@@ -5,11 +5,11 @@ import {PubNubProvider} from 'pubnub-react';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Chat, Welcome, Login, Register} from './screens';
+import {PUBNUB_SUB_KEY, PUBNUB_PUB_KEY} from 'react-native-dotenv';
 
 const pubnub = new PubNub({
-  subscribeKey: 'sub-c-4bfd44bc-b32a-11ea-bf7c-ae6a3e72d19d',
-  publishKey: 'pub-c-7b46d6f9-bec6-4ece-b24d-28528b502918',
-  uuid: 'helloTiolu',
+  subscribeKey: PUBNUB_SUB_KEY,
+  publishKey: PUBNUB_PUB_KEY,
 });
 
 const RootStack = createStackNavigator();

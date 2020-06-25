@@ -5,14 +5,20 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  Alert,
 } from 'react-native';
+import {Button} from '../../components';
+import {usePubNub} from 'pubnub-react';
+import {API_BASE_URL} from 'react-native-dotenv';
 
 type Fields = {
-  phoneNumber: string;
+  mobile: string;
   password: string;
 };
 
 export const Login = ({navigation}: any) => {
+  const pubnub = usePubNub();
+  const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
   const onChangeText = (value: string, field: keyof Fields) => {
@@ -22,11 +28,26 @@ export const Login = ({navigation}: any) => {
     });
   };
 
-  const onSubmit = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Main'}],
+  const onSubmit = async () => {
+    setLoading(true);
+    const loginResponse = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      body: JSON.stringify(fields),
+      headers: {'Content-Type': 'application/json'},
     });
+    const response = await loginResponse.json();
+    if (response.error) {
+      Alert.alert('Error', response.mesage);
+      setLoading(false);
+    } else {
+      setLoading(false);
+      pubnub.setUUID(fields.mobile);
+      pubnub.subscribe({channels: ['shara_chat'], withPresence: true});
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Main'}],
+      });
+    }
   };
 
   const handleNavigate = (route: string) => {
@@ -46,8 +67,8 @@ export const Login = ({navigation}: any) => {
             keyboardType="number-pad"
             style={styles.inputField}
             placeholder="Phone number"
-            value={fields.phoneNumber}
-            onChangeText={(text) => onChangeText(text, 'phoneNumber')}
+            value={fields.mobile}
+            onChangeText={(text) => onChangeText(text, 'mobile')}
           />
           <TextInput
             secureTextEntry={true}
@@ -56,9 +77,12 @@ export const Login = ({navigation}: any) => {
             style={styles.inputField}
             onChangeText={(text) => onChangeText(text, 'password')}
           />
-          <TouchableOpacity style={styles.button} onPress={onSubmit}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
+          <Button
+            label="Login"
+            variantColor="red"
+            onPress={onSubmit}
+            isLoading={loading}
+          />
         </View>
       </View>
 
