@@ -1,0 +1,19 @@
+version: 2.1
+workflows:
+  test:
+    jobs:
+      - build
+orbs:
+  android: circleci/android@0.2.0
+  react-native: react-native-community/react-native@4.4.2
+jobs:
+  build:
+    executor: rn/linux_js
+    steps:
+      - checkout
+      - react-native/yarn_install
+#      - run:
+#          command: ./gradlew build
+#      - run:
+#          name: Execute fastlane test
+#          command: bundle exec fastlane test
