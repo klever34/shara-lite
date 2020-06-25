@@ -1,15 +1,16 @@
+import AsyncStorage from '@react-native-community/async-storage';
+import {usePubNub} from 'pubnub-react';
 import React from 'react';
 import {
+  Alert,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-  Alert,
 } from 'react-native';
-import {Button} from '../../components';
-import {usePubNub} from 'pubnub-react';
 import {API_BASE_URL} from 'react-native-dotenv';
+import {Button} from '../../components';
 
 type Fields = {
   mobile: string;
@@ -20,6 +21,18 @@ export const Login = ({navigation}: any) => {
   const pubnub = usePubNub();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
+
+  React.useEffect(() => {
+    getPhoneNumber();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getPhoneNumber = async () => {
+    const mobile = await AsyncStorage.getItem('mobile');
+    if (mobile) {
+      setFields({...fields, mobile});
+    }
+  };
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -40,9 +53,14 @@ export const Login = ({navigation}: any) => {
       Alert.alert('Error', response.mesage);
       setLoading(false);
     } else {
+      const {credentials, user} = response.data;
+      const {token} = credentials;
+
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.removeItem('mobile');
       setLoading(false);
       pubnub.setUUID(fields.mobile);
-      pubnub.subscribe({channels: ['shara_chat'], withPresence: true});
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],

@@ -14,14 +14,20 @@ interface variantColorHexColorOptions {
   [key: string]: string;
 }
 
+interface ButtonProps {
+  label: string;
+  variantColor: string;
+  onPress(): void;
+  isLoading: boolean;
+}
+
 export const Button = ({
   label,
   variantColor = 'red',
   onPress,
   isLoading,
-}: any) => {
-  console.log(isLoading);
-  const variantColorStyles = {
+}: ButtonProps) => {
+  const variantColorStyles: variantColorStylesOptions = {
     white: {
       button: styles.whiteButton,
       text: styles.whiteButtonText,
@@ -30,15 +36,18 @@ export const Button = ({
       button: styles.redButton,
       text: styles.redButtonText,
     },
-  } as variantColorStylesOptions;
-  const variantColorHexColor = {
+  };
+
+  const variantColorHexColor: variantColorHexColorOptions = {
     white: 'white',
     red: '#e20b0d',
-  } as variantColorHexColorOptions;
-  const activityIndicatorColor = {
+  };
+
+  const activityIndicatorColor: variantColorHexColorOptions = {
     white: '#e20b0d',
     red: 'white',
-  } as variantColorHexColorOptions;
+  };
+
   return (
     <TouchableHighlight
       activeOpacity={0}

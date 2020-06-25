@@ -24,9 +24,9 @@ export const Chat = () => {
 
   useEffect(() => {
     if (pubnub) {
-      pubnub.setUUID('helloTiolu');
       const listener = {
         message: (envelope: any) => {
+          console.log(envelope);
           setMessages((msgs) => [
             ...msgs,
             {

@@ -1,20 +1,29 @@
+import AsyncStorage from '@react-native-community/async-storage';
+import {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
 import {
-  TouchableOpacity,
-  Text,
-  View,
+  Alert,
   StyleSheet,
+  Text,
   TextInput,
+  TouchableOpacity,
+  View,
 } from 'react-native';
+import {API_BASE_URL} from 'react-native-dotenv';
+import {RootStackParamList} from '../../App';
+import {Button} from '../../components';
 
 type Fields = {
   firstName: string;
   lastName: string;
-  phoneNumber: string;
+  mobile: string;
   password: string;
 };
 
-export const Register = ({navigation}: any) => {
+export const Register = ({
+  navigation,
+}: StackScreenProps<RootStackParamList>) => {
+  const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
   const onChangeText = (value: string, field: keyof Fields) => {
@@ -24,11 +33,25 @@ export const Register = ({navigation}: any) => {
     });
   };
 
-  const onSubmit = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Main'}],
+  const onSubmit = async () => {
+    setLoading(true);
+    const registerResponse = await fetch(`${API_BASE_URL}/signup`, {
+      method: 'POST',
+      body: JSON.stringify(fields),
+      headers: {'Content-Type': 'application/json'},
     });
+    const response = await registerResponse.json();
+    if (response.error) {
+      setLoading(false);
+      Alert.alert(response.mesage);
+    } else {
+      setLoading(false);
+      await AsyncStorage.setItem('mobile', fields.mobile);
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
+      });
+    }
   };
 
   const handleNavigate = (route: string) => {
@@ -56,12 +79,12 @@ export const Register = ({navigation}: any) => {
             onChangeText={(text) => onChangeText(text, 'lastName')}
           />
           <TextInput
-            value={fields.phoneNumber}
+            value={fields.mobile}
             autoCompleteType="tel"
             keyboardType="number-pad"
             style={styles.inputField}
             placeholder="Phone number"
-            onChangeText={(text) => onChangeText(text, 'phoneNumber')}
+            onChangeText={(text) => onChangeText(text, 'mobile')}
           />
           <TextInput
             secureTextEntry={true}
@@ -70,9 +93,13 @@ export const Register = ({navigation}: any) => {
             style={styles.inputField}
             onChangeText={(text) => onChangeText(text, 'password')}
           />
-          <TouchableOpacity style={styles.button} onPress={onSubmit}>
-            <Text style={styles.buttonText}>Register</Text>
-          </TouchableOpacity>
+
+          <Button
+            label="Register"
+            variantColor="red"
+            onPress={onSubmit}
+            isLoading={loading}
+          />
         </View>
       </View>
 
