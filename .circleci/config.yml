@@ -37,6 +37,7 @@ jobs:
       - react-native/yarn_install
       - run:
           command: |
+            sudo gem install fastlane -NV
             cd android
             fastlane android test
           name: Run Fastlane Test
