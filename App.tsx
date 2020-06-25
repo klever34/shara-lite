@@ -6,13 +6,20 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Chat, Welcome, Login, Register} from './screens';
 import {PUBNUB_SUB_KEY, PUBNUB_PUB_KEY} from 'react-native-dotenv';
+import SplashScreen from './screens/SplashScreen';
 
 const pubnub = new PubNub({
   subscribeKey: PUBNUB_SUB_KEY,
   publishKey: PUBNUB_PUB_KEY,
 });
 
-const RootStack = createStackNavigator();
+export type RootStackParamList = {
+  Splash: undefined;
+  Auth: undefined;
+  Main: undefined;
+};
+
+const RootStack = createStackNavigator<RootStackParamList>();
 
 const AuthStack = createStackNavigator();
 
@@ -47,7 +54,12 @@ const App = () => {
   return (
     <NavigationContainer>
       <PubNubProvider client={pubnub}>
-        <RootStack.Navigator>
+        <RootStack.Navigator initialRouteName="Splash">
+          <RootStack.Screen
+            name="Splash"
+            component={SplashScreen}
+            options={{headerShown: false}}
+          />
           <RootStack.Screen
             name="Auth"
             component={AuthScreens}
