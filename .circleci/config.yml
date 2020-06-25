@@ -1,8 +1,11 @@
 version: 2.1
 workflows:
-  testt:
+  test:
     jobs:
       - checkout_code
+      - fastlane_test:
+          requires:
+            - checkout_code
       - test:
           requires:
             - checkout_code
