@@ -1,16 +1,17 @@
 version: 2.1
 workflows:
-  test:
+  testt:
     jobs:
-      - build
-orbs:
-  android: circleci/android@0.2.0
-  react-native: react-native-community/react-native@4.4.2
+      - checkout_code
+      - test:
+          requires:
+            - checkout_code
 jobs:
-  build:
-    executor: rn/linux_js
+  test:
+    executor: react-native/linux_js
     steps:
-      - checkout
+      - attach_workspace:
+          at: .
       - react-native/yarn_install
       - run:
           command: yarn lint
@@ -18,8 +19,27 @@ jobs:
       - run:
           command: yarn test
           name: Run Tests
+  checkout_code:
+    executor: react-native/linux_js
+    steps:
+      - checkout
+      - persist_to_workspace:
+          paths: .
+          root: .
+  fastlane_test:
+    executor: react-native/linux_js
+    steps:
+      - attach_workspace:
+          at: .
+      - react-native/yarn_install
+      - run:
+          command: bundle exec fastlane android test
+          name: Run Fastlane Test
 #      - run:
 #          command: ./gradlew build
 #      - run:
 #          name: Execute fastlane test
 #          command: bundle exec fastlane test
+orbs:
+  android: circleci/android@0.2.0
+  react-native: react-native-community/react-native@4.4.2
