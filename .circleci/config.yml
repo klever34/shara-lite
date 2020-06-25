@@ -36,7 +36,9 @@ jobs:
           at: .
       - react-native/yarn_install
       - run:
-          command: bundle exec fastlane android test
+          command: |
+            cd android
+            fastlane android test
           name: Run Fastlane Test
 #      - run:
 #          command: ./gradlew build
