@@ -1,8 +1,8 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
-import {colors, dimensions} from '../styles/base';
 import {RootStackParamList} from '../App';
+import {colors, dimensions} from '../styles/base';
 
 type SplashScreenProps = StackScreenProps<RootStackParamList> & {};
 
@@ -22,7 +22,10 @@ const SplashScreen = ({navigation}: SplashScreenProps) => {
   useEffect(() => {
     // TODO: Check for log-in status here and then redirect accordingly
     setTimeout(() => {
-      navigation.navigate('Auth');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      });
     }, 750);
   });
   return (
