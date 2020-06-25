@@ -14,7 +14,7 @@ type Message = {
   id: string;
   author: string;
   content: string;
-  timetoken: string;
+  timetoken: string | number;
 };
 
 export const Chat = () => {
@@ -24,9 +24,16 @@ export const Chat = () => {
 
   useEffect(() => {
     if (pubnub) {
+      pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
+        const history = response.messages.map((item) => ({
+          id: item.entry.id,
+          timetoken: item.timetoken,
+          content: item.entry.content,
+        })) as Message[];
+        setMessages(history);
+      });
       const listener = {
         message: (envelope: any) => {
-          console.log(envelope);
           setMessages((msgs) => [
             ...msgs,
             {
@@ -78,9 +85,11 @@ export const Chat = () => {
         <View style={styles.topContainer}>
           {messages.map((message) => (
             <View key={message.timetoken} style={styles.messageContainer}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarContent}>{message.author[0]}</Text>
-              </View>
+              {message.author && (
+                <View style={styles.avatar}>
+                  <Text style={styles.avatarContent}>{message.author[0]}</Text>
+                </View>
+              )}
               <View style={styles.messageContent}>
                 <Text>{message.content}</Text>
               </View>
