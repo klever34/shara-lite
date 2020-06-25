@@ -12,6 +12,12 @@ jobs:
     steps:
       - checkout
       - react-native/yarn_install
+      - run:
+          command: yarn lint
+          name: Run ESLint
+      - run:
+          command: yarn test
+          name: Run Tests
 #      - run:
 #          command: ./gradlew build
 #      - run:
