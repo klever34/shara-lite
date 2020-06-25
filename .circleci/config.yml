@@ -43,7 +43,7 @@ jobs:
             ruby -v // Verify
             sudo apt-get install ruby2.4-dev
             export LC_ALL=en_US.UTF-8
-            export LANG=en_US.UTF-8
+            export LANG=en_US.UTF-8es
             sudo gem install fastlane -NV
             which fastlane
             cd android
