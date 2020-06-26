@@ -17,7 +17,7 @@ type ButtonProps = {
   children?: ReactNode;
 };
 
-const buttonStyles = StyleSheet.create({
+export const buttonStyles = StyleSheet.create({
   container: {
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -31,6 +31,11 @@ const buttonStyles = StyleSheet.create({
     textTransform: 'uppercase',
     fontSize: 14,
     lineHeight: 20,
+  },
+  icon: {
+    color: 'white',
+    fontSize: 18,
+    lineHeight: 24,
   },
 });
 

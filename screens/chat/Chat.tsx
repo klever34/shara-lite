@@ -1,4 +1,4 @@
-import Button from '../../components/Button';
+import Button, {buttonStyles} from '../../components/Button';
 import {usePubNub} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {
@@ -11,6 +11,8 @@ import {
 } from 'react-native';
 import {getUUID} from '../../helpers/utils';
 import {colors} from '../../styles/base';
+//TODO: Potential reduce bundle size by removing unused font set from app
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type Message = {
   id: string;
@@ -110,8 +112,9 @@ export const Chat = () => {
           <Button
             title="Send"
             style={styles.submitButton}
-            onPress={handleSubmit}
-          />
+            onPress={handleSubmit}>
+            <Icon name="send" style={buttonStyles.icon} />
+          </Button>
         )}
       </View>
     </SafeAreaView>
@@ -151,7 +154,7 @@ const styles = StyleSheet.create({
     borderRadius: 36,
     paddingVertical: 12,
     paddingLeft: 16,
-    paddingRight: 80,
+    paddingRight: 64,
     fontSize: 16,
     lineHeight: 24,
     elevation: 2,
