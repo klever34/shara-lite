@@ -161,6 +161,6 @@ const styles = StyleSheet.create({
   },
   submitButton: {
     position: 'absolute',
-    right: 20,
+    right: 16,
   },
 });
