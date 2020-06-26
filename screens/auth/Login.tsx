@@ -1,19 +1,33 @@
+import AsyncStorage from '@react-native-community/async-storage';
+import {usePubNub} from 'pubnub-react';
 import React from 'react';
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {API_BASE_URL} from 'react-native-dotenv';
+import {Button, PasswordField, PhoneNumberField} from '../../components';
 
 type Fields = {
-  phoneNumber: string;
+  mobile: string;
   password: string;
+  countryCode: string | null;
 };
 
 export const Login = ({navigation}: any) => {
+  const pubnub = usePubNub();
+  const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
+
+  React.useEffect(() => {
+    getPhoneNumber();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getPhoneNumber = async () => {
+    const mobile = await AsyncStorage.getItem('mobile');
+    const countryCode = await AsyncStorage.getItem('countryCode');
+    if (mobile && countryCode) {
+      setFields({...fields, mobile, countryCode});
+    }
+  };
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -22,11 +36,46 @@ export const Login = ({navigation}: any) => {
     });
   };
 
-  const onSubmit = () => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Main'}],
+  const onChangeMobile = (value: {code: string; number: string}) => {
+    const {code, number} = value;
+    setFields({
+      ...fields,
+      mobile: number,
+      countryCode: code,
     });
+  };
+
+  const onSubmit = async () => {
+    setLoading(true);
+    const {mobile, countryCode, ...rest} = fields;
+    const payload = {
+      ...rest,
+      mobile: `${countryCode}${mobile}`,
+    };
+    const loginResponse = await fetch(`${API_BASE_URL}/login`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+      headers: {'Content-Type': 'application/json'},
+    });
+    const response = await loginResponse.json();
+    if (response.error) {
+      Alert.alert('Error', response.mesage);
+      setLoading(false);
+    } else {
+      const {credentials, user} = response.data;
+      const {token} = credentials;
+
+      await AsyncStorage.setItem('token', token);
+      await AsyncStorage.setItem('user', JSON.stringify(user));
+      await AsyncStorage.removeItem('mobile');
+      await AsyncStorage.removeItem('countryCode');
+      setLoading(false);
+      pubnub.setUUID(fields.mobile);
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Main'}],
+      });
+    }
   };
 
   const handleNavigate = (route: string) => {
@@ -41,24 +90,25 @@ export const Login = ({navigation}: any) => {
       <View style={styles.headerSection}>
         <Text style={styles.headerText}>Shara</Text>
         <View>
-          <TextInput
-            autoCompleteType="tel"
-            keyboardType="number-pad"
-            style={styles.inputField}
-            placeholder="Phone number"
-            value={fields.phoneNumber}
-            onChangeText={(text) => onChangeText(text, 'phoneNumber')}
+          <View style={styles.inputField}>
+            <PhoneNumberField
+              value={fields.mobile}
+              countryCode={fields.countryCode}
+              onChangeText={(data) => onChangeMobile(data)}
+            />
+          </View>
+          <View style={styles.inputField}>
+            <PasswordField
+              value={fields.password}
+              onChangeText={(text) => onChangeText(text, 'password')}
+            />
+          </View>
+          <Button
+            title="Login"
+            variantColor="red"
+            onPress={onSubmit}
+            isLoading={loading}
           />
-          <TextInput
-            secureTextEntry={true}
-            placeholder="Password"
-            value={fields.password}
-            style={styles.inputField}
-            onChangeText={(text) => onChangeText(text, 'password')}
-          />
-          <TouchableOpacity style={styles.button} onPress={onSubmit}>
-            <Text style={styles.buttonText}>Login</Text>
-          </TouchableOpacity>
         </View>
       </View>
 
@@ -86,12 +136,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   inputField: {
-    height: 40,
-    fontSize: 16,
-    width: '100%',
     marginBottom: 24,
-    borderColor: 'gray',
-    borderBottomWidth: 1,
   },
   headerText: {
     fontSize: 40,

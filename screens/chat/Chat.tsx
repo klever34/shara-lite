@@ -1,4 +1,4 @@
-import Button, {buttonStyles} from '../../components/Button';
+import {BaseButton, baseButtonStyles} from '../../components';
 import {usePubNub} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {
@@ -18,7 +18,7 @@ type Message = {
   id: string;
   author: string;
   content: string;
-  timetoken: string;
+  timetoken: string | number;
 };
 
 type MessageItemProps = {
@@ -30,7 +30,9 @@ const messageItemKeyExtractor = (message: Message) => message.timetoken;
 const renderMessageItem = ({item: message}: MessageItemProps) => {
   return (
     <View key={message.timetoken} style={styles.messageContainer}>
-      <Text style={styles.senderText}>{message.author[0]}</Text>
+      {message.author && (
+        <Text style={styles.senderText}>{message.author[0]}</Text>
+      )}
       <Text style={styles.messageText}>{message.content}</Text>
     </View>
   );
@@ -43,7 +45,14 @@ export const Chat = () => {
 
   useEffect(() => {
     if (pubnub) {
-      pubnub.setUUID('helloTiolu');
+      pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
+        const history = response.messages.map((item) => ({
+          id: item.entry.id,
+          timetoken: item.timetoken,
+          content: item.entry.content,
+        })) as Message[];
+        setMessages(history);
+      });
       const listener = {
         message: (envelope: any) => {
           setMessages((msgs) => [
@@ -109,12 +118,12 @@ export const Chat = () => {
           placeholder="Type a message"
         />
         {!!input && (
-          <Button
+          <BaseButton
             title="Send"
             style={styles.submitButton}
             onPress={handleSubmit}>
-            <Icon name="send" style={buttonStyles.icon} />
-          </Button>
+            <Icon name="send" style={baseButtonStyles.icon} />
+          </BaseButton>
         )}
       </View>
     </SafeAreaView>
@@ -162,5 +171,6 @@ const styles = StyleSheet.create({
   submitButton: {
     position: 'absolute',
     right: 16,
+    borderRadius: 36,
   },
 });
