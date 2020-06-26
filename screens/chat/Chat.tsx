@@ -1,20 +1,39 @@
+import Button, {buttonStyles} from '../../components/Button';
 import {usePubNub} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {
-  Button,
+  FlatList,
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
   View,
-  ScrollView,
 } from 'react-native';
+import {getUUID} from '../../helpers/utils';
+import {colors} from '../../styles/base';
+//TODO: Potential reduce bundle size by removing unused font set from app
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 type Message = {
   id: string;
   author: string;
   content: string;
   timetoken: string;
+};
+
+type MessageItemProps = {
+  item: Message;
+};
+
+const messageItemKeyExtractor = (message: Message) => message.timetoken;
+
+const renderMessageItem = ({item: message}: MessageItemProps) => {
+  return (
+    <View key={message.timetoken} style={styles.messageContainer}>
+      <Text style={styles.senderText}>{message.author[0]}</Text>
+      <Text style={styles.messageText}>{message.content}</Text>
+    </View>
+  );
 };
 
 export const Chat = () => {
@@ -28,13 +47,13 @@ export const Chat = () => {
       const listener = {
         message: (envelope: any) => {
           setMessages((msgs) => [
-            ...msgs,
             {
               id: envelope.message.id,
               author: envelope.publisher,
               content: envelope.message.content,
               timetoken: envelope.timetoken,
             },
+            ...msgs,
           ]);
         },
       };
@@ -47,7 +66,6 @@ export const Chat = () => {
         pubnub.unsubscribeAll();
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pubnub]);
 
   const handleSubmit = () => {
@@ -56,7 +74,7 @@ export const Chat = () => {
     // Create the message with random `id`.
     const message = {
       content: input,
-      id: Math.random().toString(16).substr(2),
+      id: getUUID(),
     };
     // Publish our message to the channel `chat`
     pubnub.publish({channel: 'shara_chat', message}, function (
@@ -71,24 +89,16 @@ export const Chat = () => {
       }
     });
   };
-
   return (
-    <SafeAreaView style={styles.outerContainer}>
-      <ScrollView>
-        <View style={styles.topContainer}>
-          {messages.map((message) => (
-            <View key={message.timetoken} style={styles.messageContainer}>
-              <View style={styles.avatar}>
-                <Text style={styles.avatarContent}>{message.author[0]}</Text>
-              </View>
-              <View style={styles.messageContent}>
-                <Text>{message.content}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
-      </ScrollView>
-      <View style={styles.bottomContainer}>
+    <SafeAreaView style={styles.container}>
+      <FlatList
+        inverted={true}
+        data={messages}
+        style={styles.listContainer}
+        keyExtractor={messageItemKeyExtractor}
+        renderItem={renderMessageItem}
+      />
+      <View style={styles.inputContainer}>
         <TextInput
           style={styles.textInput}
           value={input}
@@ -96,70 +106,61 @@ export const Chat = () => {
           onSubmitEditing={handleSubmit}
           returnKeyType="send"
           enablesReturnKeyAutomatically={true}
-          placeholder="Type your message here..."
+          placeholder="Type a message"
         />
-        <View style={styles.submitButton}>
-          {input !== '' && <Button title="Send" onPress={handleSubmit} />}
-        </View>
+        {!!input && (
+          <Button
+            title="Send"
+            style={styles.submitButton}
+            onPress={handleSubmit}>
+            <Icon name="send" style={buttonStyles.icon} />
+          </Button>
+        )}
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
-  outerContainer: {
-    width: '100%',
-    height: '100%',
-  },
-  innerContainer: {
-    width: '100%',
-    height: '100%',
-  },
-  topContainer: {
+  container: {
     flex: 1,
-    width: '100%',
-    flexDirection: 'column',
-    justifyContent: 'flex-end',
-    paddingHorizontal: 16,
+  },
+  listContainer: {
+    paddingHorizontal: 8,
   },
   messageContainer: {
-    flexDirection: 'row',
-    marginTop: 16,
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    padding: 8,
-    borderRadius: 4,
+    marginTop: 8,
+    backgroundColor: colors.white,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    borderRadius: 8,
   },
-  avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 50,
-    overflow: 'hidden',
-    marginRight: 16,
+  senderText: {
+    fontSize: 14,
+    color: '#333',
   },
-  avatarContent: {
-    fontSize: 30,
-    textAlign: 'center',
-    textAlignVertical: 'center',
+  messageText: {
+    fontSize: 16,
   },
-  messageContent: {
-    flex: 1,
-  },
-  bottomContainer: {
+  inputContainer: {
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 16,
+    padding: 8,
   },
   textInput: {
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 4,
-    padding: 16,
+    backgroundColor: colors.white,
+    borderRadius: 36,
+    paddingVertical: 12,
+    paddingLeft: 16,
+    paddingRight: 64,
+    fontSize: 16,
+    lineHeight: 24,
     elevation: 2,
   },
   submitButton: {
     position: 'absolute',
-    right: 32,
+    right: 16,
   },
 });
