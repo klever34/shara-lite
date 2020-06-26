@@ -31,22 +31,17 @@ const SplashScreen = ({navigation}: SplashScreenProps) => {
 
   const handleRedirect = async () => {
     const token = await isLoggedIn();
-
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Auth'}],
-    });
-    // if (token) {
-    //   navigation.reset({
-    //     index: 0,
-    //     routes: [{name: 'Main'}],
-    //   });
-    // } else {
-    //   navigation.reset({
-    //     index: 0,
-    //     routes: [{name: 'Auth'}],
-    //   });
-    // }
+    if (token) {
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Main'}],
+      });
+    } else {
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      });
+    }
   };
 
   return (
