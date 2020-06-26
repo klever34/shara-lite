@@ -64,4 +64,5 @@ buck-out/
 
 
 # env
+.env
 .env.sample
