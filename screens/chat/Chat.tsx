@@ -30,7 +30,9 @@ const messageItemKeyExtractor = (message: Message) => message.timetoken;
 const renderMessageItem = ({item: message}: MessageItemProps) => {
   return (
     <View key={message.timetoken} style={styles.messageContainer}>
-      <Text style={styles.senderText}>{message.author[0]}</Text>
+      {message.author && (
+        <Text style={styles.senderText}>{message.author[0]}</Text>
+      )}
       <Text style={styles.messageText}>{message.content}</Text>
     </View>
   );
