@@ -1,10 +1,15 @@
-import React from 'react';
+import React, {ElementType, ReactNode} from 'react';
 import {
-  TouchableHighlight,
-  Text,
+  Platform,
   StyleSheet,
+  Text,
+  TouchableHighlight,
+  TouchableNativeFeedback,
+  View,
+  ViewStyle,
   ActivityIndicator,
 } from 'react-native';
+import {colors} from '../styles/base';
 
 interface variantColorStylesOptions {
   [key: string]: any;
@@ -15,17 +20,43 @@ interface variantColorHexColorOptions {
 }
 
 interface ButtonProps {
-  label: string;
-  variantColor: string;
+  title: string;
   onPress(): void;
   isLoading: boolean;
+  variantColor: 'red' | 'white';
 }
 
+const styles = StyleSheet.create({
+  button: {
+    height: 40,
+    borderRadius: 3,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+  },
+  whiteButton: {
+    backgroundColor: colors.white,
+  },
+  redButton: {
+    backgroundColor: colors.primary,
+  },
+  text: {
+    fontSize: 16,
+    textTransform: 'uppercase',
+  },
+  whiteButtonText: {
+    color: colors.primary,
+  },
+  redButtonText: {
+    color: colors.white,
+  },
+});
+
 export const Button = ({
-  label,
-  variantColor = 'red',
+  title,
   onPress,
   isLoading,
+  variantColor = 'red',
 }: ButtonProps) => {
   const variantColorStyles: variantColorStylesOptions = {
     white: {
@@ -38,21 +69,14 @@ export const Button = ({
     },
   };
 
-  const variantColorHexColor: variantColorHexColorOptions = {
-    white: 'white',
-    red: '#e20b0d',
-  };
-
   const activityIndicatorColor: variantColorHexColorOptions = {
-    white: '#e20b0d',
-    red: 'white',
+    white: colors.primary,
+    red: colors.white,
   };
 
   return (
-    <TouchableHighlight
-      activeOpacity={0}
+    <BaseButton
       onPress={onPress}
-      underlayColor={variantColorHexColor[variantColor]}
       style={{...styles.button, ...variantColorStyles[variantColor].button}}>
       {isLoading ? (
         <ActivityIndicator
@@ -62,35 +86,55 @@ export const Button = ({
       ) : (
         <Text
           style={{...styles.text, ...variantColorStyles[variantColor].text}}>
-          {label}
+          {title}
         </Text>
       )}
-    </TouchableHighlight>
+    </BaseButton>
   );
 };
 
-const styles = StyleSheet.create({
-  button: {
-    height: 40,
-    borderRadius: 3,
+type BaseButtonProps = {
+  title?: string;
+  style?: ViewStyle;
+  onPress: () => void;
+  children?: ReactNode;
+};
+
+export const baseButtonStyles = StyleSheet.create({
+  container: {
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    backgroundColor: colors.primary,
     alignItems: 'center',
-    paddingHorizontal: 10,
-    justifyContent: 'center',
-  },
-  whiteButton: {
-    backgroundColor: 'white',
-  },
-  redButton: {
-    backgroundColor: '#e20b0d',
+    elevation: 3,
+    borderRadius: 36,
   },
   text: {
-    fontSize: 16,
+    color: colors.white,
     textTransform: 'uppercase',
+    fontSize: 14,
+    lineHeight: 20,
   },
-  whiteButtonText: {
-    color: '#e20b0d',
-  },
-  redButtonText: {
-    color: 'white',
+  icon: {
+    color: colors.white,
+    fontSize: 18,
+    lineHeight: 24,
   },
 });
+
+export const BaseButton = ({
+  title = '',
+  onPress,
+  style = {},
+  children,
+}: BaseButtonProps) => {
+  const Touchable: ElementType =
+    Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight;
+  return (
+    <Touchable onPress={onPress}>
+      <View style={{...baseButtonStyles.container, ...style}}>
+        {children || <Text style={baseButtonStyles.text}>{title}</Text>}
+      </View>
+    </Touchable>
+  );
+};

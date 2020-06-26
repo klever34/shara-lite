@@ -94,14 +94,14 @@ export const Register = ({
             style={styles.inputField}
             onChangeText={(text) => onChangeText(text, 'lastName')}
           />
-          <View style={{marginBottom: 24}}>
+          <View style={styles.inputFieldSpacer}>
             <PhoneNumberField
               value={fields.mobile}
               countryCode={fields.countryCode}
               onChangeText={(data) => onChangeMobile(data)}
             />
           </View>
-          <View style={{marginBottom: 24}}>
+          <View style={styles.inputFieldSpacer}>
             <PasswordField
               value={fields.password}
               onChangeText={(text) => onChangeText(text, 'password')}
@@ -109,7 +109,7 @@ export const Register = ({
           </View>
 
           <Button
-            label="Register"
+            title="Register"
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
@@ -181,5 +181,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: 'white',
     textTransform: 'uppercase',
+  },
+  inputFieldSpacer: {
+    marginBottom: 24,
   },
 });

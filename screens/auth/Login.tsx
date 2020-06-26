@@ -104,7 +104,7 @@ export const Login = ({navigation}: any) => {
             />
           </View>
           <Button
-            label="Login"
+            title="Login"
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
