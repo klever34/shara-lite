@@ -9,7 +9,7 @@ export type PhoneNumber = {
 
 type Props = {
   value: string;
-  countryCode: string;
+  countryCode: string | null;
   onChangeText(number: PhoneNumber): void;
 };
 
@@ -76,12 +76,10 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 16,
     width: '100%',
-    marginBottom: 24,
     borderColor: 'gray',
     borderBottomWidth: 1,
   },
   picker: {
-    height: 40,
     paddingRight: 12,
   },
 });

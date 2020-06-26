@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import {API_BASE_URL} from 'react-native-dotenv';
 import {RootStackParamList} from '../../App';
-import {Button, PhoneNumberField} from '../../components';
+import {Button, PhoneNumberField, PasswordField} from '../../components';
 
 type Fields = {
   firstName: string;
@@ -45,9 +45,14 @@ export const Register = ({
 
   const onSubmit = async () => {
     setLoading(true);
+    const {mobile, countryCode, ...rest} = fields;
+    const payload = {
+      ...rest,
+      mobile: `${countryCode}${mobile}`,
+    };
     const registerResponse = await fetch(`${API_BASE_URL}/signup`, {
       method: 'POST',
-      body: JSON.stringify(fields),
+      body: JSON.stringify(payload),
       headers: {'Content-Type': 'application/json'},
     });
     const response = await registerResponse.json();
@@ -57,6 +62,7 @@ export const Register = ({
     } else {
       setLoading(false);
       await AsyncStorage.setItem('mobile', fields.mobile);
+      await AsyncStorage.setItem('countryCode', fields.countryCode);
       navigation.reset({
         index: 0,
         routes: [{name: 'Login'}],
@@ -88,18 +94,19 @@ export const Register = ({
             style={styles.inputField}
             onChangeText={(text) => onChangeText(text, 'lastName')}
           />
-          <PhoneNumberField
-            value={fields.mobile}
-            countryCode={fields.countryCode}
-            onChangeText={(data) => onChangeMobile(data)}
-          />
-          <TextInput
-            secureTextEntry={true}
-            placeholder="Password"
-            value={fields.password}
-            style={styles.inputField}
-            onChangeText={(text) => onChangeText(text, 'password')}
-          />
+          <View style={{marginBottom: 24}}>
+            <PhoneNumberField
+              value={fields.mobile}
+              countryCode={fields.countryCode}
+              onChangeText={(data) => onChangeMobile(data)}
+            />
+          </View>
+          <View style={{marginBottom: 24}}>
+            <PasswordField
+              value={fields.password}
+              onChangeText={(text) => onChangeText(text, 'password')}
+            />
+          </View>
 
           <Button
             label="Register"

@@ -1,21 +1,14 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import {usePubNub} from 'pubnub-react';
 import React from 'react';
-import {
-  Alert,
-  StyleSheet,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {API_BASE_URL} from 'react-native-dotenv';
-import {Button, PhoneNumberField} from '../../components';
+import {Button, PasswordField, PhoneNumberField} from '../../components';
 
 type Fields = {
   mobile: string;
   password: string;
-  countryCode: string;
+  countryCode: string | null;
 };
 
 export const Login = ({navigation}: any) => {
@@ -30,8 +23,9 @@ export const Login = ({navigation}: any) => {
 
   const getPhoneNumber = async () => {
     const mobile = await AsyncStorage.getItem('mobile');
-    if (mobile) {
-      setFields({...fields, mobile});
+    const countryCode = await AsyncStorage.getItem('countryCode');
+    if (mobile && countryCode) {
+      setFields({...fields, mobile, countryCode});
     }
   };
 
@@ -54,9 +48,13 @@ export const Login = ({navigation}: any) => {
   const onSubmit = async () => {
     setLoading(true);
     const {mobile, countryCode, ...rest} = fields;
+    const payload = {
+      ...rest,
+      mobile: `${countryCode}${mobile}`,
+    };
     const loginResponse = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
-      body: JSON.stringify({...rest, mobile: `${countryCode}${mobile}`}),
+      body: JSON.stringify(payload),
       headers: {'Content-Type': 'application/json'},
     });
     const response = await loginResponse.json();
@@ -70,6 +68,7 @@ export const Login = ({navigation}: any) => {
       await AsyncStorage.setItem('token', token);
       await AsyncStorage.setItem('user', JSON.stringify(user));
       await AsyncStorage.removeItem('mobile');
+      await AsyncStorage.removeItem('countryCode');
       setLoading(false);
       pubnub.setUUID(fields.mobile);
       navigation.reset({
@@ -91,18 +90,19 @@ export const Login = ({navigation}: any) => {
       <View style={styles.headerSection}>
         <Text style={styles.headerText}>Shara</Text>
         <View>
-          <PhoneNumberField
-            value={fields.mobile}
-            countryCode={fields.countryCode}
-            onChangeText={(data) => onChangeMobile(data)}
-          />
-          <TextInput
-            secureTextEntry={true}
-            placeholder="Password"
-            value={fields.password}
-            style={styles.inputField}
-            onChangeText={(text) => onChangeText(text, 'password')}
-          />
+          <View style={styles.inputField}>
+            <PhoneNumberField
+              value={fields.mobile}
+              countryCode={fields.countryCode}
+              onChangeText={(data) => onChangeMobile(data)}
+            />
+          </View>
+          <View style={styles.inputField}>
+            <PasswordField
+              value={fields.password}
+              onChangeText={(text) => onChangeText(text, 'password')}
+            />
+          </View>
           <Button
             label="Login"
             variantColor="red"
@@ -136,12 +136,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   inputField: {
-    height: 40,
-    fontSize: 16,
-    width: '100%',
     marginBottom: 24,
-    borderColor: 'gray',
-    borderBottomWidth: 1,
   },
   headerText: {
     fontSize: 40,
