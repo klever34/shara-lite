@@ -85,6 +85,13 @@ export const Login = ({navigation}: any) => {
     });
   };
 
+  const isButtonDisabled = () => {
+    if (!fields.mobile || !fields.password) {
+      return true;
+    }
+    return false;
+  };
+
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
@@ -108,6 +115,7 @@ export const Login = ({navigation}: any) => {
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
+            disabled={isButtonDisabled() || loading}
           />
         </View>
       </View>

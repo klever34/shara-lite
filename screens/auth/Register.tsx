@@ -77,6 +77,15 @@ export const Register = ({
     });
   };
 
+  const isButtonDisabled = () => {
+    if (Object.values(fields).length < 5) {
+      return true;
+    }
+    return false;
+  };
+
+  console.log(isButtonDisabled());
+
   return (
     <View style={styles.container}>
       <View style={styles.headerSection}>
@@ -113,6 +122,7 @@ export const Register = ({
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
+            disabled={isButtonDisabled() || loading}
           />
         </View>
       </View>

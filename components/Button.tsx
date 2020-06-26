@@ -19,9 +19,7 @@ interface variantColorHexColorOptions {
   [key: string]: string;
 }
 
-interface ButtonProps {
-  title: string;
-  onPress(): void;
+interface ButtonProps extends BaseButtonProps {
   isLoading: boolean;
   variantColor: 'red' | 'white';
 }
@@ -56,6 +54,7 @@ export const Button = ({
   title,
   onPress,
   isLoading,
+  disabled,
   variantColor = 'red',
 }: ButtonProps) => {
   const variantColorStyles: variantColorStylesOptions = {
@@ -77,6 +76,7 @@ export const Button = ({
   return (
     <BaseButton
       onPress={onPress}
+      disabled={disabled}
       style={{...styles.button, ...variantColorStyles[variantColor].button}}>
       {isLoading ? (
         <ActivityIndicator
@@ -98,6 +98,7 @@ type BaseButtonProps = {
   style?: ViewStyle;
   onPress: () => void;
   children?: ReactNode;
+  disabled?: boolean;
 };
 
 export const baseButtonStyles = StyleSheet.create({
@@ -120,6 +121,9 @@ export const baseButtonStyles = StyleSheet.create({
     fontSize: 18,
     lineHeight: 24,
   },
+  disabled: {
+    opacity: 0.5,
+  },
 });
 
 export const BaseButton = ({
@@ -127,12 +131,14 @@ export const BaseButton = ({
   onPress,
   style = {},
   children,
+  disabled,
 }: BaseButtonProps) => {
   const Touchable: ElementType =
     Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight;
+  const disabledStyle = disabled ? baseButtonStyles.disabled : {};
   return (
-    <Touchable onPress={onPress}>
-      <View style={{...baseButtonStyles.container, ...style}}>
+    <Touchable onPress={onPress} disabled={disabled}>
+      <View style={{...baseButtonStyles.container, ...style, ...disabledStyle}}>
         {children || <Text style={baseButtonStyles.text}>{title}</Text>}
       </View>
     </Touchable>
