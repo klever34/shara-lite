@@ -11,13 +11,14 @@ import {
 } from 'react-native';
 import {API_BASE_URL} from 'react-native-dotenv';
 import {RootStackParamList} from '../../App';
-import {Button} from '../../components';
+import {Button, PhoneNumberField} from '../../components';
 
 type Fields = {
   firstName: string;
   lastName: string;
   mobile: string;
   password: string;
+  countryCode: string;
 };
 
 export const Register = ({
@@ -30,6 +31,15 @@ export const Register = ({
     setFields({
       ...fields,
       [field]: value,
+    });
+  };
+
+  const onChangeMobile = (value: {code: string; number: string}) => {
+    const {code, number} = value;
+    setFields({
+      ...fields,
+      mobile: number,
+      countryCode: code,
     });
   };
 
@@ -78,13 +88,10 @@ export const Register = ({
             style={styles.inputField}
             onChangeText={(text) => onChangeText(text, 'lastName')}
           />
-          <TextInput
+          <PhoneNumberField
             value={fields.mobile}
-            autoCompleteType="tel"
-            keyboardType="number-pad"
-            style={styles.inputField}
-            placeholder="Phone number"
-            onChangeText={(text) => onChangeText(text, 'mobile')}
+            countryCode={fields.countryCode}
+            onChangeText={(data) => onChangeMobile(data)}
           />
           <TextInput
             secureTextEntry={true}

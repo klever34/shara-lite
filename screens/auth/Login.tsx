@@ -10,11 +10,12 @@ import {
   View,
 } from 'react-native';
 import {API_BASE_URL} from 'react-native-dotenv';
-import {Button} from '../../components';
+import {Button, PhoneNumberField} from '../../components';
 
 type Fields = {
   mobile: string;
   password: string;
+  countryCode: string;
 };
 
 export const Login = ({navigation}: any) => {
@@ -41,11 +42,21 @@ export const Login = ({navigation}: any) => {
     });
   };
 
+  const onChangeMobile = (value: {code: string; number: string}) => {
+    const {code, number} = value;
+    setFields({
+      ...fields,
+      mobile: number,
+      countryCode: code,
+    });
+  };
+
   const onSubmit = async () => {
     setLoading(true);
+    const {mobile, countryCode, ...rest} = fields;
     const loginResponse = await fetch(`${API_BASE_URL}/login`, {
       method: 'POST',
-      body: JSON.stringify(fields),
+      body: JSON.stringify({...rest, mobile: `${countryCode}${mobile}`}),
       headers: {'Content-Type': 'application/json'},
     });
     const response = await loginResponse.json();
@@ -80,13 +91,10 @@ export const Login = ({navigation}: any) => {
       <View style={styles.headerSection}>
         <Text style={styles.headerText}>Shara</Text>
         <View>
-          <TextInput
-            autoCompleteType="tel"
-            keyboardType="number-pad"
-            style={styles.inputField}
-            placeholder="Phone number"
+          <PhoneNumberField
             value={fields.mobile}
-            onChangeText={(text) => onChangeText(text, 'mobile')}
+            countryCode={fields.countryCode}
+            onChangeText={(data) => onChangeMobile(data)}
           />
           <TextInput
             secureTextEntry={true}
