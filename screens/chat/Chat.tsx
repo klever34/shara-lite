@@ -6,7 +6,6 @@ import {
   FlatList,
   SafeAreaView,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -44,7 +43,6 @@ export const Chat = () => {
   };
 
   useEffect(() => {
-    console.log(pubnub.getUUID());
     if (pubnub) {
       pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
         const history = response.messages.map((item) => {
