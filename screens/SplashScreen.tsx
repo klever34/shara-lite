@@ -21,7 +21,6 @@ const styles = StyleSheet.create({
 
 const SplashScreen = ({navigation}: SplashScreenProps) => {
   useEffect(() => {
-    // TODO: Check for log-in status here and then redirect accordingly
     setTimeout(handleRedirect, 750);
   });
 
@@ -32,17 +31,22 @@ const SplashScreen = ({navigation}: SplashScreenProps) => {
 
   const handleRedirect = async () => {
     const token = await isLoggedIn();
-    if (token) {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
-      });
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Auth'}],
-      });
-    }
+
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Auth'}],
+    });
+    // if (token) {
+    //   navigation.reset({
+    //     index: 0,
+    //     routes: [{name: 'Main'}],
+    //   });
+    // } else {
+    //   navigation.reset({
+    //     index: 0,
+    //     routes: [{name: 'Auth'}],
+    //   });
+    // }
   };
 
   return (

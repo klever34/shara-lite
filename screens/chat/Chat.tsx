@@ -1,7 +1,8 @@
-import {BaseButton, baseButtonStyles} from '../../components';
+import Pubnub, {PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   SafeAreaView,
   StyleSheet,
@@ -9,10 +10,11 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import {getUUID} from '../../helpers/utils';
-import {colors} from '../../styles/base';
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import {BaseButton, baseButtonStyles} from '../../components';
+import {colors} from '../../styles/base';
+import {ChatBubble} from './ChatBubble';
 
 type Message = {
   id: string;
@@ -27,42 +29,44 @@ type MessageItemProps = {
 
 const messageItemKeyExtractor = (message: Message) => message.timetoken;
 
-const renderMessageItem = ({item: message}: MessageItemProps) => {
-  return (
-    <View key={message.timetoken} style={styles.messageContainer}>
-      {message.author && (
-        <Text style={styles.senderText}>{message.author[0]}</Text>
-      )}
-      <Text style={styles.messageText}>{message.content}</Text>
-    </View>
-  );
-};
-
 export const Chat = () => {
   const pubnub = usePubNub();
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Message[]>([]);
 
+  const renderMessageItem = ({item: message}: MessageItemProps) => {
+    return (
+      <ChatBubble
+        isAuthor={message.author === pubnub.getUUID()}
+        message={message}
+      />
+    );
+  };
+
   useEffect(() => {
+    console.log(pubnub.getUUID());
     if (pubnub) {
       pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
-        const history = response.messages.map((item) => ({
-          id: item.entry.id,
-          timetoken: item.timetoken,
-          content: item.entry.content,
-        })) as Message[];
+        const history = response.messages.map((item) => {
+          return {
+            id: item.entry.id,
+            author: item.entry.id,
+            timetoken: item.timetoken,
+            content: item.entry.content,
+          };
+        }) as Message[];
         setMessages(history);
       });
       const listener = {
         message: (envelope: any) => {
           setMessages((msgs) => [
+            ...msgs,
             {
               id: envelope.message.id,
               author: envelope.publisher,
               content: envelope.message.content,
               timetoken: envelope.timetoken,
             },
-            ...msgs,
           ]);
         },
       };
@@ -78,30 +82,27 @@ export const Chat = () => {
   }, [pubnub]);
 
   const handleSubmit = () => {
-    // Clear the input field.
     setInput('');
-    // Create the message with random `id`.
     const message = {
       content: input,
-      id: getUUID(),
+      id: pubnub.getUUID(),
     };
-    // Publish our message to the channel `chat`
     pubnub.publish({channel: 'shara_chat', message}, function (
-      status: any,
-      response: any,
+      status: PubnubStatus,
+      response: Pubnub.PublishResponse,
     ) {
       if (status.error) {
-        // handle error
-        console.log(status);
+        Alert.alert('Error', status.errorData?.message);
       } else {
         console.log('message Published w/ timetoken', response.timetoken);
       }
     });
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        inverted={true}
+        // inverted={true}
         data={messages}
         style={styles.listContainer}
         keyExtractor={messageItemKeyExtractor}

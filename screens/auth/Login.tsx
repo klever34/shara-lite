@@ -70,7 +70,8 @@ export const Login = ({navigation}: any) => {
       await AsyncStorage.removeItem('mobile');
       await AsyncStorage.removeItem('countryCode');
       setLoading(false);
-      pubnub.setUUID(fields.mobile);
+      pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
+      console.log(pubnub.getUUID());
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],

@@ -11,7 +11,7 @@ type Props = {
   value: string;
   countryCode: string | null;
   onChangeText(number: PhoneNumber): void;
-} & TextInputProperties;
+} & Omit<TextInputProperties, 'onChangeText'>;
 
 export const PhoneNumberField = (props: Props) => {
   const {value, countryCode, onChangeText, ...rest} = props;
