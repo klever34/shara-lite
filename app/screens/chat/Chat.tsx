@@ -39,6 +39,12 @@ type MessageItemProps = {
 
 const messageItemKeyExtractor = (message: Message) => message.timetoken;
 
+const sortMessagesFunc = (a: Message, b: Message) => {
+  var dateA = a.timetoken && new Date(a.timetoken / 10000000).getTime();
+  var dateB = b.timetoken && new Date(b.timetoken / 10000000).getTime();
+  return dateB - dateA;
+};
+
 export const Chat = () => {
   const pubnub = usePubNub();
   const chatListRef = React.useRef<any>(null);
@@ -52,19 +58,7 @@ export const Chat = () => {
 
   useEffect(() => {
     if (pubnub) {
-      pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
-        if (response) {
-          const history = response.messages.map((item) => {
-            return {
-              id: item.entry.id,
-              author: item.entry.user,
-              timetoken: item.timetoken,
-              content: item.entry.content,
-            };
-          }) as Message[];
-          setMessages(history);
-        }
-      });
+      fetchHistory();
       const listener = {
         message: (envelope: any) => {
           setMessages((msgs) => [
@@ -89,12 +83,6 @@ export const Chat = () => {
     }
   }, [pubnub]);
 
-  // React.useLayoutEffect(() => {
-  //   if (chatListRef.current) {
-  //     chatListRef.current.scrollToIndex(0);
-  //   }
-  // }, [messages]);
-
   const renderMessageItem = ({item: message}: MessageItemProps) => {
     return (
       <ChatBubble
@@ -102,6 +90,22 @@ export const Chat = () => {
         isAuthor={message.author?.mobile === pubnub.getUUID()}
       />
     );
+  };
+
+  const fetchHistory = () => {
+    pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
+      if (response) {
+        const history = response.messages.map((item) => {
+          return {
+            id: item.entry.id,
+            author: item.entry.user,
+            timetoken: item.timetoken,
+            content: item.entry.content,
+          };
+        }) as Message[];
+        setMessages((messageList) => [...history, ...messageList]);
+      }
+    });
   };
 
   const getUser = async () => {
@@ -140,12 +144,12 @@ export const Chat = () => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        // inverted={true}
-        data={messages}
+        inverted={true}
         ref={chatListRef}
         style={styles.listContainer}
         renderItem={renderMessageItem}
-        // initialScrollIndex={messages.length - 1}
+        data={messages.sort(sortMessagesFunc)}
+        // onEndReached={() => fetchHistory()}
         keyExtractor={messageItemKeyExtractor}
       />
       <View style={styles.inputContainer}>
