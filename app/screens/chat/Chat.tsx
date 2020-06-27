@@ -49,6 +49,7 @@ export const Chat = () => {
   const pubnub = usePubNub();
   const chatListRef = React.useRef<any>(null);
   const [input, setInput] = useState('');
+  const [fetchCount, setFetchCount] = useState(1);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -93,7 +94,8 @@ export const Chat = () => {
   };
 
   const fetchHistory = () => {
-    pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
+    const count = 20 * fetchCount;
+    pubnub.history({channel: 'shara_chat', count}, (status, response) => {
       if (response) {
         const history = response.messages.map((item) => {
           return {
@@ -103,7 +105,8 @@ export const Chat = () => {
             content: item.entry.content,
           };
         }) as Message[];
-        setMessages((messageList) => [...history, ...messageList]);
+        setMessages(history);
+        setFetchCount(fetchCount + 1);
       }
     });
   };
@@ -148,8 +151,8 @@ export const Chat = () => {
         ref={chatListRef}
         style={styles.listContainer}
         renderItem={renderMessageItem}
+        onEndReached={() => fetchHistory()}
         data={messages.sort(sortMessagesFunc)}
-        // onEndReached={() => fetchHistory()}
         keyExtractor={messageItemKeyExtractor}
       />
       <View style={styles.inputContainer}>
