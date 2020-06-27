@@ -9,7 +9,7 @@ import {
   View,
 } from 'react-native';
 import {API_BASE_URL} from 'react-native-dotenv';
-import {RootStackParamList} from '../../App';
+import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 import {usePubNub} from 'pubnub-react';
 
