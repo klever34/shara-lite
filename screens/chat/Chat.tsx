@@ -45,15 +45,17 @@ export const Chat = () => {
   useEffect(() => {
     if (pubnub) {
       pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
-        const history = response.messages.map((item) => {
-          return {
-            id: item.entry.id,
-            author: item.entry.id,
-            timetoken: item.timetoken,
-            content: item.entry.content,
-          };
-        }) as Message[];
-        setMessages(history);
+        if (response) {
+          const history = response.messages.map((item) => {
+            return {
+              id: item.entry.id,
+              author: item.entry.id,
+              timetoken: item.timetoken,
+              content: item.entry.content,
+            };
+          }) as Message[];
+          setMessages(history);
+        }
       });
       const listener = {
         message: (envelope: any) => {
