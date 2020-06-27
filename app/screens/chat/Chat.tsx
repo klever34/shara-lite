@@ -9,6 +9,7 @@ import {
   TextInput,
   View,
   ActivityIndicator,
+  ImageBackground,
 } from 'react-native';
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -156,21 +157,26 @@ export const Chat = () => {
           <View style={styles.loadingContainer}>
             <ActivityIndicator
               size="small"
-              color="#00ff00"
               animating={isLoading}
+              color={colors.primary}
             />
           </View>
         </View>
       )}
-      <FlatList
-        inverted={true}
-        ref={chatListRef}
-        style={styles.listContainer}
-        renderItem={renderMessageItem}
-        onEndReached={() => fetchHistory()}
-        data={messages.sort(sortMessagesFunc)}
-        keyExtractor={messageItemKeyExtractor}
-      />
+
+      <ImageBackground
+        source={require('../../assets/images/chat-wallpaper.jpg')}
+        style={styles.chatBackground}>
+        <FlatList
+          inverted={true}
+          ref={chatListRef}
+          style={styles.listContainer}
+          renderItem={renderMessageItem}
+          onEndReached={() => fetchHistory()}
+          data={messages.sort(sortMessagesFunc)}
+          keyExtractor={messageItemKeyExtractor}
+        />
+      </ImageBackground>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.textInput}
@@ -252,5 +258,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colors.white,
+  },
+  chatBackground: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
 });
