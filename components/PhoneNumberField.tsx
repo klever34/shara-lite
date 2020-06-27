@@ -1,6 +1,6 @@
 import React from 'react';
+import {StyleSheet, TextInput, TextInputProperties, View} from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
-import {View, TextInput, StyleSheet} from 'react-native';
 
 export type PhoneNumber = {
   code: string;
@@ -11,10 +11,10 @@ type Props = {
   value: string;
   countryCode: string | null;
   onChangeText(number: PhoneNumber): void;
-};
+} & Omit<TextInputProperties, 'onChangeText'>;
 
 export const PhoneNumberField = (props: Props) => {
-  const {value, countryCode, onChangeText} = props;
+  const {value, countryCode, onChangeText, ...rest} = props;
   const [phoneNumber, setPhoneNumber] = React.useState(value || '');
   const [callingCode, setCallingCode] = React.useState(countryCode || '234');
   const [country, setCountry] = React.useState<any>({
@@ -57,10 +57,11 @@ export const PhoneNumberField = (props: Props) => {
       <TextInput
         value={phoneNumber}
         autoCompleteType="tel"
-        keyboardType="number-pad"
+        keyboardType="phone-pad"
         style={styles.inputField}
         placeholder="Phone number"
         onChangeText={(text) => onInputChangeText(text)}
+        {...rest}
       />
     </View>
   );

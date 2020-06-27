@@ -70,7 +70,7 @@ export const Login = ({navigation}: any) => {
       await AsyncStorage.removeItem('mobile');
       await AsyncStorage.removeItem('countryCode');
       setLoading(false);
-      pubnub.setUUID(fields.mobile);
+      pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
@@ -83,6 +83,13 @@ export const Login = ({navigation}: any) => {
       index: 0,
       routes: [{name: route}],
     });
+  };
+
+  const isButtonDisabled = () => {
+    if (!fields.mobile || !fields.password) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -108,6 +115,7 @@ export const Login = ({navigation}: any) => {
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
+            disabled={isButtonDisabled() || loading}
           />
         </View>
       </View>

@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
 import {
@@ -11,7 +10,8 @@ import {
 } from 'react-native';
 import {API_BASE_URL} from 'react-native-dotenv';
 import {RootStackParamList} from '../../App';
-import {Button, PhoneNumberField, PasswordField} from '../../components';
+import {Button, PasswordField, PhoneNumberField} from '../../components';
+import {usePubNub} from 'pubnub-react';
 
 type Fields = {
   firstName: string;
@@ -24,6 +24,7 @@ type Fields = {
 export const Register = ({
   navigation,
 }: StackScreenProps<RootStackParamList>) => {
+  const pubnub = usePubNub();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -61,11 +62,10 @@ export const Register = ({
       Alert.alert(response.mesage);
     } else {
       setLoading(false);
-      await AsyncStorage.setItem('mobile', fields.mobile);
-      await AsyncStorage.setItem('countryCode', fields.countryCode);
+      pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
       navigation.reset({
         index: 0,
-        routes: [{name: 'Login'}],
+        routes: [{name: 'Main'}],
       });
     }
   };
@@ -75,6 +75,13 @@ export const Register = ({
       index: 0,
       routes: [{name: route}],
     });
+  };
+
+  const isButtonDisabled = () => {
+    if (Object.values(fields).length < 5) {
+      return true;
+    }
+    return false;
   };
 
   return (
@@ -113,6 +120,7 @@ export const Register = ({
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
+            disabled={isButtonDisabled() || loading}
           />
         </View>
       </View>

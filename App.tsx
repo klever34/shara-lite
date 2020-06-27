@@ -7,6 +7,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {Chat, Welcome, Login, Register} from './screens';
 import {PUBNUB_SUB_KEY, PUBNUB_PUB_KEY} from 'react-native-dotenv';
 import SplashScreen from './screens/SplashScreen';
+import {colors} from './styles/base';
 
 const pubnub = new PubNub({
   subscribeKey: PUBNUB_SUB_KEY,
@@ -46,7 +47,17 @@ const AuthScreens = () => (
 );
 const MainScreens = () => (
   <MainStack.Navigator>
-    <MainStack.Screen name="Chat" component={Chat} />
+    <MainStack.Screen
+      name="Chat"
+      component={Chat}
+      options={{
+        title: 'Shara Chat',
+        headerStyle: {
+          backgroundColor: colors.primary,
+        },
+        headerTintColor: '#fff',
+      }}
+    />
   </MainStack.Navigator>
 );
 
