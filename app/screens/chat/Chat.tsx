@@ -10,6 +10,7 @@ import {
   View,
   ActivityIndicator,
   ImageBackground,
+  Button,
 } from 'react-native';
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -47,7 +48,7 @@ const sortMessagesFunc = (a: Message, b: Message) => {
   return dateB - dateA;
 };
 
-export const Chat = () => {
+export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
   const chatListRef = React.useRef<any>(null);
   const [input, setInput] = useState('');
@@ -55,6 +56,25 @@ export const Chat = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+
+  console.log(pubnub.getUUID());
+
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Button
+          onPress={async () => {
+            await AsyncStorage.clear();
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Auth'}],
+            });
+          }}
+          title="Logout"
+        />
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     getUser();
