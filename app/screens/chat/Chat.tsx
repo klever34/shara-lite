@@ -14,13 +14,24 @@ import Icon from 'react-native-vector-icons/MaterialIcons';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {colors} from '../../styles/base';
 import {ChatBubble} from './ChatBubble';
+import AsyncStorage from '@react-native-community/async-storage';
 
-type Message = {
-  id: string;
-  author: string;
-  content: string;
-  timetoken: string | number;
+type User = {
+  id: number;
+  email?: string;
+  firstname?: string;
+  lastname?: string;
+  mobile?: string;
 };
+
+export type Message = {
+  id: string;
+  content: string;
+  timetoken: number;
+  author: MessageAuthor;
+};
+
+type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile'>;
 
 type MessageItemProps = {
   item: Message;
@@ -30,17 +41,14 @@ const messageItemKeyExtractor = (message: Message) => message.timetoken;
 
 export const Chat = () => {
   const pubnub = usePubNub();
+  const chatListRef = React.useRef<any>(null);
   const [input, setInput] = useState('');
+  const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const renderMessageItem = ({item: message}: MessageItemProps) => {
-    return (
-      <ChatBubble
-        isAuthor={message.author === pubnub.getUUID()}
-        message={message}
-      />
-    );
-  };
+  useEffect(() => {
+    getUser();
+  }, []);
 
   useEffect(() => {
     if (pubnub) {
@@ -49,7 +57,7 @@ export const Chat = () => {
           const history = response.messages.map((item) => {
             return {
               id: item.entry.id,
-              author: item.entry.id,
+              author: item.entry.user,
               timetoken: item.timetoken,
               content: item.entry.content,
             };
@@ -63,9 +71,9 @@ export const Chat = () => {
             ...msgs,
             {
               id: envelope.message.id,
-              author: envelope.publisher,
-              content: envelope.message.content,
               timetoken: envelope.timetoken,
+              author: envelope.message.user,
+              content: envelope.message.content,
             },
           ]);
         },
@@ -81,11 +89,41 @@ export const Chat = () => {
     }
   }, [pubnub]);
 
+  // React.useLayoutEffect(() => {
+  //   if (chatListRef.current) {
+  //     chatListRef.current.scrollToIndex(0);
+  //   }
+  // }, [messages]);
+
+  const renderMessageItem = ({item: message}: MessageItemProps) => {
+    return (
+      <ChatBubble
+        message={message}
+        isAuthor={message.author?.mobile === pubnub.getUUID()}
+      />
+    );
+  };
+
+  const getUser = async () => {
+    try {
+      const data = await AsyncStorage.getItem('user');
+      const parsed = JSON.parse(data);
+      setUser(parsed);
+    } catch (e) {
+      Alert.alert('Error');
+    }
+  };
+
   const handleSubmit = () => {
     setInput('');
     const message = {
       content: input,
       id: pubnub.getUUID(),
+      user: {
+        mobile: user?.mobile,
+        lastname: user?.lastname,
+        firstname: user?.firstname,
+      },
     };
     pubnub.publish({channel: 'shara_chat', message}, function (
       status: PubnubStatus,
@@ -104,9 +142,11 @@ export const Chat = () => {
       <FlatList
         // inverted={true}
         data={messages}
+        ref={chatListRef}
         style={styles.listContainer}
-        keyExtractor={messageItemKeyExtractor}
         renderItem={renderMessageItem}
+        // initialScrollIndex={messages.length - 1}
+        keyExtractor={messageItemKeyExtractor}
       />
       <View style={styles.inputContainer}>
         <TextInput
