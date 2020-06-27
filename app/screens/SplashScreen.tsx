@@ -2,7 +2,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
 import AsyncStorage from '@react-native-community/async-storage';
 import {Image, StyleSheet, View} from 'react-native';
-import {RootStackParamList} from '../App';
+import {RootStackParamList} from '../index';
 import {colors, dimensions} from '../styles/base';
 
 type SplashScreenProps = StackScreenProps<RootStackParamList> & {};
