@@ -24,8 +24,13 @@ platform :android do
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :alpha do
     gradle(task: "clean assembleRelease")
-    crashlytics
-  
+    firebase_app_distribution(
+      app: "1:23333573770:android:4b593be0700b2c58718973
+  "
+      # release_notes_file: "release-notes.txt",
+      # testers_file: "testers.txt"
+    )
+
     # sh "your_script.sh"
     # You can also use other beta testing services here
   end
