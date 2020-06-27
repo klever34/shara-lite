@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TextInput,
   View,
+  ActivityIndicator,
 } from 'react-native';
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
@@ -50,6 +51,7 @@ export const Chat = () => {
   const chatListRef = React.useRef<any>(null);
   const [input, setInput] = useState('');
   const [fetchCount, setFetchCount] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
@@ -82,6 +84,7 @@ export const Chat = () => {
         pubnub.unsubscribeAll();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pubnub]);
 
   const renderMessageItem = ({item: message}: MessageItemProps) => {
@@ -95,8 +98,10 @@ export const Chat = () => {
 
   const fetchHistory = () => {
     const count = 20 * fetchCount;
+    setIsLoading(true);
     pubnub.history({channel: 'shara_chat', count}, (status, response) => {
       if (response) {
+        setIsLoading(false);
         const history = response.messages.map((item) => {
           return {
             id: item.entry.id,
@@ -114,7 +119,7 @@ export const Chat = () => {
   const getUser = async () => {
     try {
       const data = await AsyncStorage.getItem('user');
-      const parsed = JSON.parse(data);
+      const parsed = data && JSON.parse(data);
       setUser(parsed);
     } catch (e) {
       Alert.alert('Error');
@@ -146,6 +151,17 @@ export const Chat = () => {
 
   return (
     <SafeAreaView style={styles.container}>
+      {isLoading && (
+        <View style={styles.loadingSection}>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size="small"
+              color="#00ff00"
+              animating={isLoading}
+            />
+          </View>
+        </View>
+      )}
       <FlatList
         inverted={true}
         ref={chatListRef}
@@ -220,5 +236,21 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     borderRadius: 36,
+  },
+  loadingSection: {
+    top: 10,
+    zIndex: 100,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
+  loadingContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.white,
   },
 });
