@@ -61,6 +61,8 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+/android/google-play-store-service-account.json
+/android/app/google-services.json
 
 
 # env
