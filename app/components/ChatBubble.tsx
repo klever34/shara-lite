@@ -1,19 +1,18 @@
-import React, {useMemo} from 'react';
+import React, {useMemo, memo} from 'react';
 import format from 'date-fns/format';
 import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles/base';
-import {Message} from '../screens/chat';
+import {Message, User} from '../screens/chat';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {usePubNub} from 'pubnub-react';
 import {convertTimeTokenToDate} from '../helpers/utils';
 
 type ChatBubbleProps = {
   message: Message;
+  user: User;
 };
 
-export const ChatBubble = ({message}: ChatBubbleProps) => {
-  const pubnub = usePubNub();
-  const isAuthor = message.id === pubnub.getUUID();
+export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
+  const isAuthor = user.id === message.author?.id;
   const {timetoken, author, content} = message;
   const messageTime = useMemo(() => {
     return format(convertTimeTokenToDate(timetoken ?? 0), 'hh:mma');
@@ -87,7 +86,7 @@ export const ChatBubble = ({message}: ChatBubbleProps) => {
       </View>
     </View>
   );
-};
+});
 
 const styles = StyleSheet.create({
   messageContainer: {

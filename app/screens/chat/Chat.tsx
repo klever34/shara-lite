@@ -27,7 +27,7 @@ import {ChatBubble} from '../../components/ChatBubble';
 import StorageService from '../../services/StorageService';
 import {convertTimeTokenToDate} from '../../helpers/utils';
 
-type User = {
+export type User = {
   id: number;
   email?: string;
   firstname?: string;
@@ -36,13 +36,12 @@ type User = {
 };
 
 export type Message = {
-  id: string;
   content: string;
   timetoken?: string | number;
-  author: MessageAuthor;
+  author?: MessageAuthor;
 };
 
-type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile'>;
+type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>;
 
 type MessageItemProps = {
   item: Message;
@@ -104,10 +103,8 @@ export const Chat = ({navigation}: any) => {
         const history: Message[] = response.messages.map((item) => {
           const entry = item.entry as Message;
           return {
-            id: entry.id,
-            author: entry.author,
+            ...entry,
             timetoken: item.timetoken,
-            content: entry.content,
           };
         });
         setMessages(history.sort(sortMessages));
@@ -124,10 +121,8 @@ export const Chat = ({navigation}: any) => {
           setMessages((prevMessages) => {
             const nextMessages: Message[] = [
               {
-                id: message.id,
+                ...message,
                 timetoken: envelope.timetoken,
-                author: message.author,
-                content: message.content,
               },
               ...prevMessages,
             ];
@@ -150,8 +145,8 @@ export const Chat = ({navigation}: any) => {
     setInput('');
     const message: Message = {
       content: input,
-      id: pubnub.getUUID(),
       author: {
+        id: user?.id ?? -1,
         mobile: user?.mobile,
         lastname: user?.lastname,
         firstname: user?.firstname,
@@ -169,9 +164,15 @@ export const Chat = ({navigation}: any) => {
     });
   }, [input, pubnub, user]);
 
-  const renderMessageItem = useCallback(({item: message}: MessageItemProps) => {
-    return <ChatBubble message={message} />;
-  }, []);
+  const renderMessageItem = useCallback(
+    ({item: message}: MessageItemProps) => {
+      if (!user) {
+        return null;
+      }
+      return <ChatBubble message={message} user={user} />;
+    },
+    [user],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
