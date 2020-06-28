@@ -2,6 +2,7 @@ import 'react-native-gesture-handler';
 import React from 'react';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
+import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Chat, Welcome, Login, Register} from './screens';
@@ -64,25 +65,27 @@ const MainScreens = () => (
 const App = () => {
   return (
     <NavigationContainer>
-      <PubNubProvider client={pubnub}>
-        <RootStack.Navigator initialRouteName="Splash">
-          <RootStack.Screen
-            name="Splash"
-            component={SplashScreen}
-            options={{headerShown: false}}
-          />
-          <RootStack.Screen
-            name="Auth"
-            component={AuthScreens}
-            options={{headerShown: false}}
-          />
-          <RootStack.Screen
-            name="Main"
-            component={MainScreens}
-            options={{headerShown: false}}
-          />
-        </RootStack.Navigator>
-      </PubNubProvider>
+      <MenuProvider>
+        <PubNubProvider client={pubnub}>
+          <RootStack.Navigator initialRouteName="Splash">
+            <RootStack.Screen
+              name="Splash"
+              component={SplashScreen}
+              options={{headerShown: false}}
+            />
+            <RootStack.Screen
+              name="Auth"
+              component={AuthScreens}
+              options={{headerShown: false}}
+            />
+            <RootStack.Screen
+              name="Main"
+              component={MainScreens}
+              options={{headerShown: false}}
+            />
+          </RootStack.Navigator>
+        </PubNubProvider>
+      </MenuProvider>
     </NavigationContainer>
   );
 };

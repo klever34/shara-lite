@@ -79,7 +79,7 @@ export const ChatBubble = ({message, isAuthor}: Props) => {
   return (
     <View>
       <View key={message.timetoken} style={getMessageContainerStyle()}>
-        {author && (
+        {author && !isAuthor && (
           <Text style={getAuthorTextStyle()}>
             {author.firstname} {author.lastname}
           </Text>

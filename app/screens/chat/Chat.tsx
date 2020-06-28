@@ -1,23 +1,29 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import Pubnub, {PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
+  ImageBackground,
   SafeAreaView,
   StyleSheet,
   TextInput,
   View,
-  ActivityIndicator,
-  ImageBackground,
-  Button,
 } from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {colors} from '../../styles/base';
 import {ChatBubble} from './ChatBubble';
-import AsyncStorage from '@react-native-community/async-storage';
 
 type User = {
   id: number;
@@ -57,23 +63,22 @@ export const Chat = ({navigation}: any) => {
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  console.log(pubnub.getUUID());
-
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Button
-          onPress={async () => {
-            await AsyncStorage.clear();
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'Auth'}],
-            });
-          }}
-          title="Logout"
-        />
+        <Menu>
+          <MenuTrigger>
+            <TouchableOpacity>
+              <Icon color={colors.white} name="more-vert" size={30} />
+            </TouchableOpacity>
+          </MenuTrigger>
+          <MenuOptions>
+            <MenuOption onSelect={handleLogout} text="Logout" />
+          </MenuOptions>
+        </Menu>
       ),
     });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigation]);
 
   useEffect(() => {
@@ -167,6 +172,14 @@ export const Chat = ({navigation}: any) => {
       } else {
         console.log('message Published w/ timetoken', response.timetoken);
       }
+    });
+  };
+
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Auth'}],
     });
   };
 
