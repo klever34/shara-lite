@@ -1,7 +1,7 @@
+import {MessageEvent, PublishResponse, PubnubStatus} from 'pubnub';
 import AsyncStorage from '@react-native-community/async-storage';
-import Pubnub, {PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -23,7 +23,9 @@ import {
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {colors} from '../../styles/base';
-import {ChatBubble} from './ChatBubble';
+import {ChatBubble} from '../../components/ChatBubble';
+import StorageService from '../../services/StorageService';
+import {convertTimeTokenToDate} from '../../helpers/utils';
 
 type User = {
   id: number;
@@ -36,7 +38,7 @@ type User = {
 export type Message = {
   id: string;
   content: string;
-  timetoken: number;
+  timetoken?: string | number;
   author: MessageAuthor;
 };
 
@@ -46,24 +48,37 @@ type MessageItemProps = {
   item: Message;
 };
 
-const messageItemKeyExtractor = (message: Message) => message.timetoken;
+const messageItemKeyExtractor = (message: Message) => String(message.timetoken);
 
-const sortMessagesFunc = (a: Message, b: Message) => {
-  var dateA = a.timetoken && new Date(a.timetoken / 10000000).getTime();
-  var dateB = b.timetoken && new Date(b.timetoken / 10000000).getTime();
+const sortMessages = (a: Message, b: Message) => {
+  const dateA = convertTimeTokenToDate(a.timetoken ?? 0).getTime();
+  const dateB = convertTimeTokenToDate(b.timetoken ?? 0).getTime();
   return dateB - dateA;
 };
 
 export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
-  const chatListRef = React.useRef<any>(null);
   const [input, setInput] = useState('');
-  const [fetchCount, setFetchCount] = useState(1);
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  useEffect(() => {
+    StorageService.getItem('user').then((nextUser) => {
+      if (nextUser) {
+        setUser(nextUser);
+      }
+    });
+  }, []);
 
-  React.useLayoutEffect(() => {
+  const handleLogout = useCallback(async () => {
+    await AsyncStorage.clear();
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Auth'}],
+    });
+  }, [navigation]);
+
+  useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <Menu>
@@ -78,27 +93,46 @@ export const Chat = ({navigation}: any) => {
         </Menu>
       ),
     });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigation]);
+  }, [handleLogout, navigation]);
 
-  useEffect(() => {
-    getUser();
-  }, []);
+  const fetchHistory = useCallback(() => {
+    const count = messages.length + 20;
+    setIsLoading(true);
+    pubnub.history({channel: 'shara_chat', count}, (status, response) => {
+      if (response) {
+        setIsLoading(false);
+        const history: Message[] = response.messages.map((item) => {
+          const entry = item.entry as Message;
+          return {
+            id: entry.id,
+            author: entry.author,
+            timetoken: item.timetoken,
+            content: entry.content,
+          };
+        });
+        setMessages(history.sort(sortMessages));
+      }
+    });
+  }, [messages.length, pubnub]);
 
+  useEffect(fetchHistory, []);
   useEffect(() => {
     if (pubnub) {
-      fetchHistory();
       const listener = {
-        message: (envelope: any) => {
-          setMessages((msgs) => [
-            ...msgs,
-            {
-              id: envelope.message.id,
-              timetoken: envelope.timetoken,
-              author: envelope.message.user,
-              content: envelope.message.content,
-            },
-          ]);
+        message: (envelope: MessageEvent) => {
+          const message = envelope.message as Message;
+          setMessages((prevMessages) => {
+            const nextMessages: Message[] = [
+              {
+                id: message.id,
+                timetoken: envelope.timetoken,
+                author: message.author,
+                content: message.content,
+              },
+              ...prevMessages,
+            ];
+            return nextMessages.sort(sortMessages);
+          });
         },
       };
       // Add the listener to pubnub instance and subscribe to `chat` channel.
@@ -110,54 +144,14 @@ export const Chat = ({navigation}: any) => {
         pubnub.unsubscribeAll();
       };
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pubnub]);
+  }, [fetchHistory, pubnub]);
 
-  const renderMessageItem = ({item: message}: MessageItemProps) => {
-    return (
-      <ChatBubble
-        message={message}
-        isAuthor={message.author?.mobile === pubnub.getUUID()}
-      />
-    );
-  };
-
-  const fetchHistory = () => {
-    const count = 20 * fetchCount;
-    setIsLoading(true);
-    pubnub.history({channel: 'shara_chat', count}, (status, response) => {
-      if (response) {
-        setIsLoading(false);
-        const history = response.messages.map((item) => {
-          return {
-            id: item.entry.id,
-            author: item.entry.user,
-            timetoken: item.timetoken,
-            content: item.entry.content,
-          };
-        }) as Message[];
-        setMessages(history);
-        setFetchCount(fetchCount + 1);
-      }
-    });
-  };
-
-  const getUser = async () => {
-    try {
-      const data = await AsyncStorage.getItem('user');
-      const parsed = data && JSON.parse(data);
-      setUser(parsed);
-    } catch (e) {
-      Alert.alert('Error');
-    }
-  };
-
-  const handleSubmit = () => {
+  const handleSubmit = useCallback(() => {
     setInput('');
-    const message = {
+    const message: Message = {
       content: input,
       id: pubnub.getUUID(),
-      user: {
+      author: {
         mobile: user?.mobile,
         lastname: user?.lastname,
         firstname: user?.firstname,
@@ -165,7 +159,7 @@ export const Chat = ({navigation}: any) => {
     };
     pubnub.publish({channel: 'shara_chat', message}, function (
       status: PubnubStatus,
-      response: Pubnub.PublishResponse,
+      response: PublishResponse,
     ) {
       if (status.error) {
         Alert.alert('Error', status.errorData?.message);
@@ -173,15 +167,11 @@ export const Chat = ({navigation}: any) => {
         console.log('message Published w/ timetoken', response.timetoken);
       }
     });
-  };
+  }, [input, pubnub, user]);
 
-  const handleLogout = async () => {
-    await AsyncStorage.clear();
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Auth'}],
-    });
-  };
+  const renderMessageItem = useCallback(({item: message}: MessageItemProps) => {
+    return <ChatBubble message={message} />;
+  }, []);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -202,11 +192,10 @@ export const Chat = ({navigation}: any) => {
         style={styles.chatBackground}>
         <FlatList
           inverted={true}
-          ref={chatListRef}
           style={styles.listContainer}
           renderItem={renderMessageItem}
-          onEndReached={() => fetchHistory()}
-          data={messages.sort(sortMessagesFunc)}
+          onEndReached={fetchHistory}
+          data={messages}
           keyExtractor={messageItemKeyExtractor}
         />
       </ImageBackground>
