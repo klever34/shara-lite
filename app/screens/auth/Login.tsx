@@ -46,35 +46,40 @@ export const Login = ({navigation}: any) => {
   };
 
   const onSubmit = async () => {
-    setLoading(true);
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
-    const loginResponse = await fetch(`${API_BASE_URL}/login`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {'Content-Type': 'application/json'},
-    });
-    const response = await loginResponse.json();
-    if (response.error) {
-      Alert.alert('Error', response.mesage);
-      setLoading(false);
-    } else {
-      const {credentials, user} = response.data;
-      const {token} = credentials;
-
-      await AsyncStorage.setItem('token', token);
-      await AsyncStorage.setItem('user', JSON.stringify(user));
-      await AsyncStorage.removeItem('mobile');
-      await AsyncStorage.removeItem('countryCode');
-      setLoading(false);
-      pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
+    try {
+      setLoading(true);
+      const loginResponse = await fetch(`${API_BASE_URL}/login`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {'Content-Type': 'application/json'},
       });
+      const response = await loginResponse.json();
+      if (response.error) {
+        Alert.alert('Error', response.mesage);
+        setLoading(false);
+      } else {
+        const {credentials, user} = response.data;
+        const {token} = credentials;
+
+        await AsyncStorage.setItem('token', token);
+        await AsyncStorage.setItem('user', JSON.stringify(user));
+        await AsyncStorage.removeItem('mobile');
+        await AsyncStorage.removeItem('countryCode');
+        setLoading(false);
+        pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
+      }
+    } catch (error) {
+      setLoading(false);
+      Alert.alert('Error', error);
     }
   };
 

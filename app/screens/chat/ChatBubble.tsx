@@ -1,9 +1,19 @@
 import React from 'react';
+import fromUnixTime from 'date-fns/fromUnixTime';
 import format from 'date-fns/format';
 import {StyleSheet, Text, View, StyleProp, TextStyle} from 'react-native';
 import {colors} from '../../styles/base';
+import {Message} from './Chat';
 
-export const ChatBubble = ({message, isAuthor}: any) => {
+type Props = {
+  message: Message;
+  isAuthor: boolean;
+};
+
+export const ChatBubble = ({message, isAuthor}: Props) => {
+  const {timetoken, author, content} = message;
+  const unixTime = fromUnixTime(timetoken / 10000000);
+  const messageTime = format(unixTime, 'hh:mma');
   const getDateTextStyle = () => {
     let dateTextStyles = styles.dateText;
     if (isAuthor) {
@@ -69,13 +79,13 @@ export const ChatBubble = ({message, isAuthor}: any) => {
   return (
     <View>
       <View key={message.timetoken} style={getMessageContainerStyle()}>
-        {message.author && (
-          <Text style={getAuthorTextStyle()}>{message.author}</Text>
+        {author && !isAuthor && (
+          <Text style={getAuthorTextStyle()}>
+            {author.firstname} {author.lastname}
+          </Text>
         )}
-        <Text style={getMessageTextStyle()}>{message.content}</Text>
-        <Text style={getDateTextStyle()}>
-          {format(message.timetoken / 10000000, 'hh:mma')}
-        </Text>
+        <Text style={getMessageTextStyle()}>{content}</Text>
+        <Text style={getDateTextStyle()}>{messageTime}</Text>
       </View>
     </View>
   );

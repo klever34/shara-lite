@@ -28,7 +28,7 @@ export const Welcome = ({navigation}: any) => {
           underlayColor="white"
           style={styles.button}
           onPress={() => handleNavigate('Register')}>
-          <Text style={styles.buttonText}>Register</Text>
+          <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableHighlight>
       </View>
     </View>

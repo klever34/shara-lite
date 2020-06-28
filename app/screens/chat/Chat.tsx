@@ -1,26 +1,46 @@
+import AsyncStorage from '@react-native-community/async-storage';
 import Pubnub, {PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
+  ImageBackground,
   SafeAreaView,
   StyleSheet,
   TextInput,
   View,
 } from 'react-native';
+import {TouchableOpacity} from 'react-native-gesture-handler';
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from 'react-native-popup-menu';
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {colors} from '../../styles/base';
 import {ChatBubble} from './ChatBubble';
 
-type Message = {
-  id: string;
-  author: string;
-  content: string;
-  timetoken: string | number;
+type User = {
+  id: number;
+  email?: string;
+  firstname?: string;
+  lastname?: string;
+  mobile?: string;
 };
+
+export type Message = {
+  id: string;
+  content: string;
+  timetoken: number;
+  author: MessageAuthor;
+};
+
+type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile'>;
 
 type MessageItemProps = {
   item: Message;
@@ -28,44 +48,55 @@ type MessageItemProps = {
 
 const messageItemKeyExtractor = (message: Message) => message.timetoken;
 
-export const Chat = () => {
+const sortMessagesFunc = (a: Message, b: Message) => {
+  var dateA = a.timetoken && new Date(a.timetoken / 10000000).getTime();
+  var dateB = b.timetoken && new Date(b.timetoken / 10000000).getTime();
+  return dateB - dateA;
+};
+
+export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
+  const chatListRef = React.useRef<any>(null);
   const [input, setInput] = useState('');
+  const [fetchCount, setFetchCount] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
 
-  const renderMessageItem = ({item: message}: MessageItemProps) => {
-    return (
-      <ChatBubble
-        isAuthor={message.author === pubnub.getUUID()}
-        message={message}
-      />
-    );
-  };
+  React.useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <Menu>
+          <MenuTrigger>
+            <TouchableOpacity>
+              <Icon color={colors.white} name="more-vert" size={30} />
+            </TouchableOpacity>
+          </MenuTrigger>
+          <MenuOptions>
+            <MenuOption onSelect={handleLogout} text="Logout" />
+          </MenuOptions>
+        </Menu>
+      ),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigation]);
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   useEffect(() => {
     if (pubnub) {
-      pubnub.history({channel: 'shara_chat', count: 20}, (status, response) => {
-        if (response) {
-          const history = response.messages.map((item) => {
-            return {
-              id: item.entry.id,
-              author: item.entry.id,
-              timetoken: item.timetoken,
-              content: item.entry.content,
-            };
-          }) as Message[];
-          setMessages(history);
-        }
-      });
+      fetchHistory();
       const listener = {
         message: (envelope: any) => {
           setMessages((msgs) => [
             ...msgs,
             {
               id: envelope.message.id,
-              author: envelope.publisher,
-              content: envelope.message.content,
               timetoken: envelope.timetoken,
+              author: envelope.message.user,
+              content: envelope.message.content,
             },
           ]);
         },
@@ -79,13 +110,58 @@ export const Chat = () => {
         pubnub.unsubscribeAll();
       };
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pubnub]);
+
+  const renderMessageItem = ({item: message}: MessageItemProps) => {
+    return (
+      <ChatBubble
+        message={message}
+        isAuthor={message.author?.mobile === pubnub.getUUID()}
+      />
+    );
+  };
+
+  const fetchHistory = () => {
+    const count = 20 * fetchCount;
+    setIsLoading(true);
+    pubnub.history({channel: 'shara_chat', count}, (status, response) => {
+      if (response) {
+        setIsLoading(false);
+        const history = response.messages.map((item) => {
+          return {
+            id: item.entry.id,
+            author: item.entry.user,
+            timetoken: item.timetoken,
+            content: item.entry.content,
+          };
+        }) as Message[];
+        setMessages(history);
+        setFetchCount(fetchCount + 1);
+      }
+    });
+  };
+
+  const getUser = async () => {
+    try {
+      const data = await AsyncStorage.getItem('user');
+      const parsed = data && JSON.parse(data);
+      setUser(parsed);
+    } catch (e) {
+      Alert.alert('Error');
+    }
+  };
 
   const handleSubmit = () => {
     setInput('');
     const message = {
       content: input,
       id: pubnub.getUUID(),
+      user: {
+        mobile: user?.mobile,
+        lastname: user?.lastname,
+        firstname: user?.firstname,
+      },
     };
     pubnub.publish({channel: 'shara_chat', message}, function (
       status: PubnubStatus,
@@ -99,15 +175,41 @@ export const Chat = () => {
     });
   };
 
+  const handleLogout = async () => {
+    await AsyncStorage.clear();
+    navigation.reset({
+      index: 0,
+      routes: [{name: 'Auth'}],
+    });
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        // inverted={true}
-        data={messages}
-        style={styles.listContainer}
-        keyExtractor={messageItemKeyExtractor}
-        renderItem={renderMessageItem}
-      />
+      {isLoading && (
+        <View style={styles.loadingSection}>
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator
+              size="small"
+              animating={isLoading}
+              color={colors.primary}
+            />
+          </View>
+        </View>
+      )}
+
+      <ImageBackground
+        source={require('../../assets/images/chat-wallpaper.jpg')}
+        style={styles.chatBackground}>
+        <FlatList
+          inverted={true}
+          ref={chatListRef}
+          style={styles.listContainer}
+          renderItem={renderMessageItem}
+          onEndReached={() => fetchHistory()}
+          data={messages.sort(sortMessagesFunc)}
+          keyExtractor={messageItemKeyExtractor}
+        />
+      </ImageBackground>
       <View style={styles.inputContainer}>
         <TextInput
           style={styles.textInput}
@@ -173,5 +275,26 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     borderRadius: 36,
+  },
+  loadingSection: {
+    top: 10,
+    zIndex: 100,
+    width: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'absolute',
+  },
+  loadingContainer: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colors.white,
+  },
+  chatBackground: {
+    flex: 1,
+    resizeMode: 'cover',
+    justifyContent: 'center',
   },
 });

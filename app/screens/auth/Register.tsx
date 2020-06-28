@@ -45,28 +45,32 @@ export const Register = ({
   };
 
   const onSubmit = async () => {
-    setLoading(true);
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
-    const registerResponse = await fetch(`${API_BASE_URL}/signup`, {
-      method: 'POST',
-      body: JSON.stringify(payload),
-      headers: {'Content-Type': 'application/json'},
-    });
-    const response = await registerResponse.json();
-    if (response.error) {
-      setLoading(false);
-      Alert.alert(response.mesage);
-    } else {
-      setLoading(false);
-      pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
+    try {
+      setLoading(true);
+      const registerResponse = await fetch(`${API_BASE_URL}/signup`, {
+        method: 'POST',
+        body: JSON.stringify(payload),
+        headers: {'Content-Type': 'application/json'},
       });
+      const response = await registerResponse.json();
+      if (response.error) {
+        setLoading(false);
+        Alert.alert(response.mesage);
+      } else {
+        setLoading(false);
+        pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
+      }
+    } catch (error) {
+      Alert.alert('Error', error);
     }
   };
 
@@ -116,7 +120,7 @@ export const Register = ({
           </View>
 
           <Button
-            title="Register"
+            title="Sign up"
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
