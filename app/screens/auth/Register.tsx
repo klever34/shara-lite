@@ -11,7 +11,6 @@ import {
 import {API_BASE_URL} from 'react-native-dotenv';
 import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {usePubNub} from 'pubnub-react';
 
 type Fields = {
   firstName: string;
@@ -24,7 +23,6 @@ type Fields = {
 export const Register = ({
   navigation,
 }: StackScreenProps<RootStackParamList>) => {
-  const pubnub = usePubNub();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -63,7 +61,6 @@ export const Register = ({
         Alert.alert(response.mesage);
       } else {
         setLoading(false);
-        pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
         navigation.reset({
           index: 0,
           routes: [{name: 'Main'}],
@@ -82,7 +79,7 @@ export const Register = ({
   };
 
   const isButtonDisabled = () => {
-    if (Object.values(fields).length < 5) {
+    if (Object.keys(fields).length < 5) {
       return true;
     }
     return false;

@@ -25,7 +25,7 @@ import {BaseButton, baseButtonStyles} from '../../components';
 import {colors} from '../../styles/base';
 import {ChatBubble} from '../../components/ChatBubble';
 import StorageService from '../../services/StorageService';
-import {convertTimeTokenToDate} from '../../helpers/utils';
+import {generateUniqueId} from '../../helpers/utils';
 
 export type User = {
   id: number;
@@ -35,13 +35,16 @@ export type User = {
   mobile?: string;
 };
 
-export type Message = {
-  content: string;
-  timetoken?: string | number;
-  author?: MessageAuthor;
-};
-
 type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>;
+
+export type Message = {
+  id: string;
+  device: string;
+  created_at: number;
+  content: string;
+  author: MessageAuthor;
+  timetoken?: string | number;
+};
 
 type MessageItemProps = {
   item: Message;
@@ -50,13 +53,14 @@ type MessageItemProps = {
 const messageItemKeyExtractor = (message: Message) => String(message.timetoken);
 
 const sortMessages = (a: Message, b: Message) => {
-  const dateA = convertTimeTokenToDate(a.timetoken ?? 0).getTime();
-  const dateB = convertTimeTokenToDate(b.timetoken ?? 0).getTime();
+  const dateA = new Date(a.created_at).getTime();
+  const dateB = new Date(b.created_at).getTime();
   return dateB - dateA;
 };
 
 export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
+  const channel = 'shara_chat';
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
@@ -97,9 +101,9 @@ export const Chat = ({navigation}: any) => {
   const fetchHistory = useCallback(() => {
     const count = messages.length + 20;
     setIsLoading(true);
-    pubnub.history({channel: 'shara_chat', count}, (status, response) => {
+    pubnub.history({channel, count}, (status, response) => {
+      setIsLoading(false);
       if (response) {
-        setIsLoading(false);
         const history: Message[] = response.messages.map((item) => {
           const entry = item.entry as Message;
           return {
@@ -119,12 +123,16 @@ export const Chat = ({navigation}: any) => {
         message: (envelope: MessageEvent) => {
           const message = envelope.message as Message;
           setMessages((prevMessages) => {
+            const prevMessageIndex = prevMessages.findIndex(
+              ({id}) => id === message.id,
+            );
             const nextMessages: Message[] = [
+              ...prevMessages.slice(0, prevMessageIndex),
               {
                 ...message,
                 timetoken: envelope.timetoken,
               },
-              ...prevMessages,
+              ...prevMessages.slice(prevMessageIndex + 1),
             ];
             return nextMessages.sort(sortMessages);
           });
@@ -132,19 +140,22 @@ export const Chat = ({navigation}: any) => {
       };
       // Add the listener to pubnub instance and subscribe to `chat` channel.
       pubnub.addListener(listener);
-      pubnub.subscribe({channels: ['shara_chat']});
+      pubnub.subscribe({channels: [channel]});
       // We need to return a function that will handle unsubscription on unmount
       return () => {
         pubnub.removeListener(listener);
         pubnub.unsubscribeAll();
       };
     }
-  }, [fetchHistory, pubnub]);
+  }, [pubnub]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
     const message: Message = {
+      id: generateUniqueId(),
       content: input,
+      created_at: new Date().getTime(),
+      device: pubnub.getUUID(),
       author: {
         id: user?.id ?? -1,
         mobile: user?.mobile,
@@ -152,7 +163,8 @@ export const Chat = ({navigation}: any) => {
         firstname: user?.firstname,
       },
     };
-    pubnub.publish({channel: 'shara_chat', message}, function (
+    setMessages((prevMessages) => [message, ...prevMessages]);
+    pubnub.publish({channel, message}, function (
       status: PubnubStatus,
       response: PublishResponse,
     ) {

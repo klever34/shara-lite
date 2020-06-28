@@ -4,27 +4,28 @@ import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles/base';
 import {Message, User} from '../screens/chat';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {convertTimeTokenToDate} from '../helpers/utils';
+import {usePubNub} from 'pubnub-react';
 
 type ChatBubbleProps = {
   message: Message;
   user: User;
 };
 
-export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
-  const isAuthor = user.id === message.author?.id;
-  const {timetoken, author, content} = message;
-  const messageTime = useMemo(() => {
-    return format(convertTimeTokenToDate(timetoken ?? 0), 'hh:mma');
-  }, [timetoken]);
-  const dateTextStyles = useMemo(() => {
+export const ChatBubble = memo(({message}: ChatBubbleProps) => {
+  const pubnub = usePubNub();
+  const isAuthor = pubnub.getUUID() === message.device;
+  const {created_at, author, content, timetoken} = message;
+  const messageTime = useMemo(() => format(new Date(created_at), 'hh:mma'), [
+    created_at,
+  ]);
+  const dateTextStyle = useMemo(() => {
     if (isAuthor) {
       return {
-        ...styles.dateTextContainer,
+        ...styles.dateText,
       } as StyleProp<TextStyle>;
     }
     return {
-      ...styles.dateTextContainer,
+      ...styles.dateText,
     } as StyleProp<TextStyle>;
   }, [isAuthor]);
 
@@ -79,10 +80,14 @@ export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
           </Text>
         )}
         <Text style={messageTextStyle}>{content}</Text>
-        <Text style={dateTextStyles}>
-          <Text>{messageTime}</Text>
-          <MaterialCommunityIcons name="alarm" style={styles.receiptIcon} />
-        </Text>
+        <View style={styles.dateTextContainer}>
+          <Text style={dateTextStyle}>{messageTime}</Text>
+          <MaterialCommunityIcons
+            name={timetoken ? 'check' : 'alarm'}
+            style={styles.receiptIcon}
+            size={12}
+          />
+        </View>
       </View>
     </View>
   );
@@ -109,14 +114,18 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-end',
   },
   dateTextContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+  },
+  dateText: {
     fontSize: 10,
-    textAlignVertical: 'center',
     marginTop: 4,
     opacity: 0.5,
     textAlign: 'right',
     color: colors.black,
   },
   receiptIcon: {
-    paddingLeft: 8,
+    marginLeft: 2,
+    opacity: 0.5,
   },
 });
