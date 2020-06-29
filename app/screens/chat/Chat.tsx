@@ -163,7 +163,7 @@ export const Chat = ({navigation}: any) => {
             envelope.message === 'TYPING_ON' &&
             envelope.publisher !== pubnub.getUUID()
           ) {
-            setTypingMessage(`${envelope.publisher} is typing...`);
+            setTypingMessage(`+${envelope.publisher} is typing...`);
           } else {
             setTypingMessage('');
           }
