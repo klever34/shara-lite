@@ -57,7 +57,7 @@ export const Login = ({navigation}: any) => {
         headers: {'Content-Type': 'application/json'},
       });
       const response = await loginResponse.json();
-      if (response.error) {
+      if (!loginResponse.ok) {
         Alert.alert('Error', response.mesage);
         setLoading(false);
       } else {

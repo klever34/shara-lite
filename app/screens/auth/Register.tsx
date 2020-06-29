@@ -57,9 +57,11 @@ export const Register = ({
         headers: {'Content-Type': 'application/json'},
       });
       const response = await registerResponse.json();
-      if (response.error) {
+      if (!registerResponse.ok) {
         setLoading(false);
-        Alert.alert(response.mesage);
+        Alert.alert('Error', response.message, [
+          {text: 'OK', onPress: () => handleNavigate('Login')},
+        ]);
       } else {
         setLoading(false);
         navigation.reset({
