@@ -115,6 +115,7 @@ const styles = StyleSheet.create({
   },
   dateTextContainer: {
     flexDirection: 'row',
+    justifyContent: 'flex-end',
     alignItems: 'flex-end',
   },
   dateText: {
