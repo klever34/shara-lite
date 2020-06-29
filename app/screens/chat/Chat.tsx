@@ -1,19 +1,26 @@
-import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import AsyncStorage from '@react-native-community/async-storage';
+import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   ImageBackground,
+  Keyboard,
   SafeAreaView,
   StyleSheet,
+  Text,
   TextInput,
   View,
-  Text,
 } from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
+import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import {
   Menu,
   MenuOption,
@@ -23,10 +30,10 @@ import {
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {BaseButton, baseButtonStyles} from '../../components';
-import {colors} from '../../styles/base';
 import {ChatBubble} from '../../components/ChatBubble';
-import StorageService from '../../services/StorageService';
 import {generateUniqueId} from '../../helpers/utils';
+import StorageService from '../../services/StorageService';
+import {colors} from '../../styles/base';
 
 export type User = {
   id: number;
@@ -61,6 +68,7 @@ const sortMessages = (a: Message, b: Message) => {
 
 export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
+  const inputRef = useRef<any>(null);
   const chatMessageChannel = 'SHARA_GLOBAL';
   const isTypingChannel = 'IS_TYPING';
   const [input, setInput] = useState('');
@@ -69,6 +77,7 @@ export const Chat = ({navigation}: any) => {
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showEmojiBoard, setShowEmojiBoard] = useState(false);
   useEffect(() => {
     StorageService.getItem('user').then((nextUser) => {
       if (nextUser) {
@@ -100,9 +109,7 @@ export const Chat = ({navigation}: any) => {
       headerRight: () => (
         <Menu>
           <MenuTrigger>
-            <TouchableOpacity>
-              <Icon color={colors.white} name="more-vert" size={30} />
-            </TouchableOpacity>
+            <Icon color={colors.white} name="more-vert" size={30} />
           </MenuTrigger>
           <MenuOptions>
             <MenuOption onSelect={handleLogout} text="Logout" />
@@ -226,6 +233,24 @@ export const Chat = ({navigation}: any) => {
     [user],
   );
 
+  const openEmojiBoard = useCallback(() => {
+    setShowEmojiBoard(true);
+    Keyboard.dismiss();
+  }, []);
+
+  const closeEmojiBoard = useCallback(() => {
+    setShowEmojiBoard(false);
+    inputRef.current.focus();
+  }, []);
+
+  const toggleEmojiBoard = useCallback(() => {
+    if (showEmojiBoard) {
+      closeEmojiBoard();
+    } else {
+      openEmojiBoard();
+    }
+  }, [showEmojiBoard, closeEmojiBoard, openEmojiBoard]);
+
   return (
     <SafeAreaView style={styles.container}>
       {isLoading && (
@@ -253,12 +278,22 @@ export const Chat = ({navigation}: any) => {
         />
       </ImageBackground>
       <View style={styles.inputContainer}>
+        <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
+          <Icon
+            size={22}
+            style={styles.emojiButtonIcon}
+            name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
+          />
+        </BaseButton>
         <TextInput
-          style={styles.textInput}
+          multiline
           value={input}
-          onChangeText={setInput}
-          onSubmitEditing={handleSubmit}
+          ref={inputRef}
           returnKeyType="send"
+          onChangeText={setInput}
+          style={styles.textInput}
+          onFocus={closeEmojiBoard}
+          onSubmitEditing={handleSubmit}
           enablesReturnKeyAutomatically={true}
           placeholder="Type a message"
         />
@@ -271,6 +306,17 @@ export const Chat = ({navigation}: any) => {
           </BaseButton>
         )}
       </View>
+
+      {showEmojiBoard && (
+        <EmojiSelector
+          showTabs={true}
+          showHistory={true}
+          showSearchBar={true}
+          showSectionTitles={true}
+          category={Categories.all}
+          onEmojiSelected={(emoji) => setInput(input + emoji)}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -307,7 +353,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 36,
     paddingVertical: 12,
-    paddingLeft: 16,
+    paddingLeft: 60,
     paddingRight: 64,
     fontSize: 16,
     lineHeight: 24,
@@ -338,6 +384,17 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
+  },
+  emojiButton: {
+    left: 16,
+    zIndex: 10,
+    borderRadius: 36,
+    position: 'absolute',
+    backgroundColor: colors.white,
+  },
+  emojiButtonIcon: {
+    opacity: 0.5,
+    color: colors.gray,
   },
   headerTitle: {
     flexDirection: 'column',
