@@ -20,6 +20,7 @@ import {
   View,
   Keyboard,
   Text,
+  TextInputComponent,
 } from 'react-native';
 import {
   Menu,
@@ -68,7 +69,7 @@ const sortMessages = (a: Message, b: Message) => {
 
 export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
-  const inputRef = useRef(null);
+  const inputRef = useRef<any>(null);
   const chatMessageChannel = 'SHARA_GLOBAL';
   const isTypingChannel = 'IS_TYPING';
   const [input, setInput] = useState('');
