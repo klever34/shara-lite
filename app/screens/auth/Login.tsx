@@ -57,7 +57,7 @@ export const Login = ({navigation}: any) => {
         headers: {'Content-Type': 'application/json'},
       });
       const response = await loginResponse.json();
-      if (response.error) {
+      if (!loginResponse.ok) {
         Alert.alert('Error', response.mesage);
         setLoading(false);
       } else {
@@ -124,7 +124,7 @@ export const Login = ({navigation}: any) => {
           style={styles.helpSection}
           onPress={() => handleNavigate('Register')}>
           <Text style={styles.helpSectionText}>Don’t have an account? </Text>
-          <Text style={styles.helpSectionButtonText}>Register</Text>
+          <Text style={styles.helpSectionButtonText}>Sign up</Text>
         </TouchableOpacity>
       </View>
     </View>

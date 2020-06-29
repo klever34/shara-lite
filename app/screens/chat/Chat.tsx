@@ -111,8 +111,8 @@ export const Chat = ({navigation}: any) => {
           <MenuTrigger>
             <Icon color={colors.white} name="more-vert" size={30} />
           </MenuTrigger>
-          <MenuOptions>
-            <MenuOption onSelect={handleLogout} text="Logout" />
+          <MenuOptions optionsContainerStyle={styles.menuDropdown}>
+            <MenuOption text="Logout" onSelect={handleLogout} />
           </MenuOptions>
         </Menu>
       ),
@@ -264,21 +264,21 @@ export const Chat = ({navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading && (
-        <View style={styles.loadingSection}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator
-              size="small"
-              animating={isLoading}
-              color={colors.primary}
-            />
-          </View>
-        </View>
-      )}
-
       <ImageBackground
         source={require('../../assets/images/chat-wallpaper.png')}
         style={styles.chatBackground}>
+        {isLoading && (
+          <View style={styles.loadingSection}>
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator
+                size="small"
+                animating={isLoading}
+                color={colors.primary}
+              />
+            </View>
+          </View>
+        )}
+
         <FlatList
           inverted={true}
           style={styles.listContainer}
@@ -287,36 +287,36 @@ export const Chat = ({navigation}: any) => {
           data={messages}
           keyExtractor={messageItemKeyExtractor}
         />
-      </ImageBackground>
-      <View style={styles.inputContainer}>
-        <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
-          <Icon
-            size={22}
-            style={styles.emojiButtonIcon}
-            name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
-          />
-        </BaseButton>
-        <TextInput
-          multiline
-          value={input}
-          ref={inputRef}
-          returnKeyType="send"
-          onChangeText={setInput}
-          style={styles.textInput}
-          onFocus={closeEmojiBoard}
-          onSubmitEditing={handleSubmit}
-          enablesReturnKeyAutomatically={true}
-          placeholder="Type a message"
-        />
-        {!!input && (
-          <BaseButton
-            title="Send"
-            style={styles.submitButton}
-            onPress={handleSubmit}>
-            <Icon name="send" style={baseButtonStyles.icon} />
+        <View style={styles.inputContainer}>
+          <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
+            <Icon
+              size={22}
+              style={styles.emojiButtonIcon}
+              name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
+            />
           </BaseButton>
-        )}
-      </View>
+          <TextInput
+            multiline
+            value={input}
+            ref={inputRef}
+            returnKeyType="send"
+            onChangeText={setInput}
+            style={styles.textInput}
+            onFocus={closeEmojiBoard}
+            onSubmitEditing={handleSubmit}
+            enablesReturnKeyAutomatically={true}
+            placeholder="Type a message"
+          />
+          {!!input && (
+            <BaseButton
+              title="Send"
+              style={styles.submitButton}
+              onPress={handleSubmit}>
+              <Icon name="send" style={baseButtonStyles.icon} />
+            </BaseButton>
+          )}
+        </View>
+      </ImageBackground>
 
       {showEmojiBoard && (
         <EmojiSelector
@@ -355,10 +355,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputContainer: {
+    padding: 8,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
+    backgroundColor: 'transparent',
   },
   textInput: {
     flex: 1,
@@ -421,5 +422,9 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     lineHeight: 20,
+  },
+  menuDropdown: {
+    padding: 8,
+    maxWidth: 300,
   },
 });
