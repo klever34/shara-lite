@@ -22,7 +22,7 @@ platform :android do
   end
 
   desc "Submit a new Beta Build to Crashlytics Beta"
-  lane :internal-alpha do
+  lane :alpha do
     gradle(task: "clean assembleRelease")
     firebase_app_distribution(
       app: "1:23333573770:android:4b593be0700b2c58718973"
@@ -34,13 +34,13 @@ platform :android do
   end
 
   desc "Deploy a new version to the Google Play Internal Test Release"
-  lane :internal-beta do
+  lane :playinternal do
     gradle(task: "clean bundleRelease")
     upload_to_play_store_internal_app_sharing
   end
 
   desc "Deploy a new version to the Google Play beta lane"
-  lane :beta do
+  lane :playbeta do
     gradle(task: "clean bundleRelease")
     upload_to_play_store(
       track: beta
@@ -48,7 +48,7 @@ platform :android do
   end
 
   desc "Deploy a new version to the Google Play"
-  lane :prod do
+  lane :playprod do
     gradle(task: "clean assembleRelease")
     upload_to_play_store
   end
