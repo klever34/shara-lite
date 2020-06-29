@@ -1,4 +1,4 @@
-import {MessageEvent, PublishResponse, PubnubStatus} from 'pubnub';
+import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import AsyncStorage from '@react-native-community/async-storage';
 import {usePubNub} from 'pubnub-react';
 import EmojiSelector, {Categories} from 'react-native-emoji-selector';
@@ -20,6 +20,7 @@ import {
   View,
   Keyboard,
   TouchableOpacity,
+  Text,
 } from 'react-native';
 import {
   Menu,
@@ -58,7 +59,7 @@ type MessageItemProps = {
   item: Message;
 };
 
-const messageItemKeyExtractor = (message: Message) => String(message.timetoken);
+const messageItemKeyExtractor = (message: Message) => message.id;
 
 const sortMessages = (a: Message, b: Message) => {
   const dateA = new Date(a.created_at).getTime();
@@ -68,9 +69,12 @@ const sortMessages = (a: Message, b: Message) => {
 
 export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
-  const channel = 'shara_global';
   const inputRef = useRef(null);
+  const chatMessageChannel = 'SHARA_GLOBAL';
+  const isTypingChannel = 'IS_TYPING';
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -93,6 +97,16 @@ export const Chat = ({navigation}: any) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitle: () => {
+        return (
+          <View style={styles.headerTitle}>
+            <Text style={styles.headerTitleText}>Shara Chat</Text>
+            {!!typingMessage && (
+              <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
+            )}
+          </View>
+        );
+      },
       headerRight: () => (
         <Menu>
           <MenuTrigger>
@@ -106,12 +120,12 @@ export const Chat = ({navigation}: any) => {
         </Menu>
       ),
     });
-  }, [handleLogout, navigation]);
+  }, [handleLogout, navigation, typingMessage]);
 
   const fetchHistory = useCallback(() => {
     const count = messages.length + 20;
     setIsLoading(true);
-    pubnub.history({channel, count}, (status, response) => {
+    pubnub.history({channel: chatMessageChannel, count}, (status, response) => {
       setIsLoading(false);
       if (response) {
         const history: Message[] = response.messages.map((item) => {
@@ -147,10 +161,20 @@ export const Chat = ({navigation}: any) => {
             return nextMessages.sort(sortMessages);
           });
         },
+        signal: (envelope: SignalEvent) => {
+          if (
+            envelope.message === 'TYPING_ON' &&
+            envelope.publisher !== pubnub.getUUID()
+          ) {
+            setTypingMessage(`${envelope.publisher} is typing...`);
+          } else {
+            setTypingMessage('');
+          }
+        },
       };
       // Add the listener to pubnub instance and subscribe to `chat` channel.
       pubnub.addListener(listener);
-      pubnub.subscribe({channels: [channel]});
+      pubnub.subscribe({channels: [chatMessageChannel, isTypingChannel]});
       // We need to return a function that will handle unsubscription on unmount
       return () => {
         pubnub.removeListener(listener);
@@ -158,6 +182,22 @@ export const Chat = ({navigation}: any) => {
       };
     }
   }, [pubnub]);
+
+  useEffect(() => {
+    if (input && !isTyping) {
+      setIsTyping(true);
+      pubnub.signal({
+        channel: isTypingChannel,
+        message: 'TYPING_ON',
+      });
+    } else if (!input && isTyping) {
+      setIsTyping(false);
+      pubnub.signal({
+        channel: isTypingChannel,
+        message: 'TYPING_OFF',
+      });
+    }
+  }, [user, input, isTyping, pubnub]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
@@ -174,7 +214,7 @@ export const Chat = ({navigation}: any) => {
       },
     };
     setMessages((prevMessages) => [message, ...prevMessages]);
-    pubnub.publish({channel, message}, function (
+    pubnub.publish({channel: chatMessageChannel, message}, function (
       status: PubnubStatus,
       response: PublishResponse,
     ) {
@@ -358,5 +398,19 @@ const styles = StyleSheet.create({
   emojiButtonIcon: {
     opacity: 0.5,
     color: colors.gray,
+  },
+  headerTitle: {
+    flexDirection: 'column',
+  },
+  headerTitleText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
+    lineHeight: 24,
+  },
+  headerTitleDesc: {
+    color: 'white',
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

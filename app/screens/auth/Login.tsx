@@ -1,7 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
 import React from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {API_BASE_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 
 type Fields = {
@@ -51,7 +51,7 @@ export const Login = ({navigation}: any) => {
     };
     try {
       setLoading(true);
-      const loginResponse = await fetch(`${API_BASE_URL}/login`, {
+      const loginResponse = await fetch(`${Config.API_BASE_URL}/login`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {'Content-Type': 'application/json'},

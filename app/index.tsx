@@ -6,7 +6,7 @@ import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
 import {Chat, Login, Register, Welcome} from './screens';
-import {PUBNUB_PUB_KEY, PUBNUB_SUB_KEY} from 'react-native-dotenv';
+import Config from 'react-native-config';
 import SplashScreen from './screens/SplashScreen';
 import {colors} from './styles/base';
 import DeviceInfo from 'react-native-device-info';
@@ -45,8 +45,8 @@ const AuthScreens = () => (
 
 const MainScreens = () => {
   const pubnub = new PubNub({
-    subscribeKey: PUBNUB_SUB_KEY,
-    publishKey: PUBNUB_PUB_KEY,
+    subscribeKey: Config.PUBNUB_SUB_KEY,
+    publishKey: Config.PUBNUB_PUB_KEY,
     uuid: DeviceInfo.getUniqueId(),
   });
   return (

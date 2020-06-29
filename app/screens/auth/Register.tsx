@@ -8,7 +8,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {API_BASE_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 
@@ -50,7 +50,7 @@ export const Register = ({
     };
     try {
       setLoading(true);
-      const registerResponse = await fetch(`${API_BASE_URL}/signup`, {
+      const registerResponse = await fetch(`${Config.API_BASE_URL}/signup`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {'Content-Type': 'application/json'},
