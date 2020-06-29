@@ -147,14 +147,25 @@ export const Chat = ({navigation}: any) => {
             const prevMessageIndex = prevMessages.findIndex(
               ({id}) => id === message.id,
             );
-            const nextMessages: Message[] = [
-              ...prevMessages.slice(0, prevMessageIndex),
-              {
-                ...message,
-                timetoken: envelope.timetoken,
-              },
-              ...prevMessages.slice(prevMessageIndex + 1),
-            ];
+            let nextMessages: Message[];
+            if (prevMessageIndex > -1) {
+              nextMessages = [
+                ...prevMessages.slice(0, prevMessageIndex),
+                {
+                  ...message,
+                  timetoken: envelope.timetoken,
+                },
+                ...prevMessages.slice(prevMessageIndex + 1),
+              ];
+            } else {
+              nextMessages = [
+                {
+                  ...message,
+                  timetoken: envelope.timetoken,
+                },
+                ...prevMessages,
+              ];
+            }
             return nextMessages.sort(sortMessages);
           });
         },
