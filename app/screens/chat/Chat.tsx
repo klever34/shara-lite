@@ -1,7 +1,14 @@
 import {MessageEvent, PublishResponse, PubnubStatus} from 'pubnub';
 import AsyncStorage from '@react-native-community/async-storage';
 import {usePubNub} from 'pubnub-react';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import EmojiSelector, {Categories} from 'react-native-emoji-selector';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useRef,
+} from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -11,8 +18,9 @@ import {
   StyleSheet,
   TextInput,
   View,
+  Keyboard,
+  TouchableOpacity,
 } from 'react-native';
-import {TouchableOpacity} from 'react-native-gesture-handler';
 import {
   Menu,
   MenuOption,
@@ -60,11 +68,13 @@ const sortMessages = (a: Message, b: Message) => {
 
 export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
-  const channel = 'shara_chat';
+  const channel = 'shara_global';
+  const inputRef = useRef(null);
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
+  const [showEmojiBoard, setShowEmojiBoard] = useState(false);
   useEffect(() => {
     StorageService.getItem('user').then((nextUser) => {
       if (nextUser) {
@@ -186,6 +196,24 @@ export const Chat = ({navigation}: any) => {
     [user],
   );
 
+  const openEmojiBoard = useCallback(() => {
+    setShowEmojiBoard(true);
+    Keyboard.dismiss();
+  }, []);
+
+  const closeEmojiBoard = useCallback(() => {
+    setShowEmojiBoard(false);
+    inputRef.current.focus();
+  }, []);
+
+  const toggleEmojiBoard = useCallback(() => {
+    if (showEmojiBoard) {
+      closeEmojiBoard();
+    } else {
+      openEmojiBoard();
+    }
+  }, [showEmojiBoard, closeEmojiBoard, openEmojiBoard]);
+
   return (
     <SafeAreaView style={styles.container}>
       {isLoading && (
@@ -213,12 +241,22 @@ export const Chat = ({navigation}: any) => {
         />
       </ImageBackground>
       <View style={styles.inputContainer}>
+        <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
+          <Icon
+            size={22}
+            style={styles.emojiButtonIcon}
+            name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
+          />
+        </BaseButton>
         <TextInput
-          style={styles.textInput}
+          multiline
           value={input}
-          onChangeText={setInput}
-          onSubmitEditing={handleSubmit}
+          ref={inputRef}
           returnKeyType="send"
+          onChangeText={setInput}
+          style={styles.textInput}
+          onFocus={closeEmojiBoard}
+          onSubmitEditing={handleSubmit}
           enablesReturnKeyAutomatically={true}
           placeholder="Type a message"
         />
@@ -231,6 +269,17 @@ export const Chat = ({navigation}: any) => {
           </BaseButton>
         )}
       </View>
+
+      {showEmojiBoard && (
+        <EmojiSelector
+          showTabs={true}
+          showHistory={true}
+          showSearchBar={true}
+          showSectionTitles={true}
+          category={Categories.all}
+          onEmojiSelected={(emoji) => setInput(input + emoji)}
+        />
+      )}
     </SafeAreaView>
   );
 };
@@ -267,7 +316,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
     borderRadius: 36,
     paddingVertical: 12,
-    paddingLeft: 16,
+    paddingLeft: 60,
     paddingRight: 64,
     fontSize: 16,
     lineHeight: 24,
@@ -298,5 +347,16 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
+  },
+  emojiButton: {
+    left: 16,
+    zIndex: 10,
+    borderRadius: 36,
+    position: 'absolute',
+    backgroundColor: colors.white,
+  },
+  emojiButtonIcon: {
+    opacity: 0.5,
+    color: colors.gray,
   },
 });
