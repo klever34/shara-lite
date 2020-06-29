@@ -64,7 +64,7 @@ export const Register = ({
         setLoading(false);
         navigation.reset({
           index: 0,
-          routes: [{name: 'Auth'}],
+          routes: [{name: 'Login'}],
         });
       }
     } catch (error) {

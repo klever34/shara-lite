@@ -4,16 +4,14 @@ import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles/base';
 import {Message, User} from '../screens/chat';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {usePubNub} from 'pubnub-react';
 
 type ChatBubbleProps = {
   message: Message;
   user: User;
 };
 
-export const ChatBubble = memo(({message}: ChatBubbleProps) => {
-  const pubnub = usePubNub();
-  const isAuthor = pubnub.getUUID() === message.device;
+export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
+  const isAuthor = user.mobile === message.author.mobile;
   const {created_at, author, content, timetoken} = message;
   const messageTime = useMemo(() => format(new Date(created_at), 'hh:mma'), [
     created_at,
@@ -53,11 +51,13 @@ export const ChatBubble = memo(({message}: ChatBubbleProps) => {
     if (isAuthor) {
       return {
         ...styles.messageText,
-      };
+        ...{alignSelf: 'flex-end'},
+      } as StyleProp<TextStyle>;
     }
     return {
       ...styles.messageText,
-    };
+      ...{alignSelf: 'flex-start'},
+    } as StyleProp<TextStyle>;
   }, [isAuthor]);
 
   const authorTextStyle = useMemo(() => {
@@ -111,7 +111,6 @@ const styles = StyleSheet.create({
   messageText: {
     fontSize: 17,
     color: colors.gray,
-    alignSelf: 'flex-end',
   },
   dateTextContainer: {
     flexDirection: 'row',
