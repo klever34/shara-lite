@@ -1,5 +1,6 @@
 import React from 'react';
 import {Text, View, TouchableHighlight, StyleSheet} from 'react-native';
+import {colors} from 'app/styles/base';
 
 export const Welcome = ({navigation}: any) => {
   const handleNavigate = (route: string) => {
@@ -39,7 +40,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 12,
-    backgroundColor: '#e20b0d',
+    backgroundColor: colors.primary,
     justifyContent: 'space-between',
   },
   textSection: {
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     fontSize: 16,
-    color: '#e20b0d',
+    color: colors.primary,
     textTransform: 'uppercase',
   },
 });
