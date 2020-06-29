@@ -147,14 +147,25 @@ export const Chat = ({navigation}: any) => {
             const prevMessageIndex = prevMessages.findIndex(
               ({id}) => id === message.id,
             );
-            const nextMessages: Message[] = [
-              ...prevMessages.slice(0, prevMessageIndex),
-              {
-                ...message,
-                timetoken: envelope.timetoken,
-              },
-              ...prevMessages.slice(prevMessageIndex + 1),
-            ];
+            let nextMessages: Message[];
+            if (prevMessageIndex > -1) {
+              nextMessages = [
+                ...prevMessages.slice(0, prevMessageIndex),
+                {
+                  ...message,
+                  timetoken: envelope.timetoken,
+                },
+                ...prevMessages.slice(prevMessageIndex + 1),
+              ];
+            } else {
+              nextMessages = [
+                {
+                  ...message,
+                  timetoken: envelope.timetoken,
+                },
+                ...prevMessages,
+              ];
+            }
             return nextMessages.sort(sortMessages);
           });
         },
@@ -163,7 +174,7 @@ export const Chat = ({navigation}: any) => {
             envelope.message === 'TYPING_ON' &&
             envelope.publisher !== pubnub.getUUID()
           ) {
-            setTypingMessage(`${envelope.publisher} is typing...`);
+            setTypingMessage(`+${envelope.publisher} is typing...`);
           } else {
             setTypingMessage('');
           }
@@ -314,6 +325,7 @@ export const Chat = ({navigation}: any) => {
           showSearchBar={true}
           showSectionTitles={true}
           category={Categories.all}
+          columns={12}
           onEmojiSelected={(emoji) => setInput(input + emoji)}
         />
       )}
