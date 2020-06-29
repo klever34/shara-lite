@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, TouchableHighlight, StyleSheet} from 'react-native';
-import {colors} from 'app/styles/base';
+import {colors} from '../../styles/base';
 
 export const Welcome = ({navigation}: any) => {
   const handleNavigate = (route: string) => {
