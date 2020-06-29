@@ -325,6 +325,7 @@ export const Chat = ({navigation}: any) => {
           showSearchBar={true}
           showSectionTitles={true}
           category={Categories.all}
+          columns={12}
           onEmojiSelected={(emoji) => setInput(input + emoji)}
         />
       )}
