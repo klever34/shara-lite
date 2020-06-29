@@ -124,7 +124,7 @@ export const Login = ({navigation}: any) => {
           style={styles.helpSection}
           onPress={() => handleNavigate('Register')}>
           <Text style={styles.helpSectionText}>Don’t have an account? </Text>
-          <Text style={styles.helpSectionButtonText}>Register</Text>
+          <Text style={styles.helpSectionButtonText}>Sign up</Text>
         </TouchableOpacity>
       </View>
     </View>
