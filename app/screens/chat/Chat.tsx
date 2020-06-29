@@ -19,7 +19,6 @@ import {
   TextInput,
   View,
   Keyboard,
-  TouchableOpacity,
   Text,
 } from 'react-native';
 import {
