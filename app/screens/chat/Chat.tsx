@@ -1,27 +1,26 @@
-import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import AsyncStorage from '@react-native-community/async-storage';
+import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useState,
   useRef,
+  useState,
 } from 'react';
 import {
   ActivityIndicator,
   Alert,
   FlatList,
   ImageBackground,
+  Keyboard,
   SafeAreaView,
   StyleSheet,
+  Text,
   TextInput,
   View,
-  Keyboard,
-  Text,
-  TextInputComponent,
 } from 'react-native';
+import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import {
   Menu,
   MenuOption,
@@ -31,10 +30,10 @@ import {
 //TODO: Potential reduce bundle size by removing unused font set from app
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import {BaseButton, baseButtonStyles} from '../../components';
-import {colors} from '../../styles/base';
 import {ChatBubble} from '../../components/ChatBubble';
-import StorageService from '../../services/StorageService';
 import {generateUniqueId} from '../../helpers/utils';
+import StorageService from '../../services/StorageService';
+import {colors} from '../../styles/base';
 
 export type User = {
   id: number;
