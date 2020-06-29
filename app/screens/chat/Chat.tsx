@@ -277,7 +277,7 @@ export const Chat = ({navigation}: any) => {
       )}
 
       <ImageBackground
-        source={require('../../assets/images/chat-wallpaper.jpg')}
+        source={require('../../assets/images/chat-wallpaper.png')}
         style={styles.chatBackground}>
         <FlatList
           inverted={true}
