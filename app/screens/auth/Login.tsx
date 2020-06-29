@@ -1,8 +1,7 @@
 import AsyncStorage from '@react-native-community/async-storage';
-import {usePubNub} from 'pubnub-react';
 import React from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {API_BASE_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 
 type Fields = {
@@ -12,7 +11,6 @@ type Fields = {
 };
 
 export const Login = ({navigation}: any) => {
-  const pubnub = usePubNub();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -53,7 +51,7 @@ export const Login = ({navigation}: any) => {
     };
     try {
       setLoading(true);
-      const loginResponse = await fetch(`${API_BASE_URL}/login`, {
+      const loginResponse = await fetch(`${Config.API_BASE_URL}/login`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {'Content-Type': 'application/json'},
@@ -71,7 +69,6 @@ export const Login = ({navigation}: any) => {
         await AsyncStorage.removeItem('mobile');
         await AsyncStorage.removeItem('countryCode');
         setLoading(false);
-        pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
         navigation.reset({
           index: 0,
           routes: [{name: 'Main'}],
@@ -91,10 +88,7 @@ export const Login = ({navigation}: any) => {
   };
 
   const isButtonDisabled = () => {
-    if (!fields.mobile || !fields.password) {
-      return true;
-    }
-    return false;
+    return !fields.mobile || !fields.password;
   };
 
   return (

@@ -1,4 +1,4 @@
-import {MessageEvent, PublishResponse, PubnubStatus} from 'pubnub';
+import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import AsyncStorage from '@react-native-community/async-storage';
 import {usePubNub} from 'pubnub-react';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
@@ -11,6 +11,7 @@ import {
   StyleSheet,
   TextInput,
   View,
+  Text,
 } from 'react-native';
 import {TouchableOpacity} from 'react-native-gesture-handler';
 import {
@@ -25,9 +26,9 @@ import {BaseButton, baseButtonStyles} from '../../components';
 import {colors} from '../../styles/base';
 import {ChatBubble} from '../../components/ChatBubble';
 import StorageService from '../../services/StorageService';
-import {convertTimeTokenToDate} from '../../helpers/utils';
+import {generateUniqueId} from '../../helpers/utils';
 
-type User = {
+export type User = {
   id: number;
   email?: string;
   firstname?: string;
@@ -35,30 +36,36 @@ type User = {
   mobile?: string;
 };
 
+type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>;
+
 export type Message = {
   id: string;
+  device: string;
+  created_at: number;
   content: string;
-  timetoken?: string | number;
   author: MessageAuthor;
+  timetoken?: string | number;
 };
-
-type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile'>;
 
 type MessageItemProps = {
   item: Message;
 };
 
-const messageItemKeyExtractor = (message: Message) => String(message.timetoken);
+const messageItemKeyExtractor = (message: Message) => message.id;
 
 const sortMessages = (a: Message, b: Message) => {
-  const dateA = convertTimeTokenToDate(a.timetoken ?? 0).getTime();
-  const dateB = convertTimeTokenToDate(b.timetoken ?? 0).getTime();
+  const dateA = new Date(a.created_at).getTime();
+  const dateB = new Date(b.created_at).getTime();
   return dateB - dateA;
 };
 
 export const Chat = ({navigation}: any) => {
   const pubnub = usePubNub();
+  const chatMessageChannel = 'SHARA_GLOBAL';
+  const isTypingChannel = 'IS_TYPING';
   const [input, setInput] = useState('');
+  const [isTyping, setIsTyping] = useState(false);
+  const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -80,6 +87,16 @@ export const Chat = ({navigation}: any) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerTitle: () => {
+        return (
+          <View style={styles.headerTitle}>
+            <Text style={styles.headerTitleText}>Shara Chat</Text>
+            {!!typingMessage && (
+              <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
+            )}
+          </View>
+        );
+      },
       headerRight: () => (
         <Menu>
           <MenuTrigger>
@@ -93,21 +110,19 @@ export const Chat = ({navigation}: any) => {
         </Menu>
       ),
     });
-  }, [handleLogout, navigation]);
+  }, [handleLogout, navigation, typingMessage]);
 
   const fetchHistory = useCallback(() => {
     const count = messages.length + 20;
     setIsLoading(true);
-    pubnub.history({channel: 'shara_chat', count}, (status, response) => {
+    pubnub.history({channel: chatMessageChannel, count}, (status, response) => {
+      setIsLoading(false);
       if (response) {
-        setIsLoading(false);
         const history: Message[] = response.messages.map((item) => {
           const entry = item.entry as Message;
           return {
-            id: entry.id,
-            author: entry.author,
+            ...entry,
             timetoken: item.timetoken,
-            content: entry.content,
           };
         });
         setMessages(history.sort(sortMessages));
@@ -122,42 +137,74 @@ export const Chat = ({navigation}: any) => {
         message: (envelope: MessageEvent) => {
           const message = envelope.message as Message;
           setMessages((prevMessages) => {
+            const prevMessageIndex = prevMessages.findIndex(
+              ({id}) => id === message.id,
+            );
             const nextMessages: Message[] = [
+              ...prevMessages.slice(0, prevMessageIndex),
               {
-                id: message.id,
+                ...message,
                 timetoken: envelope.timetoken,
-                author: message.author,
-                content: message.content,
               },
-              ...prevMessages,
+              ...prevMessages.slice(prevMessageIndex + 1),
             ];
             return nextMessages.sort(sortMessages);
           });
         },
+        signal: (envelope: SignalEvent) => {
+          if (
+            envelope.message === 'TYPING_ON' &&
+            envelope.publisher !== pubnub.getUUID()
+          ) {
+            setTypingMessage(`${envelope.publisher} is typing...`);
+          } else {
+            setTypingMessage('');
+          }
+        },
       };
       // Add the listener to pubnub instance and subscribe to `chat` channel.
       pubnub.addListener(listener);
-      pubnub.subscribe({channels: ['shara_chat']});
+      pubnub.subscribe({channels: [chatMessageChannel, isTypingChannel]});
       // We need to return a function that will handle unsubscription on unmount
       return () => {
         pubnub.removeListener(listener);
         pubnub.unsubscribeAll();
       };
     }
-  }, [fetchHistory, pubnub]);
+  }, [pubnub]);
+
+  useEffect(() => {
+    if (input && !isTyping) {
+      setIsTyping(true);
+      pubnub.signal({
+        channel: isTypingChannel,
+        message: 'TYPING_ON',
+      });
+    } else if (!input && isTyping) {
+      setIsTyping(false);
+      pubnub.signal({
+        channel: isTypingChannel,
+        message: 'TYPING_OFF',
+      });
+    }
+  }, [user, input, isTyping, pubnub]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
     const message: Message = {
+      id: generateUniqueId(),
       content: input,
-      id: pubnub.getUUID(),
+      created_at: new Date().getTime(),
+      device: pubnub.getUUID(),
       author: {
+        id: user?.id ?? -1,
         mobile: user?.mobile,
         lastname: user?.lastname,
         firstname: user?.firstname,
       },
     };
-    pubnub.publish({channel: 'shara_chat', message}, function (
+    setMessages((prevMessages) => [message, ...prevMessages]);
+    pubnub.publish({channel: chatMessageChannel, message}, function (
       status: PubnubStatus,
       response: PublishResponse,
     ) {
@@ -169,9 +216,15 @@ export const Chat = ({navigation}: any) => {
     });
   }, [input, pubnub, user]);
 
-  const renderMessageItem = useCallback(({item: message}: MessageItemProps) => {
-    return <ChatBubble message={message} />;
-  }, []);
+  const renderMessageItem = useCallback(
+    ({item: message}: MessageItemProps) => {
+      if (!user) {
+        return null;
+      }
+      return <ChatBubble message={message} user={user} />;
+    },
+    [user],
+  );
 
   return (
     <SafeAreaView style={styles.container}>
@@ -285,5 +338,19 @@ const styles = StyleSheet.create({
     flex: 1,
     resizeMode: 'cover',
     justifyContent: 'center',
+  },
+  headerTitle: {
+    flexDirection: 'column',
+  },
+  headerTitleText: {
+    color: 'white',
+    fontWeight: 'bold',
+    fontSize: 18,
+    lineHeight: 24,
+  },
+  headerTitleDesc: {
+    color: 'white',
+    fontSize: 14,
+    lineHeight: 20,
   },
 });

@@ -8,10 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {API_BASE_URL} from 'react-native-dotenv';
+import Config from 'react-native-config';
 import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {usePubNub} from 'pubnub-react';
 
 type Fields = {
   firstName: string;
@@ -24,7 +23,6 @@ type Fields = {
 export const Register = ({
   navigation,
 }: StackScreenProps<RootStackParamList>) => {
-  const pubnub = usePubNub();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -52,7 +50,7 @@ export const Register = ({
     };
     try {
       setLoading(true);
-      const registerResponse = await fetch(`${API_BASE_URL}/signup`, {
+      const registerResponse = await fetch(`${Config.API_BASE_URL}/signup`, {
         method: 'POST',
         body: JSON.stringify(payload),
         headers: {'Content-Type': 'application/json'},
@@ -63,7 +61,6 @@ export const Register = ({
         Alert.alert(response.mesage);
       } else {
         setLoading(false);
-        pubnub.setUUID(`${fields.countryCode}${fields.mobile}`);
         navigation.reset({
           index: 0,
           routes: [{name: 'Main'}],
@@ -82,7 +79,7 @@ export const Register = ({
   };
 
   const isButtonDisabled = () => {
-    if (Object.values(fields).length < 5) {
+    if (Object.keys(fields).length < 5) {
       return true;
     }
     return false;
