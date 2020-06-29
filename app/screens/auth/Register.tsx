@@ -13,8 +13,8 @@ import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 
 type Fields = {
-  firstName: string;
-  lastName: string;
+  firstname: string;
+  lastname: string;
   mobile: string;
   password: string;
   countryCode: string;
@@ -46,6 +46,7 @@ export const Register = ({
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
       ...rest,
+      country_code: countryCode,
       mobile: `${countryCode}${mobile}`,
     };
     try {
@@ -63,7 +64,7 @@ export const Register = ({
         setLoading(false);
         navigation.reset({
           index: 0,
-          routes: [{name: 'Main'}],
+          routes: [{name: 'Auth'}],
         });
       }
     } catch (error) {
@@ -91,16 +92,16 @@ export const Register = ({
         <Text style={styles.headerText}>Shara</Text>
         <View>
           <TextInput
-            value={fields.firstName}
+            value={fields.firstname}
             style={styles.inputField}
             placeholder="First name"
-            onChangeText={(text) => onChangeText(text, 'firstName')}
+            onChangeText={(text) => onChangeText(text, 'firstname')}
           />
           <TextInput
-            value={fields.lastName}
+            value={fields.lastname}
             placeholder="Last name"
             style={styles.inputField}
-            onChangeText={(text) => onChangeText(text, 'lastName')}
+            onChangeText={(text) => onChangeText(text, 'lastname')}
           />
           <View style={styles.inputFieldSpacer}>
             <PhoneNumberField

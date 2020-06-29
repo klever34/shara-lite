@@ -110,9 +110,7 @@ export const Chat = ({navigation}: any) => {
       headerRight: () => (
         <Menu>
           <MenuTrigger>
-            <TouchableOpacity>
-              <Icon color={colors.white} name="more-vert" size={30} />
-            </TouchableOpacity>
+            <Icon color={colors.white} name="more-vert" size={30} />
           </MenuTrigger>
           <MenuOptions>
             <MenuOption onSelect={handleLogout} text="Logout" />
