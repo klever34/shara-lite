@@ -27,46 +27,31 @@ import {
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-//TODO: Potential reduce bundle size by removing unused font set from app
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
 import {generateUniqueId} from '../../helpers/utils';
-import StorageService from '../../services/StorageService';
-import {colors} from '../../styles/base';
-
-export type User = {
-  id: number;
-  email?: string;
-  firstname?: string;
-  lastname?: string;
-  mobile?: string;
-};
-
-type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>;
-
-export type Message = {
-  id: string;
-  device: string;
-  created_at: number;
-  content: string;
-  author: MessageAuthor;
-  timetoken?: string | number;
-};
+import {colors} from '../../styles';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from './index';
+import {getStorageService} from '../../services';
 
 type MessageItemProps = {
-  item: Message;
+  item: ChatMessage;
 };
 
-const messageItemKeyExtractor = (message: Message) => message.id;
+const messageItemKeyExtractor = (message: ChatMessage) => message.id;
 
-const sortMessages = (a: Message, b: Message) => {
+const sortMessages = (a: ChatMessage, b: ChatMessage) => {
   const dateA = new Date(a.created_at).getTime();
   const dateB = new Date(b.created_at).getTime();
   return dateB - dateA;
 };
 
-export const Chat = ({navigation}: any) => {
+const ChatScreen = ({
+  navigation,
+  route,
+}: StackScreenProps<MainStackParamList, 'Chat'>) => {
   const pubnub = usePubNub();
   const inputRef = useRef<any>(null);
   const chatMessageChannel = 'SHARA_GLOBAL';
@@ -76,10 +61,11 @@ export const Chat = ({navigation}: any) => {
   const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
   useEffect(() => {
-    StorageService.getItem('user').then((nextUser) => {
+    const storageService = getStorageService();
+    storageService.getItem<User>('user').then((nextUser) => {
       if (nextUser) {
         setUser(nextUser);
       }
@@ -99,7 +85,7 @@ export const Chat = ({navigation}: any) => {
       headerTitle: () => {
         return (
           <View style={styles.headerTitle}>
-            <Text style={styles.headerTitleText}>Shara Chat</Text>
+            <Text style={styles.headerTitleText}>{route.params.title}</Text>
             {!!typingMessage && (
               <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
             )}
@@ -109,7 +95,12 @@ export const Chat = ({navigation}: any) => {
       headerRight: () => (
         <Menu>
           <MenuTrigger>
-            <Icon color={colors.white} name="more-vert" size={30} />
+            <Icon
+              type="material-icons"
+              color={colors.white}
+              name="more-vert"
+              size={30}
+            />
           </MenuTrigger>
           <MenuOptions optionsContainerStyle={styles.menuDropdown}>
             <MenuOption text="Logout" onSelect={handleLogout} />
@@ -117,7 +108,7 @@ export const Chat = ({navigation}: any) => {
         </Menu>
       ),
     });
-  }, [handleLogout, navigation, typingMessage]);
+  }, [handleLogout, navigation, route.params.title, typingMessage]);
 
   const fetchHistory = useCallback(() => {
     const count = messages.length + 20;
@@ -125,8 +116,8 @@ export const Chat = ({navigation}: any) => {
     pubnub.history({channel: chatMessageChannel, count}, (status, response) => {
       setIsLoading(false);
       if (response) {
-        const history: Message[] = response.messages.map((item) => {
-          const entry = item.entry as Message;
+        const history: ChatMessage[] = response.messages.map((item) => {
+          const entry = item.entry as ChatMessage;
           return {
             ...entry,
             timetoken: item.timetoken,
@@ -142,12 +133,12 @@ export const Chat = ({navigation}: any) => {
     if (pubnub) {
       const listener = {
         message: (envelope: MessageEvent) => {
-          const message = envelope.message as Message;
+          const message = envelope.message as ChatMessage;
           setMessages((prevMessages) => {
             const prevMessageIndex = prevMessages.findIndex(
               ({id}) => id === message.id,
             );
-            let nextMessages: Message[];
+            let nextMessages: ChatMessage[];
             if (prevMessageIndex > -1) {
               nextMessages = [
                 ...prevMessages.slice(0, prevMessageIndex),
@@ -209,7 +200,7 @@ export const Chat = ({navigation}: any) => {
 
   const handleSubmit = useCallback(() => {
     setInput('');
-    const message: Message = {
+    const message: ChatMessage = {
       id: generateUniqueId(),
       content: input,
       created_at: new Date().getTime(),
@@ -290,6 +281,7 @@ export const Chat = ({navigation}: any) => {
         <View style={styles.inputContainer}>
           <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
             <Icon
+              type="material-icons"
               size={22}
               style={styles.emojiButtonIcon}
               name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
@@ -312,7 +304,11 @@ export const Chat = ({navigation}: any) => {
               title="Send"
               style={styles.submitButton}
               onPress={handleSubmit}>
-              <Icon name="send" style={baseButtonStyles.icon} />
+              <Icon
+                type="material-icons"
+                name="send"
+                style={baseButtonStyles.icon}
+              />
             </BaseButton>
           )}
         </View>
@@ -428,3 +424,5 @@ const styles = StyleSheet.create({
     maxWidth: 300,
   },
 });
+
+export default ChatScreen;

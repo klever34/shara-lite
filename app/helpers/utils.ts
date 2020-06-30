@@ -1,7 +1,21 @@
 import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
+import {globalStyles} from '../styles';
 
 export const generateUniqueId = () => uuidV4();
 
-export const mergeStyles = (...styles: {[key: string]: any}[]) =>
-  styles.reduce((acc, curr) => ({...acc, ...curr}), {});
+export const applyStyles = (
+  ...styles: ({[key: string]: any} | string)[]
+): {[key: string]: any} =>
+  styles.reduce<{[key: string]: any}>((acc, curr) => {
+    if (typeof curr === 'string') {
+      const classNames = curr.split(' ');
+      if (!classNames.length) {
+        return acc;
+      } else if (classNames.length === 1) {
+        return {...acc, ...globalStyles[classNames[0]]};
+      }
+      return applyStyles(...classNames);
+    }
+    return {...acc, ...curr};
+  }, {});
