@@ -1,5 +1,5 @@
 import Touchable from './Touchable';
-import {Platform, View} from 'react-native';
+import {Platform, StyleSheet, View} from 'react-native';
 import React from 'react';
 import {colors} from '../styles';
 import {applyStyles} from '../helpers/utils';
@@ -35,7 +35,7 @@ export const FAButton = ({
   );
 };
 
-const styles = {
+const styles = StyleSheet.create({
   container: {
     backgroundColor: 'red',
     width: 64,
@@ -48,4 +48,4 @@ const styles = {
     alignItems: 'center',
     elevation: 4,
   },
-};
+});
