@@ -1,18 +1,20 @@
 import AsyncStorage from '@react-native-community/async-storage';
 
-class StorageService {
-  async getItem(key: string) {
+export interface IStorageService {
+  getItem<T>(key: string): Promise<T | null>;
+}
+
+export default class StorageService implements IStorageService {
+  async getItem<T>(key: string) {
     try {
       const data = await AsyncStorage.getItem(key);
       if (!data) {
         return null;
       }
-      const parsedData = JSON.parse(data);
+      const parsedData: T = JSON.parse(data);
       return parsedData;
     } catch (e) {
       return null;
     }
   }
 }
-
-export default new StorageService();

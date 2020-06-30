@@ -31,10 +31,10 @@ import Icon from '../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
 import {generateUniqueId} from '../../helpers/utils';
-import StorageService from '../../services/StorageService';
 import {colors} from '../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from './index';
+import {getStorageService} from '../../services';
 
 type MessageItemProps = {
   item: ChatMessage;
@@ -64,7 +64,8 @@ const ChatScreen = ({
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
   useEffect(() => {
-    StorageService.getItem('user').then((nextUser) => {
+    const storageService = getStorageService();
+    storageService.getItem<User>('user').then((nextUser) => {
       if (nextUser) {
         setUser(nextUser);
       }

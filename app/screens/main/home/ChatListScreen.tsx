@@ -74,7 +74,7 @@ const listItemStyles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  titleContainer: applyStyles('h-full', 'flex-1', {
+  titleContainer: applyStyles('h-full flex-1', {
     borderBottomWidth: 1,
     borderBottomColor: 'grey',
   }),

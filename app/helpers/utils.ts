@@ -5,11 +5,17 @@ import {globalStyles} from '../styles';
 export const generateUniqueId = () => uuidV4();
 
 export const applyStyles = (
-  ...styles: ({[key: string]: any} | keyof typeof globalStyles)[]
-) =>
+  ...styles: ({[key: string]: any} | string)[]
+): {[key: string]: any} =>
   styles.reduce<{[key: string]: any}>((acc, curr) => {
     if (typeof curr === 'string') {
-      return {...acc, ...globalStyles[curr]};
+      const classNames = curr.split(' ');
+      if (!classNames.length) {
+        return acc;
+      } else if (classNames.length === 1) {
+        return {...acc, ...globalStyles[classNames[0]]};
+      }
+      return applyStyles(...classNames);
     }
     return {...acc, ...curr};
   }, {});

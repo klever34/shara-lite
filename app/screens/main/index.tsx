@@ -9,6 +9,7 @@ import {colors} from '../../styles';
 import HomeScreen from './home';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
+import {getStorageService} from '../../services';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -21,13 +22,16 @@ const MainStack = createStackNavigator<MainStackParamList>();
 const MainScreens = () => {
   const [pubnubInstance, setPubnubInstance] = useState<any>(null);
   useEffect(() => {
-    StorageService.getItem('user').then((user) => {
-      const pubnub = new PubNub({
-        subscribeKey: Config.PUBNUB_SUB_KEY,
-        publishKey: Config.PUBNUB_PUB_KEY,
-        uuid: user.mobile,
-      });
-      setPubnubInstance(pubnub);
+    const storageService = getStorageService();
+    storageService.getItem<User>('user').then((user) => {
+      if (user) {
+        const pubnub = new PubNub({
+          subscribeKey: Config.PUBNUB_SUB_KEY,
+          publishKey: Config.PUBNUB_PUB_KEY,
+          uuid: user.mobile,
+        });
+        setPubnubInstance(pubnub);
+      }
     });
   }, []);
   if (!pubnubInstance) {
@@ -56,7 +60,7 @@ const MainScreens = () => {
           name="Contacts"
           component={ContactsScreen}
           options={{
-            title: 'Contacts',
+            title: 'Select Contact',
             headerStyle: {
               backgroundColor: colors.primary,
             },
