@@ -66,7 +66,7 @@ const sortMessages = (a: Message, b: Message) => {
   return dateB - dateA;
 };
 
-export const Chat = ({navigation}: any) => {
+export const ChatScreen = ({navigation}: any) => {
   const pubnub = usePubNub();
   const inputRef = useRef<any>(null);
   const chatMessageChannel = 'SHARA_GLOBAL';

@@ -5,7 +5,7 @@ import {PubNubProvider} from 'pubnub-react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {Chat, Login, Register, Welcome} from './screens';
+import {ChatScreen, HomeScreen, Login, Register, Welcome} from './screens';
 import Config from 'react-native-config';
 import SplashScreen from './screens/SplashScreen';
 import {colors} from './styles/base';
@@ -18,11 +18,16 @@ export type RootStackParamList = {
   Main: undefined;
 };
 
+export type MainStackParamList = {
+  Home: undefined;
+  Chat: undefined;
+};
+
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const AuthStack = createStackNavigator();
 
-const MainStack = createStackNavigator();
+const MainStack = createStackNavigator<MainStackParamList>();
 
 const AuthScreens = () => (
   <AuthStack.Navigator>
@@ -65,10 +70,22 @@ const MainScreens = () => {
   }
   return (
     <PubNubProvider client={pubnubInstance}>
-      <MainStack.Navigator>
+      <MainStack.Navigator initialRouteName="Home">
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{
+            title: 'Shara',
+            headerStyle: {
+              backgroundColor: colors.primary,
+              elevation: 0,
+            },
+            headerTintColor: '#fff',
+          }}
+        />
         <MainStack.Screen
           name="Chat"
-          component={Chat}
+          component={ChatScreen}
           options={{
             title: 'Shara Chat',
             headerStyle: {

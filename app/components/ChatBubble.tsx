@@ -2,7 +2,7 @@ import React, {useMemo, memo} from 'react';
 import format from 'date-fns/format';
 import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles/base';
-import {Message, User} from '../screens/chat';
+import {Message, User} from '../screens/main';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type ChatBubbleProps = {
