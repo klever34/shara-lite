@@ -4,7 +4,6 @@ import Config from 'react-native-config';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
-import StorageService from '../../services/StorageService';
 import {colors} from '../../styles';
 import HomeScreen from './home';
 import ChatScreen from './ChatScreen';
