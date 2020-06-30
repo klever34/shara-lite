@@ -1,18 +1,12 @@
 import React from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  TextInputProperties,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import Icon from 'react-native-vector-icons/Octicons';
+import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
+import Icon from '../components/Icon';
 
 type Props = {
   value: string;
   placeholder?: string;
   onChangeText(text: string): void;
-} & TextInputProperties;
+};
 
 export const PasswordField = (props: Props) => {
   const {value, onChangeText, placeholder = 'Password', ...rest} = props;
@@ -38,6 +32,7 @@ export const PasswordField = (props: Props) => {
       <View style={styles.toggleButton}>
         <TouchableOpacity onPress={toggleSecure}>
           <Icon
+            type="octicons"
             size={16}
             color="#a8a8a8"
             name={secure ? 'eye' : 'eye-closed'}

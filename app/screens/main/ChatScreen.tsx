@@ -27,8 +27,7 @@ import {
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-//TODO: Potential reduce bundle size by removing unused font set from app
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
 import {generateUniqueId} from '../../helpers/utils';
@@ -95,7 +94,12 @@ const ChatScreen = ({
       headerRight: () => (
         <Menu>
           <MenuTrigger>
-            <Icon color={colors.white} name="more-vert" size={30} />
+            <Icon
+              type="material-icons"
+              color={colors.white}
+              name="more-vert"
+              size={30}
+            />
           </MenuTrigger>
           <MenuOptions optionsContainerStyle={styles.menuDropdown}>
             <MenuOption text="Logout" onSelect={handleLogout} />
@@ -276,6 +280,7 @@ const ChatScreen = ({
         <View style={styles.inputContainer}>
           <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
             <Icon
+              type="material-icons"
               size={22}
               style={styles.emojiButtonIcon}
               name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
@@ -298,7 +303,11 @@ const ChatScreen = ({
               title="Send"
               style={styles.submitButton}
               onPress={handleSubmit}>
-              <Icon name="send" style={baseButtonStyles.icon} />
+              <Icon
+                type="material-icons"
+                name="send"
+                style={baseButtonStyles.icon}
+              />
             </BaseButton>
           )}
         </View>
