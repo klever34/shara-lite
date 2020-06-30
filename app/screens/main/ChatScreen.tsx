@@ -33,40 +33,26 @@ import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
 import {generateUniqueId} from '../../helpers/utils';
 import StorageService from '../../services/StorageService';
-import {colors} from '../../styles/base';
-
-export type User = {
-  id: number;
-  email?: string;
-  firstname?: string;
-  lastname?: string;
-  mobile?: string;
-};
-
-type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>;
-
-export type Message = {
-  id: string;
-  device: string;
-  created_at: number;
-  content: string;
-  author: MessageAuthor;
-  timetoken?: string | number;
-};
+import {colors} from '../../styles';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from './index';
 
 type MessageItemProps = {
-  item: Message;
+  item: ChatMessage;
 };
 
-const messageItemKeyExtractor = (message: Message) => message.id;
+const messageItemKeyExtractor = (message: ChatMessage) => message.id;
 
-const sortMessages = (a: Message, b: Message) => {
+const sortMessages = (a: ChatMessage, b: ChatMessage) => {
   const dateA = new Date(a.created_at).getTime();
   const dateB = new Date(b.created_at).getTime();
   return dateB - dateA;
 };
 
-export const ChatScreen = ({navigation}: any) => {
+const ChatScreen = ({
+  navigation,
+  route,
+}: StackScreenProps<MainStackParamList, 'Chat'>) => {
   const pubnub = usePubNub();
   const inputRef = useRef<any>(null);
   const chatMessageChannel = 'SHARA_GLOBAL';
@@ -76,7 +62,7 @@ export const ChatScreen = ({navigation}: any) => {
   const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
   useEffect(() => {
     StorageService.getItem('user').then((nextUser) => {
@@ -99,7 +85,7 @@ export const ChatScreen = ({navigation}: any) => {
       headerTitle: () => {
         return (
           <View style={styles.headerTitle}>
-            <Text style={styles.headerTitleText}>Shara Chat</Text>
+            <Text style={styles.headerTitleText}>{route.params.title}</Text>
             {!!typingMessage && (
               <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
             )}
@@ -117,7 +103,7 @@ export const ChatScreen = ({navigation}: any) => {
         </Menu>
       ),
     });
-  }, [handleLogout, navigation, typingMessage]);
+  }, [handleLogout, navigation, route.params.title, typingMessage]);
 
   const fetchHistory = useCallback(() => {
     const count = messages.length + 20;
@@ -125,8 +111,8 @@ export const ChatScreen = ({navigation}: any) => {
     pubnub.history({channel: chatMessageChannel, count}, (status, response) => {
       setIsLoading(false);
       if (response) {
-        const history: Message[] = response.messages.map((item) => {
-          const entry = item.entry as Message;
+        const history: ChatMessage[] = response.messages.map((item) => {
+          const entry = item.entry as ChatMessage;
           return {
             ...entry,
             timetoken: item.timetoken,
@@ -142,12 +128,12 @@ export const ChatScreen = ({navigation}: any) => {
     if (pubnub) {
       const listener = {
         message: (envelope: MessageEvent) => {
-          const message = envelope.message as Message;
+          const message = envelope.message as ChatMessage;
           setMessages((prevMessages) => {
             const prevMessageIndex = prevMessages.findIndex(
               ({id}) => id === message.id,
             );
-            let nextMessages: Message[];
+            let nextMessages: ChatMessage[];
             if (prevMessageIndex > -1) {
               nextMessages = [
                 ...prevMessages.slice(0, prevMessageIndex),
@@ -209,7 +195,7 @@ export const ChatScreen = ({navigation}: any) => {
 
   const handleSubmit = useCallback(() => {
     setInput('');
-    const message: Message = {
+    const message: ChatMessage = {
       id: generateUniqueId(),
       content: input,
       created_at: new Date().getTime(),
@@ -428,3 +414,5 @@ const styles = StyleSheet.create({
     maxWidth: 300,
   },
 });
+
+export default ChatScreen;

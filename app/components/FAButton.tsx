@@ -1,9 +1,9 @@
 import Touchable from './Touchable';
 import {Platform, View} from 'react-native';
 import React from 'react';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import {colors} from '../styles/base';
-import {mergeStyles} from '../helpers/utils';
+import {colors} from '../styles';
+import {applyStyles} from '../helpers/utils';
+import Icon from './Icon';
 
 type FAButtonProps = {
   iconName: string;
@@ -18,8 +18,9 @@ export const FAButton = ({
 }: FAButtonProps) => {
   return (
     <Touchable onPress={onPress}>
-      <View style={mergeStyles(styles.container, {backgroundColor: color})}>
-        <Ionicons
+      <View style={applyStyles(styles.container, {backgroundColor: color})}>
+        <Icon
+          type="ionicons"
           name={
             Platform.select({
               android: 'md-' + iconName,

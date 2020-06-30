@@ -1,46 +1,34 @@
 import React from 'react';
 import {SafeAreaView} from 'react-native';
-import {FAButton} from '../../../components';
-import {MainStackParamList} from '../../../index';
-import {
-  createMaterialTopTabNavigator,
-  MaterialTopTabBarOptions,
-} from '@react-navigation/material-top-tabs';
-import {StackScreenProps} from '@react-navigation/stack';
-import {colors} from '../../../styles/base';
-import {ChatTab} from './ChatTab';
-import {ContactsTab} from './ContactsTab';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {colors} from '../../../styles';
+import ChatListScreen from './ChatListScreen';
 
 type HomeTabParamList = {
-  Chat: undefined;
+  ChatList: undefined;
   Contacts: undefined;
 };
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
-type HomeScreenProps = StackScreenProps<MainStackParamList> & {};
-
-const tabBarOptions: MaterialTopTabBarOptions = {
-  indicatorContainerStyle: {backgroundColor: colors.primary},
-  indicatorStyle: {backgroundColor: colors.white},
-  labelStyle: {fontWeight: 'bold'},
-  activeTintColor: 'rgba(255,255,255, 1)',
-  inactiveTintColor: 'rgba(255,255,255, 0.75)',
-};
-
-export const HomeScreen = ({navigation}: HomeScreenProps) => {
+const HomeScreen = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <HomeTab.Navigator initialRouteName="Chat" tabBarOptions={tabBarOptions}>
-        <HomeTab.Screen name="Chat" component={ChatTab} />
-        <HomeTab.Screen name="Contacts" component={ContactsTab} />
+      <HomeTab.Navigator
+        initialRouteName="ChatList"
+        tabBarOptions={{
+          indicatorContainerStyle: {backgroundColor: colors.primary},
+          indicatorStyle: {backgroundColor: colors.white},
+          labelStyle: {fontWeight: 'bold'},
+          activeTintColor: 'rgba(255,255,255, 1)',
+          inactiveTintColor: 'rgba(255,255,255, 0.75)',
+        }}>
+        <HomeTab.Screen
+          name="ChatList"
+          options={{title: 'Chat'}}
+          component={ChatListScreen}
+        />
       </HomeTab.Navigator>
-      <FAButton
-        iconName="add"
-        onPress={() => {
-          navigation.navigate('Chat');
-        }}
-      />
     </SafeAreaView>
   );
 };
@@ -48,3 +36,5 @@ export const HomeScreen = ({navigation}: HomeScreenProps) => {
 export const styles = {
   container: {flex: 1},
 };
+
+export default HomeScreen;

@@ -6,7 +6,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {colors} from '../styles/base';
+import {colors} from '../styles';
 import Touchable from './Touchable';
 
 interface variantColorStylesOptions {
