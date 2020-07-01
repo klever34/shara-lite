@@ -1,9 +1,9 @@
 import {StackScreenProps} from '@react-navigation/stack';
-import React, {useEffect} from 'react';
-import AsyncStorage from '@react-native-community/async-storage';
+import React, {useCallback, useEffect} from 'react';
 import {Image, StyleSheet, View} from 'react-native';
 import {RootStackParamList} from '../index';
 import {colors, dimensions} from '../styles';
+import {getAuthService, getStorageService} from '../services';
 
 type SplashScreenProps = StackScreenProps<RootStackParamList> & {};
 
@@ -20,29 +20,39 @@ const styles = StyleSheet.create({
 });
 
 const SplashScreen = ({navigation}: SplashScreenProps) => {
+  const handleRedirect = useCallback(() => {
+    const storageService = getStorageService();
+    const authService = getAuthService();
+    Promise.all([
+      storageService.getItem<User>('user'),
+      storageService.getItem<string>('token'),
+    ])
+      .then(([user, token]) => {
+        if (user && token) {
+          authService.setUser(user);
+          authService.setToken(token);
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Main'}],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Auth'}],
+          });
+        }
+      })
+      .catch(() => {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Auth'}],
+        });
+      });
+  }, [navigation]);
+
   useEffect(() => {
     setTimeout(handleRedirect, 750);
-  });
-
-  const isLoggedIn = async () => {
-    const token = await AsyncStorage.getItem('token');
-    return token;
-  };
-
-  const handleRedirect = async () => {
-    const token = await isLoggedIn();
-    if (token) {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
-      });
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Auth'}],
-      });
-    }
-  };
+  }, [handleRedirect]);
 
   return (
     <View style={styles.container}>
