@@ -11,11 +11,10 @@ workflows:
             - checkout_code
 jobs:
   test:
-    executor: react-native/linux_js
+    executor: circleci/node:12
     steps:
       - attach_workspace:
           at: .
-      - react-native/yarn_install
       - run:
           command: yarn lint
           name: Run ESLint
@@ -23,18 +22,30 @@ jobs:
 #          command: yarn test
 #          name: Run Tests
   checkout_code:
-    executor: react-native/linux_js
+    executor: circleci/node:8
     steps:
       - checkout
+      - run: yarn install
       - persist_to_workspace:
           paths: .
           root: .
   fastlane_test:
-    executor: react-native/linux_js
+    executor: circleci/android:api-27-node8-alpha
     steps:
       - attach_workspace:
           at: .
-      - react-native/yarn_install
+      - run:
+          name: fastlane install
+          command: |
+            ls -R
+            cd android
+            bundle install
+      - run:
+          name: fastlane tests
+          command: |
+            mkdir -p test-results/fastlane
+            bundle exec fastlane test
+            mv fastlane/report.xml test-results/fastlane
 #      - run:
 #          command: ./gradlew build
 #      - run:
