@@ -22,36 +22,27 @@ platform :android do
   end
 
   desc "Submit a new Beta Build to Crashlytics Beta"
-  lane :alpha do
+  lane :internal do
     gradle(task: "clean assembleRelease")
     firebase_app_distribution(
       app: ENV['FIREBASE_APP_ID_ANDROID'],
       firebase_cli_token: ENV['FIREBASE_TOKEN'],
       groups: "shara-engineering"
-      # release_notes_file: "release-notes.txt",
-      # testers_file: "testers.txt"
     )
-
-    # You can also use other beta testing services here
   end
 
   desc "Deploy a new version to the Google Play Internal Test Release"
-  lane :playinternal do
+  lane :playinternalappsharing do
     gradle(task: "clean bundleRelease")
     upload_to_play_store_internal_app_sharing
   end
 
-  desc "Deploy a new version to the Google Play beta lane"
-  lane :playbeta do
+  desc "Deploy a new version to the Google Play lane"
+  lane :play do
     gradle(task: "clean bundleRelease")
     upload_to_play_store(
-      track: beta
+      track: ENV['GOOGLE_PLAY_TRACK']
     )
   end
 
-  desc "Deploy a new version to the Google Play"
-  lane :playprod do
-    gradle(task: "clean assembleRelease")
-    upload_to_play_store
-  end
 end
