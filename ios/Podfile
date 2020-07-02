@@ -77,6 +77,12 @@ target 'SharaRN' do
   pod 'glog', :podspec => '../node_modules/react-native/third-party-podspecs/glog.podspec'
   pod 'Folly', :podspec => '../node_modules/react-native/third-party-podspecs/Folly.podspec'
 
+  pod 'RNVectorIcons', :path => '../node_modules/react-native-vector-icons'
+
+  pod 'RNDeviceInfo', :path => '../node_modules/react-native-device-info'
+
+  pod 'react-native-config', :path => '../node_modules/react-native-config'
+
   target 'SharaRNTests' do
     inherit! :complete
     # Pods for testing
