@@ -34,6 +34,7 @@
     "react-native-reanimated": "^1.9.0",
     "react-native-safe-area-context": "^3.0.5",
     "react-native-screens": "^2.9.0",
+    "react-native-share": "^3.6.0",
     "react-native-tab-view": "^2.14.4",
     "react-native-vector-icons": "^6.6.0",
     "uuid": "^8.2.0"
@@ -45,6 +46,7 @@
     "@types/jest": "^24.0.24",
     "@types/pubnub": "^4.27.4",
     "@types/react-native": "^0.62.0",
+    "@types/react-native-share": "^3.3.0",
     "@types/react-native-vector-icons": "^6.4.5",
     "@types/react-test-renderer": "16.9.2",
     "@types/uuid": "^8.0.0",

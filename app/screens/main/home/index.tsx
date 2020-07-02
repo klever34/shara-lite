@@ -1,17 +1,12 @@
 import React, {useCallback, useLayoutEffect} from 'react';
-import {SafeAreaView, StyleSheet} from 'react-native';
+import {SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '../../../styles';
 import ChatListScreen from './ChatListScreen';
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from 'react-native-popup-menu';
-import Icon from '../../../components/Icon';
 import {getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
+import AppMenu from '../../../components/Menu';
+import {applyStyles} from '../../../helpers/utils';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -33,24 +28,12 @@ const HomeScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <Menu>
-          <MenuTrigger>
-            <Icon
-              type="material-icons"
-              color={colors.white}
-              name="more-vert"
-              size={30}
-            />
-          </MenuTrigger>
-          <MenuOptions optionsContainerStyle={styles.menuDropdown}>
-            <MenuOption text="Logout" onSelect={handleLogout} />
-          </MenuOptions>
-        </Menu>
+        <AppMenu options={[{text: 'Log out', onSelect: handleLogout}]} />
       ),
     });
   }, [handleLogout, navigation]);
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={applyStyles('flex-1')}>
       <HomeTab.Navigator
         initialRouteName="ChatList"
         tabBarOptions={{
@@ -69,13 +52,5 @@ const HomeScreen = () => {
     </SafeAreaView>
   );
 };
-
-export const styles = StyleSheet.create({
-  container: {flex: 1},
-  menuDropdown: {
-    padding: 8,
-    maxWidth: 300,
-  },
-});
 
 export default HomeScreen;

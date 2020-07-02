@@ -108,11 +108,11 @@ const styles = StyleSheet.create({
   authorText: {
     fontSize: 12,
     opacity: 0.5,
-    color: colors.gray,
+    color: colors['gray-900'],
   },
   messageText: {
     fontSize: 17,
-    color: colors.gray,
+    color: colors['gray-900'],
   },
   dateTextContainer: {
     flexDirection: 'row',
