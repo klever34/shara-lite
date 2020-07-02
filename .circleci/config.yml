@@ -46,10 +46,15 @@ jobs:
           name: fastlane tests
           command: |
             cd android
-            mkdir -p test-results/fastlane
             bundle exec fastlane test
-            mv fastlane/report.xml test-results/fastlane
-
+      - store_artifacts:
+          path: fastlane/report.xml
+          destination: test-results
+      - run:
+          name: fastlane alpha
+          command: |
+            cd android
+            bundle exec fastlane alpha
 #      - run:
 #          command: ./gradlew build
 #      - run:
