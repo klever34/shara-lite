@@ -26,6 +26,16 @@ Runs all the tests
 fastlane android alpha
 ```
 Submit a new Beta Build to Crashlytics Beta
+### android internal
+```
+fastlane android internal
+```
+Deploy a new version to the Google Play Internal Test Release
+### android beta
+```
+fastlane android beta
+```
+Deploy a new version to the Google Play beta lane
 ### android deploy
 ```
 fastlane android deploy
