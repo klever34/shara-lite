@@ -1,14 +1,15 @@
-import React, {useEffect, useState} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import Config from 'react-native-config';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import Config from 'react-native-config';
+import PushNotification from 'react-native-push-notification';
+import {getStorageService} from '../../services';
 import {colors} from '../../styles';
-import HomeScreen from './home';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
-import {getStorageService} from '../../services';
+import HomeScreen from './home';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -18,8 +19,10 @@ export type MainStackParamList = {
 
 const MainStack = createStackNavigator<MainStackParamList>();
 
-const MainScreens = () => {
+const MainScreens = ({navigation}: any) => {
+  const channelName = 'NOTIFICATION';
   const [pubnubInstance, setPubnubInstance] = useState<any>(null);
+
   useEffect(() => {
     const storageService = getStorageService();
     storageService.getItem<User>('user').then((user) => {
@@ -29,10 +32,34 @@ const MainScreens = () => {
           publishKey: Config.PUBNUB_PUB_KEY,
           uuid: user.mobile,
         });
+        PushNotification.configure({
+          onRegister: function (token: any) {
+            console.log('TOKEN:', token);
+            if (token.os === 'ios') {
+              pubnub.push.addChannels({
+                channels: [channelName],
+                device: token.token,
+                pushGateway: 'apns',
+              });
+            } else if (token.os === 'android') {
+              pubnub.push.addChannels({
+                channels: [channelName],
+                device: token.token,
+                pushGateway: 'gcm',
+              });
+            }
+          },
+          onNotification: function (notification: any) {
+            console.log('NOTIFICATION:', notification);
+            navigation.navigate('Chat');
+            // Do something with the notification.
+          },
+          senderID: Config.FIREBASE_SENDER_ID,
+        });
         setPubnubInstance(pubnub);
       }
     });
-  }, []);
+  }, [navigation]);
   if (!pubnubInstance) {
     return (
       <View style={styles.activityIndicatorContainer}>
