@@ -25,7 +25,9 @@ platform :android do
   lane :alpha do
     gradle(task: "clean assembleRelease")
     firebase_app_distribution(
-      app: "1:23333573770:android:4b593be0700b2c58718973"
+      app: ENV['FIREBASE_APP_ID_ANDROID'],
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      groups: "shara-engineering"
       # release_notes_file: "release-notes.txt",
       # testers_file: "testers.txt"
     )
