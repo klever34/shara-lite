@@ -1,11 +1,10 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
-import PushNotification from 'react-native-push-notification';
-import {getStorageService} from '../../services';
+import {getStorageService, getPushNotificationService} from '../../services';
 import {colors} from '../../styles';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
@@ -23,6 +22,35 @@ const MainScreens = ({navigation}: any) => {
   const channelName = 'NOTIFICATION';
   const [pubnubInstance, setPubnubInstance] = useState<any>(null);
 
+  const onRegister = useCallback(
+    (token: PushNotificationToken) => {
+      if (pubnubInstance) {
+        if (token.os === 'ios') {
+          pubnubInstance.push.addChannels({
+            channels: [channelName],
+            device: token.token,
+            pushGateway: 'apns',
+          });
+        } else if (token.os === 'android') {
+          pubnubInstance.push.addChannels({
+            channels: [channelName],
+            device: token.token,
+            pushGateway: 'gcm',
+          });
+        }
+      }
+    },
+    [pubnubInstance],
+  );
+
+  const onNotification = useCallback(
+    (notification: PushNotificationData) => {
+      console.log('NOTIFICATION:', notification);
+      navigation && navigation.navigate('Chat');
+    },
+    [navigation],
+  );
+
   useEffect(() => {
     const storageService = getStorageService();
     storageService.getItem<User>('user').then((user) => {
@@ -32,33 +60,12 @@ const MainScreens = ({navigation}: any) => {
           publishKey: Config.PUBNUB_PUB_KEY,
           uuid: user.mobile,
         });
-        PushNotification.configure({
-          onRegister: function (token: PushNotificationToken) {
-            console.log('TOKEN:', token);
-            if (token.os === 'ios') {
-              pubnub.push.addChannels({
-                channels: [channelName],
-                device: token.token,
-                pushGateway: 'apns',
-              });
-            } else if (token.os === 'android') {
-              pubnub.push.addChannels({
-                channels: [channelName],
-                device: token.token,
-                pushGateway: 'gcm',
-              });
-            }
-          },
-          onNotification: function (notification: PushNotification) {
-            console.log('NOTIFICATION:', notification);
-            navigation.navigate('Chat');
-          },
-          senderID: Config.FIREBASE_SENDER_ID,
-        });
+        getPushNotificationService(onRegister, onNotification);
         setPubnubInstance(pubnub);
       }
     });
-  }, [navigation]);
+  }, [onNotification, onRegister]);
+
   if (!pubnubInstance) {
     return (
       <View style={styles.activityIndicatorContainer}>
@@ -66,6 +73,7 @@ const MainScreens = ({navigation}: any) => {
       </View>
     );
   }
+
   return (
     <PubNubProvider client={pubnubInstance}>
       <MainStack.Navigator initialRouteName="Home">

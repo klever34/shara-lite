@@ -22,7 +22,7 @@ type PushNotificationToken = {
   os: string
 }
 
-type PushNotification = {
+type PushNotificationData = {
   foreground: boolean
   userInteraction: boolean
   message: string
