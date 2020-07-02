@@ -935,6 +935,13 @@
     react-is "^16.13.0"
     use-subscription "^1.4.0"
 
+"@react-navigation/material-top-tabs@^5.2.12":
+  version "5.2.12"
+  resolved "https://registry.yarnpkg.com/@react-navigation/material-top-tabs/-/material-top-tabs-5.2.12.tgz#a9d1bc6b0446cb37cc24774c6db409ded38beb84"
+  integrity sha512-q1Rb/yo94+2TAQO29XZVJyWB5xhY2WKEVtXFjbtHGHl3q5ijerBXHkIt7akdkE00z5Jn9Ir5JJAmeyx6uWtVmg==
+  dependencies:
+    color "^3.1.2"
+
 "@react-navigation/native@^5.5.1":
   version "5.5.1"
   resolved "https://registry.yarnpkg.com/@react-navigation/native/-/native-5.5.1.tgz#e669d9561e54d86b1315637b8d5630dc55ee9383"
@@ -4789,6 +4796,11 @@ react-native-config@^1.2.1:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.2.1.tgz#f80454fc58ea89b549819ccb4bdab26518a9f0db"
 
+react-native-contacts@^5.2.3:
+  version "5.2.3"
+  resolved "https://registry.yarnpkg.com/react-native-contacts/-/react-native-contacts-5.2.3.tgz#d0192d695fef3cf590a39f56d817c861c4ae6bc0"
+  integrity sha512-dD//eKxZ3Id8yzewjJOzXUC1qeB9RXNEJ/JemAHUx6YsJ0t13lYfR+h71TtSMklMAoOchVtw9Qv6FRxwaCBb2Q==
+
 react-native-country-picker-modal@^1.11.0:
   version "1.11.0"
   resolved "https://registry.yarnpkg.com/react-native-country-picker-modal/-/react-native-country-picker-modal-1.11.0.tgz#14056cbbd83477549aa9b5449570fff4ef3c7d5d"
@@ -4846,6 +4858,11 @@ react-native-safe-area-context@^3.0.5:
 react-native-screens@^2.9.0:
   version "2.9.0"
   resolved "https://registry.yarnpkg.com/react-native-screens/-/react-native-screens-2.9.0.tgz#ead2843107ba00fee259aa377582e457c74f1f3b"
+
+react-native-tab-view@^2.14.4:
+  version "2.14.4"
+  resolved "https://registry.yarnpkg.com/react-native-tab-view/-/react-native-tab-view-2.14.4.tgz#740007e62c8723c6813b8c8a05caaaf82c816620"
+  integrity sha512-oqkCflPFuZwDTbyY2WaN0377akSsmcttuYACR9LT7htZfO/tKR2Z/ynj1tbv2cz2esGuVICoga9cetN1lPimog==
 
 react-native-vector-icons@^6.6.0:
   version "6.6.0"

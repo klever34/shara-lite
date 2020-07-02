@@ -1,12 +1,11 @@
 import React, {useMemo, memo} from 'react';
 import format from 'date-fns/format';
 import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
-import {colors} from '../styles/base';
-import {Message, User} from '../screens/chat';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {colors} from '../styles';
+import Icon from '../components/Icon';
 
 type ChatBubbleProps = {
-  message: Message;
+  message: ChatMessage;
   user: User;
 };
 
@@ -82,11 +81,14 @@ export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
         <Text style={messageTextStyle}>{content}</Text>
         <View style={styles.dateTextContainer}>
           <Text style={dateTextStyle}>{messageTime}</Text>
-          <MaterialCommunityIcons
-            name={timetoken ? 'check' : 'alarm'}
-            style={styles.receiptIcon}
-            size={12}
-          />
+          {isAuthor && (
+            <Icon
+              type="material-community-icons"
+              name={timetoken ? 'check' : 'alarm'}
+              style={styles.receiptIcon}
+              size={12}
+            />
+          )}
         </View>
       </View>
     </View>

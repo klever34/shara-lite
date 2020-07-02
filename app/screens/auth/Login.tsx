@@ -1,8 +1,7 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import React from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import Config from 'react-native-config';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
+import {getAuthService} from '../../services';
 
 type Fields = {
   mobile: string;
@@ -13,19 +12,6 @@ type Fields = {
 export const Login = ({navigation}: any) => {
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
-
-  React.useEffect(() => {
-    getPhoneNumber();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const getPhoneNumber = async () => {
-    const mobile = await AsyncStorage.getItem('mobile');
-    const countryCode = await AsyncStorage.getItem('countryCode');
-    if (mobile && countryCode) {
-      setFields({...fields, mobile, countryCode});
-    }
-  };
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -49,34 +35,18 @@ export const Login = ({navigation}: any) => {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
+    const authService = getAuthService();
     try {
       setLoading(true);
-      const loginResponse = await fetch(`${Config.API_BASE_URL}/login`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {'Content-Type': 'application/json'},
+      await authService.logIn(payload);
+      setLoading(false);
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Main'}],
       });
-      const response = await loginResponse.json();
-      if (response.error) {
-        Alert.alert('Error', response.mesage);
-        setLoading(false);
-      } else {
-        const {credentials, user} = response.data;
-        const {token} = credentials;
-
-        await AsyncStorage.setItem('token', token);
-        await AsyncStorage.setItem('user', JSON.stringify(user));
-        await AsyncStorage.removeItem('mobile');
-        await AsyncStorage.removeItem('countryCode');
-        setLoading(false);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Main'}],
-        });
-      }
     } catch (error) {
       setLoading(false);
-      Alert.alert('Error', error);
+      Alert.alert('Error', error.message);
     }
   };
 
@@ -124,7 +94,7 @@ export const Login = ({navigation}: any) => {
           style={styles.helpSection}
           onPress={() => handleNavigate('Register')}>
           <Text style={styles.helpSectionText}>Don’t have an account? </Text>
-          <Text style={styles.helpSectionButtonText}>Register</Text>
+          <Text style={styles.helpSectionButtonText}>Sign up</Text>
         </TouchableOpacity>
       </View>
     </View>

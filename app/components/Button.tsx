@@ -1,15 +1,13 @@
-import React, {ElementType, ReactNode} from 'react';
+import React, {ReactNode} from 'react';
 import {
-  Platform,
+  ActivityIndicator,
   StyleSheet,
   Text,
-  TouchableHighlight,
-  TouchableNativeFeedback,
   View,
   ViewStyle,
-  ActivityIndicator,
 } from 'react-native';
-import {colors} from '../styles/base';
+import {colors} from '../styles';
+import Touchable from './Touchable';
 
 interface variantColorStylesOptions {
   [key: string]: any;
@@ -133,8 +131,6 @@ export const BaseButton = ({
   children,
   disabled,
 }: BaseButtonProps) => {
-  const Touchable: ElementType =
-    Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight;
   const disabledStyle = disabled ? baseButtonStyles.disabled : {};
   return (
     <Touchable onPress={onPress} disabled={disabled}>

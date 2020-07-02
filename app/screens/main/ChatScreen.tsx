@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -21,52 +21,31 @@ import {
   View,
 } from 'react-native';
 import EmojiSelector, {Categories} from 'react-native-emoji-selector';
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from 'react-native-popup-menu';
-//TODO: Potential reduce bundle size by removing unused font set from app
-import Icon from 'react-native-vector-icons/MaterialIcons';
+import Icon from '../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
 import {generateUniqueId} from '../../helpers/utils';
-import StorageService from '../../services/StorageService';
-import {colors} from '../../styles/base';
-
-export type User = {
-  id: number;
-  email?: string;
-  firstname?: string;
-  lastname?: string;
-  mobile?: string;
-};
-
-type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>;
-
-export type Message = {
-  id: string;
-  device: string;
-  created_at: number;
-  content: string;
-  author: MessageAuthor;
-  timetoken?: string | number;
-};
+import {colors} from '../../styles';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from './index';
+import {getAuthService} from '../../services';
 
 type MessageItemProps = {
-  item: Message;
+  item: ChatMessage;
 };
 
-const messageItemKeyExtractor = (message: Message) => message.id;
+const messageItemKeyExtractor = (message: ChatMessage) => message.id;
 
-const sortMessages = (a: Message, b: Message) => {
+const sortMessages = (a: ChatMessage, b: ChatMessage) => {
   const dateA = new Date(a.created_at).getTime();
   const dateB = new Date(b.created_at).getTime();
   return dateB - dateA;
 };
 
-export const Chat = ({navigation}: any) => {
+const ChatScreen = ({
+  navigation,
+  route,
+}: StackScreenProps<MainStackParamList, 'Chat'>) => {
   const pubnub = usePubNub();
   const inputRef = useRef<any>(null);
   const chatMessageChannel = 'SHARA_GLOBAL';
@@ -75,49 +54,27 @@ export const Chat = ({navigation}: any) => {
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
-  useEffect(() => {
-    StorageService.getItem('user').then((nextUser) => {
-      if (nextUser) {
-        setUser(nextUser);
-      }
-    });
+  const user = useMemo<User | null>(() => {
+    const authService = getAuthService();
+    return authService.getUser();
   }, []);
-
-  const handleLogout = useCallback(async () => {
-    await AsyncStorage.clear();
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Auth'}],
-    });
-  }, [navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => {
         return (
           <View style={styles.headerTitle}>
-            <Text style={styles.headerTitleText}>Shara Chat</Text>
+            <Text style={styles.headerTitleText}>{route.params.title}</Text>
             {!!typingMessage && (
               <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
             )}
           </View>
         );
       },
-      headerRight: () => (
-        <Menu>
-          <MenuTrigger>
-            <Icon color={colors.white} name="more-vert" size={30} />
-          </MenuTrigger>
-          <MenuOptions>
-            <MenuOption onSelect={handleLogout} text="Logout" />
-          </MenuOptions>
-        </Menu>
-      ),
     });
-  }, [handleLogout, navigation, typingMessage]);
+  }, [navigation, route.params.title, typingMessage]);
 
   const fetchHistory = useCallback(() => {
     const count = messages.length + 20;
@@ -125,8 +82,8 @@ export const Chat = ({navigation}: any) => {
     pubnub.history({channel: chatMessageChannel, count}, (status, response) => {
       setIsLoading(false);
       if (response) {
-        const history: Message[] = response.messages.map((item) => {
-          const entry = item.entry as Message;
+        const history: ChatMessage[] = response.messages.map((item) => {
+          const entry = item.entry as ChatMessage;
           return {
             ...entry,
             timetoken: item.timetoken,
@@ -142,12 +99,12 @@ export const Chat = ({navigation}: any) => {
     if (pubnub) {
       const listener = {
         message: (envelope: MessageEvent) => {
-          const message = envelope.message as Message;
+          const message = envelope.message as ChatMessage;
           setMessages((prevMessages) => {
             const prevMessageIndex = prevMessages.findIndex(
               ({id}) => id === message.id,
             );
-            let nextMessages: Message[];
+            let nextMessages: ChatMessage[];
             if (prevMessageIndex > -1) {
               nextMessages = [
                 ...prevMessages.slice(0, prevMessageIndex),
@@ -209,7 +166,7 @@ export const Chat = ({navigation}: any) => {
 
   const handleSubmit = useCallback(() => {
     setInput('');
-    const message: Message = {
+    const message: ChatMessage = {
       id: generateUniqueId(),
       content: input,
       created_at: new Date().getTime(),
@@ -264,21 +221,21 @@ export const Chat = ({navigation}: any) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      {isLoading && (
-        <View style={styles.loadingSection}>
-          <View style={styles.loadingContainer}>
-            <ActivityIndicator
-              size="small"
-              animating={isLoading}
-              color={colors.primary}
-            />
-          </View>
-        </View>
-      )}
-
       <ImageBackground
         source={require('../../assets/images/chat-wallpaper.png')}
         style={styles.chatBackground}>
+        {isLoading && (
+          <View style={styles.loadingSection}>
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator
+                size="small"
+                animating={isLoading}
+                color={colors.primary}
+              />
+            </View>
+          </View>
+        )}
+
         <FlatList
           inverted={true}
           style={styles.listContainer}
@@ -287,36 +244,41 @@ export const Chat = ({navigation}: any) => {
           data={messages}
           keyExtractor={messageItemKeyExtractor}
         />
-      </ImageBackground>
-      <View style={styles.inputContainer}>
-        <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
-          <Icon
-            size={22}
-            style={styles.emojiButtonIcon}
-            name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
-          />
-        </BaseButton>
-        <TextInput
-          multiline
-          value={input}
-          ref={inputRef}
-          returnKeyType="send"
-          onChangeText={setInput}
-          style={styles.textInput}
-          onFocus={closeEmojiBoard}
-          onSubmitEditing={handleSubmit}
-          enablesReturnKeyAutomatically={true}
-          placeholder="Type a message"
-        />
-        {!!input && (
-          <BaseButton
-            title="Send"
-            style={styles.submitButton}
-            onPress={handleSubmit}>
-            <Icon name="send" style={baseButtonStyles.icon} />
+        <View style={styles.inputContainer}>
+          <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
+            <Icon
+              type="material-icons"
+              size={22}
+              style={styles.emojiButtonIcon}
+              name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
+            />
           </BaseButton>
-        )}
-      </View>
+          <TextInput
+            multiline
+            value={input}
+            ref={inputRef}
+            returnKeyType="send"
+            onChangeText={setInput}
+            style={styles.textInput}
+            onFocus={closeEmojiBoard}
+            onSubmitEditing={handleSubmit}
+            enablesReturnKeyAutomatically={true}
+            placeholder="Type a message"
+          />
+          {!!input && (
+            <BaseButton
+              title="Send"
+              style={styles.submitButton}
+              onPress={handleSubmit}>
+              <Icon
+                type="material-icons"
+                name="send"
+                style={baseButtonStyles.icon}
+              />
+            </BaseButton>
+          )}
+        </View>
+      </ImageBackground>
 
       {showEmojiBoard && (
         <EmojiSelector
@@ -355,10 +317,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   inputContainer: {
+    padding: 8,
     width: '100%',
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 8,
+    backgroundColor: 'transparent',
   },
   textInput: {
     flex: 1,
@@ -423,3 +386,5 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
 });
+
+export default ChatScreen;
