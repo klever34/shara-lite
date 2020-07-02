@@ -28,6 +28,11 @@ jobs:
     steps:
       - checkout
       - run: yarn install
+      - run:
+          name: Setup Credentials
+          command: |
+            echo ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d > android/app/google-services.json
+            echo ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d > android/google-play-store-service-account.json
       - persist_to_workspace:
           paths: .
           root: .
