@@ -27,7 +27,7 @@ platform :android do
     firebase_app_distribution(
       app: ENV['FIREBASE_APP_ID_ANDROID'],
       firebase_cli_token: ENV['FIREBASE_TOKEN'],
-      groups: "shara-engineering"
+      groups: "shara-engineering-developers"
     )
   end
 
