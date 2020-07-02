@@ -8,9 +8,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import Config from 'react-native-config';
 import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
+import {getAuthService} from '../../services';
 
 type Fields = {
   firstname: string;
@@ -49,28 +49,17 @@ export const Register = ({
       country_code: countryCode,
       mobile: `${countryCode}${mobile}`,
     };
+    const authService = getAuthService();
     try {
       setLoading(true);
-      const registerResponse = await fetch(`${Config.API_BASE_URL}/signup`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {'Content-Type': 'application/json'},
+      await authService.register(payload);
+      setLoading(false);
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Login'}],
       });
-      const response = await registerResponse.json();
-      if (!registerResponse.ok) {
-        setLoading(false);
-        Alert.alert('Error', response.message, [
-          {text: 'OK', onPress: () => handleNavigate('Login')},
-        ]);
-      } else {
-        setLoading(false);
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Login'}],
-        });
-      }
     } catch (error) {
-      Alert.alert('Error', error);
+      Alert.alert('Error', error.message);
     }
   };
 

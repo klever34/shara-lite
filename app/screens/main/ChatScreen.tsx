@@ -1,10 +1,10 @@
-import AsyncStorage from '@react-native-community/async-storage';
 import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -21,12 +21,6 @@ import {
   View,
 } from 'react-native';
 import EmojiSelector, {Categories} from 'react-native-emoji-selector';
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from 'react-native-popup-menu';
 import Icon from '../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
@@ -34,7 +28,7 @@ import {generateUniqueId} from '../../helpers/utils';
 import {colors} from '../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from './index';
-import {getStorageService} from '../../services';
+import {getAuthService} from '../../services';
 
 type MessageItemProps = {
   item: ChatMessage;
@@ -60,25 +54,12 @@ const ChatScreen = ({
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
-  useEffect(() => {
-    const storageService = getStorageService();
-    storageService.getItem<User>('user').then((nextUser) => {
-      if (nextUser) {
-        setUser(nextUser);
-      }
-    });
+  const user = useMemo<User | null>(() => {
+    const authService = getAuthService();
+    return authService.getUser();
   }, []);
-
-  const handleLogout = useCallback(async () => {
-    await AsyncStorage.clear();
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Auth'}],
-    });
-  }, [navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -92,23 +73,8 @@ const ChatScreen = ({
           </View>
         );
       },
-      headerRight: () => (
-        <Menu>
-          <MenuTrigger>
-            <Icon
-              type="material-icons"
-              color={colors.white}
-              name="more-vert"
-              size={30}
-            />
-          </MenuTrigger>
-          <MenuOptions optionsContainerStyle={styles.menuDropdown}>
-            <MenuOption text="Logout" onSelect={handleLogout} />
-          </MenuOptions>
-        </Menu>
-      ),
     });
-  }, [handleLogout, navigation, route.params.title, typingMessage]);
+  }, [navigation, route.params.title, typingMessage]);
 
   const fetchHistory = useCallback(() => {
     const count = messages.length + 20;
@@ -432,10 +398,6 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 14,
     lineHeight: 20,
-  },
-  menuDropdown: {
-    padding: 8,
-    maxWidth: 300,
   },
 });
 

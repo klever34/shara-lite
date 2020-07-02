@@ -1,9 +1,11 @@
 import StorageService, {IStorageService} from './StorageService'
 import ContactsService, {IContactsService} from './ContactsService'
 import PushNotificationService from './PushNotificationService'
+import AuthService, {IAuthService} from './AuthService'
 
 let storageService: IStorageService | null = null
 let contactsService: IContactsService | null = null
+let authService: IAuthService | null = null
 let pushNotificationService: any | null = null
 
 export const getStorageService = () => {
@@ -11,6 +13,13 @@ export const getStorageService = () => {
     storageService = new StorageService()
   }
   return storageService
+}
+
+export const getAuthService = () => {
+  if (!authService) {
+    authService = new AuthService(getStorageService())
+  }
+  return authService
 }
 
 export const getContactsService = () => {

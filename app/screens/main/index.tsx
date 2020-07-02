@@ -4,7 +4,7 @@ import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState, useCallback} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
-import {getStorageService, getPushNotificationService} from '../../services';
+import {getPushNotificationService, getAuthService} from '../../services';
 import {colors} from '../../styles';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
@@ -52,20 +52,18 @@ const MainScreens = ({navigation}: any) => {
   );
 
   useEffect(() => {
-    const storageService = getStorageService();
-    storageService.getItem<User>('user').then((user) => {
-      if (user) {
-        const pubnub = new PubNub({
-          subscribeKey: Config.PUBNUB_SUB_KEY,
-          publishKey: Config.PUBNUB_PUB_KEY,
-          uuid: user.mobile,
-        });
-        getPushNotificationService(onRegister, onNotification);
-        setPubnubInstance(pubnub);
-      }
-    });
+    const authService = getAuthService();
+    const user = authService.getUser();
+    if (user) {
+      const pubnub = new PubNub({
+        subscribeKey: Config.PUBNUB_SUB_KEY,
+        publishKey: Config.PUBNUB_PUB_KEY,
+        uuid: user.mobile,
+      });
+      getPushNotificationService(onRegister, onNotification);
+      setPubnubInstance(pubnub);
+    }
   }, [onNotification, onRegister]);
-
   if (!pubnubInstance) {
     return (
       <View style={styles.activityIndicatorContainer}>
