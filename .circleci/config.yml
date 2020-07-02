@@ -22,7 +22,8 @@ jobs:
 #          command: yarn test
 #          name: Run Tests
   checkout_code:
-    executor: circleci/node:8
+    docker:
+      - image: circleci/node:8
     steps:
       - checkout
       - run: yarn install
@@ -30,7 +31,8 @@ jobs:
           paths: .
           root: .
   fastlane_test:
-    executor: circleci/android:api-27-node8-alpha
+    docker:
+      - image: circleci/android:api-27-node8-alpha
     steps:
       - attach_workspace:
           at: .
