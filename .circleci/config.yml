@@ -28,7 +28,9 @@ jobs:
       - image: circleci/node:12
     steps:
       - checkout
-      - run: yarn install
+      - run:
+          name: Yarn Install Dependencies
+          command: yarn install
       - run:
           name: Setup Credentials
           command: |
@@ -47,10 +49,11 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: fastlane install
+          name: Install Fastlane & Firebase tools
           command: |
             cd android
             bundle install
+            curl -sL https://firebase.tools | bash
       - run:
           name: fastlane alpha
           command: |
