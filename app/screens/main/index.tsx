@@ -33,7 +33,7 @@ const MainScreens = ({navigation}: any) => {
           uuid: user.mobile,
         });
         PushNotification.configure({
-          onRegister: function (token: any) {
+          onRegister: function (token: PushNotificationToken) {
             console.log('TOKEN:', token);
             if (token.os === 'ios') {
               pubnub.push.addChannels({
@@ -49,10 +49,9 @@ const MainScreens = ({navigation}: any) => {
               });
             }
           },
-          onNotification: function (notification: any) {
+          onNotification: function (notification: PushNotification) {
             console.log('NOTIFICATION:', notification);
             navigation.navigate('Chat');
-            // Do something with the notification.
           },
           senderID: Config.FIREBASE_SENDER_ID,
         });
