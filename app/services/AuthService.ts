@@ -50,7 +50,6 @@ class AuthService implements IAuthService {
         headers: {'Content-Type': 'application/json'},
       });
       const response = await fetchResponse.json();
-      console.log(response);
       if (fetchResponse.ok) {
         return response;
       } else {
