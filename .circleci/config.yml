@@ -11,7 +11,8 @@ workflows:
             - checkout_code
 jobs:
   test:
-    executor: circleci/node:12
+    docker:
+      - image: circleci/node:8
     steps:
       - attach_workspace:
           at: .
