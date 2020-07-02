@@ -2,7 +2,8 @@ version: 2.1
 workflows:
   test:
     jobs:
-      - checkout_code
+      - checkout_code:
+          context: shara-dev
       - fastlane_test:
           requires:
             - checkout_code
@@ -34,7 +35,7 @@ jobs:
             echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > android/app/google-services.json
             echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > android/google-play-store-service-account.json
             echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
-            cat .env
+            cat android/app/google-services.json
       - persist_to_workspace:
           paths: .
           root: .
