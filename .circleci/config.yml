@@ -1,30 +1,66 @@
 version: 2.1
 workflows:
-  test:
+  internal:
     jobs:
       - checkout_code:
           context: shara-dev
-      - fastlane:
-          context: shara-dev
-          lane: playinternal
-          requires:
-            - checkout_code
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
       - test:
           requires:
             - checkout_code
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+      - fastlane:
+          context: shara-dev
+          lane: internal
+          requires:
+            - checkout_code
+            - test
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+  discovery:
+    jobs:
+      - checkout_code:
+          context: shara-dev
+          filters:
+            branches:
+              only:
+                - develop
+                - discovery
+                - master
+      - test:
+          requires:
+            - checkout_code
+      - request-approval:
+          type: approval
+          requires:
+            - checkout_code
+            - test
+      - fastlane:
+          context: shara-dev
+          lane: play
+          track: internal
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              only:
+                - discovery
+      # TODO Production Release Workflow
 jobs:
-  test:
-    docker:
-      - image: circleci/node:12
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          command: yarn lint
-          name: Run ESLint
-#      - run:
-#          command: yarn test
-#          name: Run Tests
   checkout_code:
     docker:
       - image: circleci/node:12
@@ -44,11 +80,23 @@ jobs:
       - persist_to_workspace:
           paths: .
           root: .
+  test:
+    docker:
+      - image: circleci/node:12
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          command: yarn lint
+          name: Run ESLint
   fastlane:
     parameters:
       lane:
         type: string
         default: test
+      track:
+        type: string
+        default: internal
     docker:
       - image: circleci/android:api-27-node
     steps:
@@ -65,15 +113,11 @@ jobs:
           command: |
             cd android
             bundle exec fastlane <<parameters.lane>>
+          environment:
+            GOOGLE_PLAY_TRACK: <<parameters.track>>
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
-
-#      - run:
-#          command: ./gradlew build
-#      - run:
-#          name: Execute fastlane test
-#          command: bundle exec fastlane test
 orbs:
   android: circleci/android@0.2.0
   react-native: react-native-community/react-native@4.4.2
