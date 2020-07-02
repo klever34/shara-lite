@@ -31,9 +31,9 @@ jobs:
       - run:
           name: Setup Credentials
           command: |
-            echo -d ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d > android/app/google-services.json
-            echo -d ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d > android/google-play-store-service-account.json
-            echo -d ${SHARA_MOBILE_ENV} | base64 -d > .env
+            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d > android/app/google-services.json
+            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d > android/google-play-store-service-account.json
+            echo -n ${SHARA_MOBILE_ENV} | base64 -d > .env
             cat .env
       - persist_to_workspace:
           paths: .
