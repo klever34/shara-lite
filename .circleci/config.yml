@@ -1,45 +1,123 @@
 version: 2.1
 workflows:
-  test:
+  internal:
     jobs:
-      - checkout_code
-      - fastlane_test:
-          requires:
-            - checkout_code
+      - checkout_code:
+          context: shara-dev
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
       - test:
           requires:
             - checkout_code
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+      - fastlane:
+          context: shara-dev
+          lane: internal
+          requires:
+            - checkout_code
+            - test
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+  discovery:
+    jobs:
+      - checkout_code:
+          context: shara-dev
+          filters:
+            branches:
+              only:
+                - develop
+                - discovery
+                - master
+      - test:
+          requires:
+            - checkout_code
+      - request-approval:
+          type: approval
+          requires:
+            - checkout_code
+            - test
+      - fastlane:
+          context: shara-dev
+          lane: play
+          track: internal
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              only:
+                - discovery
+      # TODO Production Release Workflow
 jobs:
-  test:
-    executor: react-native/linux_js
-    steps:
-      - attach_workspace:
-          at: .
-      - react-native/yarn_install
-      - run:
-          command: yarn lint
-          name: Run ESLint
-#      - run:
-#          command: yarn test
-#          name: Run Tests
   checkout_code:
-    executor: react-native/linux_js
+    docker:
+      - image: circleci/node:12
     steps:
       - checkout
+      - run:
+          name: Yarn Install Dependencies
+          command: yarn install
+      - run:
+          name: Setup Credentials
+          command: |
+            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > android/app/google-services.json
+            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > android/google-play-store-service-account.json
+            echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > android/app/shara.keystore
+            echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
+            echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> android/gradle.properties
       - persist_to_workspace:
           paths: .
           root: .
-  fastlane_test:
-    executor: react-native/linux_js
+  test:
+    docker:
+      - image: circleci/node:12
     steps:
       - attach_workspace:
           at: .
-      - react-native/yarn_install
-#      - run:
-#          command: ./gradlew build
-#      - run:
-#          name: Execute fastlane test
-#          command: bundle exec fastlane test
+      - run:
+          command: yarn lint
+          name: Run ESLint
+  fastlane:
+    parameters:
+      lane:
+        type: string
+        default: test
+      track:
+        type: string
+        default: internal
+    docker:
+      - image: circleci/android:api-27-node
+    steps:
+      - attach_workspace:
+          at: .
+      - run:
+          name: Install Fastlane & Firebase tools
+          command: |
+            cd android
+            bundle install
+            curl -sL https://firebase.tools | bash
+      - run:
+          name: Fastlane <<parameters.lane>>
+          command: |
+            cd android
+            bundle exec fastlane <<parameters.lane>>
+          environment:
+            GOOGLE_PLAY_TRACK: <<parameters.track>>
+      - store_artifacts:
+          path: fastlane/report.xml
+          destination: test-results
 orbs:
   android: circleci/android@0.2.0
   react-native: react-native-community/react-native@4.4.2
