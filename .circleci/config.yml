@@ -6,7 +6,7 @@ workflows:
           context: shara-dev
       - fastlane:
           context: shara-dev
-          lane: alpha
+          lane: playinternal
           requires:
             - checkout_code
       - test:
