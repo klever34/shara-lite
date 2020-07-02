@@ -54,7 +54,7 @@ workflows:
           lane: play
           track: internal
           requires:
-            - checkout_code
+            - request-approval
           filters:
             branches:
               only:

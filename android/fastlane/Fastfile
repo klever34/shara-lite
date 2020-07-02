@@ -45,4 +45,20 @@ platform :android do
     )
   end
 
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+    slack(
+      message: "Successfully deployed new Shara app",
+      slack_url: ENV['SLACK_WEBHOOK'],
+      channel: "#devops-services"
+    )
+  end
+
+  error do |lane, exception|
+    slack(
+      message: exception.message,
+      slack_url: ENV['SLACK_WEBHOOK'],
+      success: false
+    )
+  end
 end
