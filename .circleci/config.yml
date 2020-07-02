@@ -4,7 +4,9 @@ workflows:
     jobs:
       - checkout_code:
           context: shara-dev
-      - fastlane_test:
+      - fastlane:
+          context: shara-dev
+          lane: alpha
           requires:
             - checkout_code
       - test:
@@ -42,7 +44,11 @@ jobs:
       - persist_to_workspace:
           paths: .
           root: .
-  fastlane_test:
+  fastlane:
+    parameters:
+      lane:
+        type: string
+        default: test
     docker:
       - image: circleci/android:api-27-node
     steps:
@@ -55,10 +61,10 @@ jobs:
             bundle install
             curl -sL https://firebase.tools | bash
       - run:
-          name: fastlane alpha
+          name: Fastlane <<parameters.lane>>
           command: |
             cd android
-            bundle exec fastlane alpha
+            bundle exec fastlane <<parameters.lane>>
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
