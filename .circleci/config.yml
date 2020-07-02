@@ -54,7 +54,6 @@ jobs:
             cd android
             bundle install
             curl -sL https://firebase.tools | bash
-            firebase deploy --token "${FIREBASE_APP_DIST_TOKEN}"
       - run:
           name: fastlane alpha
           command: |
