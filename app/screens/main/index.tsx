@@ -61,6 +61,7 @@ const MainScreens = ({navigation}: any) => {
       onNotification: (notification: PushNotificationData) => {
         console.log('NOTIFICATION:', notification);
         navigation.navigate('Chat');
+        PushNotification.cancelAllLocalNotifications();
       },
     });
   }, [navigation, pubnubInstance]);
