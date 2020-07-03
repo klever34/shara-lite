@@ -178,17 +178,30 @@ const ChatScreen = ({
         firstname: user?.firstname,
       },
     };
+    const messagePayload = {
+      pn_gcm: {
+        notification: {
+          title: `${user?.firstname} ${user?.lastname}`,
+          body: input,
+        },
+        data: {
+          ...message,
+          channel: chatMessageChannel,
+        },
+      },
+      ...message,
+    };
     setMessages((prevMessages) => [message, ...prevMessages]);
-    pubnub.publish({channel: chatMessageChannel, message}, function (
-      status: PubnubStatus,
-      response: PublishResponse,
-    ) {
-      if (status.error) {
-        Alert.alert('Error', status.errorData?.message);
-      } else {
-        console.log('message Published w/ timetoken', response.timetoken);
-      }
-    });
+    pubnub.publish(
+      {channel: chatMessageChannel, message: messagePayload},
+      function (status: PubnubStatus, response: PublishResponse) {
+        if (status.error) {
+          Alert.alert('Error', status.errorData?.message);
+        } else {
+          console.log('message Published w/ timetoken', response.timetoken);
+        }
+      },
+    );
   }, [input, pubnub, user]);
 
   const renderMessageItem = useCallback(
