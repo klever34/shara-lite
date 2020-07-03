@@ -16,3 +16,17 @@ type ChatMessage = {
   author: MessageAuthor;
   timetoken?: string | number;
 };
+
+type PushNotificationToken = {
+  token: string;
+  os: string;
+};
+
+type PushNotificationData = {
+  foreground: boolean;
+  userInteraction: boolean;
+  message: string;
+  data: any;
+};
+
+declare module 'react-native-push-notification';

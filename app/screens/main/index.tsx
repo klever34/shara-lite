@@ -1,14 +1,15 @@
-import React, {useEffect, useState} from 'react';
 import {createStackNavigator} from '@react-navigation/stack';
-import Config from 'react-native-config';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import Config from 'react-native-config';
+import PushNotification from 'react-native-push-notification';
+import {getAuthService} from '../../services';
 import {colors} from '../../styles';
-import HomeScreen from './home';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
-import {getAuthService} from '../../services';
+import HomeScreen from './home';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -18,8 +19,10 @@ export type MainStackParamList = {
 
 const MainStack = createStackNavigator<MainStackParamList>();
 
-const MainScreens = () => {
+const MainScreens = ({navigation}: any) => {
+  const channelName = 'SHARA_GLOBAL';
   const [pubnubInstance, setPubnubInstance] = useState<any>(null);
+
   useEffect(() => {
     const authService = getAuthService();
     const user = authService.getUser();
@@ -32,6 +35,35 @@ const MainScreens = () => {
       setPubnubInstance(pubnub);
     }
   }, []);
+
+  useEffect(() => {
+    PushNotification.configure({
+      onRegister: (token: PushNotificationToken) => {
+        if (pubnubInstance) {
+          if (token.os === 'ios') {
+            pubnubInstance.push.addChannels({
+              channels: [channelName],
+              device: token.token,
+              pushGateway: 'apns',
+            });
+          } else if (token.os === 'android') {
+            pubnubInstance.push.addChannels({
+              channels: [channelName],
+              device: token.token,
+              pushGateway: 'gcm',
+            });
+          }
+        }
+      },
+
+      // (required) Called when a remote or local notification is opened or received
+      onNotification: () => {
+        navigation.navigate('Chat', {title: 'Shara Chat'});
+        PushNotification.cancelAllLocalNotifications();
+      },
+    });
+  }, [navigation, pubnubInstance]);
+
   if (!pubnubInstance) {
     return (
       <View style={styles.activityIndicatorContainer}>
@@ -39,6 +71,7 @@ const MainScreens = () => {
       </View>
     );
   }
+
   return (
     <PubNubProvider client={pubnubInstance}>
       <MainStack.Navigator initialRouteName="Home">

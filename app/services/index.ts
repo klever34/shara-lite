@@ -3,8 +3,8 @@ import ContactsService, {IContactsService} from './ContactsService';
 import AuthService, {IAuthService} from './AuthService';
 
 let storageService: IStorageService | null = null;
-let authService: IAuthService | null = null;
 let contactsService: IContactsService | null = null;
+let authService: IAuthService | null = null;
 
 export const getStorageService = () => {
   if (!storageService) {
