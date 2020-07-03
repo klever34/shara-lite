@@ -20,7 +20,7 @@ export type MainStackParamList = {
 const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = ({navigation}: any) => {
-  const channelName = 'NOTIFICATION';
+  const channelName = 'SHARA_GLOBAL';
   const [pubnubInstance, setPubnubInstance] = useState<any>(null);
 
   useEffect(() => {
