@@ -1,10 +1,11 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
-import {getPushNotificationService, getAuthService} from '../../services';
+import PushNotification from 'react-native-push-notification';
+import {getAuthService} from '../../services';
 import {colors} from '../../styles';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
@@ -22,35 +23,6 @@ const MainScreens = ({navigation}: any) => {
   const channelName = 'NOTIFICATION';
   const [pubnubInstance, setPubnubInstance] = useState<any>(null);
 
-  const onRegister = useCallback(
-    (token: PushNotificationToken) => {
-      if (pubnubInstance) {
-        if (token.os === 'ios') {
-          pubnubInstance.push.addChannels({
-            channels: [channelName],
-            device: token.token,
-            pushGateway: 'apns',
-          });
-        } else if (token.os === 'android') {
-          pubnubInstance.push.addChannels({
-            channels: [channelName],
-            device: token.token,
-            pushGateway: 'gcm',
-          });
-        }
-      }
-    },
-    [pubnubInstance],
-  );
-
-  const onNotification = useCallback(
-    (notification: PushNotificationData) => {
-      console.log('NOTIFICATION:', notification);
-      navigation && navigation.navigate('Chat');
-    },
-    [navigation],
-  );
-
   useEffect(() => {
     const authService = getAuthService();
     const user = authService.getUser();
@@ -60,10 +32,39 @@ const MainScreens = ({navigation}: any) => {
         publishKey: Config.PUBNUB_PUB_KEY,
         uuid: user.mobile,
       });
-      getPushNotificationService(onRegister, onNotification);
       setPubnubInstance(pubnub);
     }
-  }, [onNotification, onRegister]);
+  }, []);
+
+  useEffect(() => {
+    PushNotification.configure({
+      // (optional) Called when Token is generated (iOS and Android)
+      onRegister: (token: PushNotificationToken) => {
+        if (pubnubInstance) {
+          if (token.os === 'ios') {
+            pubnubInstance.push.addChannels({
+              channels: [channelName],
+              device: token.token,
+              pushGateway: 'apns',
+            });
+          } else if (token.os === 'android') {
+            pubnubInstance.push.addChannels({
+              channels: [channelName],
+              device: token.token,
+              pushGateway: 'gcm',
+            });
+          }
+        }
+      },
+
+      // (required) Called when a remote or local notification is opened or received
+      onNotification: (notification: PushNotificationData) => {
+        console.log('NOTIFICATION:', notification);
+        navigation.navigate('Chat');
+      },
+    });
+  }, [navigation, pubnubInstance]);
+
   if (!pubnubInstance) {
     return (
       <View style={styles.activityIndicatorContainer}>
