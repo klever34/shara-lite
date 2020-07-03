@@ -383,7 +383,7 @@ const styles = StyleSheet.create({
   },
   emojiButtonIcon: {
     opacity: 0.5,
-    color: colors.gray,
+    color: colors['gray-900'],
   },
   headerTitle: {
     flexDirection: 'column',
