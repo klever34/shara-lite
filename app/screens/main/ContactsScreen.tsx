@@ -20,6 +20,31 @@ import {colors} from '../../styles';
 const ContactsScreen = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const navigation = useNavigation();
+  useEffect(() => {
+    const contactsService = getContactsService();
+    contactsService
+      .getAll()
+      .then((nextContacts) => {
+        setContacts(nextContacts);
+      })
+      .catch((error) => {
+        Alert.alert(
+          'Error',
+          error.message,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.goBack();
+              },
+            },
+          ],
+          {
+            cancelable: false,
+          },
+        );
+      });
+  }, [navigation]);
   const inviteFriend = useCallback(async () => {
     // TODO: use better copy for shara invite
     const title = 'Share via';
@@ -89,12 +114,6 @@ const ContactsScreen = () => {
     },
     [navigation],
   );
-  useEffect(() => {
-    const contactsService = getContactsService();
-    contactsService.getAll().then((nextContacts) => {
-      setContacts(nextContacts);
-    });
-  }, []);
   return (
     <FlatList
       data={contacts}
