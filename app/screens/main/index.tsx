@@ -38,7 +38,6 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     PushNotification.configure({
-      // (optional) Called when Token is generated (iOS and Android)
       onRegister: (token: PushNotificationToken) => {
         if (pubnubInstance) {
           if (token.os === 'ios') {
@@ -58,9 +57,8 @@ const MainScreens = ({navigation}: any) => {
       },
 
       // (required) Called when a remote or local notification is opened or received
-      onNotification: (notification: PushNotificationData) => {
-        const {data} = notification;
-        navigation.navigate(data.screen);
+      onNotification: () => {
+        navigation.navigate('Chat', {title: 'Shara Chat'});
         PushNotification.cancelAllLocalNotifications();
       },
     });

@@ -186,7 +186,6 @@ const ChatScreen = ({
         },
         data: {
           ...message,
-          screen: 'Chat',
           channel: chatMessageChannel,
         },
       },
