@@ -1,12 +1,11 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Image,
   ListRenderItemInfo,
   Text,
   View,
-  Alert,
-  ScrollView,
 } from 'react-native';
 import {getContactsService} from '../../services';
 import {Contact} from 'react-native-contacts';
@@ -97,31 +96,31 @@ const ContactsScreen = () => {
     });
   }, []);
   return (
-    <ScrollView>
-      <FlatList
-        data={contacts}
-        renderItem={renderContactItem}
-        keyExtractor={(item: Contact) => item.recordID}
-      />
-      <Touchable onPress={inviteFriend}>
-        <View style={applyStyles('flex-row items-center p-md')}>
-          <View
-            style={applyStyles('mr-md center', {
-              height: 48,
-              width: 48,
-              borderRadius: 24,
-            })}>
-            <Icon
-              type="material-icons"
-              name="share"
-              color={colors['gray-600']}
-              size={28}
-            />
+    <FlatList
+      data={contacts}
+      renderItem={renderContactItem}
+      keyExtractor={(item: Contact) => item.recordID}
+      ListFooterComponent={
+        <Touchable onPress={inviteFriend}>
+          <View style={applyStyles('flex-row items-center p-md')}>
+            <View
+              style={applyStyles('mr-md center', {
+                height: 48,
+                width: 48,
+                borderRadius: 24,
+              })}>
+              <Icon
+                type="material-icons"
+                name="share"
+                color={colors['gray-600']}
+                size={28}
+              />
+            </View>
+            <Text style={applyStyles('text-lg')}>Invite a friend</Text>
           </View>
-          <Text style={applyStyles('text-lg')}>Invite a friend</Text>
-        </View>
-      </Touchable>
-    </ScrollView>
+        </Touchable>
+      }
+    />
   );
 };
 
