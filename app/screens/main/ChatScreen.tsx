@@ -183,13 +183,13 @@ const ChatScreen = ({
         notification: {
           title: `${user?.firstname} ${user?.lastname}`,
           body: input,
-          data: {
-            ...message,
-            channel: chatMessageChannel,
-          },
+        },
+        data: {
+          ...message,
+          screen: 'Chat',
+          channel: chatMessageChannel,
         },
       },
-      data: message,
       ...message,
     };
     setMessages((prevMessages) => [message, ...prevMessages]);

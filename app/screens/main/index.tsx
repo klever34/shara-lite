@@ -59,8 +59,8 @@ const MainScreens = ({navigation}: any) => {
 
       // (required) Called when a remote or local notification is opened or received
       onNotification: (notification: PushNotificationData) => {
-        console.log('NOTIFICATION:', notification);
-        navigation.navigate('Chat');
+        const {data} = notification;
+        navigation.navigate(data.screen);
         PushNotification.cancelAllLocalNotifications();
       },
     });
