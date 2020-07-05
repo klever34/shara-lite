@@ -51,6 +51,7 @@ const ChatScreen = ({
   const chatMessageChannel = 'SHARA_GLOBAL';
   const isTypingChannel = 'IS_TYPING';
   const [input, setInput] = useState('');
+  const [hasMore, setHasMore] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -75,24 +76,38 @@ const ChatScreen = ({
       },
     });
   }, [navigation, route.params.title, typingMessage]);
-
-  const fetchHistory = useCallback(() => {
-    const count = messages.length + 20;
-    setIsLoading(true);
-    pubnub.history({channel: chatMessageChannel, count}, (status, response) => {
-      setIsLoading(false);
-      if (response) {
-        const history: ChatMessage[] = response.messages.map((item) => {
-          const entry = item.entry as ChatMessage;
-          return {
-            ...entry,
-            timetoken: item.timetoken,
-          };
-        });
-        setMessages(history.sort(sortMessages));
-      }
-    });
-  }, [messages.length, pubnub]);
+  const fetchHistory = useCallback(
+    (start?: string | number) => {
+      const count = 20;
+      setIsLoading(true);
+      pubnub.history(
+        {channel: chatMessageChannel, count, start},
+        (status, response) => {
+          setIsLoading(false);
+          if (response) {
+            let history: ChatMessage[] = response.messages.map((item) => {
+              const entry = item.entry as ChatMessage;
+              return {
+                ...entry,
+                timetoken: item.timetoken,
+              };
+            });
+            history = history.filter((message) => message.timetoken !== start);
+            if (history.length) {
+              if (history.length < count) {
+                setHasMore(false);
+              }
+              setMessages((prevMessages) => [
+                ...prevMessages,
+                ...history.sort(sortMessages),
+              ]);
+            }
+          }
+        },
+      );
+    },
+    [pubnub],
+  );
 
   useEffect(fetchHistory, []);
   useEffect(() => {
@@ -253,7 +268,12 @@ const ChatScreen = ({
           inverted={true}
           style={styles.listContainer}
           renderItem={renderMessageItem}
-          onEndReached={fetchHistory}
+          onEndReached={() => {
+            if (messages.length && hasMore) {
+              fetchHistory(messages[messages.length - 1].timetoken);
+            }
+          }}
+          onEndReachedThreshold={0.2}
           data={messages}
           keyExtractor={messageItemKeyExtractor}
         />
