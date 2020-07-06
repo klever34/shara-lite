@@ -1,6 +1,6 @@
 import Realm from 'realm';
 import {createContext, useContext, useEffect, useState} from 'react';
-import {Contact, Message, Conversation} from '../models';
+import {Contact, Message, Conversation} from '../../models';
 
 const RealmContext = createContext<Realm | null>(null);
 export const RealmProvider = RealmContext.Provider;

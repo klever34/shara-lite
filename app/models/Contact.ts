@@ -1,7 +1,5 @@
-export interface IContact {
-  mobile: string;
-  firstname: string;
-  lastname: string;
+export interface IContact
+  extends Pick<User, 'firstname' | 'lastname' | 'mobile'> {
   fullName: string;
 }
 

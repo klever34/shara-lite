@@ -8,8 +8,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import {getAuthService, getContactsService} from '../../services';
-import {applyStyles, handleFetchErrors} from '../../helpers/utils';
+import {getContactsService} from '../../services';
+import {applyStyles} from '../../helpers/utils';
 import Touchable from '../../components/Touchable';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import Share from 'react-native-share';
@@ -18,9 +18,9 @@ import Icon from '../../components/Icon';
 import {colors} from '../../styles';
 import {useRealm} from '../../services/realm';
 import {IContact, IConversation} from '../../models';
-import Config from 'react-native-config';
 import flatten from 'lodash/flatten';
 import {UpdateMode} from 'realm';
+import {requester} from '../../services/api/config';
 
 const ContactsScreen = () => {
   const navigation = useNavigation();
@@ -40,29 +40,18 @@ const ContactsScreen = () => {
           ),
         );
         const requestNo = Math.ceil(numbers.length / sizePerRequest);
-        const authService = getAuthService();
         Promise.all(
           Array.from({length: requestNo}).map((_, index) => {
-            return fetch(`${Config.API_BASE_URL}/users/check`, {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${authService.getToken()}` ?? '',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
-                mobiles: numbers.slice(
-                  sizePerRequest * index,
-                  sizePerRequest * index + sizePerRequest,
-                ),
-              }),
+            return requester.post<{users: User[]}>('/users/check', {
+              mobiles: numbers.slice(
+                sizePerRequest * index,
+                sizePerRequest * index + sizePerRequest,
+              ),
             });
           }),
         )
-          .then((responses) => Promise.all(responses.map(handleFetchErrors)))
           .then((responses) => {
-            const users = flatten(
-              (responses as ApiResponse[]).map(({data}) => data.users),
-            );
+            const users = flatten(responses.map(({data}) => data.users));
             realm.write(() => {
               users.forEach((user) => {
                 realm.create<IContact>('Contact', user, UpdateMode.Modified);
@@ -135,29 +124,25 @@ const ContactsScreen = () => {
         <Touchable
           onPress={() => {
             setLoading(true);
-            const authService = getAuthService();
-            fetch(`${Config.API_BASE_URL}/chat/channel`, {
-              method: 'POST',
-              headers: {
-                Authorization: `Bearer ${authService.getToken()}` ?? '',
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({
+            requester
+              .post<{
+                channelName: string;
+              }>('/chat/channel', {
                 recipient: item.mobile,
-              }),
-            })
-              .then(handleFetchErrors)
+              })
               .then((response) => {
                 setLoading(false);
-                const {channelName} = (response as ApiResponse<{
-                  channelName: string;
-                }>).data;
+                const {channelName} = response.data;
                 const conversation = {
                   title: item.fullName,
                   channel: channelName,
                 };
                 realm.write(() => {
-                  realm.create('Conversation', conversation);
+                  realm.create(
+                    'Conversation',
+                    conversation,
+                    UpdateMode.Modified,
+                  );
                 });
                 navigation.dispatch(
                   CommonActions.reset({

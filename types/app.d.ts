@@ -1,9 +1,11 @@
 type User = {
   id: number;
+  firstname: string;
+  lastname: string;
   mobile: string;
-  email?: string;
-  firstname?: string;
-  lastname?: string;
+  country_code: string;
+  created_at: string;
+  updated_at: string;
 };
 
 type PushNotificationToken = {

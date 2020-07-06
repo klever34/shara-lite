@@ -1,5 +1,5 @@
 import {IStorageService} from './StorageService';
-import Config from 'react-native-config';
+import {requester} from './api/config';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -20,9 +20,9 @@ export interface IAuthService {
     country_code: string;
     mobile: string;
     password: string;
-  }): Promise<Response>;
+  }): Promise<ApiResponse>;
 
-  logIn(payload: {mobile: string; password: string}): Promise<Response>;
+  logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
 
   logOut(): void;
 }
@@ -73,17 +73,7 @@ class AuthService implements IAuthService {
     password: string;
   }) {
     try {
-      const fetchResponse = await fetch(`${Config.API_BASE_URL}/signup`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {'Content-Type': 'application/json'},
-      });
-      const response = await fetchResponse.json();
-      if (fetchResponse.ok) {
-        return response;
-      } else {
-        throw new Error(response.mesage || response.message);
-      }
+      return await requester.post('/signup', payload);
     } catch (error) {
       throw error;
     }
@@ -91,27 +81,18 @@ class AuthService implements IAuthService {
 
   public async logIn(payload: {mobile: string; password: string}) {
     try {
-      const fetchResponse = await fetch(`${Config.API_BASE_URL}/login`, {
-        method: 'POST',
-        body: JSON.stringify(payload),
-        headers: {'Content-Type': 'application/json'},
-      });
-      const response = await fetchResponse.json();
-      if (fetchResponse.ok) {
-        const {
-          data: {
-            credentials: {token},
-            user,
-          },
-        } = response;
-        await this.storageService.setItem('token', token);
-        this.token = token;
-        await this.storageService.setItem('user', user);
-        this.user = user;
-        return response;
-      } else {
-        throw new Error(response.mesage || response.message);
-      }
+      const fetchResponse = await requester.post('/login', payload);
+      const {
+        data: {
+          credentials: {token},
+          user,
+        },
+      } = fetchResponse;
+      await this.storageService.setItem('token', token);
+      this.token = token;
+      await this.storageService.setItem('user', user);
+      this.user = user;
+      return fetchResponse;
     } catch (error) {
       throw error;
     }

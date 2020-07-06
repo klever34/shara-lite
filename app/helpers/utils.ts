@@ -25,7 +25,9 @@ export const handleFetchErrors = async <T extends any>(
 ): Promise<T> => {
   if (!response.ok) {
     const jsonResponse = await response.json();
-    return Promise.reject(jsonResponse);
+    return Promise.reject(
+      new Error(jsonResponse.mesage || jsonResponse.message),
+    );
   }
   return response.json();
 };
