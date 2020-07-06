@@ -1,0 +1,23 @@
+import Realm from 'realm';
+import {createContext, useContext, useEffect, useState} from 'react';
+import {Contact, Message, Conversation} from '../models';
+
+const RealmContext = createContext<Realm | null>(null);
+export const RealmProvider = RealmContext.Provider;
+export const useRealm = () => {
+  const realm = useContext(RealmContext) as Realm;
+  const [, setToggle] = useState(false);
+  useEffect(() => {
+    const listener = () => setToggle((prevToggle) => !prevToggle);
+    realm.addListener('change', listener);
+    return () => {
+      realm.removeListener('change', listener);
+    };
+  }, [realm]);
+  return realm;
+};
+
+export const createRealm = async () => {
+  Realm.deleteFile({});
+  return Realm.open({schema: [Contact, Message, Conversation]});
+};

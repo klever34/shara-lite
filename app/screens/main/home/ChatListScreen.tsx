@@ -13,19 +13,22 @@ import {applyStyles} from '../../../helpers/utils';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
-
-type ChatListItemData = {id: string | number; title: string};
-
-const chatList: ChatListItemData[] = [{id: 1, title: 'Shara Chat'}];
+import {IConversation} from '../../../models';
+import {useRealm} from '../../../services/realm';
 
 const ChatListScreen = () => {
   const navigation = useNavigation();
+  const realm = useRealm() as Realm;
+  const conversations = realm.objects<IConversation>('Conversation');
   const renderChatListItem = useCallback(
-    ({item}: ListRenderItemInfo<ChatListItemData>) => {
+    ({item}: ListRenderItemInfo<IConversation>) => {
       return (
         <Touchable
           onPress={() => {
-            navigation.navigate('Chat', {title: item.title});
+            navigation.navigate('Chat', {
+              title: item.title,
+              channel: item.channel,
+            });
           }}>
           <View style={listItemStyles.container}>
             <View style={listItemStyles.imageContainer}>
@@ -53,9 +56,9 @@ const ChatListScreen = () => {
   return (
     <View style={applyStyles('flex-1')}>
       <FlatList
-        data={chatList}
+        data={conversations}
         renderItem={renderChatListItem}
-        keyExtractor={(item) => String(item.id)}
+        keyExtractor={(item) => item.channel}
       />
       <FAButton
         iconName="text"
@@ -69,16 +72,17 @@ const ChatListScreen = () => {
 
 const listItemStyles = StyleSheet.create({
   container: {
-    paddingVertical: 12,
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
   },
   titleContainer: applyStyles('h-full flex-1', {
+    paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: 'grey',
   }),
   imageContainer: applyStyles('center', {
+    marginVertical: 12,
     width: 56,
     height: 56,
     borderRadius: 28,

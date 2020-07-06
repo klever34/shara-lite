@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   ListRenderItemInfo,
+  Platform,
   Text,
   View,
 } from 'react-native';
@@ -11,15 +12,18 @@ import {getContactsService} from '../../services';
 import {Contact} from 'react-native-contacts';
 import {applyStyles} from '../../helpers/utils';
 import Touchable from '../../components/Touchable';
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, CommonActions} from '@react-navigation/native';
 import Share from 'react-native-share';
 import AppMenu from '../../components/Menu';
 import Icon from '../../components/Icon';
 import {colors} from '../../styles';
+import {useRealm} from '../../services/realm';
+import {IConversation} from '../../models';
 
 const ContactsScreen = () => {
   const [contacts, setContacts] = useState<Contact[]>([]);
   const navigation = useNavigation();
+  const realm = useRealm() as Realm;
   useEffect(() => {
     const contactsService = getContactsService();
     contactsService
@@ -120,24 +124,75 @@ const ContactsScreen = () => {
       renderItem={renderContactItem}
       keyExtractor={(item: Contact) => item.recordID}
       ListFooterComponent={
-        <Touchable onPress={inviteFriend}>
-          <View style={applyStyles('flex-row items-center p-md')}>
-            <View
-              style={applyStyles('mr-md center', {
-                height: 48,
-                width: 48,
-                borderRadius: 24,
-              })}>
-              <Icon
-                type="material-icons"
-                name="share"
-                color={colors['gray-600']}
-                size={28}
-              />
+        <>
+          <Touchable onPress={inviteFriend}>
+            <View style={applyStyles('flex-row items-center p-md')}>
+              <View
+                style={applyStyles('mr-md center', {
+                  height: 48,
+                  width: 48,
+                  borderRadius: 24,
+                })}>
+                <Icon
+                  type="material-icons"
+                  name="share"
+                  color={colors['gray-600']}
+                  size={28}
+                />
+              </View>
+              <Text style={applyStyles('text-lg')}>Invite a friend</Text>
             </View>
-            <Text style={applyStyles('text-lg')}>Invite a friend</Text>
-          </View>
-        </Touchable>
+          </Touchable>
+          <Touchable
+            onPress={() => {
+              const globalChannel = 'SHARA_GLOBAL';
+              try {
+                let global: any = realm
+                  .objects<IConversation>('Conversation')
+                  .find(
+                    (conversation) => conversation.channel === globalChannel,
+                  );
+                if (!global) {
+                  realm.write(() => {
+                    global = realm.create('Conversation', {
+                      channel: globalChannel,
+                      title: 'Shara Chat',
+                    });
+                  });
+                }
+                navigation.dispatch(
+                  CommonActions.reset({
+                    routes: [{name: 'Home'}, {name: 'Chat', params: global}],
+                    index: 1,
+                  }),
+                );
+              } catch (e) {
+                console.log('Error: ', e);
+              }
+            }}>
+            <View style={applyStyles('flex-row items-center p-md')}>
+              <View
+                style={applyStyles('mr-md center', {
+                  height: 48,
+                  width: 48,
+                  borderRadius: 24,
+                })}>
+                <Icon
+                  type="ionicons"
+                  name={
+                    Platform.select({
+                      android: 'md-globe',
+                      ios: 'ios-globe',
+                    }) as string
+                  }
+                  color={colors['gray-600']}
+                  size={28}
+                />
+              </View>
+              <Text style={applyStyles('text-lg')}>Shara Chat</Text>
+            </View>
+          </Touchable>
+        </>
       }
     />
   );

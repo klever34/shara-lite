@@ -1,16 +1,17 @@
-import React, {useMemo, memo} from 'react';
+import React, {memo, useMemo} from 'react';
 import format from 'date-fns/format';
 import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles';
 import Icon from '../components/Icon';
+import {IMessage} from '../models';
 
 type ChatBubbleProps = {
-  message: ChatMessage;
+  message: IMessage;
   user: User;
 };
 
 export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
-  const isAuthor = user.mobile === message.author.mobile;
+  const isAuthor = user.mobile === message.author;
   const {created_at, author, content, timetoken} = message;
   const messageTime = useMemo(() => format(new Date(created_at), 'hh:mma'), [
     created_at,
@@ -73,11 +74,7 @@ export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
   return (
     <View>
       <View key={message.timetoken} style={messageContainerStyle}>
-        {author && !isAuthor && (
-          <Text style={authorTextStyle}>
-            {author.firstname} {author.lastname}
-          </Text>
-        )}
+        {author && !isAuthor && <Text style={authorTextStyle}>{author}</Text>}
         <Text style={messageTextStyle}>{content}</Text>
         <View style={styles.dateTextContainer}>
           <Text style={dateTextStyle}>{messageTime}</Text>

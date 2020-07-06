@@ -10,10 +10,12 @@ import {colors} from '../../styles';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
 import HomeScreen from './home';
+import Realm from 'realm';
+import {createRealm, RealmProvider} from '../../services/realm';
 
 export type MainStackParamList = {
   Home: undefined;
-  Chat: {title: string};
+  Chat: {title: string; channel: string};
   Contacts: undefined;
 };
 
@@ -21,8 +23,13 @@ const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = ({navigation}: any) => {
   const channelName = 'SHARA_GLOBAL';
-  const [pubnubInstance, setPubnubInstance] = useState<any>(null);
-
+  const [pubnubClient, setPubnubClient] = useState<PubNub | null>(null);
+  const [realm, setRealm] = useState<Realm | null>(null);
+  useEffect(() => {
+    createRealm().then((nextRealm) => {
+      setRealm(nextRealm);
+    });
+  }, []);
   useEffect(() => {
     const authService = getAuthService();
     const user = authService.getUser();
@@ -32,22 +39,22 @@ const MainScreens = ({navigation}: any) => {
         publishKey: Config.PUBNUB_PUB_KEY,
         uuid: user.mobile,
       });
-      setPubnubInstance(pubnub);
+      setPubnubClient(pubnub);
     }
   }, []);
 
   useEffect(() => {
     PushNotification.configure({
       onRegister: (token: PushNotificationToken) => {
-        if (pubnubInstance) {
+        if (pubnubClient) {
           if (token.os === 'ios') {
-            pubnubInstance.push.addChannels({
+            pubnubClient.push.addChannels({
               channels: [channelName],
               device: token.token,
               pushGateway: 'apns',
             });
           } else if (token.os === 'android') {
-            pubnubInstance.push.addChannels({
+            pubnubClient.push.addChannels({
               channels: [channelName],
               device: token.token,
               pushGateway: 'gcm',
@@ -62,54 +69,55 @@ const MainScreens = ({navigation}: any) => {
         PushNotification.cancelAllLocalNotifications();
       },
     });
-  }, [navigation, pubnubInstance]);
+  }, [navigation, pubnubClient]);
 
-  if (!pubnubInstance) {
+  if (!pubnubClient || !realm) {
     return (
       <View style={styles.activityIndicatorContainer}>
         <ActivityIndicator color={colors.primary} size={40} />
       </View>
     );
   }
-
   return (
-    <PubNubProvider client={pubnubInstance}>
-      <MainStack.Navigator initialRouteName="Home">
-        <MainStack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            title: 'Shara',
-            headerStyle: {
-              backgroundColor: colors.primary,
-              elevation: 0,
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Contacts"
-          component={ContactsScreen}
-          options={{
-            title: 'Select Contact',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Chat"
-          component={ChatScreen}
-          options={{
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-      </MainStack.Navigator>
-    </PubNubProvider>
+    <RealmProvider value={realm}>
+      <PubNubProvider client={pubnubClient}>
+        <MainStack.Navigator initialRouteName="Home">
+          <MainStack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{
+              title: 'Shara',
+              headerStyle: {
+                backgroundColor: colors.primary,
+                elevation: 0,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="Contacts"
+            component={ContactsScreen}
+            options={{
+              title: 'Select Contact',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="Chat"
+            component={ChatScreen}
+            options={{
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+        </MainStack.Navigator>
+      </PubNubProvider>
+    </RealmProvider>
   );
 };
 
