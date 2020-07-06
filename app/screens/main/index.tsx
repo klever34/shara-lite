@@ -11,12 +11,14 @@ import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
 import HomeScreen from './home';
 import Receipts from './business/Receipts';
+import NewReceipt from './business/NewReceipt';
 
 export type MainStackParamList = {
   Home: undefined;
   Chat: {title: string};
   Contacts: undefined;
   Receipts: undefined;
+  NewReceipt: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -114,6 +116,17 @@ const MainScreens = ({navigation}: any) => {
           name="Receipts"
           component={Receipts}
           options={{
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="NewReceipt"
+          component={NewReceipt}
+          options={{
+            title: 'New Receipt',
             headerStyle: {
               backgroundColor: colors.primary,
             },

@@ -1,18 +1,26 @@
-import React from 'react';
+import React, {useLayoutEffect} from 'react';
 import {SafeAreaView, StyleSheet, Text, Platform} from 'react-native';
 import {FAButton} from '../../../components';
 import {useNavigation} from '@react-navigation/native';
 import {colors} from '../../../styles';
 import Icon from '../../../components/Icon';
+import AppMenu from '../../../components/Menu';
 
 const Receipts = () => {
   const navigation = useNavigation();
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => <AppMenu options={[]} />,
+    });
+  }, [navigation]);
+
   return (
     <SafeAreaView style={styles.container}>
       <FAButton
         style={styles.fabButton}
         onPress={() => {
-          navigation.navigate('Contacts');
+          navigation.navigate('NewReceipt');
         }}>
         <Icon
           type="ionicons"
@@ -37,12 +45,12 @@ const styles = StyleSheet.create({
     padding: 12,
   },
   fabButton: {
-    height: 48,
+    height: 40,
     width: 'auto',
     borderRadius: 16,
     alignItems: 'center',
     flexDirection: 'row',
-    paddingHorizontal: 8,
+    paddingHorizontal: 12,
     justifyContent: 'center',
   },
   fabButtonText: {
