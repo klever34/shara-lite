@@ -19,8 +19,6 @@ type RecentProductItemProps = {
   item: Product;
 };
 
-type ReceiptItem = Product & {quantity?: string};
-
 const NewReceipt = () => {
   const navigation = useNavigation();
   const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
@@ -62,6 +60,10 @@ const NewReceipt = () => {
     setSelectedProduct(item);
     setPrice(item?.price?.toString());
   }, []);
+
+  const handleDone = useCallback(() => {
+    navigation.navigate('ReceiptSummary', {products: receipt});
+  }, [receipt, navigation]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -114,36 +116,39 @@ const NewReceipt = () => {
           <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
           Products in your receipt
         </Text>
-        {selectedProduct && (
+        {(selectedProduct || !!receipt.length) && (
           <View>
-            <Text style={styles.calculatorSectionHelperText}>
-              Adding this product to receipt
-            </Text>
-            <Text style={styles.selectedProductName}>
-              {selectedProduct?.name} ({selectedProduct?.weight})
-            </Text>
-            <View style={styles.calculatorSectionInputs}>
-              <TextInput
-                value={price}
-                keyboardType="numeric"
-                placeholder="Unit Price"
-                onChangeText={handlePriceChange}
-                style={styles.calculatorSectionInput}
-                // defaultValue={selectedProduct.price?.toString()}
-              />
-              <TextInput
-                value={quantity}
-                keyboardType="numeric"
-                placeholder="Quantity"
-                onChangeText={handleQuantityChange}
-                style={styles.calculatorSectionInput}
-              />
-            </View>
+            {selectedProduct && (
+              <>
+                <Text style={styles.calculatorSectionHelperText}>
+                  Adding this product to receipt
+                </Text>
+                <Text style={styles.selectedProductName}>
+                  {selectedProduct?.name} ({selectedProduct?.weight})
+                </Text>
+                <View style={styles.calculatorSectionInputs}>
+                  <TextInput
+                    value={price}
+                    keyboardType="numeric"
+                    placeholder="Unit Price"
+                    onChangeText={handlePriceChange}
+                    style={styles.calculatorSectionInput}
+                  />
+                  <TextInput
+                    value={quantity}
+                    keyboardType="numeric"
+                    placeholder="Quantity"
+                    onChangeText={handleQuantityChange}
+                    style={styles.calculatorSectionInput}
+                  />
+                </View>
+              </>
+            )}
             <View style={styles.calculatorSectionButtons}>
               <Button
                 title="Done"
                 variantColor="white"
-                onPress={handleAddItem}
+                onPress={handleDone}
                 style={styles.calculatorSectionButton}
               />
               <Button
@@ -164,12 +169,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-  },
-  headerTitleText: {
-    fontSize: 18,
-    lineHeight: 24,
-    color: 'white',
-    fontWeight: 'bold',
   },
   searchContainer: {
     padding: 8,
@@ -214,7 +213,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   calculatorSection: {
-    // elevation: 2,
     borderTopWidth: 1,
     paddingVertical: 8,
     paddingHorizontal: 12,
@@ -226,20 +224,19 @@ const styles = StyleSheet.create({
   },
   receiptItemsCountText: {
     fontSize: 12,
-    marginBottom: 12,
-    paddingBottom: 12,
     textAlign: 'center',
     color: '#5E5959',
-    borderBottomWidth: 0.8,
     textTransform: 'uppercase',
-    borderBottomColor: colors['gray-20'],
   },
   calculatorSectionHelperText: {
     fontSize: 12,
-    paddingBottom: 12,
+    marginTop: 12,
     fontWeight: 'bold',
     textAlign: 'center',
+    paddingVertical: 12,
+    borderTopWidth: 0.8,
     textTransform: 'uppercase',
+    borderTopColor: colors['gray-20'],
   },
   selectedProductName: {
     fontSize: 18,
@@ -261,6 +258,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors['gray-700'],
   },
   calculatorSectionButtons: {
+    marginTop: 8,
     marginBottom: 32,
     alignItems: 'center',
     flexDirection: 'row',

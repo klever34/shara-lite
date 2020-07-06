@@ -12,6 +12,7 @@ import ContactsScreen from './ContactsScreen';
 import HomeScreen from './home';
 import Receipts from './business/Receipts';
 import NewReceipt from './business/NewReceipt';
+import ReceiptSummary from './business/ReceiptSummary';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -19,6 +20,7 @@ export type MainStackParamList = {
   Contacts: undefined;
   Receipts: undefined;
   NewReceipt: undefined;
+  ReceiptSummary: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -127,6 +129,17 @@ const MainScreens = ({navigation}: any) => {
           component={NewReceipt}
           options={{
             title: 'New Receipt',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ReceiptSummary"
+          component={ReceiptSummary}
+          options={{
+            title: 'Receipt Summary',
             headerStyle: {
               backgroundColor: colors.primary,
             },

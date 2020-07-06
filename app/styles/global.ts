@@ -1,5 +1,5 @@
-import {dimensions, spacing} from './variables';
-import {StyleSheet} from 'react-native';
+import {dimensions, spacing} from './variables'
+import {StyleSheet} from 'react-native'
 
 export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'flex-row': {
@@ -10,6 +10,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'justify-center': {
     justifyContent: 'center',
+  },
+  'justify-space-between': {
+    justifyContent: 'space-between',
   },
   'items-center': {
     alignItems: 'center',
@@ -65,7 +68,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`pb-${curr}`]: {paddingBottom: spacing[curr]},
       [`pl-${curr}`]: {paddingLeft: spacing[curr]},
       [`pr-${curr}`]: {paddingRight: spacing[curr]},
-    };
+    }
   }, {}),
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
@@ -77,6 +80,6 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`mb-${curr}`]: {marginBottom: spacing[curr]},
       [`ml-${curr}`]: {marginLeft: spacing[curr]},
       [`mr-${curr}`]: {marginRight: spacing[curr]},
-    };
+    }
   }, {}),
-});
+})
