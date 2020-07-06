@@ -10,11 +10,13 @@ import {colors} from '../../styles';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
 import HomeScreen from './home';
+import Receipts from './business/Receipts';
 
 export type MainStackParamList = {
   Home: undefined;
   Chat: {title: string};
   Contacts: undefined;
+  Receipts: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -101,6 +103,16 @@ const MainScreens = ({navigation}: any) => {
         <MainStack.Screen
           name="Chat"
           component={ChatScreen}
+          options={{
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="Receipts"
+          component={Receipts}
           options={{
             headerStyle: {
               backgroundColor: colors.primary,

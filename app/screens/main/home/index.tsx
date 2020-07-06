@@ -7,10 +7,14 @@ import {getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../../components/Menu';
 import {applyStyles} from '../../../helpers/utils';
+import CustomersTab from '../customers';
+import BusinessTab from '../business';
 
 type HomeTabParamList = {
   ChatList: undefined;
   Contacts: undefined;
+  Customers: undefined;
+  Business: undefined;
 };
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
@@ -47,6 +51,16 @@ const HomeScreen = () => {
           name="ChatList"
           options={{title: 'Chat'}}
           component={ChatListScreen}
+        />
+        <HomeTab.Screen
+          name="Customers"
+          component={CustomersTab}
+          options={{title: 'My Customers'}}
+        />
+        <HomeTab.Screen
+          name="Business"
+          component={BusinessTab}
+          options={{title: 'My Business'}}
         />
       </HomeTab.Navigator>
     </SafeAreaView>
