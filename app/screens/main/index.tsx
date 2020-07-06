@@ -12,6 +12,7 @@ import ContactsScreen from './ContactsScreen';
 import HomeScreen from './home';
 import Realm from 'realm';
 import {createRealm, RealmProvider} from '../../services/realm';
+import getUuidByString from 'uuid-by-string';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -23,7 +24,7 @@ const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = ({navigation}: any) => {
   const channelName = 'SHARA_GLOBAL';
-  const [pubnubClient, setPubnubClient] = useState<PubNub | null>(null);
+  const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const [realm, setRealm] = useState<Realm | null>(null);
   useEffect(() => {
     createRealm().then((nextRealm) => {
@@ -34,27 +35,27 @@ const MainScreens = ({navigation}: any) => {
     const authService = getAuthService();
     const user = authService.getUser();
     if (user) {
-      const pubnub = new PubNub({
+      const pubNub = new PubNub({
         subscribeKey: Config.PUBNUB_SUB_KEY,
         publishKey: Config.PUBNUB_PUB_KEY,
-        uuid: user.mobile,
+        uuid: getUuidByString(user.mobile),
       });
-      setPubnubClient(pubnub);
+      setPubNubClient(pubNub);
     }
   }, []);
 
   useEffect(() => {
     PushNotification.configure({
       onRegister: (token: PushNotificationToken) => {
-        if (pubnubClient) {
+        if (pubNubClient) {
           if (token.os === 'ios') {
-            pubnubClient.push.addChannels({
+            pubNubClient.push.addChannels({
               channels: [channelName],
               device: token.token,
               pushGateway: 'apns',
             });
           } else if (token.os === 'android') {
-            pubnubClient.push.addChannels({
+            pubNubClient.push.addChannels({
               channels: [channelName],
               device: token.token,
               pushGateway: 'gcm',
@@ -69,9 +70,9 @@ const MainScreens = ({navigation}: any) => {
         PushNotification.cancelAllLocalNotifications();
       },
     });
-  }, [navigation, pubnubClient]);
+  }, [navigation, pubNubClient]);
 
-  if (!pubnubClient || !realm) {
+  if (!pubNubClient || !realm) {
     return (
       <View style={styles.activityIndicatorContainer}>
         <ActivityIndicator color={colors.primary} size={40} />
@@ -80,7 +81,7 @@ const MainScreens = ({navigation}: any) => {
   }
   return (
     <RealmProvider value={realm}>
-      <PubNubProvider client={pubnubClient}>
+      <PubNubProvider client={pubNubClient}>
         <MainStack.Navigator initialRouteName="Home">
           <MainStack.Screen
             name="Home"

@@ -43,7 +43,7 @@ const ChatScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
-  const pubnub = usePubNub();
+  const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
   const {channel, title} = route.params;
   const isTypingChannel = `${channel}_IS_TYPING`;
@@ -86,7 +86,7 @@ const ChatScreen = ({
     }
     const count = 20;
     setIsLoading(true);
-    pubnub.history({channel, count, start}, (status, response) => {
+    pubNub.history({channel, count, start}, (status, response) => {
       setIsLoading(false);
       if (response) {
         let history: IMessage[] = response.messages.map((item) => {
@@ -121,11 +121,11 @@ const ChatScreen = ({
         }
       }
     });
-  }, [channel, hasMore, messages, pubnub, realm]);
+  }, [channel, hasMore, messages, pubNub, realm]);
 
   useEffect(fetchHistory, []);
   useEffect(() => {
-    if (pubnub) {
+    if (pubNub) {
       const listener = {
         message: (envelope: MessageEvent) => {
           const message = envelope.message as IMessage;
@@ -148,7 +148,7 @@ const ChatScreen = ({
         signal: (envelope: SignalEvent) => {
           if (
             envelope.message === 'TYPING_ON' &&
-            envelope.publisher !== pubnub.getUUID()
+            envelope.publisher !== pubNub.getUUID()
           ) {
             setTypingMessage(`+${envelope.publisher} is typing...`);
           } else {
@@ -156,21 +156,21 @@ const ChatScreen = ({
           }
         },
       };
-      // Add the listener to pubnub instance and subscribe to `chat` channel.
-      pubnub.addListener(listener);
-      pubnub.subscribe({channels: [channel, isTypingChannel]});
+      // Add the listener to pubNub instance and subscribe to `chat` channel.
+      pubNub.addListener(listener);
+      pubNub.subscribe({channels: [channel, isTypingChannel]});
       // We need to return a function that will handle unsubscription on unmount
       return () => {
-        pubnub.removeListener(listener);
-        pubnub.unsubscribeAll();
+        pubNub.removeListener(listener);
+        pubNub.unsubscribeAll();
       };
     }
-  }, [channel, isTypingChannel, pubnub, realm]);
+  }, [channel, isTypingChannel, pubNub, realm]);
 
   useEffect(() => {
     if (input && !isTyping) {
       setIsTyping(true);
-      pubnub
+      pubNub
         .signal({
           channel: isTypingChannel,
           message: 'TYPING_ON',
@@ -178,14 +178,14 @@ const ChatScreen = ({
         .then();
     } else if (!input && isTyping) {
       setIsTyping(false);
-      pubnub
+      pubNub
         .signal({
           channel: isTypingChannel,
           message: 'TYPING_OFF',
         })
         .then();
     }
-  }, [user, input, isTyping, pubnub, isTypingChannel]);
+  }, [user, input, isTyping, pubNub, isTypingChannel]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
@@ -216,7 +216,7 @@ const ChatScreen = ({
       },
       ...message,
     };
-    pubnub.publish({channel, message: messagePayload}, function (
+    pubNub.publish({channel, message: messagePayload}, function (
       status: PubnubStatus,
       response: PublishResponse,
     ) {
@@ -226,7 +226,7 @@ const ChatScreen = ({
         console.log('message Published w/ timetoken', response.timetoken);
       }
     });
-  }, [channel, input, pubnub, realm, user]);
+  }, [channel, input, pubNub, realm, user]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => {
