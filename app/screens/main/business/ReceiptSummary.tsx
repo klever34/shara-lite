@@ -3,7 +3,7 @@ import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
   Platform,
-  SafeAreaView,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
@@ -149,7 +149,7 @@ const ReceiptSummary = ({route}: any) => {
   );
 
   return (
-    <SafeAreaView style={styles.container}>
+    <ScrollView style={styles.container}>
       <View>
         <Text style={styles.sectionTitle}>Products</Text>
         <View>
@@ -230,7 +230,7 @@ const ReceiptSummary = ({route}: any) => {
           style={styles.actionButton}
         />
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 

@@ -26,8 +26,8 @@ interface ButtonProps extends BaseButtonProps {
 
 const styles = StyleSheet.create({
   button: {
-    height: 56,
-    borderRadius: 8,
+    height: 40,
+    borderRadius: 3,
     alignItems: 'center',
     paddingHorizontal: 10,
     justifyContent: 'center',
