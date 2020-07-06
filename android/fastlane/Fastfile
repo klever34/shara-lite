@@ -50,7 +50,7 @@ platform :android do
     slack(
       message: "Successfully deployed new Shara app",
       slack_url: ENV['SLACK_WEBHOOK'],
-      channel: "#devops-services"
+      channel: ENV['SLACK_CHANNEL']
     )
   end
 
