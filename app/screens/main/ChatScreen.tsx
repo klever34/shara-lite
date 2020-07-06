@@ -46,7 +46,6 @@ const ChatScreen = ({
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
   const {channel, title} = route.params;
-  const isTypingChannel = `${channel}_IS_TYPING`;
   const [input, setInput] = useState('');
   const [hasMore, setHasMore] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
@@ -145,14 +144,14 @@ const ChatScreen = ({
         pubNub.removeListener(listener);
       };
     }
-  }, [channel, isTypingChannel, pubNub, realm]);
+  }, [channel, pubNub, realm]);
 
   useEffect(() => {
     if (input && !isTyping) {
       setIsTyping(true);
       pubNub
         .signal({
-          channel: isTypingChannel,
+          channel,
           message: 'TYPING_ON',
         })
         .then();
@@ -160,12 +159,12 @@ const ChatScreen = ({
       setIsTyping(false);
       pubNub
         .signal({
-          channel: isTypingChannel,
+          channel,
           message: 'TYPING_OFF',
         })
         .then();
     }
-  }, [user, input, isTyping, pubNub, isTypingChannel]);
+  }, [user, input, isTyping, pubNub, channel]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
