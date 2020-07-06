@@ -82,7 +82,7 @@ const HomeScreen = () => {
                 'Conversation',
                 {
                   // TODO: Use User full Name as title
-                  title: envelope.publisher,
+                  title: envelope.message.author,
                   channel,
                   lastMessage,
                 },
