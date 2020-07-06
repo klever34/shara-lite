@@ -1,4 +1,4 @@
-import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
+import {PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {
   useCallback,
@@ -127,24 +127,6 @@ const ChatScreen = ({
   useEffect(() => {
     if (pubNub) {
       const listener = {
-        message: (envelope: MessageEvent) => {
-          const message = envelope.message as IMessage;
-          try {
-            realm.write(() => {
-              realm.create<IMessage>(
-                'Message',
-                {
-                  ...message,
-                  created_at: new Date(message.created_at),
-                  timetoken: envelope.timetoken,
-                },
-                UpdateMode.Modified,
-              );
-            });
-          } catch (e) {
-            console.log('Error: ', e);
-          }
-        },
         signal: (envelope: SignalEvent) => {
           if (
             envelope.message === 'TYPING_ON' &&

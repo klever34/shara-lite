@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {memo, useCallback} from 'react';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -13,13 +13,15 @@ import {applyStyles} from '../../../helpers/utils';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
-import {IConversation} from '../../../models';
+import {IConversation, IMessage} from '../../../models';
 import {useRealm} from '../../../services/realm';
 
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const conversations = realm.objects<IConversation>('Conversation');
+  const conversations = realm
+    .objects<IConversation>('Conversation')
+    .filtered('lastMessage != null');
   const renderChatListItem = useCallback(
     ({item}: ListRenderItemInfo<IConversation>) => {
       return (
@@ -45,7 +47,12 @@ const ChatListScreen = () => {
               />
             </View>
             <View style={listItemStyles.titleContainer}>
-              <Text style={listItemStyles.titleText}>{item.title}</Text>
+              <Text style={listItemStyles.titleText} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <Text style={listItemStyles.contentText} numberOfLines={1}>
+                {(item.lastMessage as IMessage).content}
+              </Text>
             </View>
           </View>
         </Touchable>
@@ -79,7 +86,7 @@ const listItemStyles = StyleSheet.create({
   titleContainer: applyStyles('h-full flex-1', {
     paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'grey',
+    borderBottomColor: colors['gray-400'],
   }),
   imageContainer: applyStyles('center', {
     marginVertical: 12,
@@ -89,7 +96,8 @@ const listItemStyles = StyleSheet.create({
     backgroundColor: colors.primary,
     marginRight: 12,
   }),
-  titleText: applyStyles('text-lg', {fontWeight: 'bold'}),
+  titleText: applyStyles('text-lg font-bold mb-sm'),
+  contentText: applyStyles('text-base', {color: colors['gray-600']}),
 });
 
-export default ChatListScreen;
+export default memo(ChatListScreen);

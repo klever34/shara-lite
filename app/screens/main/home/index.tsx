@@ -7,9 +7,11 @@ import {getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../../components/Menu';
 import {applyStyles} from '../../../helpers/utils';
-import {IConversation} from '../../../models';
+import {IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/realm';
+import {MessageEvent} from 'pubnub';
+import {UpdateMode} from 'realm';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -57,6 +59,46 @@ const HomeScreen = () => {
         pubNub.unsubscribeAll();
       }
     };
+  }, [pubNub, realm]);
+
+  useEffect(() => {
+    if (pubNub) {
+      const listener = {
+        message: (envelope: MessageEvent & {message: IMessage}) => {
+          const {channel} = envelope;
+          const message = envelope.message as IMessage;
+          try {
+            realm.write(() => {
+              const lastMessage = realm.create<IMessage>(
+                'Message',
+                {
+                  ...message,
+                  created_at: new Date(message.created_at),
+                  timetoken: envelope.timetoken,
+                },
+                UpdateMode.Modified,
+              );
+              realm.create<IConversation>(
+                'Conversation',
+                {
+                  // TODO: Use User full Name as title
+                  title: envelope.publisher,
+                  channel,
+                  lastMessage,
+                },
+                UpdateMode.Modified,
+              );
+            });
+          } catch (e) {
+            console.log('Error: ', e);
+          }
+        },
+      };
+      pubNub.addListener(listener);
+      return () => {
+        pubNub.removeListener(listener);
+      };
+    }
   }, [pubNub, realm]);
 
   return (
