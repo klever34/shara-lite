@@ -18,4 +18,9 @@ type PushNotificationData = {
   data: any;
 };
 
+type ApiResponse<T extends any = any> = {
+  data: any;
+  message: string;
+};
+
 declare module 'react-native-push-notification';

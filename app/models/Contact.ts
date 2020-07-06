@@ -1,14 +1,27 @@
-export interface IContact
-  extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {}
+export interface IContact {
+  mobile: string;
+  firstname: string;
+  lastname: string;
+  fullName: string;
+}
 
 export class Contact implements Partial<IContact> {
   public static schema: Realm.ObjectSchema = {
     name: 'Contact',
+    primaryKey: 'mobile',
     properties: {
-      id: 'int',
+      mobile: 'string',
       firstname: 'string',
       lastname: 'string',
-      mobile: 'string',
     },
   };
+  public firstname: string | undefined;
+  public lastname: string | undefined;
+  public get fullName() {
+    let name = this.firstname;
+    if (this.lastname) {
+      name += ' ' + this.lastname;
+    }
+    return name;
+  }
 }

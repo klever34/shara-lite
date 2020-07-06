@@ -1,35 +1,80 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
-  Image,
   ListRenderItemInfo,
   Platform,
   Text,
   View,
 } from 'react-native';
-import {getContactsService} from '../../services';
-import {Contact} from 'react-native-contacts';
-import {applyStyles} from '../../helpers/utils';
+import {getAuthService, getContactsService} from '../../services';
+import {applyStyles, handleFetchErrors} from '../../helpers/utils';
 import Touchable from '../../components/Touchable';
-import {useNavigation, CommonActions} from '@react-navigation/native';
+import {CommonActions, useNavigation} from '@react-navigation/native';
 import Share from 'react-native-share';
 import AppMenu from '../../components/Menu';
 import Icon from '../../components/Icon';
 import {colors} from '../../styles';
 import {useRealm} from '../../services/realm';
-import {IConversation} from '../../models';
+import {IContact, IConversation} from '../../models';
+import Config from 'react-native-config';
+import flatten from 'lodash/flatten';
+import {UpdateMode} from 'realm';
 
 const ContactsScreen = () => {
-  const [contacts, setContacts] = useState<Contact[]>([]);
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
+  const contacts = realm.objects<IContact>('Contact');
+  const [loading, setLoading] = useState(false);
   useEffect(() => {
     const contactsService = getContactsService();
+    setLoading(true);
     contactsService
       .getAll()
       .then((nextContacts) => {
-        setContacts(nextContacts);
+        const sizePerRequest = 20;
+        const numbers = flatten(
+          nextContacts.map((contact) =>
+            contact.phoneNumbers.map((phoneNumber) => phoneNumber.number),
+          ),
+        );
+        const requestNo = Math.ceil(numbers.length / sizePerRequest);
+        const authService = getAuthService();
+        Promise.all(
+          Array.from({length: requestNo}).map((_, index) => {
+            return fetch(`${Config.API_BASE_URL}/users/check`, {
+              method: 'POST',
+              headers: {
+                credentials: 'include',
+                Authorization: `Bearer ${authService.getToken()}` ?? '',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                mobiles: numbers.slice(
+                  sizePerRequest * index,
+                  sizePerRequest * index + sizePerRequest,
+                ),
+              }),
+            });
+          }),
+        )
+          .then((responses) => Promise.all(responses.map(handleFetchErrors)))
+          .then((responses) => {
+            const users = flatten(
+              (responses as ApiResponse[]).map(({data}) => data.users),
+            );
+            realm.write(() => {
+              users.forEach((user) => {
+                realm.create<IContact>('Contact', user, UpdateMode.Modified);
+              });
+            });
+            setLoading(false);
+          })
+          .catch((error) => {
+            setLoading(false);
+            console.log('Error: ', error);
+          });
       })
       .catch((error) => {
         Alert.alert(
@@ -48,7 +93,7 @@ const ContactsScreen = () => {
           },
         );
       });
-  }, [navigation]);
+  }, [navigation, realm]);
   const inviteFriend = useCallback(async () => {
     // TODO: use better copy for shara invite
     const title = 'Share via';
@@ -65,53 +110,47 @@ const ContactsScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <AppMenu
-          options={[
-            {
-              text: 'Invite a friend',
-              onSelect: inviteFriend,
-            },
-          ]}
-        />
+        <View style={applyStyles('flex-row')}>
+          {loading && (
+            <ActivityIndicator
+              color={colors.white}
+              size={24}
+              style={applyStyles('mr-md')}
+            />
+          )}
+          <AppMenu
+            options={[
+              {
+                text: 'Invite a friend',
+                onSelect: inviteFriend,
+              },
+            ]}
+          />
+        </View>
       ),
     });
-  }, [inviteFriend, navigation]);
+  }, [inviteFriend, loading, navigation]);
   const renderContactItem = useCallback(
-    ({item}: ListRenderItemInfo<Contact>) => {
+    ({item}: ListRenderItemInfo<IContact>) => {
       return (
         <Touchable
           onPress={() => {
-            Alert.alert(
-              'Contact Selected',
-              `${item.givenName} ${item.familyName}`,
-            );
+            Alert.alert('Contact Selected', item.fullName);
             navigation.navigate('Home');
           }}>
           <View style={applyStyles('flex-row items-center p-md')}>
-            {item.hasThumbnail ? (
-              <Image
-                source={{uri: item.thumbnailPath}}
-                style={applyStyles('mr-md', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                })}
-              />
-            ) : (
-              <View
-                style={applyStyles('mr-md', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                  backgroundColor: '#e3e3e3',
-                })}
-              />
-            )}
-            <Text
-              style={applyStyles(
-                'text-lg',
-                'font-bold',
-              )}>{`${item.givenName} ${item.familyName}`}</Text>
+            <View
+              style={applyStyles('mr-md', {
+                height: 48,
+                width: 48,
+                borderRadius: 24,
+                backgroundColor: '#e3e3e3',
+              })}
+            />
+
+            <Text style={applyStyles('text-lg', 'font-bold')}>
+              {item.fullName}
+            </Text>
           </View>
         </Touchable>
       );
@@ -122,7 +161,7 @@ const ContactsScreen = () => {
     <FlatList
       data={contacts}
       renderItem={renderContactItem}
-      keyExtractor={(item: Contact) => item.recordID}
+      keyExtractor={(item: IContact) => item.mobile}
       ListFooterComponent={
         <>
           <Touchable onPress={inviteFriend}>
