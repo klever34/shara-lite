@@ -46,7 +46,6 @@ const ContactsScreen = () => {
             return fetch(`${Config.API_BASE_URL}/users/check`, {
               method: 'POST',
               headers: {
-                credentials: 'include',
                 Authorization: `Bearer ${authService.getToken()}` ?? '',
                 'Content-Type': 'application/json',
               },
@@ -135,8 +134,48 @@ const ContactsScreen = () => {
       return (
         <Touchable
           onPress={() => {
-            Alert.alert('Contact Selected', item.fullName);
-            navigation.navigate('Home');
+            setLoading(true);
+            const authService = getAuthService();
+            fetch(`${Config.API_BASE_URL}/chat/channel`, {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${authService.getToken()}` ?? '',
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                recipient: item.mobile,
+              }),
+            })
+              .then(handleFetchErrors)
+              .then((response) => {
+                setLoading(false);
+                const {channelName} = (response as ApiResponse<{
+                  channelName: string;
+                }>).data;
+                const conversation = {
+                  title: item.fullName,
+                  channel: channelName,
+                };
+                realm.write(() => {
+                  realm.create('Conversation', conversation);
+                });
+                navigation.dispatch(
+                  CommonActions.reset({
+                    routes: [
+                      {name: 'Home'},
+                      {
+                        name: 'Chat',
+                        params: conversation,
+                      },
+                    ],
+                    index: 1,
+                  }),
+                );
+              })
+              .catch((error) => {
+                setLoading(false);
+                console.log('Error: ', error);
+              });
           }}>
           <View style={applyStyles('flex-row items-center p-md')}>
             <View
@@ -155,7 +194,7 @@ const ContactsScreen = () => {
         </Touchable>
       );
     },
-    [navigation],
+    [navigation, realm],
   );
   return (
     <FlatList
