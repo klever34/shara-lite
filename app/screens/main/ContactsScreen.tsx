@@ -133,17 +133,17 @@ const ContactsScreen = () => {
               .then((response) => {
                 setLoading(false);
                 const {channelName} = response.data;
-                const conversation = {
-                  title: item.fullName,
-                  channel: channelName,
-                };
-                realm.write(() => {
-                  realm.create(
-                    'Conversation',
-                    conversation,
-                    UpdateMode.Modified,
-                  );
-                });
+                let conversation: any = realm
+                  .objects<IConversation>('Conversation')
+                  .filtered(`channel = "${channelName}"`)[0];
+                if (!conversation) {
+                  realm.write(() => {
+                    conversation = realm.create('Conversation', {
+                      title: item.fullName,
+                      channel: channelName,
+                    });
+                  });
+                }
                 navigation.dispatch(
                   CommonActions.reset({
                     routes: [
@@ -210,22 +210,26 @@ const ContactsScreen = () => {
             onPress={() => {
               const globalChannel = 'SHARA_GLOBAL';
               try {
-                let global: any = realm
+                let globalConversation: any = realm
                   .objects<IConversation>('Conversation')
-                  .find(
-                    (conversation) => conversation.channel === globalChannel,
-                  );
-                if (!global) {
+                  .filtered(`channel = "${globalChannel}"`)[0];
+                if (!globalConversation) {
                   realm.write(() => {
-                    global = realm.create('Conversation', {
-                      channel: globalChannel,
-                      title: 'Shara Chat',
-                    });
+                    globalConversation = realm.create<IConversation>(
+                      'Conversation',
+                      {
+                        channel: globalChannel,
+                        title: 'Shara Chat',
+                      },
+                    );
                   });
                 }
                 navigation.dispatch(
                   CommonActions.reset({
-                    routes: [{name: 'Home'}, {name: 'Chat', params: global}],
+                    routes: [
+                      {name: 'Home'},
+                      {name: 'Chat', params: globalConversation},
+                    ],
                     index: 1,
                   }),
                 );

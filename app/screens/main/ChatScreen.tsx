@@ -131,7 +131,7 @@ const ChatScreen = ({
           const message = envelope.message as IMessage;
           try {
             realm.write(() => {
-              realm.create(
+              realm.create<IMessage>(
                 'Message',
                 {
                   ...message,
@@ -158,11 +158,9 @@ const ChatScreen = ({
       };
       // Add the listener to pubNub instance and subscribe to `chat` channel.
       pubNub.addListener(listener);
-      pubNub.subscribe({channels: [channel, isTypingChannel]});
       // We need to return a function that will handle unsubscription on unmount
       return () => {
         pubNub.removeListener(listener);
-        pubNub.unsubscribeAll();
       };
     }
   }, [channel, isTypingChannel, pubNub, realm]);
@@ -198,7 +196,7 @@ const ChatScreen = ({
     };
     try {
       realm.write(() => {
-        realm.create('Message', message);
+        realm.create('Message', message, UpdateMode.Never);
       });
     } catch (e) {
       console.log('Error: ', e);
