@@ -42,18 +42,17 @@ const HomeScreen = () => {
   const realm = useRealm();
 
   useEffect(() => {
-    if (pubNub) {
-      const channels: string[] = [pubNub.getUUID()];
+    const channelGroups: string[] = [pubNub.getUUID()];
+    const channels: string[] = [];
 
-      if (realm) {
-        const conversations = realm.objects<IConversation>('Conversation');
-        channels.push(
-          ...conversations.map((conversation) => conversation.channel),
-        );
-      }
-
-      pubNub.subscribe({channels});
+    if (realm) {
+      const conversations = realm.objects<IConversation>('Conversation');
+      channels.push(
+        ...conversations.map((conversation) => conversation.channel),
+      );
     }
+
+    pubNub.subscribe({channels, channelGroups});
     return () => {
       if (pubNub) {
         pubNub.unsubscribeAll();
