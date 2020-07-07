@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     maxWidth: 300,
     lineHeight: 27,
     textAlign: 'center',
-    color: colors['gray-300'],
+    color: colors['gray-200'],
     marginHorizontal: 'auto',
   },
   image: {
