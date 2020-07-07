@@ -44,4 +44,6 @@ type Customer = {
   name: string
 }
 
+declare module 'react-native-signature-capture'
+
 declare module 'react-native-push-notification'

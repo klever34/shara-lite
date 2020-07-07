@@ -14,6 +14,10 @@ import Receipts from './business/Receipts';
 import NewReceipt from './business/NewReceipt';
 import ReceiptSummary from './business/ReceiptSummary';
 import StatusModal from './StatusModal';
+import Finances from './business/Finances';
+import Inventory from './business/Inventory';
+import Expenses from './business/Expenses';
+import Credit from './business/Credit';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -23,6 +27,10 @@ export type MainStackParamList = {
   NewReceipt: {customer: Customer};
   ReceiptSummary: {customer: Customer; products: ReceiptItem[]};
   StatusModal: {status: string; text: string; onClick(): void};
+  Finances: undefined;
+  Inventory: undefined;
+  Expenses: undefined;
+  Credit: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -152,6 +160,50 @@ const MainScreens = ({navigation}: any) => {
           name="StatusModal"
           component={StatusModal}
           options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Finances"
+          component={Finances}
+          options={{
+            title: 'Finances',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="Inventory"
+          component={Inventory}
+          options={{
+            title: 'Inventory',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="Expenses"
+          component={Expenses}
+          options={{
+            title: 'Expenses',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="Credit"
+          component={Credit}
+          options={{
+            title: 'Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTintColor: '#fff',
+          }}
         />
       </MainStack.Navigator>
     </PubNubProvider>

@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {StackScreenProps} from '@react-navigation/stack';
+import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Platform,
@@ -9,14 +10,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import SignatureCapture from 'react-native-signature-capture';
+import {MainStackParamList} from '..';
 import {Button} from '../../../components/Button';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '..';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -126,6 +127,26 @@ const ReceiptSummary = ({
     customerProps || ({} as Customer),
   );
 
+  const ref = useRef<any>(null);
+
+  const saveSign = () => {
+    ref.current.saveImage();
+  };
+
+  const resetSign = () => {
+    ref.current.resetImage();
+  };
+
+  const onSaveEvent = (result: any) => {
+    //result.encoded - for the base64 encoded png
+    //result.pathName - for the file path name
+    console.log(result);
+  };
+  const onDragEvent = () => {
+    // This callback will be called when the user enters signature
+    console.log('dragged');
+  };
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <AppMenu options={[]} />,
@@ -151,6 +172,7 @@ const ReceiptSummary = ({
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
+      saveSign();
       navigation.navigate('StatusModal', {
         status: 'success',
         onClick: handleCancel,
@@ -247,8 +269,33 @@ const ReceiptSummary = ({
             onChangeText={(item) => handleUpdateCustomer(item, 'name')}
           />
         </View>
-        <View style={styles.customerSignature} />
+        <SignatureCapture
+          ref={ref}
+          showBorder={false}
+          viewMode={'portrait'}
+          showTitleLabel={false}
+          onSaveEvent={onSaveEvent}
+          onDragEvent={onDragEvent}
+          showNativeButtons={false}
+          saveImageFileInExtStorage={false}
+          style={applyStyles('flex-1', styles.customerSignature)}
+        />
         <Text style={styles.customerSignatureText}>Customer Signature </Text>
+        <View
+          style={applyStyles(
+            'flex-1',
+            'flex-row',
+            'justify-center',
+            'item-center',
+          )}>
+          <Touchable
+            style={styles.buttonStyle}
+            onPress={() => {
+              resetSign();
+            }}>
+            <Text style={styles.buttonTextStyle}>Clear</Text>
+          </Touchable>
+        </View>
       </View>
       <View style={styles.actionButtons}>
         <Button
@@ -312,12 +359,13 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   customerSignature: {
-    height: 100,
+    height: 200,
+    flex: 1,
     width: '100%',
+    borderWidth: 1,
     borderRadius: 8,
     marginBottom: 8,
-    borderWidth: 1,
-    borderColor: colors['gray-20'],
+    borderColor: 'red',
   },
   customerSignatureText: {
     fontSize: 12,
@@ -338,6 +386,15 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-700'],
+  },
+  buttonStyle: {
+    padding: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonTextStyle: {
+    fontSize: 16,
+    textAlign: 'center',
   },
 });
 

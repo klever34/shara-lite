@@ -37,8 +37,10 @@
     "react-native-safe-area-context": "^3.0.5",
     "react-native-screens": "^2.9.0",
     "react-native-share": "^3.6.0",
+    "react-native-signature-capture": "^0.4.10",
     "react-native-tab-view": "^2.14.4",
     "react-native-vector-icons": "^6.6.0",
+    "react-native-webview": "^10.3.2",
     "uuid": "^8.2.0"
   },
   "devDependencies": {

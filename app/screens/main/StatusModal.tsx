@@ -69,19 +69,21 @@ const StatusModal = ({
 
   return (
     <SafeAreaView style={applyStyles(styles.container, type.style.container)}>
-      <Touchable onPress={handleCloseModal} style={styles.closeButton}>
-        <Icon
-          type="ionicons"
-          name={
-            Platform.select({
-              android: 'md-close',
-              ios: 'ios-close',
-            }) as string
-          }
-          color={type.closeButtonColor}
-          size={16}
-        />
-      </Touchable>
+      {status === 'error' && (
+        <Touchable onPress={handleCloseModal} style={styles.closeButton}>
+          <Icon
+            type="ionicons"
+            name={
+              Platform.select({
+                android: 'md-close',
+                ios: 'ios-close',
+              }) as string
+            }
+            color={type.closeButtonColor}
+            size={16}
+          />
+        </Touchable>
+      )}
       <View style={styles.content}>
         <Image source={type.icon} style={applyStyles('mb-xl', styles.icon)} />
         <Text style={applyStyles('pb-sm', styles.headingText, type.style.text)}>
