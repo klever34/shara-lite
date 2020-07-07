@@ -1,10 +1,9 @@
-import {PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
+import {PublishResponse, PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -32,6 +31,7 @@ import {getAuthService} from '../../services';
 import {useRealm} from '../../services/realm';
 import {UpdateMode} from 'realm';
 import {IMessage} from '../../models';
+import {useTyping} from '../../services/pubnub';
 
 type MessageItemProps = {
   item: IMessage;
@@ -48,14 +48,9 @@ const ChatScreen = ({
   const {channel, title} = route.params;
   const [input, setInput] = useState('');
   const [hasMore, setHasMore] = useState(true);
-  const [isTyping, setIsTyping] = useState(false);
-  const [typingMessage, setTypingMessage] = useState('');
+  const typingMessage = useTyping(channel, input);
   const [isLoading, setIsLoading] = useState(false);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
-  const user = useMemo<User>(() => {
-    const authService = getAuthService();
-    return authService.getUser() as User;
-  }, []);
   const realm = useRealm() as Realm;
   const messages = realm
     .objects<IMessage>('Message')
@@ -123,51 +118,11 @@ const ChatScreen = ({
   }, [channel, hasMore, messages, pubNub, realm]);
 
   useEffect(fetchHistory, []);
-  useEffect(() => {
-    if (pubNub) {
-      const listener = {
-        signal: (envelope: SignalEvent) => {
-          if (
-            envelope.message === 'TYPING_ON' &&
-            envelope.publisher !== pubNub.getUUID()
-          ) {
-            setTypingMessage(`+${envelope.publisher} is typing...`);
-          } else {
-            setTypingMessage('');
-          }
-        },
-      };
-      // Add the listener to pubNub instance and subscribe to `chat` channel.
-      pubNub.addListener(listener);
-      // We need to return a function that will handle unsubscription on unmount
-      return () => {
-        pubNub.removeListener(listener);
-      };
-    }
-  }, [channel, pubNub, realm]);
-
-  useEffect(() => {
-    if (input && !isTyping) {
-      setIsTyping(true);
-      pubNub
-        .signal({
-          channel,
-          message: 'TYPING_ON',
-        })
-        .then();
-    } else if (!input && isTyping) {
-      setIsTyping(false);
-      pubNub
-        .signal({
-          channel,
-          message: 'TYPING_OFF',
-        })
-        .then();
-    }
-  }, [user, input, isTyping, pubNub, channel]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
+    const authService = getAuthService();
+    const user = authService.getUser() as User;
     const message: IMessage = {
       id: generateUniqueId(),
       content: input,
@@ -205,17 +160,16 @@ const ChatScreen = ({
         console.log('message Published w/ timetoken', response.timetoken);
       }
     });
-  }, [channel, input, pubNub, realm, user]);
+  }, [channel, input, pubNub, realm]);
 
-  const renderMessageItem = useCallback(
-    ({item: message}: MessageItemProps) => {
-      if (!user) {
-        return null;
-      }
-      return <ChatBubble message={message} user={user} />;
-    },
-    [user],
-  );
+  const renderMessageItem = useCallback(({item: message}: MessageItemProps) => {
+    const authService = getAuthService();
+    const user = authService.getUser() as User;
+    if (!user) {
+      return null;
+    }
+    return <ChatBubble message={message} user={user} />;
+  }, []);
 
   const openEmojiBoard = useCallback(() => {
     setShowEmojiBoard(true);

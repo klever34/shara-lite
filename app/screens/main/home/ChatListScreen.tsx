@@ -15,6 +15,51 @@ import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
 import {IConversation, IMessage} from '../../../models';
 import {useRealm} from '../../../services/realm';
+import {useTyping} from '../../../services/pubnub';
+
+type ChatListItemProps = {
+  conversation: IConversation;
+};
+
+const ChatListItem = ({conversation}: ChatListItemProps) => {
+  const typingMessage = useTyping(conversation.channel);
+  const navigation = useNavigation();
+  return (
+    <Touchable
+      onPress={() => {
+        navigation.navigate('Chat', conversation);
+      }}>
+      <View style={listItemStyles.container}>
+        <View style={listItemStyles.imageContainer}>
+          <Icon
+            type="ionicons"
+            name={
+              Platform.select({
+                android: 'md-globe',
+                ios: 'ios-globe',
+              }) as string
+            }
+            color="white"
+            size={24}
+          />
+        </View>
+        <View style={listItemStyles.titleContainer}>
+          <Text style={listItemStyles.titleText} numberOfLines={1}>
+            {conversation.title}
+          </Text>
+          <Text
+            style={applyStyles(
+              listItemStyles.contentText,
+              typingMessage && {color: 'green'},
+            )}
+            numberOfLines={1}>
+            {typingMessage || (conversation.lastMessage as IMessage).content}
+          </Text>
+        </View>
+      </View>
+    </Touchable>
+  );
+};
 
 const ChatListScreen = () => {
   const navigation = useNavigation();
@@ -24,41 +69,9 @@ const ChatListScreen = () => {
     .filtered('lastMessage != null');
   const renderChatListItem = useCallback(
     ({item}: ListRenderItemInfo<IConversation>) => {
-      return (
-        <Touchable
-          onPress={() => {
-            navigation.navigate('Chat', {
-              title: item.title,
-              channel: item.channel,
-            });
-          }}>
-          <View style={listItemStyles.container}>
-            <View style={listItemStyles.imageContainer}>
-              <Icon
-                type="ionicons"
-                name={
-                  Platform.select({
-                    android: 'md-globe',
-                    ios: 'ios-globe',
-                  }) as string
-                }
-                color="white"
-                size={24}
-              />
-            </View>
-            <View style={listItemStyles.titleContainer}>
-              <Text style={listItemStyles.titleText} numberOfLines={1}>
-                {item.title}
-              </Text>
-              <Text style={listItemStyles.contentText} numberOfLines={1}>
-                {(item.lastMessage as IMessage).content}
-              </Text>
-            </View>
-          </View>
-        </Touchable>
-      );
+      return <ChatListItem conversation={item} />;
     },
-    [navigation],
+    [],
   );
   return (
     <View style={applyStyles('flex-1')}>
