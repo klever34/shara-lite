@@ -1,16 +1,16 @@
-import {PermissionsAndroid, Alert} from 'react-native'
-import Contacts, {Contact} from 'react-native-contacts'
+import {PermissionsAndroid, Alert} from 'react-native';
+import Contacts, {Contact} from 'react-native-contacts';
 
 export interface IContactsService {
-  getAll: () => Promise<Contact[]>
+  getAll: () => Promise<Contact[]>;
 }
 
 export default class ContactsService implements IContactsService {
-  private async checkPermission () {
-    return new Promise(resolve => {
+  private async checkPermission() {
+    return new Promise((resolve) => {
       Contacts.checkPermission((error, result) => {
         if (result === 'authorized') {
-          resolve(true)
+          resolve(true);
         } else {
           Alert.alert(
             'Access to your contacts',
@@ -19,7 +19,7 @@ export default class ContactsService implements IContactsService {
               {
                 text: 'Cancel',
                 onPress: () => {
-                  resolve(false)
+                  resolve(false);
                 },
               },
               {
@@ -31,37 +31,37 @@ export default class ContactsService implements IContactsService {
                     if (status === 'granted') {
                       resolve(true);
                     } else {
-                      resolve(false)
+                      resolve(false);
                     }
-                  })
+                  });
                 },
               },
             ],
             {cancelable: false},
-          )
+          );
         }
-      })
-    })
+      });
+    });
   }
-  public async getAll () {
+  public async getAll() {
     return new Promise<Contact[]>((resolve, reject) => {
-      this.checkPermission().then(hasPermission => {
-        const error = new Error('We are unable to access your contacts')
+      this.checkPermission().then((hasPermission) => {
+        const error = new Error('We are unable to access your contacts');
         if (hasPermission) {
           Contacts.getAll((err, contacts) => {
             if (err) {
               reject(err);
             }
             if (contacts) {
-              resolve(contacts)
+              resolve(contacts);
             } else {
-              reject(error)
+              reject(error);
             }
-          })
+          });
         } else {
-          reject(error)
+          reject(error);
         }
-      })
-    })
+      });
+    });
   }
 }
