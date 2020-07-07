@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {colors} from '../../../styles';
@@ -78,6 +78,16 @@ const BusinessTab = () => {
       },
     },
   ];
+
+  const handleActionItemClick = useCallback(
+    (name?: string) => {
+      if (name) {
+        navigation.navigate(name);
+      }
+    },
+    [navigation],
+  );
+
   return (
     <View style={styles.container}>
       <FloatingAction
@@ -87,7 +97,7 @@ const BusinessTab = () => {
         color={colors.primary}
         showBackground={false}
         actionsPaddingTopBottom={4}
-        onPressItem={(name) => name && navigation.navigate(name)}
+        onPressItem={handleActionItemClick}
       />
     </View>
   );

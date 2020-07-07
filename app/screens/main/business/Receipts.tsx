@@ -19,6 +19,8 @@ type CustomerItemProps = {
 };
 
 const Receipts = () => {
+  //@ts-ignore
+  global.startTime = new Date().getTime();
   const navigation = useNavigation();
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);

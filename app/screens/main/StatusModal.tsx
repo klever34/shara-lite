@@ -18,6 +18,8 @@ import {colors} from '../../styles';
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '.';
+import {format} from 'date-fns/esm';
+import {differenceInMilliseconds} from 'date-fns';
 
 type StatusProps = {
   [key: string]: PageProps;
@@ -65,6 +67,9 @@ const StatusModal = ({
   };
   const type = statusProps[status];
 
+  //@ts-ignore
+  const timeTaken = new Date().getTime() - global.startTime;
+
   const handleCloseModal = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
@@ -93,6 +98,9 @@ const StatusModal = ({
           {type.heading}
         </Text>
         <Text style={applyStyles(styles.subText, type.style.text)}>{text}</Text>
+        <Text style={applyStyles(styles.subText, type.style.text)}>
+          Time taken: {format(timeTaken, 'mm:ss')}
+        </Text>
       </View>
       <View style={styles.actionButton}>
         <Button
