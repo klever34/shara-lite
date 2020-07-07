@@ -1,4 +1,4 @@
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect} from 'react';
 import {SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '../../../styles';
@@ -7,6 +7,11 @@ import {getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../../components/Menu';
 import {applyStyles} from '../../../helpers/utils';
+import {IConversation, IMessage} from '../../../models';
+import {usePubNub} from 'pubnub-react';
+import {useRealm} from '../../../services/realm';
+import {MessageEvent} from 'pubnub';
+import {UpdateMode} from 'realm';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -32,6 +37,70 @@ const HomeScreen = () => {
       ),
     });
   }, [handleLogout, navigation]);
+
+  const pubNub = usePubNub();
+  const realm = useRealm();
+
+  useEffect(() => {
+    if (pubNub) {
+      const channels: string[] = [pubNub.getUUID()];
+
+      if (realm) {
+        const conversations = realm.objects<IConversation>('Conversation');
+        channels.push(
+          ...conversations.map((conversation) => conversation.channel),
+        );
+      }
+
+      pubNub.subscribe({channels});
+    }
+    return () => {
+      if (pubNub) {
+        pubNub.unsubscribeAll();
+      }
+    };
+  }, [pubNub, realm]);
+
+  useEffect(() => {
+    if (pubNub) {
+      const listener = {
+        message: (envelope: MessageEvent & {message: IMessage}) => {
+          const {channel} = envelope;
+          const message = envelope.message as IMessage;
+          try {
+            realm.write(() => {
+              const lastMessage = realm.create<IMessage>(
+                'Message',
+                {
+                  ...message,
+                  created_at: new Date(message.created_at),
+                  timetoken: envelope.timetoken,
+                },
+                UpdateMode.Modified,
+              );
+              realm.create<IConversation>(
+                'Conversation',
+                {
+                  // TODO: Use User full Name as title
+                  title: envelope.message.author,
+                  channel,
+                  lastMessage,
+                },
+                UpdateMode.Modified,
+              );
+            });
+          } catch (e) {
+            console.log('Error: ', e);
+          }
+        },
+      };
+      pubNub.addListener(listener);
+      return () => {
+        pubNub.removeListener(listener);
+      };
+    }
+  }, [pubNub, realm]);
+
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <HomeTab.Navigator

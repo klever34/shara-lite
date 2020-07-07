@@ -1,6 +1,6 @@
 {
   "name": "Shara",
-  "version": "0.1.2-alpha-2",
+  "version": "0.1.2-alpha-3",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -19,6 +19,7 @@
     "@types/date-fns": "^2.6.0",
     "@types/pubnub": "^4.27.4",
     "date-fns": "^2.14.0",
+    "lodash": "^4.17.15",
     "pubnub": "^4.28.1",
     "pubnub-react": "^2.0.0",
     "react": "16.11.0",
@@ -38,13 +39,16 @@
     "react-native-share": "^3.6.0",
     "react-native-tab-view": "^2.14.4",
     "react-native-vector-icons": "^6.6.0",
-    "uuid": "^8.2.0"
+    "realm": "^6.0.2",
+    "uuid": "^8.2.0",
+    "uuid-by-string": "^3.0.2"
   },
   "devDependencies": {
     "@babel/core": "^7.6.2",
     "@babel/runtime": "^7.6.2",
     "@react-native-community/eslint-config": "^1.0.0",
     "@types/jest": "^24.0.24",
+    "@types/lodash": "^4.14.157",
     "@types/pubnub": "^4.27.4",
     "@types/react-native": "^0.62.0",
     "@types/react-native-share": "^3.3.0",

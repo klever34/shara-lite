@@ -1,20 +1,11 @@
 type User = {
   id: number;
-  email?: string;
-  firstname?: string;
-  lastname?: string;
-  mobile?: string;
-};
-
-type MessageAuthor = Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>;
-
-type ChatMessage = {
-  id: string;
-  device: string;
-  created_at: number;
-  content: string;
-  author: MessageAuthor;
-  timetoken?: string | number;
+  firstname: string;
+  lastname: string;
+  mobile: string;
+  country_code: string;
+  created_at: string;
+  updated_at: string;
 };
 
 type PushNotificationToken = {
@@ -27,6 +18,11 @@ type PushNotificationData = {
   userInteraction: boolean;
   message: string;
   data: any;
+};
+
+type ApiResponse<T extends any = any> = {
+  data: any;
+  message: string;
 };
 
 declare module 'react-native-push-notification';
