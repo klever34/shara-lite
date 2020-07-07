@@ -94,13 +94,15 @@ const HomeScreen = () => {
                   })
                   .then((response) => {
                     const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
-                    const membership = response.data.find((membership) => {
-                      return membership.channel.id === channel;
-                    });
-                    if (!membership || !membership.custom) {
+                    const channelMembership = response.data.find(
+                      (membership) => {
+                        return membership.channel.id === channel;
+                      },
+                    );
+                    if (!channelMembership || !channelMembership.custom) {
                       return;
                     }
-                    const encryptedMember = membership.custom.mobile;
+                    const encryptedMember = channelMembership.custom.mobile;
                     let sender = cryptr.decrypt(String(encryptedMember));
                     const contact = realm
                       .objects<IContact>('Contact')
