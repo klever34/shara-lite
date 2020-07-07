@@ -14,49 +14,49 @@
     },
     {
       "id": "2",
-      "price": 6100,
+      "price": 8000,
       "weight": "1kg",
       "name": "IPC - Indomie Pepper Chicken"
     },
     {
       "id": "3",
-      "price": 6100,
+      "price": 5500,
       "weight": "1kg",
       "name": "ION - Indomie Onion Noodles"
     },
     {
       "id": "4",
-      "price": 6100,
+      "price": 5000,
       "weight": "1kg",
       "name": "ICN - Indomie Chicken Noodles"
     },
     {
       "id": "5",
-      "price": 6100,
+      "price": 15000,
       "weight": "1kg",
       "name": "GPP - Golden Penny Pasta"
     },
     {
       "id": "6",
-      "price": 6100,
+      "price": 24000,
       "weight": "5kg",
       "name": "HF - Honeywell Flour"
     },
     {
       "id": "7",
-      "price": 6100,
+      "price": 12000,
       "weight": "1kg",
       "name": "HP - Honeywell Pasta"
     },
     {
       "id": "8",
-      "price": 6100,
+      "price": 3500,
       "weight": "1kg",
       "name": "OCC - Onga Chicken Cubes"
     },
     {
       "id": "9",
-      "price": 6100,
+      "price": 6500,
       "weight": "1kg",
       "name": "OCC - Onga Crafish Cubes"
     }

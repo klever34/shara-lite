@@ -16,7 +16,7 @@ import {Button} from '../../../components/Button';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 
 type SummaryTableItemProps = {
@@ -98,7 +98,9 @@ const SummaryTableItem = ({item}: SummaryTableItemProps) => {
         <Text style={summaryTableItemStyles.text}>
           {item.name} ({item.weight})
         </Text>
-        <Text style={summaryTableItemStyles.subText}>N{price} Per Unit</Text>
+        <Text style={summaryTableItemStyles.subText}>
+          &#8358;{numberWithCommas(price)} Per Unit
+        </Text>
       </View>
       <View
         style={applyStyles(summaryTableStyles['column-20'], {
@@ -110,7 +112,9 @@ const SummaryTableItem = ({item}: SummaryTableItemProps) => {
         style={applyStyles(summaryTableStyles['column-40'], {
           alignItems: 'flex-end',
         })}>
-        <Text style={summaryTableItemStyles.text}>N{subtotal}</Text>
+        <Text style={summaryTableItemStyles.text}>
+          &#8358;{numberWithCommas(subtotal)}
+        </Text>
       </View>
     </View>
   );
@@ -210,7 +214,6 @@ const ReceiptSummary = ({
           <FlatList
             data={products}
             nestedScrollEnabled
-            style={styles.productsList}
             renderItem={renderSummaryItem}
             keyExtractor={(item) => item.id}
             ListHeaderComponent={SummaryTableHeader}
@@ -234,7 +237,9 @@ const ReceiptSummary = ({
                   'justify-space-between',
                 )}>
                 <Text>Total:</Text>
-                <Text style={styles.totalAmountText}>N{totalAmount}</Text>
+                <Text style={styles.totalAmountText}>
+                  &#8358;{numberWithCommas(totalAmount)}
+                </Text>
               </View>
             </View>
           </View>
@@ -346,9 +351,6 @@ const styles = StyleSheet.create({
   totalAmountText: {
     fontSize: 18,
     fontWeight: 'bold',
-  },
-  productsList: {
-    maxHeight: 200,
   },
   addProductButton: {
     marginBottom: 24,

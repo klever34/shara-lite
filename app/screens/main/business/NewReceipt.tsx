@@ -16,6 +16,7 @@ import {products} from './data.json';
 import {MainStackParamList} from '..';
 import {StackScreenProps} from '@react-navigation/stack';
 import SearchableDropdown from '../../../components/SearchableDropdown';
+import {applyStyles} from '../../../helpers/utils';
 
 type RecentProductItemProps = {
   item: Product;
@@ -109,6 +110,12 @@ const NewReceipt = ({
     [],
   );
 
+  const getSubtotal = useCallback(() => {
+    const p = price ? parseFloat(price) : 0;
+    const q = quantity ? parseFloat(quantity) : 0;
+    return (p * q).toString();
+  }, [price, quantity]);
+
   return (
     <SafeAreaView style={styles.container}>
       <SearchableDropdown
@@ -141,19 +148,48 @@ const NewReceipt = ({
                   {selectedProduct?.name} ({selectedProduct?.weight})
                 </Text>
                 <View style={styles.calculatorSectionInputs}>
-                  <TextInput
-                    value={price}
-                    keyboardType="numeric"
-                    placeholder="Unit Price"
-                    onChangeText={handlePriceChange}
-                    style={styles.calculatorSectionInput}
-                  />
+                  <View
+                    style={applyStyles('flex-row', 'items-center', {
+                      width: '48%',
+                    })}>
+                    <View style={styles.textInputIcon}>
+                      <Text style={styles.textInputIconText}>&#8358;</Text>
+                    </View>
+                    <TextInput
+                      value={price}
+                      keyboardType="numeric"
+                      placeholder="Unit Price"
+                      onChangeText={handlePriceChange}
+                      style={applyStyles(
+                        'flex-1',
+                        'pl-lg',
+                        styles.calculatorSectionInput,
+                      )}
+                    />
+                  </View>
                   <TextInput
                     value={quantity}
                     keyboardType="numeric"
                     placeholder="Quantity"
                     onChangeText={handleQuantityChange}
-                    style={styles.calculatorSectionInput}
+                    style={applyStyles(styles.calculatorSectionInput, {
+                      width: '48%',
+                    })}
+                  />
+                </View>
+                <View style={styles.calculatorSectionInputs}>
+                  <View style={styles.textInputIcon}>
+                    <Text style={styles.textInputIconText}>&#8358;</Text>
+                  </View>
+                  <TextInput
+                    keyboardType="numeric"
+                    placeholder="Subtotal"
+                    style={applyStyles(
+                      'flex-1',
+                      'pl-lg',
+                      styles.calculatorSectionInput,
+                    )}
+                    value={getSubtotal()}
                   />
                 </View>
               </>
@@ -267,7 +303,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   calculatorSectionInput: {
-    width: '48%',
     fontSize: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-700'],
@@ -281,6 +316,12 @@ const styles = StyleSheet.create({
   },
   calculatorSectionButton: {
     width: '48%',
+  },
+  textInputIcon: {
+    position: 'absolute',
+  },
+  textInputIconText: {
+    fontSize: 16,
   },
 });
 
