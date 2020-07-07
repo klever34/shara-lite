@@ -27,9 +27,9 @@ export default class ContactsService implements IContactsService {
                 onPress: () => {
                   PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-                  ).then(result => {
-                    if (result === 'granted') {
-                      resolve(true)
+                  ).then((status) => {
+                    if (status === 'granted') {
+                      resolve(true);
                     } else {
                       resolve(false)
                     }
@@ -49,6 +49,9 @@ export default class ContactsService implements IContactsService {
         const error = new Error('We are unable to access your contacts')
         if (hasPermission) {
           Contacts.getAll((err, contacts) => {
+            if (err) {
+              reject(err);
+            }
             if (contacts) {
               resolve(contacts)
             } else {

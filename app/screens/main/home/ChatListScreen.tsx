@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {memo, useCallback} from 'react';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -13,19 +13,24 @@ import {applyStyles} from '../../../helpers/utils';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
-
-type ChatListItemData = {id: string | number; title: string};
-
-const chatList: ChatListItemData[] = [{id: 1, title: 'Shara Chat'}];
+import {IConversation, IMessage} from '../../../models';
+import {useRealm} from '../../../services/realm';
 
 const ChatListScreen = () => {
   const navigation = useNavigation();
+  const realm = useRealm() as Realm;
+  const conversations = realm
+    .objects<IConversation>('Conversation')
+    .filtered('lastMessage != null');
   const renderChatListItem = useCallback(
-    ({item}: ListRenderItemInfo<ChatListItemData>) => {
+    ({item}: ListRenderItemInfo<IConversation>) => {
       return (
         <Touchable
           onPress={() => {
-            navigation.navigate('Chat', {title: item.title});
+            navigation.navigate('Chat', {
+              title: item.title,
+              channel: item.channel,
+            });
           }}>
           <View style={listItemStyles.container}>
             <View style={listItemStyles.imageContainer}>
@@ -42,7 +47,12 @@ const ChatListScreen = () => {
               />
             </View>
             <View style={listItemStyles.titleContainer}>
-              <Text style={listItemStyles.titleText}>{item.title}</Text>
+              <Text style={listItemStyles.titleText} numberOfLines={1}>
+                {item.title}
+              </Text>
+              <Text style={listItemStyles.contentText} numberOfLines={1}>
+                {(item.lastMessage as IMessage).content}
+              </Text>
             </View>
           </View>
         </Touchable>
@@ -53,9 +63,9 @@ const ChatListScreen = () => {
   return (
     <View style={applyStyles('flex-1')}>
       <FlatList
-        data={chatList}
+        data={conversations}
         renderItem={renderChatListItem}
-        keyExtractor={(item) => String(item.id)}
+        keyExtractor={(item) => item.channel}
       />
       <FAButton
         iconName="text"
@@ -69,23 +79,25 @@ const ChatListScreen = () => {
 
 const listItemStyles = StyleSheet.create({
   container: {
-    paddingVertical: 12,
     paddingHorizontal: 12,
     flexDirection: 'row',
     alignItems: 'center',
   },
   titleContainer: applyStyles('h-full flex-1', {
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: 'grey',
+    borderBottomColor: colors['gray-400'],
   }),
   imageContainer: applyStyles('center', {
+    marginVertical: 12,
     width: 56,
     height: 56,
     borderRadius: 28,
     backgroundColor: colors.primary,
     marginRight: 12,
   }),
-  titleText: applyStyles('text-lg', {fontWeight: 'bold'}),
+  titleText: applyStyles('text-lg font-bold mb-sm'),
+  contentText: applyStyles('text-base', {color: colors['gray-600']}),
 });
 
-export default ChatListScreen;
+export default memo(ChatListScreen);

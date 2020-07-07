@@ -1,4 +1,4 @@
-import {MessageEvent, PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
+import {PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {
   useCallback,
@@ -29,44 +29,44 @@ import {colors} from '../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from './index';
 import {getAuthService} from '../../services';
+import {useRealm} from '../../services/realm';
+import {UpdateMode} from 'realm';
+import {IMessage} from '../../models';
 
 type MessageItemProps = {
-  item: ChatMessage;
+  item: IMessage;
 };
 
-const messageItemKeyExtractor = (message: ChatMessage) => message.id;
-
-const sortMessages = (a: ChatMessage, b: ChatMessage) => {
-  const dateA = new Date(a.created_at).getTime();
-  const dateB = new Date(b.created_at).getTime();
-  return dateB - dateA;
-};
+const messageItemKeyExtractor = (message: IMessage) => message.id;
 
 const ChatScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
-  const pubnub = usePubNub();
+  const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
-  const chatMessageChannel = 'SHARA_GLOBAL';
-  const isTypingChannel = 'IS_TYPING';
+  const {channel, title} = route.params;
   const [input, setInput] = useState('');
+  const [hasMore, setHasMore] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
-  const user = useMemo<User | null>(() => {
+  const user = useMemo<User>(() => {
     const authService = getAuthService();
-    return authService.getUser();
+    return authService.getUser() as User;
   }, []);
-
+  const realm = useRealm() as Realm;
+  const messages = realm
+    .objects<IMessage>('Message')
+    .filtered(`channel = "${channel}"`)
+    .sorted('created_at', true);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => {
         return (
           <View style={styles.headerTitle}>
-            <Text style={styles.headerTitleText}>{route.params.title}</Text>
+            <Text style={styles.headerTitleText}>{title}</Text>
             {!!typingMessage && (
               <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
             )}
@@ -74,62 +74,62 @@ const ChatScreen = ({
         );
       },
     });
-  }, [navigation, route.params.title, typingMessage]);
-
+  }, [navigation, title, typingMessage]);
   const fetchHistory = useCallback(() => {
-    const count = messages.length + 20;
+    if (!hasMore) {
+      return;
+    }
+    let start: string | number | undefined;
+    if (messages.length) {
+      start = messages[messages.length - 1].timetoken;
+    }
+    const count = 20;
     setIsLoading(true);
-    pubnub.history({channel: chatMessageChannel, count}, (status, response) => {
+    pubNub.history({channel, count, start}, (status, response) => {
       setIsLoading(false);
       if (response) {
-        const history: ChatMessage[] = response.messages.map((item) => {
-          const entry = item.entry as ChatMessage;
+        let history: IMessage[] = response.messages.map((item) => {
+          const entry = item.entry as IMessage;
           return {
             ...entry,
             timetoken: item.timetoken,
           };
         });
-        setMessages(history.sort(sortMessages));
+        history = history.filter((message) => message.timetoken !== start);
+        if (history.length) {
+          if (history.length < count) {
+            setHasMore(false);
+          }
+          try {
+            realm.write(() => {
+              history.forEach((message) => {
+                realm.create(
+                  'Message',
+                  {
+                    ...message,
+                    created_at: new Date(message.created_at),
+                    timetoken: String(message.timetoken),
+                  },
+                  UpdateMode.Modified,
+                );
+              });
+            });
+          } catch (e) {
+            console.log('Error: ', e);
+          }
+        }
       }
     });
-  }, [messages.length, pubnub]);
+  }, [channel, hasMore, messages, pubNub, realm]);
 
   useEffect(fetchHistory, []);
   useEffect(() => {
-    if (pubnub) {
+    if (pubNub) {
       const listener = {
-        message: (envelope: MessageEvent) => {
-          const message = envelope.message as ChatMessage;
-          setMessages((prevMessages) => {
-            const prevMessageIndex = prevMessages.findIndex(
-              ({id}) => id === message.id,
-            );
-            let nextMessages: ChatMessage[];
-            if (prevMessageIndex > -1) {
-              nextMessages = [
-                ...prevMessages.slice(0, prevMessageIndex),
-                {
-                  ...message,
-                  timetoken: envelope.timetoken,
-                },
-                ...prevMessages.slice(prevMessageIndex + 1),
-              ];
-            } else {
-              nextMessages = [
-                {
-                  ...message,
-                  timetoken: envelope.timetoken,
-                },
-                ...prevMessages,
-              ];
-            }
-            return nextMessages.sort(sortMessages);
-          });
-        },
         signal: (envelope: SignalEvent) => {
           if (
             envelope.message === 'TYPING_ON' &&
-            envelope.publisher !== pubnub.getUUID()
+            envelope.publisher !== pubNub.getUUID()
           ) {
             setTypingMessage(`+${envelope.publisher} is typing...`);
           } else {
@@ -137,47 +137,51 @@ const ChatScreen = ({
           }
         },
       };
-      // Add the listener to pubnub instance and subscribe to `chat` channel.
-      pubnub.addListener(listener);
-      pubnub.subscribe({channels: [chatMessageChannel, isTypingChannel]});
+      // Add the listener to pubNub instance and subscribe to `chat` channel.
+      pubNub.addListener(listener);
       // We need to return a function that will handle unsubscription on unmount
       return () => {
-        pubnub.removeListener(listener);
-        pubnub.unsubscribeAll();
+        pubNub.removeListener(listener);
       };
     }
-  }, [pubnub]);
+  }, [channel, pubNub, realm]);
 
   useEffect(() => {
     if (input && !isTyping) {
       setIsTyping(true);
-      pubnub.signal({
-        channel: isTypingChannel,
-        message: 'TYPING_ON',
-      });
+      pubNub
+        .signal({
+          channel,
+          message: 'TYPING_ON',
+        })
+        .then();
     } else if (!input && isTyping) {
       setIsTyping(false);
-      pubnub.signal({
-        channel: isTypingChannel,
-        message: 'TYPING_OFF',
-      });
+      pubNub
+        .signal({
+          channel,
+          message: 'TYPING_OFF',
+        })
+        .then();
     }
-  }, [user, input, isTyping, pubnub]);
+  }, [user, input, isTyping, pubNub, channel]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
-    const message: ChatMessage = {
+    const message: IMessage = {
       id: generateUniqueId(),
       content: input,
-      created_at: new Date().getTime(),
-      device: pubnub.getUUID(),
-      author: {
-        id: user?.id ?? -1,
-        mobile: user?.mobile,
-        lastname: user?.lastname,
-        firstname: user?.firstname,
-      },
+      created_at: new Date(),
+      author: user.mobile,
+      channel,
     };
+    try {
+      realm.write(() => {
+        realm.create('Message', message, UpdateMode.Never);
+      });
+    } catch (e) {
+      console.log('Error: ', e);
+    }
     const messagePayload = {
       pn_gcm: {
         notification: {
@@ -186,23 +190,22 @@ const ChatScreen = ({
         },
         data: {
           ...message,
-          channel: chatMessageChannel,
+          channel,
         },
       },
       ...message,
     };
-    setMessages((prevMessages) => [message, ...prevMessages]);
-    pubnub.publish(
-      {channel: chatMessageChannel, message: messagePayload},
-      function (status: PubnubStatus, response: PublishResponse) {
-        if (status.error) {
-          Alert.alert('Error', status.errorData?.message);
-        } else {
-          console.log('message Published w/ timetoken', response.timetoken);
-        }
-      },
-    );
-  }, [input, pubnub, user]);
+    pubNub.publish({channel, message: messagePayload}, function (
+      status: PubnubStatus,
+      response: PublishResponse,
+    ) {
+      if (status.error) {
+        Alert.alert('Error', status.errorData?.message);
+      } else {
+        console.log('message Published w/ timetoken', response.timetoken);
+      }
+    });
+  }, [channel, input, pubNub, realm, user]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => {
@@ -231,7 +234,6 @@ const ChatScreen = ({
       openEmojiBoard();
     }
   }, [showEmojiBoard, closeEmojiBoard, openEmojiBoard]);
-
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
@@ -254,6 +256,7 @@ const ChatScreen = ({
           style={styles.listContainer}
           renderItem={renderMessageItem}
           onEndReached={fetchHistory}
+          onEndReachedThreshold={0.2}
           data={messages}
           keyExtractor={messageItemKeyExtractor}
         />

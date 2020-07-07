@@ -19,3 +19,15 @@ export const applyStyles = (
     }
     return {...acc, ...curr};
   }, {});
+
+export const handleFetchErrors = async <T extends any>(
+  response: Response,
+): Promise<T> => {
+  if (!response.ok) {
+    const jsonResponse = await response.json();
+    return Promise.reject(
+      new Error(jsonResponse.mesage || jsonResponse.message),
+    );
+  }
+  return response.json();
+};
