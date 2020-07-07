@@ -111,6 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingRight: 12,
     fontWeight: '500',
+    color: colors['gray-300'],
   },
   fabButton: {
     paddingHorizontal: 12,

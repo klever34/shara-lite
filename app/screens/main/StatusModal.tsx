@@ -29,7 +29,7 @@ type PageProps = {
   closeButtonColor: string;
   icon: ImageProps['source'];
   buttonVariant: 'red' | 'white';
-  style: {container: ViewStyle; text: TextStyle};
+  style: {container: ViewStyle; text: TextStyle; heading: TextStyle};
 };
 
 const StatusModal = ({
@@ -45,7 +45,8 @@ const StatusModal = ({
       icon: require('../../assets/icons/check-circle.png'),
       buttonVariant: 'red',
       style: {
-        text: {color: colors['gray-900']},
+        text: {color: colors['gray-200']},
+        heading: {color: colors['gray-300']},
         container: {backgroundColor: colors.white},
       },
     },
@@ -57,6 +58,7 @@ const StatusModal = ({
       buttonVariant: 'white',
       style: {
         text: {color: colors.white},
+        heading: {color: colors.white},
         container: {backgroundColor: colors.primary},
       },
     },
@@ -86,7 +88,8 @@ const StatusModal = ({
       )}
       <View style={styles.content}>
         <Image source={type.icon} style={applyStyles('mb-xl', styles.icon)} />
-        <Text style={applyStyles('pb-sm', styles.headingText, type.style.text)}>
+        <Text
+          style={applyStyles('pb-sm', styles.headingText, type.style.heading)}>
           {type.heading}
         </Text>
         <Text style={applyStyles(styles.subText, type.style.text)}>{text}</Text>

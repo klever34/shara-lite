@@ -149,14 +149,16 @@ const styles = StyleSheet.create({
   newCustomerButtonText: {
     fontSize: 16,
     paddingLeft: 12,
+    color: colors['gray-300'],
   },
   customerListHeader: {
     fontSize: 12,
     fontWeight: 'bold',
     paddingVertical: 4,
     paddingHorizontal: 8,
-    textTransform: 'uppercase',
     borderBottomWidth: 1,
+    textTransform: 'uppercase',
+    color: colors['gray-300'],
     borderBottomColor: colors['gray-20'],
   },
   customerListItem: {
@@ -168,6 +170,7 @@ const styles = StyleSheet.create({
   },
   customerListItemText: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
 });
 

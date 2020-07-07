@@ -45,6 +45,7 @@ const summaryTableHeaderStyles = StyleSheet.create({
   },
   text: {
     fontWeight: 'bold',
+    color: colors['gray-300'],
   },
 });
 
@@ -56,10 +57,11 @@ const summaryTableItemStyles = StyleSheet.create({
   text: {
     fontSize: 16,
     paddingBottom: 4,
+    color: colors['gray-300'],
   },
   subText: {
     fontSize: 12,
-    color: colors['gray-700'],
+    color: colors['gray-200'],
   },
 });
 
@@ -227,7 +229,12 @@ const ReceiptSummary = ({
                   'items-center',
                   'justify-space-between',
                 )}>
-                <Text>Tax:</Text>
+                <Text
+                  style={applyStyles({
+                    color: colors['gray-300'],
+                  })}>
+                  Tax:
+                </Text>
                 <Text>{tax}</Text>
               </View>
               <View
@@ -236,7 +243,12 @@ const ReceiptSummary = ({
                   'items-center',
                   'justify-space-between',
                 )}>
-                <Text>Total:</Text>
+                <Text
+                  style={applyStyles({
+                    color: colors['gray-300'],
+                  })}>
+                  Total:
+                </Text>
                 <Text style={styles.totalAmountText}>
                   &#8358;{numberWithCommas(totalAmount)}
                 </Text>
@@ -351,6 +363,7 @@ const styles = StyleSheet.create({
   totalAmountText: {
     fontSize: 18,
     fontWeight: 'bold',
+    color: colors['gray-300'],
   },
   addProductButton: {
     marginBottom: 24,
@@ -383,6 +396,7 @@ const styles = StyleSheet.create({
   customerSignatureText: {
     fontSize: 12,
     textAlign: 'center',
+    color: colors['gray-300'],
   },
   actionButtons: {
     marginTop: 24,
@@ -398,6 +412,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 16,
     borderBottomWidth: 1,
+    color: colors['gray-300'],
     borderBottomColor: colors['gray-700'],
   },
   buttonStyle: {

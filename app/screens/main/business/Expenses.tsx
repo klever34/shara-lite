@@ -1,20 +1,14 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {applyStyles} from '../../../helpers/utils';
+import EmptyState from '../../../components/EmptyState';
 
 const Expenses = () => {
   return (
-    <View style={applyStyles('flex-1', 'justify-center', 'items-center')}>
-      <Text style={styles.heading}>Coming Soon</Text>
-    </View>
+    <EmptyState
+      heading="Coming Soon"
+      source={require('../../../assets/images/coming-soon.png')}
+      text="We’re working on this page right now, it’ll be available shortly."
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  heading: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-});
 
 export default Expenses;

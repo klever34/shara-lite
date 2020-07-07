@@ -246,8 +246,9 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     paddingVertical: 4,
     paddingHorizontal: 8,
-    textTransform: 'uppercase',
     borderBottomWidth: 1,
+    color: colors['gray-300'],
+    textTransform: 'uppercase',
     borderBottomColor: colors['gray-20'],
   },
   recentProductsList: {
@@ -262,6 +263,7 @@ const styles = StyleSheet.create({
   },
   recentProductItemText: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
   calculatorSection: {
     borderTopWidth: 15,
@@ -276,7 +278,7 @@ const styles = StyleSheet.create({
   receiptItemsCountText: {
     fontSize: 12,
     textAlign: 'center',
-    color: '#5E5959',
+    color: colors['gray-200'],
     textTransform: 'uppercase',
   },
   calculatorSectionHelperText: {
@@ -286,6 +288,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 12,
     borderTopWidth: 0.8,
+    color: colors['gray-300'],
     textTransform: 'uppercase',
     borderTopColor: colors['gray-20'],
   },
