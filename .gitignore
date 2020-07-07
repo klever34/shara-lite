@@ -70,3 +70,5 @@ buck-out/
 .env.dev
 .env.staging
 .env.production
+
+shim.js

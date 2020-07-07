@@ -143,7 +143,7 @@ const ContactsScreen = () => {
                   .filtered(`channel = "${channelName}"`)[0];
                 if (!conversation) {
                   realm.write(() => {
-                    conversation = realm.create('Conversation', {
+                    conversation = realm.create<IConversation>('Conversation', {
                       title: item.fullName,
                       channel: channelName,
                     });

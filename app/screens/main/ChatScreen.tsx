@@ -98,7 +98,7 @@ const ChatScreen = ({
           try {
             realm.write(() => {
               history.forEach((message) => {
-                realm.create(
+                realm.create<IMessage>(
                   'Message',
                   {
                     ...message,
@@ -132,7 +132,7 @@ const ChatScreen = ({
     };
     try {
       realm.write(() => {
-        realm.create('Message', message, UpdateMode.Never);
+        realm.create<IMessage>('Message', message, UpdateMode.Never);
       });
     } catch (e) {
       console.log('Error: ', e);
