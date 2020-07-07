@@ -94,6 +94,7 @@ const Receipts = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: 'white',
   },
   searchContainer: {
     padding: 8,

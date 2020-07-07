@@ -282,11 +282,8 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
   totalSectionContainer: {
-    paddingTop: 12,
     marginBottom: 12,
-    borderTopWidth: 1,
     alignItems: 'flex-end',
-    borderTopColor: colors['gray-20'],
   },
   totalSection: {
     width: '60%',
@@ -320,7 +317,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginBottom: 8,
     borderWidth: 1,
-    borderColor: colors['gray-50'],
+    borderColor: colors['gray-20'],
   },
   customerSignatureText: {
     fontSize: 12,

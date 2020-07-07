@@ -9,13 +9,13 @@ import {
   View,
 } from 'react-native';
 import {Button} from '../../../components/Button';
-import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import {products} from './data.json';
 import {MainStackParamList} from '..';
 import {StackScreenProps} from '@react-navigation/stack';
+import SearchableDropdown from '../../../components/SearchableDropdown';
 
 type RecentProductItemProps = {
   item: Product;
@@ -67,8 +67,27 @@ const NewReceipt = ({
   }, []);
 
   const handleDone = useCallback(() => {
-    navigation.navigate('ReceiptSummary', {products: receipt, customer});
-  }, [receipt, navigation, customer]);
+    let items = receipt;
+    if (selectedProduct && quantity && price) {
+      const product: ReceiptItem = {
+        ...selectedProduct,
+        price,
+        quantity,
+      } as ReceiptItem;
+
+      handleAddItem();
+      items = [product, ...receipt];
+    }
+    navigation.navigate('ReceiptSummary', {products: items, customer});
+  }, [
+    receipt,
+    selectedProduct,
+    quantity,
+    price,
+    handleAddItem,
+    navigation,
+    customer,
+  ]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -92,22 +111,12 @@ const NewReceipt = ({
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon
-            size={24}
-            style={styles.searchInputIcon}
-            type="ionicons"
-            name="ios-search"
-            color={colors.primary}
-          />
-          <TextInput
-            style={styles.searchInput}
-            placeholder="Search Products"
-            placeholderTextColor={colors['gray-50']}
-          />
-        </View>
-      </View>
+      <SearchableDropdown
+        items={products}
+        searchTerm="name"
+        onItemSelect={handleSelectProduct}
+        textInputProps={{placeholder: 'Search Products'}}
+      />
       <FlatList
         data={products}
         style={styles.recentProductsList}
@@ -219,7 +228,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
   },
   calculatorSection: {
-    borderTopWidth: 1,
+    borderTopWidth: 15,
     paddingVertical: 8,
     paddingHorizontal: 12,
     borderTopColor: colors['gray-20'],
