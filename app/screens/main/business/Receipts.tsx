@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useState, useCallback, useLayoutEffect} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -20,6 +20,8 @@ type CustomerItemProps = {
 
 const Receipts = () => {
   const navigation = useNavigation();
+  const [searchInputValue, setSearchInputValue] = useState('');
+  const [myCustomers, setMyCustomers] = useState(customers);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -30,9 +32,24 @@ const Receipts = () => {
   const handleSelectCustomer = useCallback(
     (item?: Customer) => {
       navigation.navigate('NewReceipt', {customer: item});
+      setSearchInputValue('');
+      setMyCustomers(customers);
     },
     [navigation],
   );
+
+  const handleCustomerSearch = useCallback((searchedText: string) => {
+    const sort = (item: Customer, text: string) => {
+      return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+    };
+    var ac = customers.filter((item: Customer) => {
+      return sort(item, searchedText);
+    });
+    setMyCustomers(ac);
+    setTimeout(() => {
+      setSearchInputValue(searchedText);
+    }, 0);
+  }, []);
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {
@@ -64,8 +81,10 @@ const Receipts = () => {
             color={colors.primary}
           />
           <TextInput
+            value={searchInputValue}
             style={styles.searchInput}
             placeholder="Search Customer"
+            onChangeText={handleCustomerSearch}
             placeholderTextColor={colors['gray-50']}
           />
         </View>
@@ -82,7 +101,7 @@ const Receipts = () => {
         </View>
       </Touchable>
       <FlatList
-        data={customers}
+        data={myCustomers}
         renderItem={renderCustomerListItem}
         ListHeaderComponent={renderCustomerListHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}

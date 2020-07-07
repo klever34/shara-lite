@@ -16,49 +16,49 @@
       "id": "2",
       "price": 6100,
       "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "name": "IPC - Indomie Pepper Chicken"
     },
     {
       "id": "3",
       "price": 6100,
       "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "name": "ION - Indomie Onion Noodles"
     },
     {
       "id": "4",
       "price": 6100,
       "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "name": "ICN - Indomie Chicken Noodles"
     },
     {
       "id": "5",
       "price": 6100,
       "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "name": "GPP - Golden Penny Pasta"
     },
     {
       "id": "6",
       "price": 6100,
-      "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "weight": "5kg",
+      "name": "HF - Honeywell Flour"
     },
     {
       "id": "7",
       "price": 6100,
       "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "name": "HP - Honeywell Pasta"
     },
     {
       "id": "8",
       "price": 6100,
       "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "name": "OCC - Onga Chicken Cubes"
     },
     {
       "id": "9",
       "price": 6100,
       "weight": "1kg",
-      "name": "DRF - Dangote Refined Sugar"
+      "name": "OCC - Onga Crafish Cubes"
     }
   ],
   "customers": [
@@ -66,6 +66,26 @@
       "id": "0",
       "mobile": "2348078657912",
       "name": "Shina Peller"
+    },
+    {
+      "id": "1",
+      "mobile": "2348078657914",
+      "name": "Kola Ventures"
+    },
+    {
+      "id": "2",
+      "mobile": "2349077657914",
+      "name": "Mama Tutu Stores"
+    },
+    {
+      "id": "3",
+      "mobile": "2348007657914",
+      "name": "Top Crust Bakeries"
+    },
+    {
+      "id": "4",
+      "mobile": "2348087627914",
+      "name": "Tasty Fried Chicken"
     }
   ]
 }

@@ -137,8 +137,8 @@ const ReceiptSummary = ({
   }, [navigation]);
 
   const handleAddProduct = useCallback(() => {
-    navigation.navigate('NewReceipt');
-  }, [navigation]);
+    navigation.navigate('NewReceipt', {customer});
+  }, [navigation, customer]);
 
   const handleUpdateCustomer = useCallback(
     (value, key) => {
