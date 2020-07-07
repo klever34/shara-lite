@@ -13,11 +13,27 @@ import HomeScreen from './home';
 import Realm from 'realm';
 import {createRealm, RealmProvider} from '../../services/realm';
 import getUuidByString from 'uuid-by-string';
+import Receipts from './business/Receipts';
+import NewReceipt from './business/NewReceipt';
+import ReceiptSummary from './business/ReceiptSummary';
+import StatusModal from './StatusModal';
+import Finances from './business/Finances';
+import Inventory from './business/Inventory';
+import Expenses from './business/Expenses';
+import Credit from './business/Credit';
 
 export type MainStackParamList = {
   Home: undefined;
   Chat: {title: string; channel: string};
   Contacts: undefined;
+  Receipts: undefined;
+  NewReceipt: {customer: Customer};
+  ReceiptSummary: {customer: Customer; products: ReceiptItem[]};
+  StatusModal: {status: string; text: string; onClick(): void};
+  Finances: undefined;
+  Inventory: undefined;
+  Expenses: undefined;
+  Credit: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -110,6 +126,87 @@ const MainScreens = ({navigation}: any) => {
             name="Chat"
             component={ChatScreen}
             options={{
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="Receipts"
+            component={Receipts}
+            options={{
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="NewReceipt"
+            component={NewReceipt}
+            options={{
+              title: 'New Receipt',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="ReceiptSummary"
+            component={ReceiptSummary}
+            options={{
+              title: 'Receipt Summary',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="StatusModal"
+            component={StatusModal}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="Finances"
+            component={Finances}
+            options={{
+              title: 'Finances',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="Inventory"
+            component={Inventory}
+            options={{
+              title: 'Inventory',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="Expenses"
+            component={Expenses}
+            options={{
+              title: 'Expenses',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="Credit"
+            component={Credit}
+            options={{
+              title: 'Credit',
               headerStyle: {
                 backgroundColor: colors.primary,
               },

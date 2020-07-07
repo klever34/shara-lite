@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import {colors} from '../styles';
 import Touchable from './Touchable';
+import {applyStyles} from '../helpers/utils';
 
 interface variantColorStylesOptions {
   [key: string]: any;
@@ -18,7 +19,8 @@ interface variantColorHexColorOptions {
 }
 
 interface ButtonProps extends BaseButtonProps {
-  isLoading: boolean;
+  style?: ViewStyle;
+  isLoading?: boolean;
   variantColor: 'red' | 'white';
 }
 
@@ -50,6 +52,7 @@ const styles = StyleSheet.create({
 
 export const Button = ({
   title,
+  style,
   onPress,
   isLoading,
   disabled,
@@ -75,7 +78,11 @@ export const Button = ({
     <BaseButton
       onPress={onPress}
       disabled={disabled}
-      style={{...styles.button, ...variantColorStyles[variantColor].button}}>
+      style={applyStyles(
+        styles.button,
+        variantColorStyles[variantColor].button,
+        {...style},
+      )}>
       {isLoading ? (
         <ActivityIndicator
           animating={isLoading}

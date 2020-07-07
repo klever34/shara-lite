@@ -1,6 +1,6 @@
 {
   "name": "Shara",
-  "version": "0.1.2-alpha-4",
+  "version": "0.1.2-alpha-5",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -30,6 +30,7 @@
     "react-native-crypto": "^2.2.0",
     "react-native-device-info": "^5.6.1",
     "react-native-emoji-selector": "^0.1.8",
+    "react-native-floating-action": "^1.20.0",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-get-random-values": "^1.4.0",
     "react-native-popup-menu": "^0.15.8",
@@ -39,8 +40,10 @@
     "react-native-safe-area-context": "^3.0.5",
     "react-native-screens": "^2.9.0",
     "react-native-share": "^3.6.0",
+    "react-native-signature-capture": "^0.4.10",
     "react-native-tab-view": "^2.14.4",
     "react-native-vector-icons": "^6.6.0",
+    "react-native-webview": "^10.3.2",
     "realm": "^6.0.2",
     "uuid": "^8.2.0",
     "uuid-by-string": "^3.0.2",

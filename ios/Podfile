@@ -83,6 +83,8 @@ target 'SharaRN' do
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
+  pod 'react-native-signature-capture', :path => '../node_modules/react-native-signature-capture'
+
   target 'SharaRNTests' do
     inherit! :complete
     # Pods for testing

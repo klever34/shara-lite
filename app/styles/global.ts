@@ -11,6 +11,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'justify-center': {
     justifyContent: 'center',
   },
+  'justify-space-between': {
+    justifyContent: 'space-between',
+  },
   'items-center': {
     alignItems: 'center',
   },

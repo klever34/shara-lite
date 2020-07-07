@@ -31,3 +31,6 @@ export const handleFetchErrors = async <T extends any>(
   }
   return response.json();
 };
+
+export const numberWithCommas = (x: number) =>
+  x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
