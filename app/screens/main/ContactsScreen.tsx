@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {getContactsService} from '../../services';
+import {getAuthService, getContactsService} from '../../services';
 import {applyStyles} from '../../helpers/utils';
 import Touchable from '../../components/Touchable';
 import {CommonActions, useNavigation} from '@react-navigation/native';
@@ -21,6 +21,7 @@ import {IContact, IConversation} from '../../models';
 import flatten from 'lodash/flatten';
 import {UpdateMode} from 'realm';
 import {requester} from '../../services/api/config';
+import {IAuthService} from '../../services/AuthService';
 
 const ContactsScreen = () => {
   const navigation = useNavigation();
@@ -50,11 +51,15 @@ const ContactsScreen = () => {
             });
           }),
         )
-          .then((responses) => {
+          .then((responses: ApiResponse<{users: User[]}>[]) => {
             const users = flatten(responses.map(({data}) => data.users));
+            const authService = getAuthService() as IAuthService;
+            const me = authService.getUser() as User;
             realm.write(() => {
-              users.forEach((user) => {
-                realm.create<IContact>('Contact', user, UpdateMode.Modified);
+              (users as User[]).forEach((user) => {
+                if (me.id !== user.id) {
+                  realm.create<IContact>('Contact', user, UpdateMode.Modified);
+                }
               });
             });
             setLoading(false);
