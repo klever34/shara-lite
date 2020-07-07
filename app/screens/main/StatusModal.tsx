@@ -16,6 +16,8 @@ import {Button} from '../../components/Button';
 import {applyStyles} from '../../helpers/utils';
 import {colors} from '../../styles';
 import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from '.';
 
 type StatusProps = {
   [key: string]: PageProps;
@@ -30,7 +32,9 @@ type PageProps = {
   style: {container: ViewStyle; text: TextStyle};
 };
 
-const StatusModal = ({route}: any) => {
+const StatusModal = ({
+  route,
+}: StackScreenProps<MainStackParamList, 'StatusModal'>) => {
   const {onClick, status, text} = route.params;
   const navigation = useNavigation();
   const statusProps: StatusProps = {

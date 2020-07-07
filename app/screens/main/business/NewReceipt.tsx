@@ -13,13 +13,18 @@ import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
-import products from './products.json';
+import {products} from './data.json';
+import {MainStackParamList} from '..';
+import {StackScreenProps} from '@react-navigation/stack';
 
 type RecentProductItemProps = {
   item: Product;
 };
 
-const NewReceipt = () => {
+const NewReceipt = ({
+  route,
+}: StackScreenProps<MainStackParamList, 'NewReceipt'>) => {
+  const {customer} = route.params;
   const navigation = useNavigation();
   const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
     null,
@@ -62,8 +67,8 @@ const NewReceipt = () => {
   }, []);
 
   const handleDone = useCallback(() => {
-    navigation.navigate('ReceiptSummary', {products: receipt});
-  }, [receipt, navigation]);
+    navigation.navigate('ReceiptSummary', {products: receipt, customer});
+  }, [receipt, navigation, customer]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -204,6 +209,7 @@ const styles = StyleSheet.create({
     height: 200,
   },
   recentProductItem: {
+    fontSize: 16,
     paddingVertical: 16,
     paddingHorizontal: 8,
     borderBottomWidth: 1,

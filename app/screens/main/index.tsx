@@ -20,8 +20,8 @@ export type MainStackParamList = {
   Chat: {title: string};
   Contacts: undefined;
   Receipts: undefined;
-  NewReceipt: undefined;
-  ReceiptSummary: undefined;
+  NewReceipt: {customer: Customer};
+  ReceiptSummary: {customer: Customer; products: ReceiptItem[]};
   StatusModal: {status: string; text: string; onClick(): void};
 };
 

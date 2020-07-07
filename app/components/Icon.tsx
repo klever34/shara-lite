@@ -1,7 +1,12 @@
 import React, {memo} from 'react';
 
 type IconProps = {
-  type: 'ionicons' | 'octicons' | 'material-icons' | 'material-community-icons';
+  type:
+    | 'ionicons'
+    | 'octicons'
+    | 'material-icons'
+    | 'feathericons'
+    | 'material-community-icons';
   [key: string]: any;
 };
 
@@ -10,6 +15,10 @@ const Icon = ({type, ...props}: IconProps) => {
   if (type === 'ionicons') {
     const {default: Ionicons} = require('react-native-vector-icons/Ionicons');
     return <Ionicons {...props} />;
+  }
+  if (type === 'feathericons') {
+    const {default: Feather} = require('react-native-vector-icons/Feather');
+    return <Feather {...props} />;
   }
   if (type === 'octicons') {
     const {default: Octicons} = require('react-native-vector-icons/Octicons');

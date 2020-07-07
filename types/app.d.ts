@@ -38,4 +38,10 @@ type Product = {
 
 type ReceiptItem = Product & {quantity?: string}
 
+type Customer = {
+  id: string
+  mobile: string
+  name: string
+}
+
 declare module 'react-native-push-notification'

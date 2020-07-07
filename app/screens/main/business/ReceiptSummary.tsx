@@ -15,11 +15,8 @@ import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-
-type Customer = {
-  name: string;
-  mobile: string;
-};
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from '..';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -118,13 +115,16 @@ const SummaryTableItem = ({item}: SummaryTableItemProps) => {
   );
 };
 
-const ReceiptSummary = ({route}: any) => {
+const ReceiptSummary = ({
+  route,
+}: StackScreenProps<MainStackParamList, 'ReceiptSummary'>) => {
   const navigation = useNavigation();
   const tax = 0;
-  const products: ReceiptItem[] = route.params.products;
+  const {customer: customerProps, products} = route.params;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [customer, setCustomer] = useState<Customer>({} as Customer);
-  console.log(customer);
+  const [customer, setCustomer] = useState<Customer>(
+    customerProps || ({} as Customer),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -296,7 +296,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   productsList: {
-    height: 200,
+    maxHeight: 200,
   },
   addProductButton: {
     marginBottom: 24,
