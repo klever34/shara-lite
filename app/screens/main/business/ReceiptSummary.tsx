@@ -269,17 +269,19 @@ const ReceiptSummary = ({
             onChangeText={(item) => handleUpdateCustomer(item, 'name')}
           />
         </View>
-        <SignatureCapture
-          ref={ref}
-          showBorder={false}
-          viewMode={'portrait'}
-          showTitleLabel={false}
-          onSaveEvent={onSaveEvent}
-          onDragEvent={onDragEvent}
-          showNativeButtons={false}
-          saveImageFileInExtStorage={false}
-          style={applyStyles('flex-1', styles.customerSignature)}
-        />
+        <View style={styles.signatureContainer}>
+          <SignatureCapture
+            ref={ref}
+            showBorder={false}
+            viewMode={'portrait'}
+            showTitleLabel={false}
+            onSaveEvent={onSaveEvent}
+            onDragEvent={onDragEvent}
+            showNativeButtons={false}
+            saveImageFileInExtStorage={false}
+            style={applyStyles('flex-1', styles.customerSignature)}
+          />
+        </View>
         <Text style={styles.customerSignatureText}>Customer Signature </Text>
         <View
           style={applyStyles(
@@ -358,14 +360,17 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textTransform: 'uppercase',
   },
-  customerSignature: {
+  signatureContainer: {
     height: 200,
-    flex: 1,
     width: '100%',
     borderWidth: 1,
     borderRadius: 8,
     marginBottom: 8,
-    borderColor: 'red',
+    borderColor: colors['gray-20'],
+  },
+  customerSignature: {
+    height: '100%',
+    width: '100%',
   },
   customerSignatureText: {
     fontSize: 12,
