@@ -13,6 +13,7 @@ import HomeScreen from './home';
 import Receipts from './business/Receipts';
 import NewReceipt from './business/NewReceipt';
 import ReceiptSummary from './business/ReceiptSummary';
+import StatusModal from './StatusModal';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -21,6 +22,7 @@ export type MainStackParamList = {
   Receipts: undefined;
   NewReceipt: undefined;
   ReceiptSummary: undefined;
+  StatusModal: {status: string; text: string; onClick(): void};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -80,7 +82,7 @@ const MainScreens = ({navigation}: any) => {
 
   return (
     <PubNubProvider client={pubnubInstance}>
-      <MainStack.Navigator initialRouteName="Home">
+      <MainStack.Navigator mode="modal" initialRouteName="Home">
         <MainStack.Screen
           name="Home"
           component={HomeScreen}
@@ -145,6 +147,11 @@ const MainScreens = ({navigation}: any) => {
             },
             headerTintColor: '#fff',
           }}
+        />
+        <MainStack.Screen
+          name="StatusModal"
+          component={StatusModal}
+          options={{headerShown: false}}
         />
       </MainStack.Navigator>
     </PubNubProvider>

@@ -122,18 +122,14 @@ const ReceiptSummary = ({route}: any) => {
   const navigation = useNavigation();
   const tax = 0;
   const products: ReceiptItem[] = route.params.products;
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [customer, setCustomer] = useState<Customer>({} as Customer);
+  console.log(customer);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <AppMenu options={[]} />,
     });
-  }, [navigation]);
-
-  const handleFinish = useCallback(() => {
-    setTimeout(() => {
-      navigation.navigate('Success');
-    }, 2000);
   }, [navigation]);
 
   const handleCancel = useCallback(() => {
@@ -150,6 +146,18 @@ const ReceiptSummary = ({route}: any) => {
     },
     [customer],
   );
+
+  const handleFinish = useCallback(() => {
+    setIsSubmitting(true);
+    setTimeout(() => {
+      setIsSubmitting(false);
+      navigation.navigate('StatusModal', {
+        status: 'success',
+        onClick: handleCancel,
+        text: `You have successfully issued a receipt to ${customer.name}`,
+      });
+    }, 2000);
+  }, [customer.name, navigation, handleCancel]);
 
   const getProductsTotalAmount = useCallback(() => {
     return products
@@ -228,6 +236,7 @@ const ReceiptSummary = ({route}: any) => {
           <TextInput
             style={styles.input}
             value={customer.mobile}
+            keyboardType="phone-pad"
             placeholder="Customer Phone Number"
             onChangeText={(item) => handleUpdateCustomer(item, 'mobile')}
           />
@@ -252,6 +261,7 @@ const ReceiptSummary = ({route}: any) => {
           title="Finish"
           variantColor="red"
           onPress={handleFinish}
+          isLoading={isSubmitting}
           style={styles.actionButton}
         />
       </View>
