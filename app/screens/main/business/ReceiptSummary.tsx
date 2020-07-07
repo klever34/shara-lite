@@ -120,17 +120,25 @@ const SummaryTableItem = ({item}: SummaryTableItemProps) => {
 
 const ReceiptSummary = ({route}: any) => {
   const navigation = useNavigation();
+  const tax = 0;
   const products: ReceiptItem[] = route.params.products;
   const [customer, setCustomer] = useState<Customer>({} as Customer);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <AppMenu options={[]} />,
     });
   }, [navigation]);
 
-  const handleFinish = useCallback(() => {}, []);
+  const handleFinish = useCallback(() => {
+    setTimeout(() => {
+      navigation.navigate('Success');
+    }, 2000);
+  }, [navigation]);
 
-  const handleCancel = useCallback(() => {}, []);
+  const handleCancel = useCallback(() => {
+    navigation.navigate('Receipts');
+  }, [navigation]);
 
   const handleAddProduct = useCallback(() => {
     navigation.navigate('NewReceipt');
@@ -143,42 +151,57 @@ const ReceiptSummary = ({route}: any) => {
     [customer],
   );
 
+  const getProductsTotalAmount = useCallback(() => {
+    return products
+      .map(({quantity, price}) => {
+        const itemPrice = price ? parseFloat(price) : 0;
+        const itemQuantity = quantity ? parseFloat(quantity) : 0;
+        return itemPrice * itemQuantity;
+      })
+      .reduce((acc, curr) => acc + curr, 0);
+  }, [products]);
+
   const renderSummaryItem = useCallback(
     ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
     [],
   );
 
+  const totalAmount = tax + getProductsTotalAmount();
+
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} nestedScrollEnabled>
       <View>
         <Text style={styles.sectionTitle}>Products</Text>
         <View>
           <FlatList
             data={products}
+            nestedScrollEnabled
             style={styles.productsList}
             renderItem={renderSummaryItem}
             keyExtractor={(item) => item.id}
             ListHeaderComponent={SummaryTableHeader}
           />
-          <View style={styles.totalSection}>
-            <View
-              style={applyStyles(
-                'pb-sm',
-                'flex-row',
-                'items-center',
-                'justify-space-between',
-              )}>
-              <Text>Tax:</Text>
-              <Text>0</Text>
-            </View>
-            <View
-              style={applyStyles(
-                'flex-row',
-                'items-center',
-                'justify-space-between',
-              )}>
-              <Text>Total:</Text>
-              <Text style={styles.totalAmountText}>N0</Text>
+          <View style={styles.totalSectionContainer}>
+            <View style={styles.totalSection}>
+              <View
+                style={applyStyles(
+                  'pb-sm',
+                  'flex-row',
+                  'items-center',
+                  'justify-space-between',
+                )}>
+                <Text>Tax:</Text>
+                <Text>{tax}</Text>
+              </View>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-space-between',
+                )}>
+                <Text>Total:</Text>
+                <Text style={styles.totalAmountText}>N{totalAmount}</Text>
+              </View>
             </View>
           </View>
           <Touchable onPress={handleAddProduct}>
@@ -215,6 +238,8 @@ const ReceiptSummary = ({route}: any) => {
             onChangeText={(item) => handleUpdateCustomer(item, 'name')}
           />
         </View>
+        <View style={styles.customerSignature} />
+        <Text style={styles.customerSignatureText}>Customer Signature </Text>
       </View>
       <View style={styles.actionButtons}>
         <Button
@@ -246,11 +271,15 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
     color: colors.primary,
   },
-  totalSection: {
+  totalSectionContainer: {
     paddingTop: 12,
     marginBottom: 12,
     borderTopWidth: 1,
+    alignItems: 'flex-end',
     borderTopColor: colors['gray-20'],
+  },
+  totalSection: {
+    width: '60%',
   },
   totalAmountText: {
     fontSize: 18,
@@ -275,8 +304,20 @@ const styles = StyleSheet.create({
     color: colors.primary,
     textTransform: 'uppercase',
   },
+  customerSignature: {
+    height: 100,
+    width: '100%',
+    borderRadius: 8,
+    marginBottom: 8,
+    borderWidth: 1,
+    borderColor: colors['gray-50'],
+  },
+  customerSignatureText: {
+    fontSize: 12,
+    textAlign: 'center',
+  },
   actionButtons: {
-    marginTop: 8,
+    marginTop: 24,
     marginBottom: 32,
     alignItems: 'center',
     flexDirection: 'row',
