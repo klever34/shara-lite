@@ -123,35 +123,39 @@ const ReceiptSummary = ({
   const tax = 0;
   const {customer: customerProps, products} = route.params;
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [signature, setSignature] = useState(false);
   const [customer, setCustomer] = useState<Customer>(
     customerProps || ({} as Customer),
   );
 
   const ref = useRef<any>(null);
 
-  const saveSign = () => {
-    ref.current.saveImage();
-  };
-
-  const resetSign = () => {
-    ref.current.resetImage();
-  };
-
-  const onSaveEvent = (result: any) => {
-    //result.encoded - for the base64 encoded png
-    //result.pathName - for the file path name
-    console.log(result);
-  };
-  const onDragEvent = () => {
-    // This callback will be called when the user enters signature
-    console.log('dragged');
-  };
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <AppMenu options={[]} />,
     });
   }, [navigation]);
+
+  const saveSign = useCallback(() => {
+    ref.current.saveImage();
+  }, []);
+
+  const resetSign = useCallback(() => {
+    ref.current.resetImage();
+    setSignature(false);
+  }, []);
+
+  const onSaveEvent = useCallback((result: any) => {
+    //result.encoded - for the base64 encoded png
+    //result.pathName - for the file path name
+    console.log(result);
+  }, []);
+
+  const onDragEvent = useCallback(() => {
+    // This callback will be called when the user enters signature
+    console.log('dragged');
+    setSignature(true);
+  }, []);
 
   const handleCancel = useCallback(() => {
     navigation.navigate('Receipts');
@@ -179,7 +183,7 @@ const ReceiptSummary = ({
         text: `You have successfully issued a receipt to ${customer.name}`,
       });
     }, 2000);
-  }, [customer.name, navigation, handleCancel]);
+  }, [saveSign, navigation, handleCancel, customer.name]);
 
   const getProductsTotalAmount = useCallback(() => {
     return products
@@ -290,13 +294,15 @@ const ReceiptSummary = ({
             'justify-center',
             'item-center',
           )}>
-          <Touchable
-            style={styles.buttonStyle}
-            onPress={() => {
-              resetSign();
-            }}>
-            <Text style={styles.buttonTextStyle}>Clear</Text>
-          </Touchable>
+          {!!signature && (
+            <Touchable
+              style={styles.buttonStyle}
+              onPress={() => {
+                resetSign();
+              }}>
+              <Text style={styles.buttonTextStyle}>Clear</Text>
+            </Touchable>
+          )}
         </View>
       </View>
       <View style={styles.actionButtons}>
