@@ -12,10 +12,14 @@ import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/realm';
 import {MessageEvent} from 'pubnub';
 import {UpdateMode} from 'realm';
+import CustomersTab from '../customers';
+import BusinessTab from '../business';
 
 type HomeTabParamList = {
   ChatList: undefined;
   Contacts: undefined;
+  Customers: undefined;
+  Business: undefined;
 };
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
@@ -116,6 +120,16 @@ const HomeScreen = () => {
           name="ChatList"
           options={{title: 'Chat'}}
           component={ChatListScreen}
+        />
+        <HomeTab.Screen
+          name="Customers"
+          component={CustomersTab}
+          options={{title: 'My Customers'}}
+        />
+        <HomeTab.Screen
+          name="Business"
+          component={BusinessTab}
+          options={{title: 'My Business'}}
         />
       </HomeTab.Navigator>
     </SafeAreaView>
