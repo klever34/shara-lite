@@ -1,25 +1,24 @@
-import React, {useCallback} from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  Platform,
-  Image,
-  StyleSheet,
-  ViewStyle,
-  ImageProps,
-  TextStyle,
-} from 'react-native';
-import Icon from '../../components/Icon';
-import Touchable from '../../components/Touchable';
-import {Button} from '../../components/Button';
-import {applyStyles} from '../../helpers/utils';
-import {colors} from '../../styles';
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '.';
 import {format} from 'date-fns/esm';
-import {differenceInMilliseconds} from 'date-fns';
+import React, {useCallback} from 'react';
+import {
+  Image,
+  ImageProps,
+  Platform,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
+import {MainStackParamList} from '.';
+import {Button} from '../../components/Button';
+import Icon from '../../components/Icon';
+import Touchable from '../../components/Touchable';
+import {applyStyles} from '../../helpers/utils';
+import {colors} from '../../styles';
 
 type StatusProps = {
   [key: string]: PageProps;
