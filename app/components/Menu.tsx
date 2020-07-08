@@ -31,7 +31,18 @@ const AppMenu = ({options}: AppMenuProps) => {
       </MenuTrigger>
       <MenuOptions optionsContainerStyle={styles.menuDropdown}>
         {options.map(({text, onSelect}) => {
-          return <MenuOption key={text} text={text} onSelect={onSelect} />;
+          return (
+            <MenuOption
+              customStyles={{
+                optionText: applyStyles('text-400', {
+                  color: colors['gray-300'],
+                }),
+              }}
+              key={text}
+              text={text}
+              onSelect={onSelect}
+            />
+          );
         })}
       </MenuOptions>
     </Menu>

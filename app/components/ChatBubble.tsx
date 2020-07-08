@@ -105,10 +105,12 @@ const styles = StyleSheet.create({
   authorText: {
     fontSize: 12,
     opacity: 0.5,
+    fontFamily: 'Rubik-Regular',
     color: colors['gray-900'],
   },
   messageText: {
     fontSize: 17,
+    fontFamily: 'Rubik-Regular',
     color: colors['gray-900'],
   },
   dateTextContainer: {
@@ -121,6 +123,7 @@ const styles = StyleSheet.create({
     marginTop: 4,
     opacity: 0.5,
     textAlign: 'right',
+    fontFamily: 'Rubik-Regular',
     color: colors.black,
   },
   receiptIcon: {

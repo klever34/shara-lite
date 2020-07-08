@@ -62,6 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     paddingHorizontal: 12,
+    backgroundColor: colors.white,
   },
   listItem: {
     alignItems: 'center',

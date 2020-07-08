@@ -61,7 +61,7 @@ const ChatListScreen = () => {
     [navigation],
   );
   return (
-    <View style={applyStyles('flex-1')}>
+    <View style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <FlatList
         data={conversations}
         renderItem={renderChatListItem}
