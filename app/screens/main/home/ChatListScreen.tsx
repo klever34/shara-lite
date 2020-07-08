@@ -16,7 +16,6 @@ import {useRealm} from '../../../services/realm';
 import {useTyping} from '../../../services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import MessageStatusIcon from '../../../components/MessageStatusIcon';
-import {getAuthService} from '../../../services';
 
 type ChatListItemProps = {
   conversation: IConversation;
@@ -38,13 +37,12 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
             {conversation.title}
           </Text>
           <View style={applyStyles('flex-row items-center')}>
-            {!typingMessage &&
-              getAuthService().getUser()?.mobile === lastMessage.author && (
-                <MessageStatusIcon
-                  status={lastMessage.timetoken ? 'pending' : 'sent'}
-                  style={applyStyles('mr-xs')}
-                />
-              )}
+            {!typingMessage && (
+              <MessageStatusIcon
+                message={lastMessage}
+                style={applyStyles('mr-xs')}
+              />
+            )}
             <Text
               style={applyStyles(
                 listItemStyles.contentText,

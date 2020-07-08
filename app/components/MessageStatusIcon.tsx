@@ -2,13 +2,10 @@ import React from 'react';
 import Icon from './Icon';
 import {StyleSheet} from 'react-native';
 import {applyStyles} from '../helpers/utils';
+import {IMessage} from '../models';
+import {getAuthService} from '../services';
 
 type MessageStatus = 'pending' | 'sent' | 'received' | 'read';
-
-type MessageStatusIconProps = {
-  status: MessageStatus;
-  style?: {[key: string]: any};
-};
 
 const iconNames: {[key in MessageStatus]: string} = {
   pending: 'alarm',
@@ -17,7 +14,16 @@ const iconNames: {[key in MessageStatus]: string} = {
   read: 'check-all',
 };
 
-const MessageStatusIcon = ({status, style = {}}: MessageStatusIconProps) => {
+type MessageStatusIconProps = {
+  message: IMessage;
+  style?: {[key: string]: any};
+};
+
+const MessageStatusIcon = ({message, style = {}}: MessageStatusIconProps) => {
+  if (getAuthService().getUser()?.mobile !== message.author) {
+    return null;
+  }
+  const status: MessageStatus = message.timetoken ? 'sent' : 'pending';
   return (
     <Icon
       type="material-community-icons"

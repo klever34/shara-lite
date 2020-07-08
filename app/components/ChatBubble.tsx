@@ -14,7 +14,7 @@ type ChatBubbleProps = {
 
 export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
   const isAuthor = user.mobile === message.author;
-  const {created_at, author, content, timetoken} = message;
+  const {created_at, author, content} = message;
   const realm = useRealm();
   let sender = useMemo(() => {
     if (!author) {
@@ -94,12 +94,7 @@ export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
         <Text style={messageTextStyle}>{content}</Text>
         <View style={styles.dateTextContainer}>
           <Text style={dateTextStyle}>{messageTime}</Text>
-          {isAuthor && (
-            <MessageStatusIcon
-              status={timetoken ? 'pending' : 'sent'}
-              style={applyStyles('ml-xs')}
-            />
-          )}
+          <MessageStatusIcon message={message} style={applyStyles('ml-xs')} />
         </View>
       </View>
     </View>
