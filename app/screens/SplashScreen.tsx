@@ -16,7 +16,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {width: '75%', height: '9%', marginBottom: 16},
+  image: {
+    width: '75%',
+    height: '9%',
+    marginBottom: 16,
+    resizeMode: 'contain',
+  },
   text: {color: colors.white, fontSize: 16, fontFamily: 'Rubik-Light'},
 });
 
