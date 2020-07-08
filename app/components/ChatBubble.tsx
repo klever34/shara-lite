@@ -5,6 +5,8 @@ import {colors} from '../styles';
 import Icon from '../components/Icon';
 import {IContact, IMessage} from '../models';
 import {useRealm} from '../services/realm';
+import MessageStatusIcon from './MessageStatusIcon';
+import {applyStyles} from '../helpers/utils';
 
 type ChatBubbleProps = {
   message: IMessage;
@@ -94,11 +96,9 @@ export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
         <View style={styles.dateTextContainer}>
           <Text style={dateTextStyle}>{messageTime}</Text>
           {isAuthor && (
-            <Icon
-              type="material-community-icons"
-              name={timetoken ? 'check' : 'alarm'}
-              style={styles.receiptIcon}
-              size={12}
+            <MessageStatusIcon
+              status={timetoken ? 'pending' : 'sent'}
+              style={applyStyles('ml-xs')}
             />
           )}
         </View>
@@ -137,9 +137,5 @@ const styles = StyleSheet.create({
     opacity: 0.5,
     textAlign: 'right',
     color: colors.black,
-  },
-  receiptIcon: {
-    marginLeft: 2,
-    opacity: 0.5,
   },
 });

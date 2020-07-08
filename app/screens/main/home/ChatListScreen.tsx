@@ -15,6 +15,8 @@ import {IConversation, IMessage} from '../../../models';
 import {useRealm} from '../../../services/realm';
 import {useTyping} from '../../../services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
+import MessageStatusIcon from '../../../components/MessageStatusIcon';
+import {getAuthService} from '../../../services';
 
 type ChatListItemProps = {
   conversation: IConversation;
@@ -23,6 +25,7 @@ type ChatListItemProps = {
 const ChatListItem = ({conversation}: ChatListItemProps) => {
   const typingMessage = useTyping(conversation.channel);
   const navigation = useNavigation();
+  const lastMessage = conversation.lastMessage as IMessage;
   return (
     <Touchable
       onPress={() => {
@@ -34,14 +37,22 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
           <Text style={listItemStyles.titleText} numberOfLines={1}>
             {conversation.title}
           </Text>
-          <Text
-            style={applyStyles(
-              listItemStyles.contentText,
-              typingMessage && {color: 'green'},
+          <View style={applyStyles('flex-row items-center')}>
+            {getAuthService().getUser()?.mobile === lastMessage.author && (
+              <MessageStatusIcon
+                status={lastMessage.timetoken ? 'pending' : 'sent'}
+                style={applyStyles('mr-xs')}
+              />
             )}
-            numberOfLines={1}>
-            {typingMessage || (conversation.lastMessage as IMessage).content}
-          </Text>
+            <Text
+              style={applyStyles(
+                listItemStyles.contentText,
+                typingMessage && {color: 'green'},
+              )}
+              numberOfLines={1}>
+              {typingMessage || lastMessage.content}
+            </Text>
+          </View>
         </View>
       </View>
     </Touchable>
