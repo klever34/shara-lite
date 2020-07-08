@@ -55,18 +55,55 @@ const ContactsScreen = () => {
             const users = flatten(responses.map(({data}) => data.users));
             const authService = getAuthService() as IAuthService;
             const me = authService.getUser() as User;
-            realm.write(() => {
-              (users as User[]).forEach((user) => {
-                if (me.id !== user.id) {
-                  realm.create<IContact>('Contact', user, UpdateMode.Modified);
-                }
+            try {
+              realm.write(() => {
+                (users as User[]).forEach((user) => {
+                  if (me.id !== user.id) {
+                    realm.create<IContact>(
+                      'Contact',
+                      user,
+                      UpdateMode.Modified,
+                    );
+                  }
+                });
               });
-            });
+            } catch (error) {
+              Alert.alert(
+                'Error',
+                error.message,
+                [
+                  {
+                    text: 'OK',
+                    onPress: () => {
+                      navigation.goBack();
+                    },
+                  },
+                ],
+                {
+                  cancelable: false,
+                },
+              );
+            }
             setLoading(false);
           })
           .catch((error) => {
             setLoading(false);
             console.log('Error: ', error);
+            Alert.alert(
+              'Error',
+              error.message,
+              [
+                {
+                  text: 'OK',
+                  onPress: () => {
+                    navigation.goBack();
+                  },
+                },
+              ],
+              {
+                cancelable: false,
+              },
+            );
           });
       })
       .catch((error) => {
