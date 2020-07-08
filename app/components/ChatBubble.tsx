@@ -2,7 +2,6 @@ import React, {memo, useMemo} from 'react';
 import format from 'date-fns/format';
 import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles';
-import Icon from '../components/Icon';
 import {IContact, IMessage} from '../models';
 import {useRealm} from '../services/realm';
 import MessageStatusIcon from './MessageStatusIcon';

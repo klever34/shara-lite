@@ -132,8 +132,8 @@ android {
         applicationId "co.shara.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 9
-        versionName "0.1.2-alpha-9.1"
+        versionCode 10
+        versionName "0.1.2-alpha-9.2"
         multiDexEnabled true
     }
     splits {
