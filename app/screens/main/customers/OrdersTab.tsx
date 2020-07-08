@@ -12,7 +12,7 @@ const OrdersTab = () => {
   const navigation = useNavigation();
 
   const handleViewDetails = (order: Order) => {
-    navigation.navigate('CreditPayment', {order});
+    navigation.navigate('OrderDetails', {order});
   };
 
   const renderOrderItem = ({item: order}: {item: Order}) => {

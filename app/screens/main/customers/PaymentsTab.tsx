@@ -12,7 +12,7 @@ const PaymentsTab = () => {
   const navigation = useNavigation();
 
   const handleViewDetails = (payment: Payment) => {
-    navigation.navigate('CreditPayment', {payment});
+    navigation.navigate('PaymentDetails', {payment});
   };
 
   const renderPaymentItem = ({item: payment}: {item: Payment}) => {
