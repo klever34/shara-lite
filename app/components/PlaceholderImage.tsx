@@ -11,9 +11,15 @@ const PlaceholderImage = ({text}: PlaceholderImageProps) => {
   if (!text) {
     return null;
   }
+  let displayLetter: string;
+  if (Number(text[0])) {
+    displayLetter = '#';
+  } else {
+    displayLetter = text[0];
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>{text[0]}</Text>
+      <Text style={styles.text}>{displayLetter}</Text>
     </View>
   );
 };

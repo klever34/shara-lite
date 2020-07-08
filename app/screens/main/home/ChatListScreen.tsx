@@ -38,12 +38,13 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
             {conversation.title}
           </Text>
           <View style={applyStyles('flex-row items-center')}>
-            {getAuthService().getUser()?.mobile === lastMessage.author && (
-              <MessageStatusIcon
-                status={lastMessage.timetoken ? 'pending' : 'sent'}
-                style={applyStyles('mr-xs')}
-              />
-            )}
+            {!typingMessage &&
+              getAuthService().getUser()?.mobile === lastMessage.author && (
+                <MessageStatusIcon
+                  status={lastMessage.timetoken ? 'pending' : 'sent'}
+                  style={applyStyles('mr-xs')}
+                />
+              )}
             <Text
               style={applyStyles(
                 listItemStyles.contentText,

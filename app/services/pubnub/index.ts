@@ -32,6 +32,7 @@ export const useTyping = (channel: string, input: string = '') => {
       const listener = {
         signal: (envelope: SignalEvent) => {
           if (
+            channel === envelope.channel &&
             envelope.message === 'TYPING_ON' &&
             envelope.publisher !== pubNub.getUUID()
           ) {
