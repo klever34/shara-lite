@@ -8,6 +8,7 @@ const AddCustomer = () => {
   const navigation = useNavigation();
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleNameChange = useCallback((text: string) => {
     setName(text);
@@ -17,7 +18,15 @@ const AddCustomer = () => {
     setMobile(text);
   }, []);
 
-  const handleSubmit = useCallback(() => {}, []);
+  const handleSubmit = useCallback(() => {
+    if (name && mobile) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        navigation.navigate('CustomerDetails', {customer: {name}});
+      }, 750);
+    }
+  }, [navigation, name, mobile]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -34,6 +43,8 @@ const AddCustomer = () => {
           <TextInput
             value={mobile}
             style={styles.input}
+            autoCompleteType="tel"
+            keyboardType="phone-pad"
             placeholder="Phone Number"
             onChangeText={handleMobileChange}
             placeholderTextColor={colors['gray-50']}
@@ -43,6 +54,7 @@ const AddCustomer = () => {
           variantColor="red"
           title="Add customer"
           onPress={handleSubmit}
+          isLoading={isLoading}
         />
       </View>
     </SafeAreaView>
@@ -60,12 +72,19 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    fontSize: 16,
+    fontSize: 18,
+    width: '100%',
     marginBottom: 24,
+    borderBottomWidth: 1,
+    fontFamily: 'Rubik-Regular',
+    borderColor: colors['gray-200'],
   },
   title: {
     fontSize: 18,
     paddingBottom: 40,
     color: colors.primary,
+    fontFamily: 'Rubik-Regular',
   },
 });
+
+export default AddCustomer;

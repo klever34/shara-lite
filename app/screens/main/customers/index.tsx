@@ -13,6 +13,7 @@ import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import {customers} from '../business/data.json';
+import {applyStyles} from '../../../helpers/utils';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
@@ -85,7 +86,9 @@ const CustomersTab = () => {
         ListHeaderComponent={renderCustomerListHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
       />
-      <FAButton style={styles.fabButton}>
+      <FAButton
+        style={styles.fabButton}
+        onPress={() => navigation.navigate('AddCustomer')}>
         <View style={styles.fabButtonContent}>
           <Icon
             size={18}
@@ -98,7 +101,9 @@ const CustomersTab = () => {
             }
             color="white"
           />
-          <Text style={styles.fabButtonText}>Add Customer</Text>
+          <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
+            Add Customer
+          </Text>
         </View>
       </FAButton>
     </View>

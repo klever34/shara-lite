@@ -21,6 +21,8 @@ import Finances from './business/Finances';
 import Inventory from './business/Inventory';
 import Expenses from './business/Expenses';
 import Credit from './business/Credit';
+import AddCustomer from './customers/AddCustomer';
+import CustomerDetails from './customers/CustomerDetails';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -34,6 +36,8 @@ export type MainStackParamList = {
   Inventory: undefined;
   Expenses: undefined;
   Credit: undefined;
+  AddCustomer: undefined;
+  CustomerDetails: {customer: any};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -251,6 +255,36 @@ const MainScreens = ({navigation}: any) => {
               },
               headerTintColor: '#fff',
             }}
+          />
+          <MainStack.Screen
+            name="AddCustomer"
+            component={AddCustomer}
+            options={{
+              title: 'Add Customer',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="CustomerDetails"
+            component={CustomerDetails}
+            options={({route}) => ({
+              title: route.params.customer.name,
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            })}
           />
         </MainStack.Navigator>
       </PubNubProvider>
