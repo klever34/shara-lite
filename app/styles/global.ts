@@ -58,6 +58,36 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'font-bold': {
     fontWeight: 'bold',
   },
+  'text-300': {
+    fontFamily: 'Rubik-Light',
+  },
+  'text-400': {
+    fontFamily: 'Rubik-Regular',
+  },
+  'text-500': {
+    fontFamily: 'Rubik-Medium',
+  },
+  'text-700': {
+    fontFamily: 'Rubik-Bold',
+  },
+  'text-900': {
+    fontFamily: 'Rubik-Black',
+  },
+  'heading-100': {
+    fontFamily: 'CocogoosePro-Thin',
+  },
+  'heading-300': {
+    fontFamily: 'CocogoosePro-UltraLight',
+  },
+  'heading-400': {
+    fontFamily: 'CocogoosePro-Light',
+  },
+  'heading-500': {
+    fontFamily: 'CocogoosePro-SemiLight',
+  },
+  'heading-700': {
+    fontFamily: 'CocogoosePro-Regular',
+  },
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
       ...acc,

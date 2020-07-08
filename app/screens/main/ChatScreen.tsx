@@ -318,20 +318,6 @@ const styles = StyleSheet.create({
   listContainer: {
     paddingHorizontal: 8,
   },
-  messageContainer: {
-    marginTop: 8,
-    backgroundColor: colors.white,
-    paddingVertical: 8,
-    paddingHorizontal: 12,
-    borderRadius: 8,
-  },
-  senderText: {
-    fontSize: 14,
-    color: '#333',
-  },
-  messageText: {
-    fontSize: 16,
-  },
   inputContainer: {
     padding: 8,
     width: '100%',
@@ -349,6 +335,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     lineHeight: 24,
     elevation: 2,
+    fontFamily: 'Rubik-Regular',
   },
   submitButton: {
     position: 'absolute',
@@ -392,14 +379,15 @@ const styles = StyleSheet.create({
   },
   headerTitleText: {
     color: 'white',
-    fontWeight: 'bold',
     fontSize: 18,
     lineHeight: 24,
+    fontFamily: 'Rubik-Medium',
   },
   headerTitleDesc: {
     color: 'white',
     fontSize: 14,
     lineHeight: 20,
+    fontFamily: 'Rubik-Regular',
   },
 });
 

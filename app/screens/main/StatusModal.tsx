@@ -93,11 +93,18 @@ const StatusModal = ({
       <View style={styles.content}>
         <Image source={type.icon} style={applyStyles('mb-xl', styles.icon)} />
         <Text
-          style={applyStyles('pb-sm', styles.headingText, type.style.heading)}>
+          style={applyStyles(
+            'pb-sm',
+            styles.headingText,
+            type.style.heading,
+            'text-700',
+          )}>
           {type.heading}
         </Text>
-        <Text style={applyStyles(styles.subText, type.style.text)}>{text}</Text>
-        <Text style={applyStyles(styles.subText, type.style.text)}>
+        <Text style={applyStyles(styles.subText, type.style.text, 'text-400')}>
+          {text}
+        </Text>
+        <Text style={applyStyles(styles.subText, type.style.text, 'text-400')}>
           Time taken: {format(timeTaken, 'mm:ss')}
         </Text>
       </View>
@@ -134,7 +141,6 @@ const styles = StyleSheet.create({
   },
   headingText: {
     fontSize: 24,
-    fontWeight: 'bold',
     textAlign: 'center',
     textTransform: 'uppercase',
   },

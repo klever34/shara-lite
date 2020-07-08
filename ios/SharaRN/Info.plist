@@ -71,6 +71,16 @@
 		<string>Octicons.ttf</string>
 		<string>SimpleLineIcons.ttf</string>
 		<string>Zocial.ttf</string>
+		<string> CocogoosePro-UltraLight.otf</string>
+		<string>CocogoosePro-Light.otf</string>
+		<string>CocogoosePro-Regular.otf</string>
+		<string>CocogoosePro-SemiLight.otf</string>
+		<string>CocogoosePro-Thin.otf</string>
+		<string>Rubik-Black.otf</string>
+		<string>Rubik-Bold.otf</string>
+		<string>Rubik-Light.otf</string>
+		<string>Rubik-Medium.otf</string>
+		<string>Rubik-Regular.otf</string>
 	</array>
 </dict>
 </plist>

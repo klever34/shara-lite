@@ -2,6 +2,9 @@ import React from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 import {getAuthService} from '../../services';
+import {colors} from '../../styles';
+import Icon from '../../components/Icon';
+import Touchable from '../../components/Touchable';
 
 type Fields = {
   mobile: string;
@@ -63,38 +66,43 @@ export const Login = ({navigation}: any) => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.backButton}>
+        <Touchable onPress={() => handleNavigate('Welcome')}>
+          <Icon size={24} type="ionicons" name="md-arrow-back" />
+        </Touchable>
+      </View>
       <View style={styles.headerSection}>
-        <Text style={styles.headerText}>Shara</Text>
-        <View>
-          <View style={styles.inputField}>
-            <PhoneNumberField
-              value={fields.mobile}
-              countryCode={fields.countryCode}
-              onChangeText={(data) => onChangeMobile(data)}
-            />
-          </View>
-          <View style={styles.inputField}>
-            <PasswordField
-              value={fields.password}
-              onChangeText={(text) => onChangeText(text, 'password')}
-            />
-          </View>
-          <Button
-            title="Login"
-            variantColor="red"
-            onPress={onSubmit}
-            isLoading={loading}
-            disabled={isButtonDisabled() || loading}
+        <Text style={styles.heading}>Welcome Back!</Text>
+        <Text style={styles.description}>Sign in to your account</Text>
+      </View>
+      <View style={styles.form}>
+        <View style={styles.inputField}>
+          <PhoneNumberField
+            value={fields.mobile}
+            countryCode={fields.countryCode}
+            onChangeText={(data) => onChangeMobile(data)}
           />
         </View>
+        <View style={styles.inputField}>
+          <PasswordField
+            value={fields.password}
+            onChangeText={(text) => onChangeText(text, 'password')}
+          />
+        </View>
+        <Button
+          title="Continue"
+          variantColor="red"
+          onPress={onSubmit}
+          isLoading={loading}
+          disabled={isButtonDisabled() || loading}
+        />
       </View>
-
       <View>
         <TouchableOpacity
           style={styles.helpSection}
           onPress={() => handleNavigate('Register')}>
           <Text style={styles.helpSectionText}>Don’t have an account? </Text>
-          <Text style={styles.helpSectionButtonText}>Sign up</Text>
+          <Text style={styles.helpSectionButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -104,24 +112,31 @@ export const Login = ({navigation}: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 12,
-    justifyContent: 'space-between',
+    padding: 32,
+  },
+  backButton: {
+    marginBottom: 48,
   },
   headerSection: {
-    flexGrow: 1,
-    marginHorizontal: 30,
-    justifyContent: 'center',
+    marginBottom: 48,
+  },
+  heading: {
+    fontSize: 24,
+    paddingBottom: 8,
+    color: colors.black,
+    fontFamily: 'CocogoosePro-Regular',
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 27,
+    color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
+  },
+  form: {
+    paddingBottom: 32,
   },
   inputField: {
     marginBottom: 24,
-  },
-  headerText: {
-    fontSize: 40,
-    marginBottom: 40,
-    fontWeight: 'bold',
-    color: '#d51a1a',
-    textAlign: 'center',
-    textTransform: 'uppercase',
   },
   helpSection: {
     marginBottom: 20,
@@ -131,22 +146,15 @@ const styles = StyleSheet.create({
   },
   helpSectionText: {
     fontSize: 16,
-    color: '#a8a8a8',
+    color: colors['gray-100'],
+    fontFamily: 'Rubik-Regular',
   },
   helpSectionButtonText: {
     fontSize: 16,
-    color: '#a8a8a8',
-    fontWeight: 'bold',
-  },
-  button: {
-    padding: 10,
-    borderRadius: 3,
-    alignItems: 'center',
-    backgroundColor: '#e20b0d',
-  },
-  buttonText: {
-    fontSize: 16,
-    color: 'white',
-    textTransform: 'uppercase',
+    color: colors.black,
+    fontFamily: 'Rubik-Regular',
+    textDecorationStyle: 'solid',
+    textDecorationLine: 'underline',
+    textDecorationColor: colors.black,
   },
 });

@@ -95,7 +95,7 @@ const NewReceipt = ({
       return (
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
-            <Text style={styles.recentProductItemText}>
+            <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
               {product.name} ({product.weight})
             </Text>
           </View>
@@ -106,7 +106,11 @@ const NewReceipt = ({
   );
 
   const renderRecentProductsHeader = useCallback(
-    () => <Text style={styles.recentProductsHeader}>Recent products</Text>,
+    () => (
+      <Text style={applyStyles(styles.recentProductsHeader, 'text-500')}>
+        Recent products
+      </Text>
+    ),
     [],
   );
 
@@ -132,7 +136,7 @@ const NewReceipt = ({
         keyExtractor={(item, index) => `${item.id}-${index}`}
       />
       <View style={styles.calculatorSection}>
-        <Text style={styles.receiptItemsCountText}>
+        <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
           You have{' '}
           <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
           Products in your receipt
@@ -141,10 +145,15 @@ const NewReceipt = ({
           <View>
             {selectedProduct && (
               <>
-                <Text style={styles.calculatorSectionHelperText}>
+                <Text
+                  style={applyStyles(
+                    styles.calculatorSectionHelperText,
+                    'text-500',
+                  )}>
                   Adding this product to receipt
                 </Text>
-                <Text style={styles.selectedProductName}>
+                <Text
+                  style={applyStyles(styles.selectedProductName, 'text-700')}>
                   {selectedProduct?.name} ({selectedProduct?.weight})
                 </Text>
                 <View style={styles.calculatorSectionInputs}>
@@ -153,7 +162,13 @@ const NewReceipt = ({
                       width: '48%',
                     })}>
                     <View style={styles.textInputIcon}>
-                      <Text style={styles.textInputIconText}>&#8358;</Text>
+                      <Text
+                        style={applyStyles(
+                          styles.textInputIconText,
+                          'text-400',
+                        )}>
+                        &#8358;
+                      </Text>
                     </View>
                     <TextInput
                       value={price}
@@ -163,6 +178,7 @@ const NewReceipt = ({
                       style={applyStyles(
                         'flex-1',
                         'pl-lg',
+                        'text-400',
                         styles.calculatorSectionInput,
                       )}
                     />
@@ -172,14 +188,21 @@ const NewReceipt = ({
                     keyboardType="numeric"
                     placeholder="Quantity"
                     onChangeText={handleQuantityChange}
-                    style={applyStyles(styles.calculatorSectionInput, {
-                      width: '48%',
-                    })}
+                    style={applyStyles(
+                      styles.calculatorSectionInput,
+                      'text-400',
+                      {
+                        width: '48%',
+                      },
+                    )}
                   />
                 </View>
                 <View style={styles.calculatorSectionInputs}>
                   <View style={styles.textInputIcon}>
-                    <Text style={styles.textInputIconText}>&#8358;</Text>
+                    <Text
+                      style={applyStyles(styles.textInputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
                   </View>
                   <TextInput
                     keyboardType="numeric"
@@ -187,6 +210,7 @@ const NewReceipt = ({
                     style={applyStyles(
                       'flex-1',
                       'pl-lg',
+                      'text-400',
                       styles.calculatorSectionInput,
                     )}
                     value={getSubtotal()}
@@ -243,7 +267,6 @@ const styles = StyleSheet.create({
   },
   recentProductsHeader: {
     fontSize: 12,
-    fontWeight: 'bold',
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderBottomWidth: 1,
@@ -284,7 +307,6 @@ const styles = StyleSheet.create({
   calculatorSectionHelperText: {
     fontSize: 12,
     marginTop: 12,
-    fontWeight: 'bold',
     textAlign: 'center',
     paddingVertical: 12,
     borderTopWidth: 0.8,
@@ -295,7 +317,6 @@ const styles = StyleSheet.create({
   selectedProductName: {
     fontSize: 18,
     paddingBottom: 24,
-    fontWeight: 'bold',
     textAlign: 'center',
     color: colors.primary,
   },
