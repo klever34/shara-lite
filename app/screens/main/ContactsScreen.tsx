@@ -22,6 +22,7 @@ import flatten from 'lodash/flatten';
 import {UpdateMode} from 'realm';
 import {requester} from '../../services/api/config';
 import {IAuthService} from '../../services/AuthService';
+import PlaceholderImage from '../../components/PlaceholderImage';
 
 const ContactsScreen = () => {
   const navigation = useNavigation();
@@ -205,15 +206,7 @@ const ContactsScreen = () => {
               });
           }}>
           <View style={applyStyles('flex-row items-center p-md')}>
-            <View
-              style={applyStyles('mr-md', {
-                height: 48,
-                width: 48,
-                borderRadius: 24,
-                backgroundColor: '#e3e3e3',
-              })}
-            />
-
+            <PlaceholderImage text={item.fullName} />
             <Text style={applyStyles('text-lg', 'font-bold')}>
               {item.fullName}
             </Text>

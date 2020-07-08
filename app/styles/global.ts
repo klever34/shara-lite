@@ -36,6 +36,10 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'h-screen': {
     height: dimensions.fullHeight,
   },
+  'text-xl': {
+    fontSize: 20,
+    lineHeight: 24,
+  },
   'text-lg': {
     fontSize: 18,
     lineHeight: 24,
