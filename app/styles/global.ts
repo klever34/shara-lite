@@ -1,5 +1,5 @@
-import {dimensions, spacing} from './variables';
-import {StyleSheet} from 'react-native';
+import {dimensions, spacing} from './variables'
+import {StyleSheet} from 'react-native'
 
 export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'flex-row': {
@@ -58,6 +58,36 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'font-bold': {
     fontWeight: 'bold',
   },
+  'text-300': {
+    fontFamily: 'Rubik-Light',
+  },
+  'text-400': {
+    fontFamily: 'Rubik-Regular',
+  },
+  'text-500': {
+    fontFamily: 'Rubik-Medium',
+  },
+  'text-700': {
+    fontFamily: 'Rubik-Bold',
+  },
+  'text-900': {
+    fontFamily: 'Rubik-Black',
+  },
+  'heading-100': {
+    fontFamily: 'CocogoosePro-Thin',
+  },
+  'heading-300': {
+    fontFamily: 'CocogoosePro-UltraLight',
+  },
+  'heading-400': {
+    fontFamily: 'CocogoosePro-Light',
+  },
+  'heading-500': {
+    fontFamily: 'CocogoosePro-SemiLight',
+  },
+  'heading-700': {
+    fontFamily: 'CocogoosePro-Regular',
+  },
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
       ...acc,
@@ -68,7 +98,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`pb-${curr}`]: {paddingBottom: spacing[curr]},
       [`pl-${curr}`]: {paddingLeft: spacing[curr]},
       [`pr-${curr}`]: {paddingRight: spacing[curr]},
-    };
+    }
   }, {}),
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
@@ -80,6 +110,6 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`mb-${curr}`]: {marginBottom: spacing[curr]},
       [`ml-${curr}`]: {marginLeft: spacing[curr]},
       [`mr-${curr}`]: {marginRight: spacing[curr]},
-    };
+    }
   }, {}),
-});
+})

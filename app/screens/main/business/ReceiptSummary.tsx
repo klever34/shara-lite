@@ -44,7 +44,7 @@ const summaryTableHeaderStyles = StyleSheet.create({
     borderBottomColor: colors['gray-900'],
   },
   text: {
-    fontWeight: 'bold',
+    fontFamily: 'Rubik-Medium',
     color: colors['gray-300'],
   },
 });
@@ -57,10 +57,12 @@ const summaryTableItemStyles = StyleSheet.create({
   text: {
     fontSize: 16,
     paddingBottom: 4,
+    fontFamily: 'Rubik-Regular',
     color: colors['gray-300'],
   },
   subText: {
     fontSize: 12,
+    fontFamily: 'Rubik-Regular',
     color: colors['gray-200'],
   },
 });
@@ -303,7 +305,9 @@ const ReceiptSummary = ({
             style={applyStyles('flex-1', styles.customerSignature)}
           />
         </View>
-        <Text style={styles.customerSignatureText}>Customer Signature </Text>
+        <Text style={applyStyles(styles.customerSignatureText, 'text-500')}>
+          Customer Signature
+        </Text>
         <View
           style={applyStyles(
             'flex-1',
@@ -317,7 +321,9 @@ const ReceiptSummary = ({
               onPress={() => {
                 resetSign();
               }}>
-              <Text style={styles.buttonTextStyle}>Clear</Text>
+              <Text style={applyStyles(styles.buttonTextStyle, 'text-400')}>
+                Clear
+              </Text>
             </Touchable>
           )}
         </View>
@@ -352,6 +358,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     paddingBottom: 12,
     color: colors.primary,
+    fontFamily: 'Rubik-Medium',
   },
   totalSectionContainer: {
     marginBottom: 12,
@@ -362,8 +369,8 @@ const styles = StyleSheet.create({
   },
   totalAmountText: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: colors['gray-300'],
+    fontFamily: 'Rubik-Medium',
   },
   addProductButton: {
     marginBottom: 24,
@@ -380,6 +387,7 @@ const styles = StyleSheet.create({
     paddingLeft: 12,
     color: colors.primary,
     textTransform: 'uppercase',
+    fontFamily: 'Rubik-Regular',
   },
   signatureContainer: {
     height: 200,
@@ -413,6 +421,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderBottomWidth: 1,
     color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-700'],
   },
   buttonStyle: {

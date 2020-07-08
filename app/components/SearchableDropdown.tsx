@@ -81,7 +81,8 @@ const SearchableDropdown = (props: any) => {
     return (
       <Touchable onPress={() => handleItemSelect(item)}>
         <View style={applyStyles(styles.listItem, itemStyle)}>
-          <Text style={applyStyles(styles.listItemText, itemTextStyle)}>
+          <Text
+            style={applyStyles(styles.listItemText, itemTextStyle, 'text-400')}>
             {item[searchTerm]}
           </Text>
         </View>
@@ -103,9 +104,9 @@ const SearchableDropdown = (props: any) => {
           <TextInput
             onFocus={handleInputFocus}
             value={value[searchTerm]}
-            style={styles.searchInput}
             onChangeText={searchedItems}
             placeholderTextColor={colors['gray-50']}
+            style={applyStyles(styles.searchInput, 'text-400')}
             {...textInputProps}
           />
         </View>

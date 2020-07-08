@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    fontFamily: 'Rubik-Regular',
     textTransform: 'uppercase',
   },
   whiteButtonText: {
@@ -120,6 +121,7 @@ export const baseButtonStyles = StyleSheet.create({
     textTransform: 'uppercase',
     fontSize: 14,
     lineHeight: 20,
+    fontFamily: 'Rubik-Light',
   },
   icon: {
     color: colors.white,
