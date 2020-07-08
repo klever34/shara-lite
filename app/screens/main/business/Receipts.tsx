@@ -14,10 +14,6 @@ import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import {customers} from './data.json';
 
-type CustomerItemProps = {
-  item: Customer;
-};
-
 const Receipts = () => {
   //@ts-ignore
   global.startTime = new Date().getTime();
