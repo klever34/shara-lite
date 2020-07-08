@@ -18,6 +18,5 @@ export const useRealm = () => {
 };
 
 export const createRealm = async () => {
-  Realm.deleteFile({});
   return Realm.open({schema: [Contact, Message, Conversation]});
 };

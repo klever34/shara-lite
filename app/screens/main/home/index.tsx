@@ -38,7 +38,7 @@ const HomeScreen = () => {
       index: 0,
       routes: [{name: 'Auth'}],
     });
-    // Realm.deleteFile({});
+    Realm.deleteFile({});
   }, [navigation]);
   useLayoutEffect(() => {
     navigation.setOptions({
