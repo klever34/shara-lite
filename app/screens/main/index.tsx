@@ -105,8 +105,11 @@ const MainScreens = ({navigation}: any) => {
             options={{
               title: 'Shara',
               headerStyle: {
-                backgroundColor: colors.primary,
                 elevation: 0,
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontFamily: 'CocogoosePro-Regular',
               },
               headerTintColor: '#fff',
             }}
@@ -119,6 +122,10 @@ const MainScreens = ({navigation}: any) => {
               headerStyle: {
                 backgroundColor: colors.primary,
               },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
               headerTintColor: '#fff',
             }}
           />
@@ -129,6 +136,10 @@ const MainScreens = ({navigation}: any) => {
               headerStyle: {
                 backgroundColor: colors.primary,
               },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
               headerTintColor: '#fff',
             }}
           />
@@ -138,6 +149,10 @@ const MainScreens = ({navigation}: any) => {
             options={{
               headerStyle: {
                 backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
               },
               headerTintColor: '#fff',
             }}
@@ -150,6 +165,10 @@ const MainScreens = ({navigation}: any) => {
               headerStyle: {
                 backgroundColor: colors.primary,
               },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
               headerTintColor: '#fff',
             }}
           />
@@ -160,6 +179,10 @@ const MainScreens = ({navigation}: any) => {
               title: 'Receipt Summary',
               headerStyle: {
                 backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
               },
               headerTintColor: '#fff',
             }}
@@ -177,6 +200,10 @@ const MainScreens = ({navigation}: any) => {
               headerStyle: {
                 backgroundColor: colors.primary,
               },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
               headerTintColor: '#fff',
             }}
           />
@@ -187,6 +214,10 @@ const MainScreens = ({navigation}: any) => {
               title: 'Inventory',
               headerStyle: {
                 backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
               },
               headerTintColor: '#fff',
             }}
@@ -199,6 +230,10 @@ const MainScreens = ({navigation}: any) => {
               headerStyle: {
                 backgroundColor: colors.primary,
               },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
               headerTintColor: '#fff',
             }}
           />
@@ -209,6 +244,10 @@ const MainScreens = ({navigation}: any) => {
               title: 'Credit',
               headerStyle: {
                 backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
               },
               headerTintColor: '#fff',
             }}

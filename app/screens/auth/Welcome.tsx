@@ -14,7 +14,7 @@ export const Welcome = ({navigation}: any) => {
     <View style={styles.container}>
       <View style={styles.textSection}>
         <Text style={styles.headingText}>Shara</Text>
-        <Text style={styles.bodyText}>Final mile software that delivers</Text>
+        <Text style={styles.bodyText}>Connect. Share. Transact.</Text>
       </View>
       <View style={styles.buttonSection}>
         <TouchableHighlight
@@ -51,13 +51,14 @@ const styles = StyleSheet.create({
   },
   headingText: {
     color: 'white',
-    fontSize: 40,
-    fontWeight: 'bold',
+    fontSize: 60,
     textTransform: 'uppercase',
+    fontFamily: 'CocogoosePro-Regular',
   },
   bodyText: {
     color: 'white',
     fontSize: 16,
+    fontFamily: 'Rubik-Light',
   },
   buttonSection: {
     flexDirection: 'row',
@@ -77,5 +78,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.primary,
     textTransform: 'uppercase',
+    fontFamily: 'Rubik-Regular',
   },
 });

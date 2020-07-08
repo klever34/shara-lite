@@ -13,6 +13,7 @@ import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import {customers} from './data.json';
+import {applyStyles} from '../../../helpers/utils';
 
 const Receipts = () => {
   //@ts-ignore
@@ -54,7 +55,9 @@ const Receipts = () => {
       return (
         <Touchable onPress={() => handleSelectCustomer(customer)}>
           <View style={styles.customerListItem}>
-            <Text style={styles.customerListItemText}>{customer.name}</Text>
+            <Text style={applyStyles(styles.customerListItemText, 'text-400')}>
+              {customer.name}
+            </Text>
           </View>
         </Touchable>
       );
@@ -63,7 +66,11 @@ const Receipts = () => {
   );
 
   const renderCustomerListHeader = useCallback(
-    () => <Text style={styles.customerListHeader}>Select a customer</Text>,
+    () => (
+      <Text style={applyStyles(styles.customerListHeader, 'text-500')}>
+        Select a customer
+      </Text>
+    ),
     [],
   );
 
@@ -80,7 +87,7 @@ const Receipts = () => {
           />
           <TextInput
             value={searchInputValue}
-            style={styles.searchInput}
+            style={applyStyles(styles.searchInput, 'text-400')}
             placeholder="Search Customer"
             onChangeText={handleCustomerSearch}
             placeholderTextColor={colors['gray-50']}
@@ -95,7 +102,9 @@ const Receipts = () => {
             type="feathericons"
             color={colors.primary}
           />
-          <Text style={styles.newCustomerButtonText}>New Customer</Text>
+          <Text style={applyStyles(styles.newCustomerButtonText, 'text-400')}>
+            New Customer
+          </Text>
         </View>
       </Touchable>
       <FlatList
@@ -151,7 +160,6 @@ const styles = StyleSheet.create({
   },
   customerListHeader: {
     fontSize: 12,
-    fontWeight: 'bold',
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderBottomWidth: 1,

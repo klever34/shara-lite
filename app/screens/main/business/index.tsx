@@ -3,30 +3,19 @@ import React, {useCallback} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {colors} from '../../../styles';
+import {applyStyles} from '../../../helpers/utils';
 
 const BusinessTab = () => {
   const navigation = useNavigation();
   const actions = [
     {
-      name: 'Finances',
-      render: () => {
-        return (
-          <View style={styles.listItem}>
-            <Text style={styles.listItemText}>Finances</Text>
-            <Image
-              style={styles.listItemIcon}
-              source={require('../../../assets/icons/business/finances.png')}
-            />
-          </View>
-        );
-      },
-    },
-    {
       name: 'Receipts',
       render: () => {
         return (
           <View style={styles.listItem}>
-            <Text style={styles.listItemText}>Issue a receipt</Text>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Issue a receipt
+            </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/receipts.png')}
@@ -40,7 +29,9 @@ const BusinessTab = () => {
       render: () => {
         return (
           <View style={styles.listItem}>
-            <Text style={styles.listItemText}>Record inventory</Text>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Record inventory
+            </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/inventory.png')}
@@ -54,7 +45,9 @@ const BusinessTab = () => {
       render: () => {
         return (
           <View style={styles.listItem}>
-            <Text style={styles.listItemText}>Record expenses</Text>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Record expenses
+            </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/expenses.png')}
@@ -68,7 +61,9 @@ const BusinessTab = () => {
       render: () => {
         return (
           <View style={styles.listItem}>
-            <Text style={styles.listItemText}>Give Credit</Text>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Give Credit
+            </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/credit.png')}
@@ -91,13 +86,12 @@ const BusinessTab = () => {
   return (
     <View style={styles.container}>
       <FloatingAction
-        animated={false}
         actions={actions}
-        distanceToEdge={12}
         color={colors.primary}
-        showBackground={false}
         actionsPaddingTopBottom={4}
         onPressItem={handleActionItemClick}
+        overlayColor="rgba(255,255,255,0.95)"
+        distanceToEdge={{vertical: 20, horizontal: 12}}
       />
     </View>
   );
@@ -108,6 +102,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     paddingHorizontal: 12,
+    backgroundColor: colors.white,
   },
   listItem: {
     alignItems: 'center',
@@ -120,7 +115,6 @@ const styles = StyleSheet.create({
   listItemText: {
     fontSize: 16,
     paddingRight: 12,
-    fontWeight: '500',
     color: colors['gray-300'],
   },
   fabButton: {
