@@ -63,7 +63,8 @@ const ChatListScreen = () => {
   const realm = useRealm() as Realm;
   const conversations = realm
     .objects<IConversation>('Conversation')
-    .filtered('lastMessage != null');
+    .filtered('lastMessage != null')
+    .sorted('lastMessage.created_at', true);
   const renderChatListItem = useCallback(
     ({item}: ListRenderItemInfo<IConversation>) => {
       return <ChatListItem conversation={item} />;

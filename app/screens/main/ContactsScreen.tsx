@@ -27,7 +27,7 @@ import PlaceholderImage from '../../components/PlaceholderImage';
 const ContactsScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const contacts = realm.objects<IContact>('Contact');
+  const contacts = realm.objects<IContact>('Contact').sorted('firstname');
   const [loading, setLoading] = useState(false);
   useEffect(() => {
     const contactsService = getContactsService();
