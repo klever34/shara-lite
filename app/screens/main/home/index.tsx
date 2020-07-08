@@ -86,34 +86,32 @@ const HomeScreen = () => {
                 Realm.UpdateMode.Modified,
               );
             });
-            realm.write(() => {
-              let conversation: any = realm
-                .objects<IConversation>('Conversation')
-                .filtered(`channel = "${channel}"`)[0];
-              if (!conversation) {
-                pubNub.objects
-                  .getMemberships({
-                    uuid: pubNub.getUUID(),
-                    include: {customFields: true},
-                  })
-                  .then((response) => {
-                    const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
-                    const channelMembership = response.data.find(
-                      (membership) => {
-                        return membership.channel.id === channel;
-                      },
-                    );
-                    if (!channelMembership || !channelMembership.custom) {
-                      return;
-                    }
-                    const encryptedMember = channelMembership.custom.mobile;
-                    let sender = cryptr.decrypt(String(encryptedMember));
-                    const contact = realm
-                      .objects<IContact>('Contact')
-                      .filtered(`mobile = "${sender}"`)[0];
-                    if (contact) {
-                      sender = contact.fullName;
-                    }
+            let conversation: any = realm
+              .objects<IConversation>('Conversation')
+              .filtered(`channel = "${channel}"`)[0];
+            if (!conversation) {
+              pubNub.objects
+                .getMemberships({
+                  uuid: pubNub.getUUID(),
+                  include: {customFields: true},
+                })
+                .then((response) => {
+                  const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
+                  const channelMembership = response.data.find((membership) => {
+                    return membership.channel.id === channel;
+                  });
+                  if (!channelMembership || !channelMembership.custom) {
+                    return;
+                  }
+                  const encryptedMember = channelMembership.custom.mobile;
+                  let sender = cryptr.decrypt(String(encryptedMember));
+                  const contact = realm
+                    .objects<IContact>('Contact')
+                    .filtered(`mobile = "${sender}"`)[0];
+                  if (contact) {
+                    sender = contact.fullName;
+                  }
+                  realm.write(() => {
                     realm.create<IConversation>(
                       'Conversation',
                       {
@@ -123,11 +121,13 @@ const HomeScreen = () => {
                       },
                       Realm.UpdateMode.Never,
                     );
-                  })
-                  .catch((e) => {
-                    console.log('Error :', e.status);
                   });
-              } else {
+                })
+                .catch((e) => {
+                  console.log('Error :', e.status || e);
+                });
+            } else {
+              realm.write(() => {
                 realm.create<IConversation>(
                   'Conversation',
                   {
@@ -136,8 +136,8 @@ const HomeScreen = () => {
                   },
                   Realm.UpdateMode.Modified,
                 );
-              }
-            });
+              });
+            }
           } catch (e) {
             console.log('Error: ', e);
           }
