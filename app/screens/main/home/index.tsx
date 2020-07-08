@@ -112,7 +112,7 @@ const HomeScreen = () => {
         tabBarOptions={{
           indicatorContainerStyle: {backgroundColor: colors.primary},
           indicatorStyle: {backgroundColor: colors.white},
-          labelStyle: {fontFamily: 'Rubik-Medium'},
+          labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: 'rgba(255,255,255, 1)',
           inactiveTintColor: 'rgba(255,255,255, 0.75)',
         }}>

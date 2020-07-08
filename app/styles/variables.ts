@@ -1,9 +1,9 @@
-import {Dimensions} from 'react-native';
+import {Dimensions} from 'react-native'
 
 export const dimensions = {
   fullHeight: Dimensions.get('window').height,
   fullWidth: Dimensions.get('window').width,
-};
+}
 
 export const colors = {
   primary: '#dd0404',
@@ -19,8 +19,8 @@ export const colors = {
   'gray-700': '#4A5568',
   'gray-800': '#2D3748',
   'gray-900': '#1A202C',
-  black: '#000',
-};
+  black: '#222222',
+}
 
 export const spacing: {[key: string]: number} = {
   xs: 4,
@@ -28,4 +28,4 @@ export const spacing: {[key: string]: number} = {
   md: 12,
   lg: 16,
   xl: 24,
-};
+}

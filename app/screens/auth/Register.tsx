@@ -11,6 +11,9 @@ import {
 import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 import {getAuthService} from '../../services';
+import {colors} from '../../styles';
+import Icon from '../../components/Icon';
+import Touchable from '../../components/Touchable';
 
 type Fields = {
   firstname: string;
@@ -79,19 +82,31 @@ export const Register = ({
 
   return (
     <View style={styles.container}>
+      <View style={styles.backButton}>
+        <Touchable onPress={() => handleNavigate('Welcome')}>
+          <Icon size={24} type="ionicons" name="md-arrow-back" />
+        </Touchable>
+      </View>
       <View style={styles.headerSection}>
-        <Text style={styles.headerText}>Shara</Text>
+        <Text style={styles.heading}>Sign Up</Text>
+        <Text style={styles.description}>
+          Create an account so you can chat and do business faster and better.
+        </Text>
+      </View>
+      <View style={styles.headerSection}>
         <View>
           <TextInput
             value={fields.firstname}
             style={styles.inputField}
-            placeholder="First name"
+            placeholder="First Name"
+            placeholderTextColor={colors['gray-50']}
             onChangeText={(text) => onChangeText(text, 'firstname')}
           />
           <TextInput
             value={fields.lastname}
-            placeholder="Last name"
+            placeholder="Last Name"
             style={styles.inputField}
+            placeholderTextColor={colors['gray-50']}
             onChangeText={(text) => onChangeText(text, 'lastname')}
           />
           <View style={styles.inputFieldSpacer}>
@@ -109,10 +124,10 @@ export const Register = ({
           </View>
 
           <Button
-            title="Sign up"
             variantColor="red"
             onPress={onSubmit}
             isLoading={loading}
+            title="Create an account"
             disabled={isButtonDisabled() || loading}
           />
         </View>
@@ -123,7 +138,7 @@ export const Register = ({
           style={styles.helpSection}
           onPress={() => handleNavigate('Login')}>
           <Text style={styles.helpSectionText}>Already have an account? </Text>
-          <Text style={styles.helpSectionButtonText}>Login</Text>
+          <Text style={styles.helpSectionButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
     </View>
@@ -133,29 +148,45 @@ export const Register = ({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 12,
-    justifyContent: 'space-between',
+    padding: 32,
+  },
+  backButton: {
+    marginBottom: 48,
   },
   headerSection: {
-    flexGrow: 1,
-    marginHorizontal: 30,
-    justifyContent: 'center',
+    marginBottom: 48,
+  },
+  heading: {
+    fontSize: 24,
+    paddingBottom: 8,
+    color: colors.black,
+    fontFamily: 'CocogoosePro-Regular',
+  },
+  description: {
+    fontSize: 16,
+    lineHeight: 27,
+    color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
+  },
+  form: {
+    paddingBottom: 32,
   },
   inputField: {
     height: 40,
-    fontSize: 16,
+    fontSize: 18,
     width: '100%',
     marginBottom: 24,
-    borderColor: 'gray',
     borderBottomWidth: 1,
+    fontFamily: 'Rubik-Regular',
+    borderColor: colors['gray-200'],
   },
   headerText: {
     fontSize: 40,
     marginBottom: 40,
-    fontWeight: 'bold',
     color: '#d51a1a',
     textAlign: 'center',
     textTransform: 'uppercase',
+    fontFamily: 'CocogoosePro-Regular',
   },
   helpSection: {
     marginBottom: 20,
@@ -165,23 +196,16 @@ const styles = StyleSheet.create({
   },
   helpSectionText: {
     fontSize: 16,
-    color: '#a8a8a8',
+    color: colors['gray-100'],
+    fontFamily: 'Rubik-Regular',
   },
   helpSectionButtonText: {
     fontSize: 16,
-    color: '#a8a8a8',
-    fontWeight: 'bold',
-  },
-  button: {
-    padding: 10,
-    borderRadius: 3,
-    alignItems: 'center',
-    backgroundColor: '#e20b0d',
-  },
-  buttonText: {
-    fontSize: 16,
-    color: 'white',
-    textTransform: 'uppercase',
+    color: colors.black,
+    fontFamily: 'Rubik-Regular',
+    textDecorationStyle: 'solid',
+    textDecorationLine: 'underline',
+    textDecorationColor: colors.black,
   },
   inputFieldSpacer: {
     marginBottom: 24,

@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, TextInput, TextInputProperties, View} from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
+import {colors} from '../styles';
 
 export type PhoneNumber = {
   code: string;
@@ -51,7 +52,7 @@ export const PhoneNumberField = (props: Props) => {
           onSelect={onSelect}
           countryCode={country.cca2}
           withCallingCodeButton
-          withFlagButton={false}
+          containerButtonStyle={styles.pickerButton}
         />
       </View>
       <TextInput
@@ -59,7 +60,8 @@ export const PhoneNumberField = (props: Props) => {
         autoCompleteType="tel"
         keyboardType="phone-pad"
         style={styles.inputField}
-        placeholder="Phone number"
+        placeholder="Phone Number"
+        placeholderTextColor={colors['gray-50']}
         onChangeText={(text) => onInputChangeText(text)}
         {...rest}
       />
@@ -75,12 +77,18 @@ const styles = StyleSheet.create({
   inputField: {
     flex: 1,
     height: 40,
-    fontSize: 16,
+    fontSize: 18,
     width: '100%',
-    borderColor: 'gray',
     borderBottomWidth: 1,
+    fontFamily: 'Rubik-Regular',
+    borderColor: colors['gray-200'],
   },
   picker: {
     paddingRight: 12,
+  },
+  pickerButton: {
+    paddingBottom: 12,
+    borderBottomWidth: 1,
+    borderColor: colors['gray-200'],
   },
 });

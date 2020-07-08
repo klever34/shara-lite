@@ -1,6 +1,7 @@
 import React from 'react';
 import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
 import Icon from '../components/Icon';
+import {colors} from '../styles';
 
 type Props = {
   value: string;
@@ -25,6 +26,7 @@ export const PasswordField = (props: Props) => {
           secureTextEntry={secure}
           placeholder={placeholder}
           style={styles.inputField}
+          placeholderTextColor={colors['gray-50']}
           onChangeText={(text) => onChangeText(text)}
           {...rest}
         />
@@ -50,10 +52,11 @@ const styles = StyleSheet.create({
   inputFieldContainer: {},
   inputField: {
     height: 40,
-    fontSize: 16,
+    fontSize: 18,
     width: '100%',
-    borderColor: 'gray',
     borderBottomWidth: 1,
+    fontFamily: 'Rubik-Regular',
+    borderColor: colors['gray-200'],
   },
   toggleButton: {
     top: 10,

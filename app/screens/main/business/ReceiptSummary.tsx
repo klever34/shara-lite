@@ -232,9 +232,12 @@ const ReceiptSummary = ({
                   'justify-space-between',
                 )}>
                 <Text
-                  style={applyStyles({
-                    color: colors['gray-300'],
-                  })}>
+                  style={applyStyles(
+                    {
+                      color: colors['gray-300'],
+                    },
+                    'text-400',
+                  )}>
                   Tax:
                 </Text>
                 <Text>{tax}</Text>
@@ -246,9 +249,12 @@ const ReceiptSummary = ({
                   'justify-space-between',
                 )}>
                 <Text
-                  style={applyStyles({
-                    color: colors['gray-300'],
-                  })}>
+                  style={applyStyles(
+                    {
+                      color: colors['gray-300'],
+                    },
+                    'text-400',
+                  )}>
                   Total:
                 </Text>
                 <Text style={styles.totalAmountText}>
