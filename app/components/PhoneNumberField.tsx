@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, TextInput, TextInputProperties, View} from 'react-native';
 import CountryPicker from 'react-native-country-picker-modal';
 import {colors} from '../styles';
+import Icon from './Icon';
 
 export type PhoneNumber = {
   code: string;
@@ -54,6 +55,13 @@ export const PhoneNumberField = (props: Props) => {
           withCallingCodeButton
           containerButtonStyle={styles.pickerButton}
         />
+        <Icon
+          size={16}
+          type="ionicons"
+          name="ios-arrow-down"
+          color={colors['gray-50']}
+          style={styles.arrowDownIcon}
+        />
       </View>
       <TextInput
         value={phoneNumber}
@@ -87,8 +95,14 @@ const styles = StyleSheet.create({
     paddingRight: 12,
   },
   pickerButton: {
+    width: 100,
     paddingBottom: 12,
     borderBottomWidth: 1,
     borderColor: colors['gray-200'],
+  },
+  arrowDownIcon: {
+    position: 'absolute',
+    top: 8,
+    right: 12,
   },
 });
