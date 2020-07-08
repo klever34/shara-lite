@@ -27,6 +27,11 @@ type HomeTabParamList = {
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
+type ChannelMetadataCustomFields = {
+  members: string;
+  type: '1-1';
+};
+
 const HomeScreen = () => {
   const navigation = useNavigation();
   const pubNub = usePubNub();
@@ -91,20 +96,14 @@ const HomeScreen = () => {
               .filtered(`channel = "${channel}"`)[0];
             if (!conversation) {
               pubNub.objects
-                .getMemberships({
-                  uuid: pubNub.getUUID(),
-                  include: {customFields: true},
-                })
+                .getChannelMetadata({channel, include: {customFields: true}})
                 .then((response) => {
+                  const customFields = response.data
+                    .custom as ChannelMetadataCustomFields;
                   const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
-                  const channelMembership = response.data.find((membership) => {
-                    return membership.channel.id === channel;
-                  });
-                  if (!channelMembership || !channelMembership.custom) {
-                    return;
-                  }
-                  const encryptedMember = channelMembership.custom.mobile;
-                  let sender = cryptr.decrypt(String(encryptedMember));
+                  let sender = cryptr.decrypt(
+                    String(customFields.members).split(',')[1],
+                  );
                   const contact = realm
                     .objects<IContact>('Contact')
                     .filtered(`mobile = "${sender}"`)[0];
