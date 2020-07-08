@@ -3,6 +3,7 @@ import React from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {colors} from '../../../styles';
+import {applyStyles} from '../../../helpers/utils';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
@@ -13,7 +14,9 @@ const CustomersTab = () => {
       render: () => {
         return (
           <View style={styles.listItem}>
-            <Text style={styles.listItemText}>Issue a receipt</Text>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Issue a receipt
+            </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/receipts.png')}
@@ -28,7 +31,9 @@ const CustomersTab = () => {
       render: () => {
         return (
           <View style={styles.listItem}>
-            <Text style={styles.listItemText}>Give Credit</Text>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Give Credit
+            </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/credit.png')}
@@ -41,12 +46,11 @@ const CustomersTab = () => {
   return (
     <View style={styles.container}>
       <FloatingAction
-        animated={false}
         actions={actions}
         distanceToEdge={12}
         color={colors.primary}
-        showBackground={false}
         actionsPaddingTopBottom={4}
+        overlayColor="rgba(255,255,255,0.95)"
         onPressItem={(name) => name && navigation.navigate(name)}
       />
     </View>
@@ -58,6 +62,7 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingVertical: 14,
     paddingHorizontal: 12,
+    backgroundColor: colors.white,
   },
   listItem: {
     alignItems: 'center',
@@ -71,6 +76,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     paddingRight: 12,
     fontWeight: '500',
+    color: colors['gray-300'],
   },
   fabButton: {
     paddingHorizontal: 12,

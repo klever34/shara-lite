@@ -1,6 +1,6 @@
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect} from 'react';
-import {Image, StyleSheet, View} from 'react-native';
+import {Image, StyleSheet, View, Text} from 'react-native';
 import {RootStackParamList} from '../index';
 import {colors, dimensions} from '../styles';
 import {getAuthService} from '../services';
@@ -16,7 +16,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  image: {width: '100%', height: 200},
+  image: {width: '75%', height: '9%', marginBottom: 16},
+  text: {color: colors.white, fontSize: 16, fontFamily: 'Rubik-Light'},
 });
 
 const SplashScreen = ({navigation}: SplashScreenProps) => {
@@ -43,9 +44,10 @@ const SplashScreen = ({navigation}: SplashScreenProps) => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/images/splash-screen.png')}
+        source={require('../assets/images/shara_logo_white.png')}
         style={styles.image}
       />
+      <Text style={styles.text}>Connect. Share. Transact.</Text>
     </View>
   );
 };

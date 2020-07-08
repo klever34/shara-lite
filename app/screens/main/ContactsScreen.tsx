@@ -238,7 +238,12 @@ const ContactsScreen = () => {
                   size={28}
                 />
               </View>
-              <Text style={applyStyles('text-lg')}>Invite a friend</Text>
+              <Text
+                style={applyStyles('text-lg', 'text-400', {
+                  color: colors['gray-300'],
+                })}>
+                Invite a friend
+              </Text>
             </View>
           </Touchable>
           <Touchable
@@ -291,7 +296,12 @@ const ContactsScreen = () => {
                   size={28}
                 />
               </View>
-              <Text style={applyStyles('text-lg')}>Shara Chat</Text>
+              <Text
+                style={applyStyles('text-lg', 'text-400', {
+                  color: colors['gray-300'],
+                })}>
+                Shara Chat
+              </Text>
             </View>
           </Touchable>
         </>

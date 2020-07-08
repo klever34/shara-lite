@@ -26,8 +26,8 @@ interface ButtonProps extends BaseButtonProps {
 
 const styles = StyleSheet.create({
   button: {
-    height: 40,
-    borderRadius: 3,
+    height: 56,
+    borderRadius: 8,
     alignItems: 'center',
     paddingHorizontal: 10,
     justifyContent: 'center',
@@ -40,6 +40,7 @@ const styles = StyleSheet.create({
   },
   text: {
     fontSize: 16,
+    fontFamily: 'Rubik-Regular',
     textTransform: 'uppercase',
   },
   whiteButtonText: {
@@ -120,6 +121,7 @@ export const baseButtonStyles = StyleSheet.create({
     textTransform: 'uppercase',
     fontSize: 14,
     lineHeight: 20,
+    fontFamily: 'Rubik-Light',
   },
   icon: {
     color: colors.white,
