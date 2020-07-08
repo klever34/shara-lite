@@ -23,6 +23,8 @@ import Expenses from './business/Expenses';
 import Credit from './business/Credit';
 import AddCustomer from './customers/AddCustomer';
 import CustomerDetails from './customers/CustomerDetails';
+import RecordPayment from './customers/RecordPayment';
+import CreditPayment from './customers/CreditPayment';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -38,6 +40,8 @@ export type MainStackParamList = {
   Credit: undefined;
   AddCustomer: undefined;
   CustomerDetails: {customer: any};
+  RecordPayment: undefined;
+  CreditPayment: {creditDetails: CreditDetails};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -285,6 +289,36 @@ const MainScreens = ({navigation}: any) => {
               },
               headerTintColor: '#fff',
             })}
+          />
+          <MainStack.Screen
+            name="RecordPayment"
+            component={RecordPayment}
+            options={{
+              title: 'Record Payment',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="CreditPayment"
+            component={CreditPayment}
+            options={{
+              title: 'Credit Payment',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
           />
         </MainStack.Navigator>
       </PubNubProvider>

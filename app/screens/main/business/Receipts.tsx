@@ -12,7 +12,7 @@ import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
-import {customers} from './data.json';
+import {customers} from '../data.json';
 import {applyStyles} from '../../../helpers/utils';
 
 const Receipts = () => {

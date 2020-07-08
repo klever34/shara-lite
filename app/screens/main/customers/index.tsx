@@ -12,7 +12,7 @@ import {FAButton} from '../../../components';
 import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
-import {customers} from '../business/data.json';
+import {customers} from '../data.json';
 import {applyStyles} from '../../../helpers/utils';
 
 const CustomersTab = () => {
@@ -22,7 +22,7 @@ const CustomersTab = () => {
 
   const handleSelectCustomer = useCallback(
     (item?: Customer) => {
-      navigation.navigate('NewReceipt', {customer: item});
+      navigation.navigate('CustomerDetails', {customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
     },

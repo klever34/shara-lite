@@ -21,7 +21,7 @@ const CustomerDetailsTab = createMaterialTopTabNavigator<
   CustomerDetailsParamList
 >();
 
-const CustomerDetails = ({route}: any) => {
+const CustomerDetails = () => {
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
@@ -29,8 +29,6 @@ const CustomerDetails = ({route}: any) => {
       headerRight: () => <AppMenu options={[]} />,
     });
   }, [navigation]);
-
-  console.log(route.params);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

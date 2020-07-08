@@ -12,7 +12,7 @@ import {Button} from '../../../components/Button';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
-import {products} from './data.json';
+import {products} from '../data.json';
 import {MainStackParamList} from '..';
 import {StackScreenProps} from '@react-navigation/stack';
 import SearchableDropdown from '../../../components/SearchableDropdown';
