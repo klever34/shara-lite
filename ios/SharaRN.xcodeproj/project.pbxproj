@@ -36,6 +36,16 @@
 		DE6D369D28B14FAD86B6A9D4 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DFE8E439BD6440F2A18BD257 /* AntDesign.ttf */; };
 		F3FFDEA8C28D056DD3CB8C75 /* libPods-SharaRN.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E1F34EA09BBE00A5272ED /* libPods-SharaRN.a */; };
 		FF97DEE1975A40A58C7E752A /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 68989F10DFFF4FCCA0535707 /* EvilIcons.ttf */; };
+		BBAA3DE42FDB4E6AAA343B00 /*  CocogoosePro-UltraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */; };
+		47A7D71C4B0943E99E992479 /* CocogoosePro-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */; };
+		6A11E098B8E54643BFA9C944 /* CocogoosePro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */; };
+		7D0557EA69C5427CBC568811 /* CocogoosePro-SemiLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */; };
+		69C0694F31094220B2D8F685 /* CocogoosePro-Thin.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4FB8BB48A9284C2987BC4895 /* CocogoosePro-Thin.otf */; };
+		20D8035AA4AC4C3DA5E128B9 /* Rubik-Black.otf in Resources */ = {isa = PBXBuildFile; fileRef = 8F68A10B3D004C08BDFC6EAE /* Rubik-Black.otf */; };
+		F4BD32F8D8CD43EE9375ADD7 /* Rubik-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = 9789EDC71A1C4E31A749F31A /* Rubik-Bold.otf */; };
+		2B657AE90F7449EF8F96D331 /* Rubik-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4AED76054A084405914A567C /* Rubik-Light.otf */; };
+		79340C9A070C49E8B29A1410 /* Rubik-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3637D543DE434C8F978D263E /* Rubik-Medium.otf */; };
+		EC84491691CB4B94A0FAD557 /* Rubik-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3AC6BE21476942BBB4ECDFB6 /* Rubik-Regular.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -99,6 +109,16 @@
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		EE17A47AC3DC6297355AF760 /* Pods-SharaRN-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharaRN-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-SharaRN-tvOSTests/Pods-SharaRN-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		FE5431FE902246E40652F57A /* Pods-SharaRN-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharaRN-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-SharaRN-tvOS/Pods-SharaRN-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
+		731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */ = {isa = PBXFileReference; name = " CocogoosePro-UltraLight.otf"; path = "../app/assets/fonts/ CocogoosePro-UltraLight.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */ = {isa = PBXFileReference; name = "CocogoosePro-Light.otf"; path = "../app/assets/fonts/CocogoosePro-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */ = {isa = PBXFileReference; name = "CocogoosePro-Regular.otf"; path = "../app/assets/fonts/CocogoosePro-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */ = {isa = PBXFileReference; name = "CocogoosePro-SemiLight.otf"; path = "../app/assets/fonts/CocogoosePro-SemiLight.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4FB8BB48A9284C2987BC4895 /* CocogoosePro-Thin.otf */ = {isa = PBXFileReference; name = "CocogoosePro-Thin.otf"; path = "../app/assets/fonts/CocogoosePro-Thin.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		8F68A10B3D004C08BDFC6EAE /* Rubik-Black.otf */ = {isa = PBXFileReference; name = "Rubik-Black.otf"; path = "../app/assets/fonts/Rubik-Black.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		9789EDC71A1C4E31A749F31A /* Rubik-Bold.otf */ = {isa = PBXFileReference; name = "Rubik-Bold.otf"; path = "../app/assets/fonts/Rubik-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4AED76054A084405914A567C /* Rubik-Light.otf */ = {isa = PBXFileReference; name = "Rubik-Light.otf"; path = "../app/assets/fonts/Rubik-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3637D543DE434C8F978D263E /* Rubik-Medium.otf */ = {isa = PBXFileReference; name = "Rubik-Medium.otf"; path = "../app/assets/fonts/Rubik-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		3AC6BE21476942BBB4ECDFB6 /* Rubik-Regular.otf */ = {isa = PBXFileReference; name = "Rubik-Regular.otf"; path = "../app/assets/fonts/Rubik-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -250,6 +270,16 @@
 				AFAC2FF7CEF143BBB6B71411 /* Octicons.ttf */,
 				0C4A3031661A4FC2ADF2F2C5 /* SimpleLineIcons.ttf */,
 				A3C6B74B43F945ECBD06F79B /* Zocial.ttf */,
+				731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */,
+				6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */,
+				09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */,
+				AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */,
+				4FB8BB48A9284C2987BC4895 /* CocogoosePro-Thin.otf */,
+				8F68A10B3D004C08BDFC6EAE /* Rubik-Black.otf */,
+				9789EDC71A1C4E31A749F31A /* Rubik-Bold.otf */,
+				4AED76054A084405914A567C /* Rubik-Light.otf */,
+				3637D543DE434C8F978D263E /* Rubik-Medium.otf */,
+				3AC6BE21476942BBB4ECDFB6 /* Rubik-Regular.otf */,
 			);
 			name = Resources;
 			path = "";
@@ -416,6 +446,16 @@
 				81501C0E23A84F98A4B1C50A /* Octicons.ttf in Resources */,
 				8929E6D5E474477DA45904F6 /* SimpleLineIcons.ttf in Resources */,
 				808B522AF3124444995D9CE1 /* Zocial.ttf in Resources */,
+				BBAA3DE42FDB4E6AAA343B00 /*  CocogoosePro-UltraLight.otf in Resources */,
+				47A7D71C4B0943E99E992479 /* CocogoosePro-Light.otf in Resources */,
+				6A11E098B8E54643BFA9C944 /* CocogoosePro-Regular.otf in Resources */,
+				7D0557EA69C5427CBC568811 /* CocogoosePro-SemiLight.otf in Resources */,
+				69C0694F31094220B2D8F685 /* CocogoosePro-Thin.otf in Resources */,
+				20D8035AA4AC4C3DA5E128B9 /* Rubik-Black.otf in Resources */,
+				F4BD32F8D8CD43EE9375ADD7 /* Rubik-Bold.otf in Resources */,
+				2B657AE90F7449EF8F96D331 /* Rubik-Light.otf in Resources */,
+				79340C9A070C49E8B29A1410 /* Rubik-Medium.otf in Resources */,
+				EC84491691CB4B94A0FAD557 /* Rubik-Regular.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
