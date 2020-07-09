@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ViewStyle} from 'react-native';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import Icon from '../../../components/Icon';
@@ -8,14 +8,15 @@ import {applyStyles} from '../../../helpers/utils';
 type Props = {
   buttonIcon?: string;
   onClick?(): void;
+  style?: ViewStyle;
   buttonText?: string;
   children: React.ReactNode;
 };
 
 const ActionCard = (props: Props) => {
-  const {children, onClick, buttonIcon, buttonText} = props;
+  const {children, onClick, style, buttonIcon, buttonText} = props;
   return (
-    <View style={styles.container}>
+    <View style={applyStyles(styles.container, {...style})}>
       {children}
       {onClick && (
         <Touchable onPress={onClick}>

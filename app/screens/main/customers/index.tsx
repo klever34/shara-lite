@@ -116,7 +116,8 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   searchContainer: {
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     backgroundColor: colors.primary,
   },
   searchInputContainer: {
@@ -140,7 +141,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: 'bold',
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
@@ -148,8 +149,7 @@ const styles = StyleSheet.create({
   },
   customerListItem: {
     fontSize: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 8,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-20'],
   },

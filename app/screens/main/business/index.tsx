@@ -3,7 +3,9 @@ import React, {useCallback} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {colors} from '../../../styles';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import ActionCard from '../customers/ActionCard';
+import {Button} from '../../../components';
 
 const BusinessTab = () => {
   const navigation = useNavigation();
@@ -85,13 +87,97 @@ const BusinessTab = () => {
 
   return (
     <View style={styles.container}>
+      <View style={applyStyles('mb-lg')}>
+        <ActionCard
+          style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
+          <Text
+            style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
+            Total sales
+          </Text>
+          <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
+            {numberWithCommas(15365400)}
+          </Text>
+        </ActionCard>
+      </View>
+      <View style={applyStyles('flex-row', 'mb-lg', 'justify-space-between')}>
+        <ActionCard
+          style={applyStyles(styles.card, {
+            backgroundColor: colors.white,
+            width: '48%',
+          })}>
+          <Text
+            style={applyStyles(styles.cardTitle, {color: colors['gray-100']})}>
+            Total profit
+          </Text>
+          <Text
+            style={applyStyles(styles.cardContent, {
+              color: colors['gray-300'],
+            })}>
+            {numberWithCommas(15365400)}
+          </Text>
+        </ActionCard>
+        <ActionCard
+          style={applyStyles(styles.card, {
+            backgroundColor: colors.white,
+            width: '48%',
+          })}>
+          <Text
+            style={applyStyles(styles.cardTitle, {color: colors['gray-100']})}>
+            Total expenses
+          </Text>
+          <Text
+            style={applyStyles(styles.cardContent, {
+              color: colors.primary,
+            })}>
+            {numberWithCommas(1205400)}
+          </Text>
+        </ActionCard>
+      </View>
+      <View style={applyStyles('flex-row', 'mb-lg', 'justify-space-between')}>
+        <ActionCard
+          style={applyStyles(styles.card, {
+            backgroundColor: colors.white,
+            width: '48%',
+          })}>
+          <Text
+            style={applyStyles(styles.cardTitle, {color: colors['gray-100']})}>
+            Total credit
+          </Text>
+          <Text
+            style={applyStyles(styles.cardContent, {
+              color: colors['gray-300'],
+            })}>
+            {numberWithCommas(14405000)}
+          </Text>
+        </ActionCard>
+        <ActionCard
+          style={applyStyles(styles.card, {
+            backgroundColor: colors.white,
+            width: '48%',
+          })}>
+          <Text
+            style={applyStyles(styles.cardTitle, {color: colors['gray-100']})}>
+            Overdue credit
+          </Text>
+          <Text
+            style={applyStyles(styles.cardContent, {color: colors.primary})}>
+            {numberWithCommas(15365400)}
+          </Text>
+        </ActionCard>
+      </View>
+      <Button
+        onPress={() => {}}
+        variantColor="white"
+        title="View all finances"
+        style={applyStyles({elevation: 0})}
+      />
       <FloatingAction
         actions={actions}
+        distanceToEdge={12}
         color={colors.primary}
         actionsPaddingTopBottom={4}
         onPressItem={handleActionItemClick}
         overlayColor="rgba(255,255,255,0.95)"
-        distanceToEdge={{vertical: 20, horizontal: 12}}
       />
     </View>
   );
@@ -101,8 +187,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingVertical: 14,
-    paddingHorizontal: 12,
-    backgroundColor: colors.white,
+    paddingHorizontal: 16,
+    // backgroundColor: colors.white,
   },
   listItem: {
     alignItems: 'center',
@@ -117,14 +203,20 @@ const styles = StyleSheet.create({
     paddingRight: 12,
     color: colors['gray-300'],
   },
-  fabButton: {
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
+  card: {
+    padding: 16,
+    paddingTop: 16,
+    elevation: 0,
   },
-  fabButtonText: {
+  cardTitle: {
+    fontSize: 12,
+    paddingBottom: 4,
+    fontFamily: 'Rubik-Medium',
+    textTransform: 'uppercase',
+  },
+  cardContent: {
     fontSize: 16,
-    color: colors.white,
+    fontFamily: 'Rubik-Medium',
   },
 });
 

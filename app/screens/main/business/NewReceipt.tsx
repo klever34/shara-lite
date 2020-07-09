@@ -244,31 +244,10 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: colors.white,
   },
-  searchContainer: {
-    padding: 8,
-    backgroundColor: colors.primary,
-  },
-  searchInputContainer: {
-    position: 'relative',
-  },
-  searchInputIcon: {
-    top: 12,
-    left: 10,
-    elevation: 3,
-    position: 'absolute',
-  },
-  searchInput: {
-    height: 48,
-    elevation: 2,
-    fontSize: 16,
-    borderRadius: 8,
-    paddingLeft: 36,
-    backgroundColor: colors.white,
-  },
   recentProductsHeader: {
     fontSize: 12,
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     color: colors['gray-300'],
     textTransform: 'uppercase',
@@ -279,8 +258,7 @@ const styles = StyleSheet.create({
   },
   recentProductItem: {
     fontSize: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 8,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-20'],
   },
@@ -291,7 +269,7 @@ const styles = StyleSheet.create({
   calculatorSection: {
     borderTopWidth: 15,
     paddingVertical: 8,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     borderTopColor: colors['gray-20'],
   },
   receiptItemsCount: {
@@ -346,6 +324,7 @@ const styles = StyleSheet.create({
   },
   textInputIconText: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
 });
 

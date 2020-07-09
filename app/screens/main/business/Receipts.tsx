@@ -123,7 +123,8 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   searchContainer: {
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     backgroundColor: colors.primary,
   },
   searchInputContainer: {
@@ -149,7 +150,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     flexDirection: 'row',
     borderBottomWidth: 1,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     borderTopColor: colors['gray-20'],
     borderBottomColor: colors['gray-20'],
   },
@@ -161,7 +162,7 @@ const styles = StyleSheet.create({
   customerListHeader: {
     fontSize: 12,
     paddingVertical: 4,
-    paddingHorizontal: 8,
+    paddingHorizontal: 16,
     borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
@@ -169,8 +170,7 @@ const styles = StyleSheet.create({
   },
   customerListItem: {
     fontSize: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 8,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-20'],
   },

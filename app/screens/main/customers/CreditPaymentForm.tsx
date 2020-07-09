@@ -17,7 +17,10 @@ type Props = {
 
 const CreditPaymentForm = (props: Props) => {
   const {isLoading, onSubmit} = props;
-  const [payload, setPayload] = useState<Payload>({} as Payload);
+  const [payload, setPayload] = useState<Payload>({
+    paymentMethod: 'cash',
+    amount: '',
+  } as Payload);
 
   const handleChange = useCallback(
     (value: string | number, key: keyof Payload) => {
@@ -39,30 +42,36 @@ const CreditPaymentForm = (props: Props) => {
 
   return (
     <View>
-      <TextInput
-        style={styles.input}
-        autoCompleteType="tel"
-        value={payload.amount}
-        keyboardType="number-pad"
-        placeholder="Amount Paid"
-        placeholderTextColor={colors['gray-50']}
-        onChangeText={(text) => handleChange(text, 'amount')}
-      />
+      <View style={applyStyles('flex-row', 'items-center')}>
+        <View style={styles.textInputIcon}>
+          <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
+            &#8358;
+          </Text>
+        </View>
+        <TextInput
+          value={payload.amount}
+          keyboardType="number-pad"
+          placeholder="Amount Paid"
+          placeholderTextColor={colors['gray-50']}
+          onChangeText={(text) => handleChange(text, 'amount')}
+          style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
+        />
+      </View>
       <View style={styles.pickerContainer}>
         <Text style={applyStyles('text-400', styles.pickerLabel)}>
           Payment method
         </Text>
         <Picker
           mode="dropdown"
-          selectedValue="Cash"
           style={styles.picker}
           prompt="Payment Method"
           itemStyle={styles.pickerItem}
+          selectedValue={payload.paymentMethod}
           onValueChange={(itemValue) =>
             handleChange(itemValue, 'paymentMethod')
           }>
-          <Picker.Item label="Cash" value="cash" />
-          <Picker.Item label="Credit" value="credit" />
+          <Picker.Item label="Cash" value="Cash" />
+          <Picker.Item label="Credit" value="Credit" />
         </Picker>
       </View>
 
@@ -105,6 +114,14 @@ const styles = StyleSheet.create({
   pickerItem: {
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
+  },
+  textInputIcon: {
+    top: 14,
+    position: 'absolute',
+  },
+  textInputIconText: {
+    fontSize: 16,
+    color: colors['gray-300'],
   },
 });
 
