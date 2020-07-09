@@ -186,9 +186,9 @@ const BusinessTab = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 14,
+    paddingVertical: 32,
     paddingHorizontal: 16,
-    // backgroundColor: colors.white,
+    backgroundColor: colors['gray-10'],
   },
   listItem: {
     alignItems: 'center',
