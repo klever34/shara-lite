@@ -2,16 +2,20 @@ import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Alert, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
 import PushNotification from 'react-native-push-notification';
-import {getAuthService} from '../../services';
+import {
+  getAuthService,
+  getContactsService,
+  getRealmService,
+} from '../../services';
 import {colors} from '../../styles';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
 import HomeScreen from './home';
 import Realm from 'realm';
-import {createRealm, RealmProvider} from '../../services/realm';
+import {createRealm, RealmProvider} from '../../services/RealmService';
 import getUuidByString from 'uuid-by-string';
 import Receipts from './business/Receipts';
 import NewReceipt from './business/NewReceipt';
@@ -45,6 +49,8 @@ const MainScreens = ({navigation}: any) => {
   useEffect(() => {
     createRealm().then((nextRealm) => {
       setRealm(nextRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(nextRealm);
     });
   }, []);
   useEffect(() => {
@@ -59,6 +65,24 @@ const MainScreens = ({navigation}: any) => {
       setPubNubClient(pubNub);
     }
   }, []);
+
+  useEffect(() => {
+    const contactsService = getContactsService();
+    contactsService.loadContacts().catch((error) => {
+      Alert.alert(
+        'Error',
+        error.message,
+        [
+          {
+            text: 'OK',
+          },
+        ],
+        {
+          cancelable: false,
+        },
+      );
+    });
+  }, [navigation]);
 
   useEffect(() => {
     PushNotification.configure({

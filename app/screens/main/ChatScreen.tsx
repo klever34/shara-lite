@@ -28,10 +28,10 @@ import {colors} from '../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from './index';
 import {getAuthService} from '../../services';
-import {useRealm} from '../../services/realm';
+import {useRealm} from '../../services/RealmService';
 import {UpdateMode} from 'realm';
 import {IMessage} from '../../models';
-import {useTyping} from '../../services/pubnub';
+import {useTyping} from '../../services/PubNubService';
 
 type MessageItemProps = {
   item: IMessage;

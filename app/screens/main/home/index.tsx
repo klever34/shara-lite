@@ -9,7 +9,7 @@ import AppMenu from '../../../components/Menu';
 import {applyStyles} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
-import {useRealm} from '../../../services/realm';
+import {useRealm} from '../../../services/RealmService';
 import {MessageEvent} from 'pubnub';
 import Realm from 'realm';
 import '../../../../shim';
@@ -39,12 +39,13 @@ const HomeScreen = () => {
   const handleLogout = useCallback(async () => {
     const authService = getAuthService();
     await authService.logOut();
+    Realm.deleteFile({});
+    pubNub.unsubscribeAll();
     navigation.reset({
       index: 0,
       routes: [{name: 'Auth'}],
     });
-    Realm.deleteFile({});
-  }, [navigation]);
+  }, [pubNub, navigation]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -101,9 +102,16 @@ const HomeScreen = () => {
                   const customFields = response.data
                     .custom as ChannelMetadataCustomFields;
                   const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
-                  let sender = cryptr.decrypt(
-                    String(customFields.members).split(',')[1],
-                  );
+                  const members = customFields.members
+                    .split(',')
+                    .map((encryptedMember) => {
+                      return cryptr.decrypt(encryptedMember);
+                    });
+                  const authService = getAuthService();
+                  const user = authService.getUser() as User;
+                  let sender = members.find(
+                    (member) => member !== user.mobile,
+                  ) as string;
                   const contact = realm
                     .objects<IContact>('Contact')
                     .filtered(`mobile = "${sender}"`)[0];
@@ -111,12 +119,17 @@ const HomeScreen = () => {
                     sender = contact.fullName;
                   }
                   realm.write(() => {
+                    if (contact) {
+                      contact.channel = channel;
+                    }
                     realm.create<IConversation>(
                       'Conversation',
                       {
                         title: sender,
                         channel,
                         lastMessage,
+                        type: customFields.type,
+                        members,
                       },
                       Realm.UpdateMode.Never,
                     );

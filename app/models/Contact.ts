@@ -1,6 +1,7 @@
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile'> {
   fullName: string;
+  channel?: string;
 }
 
 export class Contact implements Partial<IContact> {
@@ -9,6 +10,7 @@ export class Contact implements Partial<IContact> {
     primaryKey: 'mobile',
     properties: {
       mobile: 'string',
+      channel: 'string?',
       firstname: 'string',
       lastname: 'string',
     },

@@ -1,6 +1,23 @@
 import Realm from 'realm';
 import {createContext, useContext, useEffect, useState} from 'react';
-import {Contact, Message, Conversation} from '../../models';
+import {Contact, Conversation, Message} from '../models';
+
+export interface IRealmService {
+  getInstance(): Realm | null;
+  setInstance(realm: Realm): void;
+}
+
+export default class RealmService implements IRealmService {
+  private realm: Realm | null = null;
+  public getInstance() {
+    return this.realm;
+  }
+  public setInstance(realm: Realm) {
+    if (!this.realm) {
+      this.realm = realm;
+    }
+  }
+}
 
 const RealmContext = createContext<Realm | null>(null);
 export const RealmProvider = RealmContext.Provider;
@@ -18,5 +35,8 @@ export const useRealm = () => {
 };
 
 export const createRealm = async () => {
-  return Realm.open({schema: [Contact, Message, Conversation]});
+  Realm.deleteFile({});
+  return Realm.open({
+    schema: [Contact, Message, Conversation],
+  });
 };

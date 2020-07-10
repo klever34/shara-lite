@@ -12,8 +12,8 @@ import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
 import {IConversation, IMessage} from '../../../models';
-import {useRealm} from '../../../services/realm';
-import {useTyping} from '../../../services/pubnub';
+import {useRealm} from '../../../services/RealmService';
+import {useTyping} from '../../../services/PubNubService';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import MessageStatusIcon from '../../../components/MessageStatusIcon';
 

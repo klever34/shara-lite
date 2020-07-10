@@ -4,7 +4,6 @@ import {
   Alert,
   FlatList,
   ListRenderItemInfo,
-  Platform,
   Text,
   View,
 } from 'react-native';
@@ -16,12 +15,10 @@ import Share from 'react-native-share';
 import AppMenu from '../../components/Menu';
 import Icon from '../../components/Icon';
 import {colors} from '../../styles';
-import {useRealm} from '../../services/realm';
+import {useRealm} from '../../services/RealmService';
 import {IContact, IConversation} from '../../models';
-import flatten from 'lodash/flatten';
 import {UpdateMode} from 'realm';
 import {requester} from '../../services/api/config';
-import {IAuthService} from '../../services/AuthService';
 import PlaceholderImage from '../../components/PlaceholderImage';
 
 const ContactsScreen = () => {
@@ -32,99 +29,25 @@ const ContactsScreen = () => {
   useEffect(() => {
     const contactsService = getContactsService();
     setLoading(true);
-    contactsService
-      .getAll()
-      .then((nextContacts) => {
-        const sizePerRequest = 20;
-        const numbers = flatten(
-          nextContacts.map((contact) =>
-            contact.phoneNumbers.map((phoneNumber) => phoneNumber.number),
-          ),
-        );
-        const requestNo = Math.ceil(numbers.length / sizePerRequest);
-        Promise.all(
-          Array.from({length: requestNo}).map((_, index) => {
-            return requester.post<{users: User[]}>('/users/check', {
-              mobiles: numbers.slice(
-                sizePerRequest * index,
-                sizePerRequest * index + sizePerRequest,
-              ),
-            });
-          }),
-        )
-          .then((responses: ApiResponse<{users: User[]}>[]) => {
-            const users = flatten(responses.map(({data}) => data.users));
-            const authService = getAuthService() as IAuthService;
-            const me = authService.getUser() as User;
-            try {
-              realm.write(() => {
-                (users as User[]).forEach((user) => {
-                  if (me.id !== user.id) {
-                    realm.create<IContact>(
-                      'Contact',
-                      user,
-                      UpdateMode.Modified,
-                    );
-                  }
-                });
-              });
-            } catch (error) {
-              Alert.alert(
-                'Error',
-                error.message,
-                [
-                  {
-                    text: 'OK',
-                    onPress: () => {
-                      navigation.goBack();
-                    },
-                  },
-                ],
-                {
-                  cancelable: false,
-                },
-              );
-            }
-            setLoading(false);
-          })
-          .catch((error) => {
-            setLoading(false);
-            console.log('Error: ', error);
-            Alert.alert(
-              'Error',
-              error.message,
-              [
-                {
-                  text: 'OK',
-                  onPress: () => {
-                    navigation.goBack();
-                  },
-                },
-              ],
-              {
-                cancelable: false,
-              },
-            );
-          });
-      })
-      .catch((error) => {
-        Alert.alert(
-          'Error',
-          error.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.goBack();
-              },
-            },
-          ],
+    contactsService.loadContacts().catch((error) => {
+      Alert.alert(
+        'Error',
+        error.message,
+        [
           {
-            cancelable: false,
+            text: 'OK',
+            onPress: () => {
+              navigation.goBack();
+            },
           },
-        );
-      });
-  }, [navigation, realm]);
+        ],
+        {
+          cancelable: false,
+        },
+      );
+    });
+    setLoading(false);
+  }, [navigation]);
   const inviteFriend = useCallback(async () => {
     // TODO: use better copy for shara invite
     const title = 'Share via';
@@ -163,49 +86,63 @@ const ContactsScreen = () => {
   }, [inviteFriend, loading, navigation]);
   const renderContactItem = useCallback(
     ({item}: ListRenderItemInfo<IContact>) => {
-      return (
-        <Touchable
-          onPress={() => {
+      const chatWithContact = async () => {
+        try {
+          let contact = realm
+            .objects<IContact>('Contact')
+            .filtered(`mobile = "${item.mobile}"`)[0];
+          let channelName = contact.channel;
+          let conversation: IConversation;
+          if (!channelName) {
             setLoading(true);
-            requester
-              .post<{
-                channelName: string;
-              }>('/chat/channel', {
-                recipient: item.mobile,
-              })
-              .then((response) => {
-                setLoading(false);
-                const {channelName} = response.data;
-                let conversation: any = realm
-                  .objects<IConversation>('Conversation')
-                  .filtered(`channel = "${channelName}"`)[0];
-                if (!conversation) {
-                  realm.write(() => {
-                    conversation = realm.create<IConversation>('Conversation', {
-                      title: item.fullName,
-                      channel: channelName,
-                    });
-                  });
-                }
-                navigation.dispatch(
-                  CommonActions.reset({
-                    routes: [
-                      {name: 'Home'},
-                      {
-                        name: 'Chat',
-                        params: conversation,
-                      },
-                    ],
-                    index: 1,
-                  }),
-                );
-              })
-              .catch((error) => {
-                setLoading(false);
-                console.log('Error: ', error);
-              });
-          }}>
-          <View style={applyStyles('flex-row items-center p-md')}>
+            const response = await requester.post<{
+              channelName: string;
+            }>('/chat/channel', {
+              recipient: item.mobile,
+            });
+            ({channelName} = response.data);
+            const authService = getAuthService();
+            const user = authService.getUser() as User;
+            realm.write(() => {
+              conversation = realm.create<IConversation>(
+                'Conversation',
+                {
+                  title: item.fullName,
+                  channel: channelName,
+                  type: '1-1',
+                  members: [user.mobile, item.mobile],
+                },
+                UpdateMode.Never,
+              );
+              contact.channel = channelName;
+            });
+            setLoading(false);
+          } else {
+            conversation = realm
+              .objects<IConversation>('Conversation')
+              .filtered(`channel = "${channelName}"`)[0];
+          }
+          navigation.dispatch(
+            CommonActions.reset({
+              routes: [
+                {name: 'Home'},
+                {
+                  name: 'Chat',
+                  // @ts-ignore
+                  params: conversation,
+                },
+              ],
+              index: 1,
+            }),
+          );
+        } catch (error) {
+          setLoading(false);
+          console.log('Error: ', error);
+        }
+      };
+      return (
+        <Touchable onPress={chatWithContact}>
+          <View style={applyStyles('flex-row items-center px-md')}>
             <PlaceholderImage text={item.fullName} />
             <Text style={applyStyles('text-lg', 'font-bold')}>
               {item.fullName}
@@ -222,89 +159,29 @@ const ContactsScreen = () => {
       renderItem={renderContactItem}
       keyExtractor={(item: IContact) => item.mobile}
       ListFooterComponent={
-        <>
-          <Touchable onPress={inviteFriend}>
-            <View style={applyStyles('flex-row items-center p-md')}>
-              <View
-                style={applyStyles('mr-md center', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                })}>
-                <Icon
-                  type="material-icons"
-                  name="share"
-                  color={colors['gray-600']}
-                  size={28}
-                />
-              </View>
-              <Text
-                style={applyStyles('text-lg', 'text-400', {
-                  color: colors['gray-300'],
-                })}>
-                Invite a friend
-              </Text>
+        <Touchable onPress={inviteFriend}>
+          <View style={applyStyles('flex-row items-center p-md')}>
+            <View
+              style={applyStyles('mr-md center', {
+                height: 48,
+                width: 48,
+                borderRadius: 24,
+              })}>
+              <Icon
+                type="material-icons"
+                name="share"
+                color={colors['gray-600']}
+                size={28}
+              />
             </View>
-          </Touchable>
-          <Touchable
-            onPress={() => {
-              const globalChannel = 'SHARA_GLOBAL';
-              try {
-                let globalConversation: any = realm
-                  .objects<IConversation>('Conversation')
-                  .filtered(`channel = "${globalChannel}"`)[0];
-                if (!globalConversation) {
-                  realm.write(() => {
-                    globalConversation = realm.create<IConversation>(
-                      'Conversation',
-                      {
-                        channel: globalChannel,
-                        title: 'Shara Chat',
-                      },
-                    );
-                  });
-                }
-                navigation.dispatch(
-                  CommonActions.reset({
-                    routes: [
-                      {name: 'Home'},
-                      {name: 'Chat', params: globalConversation},
-                    ],
-                    index: 1,
-                  }),
-                );
-              } catch (e) {
-                console.log('Error: ', e);
-              }
-            }}>
-            <View style={applyStyles('flex-row items-center p-md')}>
-              <View
-                style={applyStyles('mr-md center', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                })}>
-                <Icon
-                  type="ionicons"
-                  name={
-                    Platform.select({
-                      android: 'md-globe',
-                      ios: 'ios-globe',
-                    }) as string
-                  }
-                  color={colors['gray-600']}
-                  size={28}
-                />
-              </View>
-              <Text
-                style={applyStyles('text-lg', 'text-400', {
-                  color: colors['gray-300'],
-                })}>
-                Shara Chat
-              </Text>
-            </View>
-          </Touchable>
-        </>
+            <Text
+              style={applyStyles('text-lg', 'text-400', {
+                color: colors['gray-300'],
+              })}>
+              Invite a friend
+            </Text>
+          </View>
+        </Touchable>
       }
     />
   );

@@ -4,6 +4,8 @@ export interface IConversation {
   channel: string;
   title: string;
   lastMessage?: IMessage;
+  type: '1-1';
+  members: string[];
 }
 
 export class Conversation implements Partial<IConversation> {
@@ -14,6 +16,8 @@ export class Conversation implements Partial<IConversation> {
       channel: 'string',
       title: 'string',
       lastMessage: 'Message',
+      type: 'string',
+      members: 'string[]',
     },
   };
 }

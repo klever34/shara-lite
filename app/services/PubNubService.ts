@@ -1,7 +1,7 @@
 import {useEffect, useState} from 'react';
 import {SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import {useRealm} from '../realm';
+import {useRealm} from './RealmService';
 
 export const useTyping = (channel: string, input: string = '') => {
   const pubNub = usePubNub();
