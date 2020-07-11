@@ -21,6 +21,12 @@ import Finances from './business/Finances';
 import Inventory from './business/Inventory';
 import Expenses from './business/Expenses';
 import Credit from './business/Credit';
+import AddCustomer from './customers/AddCustomer';
+import CustomerDetails from './customers/CustomerDetails';
+import RecordPayment from './customers/RecordPayment';
+import CreditPayment from './customers/CreditPayment';
+import OrderDetails from './customers/OrderDetails';
+import PaymentDetails from './customers/PaymentDetails';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -34,6 +40,12 @@ export type MainStackParamList = {
   Inventory: undefined;
   Expenses: undefined;
   Credit: undefined;
+  AddCustomer: undefined;
+  CustomerDetails: {customer: any};
+  RecordPayment: undefined;
+  CreditPayment: {creditDetails: CreditDetails};
+  PaymentDetails: {payment: Payment};
+  OrderDetails: {order: Order};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -242,6 +254,96 @@ const MainScreens = ({navigation}: any) => {
             component={Credit}
             options={{
               title: 'Credit',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="AddCustomer"
+            component={AddCustomer}
+            options={{
+              title: 'Add Customer',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="CustomerDetails"
+            component={CustomerDetails}
+            options={({route}) => ({
+              title: route.params.customer.name,
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            })}
+          />
+          <MainStack.Screen
+            name="RecordPayment"
+            component={RecordPayment}
+            options={{
+              title: 'Record Payment',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="CreditPayment"
+            component={CreditPayment}
+            options={{
+              title: 'Credit Payment',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="PaymentDetails"
+            component={PaymentDetails}
+            options={{
+              title: 'Payment Details',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="OrderDetails"
+            component={OrderDetails}
+            options={{
+              title: 'Order Details',
               headerStyle: {
                 backgroundColor: colors.primary,
               },

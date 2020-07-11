@@ -8,6 +8,7 @@ export const dimensions = {
 export const colors = {
   primary: '#dd0404',
   white: '#FFF',
+  'gray-10': '#F5F5F5',
   'gray-20': '#EBE6E6',
   'gray-50': '#B9B9B9',
   'gray-100': '#8A8181',
@@ -19,6 +20,7 @@ export const colors = {
   'gray-700': '#4A5568',
   'gray-800': '#2D3748',
   'gray-900': '#1A202C',
+  'red-50': '#F4B1B1',
   black: '#222222',
 };
 
