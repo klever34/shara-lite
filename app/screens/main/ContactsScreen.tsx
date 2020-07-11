@@ -18,7 +18,7 @@ import {colors} from '../../styles';
 import {useRealm} from '../../services/RealmService';
 import {IContact, IConversation} from '../../models';
 import {UpdateMode} from 'realm';
-import {requester} from '../../services/api/config';
+import {requester} from '../../services/ApiService';
 import PlaceholderImage from '../../components/PlaceholderImage';
 
 const ContactsScreen = () => {

@@ -1,5 +1,5 @@
 import {IStorageService} from './StorageService';
-import {requester} from './api/config';
+import {requester} from './ApiService';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -31,7 +31,7 @@ class AuthService implements IAuthService {
   private user: User | null = null;
   private token: string | null = null;
 
-  constructor(public storageService: IStorageService) {}
+  constructor(private storageService: IStorageService) {}
 
   public async initialize(): Promise<void> {
     try {
