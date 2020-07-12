@@ -21,7 +21,7 @@ interface variantColorHexColorOptions {
 interface ButtonProps extends BaseButtonProps {
   style?: ViewStyle;
   isLoading?: boolean;
-  variantColor: 'red' | 'white';
+  variantColor?: 'red' | 'white';
 }
 
 const styles = StyleSheet.create({

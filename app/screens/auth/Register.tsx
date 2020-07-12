@@ -172,7 +172,6 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   inputField: {
-    height: 40,
     fontSize: 18,
     width: '100%',
     marginBottom: 24,

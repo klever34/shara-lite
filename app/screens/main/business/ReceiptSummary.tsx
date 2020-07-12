@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
+import {Picker} from '@react-native-community/picker';
 import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
 import {
   FlatList,
@@ -21,6 +22,11 @@ import {colors} from '../../../styles';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
+};
+
+type CreditPayload = {
+  amount: string;
+  paymentMethod: string | number;
 };
 
 const summaryTableStyles = StyleSheet.create({
@@ -130,6 +136,9 @@ const ReceiptSummary = ({
   const navigation = useNavigation();
   const tax = 0;
   const {customer: customerProps, products} = route.params;
+  const [creditPayload, setCreditPayload] = useState<CreditPayload>({
+    paymentMethod: 'Credit',
+  } as CreditPayload);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signature, setSignature] = useState(false);
   const [customer, setCustomer] = useState<Customer>(
@@ -178,6 +187,16 @@ const ReceiptSummary = ({
       setCustomer({...customer, [key]: value});
     },
     [customer],
+  );
+
+  const handleCreditPayloadChange = useCallback(
+    (value: string | number, key: keyof CreditPayload) => {
+      setCreditPayload({
+        ...creditPayload,
+        [key]: value,
+      });
+    },
+    [creditPayload],
   );
 
   const handleFinish = useCallback(() => {
@@ -334,6 +353,40 @@ const ReceiptSummary = ({
           )}
         </View>
       </View>
+      <View style={applyStyles({marginTop: 40})}>
+        <View style={styles.pickerContainer}>
+          <Text style={applyStyles('text-400', styles.pickerLabel)}>
+            Payment method
+          </Text>
+          <Picker
+            mode="dropdown"
+            style={styles.picker}
+            prompt="Payment Method"
+            itemStyle={styles.pickerItem}
+            selectedValue={creditPayload.paymentMethod}
+            onValueChange={(itemValue) =>
+              handleCreditPayloadChange(itemValue, 'paymentMethod')
+            }>
+            <Picker.Item label="Cash" value="Cash" />
+            <Picker.Item label="Credit" value="Credit" />
+          </Picker>
+        </View>
+        <View style={applyStyles('flex-row', 'items-center')}>
+          <View style={styles.textInputIcon}>
+            <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
+              &#8358;
+            </Text>
+          </View>
+          <TextInput
+            style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
+            keyboardType="number-pad"
+            placeholder="Amount Paid"
+            value={creditPayload.amount}
+            placeholderTextColor={colors['gray-50']}
+            onChangeText={(text) => handleCreditPayloadChange(text, 'amount')}
+          />
+        </View>
+      </View>
       <View style={styles.actionButtons}>
         <Button
           title="Cancel"
@@ -357,7 +410,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingVertical: 24,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     backgroundColor: colors.white,
   },
   sectionTitle: {
@@ -438,6 +491,30 @@ const styles = StyleSheet.create({
   buttonTextStyle: {
     fontSize: 16,
     textAlign: 'center',
+  },
+  pickerContainer: {
+    marginBottom: 40,
+    borderBottomWidth: 1,
+    borderColor: colors['gray-200'],
+  },
+  pickerLabel: {
+    color: colors['gray-100'],
+  },
+  picker: {
+    paddingBottom: 12,
+    fontFamily: 'Rubik-Regular',
+  },
+  pickerItem: {
+    color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
+  },
+  textInputIcon: {
+    top: 14,
+    position: 'absolute',
+  },
+  textInputIconText: {
+    fontSize: 16,
+    color: colors['gray-300'],
   },
 });
 

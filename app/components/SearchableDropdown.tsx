@@ -124,7 +124,8 @@ const SearchableDropdown = (props: any) => {
 
 const styles = StyleSheet.create({
   searchContainer: {
-    padding: 8,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     backgroundColor: colors.primary,
   },
   searchInputContainer: {
@@ -146,8 +147,7 @@ const styles = StyleSheet.create({
   },
   listItem: {
     fontSize: 16,
-    paddingVertical: 16,
-    paddingHorizontal: 8,
+    padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-20'],
   },

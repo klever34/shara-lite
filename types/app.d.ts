@@ -38,6 +38,33 @@ type ApiResponse<T extends any = any> = {
   data: any;
   message: string;
 };
+type CustomerItemProps = {
+  item: Customer;
+};
+type CreditDetails = {
+  id: string;
+  amount: number;
+  givenOn: string;
+  dueOn: string;
+  givenBy: string;
+};
+type Order = {
+  id: string;
+  amount: number;
+  paymentMethod: string;
+  status: string;
+  deliveryType: string;
+  location: string;
+  placedOn: string;
+  completedOn: string;
+};
+type Payment = {
+  id: string;
+  amount: number;
+  receivedBy: string;
+  paymentMethod: string;
+  paidOn: string;
+};
 
 declare module 'react-native-signature-capture';
 

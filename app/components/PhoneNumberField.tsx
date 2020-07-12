@@ -84,7 +84,6 @@ const styles = StyleSheet.create({
   },
   inputField: {
     flex: 1,
-    height: 40,
     fontSize: 18,
     width: '100%',
     borderBottomWidth: 1,
@@ -92,6 +91,7 @@ const styles = StyleSheet.create({
     borderColor: colors['gray-200'],
   },
   picker: {
+    top: 4,
     paddingRight: 12,
   },
   pickerButton: {
