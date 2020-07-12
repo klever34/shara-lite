@@ -1,6 +1,12 @@
-import {PublishResponse, PubnubStatus} from 'pubnub';
+import {PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   FlatList,
   ImageBackground,
@@ -46,6 +52,64 @@ const ChatScreen = ({
     .objects<IMessage>('Message')
     .filtered(`channel = "${channel}"`)
     .sorted('created_at', true);
+
+  useEffect(() => {
+    const listener = () => {
+      const authService = getAuthService();
+      const user = authService.getUser() as User;
+      const markedMessages = realm
+        .objects<IMessage>('Message')
+        .filtered(
+          `channel = "${channel}" AND read_timetoken = null AND author != "${user.mobile}"`,
+        );
+      if (markedMessages.length) {
+        pubNub.signal({channel, message: 'READ'}).then((status) => {
+          realm.write(() => {
+            for (let i = 0; i < markedMessages.length; i += 1) {
+              markedMessages[i].read_timetoken = String(status.timetoken);
+            }
+          });
+        });
+      }
+    };
+    listener();
+    realm.addListener('change', listener);
+    return () => {
+      realm.removeListener('change', listener);
+    };
+  }, [channel, pubNub, realm]);
+
+  useEffect(() => {
+    const listener = {
+      signal: (evt: SignalEvent) => {
+        try {
+          if (evt.message === 'READ' && evt.publisher !== pubNub.getUUID()) {
+            const authService = getAuthService();
+            const user = authService.getUser() as User;
+            const markedMessages = realm
+              .objects<IMessage>('Message')
+              .filtered(
+                `channel = "${channel}" AND read_timetoken = null AND author = "${user.mobile}"`,
+              );
+            if (markedMessages.length) {
+              realm.write(() => {
+                for (let i = 0; i < markedMessages.length; i += 1) {
+                  markedMessages[i].read_timetoken = evt.timetoken;
+                }
+              });
+            }
+          }
+        } catch (e) {
+          console.log('Signal Listener Error: ', e);
+        }
+      },
+    };
+    pubNub.addListener(listener);
+    return () => {
+      pubNub.removeListener(listener);
+    };
+  }, [channel, pubNub, realm]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => {
