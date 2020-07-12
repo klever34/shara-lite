@@ -10,7 +10,7 @@ import {applyStyles} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/RealmService';
-import {MessageEvent} from 'pubnub';
+import {MessageEvent, SignalEvent} from 'pubnub';
 import Realm from 'realm';
 import '../../../../shim';
 import Cryptr from 'cryptr';
@@ -74,92 +74,104 @@ const HomeScreen = () => {
   }, [pubNub, realm]);
 
   useEffect(() => {
-    if (pubNub) {
-      const listener = {
-        message: (envelope: MessageEvent) => {
-          const {channel} = envelope;
-          const message = envelope.message as IMessage;
-          try {
-            let lastMessage: IMessage;
+    const listener = {
+      message: (evt: MessageEvent) => {
+        const {channel} = evt;
+        const message = evt.message as IMessage;
+        try {
+          let lastMessage: IMessage;
+          realm.write(() => {
+            lastMessage = realm.create<IMessage>(
+              'Message',
+              {
+                ...message,
+                created_at: new Date(message.created_at),
+                timetokens: [evt.timetoken],
+              },
+              Realm.UpdateMode.Modified,
+            );
+          });
+          let conversation: any = realm
+            .objects<IConversation>('Conversation')
+            .filtered(`channel = "${channel}"`)[0];
+          if (!conversation) {
+            pubNub.objects
+              .getChannelMetadata({channel, include: {customFields: true}})
+              .then((response) => {
+                const customFields = response.data
+                  .custom as ChannelMetadataCustomFields;
+                const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
+                const members = customFields.members
+                  .split(',')
+                  .map((encryptedMember) => {
+                    return cryptr.decrypt(encryptedMember);
+                  });
+                const authService = getAuthService();
+                const user = authService.getUser() as User;
+                let sender = members.find(
+                  (member) => member !== user.mobile,
+                ) as string;
+                const contact = realm
+                  .objects<IContact>('Contact')
+                  .filtered(`mobile = "${sender}"`)[0];
+                if (contact) {
+                  sender = contact.fullName;
+                }
+                realm.write(() => {
+                  if (contact) {
+                    contact.channel = channel;
+                  }
+                  realm.create<IConversation>(
+                    'Conversation',
+                    {
+                      title: sender,
+                      channel,
+                      lastMessage,
+                      type: customFields.type,
+                      members,
+                    },
+                    Realm.UpdateMode.Never,
+                  );
+                });
+              })
+              .catch((e) => {
+                console.log('Error :', e.status || e);
+              });
+          } else {
             realm.write(() => {
-              lastMessage = realm.create<IMessage>(
-                'Message',
+              realm.create<IConversation>(
+                'Conversation',
                 {
-                  ...message,
-                  created_at: new Date(message.created_at),
-                  timetoken: envelope.timetoken,
+                  channel,
+                  lastMessage,
                 },
                 Realm.UpdateMode.Modified,
               );
             });
-            let conversation: any = realm
-              .objects<IConversation>('Conversation')
-              .filtered(`channel = "${channel}"`)[0];
-            if (!conversation) {
-              pubNub.objects
-                .getChannelMetadata({channel, include: {customFields: true}})
-                .then((response) => {
-                  const customFields = response.data
-                    .custom as ChannelMetadataCustomFields;
-                  const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
-                  const members = customFields.members
-                    .split(',')
-                    .map((encryptedMember) => {
-                      return cryptr.decrypt(encryptedMember);
-                    });
-                  const authService = getAuthService();
-                  const user = authService.getUser() as User;
-                  let sender = members.find(
-                    (member) => member !== user.mobile,
-                  ) as string;
-                  const contact = realm
-                    .objects<IContact>('Contact')
-                    .filtered(`mobile = "${sender}"`)[0];
-                  if (contact) {
-                    sender = contact.fullName;
-                  }
-                  realm.write(() => {
-                    if (contact) {
-                      contact.channel = channel;
-                    }
-                    realm.create<IConversation>(
-                      'Conversation',
-                      {
-                        title: sender,
-                        channel,
-                        lastMessage,
-                        type: customFields.type,
-                        members,
-                      },
-                      Realm.UpdateMode.Never,
-                    );
-                  });
-                })
-                .catch((e) => {
-                  console.log('Error :', e.status || e);
-                });
-            } else {
-              realm.write(() => {
-                realm.create<IConversation>(
-                  'Conversation',
-                  {
-                    channel,
-                    lastMessage,
-                  },
-                  Realm.UpdateMode.Modified,
-                );
-              });
-            }
-          } catch (e) {
-            console.log('Error: ', e);
           }
-        },
-      };
-      pubNub.addListener(listener);
-      return () => {
-        pubNub.removeListener(listener);
-      };
-    }
+          pubNub.signal({channel, message: 'RECEIVED'}).then();
+        } catch (e) {
+          console.log('Error: ', e);
+        }
+      },
+      signal: (evt: SignalEvent) => {
+        console.log('evt', evt);
+        if (evt.message === 'RECEIVED' && evt.publisher !== pubNub.getUUID()) {
+          realm.write(() => {
+            const messages = realm
+              .objects<IMessage>('Message')
+              .filtered('timetokens.@count = 1');
+            for (let i = 0; i < messages.length; i += 1) {
+              messages[i].timetokens.push(evt.timetoken);
+            }
+          });
+        }
+      },
+    };
+    pubNub.addListener(listener);
+    return () => {
+      pubNub.removeListener(listener);
+    };
   }, [pubNub, realm]);
 
   return (

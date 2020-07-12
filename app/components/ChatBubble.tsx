@@ -89,7 +89,7 @@ export const ChatBubble = memo(({message, user}: ChatBubbleProps) => {
 
   return (
     <View>
-      <View key={message.timetoken} style={messageContainerStyle}>
+      <View key={message.id} style={messageContainerStyle}>
         {author && !isAuthor && <Text style={authorTextStyle}>{sender}</Text>}
         <Text style={messageTextStyle}>{content}</Text>
         <View style={styles.dateTextContainer}>

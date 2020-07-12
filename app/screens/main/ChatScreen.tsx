@@ -76,7 +76,7 @@ const ChatScreen = ({
     }
     let start: string | number | undefined;
     if (messages.length) {
-      start = messages[messages.length - 1].timetoken;
+      start = messages[messages.length - 1].timetokens[0];
     }
     const count = 20;
     setIsLoading(true);
@@ -87,10 +87,10 @@ const ChatScreen = ({
           const entry = item.entry as IMessage;
           return {
             ...entry,
-            timetoken: item.timetoken,
+            timetokens: [String(item.timetoken)],
           };
         });
-        history = history.filter((message) => message.timetoken !== start);
+        history = history.filter((message) => message.timetokens[0] !== start);
         if (history.length) {
           if (history.length < count) {
             setHasMore(false);
@@ -103,7 +103,6 @@ const ChatScreen = ({
                   {
                     ...message,
                     created_at: new Date(message.created_at),
-                    timetoken: String(message.timetoken),
                   },
                   UpdateMode.Modified,
                 );
@@ -129,6 +128,7 @@ const ChatScreen = ({
       created_at: new Date(),
       author: user.mobile,
       channel,
+      timetokens: [],
     };
     try {
       realm.write(() => {

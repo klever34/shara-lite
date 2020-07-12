@@ -23,7 +23,20 @@ const MessageStatusIcon = ({message, style = {}}: MessageStatusIconProps) => {
   if (getAuthService().getUser()?.mobile !== message.author) {
     return null;
   }
-  const status: MessageStatus = message.timetoken ? 'sent' : 'pending';
+  let status: MessageStatus;
+  switch (message.timetokens.length) {
+    case 1:
+      status = 'sent';
+      break;
+    case 2:
+      status = 'received';
+      break;
+    case 3:
+      status = 'read';
+      break;
+    default:
+      status = 'pending';
+  }
   return (
     <Icon
       type="material-community-icons"
