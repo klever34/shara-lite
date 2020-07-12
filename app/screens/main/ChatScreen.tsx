@@ -1,15 +1,7 @@
 import {PublishResponse, PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   FlatList,
   ImageBackground,
   Keyboard,
@@ -30,7 +22,7 @@ import {MainStackParamList} from './index';
 import {getAuthService} from '../../services';
 import {useRealm} from '../../services/RealmService';
 import {UpdateMode} from 'realm';
-import {IMessage} from '../../models';
+import {IConversation, IMessage} from '../../models';
 import {useTyping} from '../../services/PubNubService';
 
 type MessageItemProps = {
@@ -47,9 +39,7 @@ const ChatScreen = ({
   const inputRef = useRef<any>(null);
   const {channel, title} = route.params;
   const [input, setInput] = useState('');
-  const [hasMore, setHasMore] = useState(true);
   const typingMessage = useTyping(channel, input);
-  const [isLoading, setIsLoading] = useState(false);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
   const realm = useRealm() as Realm;
   const messages = realm
@@ -70,69 +60,21 @@ const ChatScreen = ({
       },
     });
   }, [navigation, title, typingMessage]);
-  const fetchHistory = useCallback(() => {
-    if (!hasMore) {
-      return;
-    }
-    let start: string | number | undefined;
-    if (messages.length) {
-      start = messages[messages.length - 1].timetokens[0];
-    }
-    const count = 20;
-    setIsLoading(true);
-    pubNub.history({channel, count, start}, (status, response) => {
-      setIsLoading(false);
-      if (response) {
-        let history: IMessage[] = response.messages.map((item) => {
-          const entry = item.entry as IMessage;
-          return {
-            ...entry,
-            timetokens: [String(item.timetoken)],
-          };
-        });
-        history = history.filter((message) => message.timetokens[0] !== start);
-        if (history.length) {
-          if (history.length < count) {
-            setHasMore(false);
-          }
-          try {
-            realm.write(() => {
-              history.forEach((message) => {
-                realm.create<IMessage>(
-                  'Message',
-                  {
-                    ...message,
-                    created_at: new Date(message.created_at),
-                  },
-                  UpdateMode.Modified,
-                );
-              });
-            });
-          } catch (e) {
-            console.log('Error: ', e);
-          }
-        }
-      }
-    });
-  }, [channel, hasMore, messages, pubNub, realm]);
-
-  useEffect(fetchHistory, []);
 
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();
     const user = authService.getUser() as User;
-    const message: IMessage = {
+    let message: IMessage = {
       id: generateUniqueId(),
       content: input,
       created_at: new Date(),
       author: user.mobile,
       channel,
-      timetokens: [],
     };
     try {
       realm.write(() => {
-        realm.create<IMessage>('Message', message, UpdateMode.Never);
+        message = realm.create<IMessage>('Message', message, UpdateMode.Never);
       });
     } catch (e) {
       console.log('Error: ', e);
@@ -155,9 +97,17 @@ const ChatScreen = ({
       response: PublishResponse,
     ) {
       if (status.error) {
-        Alert.alert('Error', status.errorData?.message);
+        console.log('Error: ', status.errorData?.message);
       } else {
-        console.log('message Published w/ timetoken', response.timetoken);
+        realm.write(() => {
+          message.sent_timetoken = String(response.timetoken);
+        });
+        realm.write(() => {
+          const conversation = realm
+            .objects<IConversation>('Conversation')
+            .filtered(`channel = "${message.channel}"`)[0];
+          conversation.lastMessage = message;
+        });
       }
     });
   }, [channel, input, pubNub, realm]);
@@ -193,24 +143,10 @@ const ChatScreen = ({
       <ImageBackground
         source={require('../../assets/images/chat-wallpaper.png')}
         style={styles.chatBackground}>
-        {isLoading && (
-          <View style={styles.loadingSection}>
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator
-                size="small"
-                animating={isLoading}
-                color={colors.primary}
-              />
-            </View>
-          </View>
-        )}
-
         <FlatList
           inverted={true}
           style={styles.listContainer}
           renderItem={renderMessageItem}
-          onEndReached={fetchHistory}
-          onEndReachedThreshold={0.2}
           data={messages}
           keyExtractor={messageItemKeyExtractor}
         />

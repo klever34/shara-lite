@@ -24,15 +24,15 @@ const MessageStatusIcon = ({message, style = {}}: MessageStatusIconProps) => {
     return null;
   }
   let status: MessageStatus;
-  switch (message.timetokens.length) {
-    case 1:
-      status = 'sent';
+  switch (true) {
+    case !!message.read_timetoken:
+      status = 'read';
       break;
-    case 2:
+    case !!message.received_timetoken:
       status = 'received';
       break;
-    case 3:
-      status = 'read';
+    case !!message.sent_timetoken:
+      status = 'sent';
       break;
     default:
       status = 'pending';

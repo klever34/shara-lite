@@ -29,24 +29,29 @@ const ContactsScreen = () => {
   useEffect(() => {
     const contactsService = getContactsService();
     setLoading(true);
-    contactsService.loadContacts().catch((error) => {
-      Alert.alert(
-        'Error',
-        error.message,
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.goBack();
+    contactsService
+      .loadContacts()
+      .then(() => {
+        setLoading(false);
+      })
+      .catch((error) => {
+        setLoading(false);
+        Alert.alert(
+          'Error',
+          error.message,
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                navigation.goBack();
+              },
             },
+          ],
+          {
+            cancelable: false,
           },
-        ],
-        {
-          cancelable: false,
-        },
-      );
-    });
-    setLoading(false);
+        );
+      });
   }, [navigation]);
   const inviteFriend = useCallback(async () => {
     // TODO: use better copy for shara invite

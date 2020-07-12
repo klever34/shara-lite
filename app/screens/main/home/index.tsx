@@ -76,77 +76,77 @@ const HomeScreen = () => {
   useEffect(() => {
     const listener = {
       message: async (evt: MessageEvent) => {
-        const {channel} = evt;
+        const {channel, publisher} = evt;
         const message = evt.message as IMessage;
         try {
-          let lastMessage: IMessage;
-          realm.write(() => {
-            lastMessage = realm.create<IMessage>(
-              'Message',
-              {
-                ...message,
-                created_at: new Date(message.created_at),
-                timetokens: [evt.timetoken],
-              },
-              Realm.UpdateMode.Modified,
-            );
-          });
-          let conversation: any = realm
-            .objects<IConversation>('Conversation')
-            .filtered(`channel = "${channel}"`)[0];
-          if (!conversation) {
-            const response = await pubNub.objects.getChannelMetadata({
-              channel,
-              include: {customFields: true},
-            });
-            const customFields = response.data
-              .custom as ChannelMetadataCustomFields;
-            const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
-            const members = customFields.members
-              .split(',')
-              .map((encryptedMember) => {
-                return cryptr.decrypt(encryptedMember);
-              });
-            const authService = getAuthService();
-            const user = authService.getUser() as User;
-            let sender = members.find(
-              (member) => member !== user.mobile,
-            ) as string;
-            const contact = realm
-              .objects<IContact>('Contact')
-              .filtered(`mobile = "${sender}"`)[0];
-            if (contact) {
-              sender = contact.fullName;
-            }
+          if (publisher !== pubNub.getUUID()) {
+            let lastMessage: IMessage;
             realm.write(() => {
-              if (contact) {
-                contact.channel = channel;
-              }
-              realm.create<IConversation>(
-                'Conversation',
+              lastMessage = realm.create<IMessage>(
+                'Message',
                 {
-                  title: sender,
-                  channel,
-                  lastMessage,
-                  type: customFields.type,
-                  members,
-                },
-                Realm.UpdateMode.Never,
-              );
-            });
-          } else {
-            realm.write(() => {
-              realm.create<IConversation>(
-                'Conversation',
-                {
-                  channel,
-                  lastMessage,
+                  ...message,
+                  created_at: new Date(message.created_at),
+                  sent_timetoken: String(evt.timetoken),
                 },
                 Realm.UpdateMode.Modified,
               );
             });
-          }
-          if (evt.publisher !== pubNub.getUUID()) {
+            let conversation: any = realm
+              .objects<IConversation>('Conversation')
+              .filtered(`channel = "${channel}"`)[0];
+            if (!conversation) {
+              const response = await pubNub.objects.getChannelMetadata({
+                channel,
+                include: {customFields: true},
+              });
+              const customFields = response.data
+                .custom as ChannelMetadataCustomFields;
+              const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
+              const members = customFields.members
+                .split(',')
+                .map((encryptedMember) => {
+                  return cryptr.decrypt(encryptedMember);
+                });
+              const authService = getAuthService();
+              const user = authService.getUser() as User;
+              let sender = members.find(
+                (member) => member !== user.mobile,
+              ) as string;
+              const contact = realm
+                .objects<IContact>('Contact')
+                .filtered(`mobile = "${sender}"`)[0];
+              if (contact) {
+                sender = contact.fullName;
+              }
+              realm.write(() => {
+                if (contact) {
+                  contact.channel = channel;
+                }
+                realm.create<IConversation>(
+                  'Conversation',
+                  {
+                    title: sender,
+                    channel,
+                    lastMessage,
+                    type: customFields.type,
+                    members,
+                  },
+                  Realm.UpdateMode.Never,
+                );
+              });
+            } else {
+              realm.write(() => {
+                realm.create<IConversation>(
+                  'Conversation',
+                  {
+                    channel,
+                    lastMessage,
+                  },
+                  Realm.UpdateMode.Modified,
+                );
+              });
+            }
             pubNub.signal({channel, message: 'RECEIVED'}).then();
           }
         } catch (e) {
@@ -161,11 +161,13 @@ const HomeScreen = () => {
           ) {
             const messages = realm
               .objects<IMessage>('Message')
-              .filtered(`timetokens.@count = 1 AND channel = "${evt.channel}"`);
+              .filtered(
+                `channel = "${evt.channel}" AND received_timetoken = null`,
+              );
             if (messages.length) {
               realm.write(() => {
                 for (let i = 0; i < messages.length; i += 1) {
-                  messages[i].timetokens.push(evt.timetoken);
+                  messages[i].received_timetoken = evt.timetoken;
                 }
               });
             }
