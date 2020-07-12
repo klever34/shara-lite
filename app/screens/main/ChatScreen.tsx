@@ -72,13 +72,6 @@ const ChatScreen = ({
       author: user.mobile,
       channel,
     };
-    try {
-      realm.write(() => {
-        message = realm.create<IMessage>('Message', message, UpdateMode.Never);
-      });
-    } catch (e) {
-      console.log('Error: ', e);
-    }
     const messagePayload = {
       pn_gcm: {
         notification: {
@@ -92,6 +85,13 @@ const ChatScreen = ({
       },
       ...message,
     };
+    try {
+      realm.write(() => {
+        message = realm.create<IMessage>('Message', message, UpdateMode.Never);
+      });
+    } catch (e) {
+      console.log('Error: ', e);
+    }
     pubNub.publish({channel, message: messagePayload}, function (
       status: PubnubStatus,
       response: PublishResponse,
