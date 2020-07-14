@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useCallback, useEffect, useRef, useState} from 'react';
 import {SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from './RealmService';
@@ -8,35 +8,49 @@ export const useTyping = (channel: string, input: string = '') => {
   const realm = useRealm();
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
+  const timer = useRef<number | null>(null);
+  const stopTyping = useCallback(() => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    setIsTyping(false);
+    pubNub.signal(
+      {
+        channel,
+        message: 'TYPING_OFF',
+      },
+      (status) => {
+        if (status.error) {
+          console.log('TYPING_OFF Signal Error: ', status);
+        }
+      },
+    );
+  }, [channel, pubNub]);
+  const startTyping = useCallback(() => {
+    if (timer.current) {
+      clearTimeout(timer.current);
+    }
+    setIsTyping(true);
+    pubNub.signal(
+      {
+        channel,
+        message: 'TYPING_ON',
+      },
+      (status) => {
+        if (status.error) {
+          console.log('TYPING_ON Signal Error: ', status);
+        }
+      },
+    );
+    timer.current = setTimeout(stopTyping, 10000);
+  }, [channel, pubNub, stopTyping]);
   useEffect(() => {
     if (input && !isTyping) {
-      setIsTyping(true);
-      pubNub.signal(
-        {
-          channel,
-          message: 'TYPING_ON',
-        },
-        (status) => {
-          if (status.error) {
-            console.log('TYPING_ON Signal Error: ', status);
-          }
-        },
-      );
+      startTyping();
     } else if (!input && isTyping) {
-      setIsTyping(false);
-      pubNub.signal(
-        {
-          channel,
-          message: 'TYPING_OFF',
-        },
-        (status) => {
-          if (status.error) {
-            console.log('TYPING_OFF Signal Error: ', status);
-          }
-        },
-      );
+      stopTyping();
     }
-  }, [input, isTyping, pubNub, channel]);
+  }, [input, isTyping, startTyping, stopTyping]);
   useEffect(() => {
     if (pubNub) {
       const listener = {
