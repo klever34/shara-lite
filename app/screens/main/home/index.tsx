@@ -173,7 +173,7 @@ const HomeScreen = () => {
             const messages = realm
               .objects<IMessage>('Message')
               .filtered(
-                `channel = "${evt.channel}" AND received_timetoken = null`,
+                `channel = "${evt.channel}" AND received_timetoken = null AND sent_timetoken != null`,
               );
             if (messages.length) {
               realm.write(() => {

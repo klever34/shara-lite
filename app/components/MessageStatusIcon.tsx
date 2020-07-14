@@ -24,10 +24,12 @@ const MessageStatusIcon = ({message, style = {}}: MessageStatusIconProps) => {
   }
   let status: MessageStatus;
   switch (true) {
-    case !!message.read_timetoken:
+    case !!message.read_timetoken &&
+      !!message.received_timetoken &&
+      !!message.sent_timetoken:
       status = 'read';
       break;
-    case !!message.received_timetoken:
+    case !!message.received_timetoken && !!message.sent_timetoken:
       status = 'received';
       break;
     case !!message.sent_timetoken:

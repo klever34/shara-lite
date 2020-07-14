@@ -97,7 +97,7 @@ const ChatScreen = ({
             const markedMessages = realm
               .objects<IMessage>('Message')
               .filtered(
-                `channel = "${channel}" AND read_timetoken = null AND author = "${user.mobile}"`,
+                `channel = "${channel}" AND author = "${user.mobile}" AND read_timetoken = null AND sent_timetoken != null`,
               );
             if (markedMessages.length) {
               realm.write(() => {
