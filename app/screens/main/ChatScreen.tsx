@@ -184,14 +184,10 @@ const ChatScreen = ({
     });
   }, [channel, input, pubNub, realm]);
 
-  const renderMessageItem = useCallback(({item: message}: MessageItemProps) => {
-    const authService = getAuthService();
-    const user = authService.getUser() as User;
-    if (!user) {
-      return null;
-    }
-    return <ChatBubble message={message} user={user} />;
-  }, []);
+  const renderMessageItem = useCallback(
+    ({item: message}: MessageItemProps) => <ChatBubble message={message} />,
+    [],
+  );
 
   const openEmojiBoard = useCallback(() => {
     setShowEmojiBoard(true);
