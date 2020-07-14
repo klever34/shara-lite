@@ -147,7 +147,18 @@ const HomeScreen = () => {
                 );
               });
             }
-            pubNub.signal({channel, message: 'RECEIVED'}).then();
+            pubNub.signal(
+              {channel, message: 'RECEIVED'},
+              (status, response) => {
+                if (status.error) {
+                  console.log('RECEIVED Signal Error: ', status);
+                } else {
+                  realm.write(() => {
+                    lastMessage.received_timetoken = String(response.timetoken);
+                  });
+                }
+              },
+            );
           }
         } catch (e) {
           console.log('Message Listener Error: ', e.status || e);

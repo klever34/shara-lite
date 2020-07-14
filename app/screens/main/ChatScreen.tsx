@@ -57,19 +57,27 @@ const ChatScreen = ({
     const listener = () => {
       const authService = getAuthService();
       const user = authService.getUser() as User;
-      const markedMessages = realm
-        .objects<IMessage>('Message')
-        .filtered(
-          `channel = "${channel}" AND read_timetoken = null AND author != "${user.mobile}"`,
-        );
-      if (markedMessages.length) {
-        pubNub.signal({channel, message: 'READ'}).then((status) => {
-          realm.write(() => {
-            for (let i = 0; i < markedMessages.length; i += 1) {
-              markedMessages[i].read_timetoken = String(status.timetoken);
+      try {
+        const markedMessages = realm
+          .objects<IMessage>('Message')
+          .filtered(
+            `channel = "${channel}" AND read_timetoken = null AND author != "${user.mobile}"`,
+          );
+        if (markedMessages.length) {
+          pubNub.signal({channel, message: 'READ'}, (status, response) => {
+            if (status.error) {
+              console.log('READ Signal Error: ', status);
+            } else {
+              realm.write(() => {
+                for (let i = 0; i < markedMessages.length; i += 1) {
+                  markedMessages[i].read_timetoken = String(response.timetoken);
+                }
+              });
             }
           });
-        });
+        }
+      } catch (error) {
+        console.log('Error: ', error);
       }
     };
     listener();

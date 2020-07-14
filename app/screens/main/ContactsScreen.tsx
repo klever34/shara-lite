@@ -117,7 +117,7 @@ const ContactsScreen = () => {
                   type: '1-1',
                   members: [user.mobile, item.mobile],
                 },
-                UpdateMode.Never,
+                UpdateMode.Modified,
               );
               contact.channel = channelName;
             });

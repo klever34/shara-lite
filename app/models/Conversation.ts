@@ -15,7 +15,7 @@ export class Conversation implements Partial<IConversation> {
     properties: {
       channel: 'string',
       title: 'string',
-      lastMessage: 'Message',
+      lastMessage: 'Message?',
       type: 'string',
       members: 'string[]',
     },

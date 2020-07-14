@@ -1,6 +1,5 @@
 import React from 'react';
 import Icon from './Icon';
-import {StyleSheet} from 'react-native';
 import {applyStyles} from '../helpers/utils';
 import {IMessage} from '../models';
 import {getAuthService} from '../services';
@@ -41,16 +40,13 @@ const MessageStatusIcon = ({message, style = {}}: MessageStatusIconProps) => {
     <Icon
       type="material-community-icons"
       name={iconNames[status]}
-      style={applyStyles(styles.icon, style)}
+      style={applyStyles(style, {
+        color: status === 'read' ? 'dodgerblue' : 'black',
+        opacity: status === 'read' ? 1 : 0.5,
+      })}
       size={12}
     />
   );
 };
-
-const styles = StyleSheet.create({
-  icon: {
-    opacity: 0.5,
-  },
-});
 
 export default MessageStatusIcon;

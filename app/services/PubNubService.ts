@@ -11,20 +11,30 @@ export const useTyping = (channel: string, input: string = '') => {
   useEffect(() => {
     if (input && !isTyping) {
       setIsTyping(true);
-      pubNub
-        .signal({
+      pubNub.signal(
+        {
           channel,
           message: 'TYPING_ON',
-        })
-        .then();
+        },
+        (status) => {
+          if (status.error) {
+            console.log('TYPING_ON Signal Error: ', status);
+          }
+        },
+      );
     } else if (!input && isTyping) {
       setIsTyping(false);
-      pubNub
-        .signal({
+      pubNub.signal(
+        {
           channel,
           message: 'TYPING_OFF',
-        })
-        .then();
+        },
+        (status) => {
+          if (status.error) {
+            console.log('TYPING_OFF Signal Error: ', status);
+          }
+        },
+      );
     }
   }, [input, isTyping, pubNub, channel]);
   useEffect(() => {
