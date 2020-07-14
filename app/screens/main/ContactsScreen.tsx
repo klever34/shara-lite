@@ -26,33 +26,39 @@ const ContactsScreen = () => {
   const realm = useRealm() as Realm;
   const contacts = realm.objects<IContact>('Contact').sorted('firstname');
   const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    const contactsService = getContactsService();
-    setLoading(true);
-    contactsService
-      .loadContacts()
-      .then(() => {
-        setLoading(false);
-      })
-      .catch((error) => {
-        setLoading(false);
-        Alert.alert(
-          'Error',
-          error.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.goBack();
+  const loadContacts = useCallback(
+    (showLoader = false) => {
+      const contactsService = getContactsService();
+      if (!contacts.length || showLoader) {
+        setLoading(true);
+      }
+      contactsService
+        .loadContacts()
+        .then(() => {
+          setLoading(false);
+        })
+        .catch((error) => {
+          setLoading(false);
+          Alert.alert(
+            'Error',
+            error.message,
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  navigation.goBack();
+                },
               },
+            ],
+            {
+              cancelable: false,
             },
-          ],
-          {
-            cancelable: false,
-          },
-        );
-      });
-  }, [navigation]);
+          );
+        });
+    },
+    [contacts.length, navigation],
+  );
+  useEffect(loadContacts, []);
   const inviteFriend = useCallback(async () => {
     // TODO: use better copy for shara invite
     const title = 'Share via';
@@ -80,6 +86,10 @@ const ContactsScreen = () => {
           <AppMenu
             options={[
               {
+                text: 'Refresh',
+                onSelect: () => loadContacts(true),
+              },
+              {
                 text: 'Invite a friend',
                 onSelect: inviteFriend,
               },
@@ -88,7 +98,7 @@ const ContactsScreen = () => {
         </View>
       ),
     });
-  }, [inviteFriend, loading, navigation]);
+  }, [inviteFriend, loadContacts, loading, navigation]);
   const renderContactItem = useCallback(
     ({item}: ListRenderItemInfo<IContact>) => {
       const chatWithContact = async () => {
