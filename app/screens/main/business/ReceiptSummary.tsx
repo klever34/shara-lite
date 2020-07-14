@@ -481,7 +481,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-    borderBottomColor: colors['gray-700'],
+    borderBottomColor: colors['gray-200'],
   },
   buttonStyle: {
     padding: 12,

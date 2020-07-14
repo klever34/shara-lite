@@ -185,7 +185,7 @@ const ContactsScreen = () => {
               <Icon
                 type="material-icons"
                 name="share"
-                color={colors['gray-600']}
+                color={colors['gray-50']}
                 size={28}
               />
             </View>

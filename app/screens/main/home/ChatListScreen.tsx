@@ -1,4 +1,4 @@
-import React, {memo, useCallback} from 'react';
+import React, {memo, useCallback, useMemo} from 'react';
 import {
   FlatList,
   ListRenderItemInfo,
@@ -25,6 +25,26 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
   const typingMessage = useTyping(conversation.channel);
   const navigation = useNavigation();
   const lastMessage = conversation.lastMessage as IMessage;
+  const dateText = useMemo(() => {
+    const createdAtDate = lastMessage.created_at;
+    const midnight = new Date();
+    midnight.setHours(0, 0, 0, 0);
+    if (createdAtDate.getTime() >= midnight.getTime()) {
+      return createdAtDate.toLocaleTimeString([], {
+        hour: '2-digit',
+        minute: '2-digit',
+      });
+    } else {
+      const upperMidnight = new Date();
+      upperMidnight.setHours(0, 0, 0, 0);
+      upperMidnight.setDate(upperMidnight.getDate() - 1);
+      if (createdAtDate.getTime() >= upperMidnight.getTime()) {
+        return 'Yesterday';
+      } else {
+        return createdAtDate.toLocaleDateString();
+      }
+    }
+  }, [lastMessage.created_at]);
   return (
     <Touchable
       onPress={() => {
@@ -32,25 +52,32 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
       }}>
       <View style={listItemStyles.container}>
         <PlaceholderImage text={conversation.title} />
-        <View style={listItemStyles.titleContainer}>
-          <Text style={listItemStyles.titleText} numberOfLines={1}>
-            {conversation.title}
-          </Text>
-          <View style={applyStyles('flex-row items-center')}>
-            {!typingMessage && (
-              <MessageStatusIcon
-                message={lastMessage}
-                style={applyStyles('mr-xs')}
-              />
-            )}
-            <Text
-              style={applyStyles(
-                listItemStyles.contentText,
-                typingMessage && {color: 'green'},
-              )}
-              numberOfLines={1}>
-              {typingMessage || lastMessage.content}
+        <View style={listItemStyles.contentContainer}>
+          <View style={listItemStyles.titleContainer}>
+            <Text style={listItemStyles.titleText} numberOfLines={1}>
+              {conversation.title}
             </Text>
+            <Text style={listItemStyles.dateText} numberOfLines={1}>
+              {dateText}
+            </Text>
+          </View>
+          <View style={listItemStyles.messageContainer}>
+            <View style={applyStyles('flex-row items-center')}>
+              {!typingMessage && (
+                <MessageStatusIcon
+                  message={lastMessage}
+                  style={applyStyles('mr-xs')}
+                />
+              )}
+              <Text
+                style={applyStyles(
+                  listItemStyles.contentText,
+                  typingMessage && {color: 'green'},
+                )}
+                numberOfLines={1}>
+                {typingMessage || lastMessage.content}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -89,26 +116,22 @@ const ChatListScreen = () => {
 };
 
 const listItemStyles = StyleSheet.create({
-  container: {
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  titleContainer: applyStyles('h-full flex-1', {
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-400'],
-  }),
-  imageContainer: applyStyles('center', {
-    marginVertical: 12,
+  container: applyStyles('flex-row items-center px-md'),
+  imageContainer: applyStyles('center my-md mr-md', {
     width: 56,
     height: 56,
     borderRadius: 28,
     backgroundColor: colors.primary,
-    marginRight: 12,
   }),
-  titleText: applyStyles('text-lg font-bold mb-sm'),
-  contentText: applyStyles('text-base', {color: colors['gray-600']}),
+  contentContainer: applyStyles('flex-col flex-1 py-md', {
+    borderBottomWidth: 1,
+    borderBottomColor: colors['gray-20'],
+  }),
+  titleContainer: applyStyles('h-full flex-1 flex-row'),
+  titleText: applyStyles('flex-1 text-lg font-bold mb-sm'),
+  dateText: applyStyles('text-sm', {color: colors['gray-200']}),
+  messageContainer: applyStyles('self-start'),
+  contentText: applyStyles('text-base', {color: colors['gray-50']}),
 });
 
 export default memo(ChatListScreen);

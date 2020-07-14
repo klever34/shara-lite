@@ -17,6 +17,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'items-center': {
     alignItems: 'center',
   },
+  'self-start': {
+    alignSelf: 'flex-start',
+  },
   center: {
     justifyContent: 'center',
     alignItems: 'center',

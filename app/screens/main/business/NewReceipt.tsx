@@ -307,7 +307,7 @@ const styles = StyleSheet.create({
   calculatorSectionInput: {
     fontSize: 16,
     borderBottomWidth: 1,
-    borderBottomColor: colors['gray-700'],
+    borderBottomColor: colors['gray-200'],
   },
   calculatorSectionButtons: {
     marginTop: 8,
