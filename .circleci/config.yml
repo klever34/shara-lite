@@ -120,6 +120,9 @@ jobs:
       - when:
           condition: <<parameters.commit>>
           steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "90:6e:55:bd:ec:dd:c7:3b:72:d9:11:1c:74:e6:13:98"
             - run:
                 name: Commit and push version update
                 command: |
