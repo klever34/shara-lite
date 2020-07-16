@@ -16,6 +16,7 @@ import {useRealm} from '../../../services/RealmService';
 import {useTyping} from '../../../services/PubNubService';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import MessageStatusIcon from '../../../components/MessageStatusIcon';
+import {getAuthService} from '../../../services';
 
 type ChatListItemProps = {
   conversation: IConversation;
@@ -25,15 +26,24 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
   const typingMessage = useTyping(conversation.channel);
   const navigation = useNavigation();
   const lastMessage = conversation.lastMessage as IMessage;
+  const realm = useRealm();
+  const user = getAuthService().getUser() as User;
+  const messages = realm
+    .objects<IMessage>('Message')
+    .filtered(
+      `channel = "${conversation.channel}" AND author != "${user.mobile}" AND received_timetoken != null AND read_timetoken = null`,
+    );
   const dateText = useMemo(() => {
     const createdAtDate = lastMessage.created_at;
     const midnight = new Date();
     midnight.setHours(0, 0, 0, 0);
     if (createdAtDate.getTime() >= midnight.getTime()) {
-      return createdAtDate.toLocaleTimeString([], {
-        hour: '2-digit',
-        minute: '2-digit',
-      });
+      return createdAtDate
+        .toLocaleTimeString([], {
+          hour: '2-digit',
+          minute: '2-digit',
+        })
+        .replace(/(:\d{2}| [AP]M)$/, '');
     } else {
       const upperMidnight = new Date();
       upperMidnight.setHours(0, 0, 0, 0);
@@ -62,7 +72,7 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
             </Text>
           </View>
           <View style={listItemStyles.messageContainer}>
-            <View style={applyStyles('flex-row items-center')}>
+            <View style={applyStyles('flex-row items-center flex-1')}>
               {!typingMessage && (
                 <MessageStatusIcon
                   message={lastMessage}
@@ -78,6 +88,22 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
                 {typingMessage || lastMessage.content}
               </Text>
             </View>
+            {!!messages.length && (
+              <View
+                style={applyStyles('center', {
+                  width: 24,
+                  height: 24,
+                  backgroundColor: colors.primary,
+                  borderRadius: 12,
+                })}>
+                <Text
+                  style={applyStyles('text-xs font-bold', {
+                    color: colors.white,
+                  })}>
+                  {messages.length >= 100 ? '99+' : messages.length}
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </View>
@@ -130,7 +156,7 @@ const listItemStyles = StyleSheet.create({
   titleContainer: applyStyles('h-full flex-1 flex-row'),
   titleText: applyStyles('flex-1 text-lg font-bold mb-sm'),
   dateText: applyStyles('text-sm', {color: colors['gray-200']}),
-  messageContainer: applyStyles('self-start'),
+  messageContainer: applyStyles('flex-row self-start'),
   contentText: applyStyles('text-base', {color: colors['gray-50']}),
 });
 
