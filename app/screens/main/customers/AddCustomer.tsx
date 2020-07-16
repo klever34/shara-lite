@@ -1,11 +1,16 @@
 import React, {useCallback, useState} from 'react';
 import {SafeAreaView, Text, TextInput, StyleSheet, View} from 'react-native';
-import {Button} from '../../../components/Button';
 import {useNavigation} from '@react-navigation/native';
+import {UpdateMode} from 'realm';
+import {Button} from '../../../components/Button';
+import {useRealm} from '../../../services/realm';
+import {ICustomer} from '../../../models';
+import {generateUniqueId} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 
 const AddCustomer = () => {
   const navigation = useNavigation();
+  const realm = useRealm() as Realm;
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -20,10 +25,20 @@ const AddCustomer = () => {
 
   const handleSubmit = useCallback(() => {
     if (name && mobile) {
+      const id = generateUniqueId();
+      const customer = {
+        id,
+        name,
+        mobile,
+        created_at: new Date(),
+      };
+      realm.write(() => {
+        realm.create<ICustomer>('Customer', customer, UpdateMode.Modified);
+      });
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
-        navigation.navigate('CustomerDetails', {customer: {name}});
+        navigation.navigate('CustomerDetails', {customer});
       }, 750);
     }
   }, [navigation, name, mobile]);
@@ -35,7 +50,7 @@ const AddCustomer = () => {
         <View style={styles.formInputs}>
           <TextInput
             value={name}
-            placeholder="Name"
+            placeholder='Name'
             style={styles.input}
             onChangeText={handleNameChange}
             placeholderTextColor={colors['gray-50']}
@@ -43,16 +58,16 @@ const AddCustomer = () => {
           <TextInput
             value={mobile}
             style={styles.input}
-            autoCompleteType="tel"
-            keyboardType="phone-pad"
-            placeholder="Phone Number"
+            autoCompleteType='tel'
+            keyboardType='phone-pad'
+            placeholder='Phone Number'
             onChangeText={handleMobileChange}
             placeholderTextColor={colors['gray-50']}
           />
         </View>
         <Button
-          variantColor="red"
-          title="Add customer"
+          variantColor='red'
+          title='Add customer'
           onPress={handleSubmit}
           isLoading={isLoading}
         />
