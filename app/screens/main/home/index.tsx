@@ -37,15 +37,21 @@ const HomeScreen = () => {
   const pubNub = usePubNub();
   const realm = useRealm();
   const handleLogout = useCallback(async () => {
-    const authService = getAuthService();
-    await authService.logOut();
-    Realm.deleteFile({});
-    pubNub.unsubscribeAll();
-    navigation.reset({
-      index: 0,
-      routes: [{name: 'Auth'}],
-    });
-  }, [pubNub, navigation]);
+    try {
+      const authService = getAuthService();
+      await authService.logOut();
+      realm.write(() => {
+        realm.deleteAll();
+      });
+      pubNub.unsubscribeAll();
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      });
+    } catch (e) {
+      console.log('Error: ', e);
+    }
+  }, [realm, pubNub, navigation]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
