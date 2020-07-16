@@ -73,7 +73,7 @@ jobs:
           name: Bump version number before build so image has same version as docker tag
           command: |
             CURRENT_VERSION=$(jq ".version" -r package.json)
-            IMAGE_VERSION=$(./bin/semver build "build.${CIRCLE_BUILD_NUM}" ${CURRENT_VERSION});
+            IMAGE_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${CURRENT_VERSION});
             jq ".version=\"${IMAGE_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
             echo "export IMAGE_VERSION=${IMAGE_VERSION}" >> $BASH_ENV
             head package.json
