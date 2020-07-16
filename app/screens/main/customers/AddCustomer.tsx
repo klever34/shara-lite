@@ -41,7 +41,7 @@ const AddCustomer = () => {
         navigation.navigate('CustomerDetails', {customer});
       }, 750);
     }
-  }, [navigation, name, mobile]);
+  }, [navigation, name, mobile, realm]);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -50,7 +50,7 @@ const AddCustomer = () => {
         <View style={styles.formInputs}>
           <TextInput
             value={name}
-            placeholder='Name'
+            placeholder="Name"
             style={styles.input}
             onChangeText={handleNameChange}
             placeholderTextColor={colors['gray-50']}
@@ -58,16 +58,16 @@ const AddCustomer = () => {
           <TextInput
             value={mobile}
             style={styles.input}
-            autoCompleteType='tel'
-            keyboardType='phone-pad'
-            placeholder='Phone Number'
+            autoCompleteType="tel"
+            keyboardType="phone-pad"
+            placeholder="Phone Number"
             onChangeText={handleMobileChange}
             placeholderTextColor={colors['gray-50']}
           />
         </View>
         <Button
-          variantColor='red'
-          title='Add customer'
+          variantColor="red"
+          title="Add customer"
           onPress={handleSubmit}
           isLoading={isLoading}
         />

@@ -17,15 +17,16 @@ type CustomerDetailsParamList = {
   Credit: undefined;
 };
 
-const CustomerDetailsTab = createMaterialTopTabNavigator<CustomerDetailsParamList>();
+const CustomerDetailsTab = createMaterialTopTabNavigator<
+  CustomerDetailsParamList
+>();
 
-const CustomerDetails = ({route}) => {
-  const {customer} = route.params;
+const CustomerDetails = () => {
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]}/>,
+      headerRight: () => <AppMenu options={[]} />,
     });
   }, [navigation]);
 

@@ -28,7 +28,7 @@ const Receipts = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]}/>,
+      headerRight: () => <AppMenu options={[]} />,
     });
   }, [navigation]);
 
@@ -38,21 +38,24 @@ const Receipts = () => {
       setSearchInputValue('');
       setMyCustomers(customers);
     },
-    [navigation],
+    [customers, navigation],
   );
 
-  const handleCustomerSearch = useCallback((searchedText: string) => {
-    const sort = (item: Customer, text: string) => {
-      return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-    };
-    var ac = customers.filter((item: Customer) => {
-      return sort(item, searchedText);
-    });
-    setMyCustomers(ac);
-    setTimeout(() => {
-      setSearchInputValue(searchedText);
-    }, 0);
-  }, []);
+  const handleCustomerSearch = useCallback(
+    (searchedText: string) => {
+      const sort = (item: Customer, text: string) => {
+        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+      };
+      var ac = customers.filter((item: Customer) => {
+        return sort(item, searchedText);
+      });
+      setMyCustomers(ac);
+      setTimeout(() => {
+        setSearchInputValue(searchedText);
+      }, 0);
+    },
+    [customers],
+  );
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {
@@ -60,7 +63,7 @@ const Receipts = () => {
         <Touchable onPress={() => handleSelectCustomer(customer)}>
           <View style={styles.customerListItem}>
             <Text style={applyStyles(styles.customerListItemText, 'text-400')}>
-              {customer.name}
+              {customer.name}∏
             </Text>
           </View>
         </Touchable>
