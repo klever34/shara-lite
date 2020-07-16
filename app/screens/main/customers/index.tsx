@@ -1,5 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
+import {useRealm} from '../../../services/realm';
+import {ICustomer} from '../../../models';
 import {
   FlatList,
   Platform,
@@ -12,11 +14,13 @@ import {FAButton} from '../../../components';
 import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
-import {customers} from '../data.json';
 import {applyStyles} from '../../../helpers/utils';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
+  const realm = useRealm() as Realm;
+  const customers = realm.objects<ICustomer>('Customer');
+
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);
 
