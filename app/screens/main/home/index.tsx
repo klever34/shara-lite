@@ -132,7 +132,7 @@ const HomeScreen = () => {
                     type: customFields.type,
                     members,
                   },
-                  Realm.UpdateMode.Never,
+                  Realm.UpdateMode.Modified,
                 );
               });
             } else {
