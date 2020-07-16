@@ -5,6 +5,7 @@ workflows:
     jobs:
       - checkout_code:
           merged: false
+          commit: true
           context: shara-dev
           filters:
             branches:
@@ -81,6 +82,9 @@ jobs:
       merged:
         type: boolean
         default: false
+      commit:
+        type: boolean
+        default: false
     steps:
       - checkout
       - run:
@@ -111,6 +115,16 @@ jobs:
                   echo "CURRENT_VERSION: ${CURRENT_VERSION}"
                   echo "CURRENT_VERSION: ${CURRENT_VERSION}"
                   echo "NEW_VERSION: ${NEW_VERSION}"
+      # TODO Should happen after tests, build and deploy
+      - when:
+          condition: <<parameters.commit>>
+          steps:
+            - run:
+                name: Commit and push version update
+                command: |
+                  git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
+                  git commit -am "Bumped version to ${NEW_VERSION} [skip ci]"
+                  git push --set-upstream origin ${CIRCLE_BRANCH}
       - run:
           name: Setup Credentials
           command: |
