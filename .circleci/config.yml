@@ -20,6 +20,7 @@ workflows:
                 - master
                 - develop
                 - discovery
+                - feature/auto-versioning
       - test:
           requires:
             - checkout_code
@@ -29,6 +30,7 @@ workflows:
                 - master
                 - develop
                 - discovery
+                - feature/auto-versioning
       - fastlane:
           context: shara-dev
           lane: internal
@@ -41,6 +43,7 @@ workflows:
                 - master
                 - develop
                 - discovery
+                - feature/auto-versioning
   discovery:
     jobs:
       - checkout_code:
@@ -83,12 +86,11 @@ jobs:
       - run:
           name: Yarn Install Dependencies
           command: yarn install
-      # auto-versioning: When Discovery or Develop bump patch
       - when:
           condition: <<parameters.merged>>
           steps:
             - run:
-                name: Bump version number before build so image has same version as docker tag
+                name: Auto-versioning >>  When Master, Discovery or Develop bump patch
                 command: |
                   CURRENT_VERSION=$(jq ".version" -r package.json)
                   NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
@@ -96,12 +98,11 @@ jobs:
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
                   echo "CURRENT_VERSION: ${CURRENT_VERSION}"
                   echo "NEW_VERSION: ${NEW_VERSION}"
-      # auto-versioning: When unmerged i.e. feature branches, bump build
       - unless:
           condition: <<parameters.merged>>
           steps:
             - run:
-                name: Bump version number before build so image has same version as docker tag
+                name: Auto-versioning >> When unmerged i.e. feature branches, bump build
                 command: |
                   CURRENT_VERSION=$(jq ".version" -r package.json)
                   NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${CURRENT_VERSION});
