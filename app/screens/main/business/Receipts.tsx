@@ -11,20 +11,24 @@ import {
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
+import {useRealm} from '../../../services/realm';
+import {ICustomer} from '../../../models';
 import {colors} from '../../../styles';
-import {customers} from '../data.json';
 import {applyStyles} from '../../../helpers/utils';
 
 const Receipts = () => {
   //@ts-ignore
   global.startTime = new Date().getTime();
   const navigation = useNavigation();
+  const realm = useRealm() as Realm;
+  const customers = realm.objects<ICustomer>('Customer');
+
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
+      headerRight: () => <AppMenu options={[]}/>,
     });
   }, [navigation]);
 
