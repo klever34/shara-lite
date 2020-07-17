@@ -15,13 +15,14 @@ import {ICustomer} from '../../../models';
 import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
 import {Button} from '../../../components';
+import {getCustomers} from '../../../services/CustomerService';
 
 const Receipts = (props) => {
   const {onCustomerSelect, onModalClose} = props;
   //@ts-ignore
   global.startTime = new Date().getTime();
   const realm = useRealm() as Realm;
-  const customers = realm.objects<ICustomer>('Customer');
+  const customers = getCustomers({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);

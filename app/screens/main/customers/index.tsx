@@ -15,11 +15,12 @@ import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
+import {getCustomers} from '../../../services/CustomerService';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const customers = realm.objects<ICustomer>('Customer');
+  const customers = getCustomers({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);

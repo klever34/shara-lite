@@ -1,4 +1,4 @@
-export interface IPayment {
+export interface IPaymentItem {
   id: string;
   description: string;
   product: object;
@@ -9,14 +9,14 @@ export interface IPayment {
   created_at: Date;
 }
 
-export class Payment implements Partial<IPayment> {
+export class PaymentItem implements Partial<IPaymentItem> {
   public static schema: Realm.ObjectSchema = {
-    name: 'Payment',
+    name: 'PaymentItem',
     primaryKey: 'id',
     properties: {
       id: 'string',
       description: 'string',
-      payment: 'Payment?',
+      payment: 'PaymentItem?',
       quantity: 'int',
       unit_price: 'double',
       total_price: 'double',

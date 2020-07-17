@@ -5,9 +5,11 @@ export interface ICustomer {
   created_at: Date;
 }
 
+export const modelName = 'Customer';
+
 export class Customer implements Partial<ICustomer> {
   public static schema: Realm.ObjectSchema = {
-    name: 'Customer',
+    name: modelName,
     primaryKey: 'id',
     properties: {
       id: 'string',

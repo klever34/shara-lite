@@ -7,6 +7,7 @@ import {useRealm} from '../../../services/realm';
 import {ICustomer} from '../../../models';
 import {generateUniqueId} from '../../../helpers/utils';
 import {colors} from '../../../styles';
+import {saveCustomer} from '../../../services/CustomerService';
 
 const AddCustomer = () => {
   const navigation = useNavigation();
@@ -32,9 +33,7 @@ const AddCustomer = () => {
         mobile,
         created_at: new Date(),
       };
-      realm.write(() => {
-        realm.create<ICustomer>('Customer', customer, UpdateMode.Modified);
-      });
+      saveCustomer({realm, customer});
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
