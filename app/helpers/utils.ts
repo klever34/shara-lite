@@ -40,11 +40,14 @@ export const retryPromise = (
   promiseFn: () => Promise<any>,
   predicate: (error: any) => boolean = () => true,
 ) => {
-  return promiseRetry((retry) => {
-    return promiseFn().catch((error) => {
-      if (predicate(error)) {
-        retry(error);
-      }
-    });
-  });
+  return promiseRetry(
+    (retry) => {
+      return promiseFn().catch((error) => {
+        if (predicate(error)) {
+          retry(error);
+        }
+      });
+    },
+    {forever: true},
+  );
 };

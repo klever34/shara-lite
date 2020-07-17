@@ -64,16 +64,23 @@ const ChatScreen = ({
             `channel = "${channel}" AND read_timetoken = null AND author != "${user.mobile}"`,
           );
         if (markedMessages.length) {
-          pubNub.signal({channel, message: 'READ'}, (status, response) => {
-            if (status.error) {
-              console.log('READ Signal Error: ', status);
-            } else {
-              realm.write(() => {
-                for (let i = 0; i < markedMessages.length; i += 1) {
-                  markedMessages[i].read_timetoken = String(response.timetoken);
+          retryPromise(() => {
+            return new Promise<any>((resolve, reject) => {
+              pubNub.signal({channel, message: 'READ'}, (status, response) => {
+                if (status.error) {
+                  console.log('READ Signal Error: ', status);
+                  reject(status.errorData);
+                } else {
+                  resolve(response);
                 }
               });
-            }
+            });
+          }).then((response) => {
+            realm.write(() => {
+              for (let i = 0; i < markedMessages.length; i += 1) {
+                markedMessages[i].read_timetoken = String(response.timetoken);
+              }
+            });
           });
         }
       } catch (error) {

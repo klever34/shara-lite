@@ -6,7 +6,7 @@ import ChatListScreen from './ChatListScreen';
 import {getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../../components/Menu';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles, retryPromise} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/RealmService';
@@ -153,18 +153,25 @@ const HomeScreen = () => {
                 );
               });
             }
-            pubNub.signal(
-              {channel, message: 'RECEIVED'},
-              (status, response) => {
-                if (status.error) {
-                  console.log('RECEIVED Signal Error: ', status);
-                } else {
-                  realm.write(() => {
-                    lastMessage.received_timetoken = String(response.timetoken);
-                  });
-                }
-              },
-            );
+            retryPromise(() => {
+              return new Promise<any>((resolve, reject) => {
+                pubNub.signal(
+                  {channel, message: 'RECEIVED'},
+                  (status, response) => {
+                    if (status.error) {
+                      console.log('RECEIVED Signal Error: ', status);
+                      reject(status.errorData);
+                    } else {
+                      resolve(response);
+                    }
+                  },
+                );
+              });
+            }).then((response) => {
+              realm.write(() => {
+                lastMessage.received_timetoken = String(response.timetoken);
+              });
+            });
           }
         } catch (e) {
           console.log('Message Listener Error: ', e.status || e);
