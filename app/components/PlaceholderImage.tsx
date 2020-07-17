@@ -2,6 +2,7 @@ import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
+import capitalize from 'lodash/capitalize';
 
 type PlaceholderImageProps = {
   text: string;
@@ -15,7 +16,7 @@ const PlaceholderImage = ({text}: PlaceholderImageProps) => {
   if (Number(text[0])) {
     displayLetter = '#';
   } else {
-    displayLetter = text[0];
+    displayLetter = capitalize(text[0]);
   }
   return (
     <View style={styles.container}>

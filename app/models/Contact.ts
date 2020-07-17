@@ -1,3 +1,5 @@
+import capitalize from 'lodash/capitalize';
+
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile'> {
   fullName: string;
@@ -18,9 +20,9 @@ export class Contact implements Partial<IContact> {
   public firstname: string | undefined;
   public lastname: string | undefined;
   public get fullName() {
-    let name = this.firstname;
+    let name = capitalize(this.firstname);
     if (this.lastname) {
-      name += ' ' + this.lastname;
+      name += ' ' + capitalize(this.lastname);
     }
     return name;
   }
