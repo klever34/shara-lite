@@ -1,7 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Picker} from '@react-native-community/picker';
-import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   FlatList,
   Modal,
@@ -76,6 +82,8 @@ const summaryTableItemStyles = StyleSheet.create({
   },
 });
 
+const paymentTypes = ['Cash', 'Bank Transfer'];
+
 const SummaryTableHeader = () => {
   return (
     <View
@@ -137,13 +145,17 @@ const ReceiptSummary = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ReceiptSummary'>) => {
   const navigation = useNavigation();
-  const tax = 0;
   const {customer: customerProps, products} = route.params;
-  const [creditPayload, setCreditPayload] = useState<CreditPayload>({
-    paymentMethod: 'Credit',
-  } as CreditPayload);
+  const tax = 0;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signature, setSignature] = useState(false);
+
+  const [paymentType, setPaymentType] = useState(paymentTypes[0]);
+  const [amountPaid, setAmountPaid] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  const creditAmount = totalAmount - amountPaid;
 
   const [customer, setCustomer] = useState<Customer>(
     customerProps || ({} as Customer),
@@ -205,15 +217,14 @@ const ReceiptSummary = ({
     [customer],
   );
 
-  const handleCreditPayloadChange = useCallback(
-    (value: string | number, key: keyof CreditPayload) => {
-      setCreditPayload({
-        ...creditPayload,
-        [key]: value,
-      });
-    },
-    [creditPayload],
-  );
+  const handlePaymentTypeChange = useCallback((value: string | number) => {
+    setPaymentType(value.toString());
+  }, []);
+
+  const handleAmountPaidChange = useCallback((value: string | number) => {
+    // @TODO Improve conversion
+    setAmountPaid(parseFloat(value.toString().replace(/,/g, '')));
+  }, []);
 
   const handleFinish = useCallback(() => {
     setIsSubmitting(true);
@@ -228,22 +239,23 @@ const ReceiptSummary = ({
     }, 2000);
   }, [saveSign, navigation, handleCancel, customer.name]);
 
-  const getProductsTotalAmount = useCallback(() => {
-    return products
+  useEffect(() => {
+    const totalAmount = products
       .map(({quantity, price}) => {
         const itemPrice = price ? parseFloat(price) : 0;
         const itemQuantity = quantity ? parseFloat(quantity) : 0;
         return itemPrice * itemQuantity;
       })
       .reduce((acc, curr) => acc + curr, 0);
+
+    setTotalAmount(totalAmount);
+    setAmountPaid(totalAmount);
   }, [products]);
 
   const renderSummaryItem = useCallback(
     ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
     [],
   );
-
-  const totalAmount = tax + getProductsTotalAmount();
 
   return (
     <ScrollView style={styles.container} nestedScrollEnabled>
@@ -396,12 +408,15 @@ const ReceiptSummary = ({
             style={styles.picker}
             prompt="Payment Method"
             itemStyle={styles.pickerItem}
-            selectedValue={creditPayload.paymentMethod}
-            onValueChange={(itemValue) =>
-              handleCreditPayloadChange(itemValue, 'paymentMethod')
-            }>
-            <Picker.Item label="Cash" value="Cash" />
-            <Picker.Item label="Bank Transfer" value="Bank Transfer" />
+            selectedValue={paymentType}
+            onValueChange={(itemValue) => handlePaymentTypeChange(itemValue)}>
+            {paymentTypes.map((paymentType: string, index) => (
+              <Picker.Item
+                label={paymentType}
+                value={paymentType}
+                key={index}
+              />
+            ))}
           </Picker>
         </View>
         <View style={applyStyles('flex-row', 'items-center')}>
@@ -414,11 +429,21 @@ const ReceiptSummary = ({
             style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
             keyboardType="number-pad"
             placeholder="Amount Paid"
-            value={numberWithCommas(totalAmount)}
+            value={numberWithCommas(amountPaid)}
             placeholderTextColor={colors['gray-50']}
-            onChangeText={(text) => handleCreditPayloadChange(text, 'amount')}
+            onChangeText={(text) => handleAmountPaidChange(text)}
           />
         </View>
+        {creditAmount > 0 && (
+          <View>
+            <Text style={applyStyles('text-400', styles.pickerLabel)}>
+              Credit issued
+            </Text>
+            <Text style={styles.creditText}>
+              &#8358;{numberWithCommas(creditAmount)}
+            </Text>
+          </View>
+        )}
       </View>
       <View style={styles.actionButtons}>
         <Button
@@ -551,6 +576,10 @@ const styles = StyleSheet.create({
   textInputIconText: {
     fontSize: 16,
     color: colors['gray-300'],
+  },
+  creditText: {
+    marginTop: 3,
+    color: colors['primary'],
   },
 });
 
