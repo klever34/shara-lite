@@ -4,7 +4,9 @@ import {Picker} from '@react-native-community/picker';
 import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
 import {
   FlatList,
+  Modal,
   Platform,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -19,6 +21,7 @@ import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
+import Receipts from './Receipts';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -141,9 +144,22 @@ const ReceiptSummary = ({
   } as CreditPayload);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [signature, setSignature] = useState(false);
+
   const [customer, setCustomer] = useState<Customer>(
     customerProps || ({} as Customer),
   );
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState<boolean>(
+    false,
+  );
+
+  const handleCustomerSelect = useCallback(({customer}) => {
+    setCustomer(customer);
+    handleToggleCustomerModal();
+  }, []);
+
+  const handleToggleCustomerModal = useCallback(() => {
+    setIsCustomerModalOpen((isNodalOpen) => !isNodalOpen);
+  }, []);
 
   const ref = useRef<any>(null);
 
@@ -179,8 +195,8 @@ const ReceiptSummary = ({
   }, [navigation]);
 
   const handleAddProduct = useCallback(() => {
-    navigation.navigate('NewReceipt', {customer});
-  }, [navigation, customer]);
+    navigation.navigate('NewReceipt');
+  }, [navigation]);
 
   const handleUpdateCustomer = useCallback(
     (value, key) => {
@@ -317,6 +333,23 @@ const ReceiptSummary = ({
             onChangeText={(item) => handleUpdateCustomer(item, 'name')}
           />
         </View>
+        <View style={styles.selectCustomerButton}>
+          <Button
+            title="Select customer"
+            variantColor="red"
+            onPress={handleToggleCustomerModal}
+            style={styles.actionButton}
+          />
+        </View>
+        <Modal
+          animationType="slide"
+          transparent={false}
+          visible={isCustomerModalOpen}>
+          <Receipts
+            onCustomerSelect={handleCustomerSelect}
+            onModalClose={handleToggleCustomerModal}
+          />
+        </Modal>
         <View style={styles.signatureContainer}>
           <SignatureCapture
             ref={ref}
@@ -441,6 +474,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderTopColor: colors['gray-20'],
     borderBottomColor: colors['gray-20'],
+  },
+  selectCustomerButton: {
+    marginBottom: 24,
   },
   addProductButtonText: {
     paddingLeft: 12,

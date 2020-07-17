@@ -1,5 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useState, useCallback, useLayoutEffect} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -15,30 +14,25 @@ import {useRealm} from '../../../services/realm';
 import {ICustomer} from '../../../models';
 import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
+import {Button} from '../../../components';
 
-const Receipts = () => {
+const Receipts = (props) => {
+  const {onCustomerSelect, onModalClose} = props;
   //@ts-ignore
   global.startTime = new Date().getTime();
-  const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = realm.objects<ICustomer>('Customer');
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
-    });
-  }, [navigation]);
-
   const handleSelectCustomer = useCallback(
     (item?: Customer) => {
-      navigation.navigate('NewReceipt', {customer: item});
+      onCustomerSelect({customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
     },
-    [customers, navigation],
+    [customers, onCustomerSelect],
   );
 
   const handleCustomerSearch = useCallback(
@@ -56,6 +50,10 @@ const Receipts = () => {
     },
     [customers],
   );
+
+  const handleCloseModal = useCallback(() => {
+    onModalClose();
+  }, []);
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {
@@ -101,25 +99,13 @@ const Receipts = () => {
           />
         </View>
       </View>
-      <Touchable onPress={() => handleSelectCustomer()}>
-        <View style={styles.newCustomerButton}>
-          <Icon
-            size={24}
-            name="user-plus"
-            type="feathericons"
-            color={colors.primary}
-          />
-          <Text style={applyStyles(styles.newCustomerButtonText, 'text-400')}>
-            New Customer
-          </Text>
-        </View>
-      </Touchable>
       <FlatList
         data={myCustomers}
         renderItem={renderCustomerListItem}
         ListHeaderComponent={renderCustomerListHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
       />
+      <Button title="Close" variantColor="white" onPress={handleCloseModal} />
     </SafeAreaView>
   );
 };

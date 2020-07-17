@@ -11,7 +11,7 @@ const BusinessTab = () => {
   const navigation = useNavigation();
   const actions = [
     {
-      name: 'Receipts',
+      name: 'NewReceipt',
       render: () => {
         return (
           <View style={styles.listItem}>

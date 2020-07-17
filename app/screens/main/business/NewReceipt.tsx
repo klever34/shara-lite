@@ -7,6 +7,7 @@ import {
   Text,
   TextInput,
   View,
+  Modal,
 } from 'react-native';
 import {Button} from '../../../components/Button';
 import AppMenu from '../../../components/Menu';
@@ -17,6 +18,7 @@ import {MainStackParamList} from '..';
 import {StackScreenProps} from '@react-navigation/stack';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import {applyStyles} from '../../../helpers/utils';
+import Receipts from './Receipts';
 
 type RecentProductItemProps = {
   item: Product;
@@ -25,11 +27,11 @@ type RecentProductItemProps = {
 const NewReceipt = ({
   route,
 }: StackScreenProps<MainStackParamList, 'NewReceipt'>) => {
-  const {customer} = route.params;
   const navigation = useNavigation();
   const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
     null,
   );
+
   const [price, setPrice] = useState<string | undefined>('');
   const [quantity, setQuantity] = useState<string | undefined>('');
   const [receipt, setReceipt] = useState<ReceiptItem[]>([]);
@@ -79,16 +81,8 @@ const NewReceipt = ({
       handleAddItem();
       items = [product, ...receipt];
     }
-    navigation.navigate('ReceiptSummary', {products: items, customer});
-  }, [
-    receipt,
-    selectedProduct,
-    quantity,
-    price,
-    handleAddItem,
-    navigation,
-    customer,
-  ]);
+    navigation.navigate('ReceiptSummary', {products: items});
+  }, [receipt, selectedProduct, quantity, price, handleAddItem, navigation]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
