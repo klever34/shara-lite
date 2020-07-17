@@ -1,5 +1,6 @@
 import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
+import promiseRetry from 'promise-retry';
 import {globalStyles} from '../styles';
 
 export const generateUniqueId = () => uuidV4();
@@ -34,3 +35,16 @@ export const handleFetchErrors = async <T extends any>(
 
 export const numberWithCommas = (x: number) =>
   x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
+
+export const retryPromise = (
+  promiseFn: () => Promise<any>,
+  predicate: (error: any) => boolean = () => true,
+) => {
+  return promiseRetry((retry) => {
+    return promiseFn().catch((error) => {
+      if (predicate(error)) {
+        retry(error);
+      }
+    });
+  });
+};

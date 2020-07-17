@@ -21,7 +21,7 @@ import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import Icon from '../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
-import {generateUniqueId} from '../../helpers/utils';
+import {generateUniqueId, retryPromise} from '../../helpers/utils';
 import {colors} from '../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from './index';
@@ -160,27 +160,32 @@ const ChatScreen = ({
     try {
       realm.write(() => {
         message = realm.create<IMessage>('Message', message, UpdateMode.Never);
+        const conversation = realm
+          .objects<IConversation>('Conversation')
+          .filtered(`channel = "${message.channel}"`)[0];
+        conversation.lastMessage = message;
       });
     } catch (e) {
       console.log('Error: ', e);
     }
-    pubNub.publish({channel, message: messagePayload}, function (
-      status: PubnubStatus,
-      response: PublishResponse,
-    ) {
-      if (status.error) {
-        console.log('Error: ', status.errorData?.message);
-      } else {
-        realm.write(() => {
-          message.sent_timetoken = String(response.timetoken);
+    retryPromise(() => {
+      return new Promise<any>((resolve, reject) => {
+        pubNub.publish({channel, message: messagePayload}, function (
+          status: PubnubStatus,
+          response: PublishResponse,
+        ) {
+          if (status.error) {
+            console.log('Error: ', status);
+            reject(status.errorData);
+          } else {
+            resolve(response);
+          }
         });
-        realm.write(() => {
-          const conversation = realm
-            .objects<IConversation>('Conversation')
-            .filtered(`channel = "${message.channel}"`)[0];
-          conversation.lastMessage = message;
-        });
-      }
+      });
+    }).then((response) => {
+      realm.write(() => {
+        message.sent_timetoken = String(response.timetoken);
+      });
     });
   }, [channel, input, pubNub, realm]);
 
