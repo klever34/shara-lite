@@ -368,7 +368,7 @@ const ReceiptSummary = ({
               handleCreditPayloadChange(itemValue, 'paymentMethod')
             }>
             <Picker.Item label="Cash" value="Cash" />
-            <Picker.Item label="Credit" value="Credit" />
+            <Picker.Item label="Bank Transfer" value="Bank Transfer" />
           </Picker>
         </View>
         <View style={applyStyles('flex-row', 'items-center')}>
@@ -381,7 +381,7 @@ const ReceiptSummary = ({
             style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
             keyboardType="number-pad"
             placeholder="Amount Paid"
-            value={creditPayload.amount}
+            value={numberWithCommas(totalAmount)}
             placeholderTextColor={colors['gray-50']}
             onChangeText={(text) => handleCreditPayloadChange(text, 'amount')}
           />

@@ -63,7 +63,7 @@ const Receipts = () => {
         <Touchable onPress={() => handleSelectCustomer(customer)}>
           <View style={styles.customerListItem}>
             <Text style={applyStyles(styles.customerListItemText, 'text-400')}>
-              {customer.name}∏
+              {customer.name}
             </Text>
           </View>
         </Touchable>
