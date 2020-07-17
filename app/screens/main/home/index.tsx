@@ -6,15 +6,12 @@ import ChatListScreen from './ChatListScreen';
 import {getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../../components/Menu';
-import {applyStyles, retryPromise} from '../../../helpers/utils';
+import {applyStyles, decrypt, retryPromise} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/RealmService';
 import {MessageEvent, SignalEvent} from 'pubnub';
 import Realm from 'realm';
-import '../../../../shim';
-import Cryptr from 'cryptr';
-import Config from 'react-native-config';
 import CustomersTab from '../customers';
 import BusinessTab from '../business';
 
@@ -79,6 +76,12 @@ const HomeScreen = () => {
     };
   }, [pubNub, realm]);
 
+  const extractMembers = (membersString: string) => {
+    return membersString
+      .split(',')
+      .map((encryptedMember) => decrypt(encryptedMember));
+  };
+
   useEffect(() => {
     const listener = {
       message: async (evt: MessageEvent) => {
@@ -108,12 +111,7 @@ const HomeScreen = () => {
               });
               const customFields = response.data
                 .custom as ChannelMetadataCustomFields;
-              const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
-              const members = customFields.members
-                .split(',')
-                .map((encryptedMember) => {
-                  return cryptr.decrypt(encryptedMember);
-                });
+              const members = extractMembers(customFields.members);
               const authService = getAuthService();
               const user = authService.getUser() as User;
               let sender = members.find(
@@ -205,6 +203,62 @@ const HomeScreen = () => {
     return () => {
       pubNub.removeListener(listener);
     };
+  }, [pubNub, realm]);
+
+  useEffect(() => {
+    const loadMemberships = async () => {
+      try {
+        const {data} = await pubNub.objects.getMemberships({
+          uuid: pubNub.getUUID(),
+          include: {
+            customChannelFields: true,
+          },
+        });
+        const conversations = data.map<IConversation>(({channel}) => {
+          const custom = channel.custom as ChannelMetadataCustomFields;
+          const members = extractMembers(custom.members);
+          const user = getAuthService().getUser() as User;
+
+          let sender: string;
+          if (custom.type === '1-1') {
+            sender = members.find((member) => member !== user.mobile) as string;
+          } else {
+            sender = channel.name ?? '';
+          }
+          return {
+            title: sender,
+            type: custom.type,
+            members,
+            channel: channel.id,
+          };
+        });
+        realm.write(() => {
+          conversations.forEach((conversation) => {
+            let title: string = conversation.title;
+            if (conversation.type === '1-1') {
+              const contact = realm
+                .objects<IContact>('Contact')
+                .filtered(`mobile = "${conversation.title}"`)[0];
+              if (contact) {
+                title = contact.fullName;
+              }
+              if (contact) {
+                contact.channel = conversation.channel;
+              }
+            }
+            realm.create<IConversation>(
+              'Conversation',
+              {
+                ...conversation,
+                title,
+              },
+              Realm.UpdateMode.Modified,
+            );
+          });
+        });
+      } catch (e) {}
+    };
+    loadMemberships().then();
   }, [pubNub, realm]);
 
   return (

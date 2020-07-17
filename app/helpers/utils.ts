@@ -2,6 +2,9 @@ import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
 import promiseRetry from 'promise-retry';
 import {globalStyles} from '../styles';
+import '../../shim';
+import Cryptr from 'cryptr';
+import Config from 'react-native-config';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -50,4 +53,8 @@ export const retryPromise = (
     },
     {forever: true},
   );
+};
+const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
+export const decrypt = (encryptedText: string) => {
+  return cryptr.decrypt(encryptedText);
 };

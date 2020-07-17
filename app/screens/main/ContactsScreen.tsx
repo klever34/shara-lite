@@ -173,6 +173,35 @@ const ContactsScreen = () => {
       data={contacts}
       renderItem={renderContactItem}
       keyExtractor={(item: IContact) => item.mobile}
+      ListHeaderComponent={
+        <Touchable
+          onPress={() => {
+            navigation.navigate('Home');
+          }}>
+          <View style={applyStyles('flex-row items-center p-md')}>
+            <View
+              style={applyStyles('mr-md center', {
+                height: 48,
+                width: 48,
+                borderRadius: 24,
+                backgroundColor: colors.primary,
+              })}>
+              <Icon
+                type="material-icons"
+                name="people"
+                color={colors.white}
+                size={28}
+              />
+            </View>
+            <Text
+              style={applyStyles('text-lg', 'text-400', {
+                color: colors['gray-300'],
+              })}>
+              New group
+            </Text>
+          </View>
+        </Touchable>
+      }
       ListFooterComponent={
         <Touchable onPress={inviteFriend}>
           <View style={applyStyles('flex-row items-center p-md')}>
