@@ -71,33 +71,33 @@ const HomeScreen = () => {
     };
   }, [pubNub, realm]);
 
-  const getConversationFromChannelData = async (
-    channel: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
+  const getConversationFromChannelMetadata = async (
+    channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
   ): Promise<IConversation> => {
     try {
-      const custom = channel.custom as ChannelCustom;
+      const custom = channelMetadata.custom as ChannelCustom;
       let sender: string;
       let members: string[];
-      if (custom.type === '1-1') {
+      if (custom.type === 'group') {
+        const apiService = getApiService();
+        const groupChatMembers = await apiService.getGroupMembers(custom.id);
+        members = groupChatMembers.map(({user: {mobile}}) => mobile);
+        sender = channelMetadata.name ?? '';
+      } else {
         members = custom.members
           .split(',')
           .map((encryptedMember) => decrypt(encryptedMember));
         const user = getAuthService().getUser() as User;
-        sender = members.find((member) => member !== user.mobile) as string;
-      } else {
-        const apiService = getApiService();
-        const groupChatMembers = await apiService.getGroupMembers(custom.id);
-        members = groupChatMembers.map(({user: {mobile}}) => mobile);
-        sender = channel.name ?? '';
+        sender = members.find((member) => member !== user.mobile) ?? '';
       }
       return {
         title: sender,
-        type: custom.type,
+        type: custom.type ?? '1-1',
         members,
-        channel: channel.id,
+        channel: channelMetadata.id,
       };
     } catch (e) {
-      console.log('getConversationFromChannelData Error: ', e);
+      console.log('getConversationFromChannelMetadata Error: ', e);
       throw e;
     }
   };
@@ -121,7 +121,7 @@ const HomeScreen = () => {
                 Realm.UpdateMode.Modified,
               );
             });
-            let conversation: any = realm
+            let conversation: IConversation = realm
               .objects<IConversation>('Conversation')
               .filtered(`channel = "${channel}"`)[0];
             if (!conversation) {
@@ -129,7 +129,7 @@ const HomeScreen = () => {
                 channel,
                 include: {customFields: true},
               });
-              conversation = await getConversationFromChannelData(
+              conversation = await getConversationFromChannelMetadata(
                 response.data,
               );
               realm.write(() => {
@@ -226,10 +226,17 @@ const HomeScreen = () => {
             customChannelFields: true,
           },
         });
-        realm.write(async () => {
-          for (let i = 0; i < data.length; i += 1) {
-            const {channel} = data[i];
-            const conversation = await getConversationFromChannelData(channel);
+        const conversations: IConversation[] = [];
+        for (let i = 0; i < data.length; i += 1) {
+          const {channel} = data[i];
+          const conversation = await getConversationFromChannelMetadata(
+            channel,
+          );
+          conversations.push(conversation);
+        }
+        realm.write(() => {
+          for (let i = 0; i < conversations.length; i += 1) {
+            const conversation = conversations[i];
             if (conversation.type === '1-1') {
               const contact = realm
                 .objects<IContact>('Contact')

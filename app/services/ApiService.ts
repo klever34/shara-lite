@@ -24,7 +24,7 @@ export const requester: Requester = {
     return fetch(
       `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: {
           Authorization: `Bearer ${authService.getToken()}` ?? '',
           'Content-Type': 'application/json',
