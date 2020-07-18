@@ -62,11 +62,9 @@ const CustomerDetails = ({route}: {route: any}) => {
           options={{title: 'Payments'}}>
           {addCustomerToComponent(PaymentsTab)}
         </CustomerDetailsTab.Screen>
-        <CustomerDetailsTab.Screen
-          name="Credit"
-          component={CreditsTab}
-          options={{title: 'Credit'}}
-        />
+        <CustomerDetailsTab.Screen name="Credit" options={{title: 'Credit'}}>
+          {addCustomerToComponent(CreditsTab)}
+        </CustomerDetailsTab.Screen>
       </CustomerDetailsTab.Navigator>
     </SafeAreaView>
   );

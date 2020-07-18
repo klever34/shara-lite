@@ -71,7 +71,7 @@ const CreditPaymentForm = (props: Props) => {
             handleChange(itemValue, 'paymentMethod')
           }>
           <Picker.Item label="Cash" value="Cash" />
-          <Picker.Item label="Credit" value="Credit" />
+          <Picker.Item label="Bank Transfer" value="Bank Transfer" />
         </Picker>
       </View>
 

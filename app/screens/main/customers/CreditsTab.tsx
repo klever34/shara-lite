@@ -6,17 +6,24 @@ import {useNavigation} from '@react-navigation/native';
 import {numberWithCommas, applyStyles} from '../../../helpers/utils';
 import {FlatList} from 'react-native-gesture-handler';
 import ActionCard from './ActionCard';
-import {credits} from '../data.json';
 import {format} from 'date-fns/esm';
+import {ICustomer} from '../../../models';
+import {IPayment} from '../../../models/Payment';
 
-const CreditsTab = () => {
+const CreditsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
+  const payments = customer.payments || [];
+  const credits = payments.filter(({credit_amount}) => credit_amount > 0);
+  const totalCredits = credits.reduce(
+    (total, {credit_amount}) => total + credit_amount,
+    0,
+  );
 
-  const handleViewDetails = (creditDetails: CreditDetails) => {
+  const handleViewDetails = (creditDetails: IPayment) => {
     navigation.navigate('CreditPayment', {creditDetails});
   };
 
-  const renderCreditItem = ({item: creditDetails}: {item: CreditDetails}) => {
+  const renderCreditItem = ({item: creditDetails}: {item: IPayment}) => {
     return (
       <View style={styles.creditItem}>
         <ActionCard
@@ -26,33 +33,33 @@ const CreditsTab = () => {
           <View style={applyStyles('pb-sm')}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(creditDetails.amount)}
+              &#8358;{numberWithCommas(creditDetails.credit_amount)}
             </Text>
           </View>
           <View style={applyStyles('flex-row', 'justify-space-between')}>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Given on</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {format(new Date(creditDetails.givenOn), 'MMM dd, yyyy')}
+                {format(new Date(creditDetails.created_at), 'MMM dd, yyyy')}
               </Text>
               <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {format(new Date(creditDetails.givenOn), 'hh:mm:a')}
+                {format(new Date(creditDetails.created_at), 'hh:mm:a')}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Due on</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {format(new Date(creditDetails.dueOn), 'MMM dd, yyyy')}
+                {format(new Date(creditDetails.created_at), 'MMM dd, yyyy')}
               </Text>
               <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {format(new Date(creditDetails.dueOn), 'hh:mm:a')}
+                {format(new Date(creditDetails.created_at), 'hh:mm:a')}
               </Text>
             </View>
           </View>
           <View style={applyStyles('pb-sm')}>
             <Text style={styles.itemTitle}>Given by</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditDetails.givenBy}
+              NA
             </Text>
           </View>
         </ActionCard>
@@ -67,7 +74,7 @@ const CreditsTab = () => {
           Total Credit
         </Text>
         <Text style={applyStyles('text-700', styles.toalCreditAmount)}>
-          &#8358; {numberWithCommas(13500)}
+          &#8358; {numberWithCommas(totalCredits)}
         </Text>
         <Button
           title="record payment"
