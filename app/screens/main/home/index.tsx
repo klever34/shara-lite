@@ -206,7 +206,7 @@ const HomeScreen = () => {
   }, [pubNub, realm]);
 
   useEffect(() => {
-    const loadMemberships = async () => {
+    retryPromise(async () => {
       try {
         const {data} = await pubNub.objects.getMemberships({
           uuid: pubNub.getUUID(),
@@ -257,8 +257,7 @@ const HomeScreen = () => {
           });
         });
       } catch (e) {}
-    };
-    loadMemberships().then();
+    }).then();
   }, [pubNub, realm]);
 
   return (

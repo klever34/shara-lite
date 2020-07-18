@@ -54,7 +54,8 @@ export const retryPromise = (
     {forever: true},
   );
 };
-const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
+
 export const decrypt = (encryptedText: string) => {
+  const cryptr = new Cryptr(Config.PUBNUB_USER_CRYPT_KEY);
   return cryptr.decrypt(encryptedText);
 };
