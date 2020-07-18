@@ -92,7 +92,7 @@ const CustomersTab = () => {
         data={myCustomers}
         renderItem={renderCustomerListItem}
         ListHeaderComponent={renderCustomerListHeader}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item) => `${item.id}`}
       />
       <FAButton
         style={styles.fabButton}

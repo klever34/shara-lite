@@ -1,6 +1,6 @@
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
-import React, {useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect} from 'react';
 import {SafeAreaView} from 'react-native';
 import AppMenu from '../../../components/Menu';
 import {applyStyles} from '../../../helpers/utils';
@@ -21,14 +21,20 @@ const CustomerDetailsTab = createMaterialTopTabNavigator<
   CustomerDetailsParamList
 >();
 
-const CustomerDetails = () => {
+const CustomerDetails = ({route}: {route: any}) => {
   const navigation = useNavigation();
+  const {customer} = route.params;
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <AppMenu options={[]} />,
     });
   }, [navigation]);
+
+  const addCustomerToComponent = useCallback(
+    (Component) => (props: any) => <Component {...props} customer={customer} />,
+    [customer],
+  );
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
@@ -53,9 +59,9 @@ const CustomerDetails = () => {
         />
         <CustomerDetailsTab.Screen
           name="Payments"
-          component={PaymentsTab}
-          options={{title: 'Payments'}}
-        />
+          options={{title: 'Payments'}}>
+          {addCustomerToComponent(PaymentsTab)}
+        </CustomerDetailsTab.Screen>
         <CustomerDetailsTab.Screen
           name="Credit"
           component={CreditsTab}
