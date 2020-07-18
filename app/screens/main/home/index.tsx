@@ -3,14 +3,14 @@ import {SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '../../../styles';
 import ChatListScreen from './ChatListScreen';
-import {getAuthService} from '../../../services';
+import {getApiService, getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../../components/Menu';
 import {applyStyles, decrypt, retryPromise} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/RealmService';
-import {MessageEvent, SignalEvent} from 'pubnub';
+import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
 import Realm from 'realm';
 import CustomersTab from '../customers';
 import BusinessTab from '../business';
@@ -23,11 +23,6 @@ type HomeTabParamList = {
 };
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
-
-type ChannelMetadataCustomFields = {
-  members: string;
-  type: '1-1';
-};
 
 const HomeScreen = () => {
   const navigation = useNavigation();
@@ -76,10 +71,35 @@ const HomeScreen = () => {
     };
   }, [pubNub, realm]);
 
-  const extractMembers = (membersString: string) => {
-    return membersString
-      .split(',')
-      .map((encryptedMember) => decrypt(encryptedMember));
+  const getConversationFromChannelData = async (
+    channel: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
+  ): Promise<IConversation> => {
+    try {
+      const custom = channel.custom as ChannelCustom;
+      let sender: string;
+      let members: string[];
+      if (custom.type === '1-1') {
+        members = custom.members
+          .split(',')
+          .map((encryptedMember) => decrypt(encryptedMember));
+        const user = getAuthService().getUser() as User;
+        sender = members.find((member) => member !== user.mobile) as string;
+      } else {
+        const apiService = getApiService();
+        const groupChatMembers = await apiService.getGroupMembers(custom.id);
+        members = groupChatMembers.map(({user: {mobile}}) => mobile);
+        sender = channel.name ?? '';
+      }
+      return {
+        title: sender,
+        type: custom.type,
+        members,
+        channel: channel.id,
+      };
+    } catch (e) {
+      console.log('getConversationFromChannelData Error: ', e);
+      throw e;
+    }
   };
 
   useEffect(() => {
@@ -109,32 +129,24 @@ const HomeScreen = () => {
                 channel,
                 include: {customFields: true},
               });
-              const customFields = response.data
-                .custom as ChannelMetadataCustomFields;
-              const members = extractMembers(customFields.members);
-              const authService = getAuthService();
-              const user = authService.getUser() as User;
-              let sender = members.find(
-                (member) => member !== user.mobile,
-              ) as string;
-              const contact = realm
-                .objects<IContact>('Contact')
-                .filtered(`mobile = "${sender}"`)[0];
-              if (contact) {
-                sender = contact.fullName;
-              }
+              conversation = await getConversationFromChannelData(
+                response.data,
+              );
               realm.write(() => {
-                if (contact) {
-                  contact.channel = channel;
+                if (conversation.type === '1-1') {
+                  const contact = realm
+                    .objects<IContact>('Contact')
+                    .filtered(`mobile = "${conversation.title}"`)[0];
+                  if (contact) {
+                    conversation.title = contact.fullName;
+                    contact.channel = conversation.channel;
+                  }
                 }
                 realm.create<IConversation>(
                   'Conversation',
                   {
-                    title: sender,
-                    channel,
+                    ...conversation,
                     lastMessage,
-                    type: customFields.type,
-                    members,
                   },
                   Realm.UpdateMode.Modified,
                 );
@@ -206,7 +218,7 @@ const HomeScreen = () => {
   }, [pubNub, realm]);
 
   useEffect(() => {
-    retryPromise(async () => {
+    (async () => {
       try {
         const {data} = await pubNub.objects.getMemberships({
           uuid: pubNub.getUUID(),
@@ -214,50 +226,31 @@ const HomeScreen = () => {
             customChannelFields: true,
           },
         });
-        const conversations = data.map<IConversation>(({channel}) => {
-          const custom = channel.custom as ChannelMetadataCustomFields;
-          const members = extractMembers(custom.members);
-          const user = getAuthService().getUser() as User;
-
-          let sender: string;
-          if (custom.type === '1-1') {
-            sender = members.find((member) => member !== user.mobile) as string;
-          } else {
-            sender = channel.name ?? '';
-          }
-          return {
-            title: sender,
-            type: custom.type,
-            members,
-            channel: channel.id,
-          };
-        });
-        realm.write(() => {
-          conversations.forEach((conversation) => {
-            let title: string = conversation.title;
+        realm.write(async () => {
+          for (let i = 0; i < data.length; i += 1) {
+            const {channel} = data[i];
+            const conversation = await getConversationFromChannelData(channel);
             if (conversation.type === '1-1') {
               const contact = realm
                 .objects<IContact>('Contact')
                 .filtered(`mobile = "${conversation.title}"`)[0];
               if (contact) {
-                title = contact.fullName;
-              }
-              if (contact) {
+                conversation.title = contact.fullName;
                 contact.channel = conversation.channel;
               }
             }
             realm.create<IConversation>(
               'Conversation',
-              {
-                ...conversation,
-                title,
-              },
+              conversation,
               Realm.UpdateMode.Modified,
             );
-          });
+          }
         });
-      } catch (e) {}
-    }).then();
+      } catch (e) {
+        console.log('Error: ', e);
+        throw e;
+      }
+    })().then();
   }, [pubNub, realm]);
 
   return (

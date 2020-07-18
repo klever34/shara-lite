@@ -4,7 +4,7 @@ export interface IConversation {
   channel: string;
   title: string;
   lastMessage?: IMessage;
-  type: '1-1';
+  type: '1-1' | 'group';
   members: string[];
 }
 

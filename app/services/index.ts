@@ -21,7 +21,7 @@ export const getApiService = () => {
   if (!apiService) {
     apiService = new ApiService();
   }
-  return apiService;
+  return apiService as IApiService;
 };
 
 export const getRealmService = () => {

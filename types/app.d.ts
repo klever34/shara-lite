@@ -8,6 +8,31 @@ type User = {
   updated_at: string;
 };
 
+type GroupChatMember = {
+  id: number;
+  user_id: number;
+  group_chat_id: number;
+  is_admin: boolean;
+  created_at: string;
+  updated_at: string;
+  is_creator: boolean;
+  user: User;
+};
+
+type OneOnOneChannelCustom = {
+  type: '1-1';
+  members: string;
+};
+
+type GroupChannelCustom = {
+  type: 'group';
+  id: number;
+  creatorId: number;
+  creatorMobile: string;
+};
+
+type ChannelCustom = OneOnOneChannelCustom | GroupChannelCustom;
+
 type PushNotificationToken = {
   token: string;
   os: string;

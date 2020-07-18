@@ -33,7 +33,7 @@ export const handleFetchErrors = async <T extends any>(
       new Error(jsonResponse.mesage || jsonResponse.message),
     );
   }
-  return response.json();
+  return (await response.json()) as Promise<T>;
 };
 
 export const numberWithCommas = (x: number) =>
@@ -41,8 +41,9 @@ export const numberWithCommas = (x: number) =>
 
 export const retryPromise = (
   promiseFn: () => Promise<any>,
-  predicate: (error: any) => boolean = () => true,
+  options: {predicate?: (error: any) => boolean} = {},
 ) => {
+  const {predicate = () => true, ...restOptions} = options;
   return promiseRetry(
     (retry) => {
       return promiseFn().catch((error) => {
@@ -51,7 +52,7 @@ export const retryPromise = (
         }
       });
     },
-    {forever: true},
+    {forever: true, ...restOptions},
   );
 };
 
