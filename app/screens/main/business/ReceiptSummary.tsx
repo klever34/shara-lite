@@ -12,7 +12,6 @@ import {
   FlatList,
   Modal,
   Platform,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -28,6 +27,9 @@ import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import Receipts from './Receipts';
+import {savePayment} from '../../../services/PaymentService';
+import {useRealm} from '../../../services/realm';
+import {ICustomer} from '../../../models';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -145,6 +147,8 @@ const ReceiptSummary = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ReceiptSummary'>) => {
   const navigation = useNavigation();
+  const realm = useRealm();
+
   const {customer: customerProps, products} = route.params;
   const tax = 0;
 
@@ -157,21 +161,24 @@ const ReceiptSummary = ({
 
   const creditAmount = totalAmount - amountPaid;
 
-  const [customer, setCustomer] = useState<Customer>(
+  const [customer, setCustomer] = useState<Customer | ICustomer>(
     customerProps || ({} as Customer),
   );
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState<boolean>(
     false,
   );
 
-  const handleCustomerSelect = useCallback(({customer}) => {
-    setCustomer(customer);
-    handleToggleCustomerModal();
-  }, []);
-
   const handleToggleCustomerModal = useCallback(() => {
     setIsCustomerModalOpen((isNodalOpen) => !isNodalOpen);
   }, []);
+
+  const handleCustomerSelect = useCallback(
+    ({customer}) => {
+      setCustomer(customer);
+      handleToggleCustomerModal();
+    },
+    [setCustomer, handleToggleCustomerModal],
+  );
 
   const ref = useRef<any>(null);
 
@@ -203,7 +210,7 @@ const ReceiptSummary = ({
   }, []);
 
   const handleCancel = useCallback(() => {
-    navigation.navigate('Receipts');
+    navigation.navigate('NewReceipt');
   }, [navigation]);
 
   const handleAddProduct = useCallback(() => {
@@ -226,18 +233,30 @@ const ReceiptSummary = ({
     setAmountPaid(parseFloat(value.toString().replace(/,/g, '')));
   }, []);
 
-  const handleFinish = useCallback(() => {
+  const handleFinish = () => {
     setIsSubmitting(true);
+    savePayment({
+      realm,
+      customer,
+      type: paymentType,
+      amountPaid,
+      totalAmount,
+      creditAmount,
+      tax,
+      products,
+    });
     setTimeout(() => {
       setIsSubmitting(false);
       saveSign();
       navigation.navigate('StatusModal', {
         status: 'success',
         onClick: handleCancel,
-        text: `You have successfully issued a receipt to ${customer.name}`,
+        text: `You have successfully issued a receipt ${
+          customer.name ? `to ${customer.name}` : ''
+        }`,
       });
     }, 2000);
-  }, [saveSign, navigation, handleCancel, customer.name]);
+  };
 
   useEffect(() => {
     const totalAmount = products

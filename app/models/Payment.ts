@@ -1,8 +1,10 @@
+import {ICustomer} from './Customer';
+
 export interface IPayment {
   id: string;
-  customer_name: string;
-  customer_mobile: string;
-  customer: object;
+  customer_name?: string;
+  customer_mobile?: string;
+  customer?: ICustomer;
   type: string;
   amount_paid: number;
   total_amount: number;
@@ -10,6 +12,8 @@ export interface IPayment {
   credit_amount: number;
   created_at: Date;
 }
+
+export const modelName = 'Payment';
 
 export class Payment implements Partial<IPayment> {
   public static schema: Realm.ObjectSchema = {

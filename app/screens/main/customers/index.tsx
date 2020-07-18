@@ -1,7 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {useRealm} from '../../../services/realm';
-import {ICustomer} from '../../../models';
 import {
   FlatList,
   Platform,
@@ -16,6 +15,7 @@ import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
 import {getCustomers} from '../../../services/CustomerService';
+import {ICustomer} from '../../../models';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
@@ -23,7 +23,7 @@ const CustomersTab = () => {
   const customers = getCustomers({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [myCustomers, setMyCustomers] = useState(customers);
+  const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
 
   const handleSelectCustomer = useCallback(
     (item?: Customer) => {
@@ -39,7 +39,7 @@ const CustomersTab = () => {
       const sort = (item: Customer, text: string) => {
         return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
       };
-      var ac = customers.filter((item: Customer) => {
+      const ac = customers.filter((item: Customer) => {
         return sort(item, searchedText);
       });
       setMyCustomers(ac);

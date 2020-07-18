@@ -1,10 +1,8 @@
 import React, {useCallback, useState} from 'react';
 import {SafeAreaView, Text, TextInput, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
-import {UpdateMode} from 'realm';
 import {Button} from '../../../components/Button';
 import {useRealm} from '../../../services/realm';
-import {ICustomer} from '../../../models';
 import {generateUniqueId} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {saveCustomer} from '../../../services/CustomerService';

@@ -24,10 +24,10 @@ type Product = {
   id: string;
   name: string;
   weight: string;
-  price?: string;
+  price: string;
 };
 
-type ReceiptItem = Product & {quantity?: string};
+type ReceiptItem = Product & {quantity: string};
 
 type Customer = {
   id: string;

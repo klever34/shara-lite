@@ -7,27 +7,24 @@ import {
   Text,
   TextInput,
   View,
-  Modal,
 } from 'react-native';
 import {Button} from '../../../components/Button';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
 import {products} from '../data.json';
-import {MainStackParamList} from '..';
-import {StackScreenProps} from '@react-navigation/stack';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import {applyStyles} from '../../../helpers/utils';
-import Receipts from './Receipts';
 
 type RecentProductItemProps = {
   item: Product;
 };
 
-const NewReceipt = ({
-  route,
-}: StackScreenProps<MainStackParamList, 'NewReceipt'>) => {
+const NewReceipt = () => {
   const navigation = useNavigation();
+  //@ts-ignore
+  global.startTime = new Date().getTime();
+
   const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
     null,
   );

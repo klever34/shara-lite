@@ -8,19 +8,15 @@ import {
   View,
 } from 'react-native';
 import Icon from '../../../components/Icon';
-import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {useRealm} from '../../../services/realm';
-import {ICustomer} from '../../../models';
 import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
 import {Button} from '../../../components';
 import {getCustomers} from '../../../services/CustomerService';
 
-const Receipts = (props) => {
+const Receipts = (props: any) => {
   const {onCustomerSelect, onModalClose} = props;
-  //@ts-ignore
-  global.startTime = new Date().getTime();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
 
@@ -54,7 +50,7 @@ const Receipts = (props) => {
 
   const handleCloseModal = useCallback(() => {
     onModalClose();
-  }, []);
+  }, [onModalClose]);
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {

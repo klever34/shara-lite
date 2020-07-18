@@ -1,8 +1,8 @@
 import {ICustomer, modelName} from '../models';
-import Realm, {Results, UpdateMode} from 'realm';
+import Realm, {UpdateMode} from 'realm';
 
-export const getCustomers = ({realm}: {realm: Realm}): Results<ICustomer> => {
-  return realm.objects<ICustomer>(modelName);
+export const getCustomers = ({realm}: {realm: Realm}): ICustomer[] => {
+  return (realm.objects<ICustomer>(modelName) as unknown) as ICustomer[];
 };
 
 export const saveCustomer = ({
