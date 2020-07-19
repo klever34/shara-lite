@@ -31,8 +31,8 @@ export const PasswordField = (props: Props) => {
           {...rest}
         />
       </View>
-      <View style={styles.toggleButton}>
-        <TouchableOpacity onPress={toggleSecure}>
+      <View style={styles.toggleButtonContainer}>
+        <TouchableOpacity style={styles.toggleButton} onPress={toggleSecure}>
           <Icon
             type="octicons"
             size={16}
@@ -57,9 +57,12 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Regular',
     borderColor: colors['gray-200'],
   },
-  toggleButton: {
-    top: 10,
+  toggleButtonContainer: {
+    top: 16,
     right: 8,
     position: 'absolute',
+  },
+  toggleButton: {
+    height: 45,
   },
 });
