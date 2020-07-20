@@ -17,6 +17,7 @@ import {
   Text,
   TextInput,
   View,
+  KeyboardAvoidingView,
 } from 'react-native';
 import SignatureCapture from 'react-native-signature-capture';
 import {MainStackParamList} from '..';
@@ -277,197 +278,195 @@ const ReceiptSummary = ({
   );
 
   return (
-    <ScrollView style={styles.container} nestedScrollEnabled>
-      <View>
-        <Text style={styles.sectionTitle}>Products</Text>
+    <KeyboardAvoidingView style={styles.container}>
+      <ScrollView style={styles.scrollView} nestedScrollEnabled>
         <View>
-          <FlatList
-            data={products}
-            nestedScrollEnabled
-            renderItem={renderSummaryItem}
-            keyExtractor={(item) => item.id}
-            ListHeaderComponent={SummaryTableHeader}
-          />
-          <View style={styles.totalSectionContainer}>
-            <View style={styles.totalSection}>
-              <View
-                style={applyStyles(
-                  'pb-sm',
-                  'flex-row',
-                  'items-center',
-                  'justify-space-between',
-                )}>
-                <Text
+          <Text style={styles.sectionTitle}>Products</Text>
+          <View>
+            <FlatList
+              data={products}
+              nestedScrollEnabled
+              renderItem={renderSummaryItem}
+              keyExtractor={(item) => item.id}
+              ListHeaderComponent={SummaryTableHeader}
+            />
+            <View style={styles.totalSectionContainer}>
+              <View style={styles.totalSection}>
+                <View
                   style={applyStyles(
-                    {
-                      color: colors['gray-300'],
-                    },
-                    'text-400',
+                    'pb-sm',
+                    'flex-row',
+                    'items-center',
+                    'justify-space-between',
                   )}>
-                  Tax:
-                </Text>
-                <Text>{tax}</Text>
-              </View>
-              <View
-                style={applyStyles(
-                  'flex-row',
-                  'items-center',
-                  'justify-space-between',
-                )}>
-                <Text
+                  <Text
+                    style={applyStyles(
+                      {
+                        color: colors['gray-300'],
+                      },
+                      'text-400',
+                    )}>
+                    Tax:
+                  </Text>
+                  <Text>{tax}</Text>
+                </View>
+                <View
                   style={applyStyles(
-                    {
-                      color: colors['gray-300'],
-                    },
-                    'text-400',
+                    'flex-row',
+                    'items-center',
+                    'justify-space-between',
                   )}>
-                  Total:
-                </Text>
-                <Text style={styles.totalAmountText}>
-                  &#8358;{numberWithCommas(totalAmount)}
-                </Text>
+                  <Text
+                    style={applyStyles(
+                      {
+                        color: colors['gray-300'],
+                      },
+                      'text-400',
+                    )}>
+                    Total:
+                  </Text>
+                  <Text style={styles.totalAmountText}>
+                    &#8358;{numberWithCommas(totalAmount)}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-          <Touchable onPress={handleAddProduct}>
-            <View style={styles.addProductButton}>
-              <Icon
-                size={24}
-                type="ionicons"
-                name={
-                  Platform.select({
-                    android: 'md-add',
-                    ios: 'ios-add',
-                  }) as string
-                }
-                color={colors.primary}
-              />
-              <Text style={styles.addProductButtonText}>Add a product</Text>
-            </View>
-          </Touchable>
-        </View>
-      </View>
-      <View>
-        <Text style={styles.sectionTitle}>Customer Details</Text>
-        <View>
-          <TextInput
-            style={styles.input}
-            value={customer.mobile}
-            keyboardType="phone-pad"
-            placeholder="Customer Phone Number"
-            onChangeText={(item) => handleUpdateCustomer(item, 'mobile')}
-          />
-          <TextInput
-            style={styles.input}
-            value={customer.name}
-            placeholder="Customer Name"
-            onChangeText={(item) => handleUpdateCustomer(item, 'name')}
-          />
-        </View>
-        <View style={styles.selectCustomerButton}>
-          <Button
-            title="Select customer"
-            variantColor="red"
-            onPress={handleToggleCustomerModal}
-            style={styles.actionButton}
-          />
-        </View>
-        <Modal
-          animationType="slide"
-          transparent={false}
-          visible={isCustomerModalOpen}>
-          <Receipts
-            onCustomerSelect={handleCustomerSelect}
-            onModalClose={handleToggleCustomerModal}
-          />
-        </Modal>
-        <View style={styles.signatureContainer}>
-          <SignatureCapture
-            ref={ref}
-            showBorder={false}
-            viewMode={'portrait'}
-            showTitleLabel={false}
-            onSaveEvent={onSaveEvent}
-            onDragEvent={onDragEvent}
-            showNativeButtons={false}
-            saveImageFileInExtStorage={false}
-            style={applyStyles('flex-1', styles.customerSignature)}
-          />
-        </View>
-        <Text style={applyStyles(styles.customerSignatureText, 'text-500')}>
-          Customer Signature
-        </Text>
-        <View
-          style={applyStyles(
-            'flex-1',
-            'flex-row',
-            'justify-center',
-            'item-center',
-          )}>
-          {!!signature && (
-            <Touchable
-              style={styles.buttonStyle}
-              onPress={() => {
-                resetSign();
-              }}>
-              <Text style={applyStyles(styles.buttonTextStyle, 'text-400')}>
-                Clear
-              </Text>
+            <Touchable onPress={handleAddProduct}>
+              <View style={styles.addProductButton}>
+                <Icon
+                  size={24}
+                  type="ionicons"
+                  name={
+                    Platform.select({
+                      android: 'md-add',
+                      ios: 'ios-add',
+                    }) as string
+                  }
+                  color={colors.primary}
+                />
+                <Text style={styles.addProductButtonText}>Add a product</Text>
+              </View>
             </Touchable>
+          </View>
+        </View>
+        <View>
+          <Text style={styles.sectionTitle}>Customer Details</Text>
+          <View>
+            <TextInput
+              style={styles.input}
+              value={customer.mobile}
+              keyboardType="phone-pad"
+              placeholder="Customer Phone Number"
+              onChangeText={(item) => handleUpdateCustomer(item, 'mobile')}
+            />
+            <TextInput
+              style={styles.input}
+              value={customer.name}
+              placeholder="Customer Name"
+              onChangeText={(item) => handleUpdateCustomer(item, 'name')}
+            />
+          </View>
+          <View style={styles.selectCustomerButton}>
+            <Button
+              variantColor="red"
+              title="Select customer"
+              style={applyStyles('w-full')}
+              onPress={handleToggleCustomerModal}
+            />
+          </View>
+          <Modal
+            animationType="slide"
+            transparent={false}
+            visible={isCustomerModalOpen}>
+            <Receipts
+              onCustomerSelect={handleCustomerSelect}
+              onModalClose={handleToggleCustomerModal}
+            />
+          </Modal>
+          <View style={styles.signatureContainer}>
+            <SignatureCapture
+              ref={ref}
+              showBorder={false}
+              viewMode={'portrait'}
+              showTitleLabel={false}
+              onSaveEvent={onSaveEvent}
+              onDragEvent={onDragEvent}
+              showNativeButtons={false}
+              saveImageFileInExtStorage={false}
+              style={applyStyles('flex-1', styles.customerSignature)}
+            />
+          </View>
+          <Text style={applyStyles(styles.customerSignatureText, 'text-500')}>
+            Customer Signature
+          </Text>
+          <View
+            style={applyStyles(
+              'flex-1',
+              'flex-row',
+              'justify-center',
+              'item-center',
+            )}>
+            {!!signature && (
+              <Touchable
+                style={styles.buttonStyle}
+                onPress={() => {
+                  resetSign();
+                }}>
+                <Text style={applyStyles(styles.buttonTextStyle, 'text-400')}>
+                  Clear
+                </Text>
+              </Touchable>
+            )}
+          </View>
+        </View>
+        <View style={applyStyles({marginTop: 40, marginBottom: 100})}>
+          <View style={styles.pickerContainer}>
+            <Text style={applyStyles('text-400', styles.pickerLabel)}>
+              Payment method
+            </Text>
+            <Picker
+              mode="dropdown"
+              style={styles.picker}
+              prompt="Payment Method"
+              itemStyle={styles.pickerItem}
+              selectedValue={paymentType}
+              onValueChange={(itemValue) => handlePaymentTypeChange(itemValue)}>
+              {paymentTypes.map((type: string, index) => (
+                <Picker.Item label={type} value={type} key={index} />
+              ))}
+            </Picker>
+          </View>
+          <View style={applyStyles('flex-row', 'items-center')}>
+            <View style={styles.textInputIcon}>
+              <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
+                &#8358;
+              </Text>
+            </View>
+            <TextInput
+              style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
+              keyboardType="number-pad"
+              placeholder="Amount Paid"
+              value={numberWithCommas(amountPaid)}
+              placeholderTextColor={colors['gray-50']}
+              onChangeText={(text) => handleAmountPaidChange(text)}
+            />
+          </View>
+          {creditAmount > 0 && (
+            <View>
+              <Text style={applyStyles('text-400', styles.pickerLabel)}>
+                Credit issued
+              </Text>
+              <Text style={styles.creditText}>
+                &#8358;{numberWithCommas(creditAmount)}
+              </Text>
+            </View>
           )}
         </View>
-      </View>
-      <View style={applyStyles({marginTop: 40})}>
-        <View style={styles.pickerContainer}>
-          <Text style={applyStyles('text-400', styles.pickerLabel)}>
-            Payment method
-          </Text>
-          <Picker
-            mode="dropdown"
-            style={styles.picker}
-            prompt="Payment Method"
-            itemStyle={styles.pickerItem}
-            selectedValue={paymentType}
-            onValueChange={(itemValue) => handlePaymentTypeChange(itemValue)}>
-            {paymentTypes.map((paymentType: string, index) => (
-              <Picker.Item
-                label={paymentType}
-                value={paymentType}
-                key={index}
-              />
-            ))}
-          </Picker>
-        </View>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <View style={styles.textInputIcon}>
-            <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-              &#8358;
-            </Text>
-          </View>
-          <TextInput
-            style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
-            keyboardType="number-pad"
-            placeholder="Amount Paid"
-            value={numberWithCommas(amountPaid)}
-            placeholderTextColor={colors['gray-50']}
-            onChangeText={(text) => handleAmountPaidChange(text)}
-          />
-        </View>
-        {creditAmount > 0 && (
-          <View>
-            <Text style={applyStyles('text-400', styles.pickerLabel)}>
-              Credit issued
-            </Text>
-            <Text style={styles.creditText}>
-              &#8358;{numberWithCommas(creditAmount)}
-            </Text>
-          </View>
-        )}
-      </View>
+      </ScrollView>
       <View style={styles.actionButtons}>
         <Button
           title="Cancel"
-          variantColor="white"
+          variantColor="clear"
           onPress={handleCancel}
           style={styles.actionButton}
         />
@@ -479,16 +478,18 @@ const ReceiptSummary = ({
           style={styles.actionButton}
         />
       </View>
-    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.white,
+  },
+  scrollView: {
     paddingVertical: 24,
     paddingHorizontal: 16,
-    backgroundColor: colors.white,
   },
   sectionTitle: {
     fontSize: 18,
@@ -529,7 +530,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Regular',
   },
   signatureContainer: {
-    height: 200,
+    height: 100,
     width: '100%',
     borderWidth: 1,
     borderRadius: 8,
@@ -546,10 +547,10 @@ const styles = StyleSheet.create({
     color: colors['gray-300'],
   },
   actionButtons: {
-    marginTop: 24,
-    marginBottom: 32,
+    paddingVertical: 12,
     alignItems: 'center',
     flexDirection: 'row',
+    paddingHorizontal: 16,
     justifyContent: 'space-between',
   },
   actionButton: {

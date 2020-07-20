@@ -14,7 +14,7 @@ type CustomerDetailsParamList = {
   Details: undefined;
   Orders: undefined;
   Payments: undefined;
-  Credit: undefined;
+  CreditsTab: undefined;
 };
 
 const CustomerDetailsTab = createMaterialTopTabNavigator<
@@ -62,7 +62,9 @@ const CustomerDetails = ({route}: {route: any}) => {
           options={{title: 'Payments'}}>
           {addCustomerToComponent(PaymentsTab)}
         </CustomerDetailsTab.Screen>
-        <CustomerDetailsTab.Screen name="Credit" options={{title: 'Credit'}}>
+        <CustomerDetailsTab.Screen
+          name="CreditsTab"
+          options={{title: 'Credit'}}>
           {addCustomerToComponent(CreditsTab)}
         </CustomerDetailsTab.Screen>
       </CustomerDetailsTab.Navigator>

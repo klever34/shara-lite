@@ -21,7 +21,7 @@ interface variantColorHexColorOptions {
 interface ButtonProps extends BaseButtonProps {
   style?: ViewStyle;
   isLoading?: boolean;
-  variantColor?: 'red' | 'white';
+  variantColor?: 'red' | 'white' | 'clear';
 }
 
 const styles = StyleSheet.create({
@@ -37,6 +37,10 @@ const styles = StyleSheet.create({
   },
   redButton: {
     backgroundColor: colors.primary,
+  },
+  clearButton: {
+    elevation: 0,
+    backgroundColor: colors.white,
   },
   text: {
     fontSize: 16,
@@ -67,6 +71,10 @@ export const Button = ({
     red: {
       button: styles.redButton,
       text: styles.redButtonText,
+    },
+    clear: {
+      button: styles.clearButton,
+      text: styles.whiteButtonText,
     },
   };
 
