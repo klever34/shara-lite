@@ -9,14 +9,11 @@ type PlaceholderImageProps = {
 };
 
 const PlaceholderImage = ({text}: PlaceholderImageProps) => {
-  if (!text) {
-    return null;
-  }
   let displayLetter: string;
-  if (Number(text[0])) {
-    displayLetter = '#';
-  } else {
+  if (text && text[0].match(/[A-Za-z]/)) {
     displayLetter = capitalize(text[0]);
+  } else {
+    displayLetter = '#';
   }
   return (
     <View style={styles.container}>
