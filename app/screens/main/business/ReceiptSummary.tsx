@@ -1,36 +1,29 @@
+import {Picker} from '@react-native-community/picker';
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {Picker} from '@react-native-community/picker';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
+  KeyboardAvoidingView,
   Modal,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
-  KeyboardAvoidingView,
 } from 'react-native';
-import SignatureCapture from 'react-native-signature-capture';
 import {MainStackParamList} from '..';
 import {Button} from '../../../components/Button';
+import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {colors} from '../../../styles';
-import Receipts from './Receipts';
+import {ICustomer} from '../../../models';
 import {savePayment} from '../../../services/PaymentService';
 import {useRealm} from '../../../services/realm';
-import {ICustomer} from '../../../models';
+import {colors} from '../../../styles';
+import Receipts from './Receipts';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -154,7 +147,6 @@ const ReceiptSummary = ({
   const tax = 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [signature, setSignature] = useState(false);
 
   const [paymentType, setPaymentType] = useState(paymentTypes[0]);
   const [amountPaid, setAmountPaid] = useState(0);
@@ -174,41 +166,18 @@ const ReceiptSummary = ({
   }, []);
 
   const handleCustomerSelect = useCallback(
-    ({customer}) => {
-      setCustomer(customer);
+    ({customerData}) => {
+      setCustomer(customerData);
       handleToggleCustomerModal();
     },
     [setCustomer, handleToggleCustomerModal],
   );
-
-  const ref = useRef<any>(null);
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <AppMenu options={[]} />,
     });
   }, [navigation]);
-
-  const saveSign = useCallback(() => {
-    ref.current.saveImage();
-  }, []);
-
-  const resetSign = useCallback(() => {
-    ref.current.resetImage();
-    setSignature(false);
-  }, []);
-
-  const onSaveEvent = useCallback((result: any) => {
-    //result.encoded - for the base64 encoded png
-    //result.pathName - for the file path name
-    console.log(result);
-  }, []);
-
-  const onDragEvent = useCallback(() => {
-    // This callback will be called when the user enters signature
-    console.log('dragged');
-    setSignature(true);
-  }, []);
 
   const handleCancel = useCallback(() => {
     navigation.navigate('NewReceipt');
@@ -248,19 +217,18 @@ const ReceiptSummary = ({
     });
     setTimeout(() => {
       setIsSubmitting(false);
-      saveSign();
       navigation.navigate('StatusModal', {
         status: 'success',
         onClick: handleCancel,
-        text: `You have successfully issued a receipt ${
-          customer.name ? `to ${customer.name}` : ''
-        }`,
+        text: `You have successfully issued a receipt for N${numberWithCommas(
+          amountPaid,
+        )} in Cash and N${numberWithCommas(creditAmount)} in Credit`,
       });
     }, 2000);
   };
 
   useEffect(() => {
-    const totalAmount = products
+    const total = products
       .map(({quantity, price}) => {
         const itemPrice = price ? parseFloat(price) : 0;
         const itemQuantity = quantity ? parseFloat(quantity) : 0;
@@ -268,8 +236,8 @@ const ReceiptSummary = ({
       })
       .reduce((acc, curr) => acc + curr, 0);
 
-    setTotalAmount(totalAmount);
-    setAmountPaid(totalAmount);
+    setTotalAmount(total);
+    setAmountPaid(total);
   }, [products]);
 
   const renderSummaryItem = useCallback(
@@ -352,17 +320,17 @@ const ReceiptSummary = ({
         <View>
           <Text style={styles.sectionTitle}>Customer Details</Text>
           <View>
-            <TextInput
-              style={styles.input}
+            <FloatingLabelInput
+              containerStyle={styles.input}
               value={customer.mobile}
               keyboardType="phone-pad"
-              placeholder="Customer Phone Number"
+              label="Customer Phone Number"
               onChangeText={(item) => handleUpdateCustomer(item, 'mobile')}
             />
-            <TextInput
-              style={styles.input}
+            <FloatingLabelInput
+              containerStyle={styles.input}
               value={customer.name}
-              placeholder="Customer Name"
+              label="Customer Name"
               onChangeText={(item) => handleUpdateCustomer(item, 'name')}
             />
           </View>
@@ -383,41 +351,6 @@ const ReceiptSummary = ({
               onModalClose={handleToggleCustomerModal}
             />
           </Modal>
-          <View style={styles.signatureContainer}>
-            <SignatureCapture
-              ref={ref}
-              showBorder={false}
-              viewMode={'portrait'}
-              showTitleLabel={false}
-              onSaveEvent={onSaveEvent}
-              onDragEvent={onDragEvent}
-              showNativeButtons={false}
-              saveImageFileInExtStorage={false}
-              style={applyStyles('flex-1', styles.customerSignature)}
-            />
-          </View>
-          <Text style={applyStyles(styles.customerSignatureText, 'text-500')}>
-            Customer Signature
-          </Text>
-          <View
-            style={applyStyles(
-              'flex-1',
-              'flex-row',
-              'justify-center',
-              'item-center',
-            )}>
-            {!!signature && (
-              <Touchable
-                style={styles.buttonStyle}
-                onPress={() => {
-                  resetSign();
-                }}>
-                <Text style={applyStyles(styles.buttonTextStyle, 'text-400')}>
-                  Clear
-                </Text>
-              </Touchable>
-            )}
-          </View>
         </View>
         <View style={applyStyles({marginTop: 40, marginBottom: 100})}>
           <View style={styles.pickerContainer}>
@@ -437,29 +370,37 @@ const ReceiptSummary = ({
             </Picker>
           </View>
           <View style={applyStyles('flex-row', 'items-center')}>
-            <View style={styles.textInputIcon}>
-              <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-                &#8358;
-              </Text>
-            </View>
-            <TextInput
-              style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
+            <FloatingLabelInput
+              label="Amount Paid"
               keyboardType="number-pad"
-              placeholder="Amount Paid"
+              containerStyle={applyStyles({marginBottom: 32})}
               value={numberWithCommas(amountPaid)}
-              placeholderTextColor={colors['gray-50']}
               onChangeText={(text) => handleAmountPaidChange(text)}
+              leftIcon={
+                <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
+                  &#8358;
+                </Text>
+              }
             />
           </View>
           {creditAmount > 0 && (
-            <View>
-              <Text style={applyStyles('text-400', styles.pickerLabel)}>
-                Credit issued
-              </Text>
-              <Text style={styles.creditText}>
-                &#8358;{numberWithCommas(creditAmount)}
-              </Text>
-            </View>
+            <FloatingLabelInput
+              editable={false}
+              label="Credit remaining"
+              keyboardType="number-pad"
+              inputStyle={applyStyles({color: colors.primary})}
+              value={numberWithCommas(creditAmount)}
+              leftIcon={
+                <Text
+                  style={applyStyles(
+                    styles.textInputIconText,
+                    {color: colors.primary},
+                    'text-400',
+                  )}>
+                  &#8358;
+                </Text>
+              }
+            />
           )}
         </View>
       </ScrollView>
@@ -557,12 +498,7 @@ const styles = StyleSheet.create({
     width: '48%',
   },
   input: {
-    fontSize: 16,
     marginBottom: 16,
-    borderBottomWidth: 1,
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-    borderBottomColor: colors['gray-700'],
   },
   buttonStyle: {
     padding: 12,
@@ -599,7 +535,7 @@ const styles = StyleSheet.create({
   },
   creditText: {
     marginTop: 3,
-    color: colors['primary'],
+    color: colors.primary,
   },
 });
 

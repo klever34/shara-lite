@@ -16,6 +16,7 @@ import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
 import {getCustomers} from '../../../services/CustomerService';
 import {ICustomer} from '../../../models';
+import EmptyState from '../../../components/EmptyState';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
@@ -70,30 +71,40 @@ const CustomersTab = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon
-            size={24}
-            style={styles.searchInputIcon}
-            type="ionicons"
-            name="ios-search"
-            color={colors.primary}
+      {myCustomers.length ? (
+        <>
+          <View style={styles.searchContainer}>
+            <View style={styles.searchInputContainer}>
+              <Icon
+                size={24}
+                style={styles.searchInputIcon}
+                type="ionicons"
+                name="ios-search"
+                color={colors.primary}
+              />
+              <TextInput
+                value={searchInputValue}
+                style={styles.searchInput}
+                placeholder="Search Customer"
+                onChangeText={handleCustomerSearch}
+                placeholderTextColor={colors['gray-50']}
+              />
+            </View>
+          </View>
+          <FlatList
+            data={myCustomers}
+            renderItem={renderCustomerListItem}
+            ListHeaderComponent={renderCustomerListHeader}
+            keyExtractor={(item) => `${item.id}`}
           />
-          <TextInput
-            value={searchInputValue}
-            style={styles.searchInput}
-            placeholder="Search Customer"
-            onChangeText={handleCustomerSearch}
-            placeholderTextColor={colors['gray-50']}
-          />
-        </View>
-      </View>
-      <FlatList
-        data={myCustomers}
-        renderItem={renderCustomerListItem}
-        ListHeaderComponent={renderCustomerListHeader}
-        keyExtractor={(item) => `${item.id}`}
-      />
+        </>
+      ) : (
+        <EmptyState
+          heading="Add a customer"
+          source={require('../../../assets/images/coming-soon.png')}
+          text="Click the button below to add a new customer"
+        />
+      )}
       <FAButton
         style={styles.fabButton}
         onPress={() => navigation.navigate('AddCustomer')}>

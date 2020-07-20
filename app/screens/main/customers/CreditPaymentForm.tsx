@@ -1,9 +1,9 @@
-import React, {useState, useCallback} from 'react';
-import {View, TextInput, StyleSheet, Text} from 'react-native';
 import {Picker} from '@react-native-community/picker';
-import {colors} from '../../../styles';
-import {Button} from '../../../components';
+import React, {useCallback, useState} from 'react';
+import {StyleSheet, Text, View} from 'react-native';
+import {Button, FloatingLabelInput} from '../../../components';
 import {applyStyles} from '../../../helpers/utils';
+import {colors} from '../../../styles';
 
 type Payload = {
   amount: string;
@@ -43,18 +43,17 @@ const CreditPaymentForm = (props: Props) => {
   return (
     <View>
       <View style={applyStyles('flex-row', 'items-center')}>
-        <View style={styles.textInputIcon}>
-          <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-            &#8358;
-          </Text>
-        </View>
-        <TextInput
+        <FloatingLabelInput
+          label="Amount Paid"
           value={payload.amount}
           keyboardType="number-pad"
-          placeholder="Amount Paid"
-          placeholderTextColor={colors['gray-50']}
+          containerStyle={styles.input}
           onChangeText={(text) => handleChange(text, 'amount')}
-          style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
+          leftIcon={
+            <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
+              &#8358;
+            </Text>
+          }
         />
       </View>
       <View style={styles.pickerContainer}>
@@ -86,12 +85,7 @@ const CreditPaymentForm = (props: Props) => {
 
 const styles = StyleSheet.create({
   input: {
-    fontSize: 18,
-    width: '100%',
     marginBottom: 24,
-    borderBottomWidth: 1,
-    fontFamily: 'Rubik-Regular',
-    borderColor: colors['gray-200'],
   },
   title: {
     fontSize: 18,
@@ -114,10 +108,6 @@ const styles = StyleSheet.create({
   pickerItem: {
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-  },
-  textInputIcon: {
-    top: 14,
-    position: 'absolute',
   },
   textInputIconText: {
     fontSize: 16,

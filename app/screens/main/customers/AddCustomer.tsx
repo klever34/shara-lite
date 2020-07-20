@@ -1,11 +1,18 @@
-import React, {useCallback, useState} from 'react';
-import {SafeAreaView, Text, TextInput, StyleSheet, View} from 'react-native';
 import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useState} from 'react';
+import {
+  KeyboardAvoidingView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {Button} from '../../../components/Button';
-import {useRealm} from '../../../services/realm';
 import {generateUniqueId} from '../../../helpers/utils';
-import {colors} from '../../../styles';
 import {saveCustomer} from '../../../services/CustomerService';
+import {useRealm} from '../../../services/realm';
+import {colors} from '../../../styles';
+import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 
 const AddCustomer = () => {
   const navigation = useNavigation();
@@ -41,25 +48,23 @@ const AddCustomer = () => {
   }, [navigation, name, mobile, realm]);
 
   return (
-    <SafeAreaView style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <Text style={styles.title}>Customer Details</Text>
       <View>
         <View style={styles.formInputs}>
-          <TextInput
+          <FloatingLabelInput
             value={name}
-            placeholder="Name"
-            style={styles.input}
+            label="Name"
+            containerStyle={styles.input}
             onChangeText={handleNameChange}
-            placeholderTextColor={colors['gray-50']}
           />
-          <TextInput
+          <FloatingLabelInput
             value={mobile}
-            style={styles.input}
+            label="Phone Number"
             autoCompleteType="tel"
             keyboardType="phone-pad"
-            placeholder="Phone Number"
+            containerStyle={styles.input}
             onChangeText={handleMobileChange}
-            placeholderTextColor={colors['gray-50']}
           />
         </View>
         <Button
@@ -69,7 +74,7 @@ const AddCustomer = () => {
           isLoading={isLoading}
         />
       </View>
-    </SafeAreaView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -84,12 +89,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   input: {
-    fontSize: 18,
-    width: '100%',
     marginBottom: 24,
-    borderBottomWidth: 1,
-    fontFamily: 'Rubik-Regular',
-    borderColor: colors['gray-200'],
   },
   title: {
     fontSize: 18,

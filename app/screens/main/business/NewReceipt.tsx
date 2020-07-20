@@ -1,20 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {Button} from '../../../components/Button';
+import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 import AppMenu from '../../../components/Menu';
+import SearchableDropdown from '../../../components/SearchableDropdown';
 import Touchable from '../../../components/Touchable';
+import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {products} from '../data.json';
-import SearchableDropdown from '../../../components/SearchableDropdown';
-import {applyStyles} from '../../../helpers/utils';
 
 type RecentProductItemProps = {
   item: Product;
@@ -152,59 +146,42 @@ const NewReceipt = () => {
                     style={applyStyles('flex-row', 'items-center', {
                       width: '48%',
                     })}>
-                    <View style={styles.textInputIcon}>
-                      <Text
-                        style={applyStyles(
-                          styles.textInputIconText,
-                          'text-400',
-                        )}>
-                        &#8358;
-                      </Text>
-                    </View>
-                    <TextInput
+                    <FloatingLabelInput
                       value={price}
+                      label="Unit Price"
                       keyboardType="numeric"
-                      placeholder="Unit Price"
                       onChangeText={handlePriceChange}
-                      style={applyStyles(
-                        'flex-1',
-                        'pl-lg',
-                        'text-400',
-                        styles.calculatorSectionInput,
-                      )}
+                      leftIcon={
+                        <Text
+                          style={applyStyles(styles.inputIconText, 'text-400')}>
+                          &#8358;
+                        </Text>
+                      }
                     />
                   </View>
-                  <TextInput
-                    value={quantity}
-                    keyboardType="numeric"
-                    placeholder="Quantity"
-                    onChangeText={handleQuantityChange}
-                    style={applyStyles(
-                      styles.calculatorSectionInput,
-                      'text-400',
-                      {
-                        width: '48%',
-                      },
-                    )}
-                  />
+                  <View
+                    style={applyStyles('text-400', {
+                      width: '48%',
+                    })}>
+                    <FloatingLabelInput
+                      value={quantity}
+                      label="Quantity"
+                      keyboardType="numeric"
+                      onChangeText={handleQuantityChange}
+                    />
+                  </View>
                 </View>
                 <View style={styles.calculatorSectionInputs}>
-                  <View style={styles.textInputIcon}>
-                    <Text
-                      style={applyStyles(styles.textInputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
-                  </View>
-                  <TextInput
-                    keyboardType="numeric"
-                    placeholder="Subtotal"
-                    style={applyStyles(
-                      'flex-1',
-                      'pl-lg',
-                      'text-400',
-                      styles.calculatorSectionInput,
-                    )}
+                  <FloatingLabelInput
+                    label="Subtotal"
                     value={getSubtotal()}
+                    keyboardType="numeric"
+                    leftIcon={
+                      <Text
+                        style={applyStyles(styles.inputIconText, 'text-400')}>
+                        &#8358;
+                      </Text>
+                    }
                   />
                 </View>
               </>
@@ -212,7 +189,7 @@ const NewReceipt = () => {
             <View style={styles.calculatorSectionButtons}>
               <Button
                 title="Done"
-                variantColor="white"
+                variantColor="clear"
                 onPress={handleDone}
                 style={styles.calculatorSectionButton}
               />
@@ -295,11 +272,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  calculatorSectionInput: {
-    fontSize: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-700'],
-  },
   calculatorSectionButtons: {
     marginTop: 8,
     marginBottom: 32,
@@ -310,10 +282,7 @@ const styles = StyleSheet.create({
   calculatorSectionButton: {
     width: '48%',
   },
-  textInputIcon: {
-    position: 'absolute',
-  },
-  textInputIconText: {
+  inputIconText: {
     fontSize: 16,
     color: colors['gray-300'],
   },
