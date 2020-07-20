@@ -1,12 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {
-  KeyboardAvoidingView,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {KeyboardAvoidingView, StyleSheet, Text, View} from 'react-native';
 import {Button} from '../../../components/Button';
 import {generateUniqueId} from '../../../helpers/utils';
 import {saveCustomer} from '../../../services/CustomerService';
