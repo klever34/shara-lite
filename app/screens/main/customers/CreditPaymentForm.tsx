@@ -71,6 +71,7 @@ const CreditPaymentForm = (props: Props) => {
           }>
           <Picker.Item label="Cash" value="Cash" />
           <Picker.Item label="Bank Transfer" value="Bank Transfer" />
+          <Picker.Item label="Mobile Money" value="Mobile Money" />
         </Picker>
       </View>
 

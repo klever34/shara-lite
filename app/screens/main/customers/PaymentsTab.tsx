@@ -8,6 +8,7 @@ import {colors} from '../../../styles';
 import ActionCard from './ActionCard';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
+import EmptyState from '../../../components/EmptyState';
 
 const PaymentsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
@@ -54,11 +55,19 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={payments}
-        renderItem={renderPaymentItem}
-        keyExtractor={(item) => item.id}
-      />
+      {payments.length ? (
+        <FlatList
+          data={payments}
+          renderItem={renderPaymentItem}
+          keyExtractor={(item) => item.id}
+        />
+      ) : (
+        <EmptyState
+          heading="No payments"
+          source={require('../../../assets/images/coming-soon.png')}
+          text={`Payment records for ${customer.name} will be displayed here`}
+        />
+      )}
     </SafeAreaView>
   );
 };

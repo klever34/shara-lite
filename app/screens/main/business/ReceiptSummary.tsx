@@ -78,7 +78,7 @@ const summaryTableItemStyles = StyleSheet.create({
   },
 });
 
-const paymentTypes = ['Cash', 'Bank Transfer'];
+const paymentTypes = ['Cash', 'Bank Transfer', 'Mobile Money'];
 
 const SummaryTableHeader = () => {
   return (
@@ -166,7 +166,7 @@ const ReceiptSummary = ({
   }, []);
 
   const handleCustomerSelect = useCallback(
-    ({customerData}) => {
+    ({customer: customerData}) => {
       setCustomer(customerData);
       handleToggleCustomerModal();
     },
@@ -524,10 +524,6 @@ const styles = StyleSheet.create({
   pickerItem: {
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-  },
-  textInputIcon: {
-    top: 14,
-    position: 'absolute',
   },
   textInputIconText: {
     fontSize: 16,
