@@ -56,7 +56,8 @@ const NewReceipt = () => {
   }, []);
 
   const handleSelectProduct = useCallback((item: Product) => {
-    setSelectedProduct(item);
+    const payload = item as ReceiptItem;
+    setSelectedProduct(payload);
     setPrice(item?.price?.toString());
   }, []);
 
@@ -112,6 +113,7 @@ const NewReceipt = () => {
         searchTerm="name"
         onItemSelect={handleSelectProduct}
         textInputProps={{placeholder: 'Search Products'}}
+        emptyStateText="We don't have this item in our database, you can help us update our system by adding it as a new item."
       />
       <FlatList
         data={products}
