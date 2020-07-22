@@ -1,7 +1,7 @@
 import capitalize from 'lodash/capitalize';
 
 export interface IContact
-  extends Pick<User, 'firstname' | 'lastname' | 'mobile'> {
+  extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
   fullName: string;
   channel?: string;
 }
@@ -11,6 +11,7 @@ export class Contact implements Partial<IContact> {
     name: 'Contact',
     primaryKey: 'mobile',
     properties: {
+      id: 'int',
       mobile: 'string',
       channel: 'string?',
       firstname: 'string',

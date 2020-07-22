@@ -8,6 +8,15 @@ type User = {
   updated_at: string;
 };
 
+type GroupChat = {
+  name: string;
+  uuid: string;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  id: number;
+};
+
 type GroupChatMember = {
   id: number;
   user_id: number;

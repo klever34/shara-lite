@@ -1,12 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  ListRenderItemInfo,
-  Text,
-  View,
-} from 'react-native';
+import {ActivityIndicator, Alert, Text, View} from 'react-native';
 import {getAuthService, getContactsService} from '../../services';
 import {applyStyles} from '../../helpers/utils';
 import Touchable from '../../components/Touchable';
@@ -19,7 +12,7 @@ import {useRealm} from '../../services/RealmService';
 import {IContact, IConversation} from '../../models';
 import {UpdateMode} from 'realm';
 import {requester} from '../../services/ApiService';
-import PlaceholderImage from '../../components/PlaceholderImage';
+import ContactsList from '../../components/ContactsList';
 
 const ContactsScreen = () => {
   const navigation = useNavigation();
@@ -99,84 +92,71 @@ const ContactsScreen = () => {
       ),
     });
   }, [inviteFriend, loadContacts, loading, navigation]);
-  const renderContactItem = useCallback(
-    ({item}: ListRenderItemInfo<IContact>) => {
-      const chatWithContact = async () => {
-        try {
-          let contact = realm
-            .objects<IContact>('Contact')
-            .filtered(`mobile = "${item.mobile}"`)[0];
-          let channelName = contact.channel;
-          let conversation: IConversation;
-          if (!channelName) {
-            setLoading(true);
-            const response = await requester.post<{
-              channelName: string;
-            }>('/chat/channel', {
-              recipient: item.mobile,
-            });
-            ({channelName} = response.data);
-            const authService = getAuthService();
-            const user = authService.getUser() as User;
-            realm.write(() => {
-              conversation = realm.create<IConversation>(
-                'Conversation',
-                {
-                  title: item.fullName,
-                  channel: channelName,
-                  type: '1-1',
-                  members: [user.mobile, item.mobile],
-                },
-                UpdateMode.Modified,
-              );
-              contact.channel = channelName;
-            });
-            setLoading(false);
-          } else {
-            conversation = realm
-              .objects<IConversation>('Conversation')
-              .filtered(`channel = "${channelName}"`)[0];
-          }
-          navigation.dispatch(
-            CommonActions.reset({
-              routes: [
-                {name: 'Home'},
-                {
-                  name: 'Chat',
-                  // @ts-ignore
-                  params: conversation,
-                },
-              ],
-              index: 1,
-            }),
-          );
-        } catch (error) {
+  const chatWithContact = useCallback(
+    async (item) => {
+      try {
+        let contact = realm
+          .objects<IContact>('Contact')
+          .filtered(`mobile = "${item.mobile}"`)[0];
+        let channelName = contact.channel;
+        let conversation: IConversation;
+        if (!channelName) {
+          setLoading(true);
+          const response = await requester.post<{
+            channelName: string;
+          }>('/chat/channel', {
+            recipient: item.mobile,
+          });
+          ({channelName} = response.data);
+          const authService = getAuthService();
+          const user = authService.getUser() as User;
+          realm.write(() => {
+            conversation = realm.create<IConversation>(
+              'Conversation',
+              {
+                title: item.fullName,
+                channel: channelName,
+                type: '1-1',
+                members: [user.mobile, item.mobile],
+              },
+              UpdateMode.Modified,
+            );
+            contact.channel = channelName;
+          });
           setLoading(false);
-          console.log('Error: ', error);
+        } else {
+          conversation = realm
+            .objects<IConversation>('Conversation')
+            .filtered(`channel = "${channelName}"`)[0];
         }
-      };
-      return (
-        <Touchable onPress={chatWithContact}>
-          <View style={applyStyles('flex-row items-center px-md')}>
-            <PlaceholderImage text={item.fullName} />
-            <Text style={applyStyles('text-lg', 'font-bold')}>
-              {item.fullName}
-            </Text>
-          </View>
-        </Touchable>
-      );
+        navigation.dispatch(
+          CommonActions.reset({
+            routes: [
+              {name: 'Home'},
+              {
+                name: 'Chat',
+                // @ts-ignore
+                params: conversation,
+              },
+            ],
+            index: 1,
+          }),
+        );
+      } catch (error) {
+        setLoading(false);
+        console.log('Error: ', error);
+      }
     },
     [navigation, realm],
   );
+
   return (
-    <FlatList
-      data={contacts}
-      renderItem={renderContactItem}
-      keyExtractor={(item: IContact) => item.mobile}
+    <ContactsList
+      onContactItemClick={chatWithContact}
       ListHeaderComponent={
         <Touchable
           onPress={() => {
-            navigation.navigate('Home');
+            navigation.navigate('SelectGroupMembers');
           }}>
           <View style={applyStyles('flex-row items-center p-md')}>
             <View

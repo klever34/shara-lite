@@ -31,10 +31,13 @@ import RecordPayment from './customers/RecordPayment';
 import CreditPayment from './customers/CreditPayment';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
+import SelectGroupMembersScreen from './SelectGroupMembersScreen';
+import SetGroupDetailsScreen from './SetGroupDetailsScreen';
+import {IContact, IConversation} from '../../models';
 
 export type MainStackParamList = {
   Home: undefined;
-  Chat: {title: string; channel: string};
+  Chat: IConversation;
   Contacts: undefined;
   Receipts: undefined;
   NewReceipt: {customer: Customer};
@@ -50,6 +53,9 @@ export type MainStackParamList = {
   CreditPayment: {creditDetails: CreditDetails};
   PaymentDetails: {payment: Payment};
   OrderDetails: {order: Order};
+
+  SelectGroupMembers: undefined;
+  SetGroupDetails: {members: IContact[]};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -169,6 +175,36 @@ const MainScreens = ({navigation}: any) => {
             name="Chat"
             component={ChatScreen}
             options={{
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="SelectGroupMembers"
+            component={SelectGroupMembersScreen}
+            options={{
+              headerTitle: 'New Group',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="SetGroupDetails"
+            component={SetGroupDetailsScreen}
+            options={{
+              headerTitle: 'New Group',
               headerStyle: {
                 backgroundColor: colors.primary,
               },

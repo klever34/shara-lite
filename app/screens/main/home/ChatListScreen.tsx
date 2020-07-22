@@ -61,7 +61,10 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
         navigation.navigate('Chat', conversation);
       }}>
       <View style={listItemStyles.container}>
-        <PlaceholderImage text={conversation.title} />
+        <PlaceholderImage
+          text={conversation.title}
+          style={applyStyles('mr-md my-md')}
+        />
         <View style={listItemStyles.contentContainer}>
           <View style={listItemStyles.titleContainer}>
             <Text style={listItemStyles.titleText} numberOfLines={1}>
