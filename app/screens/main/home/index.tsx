@@ -9,7 +9,7 @@ import AppMenu from '../../../components/Menu';
 import {applyStyles, decrypt, retryPromise} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
-import {useRealm} from '../../../services/RealmService';
+import {useRealm} from '../../../services/realm';
 import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
 import Realm from 'realm';
 import CustomersTab from '../customers';

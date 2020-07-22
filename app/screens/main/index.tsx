@@ -15,7 +15,7 @@ import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
 import HomeScreen from './home';
 import Realm from 'realm';
-import {createRealm, RealmProvider} from '../../services/RealmService';
+import {createRealm, RealmProvider} from '../../services/realm';
 import getUuidByString from 'uuid-by-string';
 import Receipts from './business/Receipts';
 import NewReceipt from './business/NewReceipt';

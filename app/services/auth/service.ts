@@ -1,5 +1,5 @@
-import {IStorageService} from './StorageService';
-import {requester} from './ApiService';
+import {IStorageService} from '../storage/service';
+import {requester} from '../api';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -27,7 +27,7 @@ export interface IAuthService {
   logOut(): void;
 }
 
-class AuthService implements IAuthService {
+export default class AuthService implements IAuthService {
   private user: User | null = null;
   private token: string | null = null;
 
@@ -104,5 +104,3 @@ class AuthService implements IAuthService {
     await this.storageService.clear();
   }
 }
-
-export default AuthService;

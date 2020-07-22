@@ -3,7 +3,7 @@ import format from 'date-fns/format';
 import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles';
 import {IContact, IConversation, IMessage} from '../models';
-import {useRealm} from '../services/RealmService';
+import {useRealm} from '../services/realm';
 import MessageStatusIcon from './MessageStatusIcon';
 import {applyStyles} from '../helpers/utils';
 import {getAuthService} from '../services';

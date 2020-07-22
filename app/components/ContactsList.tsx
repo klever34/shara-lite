@@ -6,7 +6,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useRealm} from '../services/RealmService';
+import {useRealm} from '../services/realm';
 import {IContact} from '../models';
 import Touchable from './Touchable';
 import {applyStyles} from '../helpers/utils';

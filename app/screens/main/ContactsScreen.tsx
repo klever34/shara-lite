@@ -8,10 +8,10 @@ import Share from 'react-native-share';
 import AppMenu from '../../components/Menu';
 import Icon from '../../components/Icon';
 import {colors} from '../../styles';
-import {useRealm} from '../../services/RealmService';
+import {useRealm} from '../../services/realm';
 import {IContact, IConversation} from '../../models';
 import {UpdateMode} from 'realm';
-import {requester} from '../../services/ApiService';
+import {requester} from '../../services/api';
 import ContactsList from '../../components/ContactsList';
 
 const ContactsScreen = () => {

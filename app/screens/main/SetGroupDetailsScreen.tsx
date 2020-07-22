@@ -10,8 +10,9 @@ import Modal from 'react-native-modal';
 import {colors} from '../../styles';
 import {getApiService} from '../../services';
 import {IConversation} from '../../models';
-import {useRealm} from '../../services/RealmService';
+import {useRealm} from '../../services/realm';
 import {UpdateMode} from 'realm';
+import {CommonActions} from '@react-navigation/native';
 
 const SetGroupDetailsScreen = ({
   navigation,
@@ -39,7 +40,18 @@ const SetGroupDetailsScreen = ({
               },
               UpdateMode.Modified,
             );
-            navigation.navigate('Chat', conversation);
+            navigation.dispatch(
+              CommonActions.reset({
+                routes: [
+                  {name: 'Home'},
+                  {
+                    name: 'Chat',
+                    params: conversation,
+                  },
+                ],
+                index: 1,
+              }),
+            );
           });
         } catch (e) {
           console.log('Error: ', e);
