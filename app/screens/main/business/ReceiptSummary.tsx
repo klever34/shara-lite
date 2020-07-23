@@ -1,60 +1,39 @@
 import {Picker} from '@react-native-community/picker';
-import format from 'date-fns/format';
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  Image,
-  ImageProps,
-  ViewStyle,
-  TextStyle,
 } from 'react-native';
+import {Contact} from 'react-native-contacts';
 import {MainStackParamList} from '..';
 import {Button} from '../../../components/Button';
+import {ContactsListModal} from '../../../components/ContactsListModal';
 import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
 import {
   applyStyles,
-  numberWithCommas,
   generateUniqueId,
+  numberWithCommas,
 } from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {savePayment} from '../../../services/PaymentService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
-import {ContactsListModal} from '../../../components/ContactsListModal';
-import {Contact} from 'react-native-contacts';
+import {CustomerDetailsModal} from './CustomerDetailsModal';
+import {ReceiptStatusModal} from './ReceiptStatusModal';
+import {ShareReceiptModal} from './ShareReceiptModal';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
-};
-
-type CreditPayload = {
-  amount: string;
-  paymentMethod: string | number;
-};
-
-type StatusProps = {
-  [key: string]: PageProps;
-};
-
-type PageProps = {
-  heading: string;
-  buttonText: string;
-  closeButtonColor: string;
-  icon: ImageProps['source'];
-  buttonVariant: 'red' | 'white';
-  style: {container: ViewStyle; text: TextStyle; heading: TextStyle};
 };
 
 const summaryTableStyles = StyleSheet.create({
@@ -184,33 +163,6 @@ const ReceiptSummary = ({
 
   //@ts-ignore
   const timeTaken = new Date().getTime() - global.startTime;
-
-  const statusProps: StatusProps = {
-    success: {
-      heading: 'Success!',
-      buttonText: 'Done',
-      closeButtonColor: colors.primary,
-      icon: require('../../../assets/icons/check-circle.png'),
-      buttonVariant: 'red',
-      style: {
-        text: {color: colors['gray-200']},
-        heading: {color: colors['gray-300']},
-        container: {backgroundColor: colors.white},
-      },
-    },
-    error: {
-      heading: 'Error!',
-      buttonText: 'Retry',
-      closeButtonColor: colors.white,
-      icon: require('../../../assets/icons/x-circle.png'),
-      buttonVariant: 'white',
-      style: {
-        text: {color: colors.white},
-        heading: {color: colors.white},
-        container: {backgroundColor: colors.primary},
-      },
-    },
-  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -505,325 +457,30 @@ const ReceiptSummary = ({
         />
       </View>
 
-      <Modal
-        transparent={false}
-        animationType="slide"
-        visible={isSuccessModalOpen}>
-        <ScrollView>
-          <View style={styles.statusModalContent}>
-            <Image
-              source={statusProps.success.icon}
-              style={applyStyles('mb-xl', styles.statusModalIcon)}
-            />
-            <Text
-              style={applyStyles(
-                'pb-sm',
-                styles.statusModalHeadingText,
-                statusProps.success.style.heading,
-                'heading-700',
-              )}>
-              {statusProps.success.heading}
-            </Text>
-            <Text
-              style={applyStyles(
-                styles.statusModalDescription,
-                statusProps.success.style.text,
-                'text-400',
-              )}>
-              {`You have successfully issued a receipt for N${numberWithCommas(
-                amountPaid,
-              )} in Cash and N${numberWithCommas(creditAmount)} in Credit`}
-            </Text>
-            <Text
-              style={applyStyles(
-                styles.statusModalDescription,
-                statusProps.success.style.text,
-                'text-400',
-              )}>
-              Time taken: {format(timeTaken, 'mm:ss')}
-            </Text>
-          </View>
+      <ReceiptStatusModal
+        timeTaken={timeTaken}
+        amountPaid={amountPaid}
+        creditAmount={creditAmount}
+        onComplete={handleComplete}
+        isSubmitting={isSubmitting}
+        visible={isSuccessModalOpen}
+        onClose={handleCloseSuccessModal}
+        onOpenShareModal={handleOpenShareModal}
+        onOpenCustomerModal={handleOpenCustomerModal}
+      />
 
-          <View style={applyStyles({marginBottom: 40, paddingHorizontal: 16})}>
-            <View
-              style={applyStyles('items-center, justify-center', {
-                marginBottom: 16,
-              })}>
-              <Text
-                style={applyStyles('text-400', 'text-center', {
-                  color: colors['gray-100'],
-                })}>
-                Do you want to add the customers' details?
-              </Text>
-            </View>
+      <CustomerDetailsModal
+        customer={customer}
+        visible={isCustomerModalOpen}
+        onClose={handleCloseCustomerModal}
+        onUpdateCustomer={handleUpdateCustomer}
+        onOpenContactList={handleOpenContactList}
+      />
 
-            <Touchable onPress={handleOpenCustomerModal}>
-              <View
-                style={applyStyles(
-                  'flex-row',
-                  'items-center',
-                  'justify-center',
-                  {paddingVertical: 16},
-                )}>
-                <Icon
-                  size={24}
-                  type="ionicons"
-                  name={
-                    Platform.select({
-                      android: 'md-add',
-                      ios: 'ios-add',
-                    }) as string
-                  }
-                  color={colors.primary}
-                />
-                <Text style={styles.addProductButtonText}>
-                  Add customer details
-                </Text>
-              </View>
-            </Touchable>
-            <Button
-              onPress={() => {}}
-              variantColor="white"
-              style={applyStyles({marginTop: 24})}>
-              <View
-                style={applyStyles(
-                  'flex-row',
-                  'items-center',
-                  'justify-center',
-                )}>
-                <Icon
-                  size={24}
-                  name="printer"
-                  type="feathericons"
-                  color={colors['gray-50']}
-                />
-                <Text
-                  style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                    color: colors['gray-200'],
-                  })}>
-                  Print receipt
-                </Text>
-              </View>
-            </Button>
-          </View>
-        </ScrollView>
-        <View style={styles.actionButtons}>
-          <Button
-            variantColor="clear"
-            style={styles.actionButton}
-            onPress={handleOpenShareModal}>
-            <View
-              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-              <Icon
-                size={24}
-                name="share"
-                type="feathericons"
-                color={colors['gray-50']}
-              />
-              <Text
-                style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                  color: colors['gray-200'],
-                })}>
-                Share
-              </Text>
-            </View>
-          </Button>
-          <Button
-            title="Finish"
-            variantColor="red"
-            isLoading={isSubmitting}
-            onPress={handleComplete}
-            style={styles.actionButton}
-          />
-        </View>
-      </Modal>
-
-      <Modal
-        transparent={false}
-        animationType="slide"
-        visible={isCustomerModalOpen}>
-        <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
-          <View style={applyStyles({marginBottom: 48})}>
-            <Text
-              style={applyStyles('mb-xl', 'text-400', {
-                fontSize: 18,
-                color: colors.primary,
-              })}>
-              Customer Details
-            </Text>
-
-            <Touchable onPress={handleOpenContactList}>
-              <View
-                style={applyStyles(
-                  'px-lg',
-                  'pt-md',
-                  'pb-lg',
-                  'mb-lg',
-                  'flex-row',
-                  'items-center',
-                  'justify-space-between',
-                  {borderBottomColor: colors['gray-50'], borderBottomWidth: 1},
-                )}>
-                <Text
-                  style={applyStyles({
-                    fontSize: 16,
-                    color: colors['gray-100'],
-                  })}>
-                  Select from contacts
-                </Text>
-                <Icon
-                  size={24}
-                  name="users"
-                  type="feathericons"
-                  color={colors['gray-100']}
-                />
-              </View>
-            </Touchable>
-          </View>
-          <View>
-            <FloatingLabelInput
-              value={customer.name}
-              label="Type Customer Name"
-              containerStyle={applyStyles('pb-md')}
-              onChangeText={(text) => handleUpdateCustomer(text, 'name')}
-            />
-            <FloatingLabelInput
-              label="Phone number"
-              value={customer.mobile}
-              keyboardType="number-pad"
-              containerStyle={applyStyles({paddingBottom: 80})}
-              onChangeText={(text) => handleUpdateCustomer(text, 'mobile')}
-            />
-          </View>
-        </ScrollView>
-        <View style={styles.actionButtons}>
-          <Button
-            variantColor="clear"
-            style={styles.actionButton}
-            onPress={handleCloseCustomerModal}>
-            <Text
-              style={applyStyles('text-400', 'text-uppercase', {
-                color: colors['gray-200'],
-              })}>
-              Cancel
-            </Text>
-          </Button>
-          <Button
-            title="Done"
-            variantColor="red"
-            style={styles.actionButton}
-            onPress={handleCloseCustomerModal}
-          />
-        </View>
-      </Modal>
-
-      <Modal
-        transparent={false}
-        animationType="slide"
-        visible={isShareModalOpen}>
-        <View
-          style={applyStyles(
-            'px-lg',
-            'flex-1',
-            'items-center',
-            'justify-center',
-          )}>
-          <Text
-            style={applyStyles('text-400', 'pb-md', 'text-center', {
-              fontSize: 18,
-              color: colors.primary,
-            })}>
-            Select a sharing option
-          </Text>
-
-          <Button
-            variantColor="white"
-            style={applyStyles('w-full', 'mb-md')}
-            onPress={handleOpenShareModal}>
-            <View
-              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-              <Icon
-                size={24}
-                name="mail"
-                type="feathericons"
-                color={colors.primary}
-              />
-              <Text
-                style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                  color: colors['gray-200'],
-                })}>
-                Share via email
-              </Text>
-            </View>
-          </Button>
-          <Button
-            variantColor="white"
-            style={applyStyles('w-full', 'mb-xl')}
-            onPress={handleOpenShareModal}>
-            <View
-              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-              <Icon
-                size={24}
-                name="message-circle"
-                type="feathericons"
-                color={colors.primary}
-              />
-              <Text
-                style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                  color: colors['gray-200'],
-                })}>
-                Share via sms
-              </Text>
-            </View>
-          </Button>
-          <View
-            style={applyStyles('pt-xl', 'w-full', {
-              borderTopWidth: 1,
-              borderTopColor: colors['gray-20'],
-            })}>
-            <Button
-              variantColor="white"
-              style={applyStyles('w-full', 'mb-md', {
-                backgroundColor: '#1BA058',
-              })}
-              onPress={handleOpenShareModal}>
-              <View
-                style={applyStyles(
-                  'flex-row',
-                  'items-center',
-                  'justify-center',
-                )}>
-                <Icon
-                  size={24}
-                  name="logo-whatsapp"
-                  type="ionicons"
-                  color={colors.white}
-                />
-                <Text
-                  style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                    color: colors.white,
-                  })}>
-                  Share via whatsapp
-                </Text>
-              </View>
-            </Button>
-          </View>
-        </View>
-
-        <View style={applyStyles('px-lg')}>
-          <Button
-            variantColor="clear"
-            style={applyStyles({width: '100%', marginBottom: 24})}
-            onPress={handleCloseShareModal}>
-            <Text
-              style={applyStyles('text-400', 'text-uppercase', {
-                color: colors['gray-200'],
-              })}>
-              Cancel
-            </Text>
-          </Button>
-        </View>
-      </Modal>
+      <ShareReceiptModal
+        visible={isShareModalOpen}
+        onClose={handleCloseShareModal}
+      />
 
       <ContactsListModal
         visible={isContactListModalOpen}
@@ -933,33 +590,6 @@ const styles = StyleSheet.create({
   creditText: {
     marginTop: 3,
     color: colors.primary,
-  },
-  statusModalContent: {
-    flex: 1,
-    marginTop: 32,
-    marginBottom: 16,
-    paddingBottom: 16,
-    alignItems: 'center',
-    borderBottomWidth: 1,
-    marginHorizontal: 16,
-    justifyContent: 'center',
-    borderBottomColor: colors['gray-20'],
-  },
-  statusModalIcon: {
-    width: 64,
-    height: 64,
-  },
-  statusModalHeadingText: {
-    fontSize: 24,
-    textAlign: 'center',
-    textTransform: 'uppercase',
-  },
-  statusModalDescription: {
-    fontSize: 16,
-    maxWidth: 260,
-    lineHeight: 27,
-    textAlign: 'center',
-    marginHorizontal: 'auto',
   },
 });
 
