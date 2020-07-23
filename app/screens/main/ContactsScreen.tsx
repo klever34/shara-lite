@@ -109,7 +109,11 @@ const ContactsScreen = () => {
           });
           ({channelName} = response.data);
           const authService = getAuthService();
-          const user = authService.getUser() as User;
+          setLoading(false);
+          const user = authService.getUser();
+          if (!user) {
+            return;
+          }
           realm.write(() => {
             conversation = realm.create<IConversation>(
               'Conversation',
@@ -123,7 +127,6 @@ const ContactsScreen = () => {
             );
             contact.channel = channelName;
           });
-          setLoading(false);
         } else {
           conversation = realm
             .objects<IConversation>('Conversation')

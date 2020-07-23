@@ -14,8 +14,8 @@ type ChatBubbleProps = {
 
 export const ChatBubble = memo(({message}: ChatBubbleProps) => {
   const authService = getAuthService();
-  const user = authService.getUser() as User;
-  const isAuthor = user.mobile === message.author;
+  const user = authService.getUser();
+  const isAuthor = user?.mobile === message.author;
   const {created_at, author, content} = message;
   const realm = useRealm();
   const showSender = useMemo(() => {

@@ -56,12 +56,14 @@ const ChatScreen = ({
   useEffect(() => {
     const listener = () => {
       const authService = getAuthService();
-      const user = authService.getUser() as User;
+      const user = authService.getUser();
       try {
         const markedMessages = realm
           .objects<IMessage>('Message')
           .filtered(
-            `channel = "${channel}" AND read_timetoken = null AND author != "${user.mobile}"`,
+            `channel = "${channel}" AND read_timetoken = null AND author != "${
+              user?.mobile ?? ''
+            }"`,
           );
         if (markedMessages.length) {
           retryPromise(() => {
@@ -100,11 +102,13 @@ const ChatScreen = ({
         try {
           if (evt.message === 'READ' && evt.publisher !== pubNub.getUUID()) {
             const authService = getAuthService();
-            const user = authService.getUser() as User;
+            const user = authService.getUser();
             const markedMessages = realm
               .objects<IMessage>('Message')
               .filtered(
-                `channel = "${channel}" AND author = "${user.mobile}" AND read_timetoken = null AND sent_timetoken != null`,
+                `channel = "${channel}" AND author = "${
+                  user?.mobile ?? ''
+                }" AND read_timetoken = null AND sent_timetoken != null`,
               );
             if (markedMessages.length) {
               realm.write(() => {
@@ -143,7 +147,10 @@ const ChatScreen = ({
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();
-    const user = authService.getUser() as User;
+    const user = authService.getUser();
+    if (!user) {
+      return;
+    }
     let message: IMessage = {
       id: generateUniqueId(),
       content: input,
@@ -157,10 +164,7 @@ const ChatScreen = ({
           title: `${user?.firstname} ${user?.lastname}`,
           body: input,
         },
-        data: {
-          ...message,
-          channel,
-        },
+        data: message,
       },
       ...message,
     };

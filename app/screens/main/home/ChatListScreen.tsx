@@ -27,11 +27,13 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
   const navigation = useNavigation();
   const lastMessage = conversation.lastMessage as IMessage;
   const realm = useRealm();
-  const user = getAuthService().getUser() as User;
+  const user = getAuthService().getUser();
   const messages = realm
     .objects<IMessage>('Message')
     .filtered(
-      `channel = "${conversation.channel}" AND author != "${user.mobile}" AND received_timetoken != null AND read_timetoken = null`,
+      `channel = "${conversation.channel}" AND author != "${
+        user?.mobile ?? ''
+      }" AND received_timetoken != null AND read_timetoken = null`,
     );
   const dateText = useMemo(() => {
     const createdAtDate = lastMessage.created_at;

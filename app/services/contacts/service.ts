@@ -81,7 +81,7 @@ export default class ContactsService implements IContactsService {
   public async loadContacts() {
     try {
       const contacts = await this.getAll();
-      const me = this.authService.getUser() as User;
+      const me = this.authService.getUser();
       const numbers = flatten(
         contacts.map((contact) =>
           contact.phoneNumbers.map((phoneNumber) =>
@@ -91,7 +91,7 @@ export default class ContactsService implements IContactsService {
       );
       const users = await this.apiService.getUserDetails(numbers);
       await this.realmService.updateMultipleContacts(
-        (users.filter((user) => user.id !== me.id) as unknown) as IContact[],
+        (users.filter((user) => user.id !== me?.id) as unknown) as IContact[],
       );
     } catch (error) {
       console.log('Error: ', error.message);
