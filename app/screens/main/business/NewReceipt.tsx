@@ -1,6 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  ScrollView,
+} from 'react-native';
 import {Button} from '../../../components/Button';
 import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 import AppMenu from '../../../components/Menu';
@@ -122,15 +129,15 @@ const NewReceipt = () => {
         ListHeaderComponent={renderRecentProductsHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
       />
-      <View style={styles.calculatorSection}>
-        <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
-          You have{' '}
-          <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
-          Products in your receipt
-        </Text>
-        {(selectedProduct || !!receipt.length) && (
-          <View>
-            {selectedProduct && (
+      {selectedProduct ? (
+        <>
+          <ScrollView style={styles.calculatorSection}>
+            <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
+              You have{' '}
+              <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
+              Products in your receipt
+            </Text>
+            <View>
               <>
                 <Text
                   style={applyStyles(
@@ -187,7 +194,9 @@ const NewReceipt = () => {
                   />
                 </View>
               </>
-            )}
+            </View>
+          </ScrollView>
+          {!!selectedProduct && (
             <View style={styles.calculatorSectionButtons}>
               <Button
                 title="Done"
@@ -202,9 +211,17 @@ const NewReceipt = () => {
                 style={styles.calculatorSectionButton}
               />
             </View>
-          </View>
-        )}
-      </View>
+          )}
+        </>
+      ) : (
+        <View style={styles.calculatorSection}>
+          <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
+            You have{' '}
+            <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
+            Products in your receipt
+          </Text>
+        </View>
+      )}
     </SafeAreaView>
   );
 };
@@ -276,10 +293,13 @@ const styles = StyleSheet.create({
   },
   calculatorSectionButtons: {
     marginTop: 8,
-    marginBottom: 32,
+    borderTopWidth: 1,
     alignItems: 'center',
     flexDirection: 'row',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
     justifyContent: 'space-between',
+    borderTopColor: colors['gray-20'],
   },
   calculatorSectionButton: {
     width: '48%',
