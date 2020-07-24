@@ -5,17 +5,20 @@ import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import {payments} from '../data.json';
 import ActionCard from './ActionCard';
+import {ICustomer} from '../../../models';
+import {IPayment} from '../../../models/Payment';
+import EmptyState from '../../../components/EmptyState';
 
-const PaymentsTab = () => {
+const PaymentsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
+  const payments = customer.payments || [];
 
-  const handleViewDetails = (payment: Payment) => {
+  const handleViewDetails = (payment: IPayment) => {
     navigation.navigate('PaymentDetails', {payment});
   };
 
-  const renderPaymentItem = ({item: payment}: {item: Payment}) => {
+  const renderPaymentItem = ({item: payment}: {item: IPayment}) => {
     return (
       <View style={styles.creditItem}>
         <ActionCard
@@ -25,31 +28,25 @@ const PaymentsTab = () => {
           <View style={applyStyles('pb-sm')}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(payment.amount)}
+              &#8358;{numberWithCommas(payment.amount_paid)}
             </Text>
           </View>
           <View style={applyStyles('flex-row', 'justify-space-between')}>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Payment Made</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {format(new Date(payment.paidOn), 'MMM dd, yyyy')}
+                {format(new Date(payment.created_at), 'MMM dd, yyyy')}
               </Text>
               <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {format(new Date(payment.paidOn), 'hh:mm:a')}
+                {format(new Date(payment.created_at), 'hh:mm:a')}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Payment Method</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {payment.paymentMethod}
+                {payment.type}
               </Text>
             </View>
-          </View>
-          <View style={applyStyles('pb-sm')}>
-            <Text style={styles.itemTitle}>Received by</Text>
-            <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {payment.receivedBy}
-            </Text>
           </View>
         </ActionCard>
       </View>
@@ -58,11 +55,19 @@ const PaymentsTab = () => {
 
   return (
     <SafeAreaView style={styles.container}>
-      <FlatList
-        data={payments}
-        renderItem={renderPaymentItem}
-        keyExtractor={(item) => item.id}
-      />
+      {payments.length ? (
+        <FlatList
+          data={payments}
+          renderItem={renderPaymentItem}
+          keyExtractor={(item) => item.id}
+        />
+      ) : (
+        <EmptyState
+          heading="No payments"
+          source={require('../../../assets/images/coming-soon.png')}
+          text={`Payment records for ${customer.name} will be displayed here`}
+        />
+      )}
     </SafeAreaView>
   );
 };

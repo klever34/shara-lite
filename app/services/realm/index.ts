@@ -1,6 +1,8 @@
 import {createContext, useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
-import {Contact, Conversation, Message} from '../../models';
+import {Contact, Message, Conversation, Customer} from '../../models';
+import {Payment} from '../../models/Payment';
+import {PaymentItem} from '../../models/PaymentItem';
 
 const RealmContext = createContext<Realm | null>(null);
 export const RealmProvider = RealmContext.Provider;
@@ -22,7 +24,7 @@ export const createRealm = async () => {
     Realm.deleteFile({});
   }
   return Realm.open({
-    schema: [Contact, Message, Conversation],
+    schema: [Contact, Message, Conversation, Customer, Payment, PaymentItem],
   });
 };
 

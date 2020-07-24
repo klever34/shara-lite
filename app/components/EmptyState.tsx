@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
     marginHorizontal: 'auto',
   },
   image: {
-    width: 223,
-    height: 223,
+    width: 140,
+    height: 140,
     marginBottom: 24,
   },
 });

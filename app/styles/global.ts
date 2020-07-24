@@ -42,6 +42,15 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'h-screen': {
     height: dimensions.fullHeight,
   },
+  'text-center': {
+    textAlign: 'center',
+  },
+  'text-uppercase': {
+    textTransform: 'uppercase',
+  },
+  'text-capitalize': {
+    textTransform: 'capitalize',
+  },
   'text-xl': {
     fontSize: 20,
     lineHeight: 24,

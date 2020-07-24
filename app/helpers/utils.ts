@@ -61,3 +61,6 @@ export const decrypt = (encryptedText: string) => {
     Config.PUBNUB_USER_CRYPT_KEY,
   ).toString(CryptoJS.enc.Utf8);
 };
+
+export const formatCurrency = (amount: number) =>
+  `&#8358;${numberWithCommas(amount)}`;

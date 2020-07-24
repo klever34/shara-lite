@@ -1,32 +1,35 @@
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {Picker} from '@react-native-community/picker';
-import React, {useCallback, useLayoutEffect, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
+  KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   View,
+  Alert,
 } from 'react-native';
-import SignatureCapture from 'react-native-signature-capture';
 import {MainStackParamList} from '..';
-import {Button} from '../../../components/Button';
+import {Button} from '../../../components';
+import {FloatingLabelInput} from '../../../components';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
-import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {ICustomer} from '../../../models';
+import {savePayment} from '../../../services/PaymentService';
+import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
+import {CustomerDetailsModal} from './CustomerDetailsModal';
+import {PaymentMethodModal} from './PaymentMethodModal';
+import Receipts from './Receipts';
+import {ReceiptStatusModal} from './ReceiptStatusModal';
+import {ShareReceiptModal} from './ShareReceiptModal';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
-};
-
-type CreditPayload = {
-  amount: string;
-  paymentMethod: string | number;
 };
 
 const summaryTableStyles = StyleSheet.create({
@@ -134,18 +137,30 @@ const ReceiptSummary = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ReceiptSummary'>) => {
   const navigation = useNavigation();
-  const tax = 0;
+  const realm = useRealm();
+
   const {customer: customerProps, products} = route.params;
-  const [creditPayload, setCreditPayload] = useState<CreditPayload>({
-    paymentMethod: 'Credit',
-  } as CreditPayload);
+  const tax = 0;
+
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [signature, setSignature] = useState(false);
-  const [customer, setCustomer] = useState<Customer>(
+  const [paymentType, setPaymentType] = useState<
+    'cash' | 'transfer' | 'mobile'
+  >('cash');
+  const [amountPaid, setAmountPaid] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [payments, setPayments] = useState<Payment[]>([]);
+  const [customer, setCustomer] = useState<Customer | ICustomer>(
     customerProps || ({} as Customer),
   );
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
+  const creditAmount = totalAmount - amountPaid;
 
-  const ref = useRef<any>(null);
+  //@ts-ignore
+  const timeTaken = new Date().getTime() - global.startTime;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -153,34 +168,133 @@ const ReceiptSummary = ({
     });
   }, [navigation]);
 
-  const saveSign = useCallback(() => {
-    ref.current.saveImage();
-  }, []);
-
-  const resetSign = useCallback(() => {
-    ref.current.resetImage();
-    setSignature(false);
-  }, []);
-
-  const onSaveEvent = useCallback((result: any) => {
-    //result.encoded - for the base64 encoded png
-    //result.pathName - for the file path name
-    console.log(result);
-  }, []);
-
-  const onDragEvent = useCallback(() => {
-    // This callback will be called when the user enters signature
-    console.log('dragged');
-    setSignature(true);
-  }, []);
-
   const handleCancel = useCallback(() => {
-    navigation.navigate('Receipts');
+    navigation.navigate('NewReceipt');
   }, [navigation]);
 
   const handleAddProduct = useCallback(() => {
-    navigation.navigate('NewReceipt', {customer});
-  }, [navigation, customer]);
+    navigation.navigate('NewReceipt');
+  }, [navigation]);
+
+  const handleOpenSuccessModal = useCallback(() => {
+    setIsSuccessModalOpen(true);
+  }, []);
+
+  const handleCloseSuccessModal = useCallback(() => {
+    setIsSuccessModalOpen(false);
+  }, []);
+
+  const handleOpenShareModal = useCallback(() => {
+    setIsShareModalOpen(true);
+  }, []);
+
+  const handleCloseShareModal = useCallback(() => {
+    setIsShareModalOpen(false);
+  }, []);
+
+  const handleOpenCustomerModal = useCallback(() => {
+    setIsCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseCustomerModal = useCallback(() => {
+    setIsCustomerModalOpen(false);
+  }, []);
+
+  const handleOpenPaymentModal = useCallback(
+    (type: 'cash' | 'transfer' | 'mobile') => {
+      setPaymentType(type);
+      setIsPaymentModalOpen(true);
+    },
+    [],
+  );
+
+  const handleClosePaymentModal = useCallback(() => {
+    setIsPaymentModalOpen(false);
+  }, []);
+
+  const handleOpenContactList = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactList = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
+
+  const handleSmsShare = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt sharing via SMS is coming in the next release',
+    );
+  }, []);
+
+  const handleEmailShare = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt sharing via Email is coming in the next release',
+    );
+  }, []);
+
+  const handleWhatsappShare = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt sharing via Whatsapp is coming in the next release',
+    );
+  }, []);
+
+  const handlePrintReceipt = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt printing is coming in the next release',
+    );
+  }, []);
+
+  const handleRemovePayment = useCallback(
+    (type: 'cash' | 'transfer' | 'mobile') => {
+      const result = payments.filter((item) => item.paymentMethod !== type);
+      setPayments(result);
+    },
+    [payments],
+  );
+
+  const handleSubmitPayment = useCallback(
+    (payment: Payment) => {
+      setPayments([...payments, payment]);
+    },
+    [payments],
+  );
+
+  const handlePaymentMethodAmountChange = useCallback(
+    (text: string, type: 'cash' | 'transfer' | 'mobile') => {
+      const result = payments.map((item) => {
+        if (item.paymentMethod === type) {
+          return {...item, amount: parseFloat(text)};
+        }
+        return item;
+      });
+      setPayments(result);
+    },
+    [payments],
+  );
+
+  const getPaymentMethodAmount = useCallback(
+    (type: 'cash' | 'transfer' | 'mobile') => {
+      const paymentMethod = payments.find(
+        (item) => item.paymentMethod === type,
+      );
+      if (paymentMethod) {
+        return paymentMethod.amount.toString();
+      }
+      return '0';
+    },
+    [payments],
+  );
+
+  const handleCustomerSelect = useCallback(
+    ({customer: customerData}) => {
+      setCustomer(customerData);
+    },
+    [setCustomer],
+  );
 
   const handleUpdateCustomer = useCallback(
     (value, key) => {
@@ -189,233 +303,450 @@ const ReceiptSummary = ({
     [customer],
   );
 
-  const handleCreditPayloadChange = useCallback(
-    (value: string | number, key: keyof CreditPayload) => {
-      setCreditPayload({
-        ...creditPayload,
-        [key]: value,
-      });
-    },
-    [creditPayload],
-  );
+  const handleFinish = () => {
+    setIsSubmitting(true);
+    savePayment({
+      realm,
+      customer,
+      type: paymentType,
+      amountPaid,
+      totalAmount,
+      creditAmount,
+      tax,
+      products,
+    });
+    setTimeout(() => {
+      setIsSubmitting(false);
+      handleOpenSuccessModal();
+    }, 2000);
+  };
 
-  const handleFinish = useCallback(() => {
+  const handleComplete = useCallback(() => {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
-      saveSign();
-      navigation.navigate('StatusModal', {
-        status: 'success',
-        onClick: handleCancel,
-        text: `You have successfully issued a receipt to ${customer.name}`,
-      });
+      handleCloseSuccessModal();
+      navigation.navigate('NewReceipt');
     }, 2000);
-  }, [saveSign, navigation, handleCancel, customer.name]);
+  }, [navigation, handleCloseSuccessModal]);
 
-  const getProductsTotalAmount = useCallback(() => {
-    return products
+  useEffect(() => {
+    const total = products
       .map(({quantity, price}) => {
         const itemPrice = price ? parseFloat(price) : 0;
         const itemQuantity = quantity ? parseFloat(quantity) : 0;
         return itemPrice * itemQuantity;
       })
       .reduce((acc, curr) => acc + curr, 0);
+
+    setTotalAmount(total);
+    setAmountPaid(total);
   }, [products]);
+
+  useEffect(() => {
+    if (payments.length) {
+      const paid = payments.reduce((acc, item) => acc + item.amount, 0);
+      setAmountPaid(paid);
+    }
+  }, [payments, totalAmount]);
 
   const renderSummaryItem = useCallback(
     ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
     [],
   );
 
-  const totalAmount = tax + getProductsTotalAmount();
-
   return (
-    <ScrollView style={styles.container} nestedScrollEnabled>
-      <View>
-        <Text style={styles.sectionTitle}>Products</Text>
+    <KeyboardAvoidingView style={styles.container}>
+      <ScrollView style={styles.scrollView} nestedScrollEnabled>
         <View>
-          <FlatList
-            data={products}
-            nestedScrollEnabled
-            renderItem={renderSummaryItem}
-            keyExtractor={(item) => item.id}
-            ListHeaderComponent={SummaryTableHeader}
-          />
-          <View style={styles.totalSectionContainer}>
-            <View style={styles.totalSection}>
-              <View
-                style={applyStyles(
-                  'pb-sm',
-                  'flex-row',
-                  'items-center',
-                  'justify-space-between',
-                )}>
-                <Text
+          <Text style={applyStyles('pb-xs', styles.sectionTitle)}>
+            Products
+          </Text>
+          <Text
+            style={applyStyles('text-400', 'mb-xl', {
+              color: colors['gray-100'],
+            })}>
+            Here is a list of products being purchased
+          </Text>
+          <View>
+            <FlatList
+              data={products}
+              nestedScrollEnabled
+              renderItem={renderSummaryItem}
+              keyExtractor={(item) => item.id}
+              ListHeaderComponent={SummaryTableHeader}
+            />
+            <View style={styles.totalSectionContainer}>
+              <View style={styles.totalSection}>
+                <View
                   style={applyStyles(
-                    {
-                      color: colors['gray-300'],
-                    },
-                    'text-400',
+                    'pb-sm',
+                    'flex-row',
+                    'items-center',
+                    'justify-space-between',
                   )}>
-                  Tax:
-                </Text>
-                <Text>{tax}</Text>
-              </View>
-              <View
-                style={applyStyles(
-                  'flex-row',
-                  'items-center',
-                  'justify-space-between',
-                )}>
-                <Text
+                  <Text
+                    style={applyStyles(
+                      {
+                        color: colors['gray-300'],
+                      },
+                      'text-400',
+                    )}>
+                    Tax:
+                  </Text>
+                  <Text>{tax}</Text>
+                </View>
+                <View
                   style={applyStyles(
-                    {
-                      color: colors['gray-300'],
-                    },
-                    'text-400',
+                    'flex-row',
+                    'items-center',
+                    'justify-space-between',
                   )}>
-                  Total:
-                </Text>
-                <Text style={styles.totalAmountText}>
-                  &#8358;{numberWithCommas(totalAmount)}
-                </Text>
+                  <Text
+                    style={applyStyles(
+                      {
+                        color: colors['gray-300'],
+                      },
+                      'text-400',
+                    )}>
+                    Total:
+                  </Text>
+                  <Text style={styles.totalAmountText}>
+                    &#8358;{numberWithCommas(totalAmount)}
+                  </Text>
+                </View>
               </View>
             </View>
+            <Button variantColor="white" onPress={handleAddProduct}>
+              <View style={styles.addProductButton}>
+                <Icon
+                  size={24}
+                  type="ionicons"
+                  name={
+                    Platform.select({
+                      android: 'md-add',
+                      ios: 'ios-add',
+                    }) as string
+                  }
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add product
+                </Text>
+              </View>
+            </Button>
           </View>
-          <Touchable onPress={handleAddProduct}>
-            <View style={styles.addProductButton}>
-              <Icon
-                size={24}
-                type="ionicons"
-                name={
-                  Platform.select({
-                    android: 'md-add',
-                    ios: 'ios-add',
-                  }) as string
-                }
-                color={colors.primary}
-              />
-              <Text style={styles.addProductButtonText}>Add a product</Text>
+        </View>
+        <View style={applyStyles({marginVertical: 24})}>
+          <Text style={applyStyles('pb-xs', styles.sectionTitle)}>Payment</Text>
+          <Text
+            style={applyStyles('text-400', 'mb-xl', {
+              color: colors['gray-100'],
+            })}>
+            Select one or more payment methods
+          </Text>
+          {payments.map((item) => item.paymentMethod).includes('cash') ? (
+            <View style={applyStyles('mb-xs')}>
+              <View style={applyStyles('pb-sm')}>
+                <FloatingLabelInput
+                  label="Cash Payment"
+                  value={getPaymentMethodAmount('cash')}
+                  keyboardType="numbers-and-punctuation"
+                  onChangeText={(text) =>
+                    handlePaymentMethodAmountChange(text, 'cash')
+                  }
+                  leftIcon={
+                    <Text
+                      style={applyStyles(styles.textInputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+              <Button
+                variantColor="clear"
+                onPress={() => handleRemovePayment('cash')}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                  )}>
+                  <Icon
+                    size={24}
+                    name="trash-2"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Delete payment
+                  </Text>
+                </View>
+              </Button>
             </View>
-          </Touchable>
-        </View>
-      </View>
-      <View>
-        <Text style={styles.sectionTitle}>Customer Details</Text>
-        <View>
-          <TextInput
-            style={styles.input}
-            value={customer.mobile}
-            keyboardType="phone-pad"
-            placeholder="Customer Phone Number"
-            onChangeText={(item) => handleUpdateCustomer(item, 'mobile')}
-          />
-          <TextInput
-            style={styles.input}
-            value={customer.name}
-            placeholder="Customer Name"
-            onChangeText={(item) => handleUpdateCustomer(item, 'name')}
-          />
-        </View>
-        <View style={styles.signatureContainer}>
-          <SignatureCapture
-            ref={ref}
-            showBorder={false}
-            viewMode={'portrait'}
-            showTitleLabel={false}
-            onSaveEvent={onSaveEvent}
-            onDragEvent={onDragEvent}
-            showNativeButtons={false}
-            saveImageFileInExtStorage={false}
-            style={applyStyles('flex-1', styles.customerSignature)}
-          />
-        </View>
-        <Text style={applyStyles(styles.customerSignatureText, 'text-500')}>
-          Customer Signature
-        </Text>
-        <View
-          style={applyStyles(
-            'flex-1',
-            'flex-row',
-            'justify-center',
-            'item-center',
-          )}>
-          {!!signature && (
-            <Touchable
-              style={styles.buttonStyle}
-              onPress={() => {
-                resetSign();
-              }}>
-              <Text style={applyStyles(styles.buttonTextStyle, 'text-400')}>
-                Clear
-              </Text>
-            </Touchable>
+          ) : (
+            <Button
+              variantColor="white"
+              style={applyStyles('mb-md')}
+              onPress={() => handleOpenPaymentModal('cash')}>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  type="feathericons"
+                  name="dollar-sign"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add cash payment
+                </Text>
+              </View>
+            </Button>
+          )}
+          {payments.map((item) => item.paymentMethod).includes('transfer') ? (
+            <View style={applyStyles('mb-xs')}>
+              <View style={applyStyles('pb-sm')}>
+                <FloatingLabelInput
+                  label="Bank Transfer"
+                  keyboardType="numbers-and-punctuation"
+                  value={getPaymentMethodAmount('transfer')}
+                  onChangeText={(text) =>
+                    handlePaymentMethodAmountChange(text, 'transfer')
+                  }
+                  leftIcon={
+                    <Text
+                      style={applyStyles(styles.textInputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+              <Button
+                variantColor="clear"
+                onPress={() => handleRemovePayment('transfer')}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                  )}>
+                  <Icon
+                    size={24}
+                    name="trash-2"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Delete payment
+                  </Text>
+                </View>
+              </Button>
+            </View>
+          ) : (
+            <Button
+              variantColor="white"
+              style={applyStyles('mb-md')}
+              onPress={() => handleOpenPaymentModal('transfer')}>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  name="repeat"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add bank transfer
+                </Text>
+              </View>
+            </Button>
+          )}
+          {payments.map((item) => item.paymentMethod).includes('mobile') ? (
+            <View style={applyStyles('mb-xs')}>
+              <View style={applyStyles('pb-sm')}>
+                <FloatingLabelInput
+                  label="Mobile Money"
+                  keyboardType="numbers-and-punctuation"
+                  value={getPaymentMethodAmount('mobile')}
+                  onChangeText={(text) =>
+                    handlePaymentMethodAmountChange(text, 'mobile')
+                  }
+                  leftIcon={
+                    <Text
+                      style={applyStyles(styles.textInputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+              <Button
+                variantColor="clear"
+                onPress={() => handleRemovePayment('mobile')}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                  )}>
+                  <Icon
+                    size={24}
+                    name="trash-2"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Delete payment
+                  </Text>
+                </View>
+              </Button>
+            </View>
+          ) : (
+            <Button
+              variantColor="white"
+              style={applyStyles('mb-md')}
+              onPress={() => handleOpenPaymentModal('mobile')}>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  name="smartphone"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add mobile money
+                </Text>
+              </View>
+            </Button>
           )}
         </View>
-      </View>
-      <View style={applyStyles({marginTop: 40})}>
-        <View style={styles.pickerContainer}>
-          <Text style={applyStyles('text-400', styles.pickerLabel)}>
-            Payment method
-          </Text>
-          <Picker
-            mode="dropdown"
-            style={styles.picker}
-            prompt="Payment Method"
-            itemStyle={styles.pickerItem}
-            selectedValue={creditPayload.paymentMethod}
-            onValueChange={(itemValue) =>
-              handleCreditPayloadChange(itemValue, 'paymentMethod')
-            }>
-            <Picker.Item label="Cash" value="Cash" />
-            <Picker.Item label="Credit" value="Credit" />
-          </Picker>
-        </View>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <View style={styles.textInputIcon}>
-            <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-              &#8358;
-            </Text>
+        {!!creditAmount && (
+          <View style={applyStyles({marginBottom: 80})}>
+            <FloatingLabelInput
+              editable={false}
+              label="Remaining Balance"
+              keyboardType="number-pad"
+              inputStyle={applyStyles({color: colors.primary})}
+              value={numberWithCommas(creditAmount)}
+              leftIcon={
+                <Text
+                  style={applyStyles(
+                    styles.textInputIconText,
+                    {color: colors.primary},
+                    'text-400',
+                  )}>
+                  &#8358;
+                </Text>
+              }
+            />
           </View>
-          <TextInput
-            style={applyStyles('flex-1', 'pl-lg', 'text-400', styles.input)}
-            keyboardType="number-pad"
-            placeholder="Amount Paid"
-            value={creditPayload.amount}
-            placeholderTextColor={colors['gray-50']}
-            onChangeText={(text) => handleCreditPayloadChange(text, 'amount')}
-          />
-        </View>
-      </View>
+        )}
+      </ScrollView>
       <View style={styles.actionButtons}>
         <Button
           title="Cancel"
-          variantColor="white"
+          variantColor="clear"
           onPress={handleCancel}
           style={styles.actionButton}
         />
         <Button
-          title="Finish"
+          title="Done"
           variantColor="red"
           onPress={handleFinish}
           isLoading={isSubmitting}
           style={styles.actionButton}
         />
       </View>
-    </ScrollView>
+      <ReceiptStatusModal
+        customer={customer}
+        timeTaken={timeTaken}
+        amountPaid={amountPaid}
+        creditAmount={creditAmount}
+        onComplete={handleComplete}
+        isSubmitting={isSubmitting}
+        visible={isSuccessModalOpen}
+        onClose={handleCloseSuccessModal}
+        onPrintReceipt={handlePrintReceipt}
+        onOpenShareModal={handleOpenShareModal}
+        onOpenCustomerModal={handleOpenCustomerModal}
+      />
+      <CustomerDetailsModal
+        customer={customer}
+        visible={isCustomerModalOpen}
+        onClose={handleCloseCustomerModal}
+        onUpdateCustomer={handleUpdateCustomer}
+        onOpenContactList={handleOpenContactList}
+      />
+      <ShareReceiptModal
+        visible={isShareModalOpen}
+        onClose={handleCloseShareModal}
+        onSmsShare={handleSmsShare}
+        onEmailShare={handleEmailShare}
+        onWhatsappShare={handleWhatsappShare}
+      />
+      <Modal visible={isContactListModalOpen}>
+        <Receipts
+          onModalClose={handleCloseContactList}
+          onCustomerSelect={handleCustomerSelect}
+        />
+      </Modal>
+      <PaymentMethodModal
+        type={paymentType}
+        visible={isPaymentModalOpen}
+        onSubmit={handleSubmitPayment}
+        onClose={handleClosePaymentModal}
+        amount={
+          amountPaid === totalAmount ? totalAmount : totalAmount - amountPaid
+        }
+      />
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: colors.white,
+  },
+  scrollView: {
     paddingVertical: 24,
     paddingHorizontal: 16,
-    backgroundColor: colors.white,
   },
   sectionTitle: {
     fontSize: 18,
-    paddingBottom: 12,
     color: colors.primary,
     fontFamily: 'Rubik-Medium',
   },
@@ -432,85 +763,21 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Medium',
   },
   addProductButton: {
-    marginBottom: 24,
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+  },
+  actionButtons: {
     borderTopWidth: 1,
     paddingVertical: 12,
     alignItems: 'center',
     flexDirection: 'row',
-    borderBottomWidth: 1,
-    justifyContent: 'center',
-    borderTopColor: colors['gray-20'],
-    borderBottomColor: colors['gray-20'],
-  },
-  addProductButtonText: {
-    paddingLeft: 12,
-    color: colors.primary,
-    textTransform: 'uppercase',
-    fontFamily: 'Rubik-Regular',
-  },
-  signatureContainer: {
-    height: 200,
-    width: '100%',
-    borderWidth: 1,
-    borderRadius: 8,
-    marginBottom: 8,
-    borderColor: colors['gray-20'],
-  },
-  customerSignature: {
-    height: '100%',
-    width: '100%',
-  },
-  customerSignatureText: {
-    fontSize: 12,
-    textAlign: 'center',
-    color: colors['gray-300'],
-  },
-  actionButtons: {
-    marginTop: 24,
-    marginBottom: 32,
-    alignItems: 'center',
-    flexDirection: 'row',
+    paddingHorizontal: 16,
     justifyContent: 'space-between',
+    borderTopColor: colors['gray-20'],
   },
   actionButton: {
     width: '48%',
-  },
-  input: {
-    fontSize: 16,
-    marginBottom: 16,
-    borderBottomWidth: 1,
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-    borderBottomColor: colors['gray-200'],
-  },
-  buttonStyle: {
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonTextStyle: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  pickerContainer: {
-    marginBottom: 40,
-    borderBottomWidth: 1,
-    borderColor: colors['gray-200'],
-  },
-  pickerLabel: {
-    color: colors['gray-100'],
-  },
-  picker: {
-    paddingBottom: 12,
-    fontFamily: 'Rubik-Regular',
-  },
-  pickerItem: {
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-  },
-  textInputIcon: {
-    top: 14,
-    position: 'absolute',
   },
   textInputIconText: {
     fontSize: 16,
