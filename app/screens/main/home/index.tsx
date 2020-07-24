@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useLayoutEffect} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '../../../styles';
@@ -29,6 +29,7 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const pubNub = usePubNub();
   const realm = useRealm();
+  const [notificationToken, setNotificationToken] = useState('');
   const handleLogout = useCallback(async () => {
     try {
       const authService = getAuthService();
@@ -57,49 +58,50 @@ const HomeScreen = () => {
     const channelGroups: string[] = [pubNub.getUUID()];
     const channels: string[] = [];
 
-    if (realm) {
-      const conversations = realm.objects<IConversation>('Conversation');
-      channels.push(
-        ...conversations.map((conversation) => conversation.channel),
-      );
-    }
+    const conversations = realm.objects<IConversation>('Conversation');
+    channels.push(...conversations.map((conversation) => conversation.channel));
 
     pubNub.subscribe({channels, channelGroups});
 
-    PushNotification.configure({
-      onRegister: (token: PushNotificationToken) => {
-        const pushGateway = Platform.select({android: 'gcm', ios: 'apns'});
-        if (pushGateway) {
-          pubNub.push.addChannels(
-            {
-              channels: [pubNub.getUUID(), ...channels],
-              device: token.token,
-              pushGateway,
-            },
-            (status) => {
-              if (status.error) {
-                console.log('PubNub Error', status.errorData);
-              }
-            },
-          );
-        }
-      },
-      onNotification: (notification) => {
-        const message = notification.data as IMessage;
-        const conversation = realm
-          .objects<IConversation>('Conversation')
-          .filtered(`channel = "${message.channel}"`)[0];
-        navigation.navigate('Chat', conversation);
-        PushNotification.cancelAllLocalNotifications();
-      },
-    });
+    const pushGateway = Platform.select({android: 'gcm', ios: 'apns'});
+    if (pushGateway && notificationToken) {
+      pubNub.push.addChannels(
+        {
+          channels: [...channels, pubNub.getUUID()],
+          device: notificationToken,
+          pushGateway,
+        },
+        (status) => {
+          if (status.error) {
+            console.log('PubNub Error: ', status);
+          }
+        },
+      );
+    }
 
     return () => {
       if (pubNub) {
         pubNub.unsubscribeAll();
       }
     };
-  }, [navigation, pubNub, realm]);
+  }, [notificationToken, pubNub, realm]);
+
+  useEffect(() => {
+    PushNotification.configure({
+      onRegister: (token: PushNotificationToken) => {
+        setNotificationToken(token.token);
+      },
+      onNotification: (notification: any) => {
+        if (!notification.foreground) {
+          const conversation = realm
+            .objects<IConversation>('Conversation')
+            .filtered(`channel = "${notification.channel}"`)[0];
+          navigation.navigate('Chat', conversation);
+          PushNotification.cancelAllLocalNotifications();
+        }
+      },
+    });
+  }, [navigation, realm]);
 
   const getConversationFromChannelMetadata = useCallback(
     async (

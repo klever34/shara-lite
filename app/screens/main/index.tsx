@@ -62,12 +62,21 @@ const MainStack = createStackNavigator<MainStackParamList>();
 const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const [realm, setRealm] = useState<Realm | null>(null);
+  const [error, setError] = useState(false);
   useEffect(() => {
-    createRealm().then((nextRealm) => {
-      setRealm(nextRealm);
-      const realmService = getRealmService();
-      realmService.setInstance(nextRealm);
-    });
+    createRealm()
+      .then((nextRealm) => {
+        setRealm(nextRealm);
+        const realmService = getRealmService();
+        realmService.setInstance(nextRealm);
+      })
+      .catch(() => {
+        setError(true);
+        Alert.alert(
+          'Oops! Something went wrong.',
+          'Try clearing app data from application settings',
+        );
+      });
   }, []);
   useEffect(() => {
     const authService = getAuthService();
@@ -99,6 +108,10 @@ const MainScreens = ({navigation}: any) => {
       );
     });
   }, [navigation]);
+
+  if (error) {
+    return null;
+  }
 
   if (!pubNubClient || !realm) {
     return (

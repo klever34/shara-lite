@@ -21,20 +21,22 @@ const ContactsScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const contacts = realm.objects<IContact>('Contact').sorted('firstname');
-  const [loading, setLoading] = useState(false);
+  const [loadingContacts, setLoadingContacts] = useState(false);
+  const [loadingChat, setLoadingChat] = useState(false);
+  // TODO: use useAsync hook for tracking loading state
   const loadContacts = useCallback(
     (showLoader = false) => {
       const contactsService = getContactsService();
       if (!contacts.length || showLoader) {
-        setLoading(true);
+        setLoadingContacts(true);
       }
       contactsService
         .loadContacts()
         .then(() => {
-          setLoading(false);
+          setLoadingContacts(false);
         })
         .catch((error) => {
-          setLoading(false);
+          setLoadingContacts(false);
           Alert.alert(
             'Error',
             error.message,
@@ -89,7 +91,7 @@ const ContactsScreen = () => {
     navigation.setOptions({
       headerRight: () => (
         <View style={applyStyles('flex-row')}>
-          {loading && (
+          {(loadingContacts || loadingChat) && (
             <ActivityIndicator
               color={colors.white}
               size={24}
@@ -111,9 +113,12 @@ const ContactsScreen = () => {
         </View>
       ),
     });
-  }, [inviteFriend, loadContacts, loading, navigation]);
+  }, [inviteFriend, loadContacts, loadingChat, loadingContacts, navigation]);
   const chatWithContact = useCallback(
     async (item) => {
+      if (loadingChat) {
+        return;
+      }
       try {
         let contact = realm
           .objects<IContact>('Contact')
@@ -122,10 +127,10 @@ const ContactsScreen = () => {
         let conversation: IConversation;
         const apiService = getApiService();
         if (!channelName) {
-          setLoading(true);
+          setLoadingChat(true);
           channelName = await apiService.createOneOnOneChannel(item.mobile);
           const authService = getAuthService();
-          setLoading(false);
+          setLoadingChat(false);
           const user = authService.getUser();
           if (!user) {
             return;
@@ -151,11 +156,11 @@ const ContactsScreen = () => {
           navigateToChat(conversation);
         }
       } catch (error) {
-        setLoading(false);
+        setLoadingChat(false);
         console.log('Error: ', error);
       }
     },
-    [navigateToChat, realm],
+    [loadingChat, navigateToChat, realm],
   );
 
   return (
