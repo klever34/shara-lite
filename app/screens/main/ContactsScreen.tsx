@@ -68,6 +68,23 @@ const ContactsScreen = () => {
       });
     } catch (e) {}
   }, []);
+  const navigateToChat = useCallback(
+    (conversation: IConversation) => {
+      navigation.dispatch(
+        CommonActions.reset({
+          routes: [
+            {name: 'Home'},
+            {
+              name: 'Chat',
+              params: conversation,
+            },
+          ],
+          index: 1,
+        }),
+      );
+    },
+    [navigation],
+  );
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -125,31 +142,20 @@ const ContactsScreen = () => {
               UpdateMode.Modified,
             );
             contact.channel = channelName;
+            navigateToChat(conversation);
           });
         } else {
           conversation = realm
             .objects<IConversation>('Conversation')
             .filtered(`channel = "${channelName}"`)[0];
+          navigateToChat(conversation);
         }
-        navigation.dispatch(
-          CommonActions.reset({
-            routes: [
-              {name: 'Home'},
-              {
-                name: 'Chat',
-                // @ts-ignore
-                params: conversation,
-              },
-            ],
-            index: 1,
-          }),
-        );
       } catch (error) {
         setLoading(false);
         console.log('Error: ', error);
       }
     },
-    [navigation, realm],
+    [navigateToChat, realm],
   );
 
   return (

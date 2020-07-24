@@ -109,7 +109,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#000',
     borderBottomWidth: 1,
-    borderBottomColor: colors['gray-700'],
+    borderBottomColor: colors['gray-300'],
   },
   inputIcon: {
     top: 34,
