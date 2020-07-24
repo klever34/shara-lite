@@ -1,6 +1,10 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {ActivityIndicator, Alert, Text, View} from 'react-native';
-import {getAuthService, getContactsService} from '../../services';
+import {
+  getApiService,
+  getAuthService,
+  getContactsService,
+} from '../../services';
 import {applyStyles} from '../../helpers/utils';
 import Touchable from '../../components/Touchable';
 import {CommonActions, useNavigation} from '@react-navigation/native';
@@ -11,7 +15,6 @@ import {colors} from '../../styles';
 import {useRealm} from '../../services/realm';
 import {IContact, IConversation} from '../../models';
 import {UpdateMode} from 'realm';
-import {requester} from '../../services/api';
 import ContactsList from '../../components/ContactsList';
 
 const ContactsScreen = () => {
@@ -100,14 +103,10 @@ const ContactsScreen = () => {
           .filtered(`mobile = "${item.mobile}"`)[0];
         let channelName = contact.channel;
         let conversation: IConversation;
+        const apiService = getApiService();
         if (!channelName) {
           setLoading(true);
-          const response = await requester.post<{
-            channelName: string;
-          }>('/chat/channel', {
-            recipient: item.mobile,
-          });
-          ({channelName} = response.data);
+          channelName = await apiService.createOneOnOneChannel(item.mobile);
           const authService = getAuthService();
           setLoading(false);
           const user = authService.getUser();

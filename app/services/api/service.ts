@@ -30,6 +30,8 @@ export interface IApiService {
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
 
+  createOneOnOneChannel(mobile: string): Promise<string>;
+
   getUserDetails(mobiles: string[]): Promise<User[]>;
 
   getGroupMembers(groupId: number): Promise<GroupChatMember[]>;
@@ -112,6 +114,22 @@ export class ApiService implements IApiService {
     }
   }
 
+  public async createOneOnOneChannel(recipient: string) {
+    try {
+      const {
+        data: {channelName},
+      } = await this.requester.post<{
+        channelName: string;
+      }>('/chat/channel', {
+        recipient,
+      });
+      return channelName;
+    } catch (e) {
+      console.log('createOneOnOneChannel Error: ', e);
+      throw e;
+    }
+  }
+
   getUserDetails(mobiles: string[]): Promise<User[]> {
     const sizePerRequest = 20;
     const requestNo = Math.ceil(mobiles.length / sizePerRequest);
@@ -159,7 +177,6 @@ export class ApiService implements IApiService {
   }
 
   async addGroupChatMembers(groupChatId: number, members: IContact[]) {
-    console.log(members.map((member) => member.id));
     try {
       const {
         data: {groupChatMembers},

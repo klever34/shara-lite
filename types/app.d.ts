@@ -47,13 +47,6 @@ type PushNotificationToken = {
   os: string;
 };
 
-type PushNotificationData = {
-  foreground: boolean;
-  userInteraction: boolean;
-  message: string;
-  data: any;
-};
-
 type Product = {
   id: string;
   name: string;
@@ -101,5 +94,3 @@ type Payment = {
 };
 
 declare module 'react-native-signature-capture';
-
-declare module 'react-native-push-notification';

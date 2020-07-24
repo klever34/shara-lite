@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect} from 'react';
-import {SafeAreaView} from 'react-native';
+import {Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '../../../styles';
 import ChatListScreen from './ChatListScreen';
@@ -14,6 +14,7 @@ import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
 import Realm from 'realm';
 import CustomersTab from '../customers';
 import BusinessTab from '../business';
+import PushNotification from 'react-native-push-notification';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -64,43 +65,79 @@ const HomeScreen = () => {
     }
 
     pubNub.subscribe({channels, channelGroups});
+
+    PushNotification.configure({
+      onRegister: (token: PushNotificationToken) => {
+        const pushGateway = Platform.select({android: 'gcm', ios: 'apns'});
+        if (pushGateway) {
+          pubNub.push.addChannels(
+            {
+              channels: [pubNub.getUUID(), ...channels],
+              device: token.token,
+              pushGateway,
+            },
+            (status) => {
+              if (status.error) {
+                console.log('PubNub Error', status.errorData);
+              }
+            },
+          );
+        }
+      },
+      onNotification: (notification) => {
+        const message = notification.data as IMessage;
+        const conversation = realm
+          .objects<IConversation>('Conversation')
+          .filtered(`channel = "${message.channel}"`)[0];
+        navigation.navigate('Chat', conversation);
+        PushNotification.cancelAllLocalNotifications();
+      },
+    });
+
     return () => {
       if (pubNub) {
         pubNub.unsubscribeAll();
       }
     };
-  }, [pubNub, realm]);
+  }, [navigation, pubNub, realm]);
 
-  const getConversationFromChannelMetadata = async (
-    channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
-  ): Promise<IConversation> => {
-    try {
+  const getConversationFromChannelMetadata = useCallback(
+    async (
+      channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
+    ): Promise<IConversation> => {
       const custom = channelMetadata.custom as ChannelCustom;
-      let sender: string;
-      let members: string[];
-      if (custom.type === 'group') {
-        const apiService = getApiService();
-        const groupChatMembers = await apiService.getGroupMembers(custom.id);
-        members = groupChatMembers.map(({user: {mobile}}) => mobile);
-        sender = channelMetadata.name ?? '';
-      } else {
-        members = custom.members
-          .split(',')
-          .map((encryptedMember) => decrypt(encryptedMember));
-        const user = getAuthService().getUser() as User;
-        sender = members.find((member) => member !== user.mobile) ?? '';
+      try {
+        let sender: string;
+        let members: string[];
+        if (custom.type === 'group') {
+          const apiService = getApiService();
+          const groupChatMembers = await apiService.getGroupMembers(custom.id);
+          members = groupChatMembers.map(({user: {mobile}}) => mobile);
+          sender = channelMetadata.name ?? '';
+        } else {
+          members = custom.members
+            .split(',')
+            .map((encryptedMember) => decrypt(encryptedMember));
+          const user = getAuthService().getUser();
+          sender = members.find((member) => member !== user?.mobile) ?? '';
+        }
+        return {
+          title: sender,
+          type: custom.type ?? '1-1',
+          members,
+          channel: channelMetadata.id,
+        };
+      } catch (e) {
+        console.log(
+          'getConversationFromChannelMetadata Error: ',
+          e,
+          channelMetadata,
+        );
+        throw e;
       }
-      return {
-        title: sender,
-        type: custom.type ?? '1-1',
-        members,
-        channel: channelMetadata.id,
-      };
-    } catch (e) {
-      console.log('getConversationFromChannelMetadata Error: ', e);
-      throw e;
-    }
-  };
+    },
+    [],
+  );
 
   useEffect(() => {
     const listener = {
@@ -215,24 +252,39 @@ const HomeScreen = () => {
     return () => {
       pubNub.removeListener(listener);
     };
-  }, [pubNub, realm]);
+  }, [getConversationFromChannelMetadata, pubNub, realm]);
 
   useEffect(() => {
     (async () => {
       try {
-        const {data} = await pubNub.objects.getMemberships({
-          uuid: pubNub.getUUID(),
-          include: {
-            customChannelFields: true,
-          },
+        const {data} = await new Promise((resolve, reject) => {
+          pubNub.objects.getMemberships(
+            {
+              uuid: pubNub.getUUID(),
+              include: {
+                customChannelFields: true,
+              },
+            },
+            (status, response) => {
+              if (status.error) {
+                reject(status);
+              } else {
+                resolve(response);
+              }
+            },
+          );
         });
         const conversations: IConversation[] = [];
         for (let i = 0; i < data.length; i += 1) {
           const {channel} = data[i];
-          const conversation = await getConversationFromChannelMetadata(
-            channel,
-          );
-          conversations.push(conversation);
+          try {
+            const conversation = await getConversationFromChannelMetadata(
+              channel,
+            );
+            conversations.push(conversation);
+          } catch (e) {
+            console.log('Fetching conversation Error: ', e, channel);
+          }
         }
         realm.write(() => {
           for (let i = 0; i < conversations.length; i += 1) {
@@ -254,11 +306,10 @@ const HomeScreen = () => {
           }
         });
       } catch (e) {
-        console.log('Error: ', e);
-        throw e;
+        console.log('Fetching all conversations Error: ', e);
       }
     })().then();
-  }, [pubNub, realm]);
+  }, [getConversationFromChannelMetadata, pubNub, realm]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

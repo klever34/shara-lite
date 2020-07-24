@@ -181,6 +181,7 @@ const ChatScreen = ({
     }
     retryPromise(() => {
       return new Promise<any>((resolve, reject) => {
+        // TODO: Separate message publish from notification publish
         pubNub.publish({channel, message: messagePayload}, function (
           status: PubnubStatus,
           response: PublishResponse,

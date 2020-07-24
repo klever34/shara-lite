@@ -4,7 +4,6 @@ import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Alert, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
-import PushNotification from 'react-native-push-notification';
 import {
   getAuthService,
   getContactsService,
@@ -61,7 +60,6 @@ export type MainStackParamList = {
 const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = ({navigation}: any) => {
-  const channelName = 'SHARA_GLOBAL';
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const [realm, setRealm] = useState<Realm | null>(null);
   useEffect(() => {
@@ -101,34 +99,6 @@ const MainScreens = ({navigation}: any) => {
       );
     });
   }, [navigation]);
-
-  useEffect(() => {
-    PushNotification.configure({
-      onRegister: (token: PushNotificationToken) => {
-        if (pubNubClient) {
-          if (token.os === 'ios') {
-            pubNubClient.push.addChannels({
-              channels: [channelName],
-              device: token.token,
-              pushGateway: 'apns',
-            });
-          } else if (token.os === 'android') {
-            pubNubClient.push.addChannels({
-              channels: [channelName],
-              device: token.token,
-              pushGateway: 'gcm',
-            });
-          }
-        }
-      },
-
-      // (required) Called when a remote or local notification is opened or received
-      onNotification: () => {
-        navigation.navigate('Chat', {title: 'Shara Chat'});
-        PushNotification.cancelAllLocalNotifications();
-      },
-    });
-  }, [navigation, pubNubClient]);
 
   if (!pubNubClient || !realm) {
     return (

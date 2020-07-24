@@ -42,7 +42,6 @@ const SelectGroupMembersScreen = () => {
                   <Touchable
                     key={contact.mobile}
                     onPress={() => {
-                      console.log('foo');
                       toggleContactSelect(contact);
                     }}>
                     <View>
