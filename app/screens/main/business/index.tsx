@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {Image, StyleSheet, Text, View} from 'react-native';
+import {Image, StyleSheet, Text, View, Alert} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {colors} from '../../../styles';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
@@ -11,7 +11,7 @@ const BusinessTab = () => {
   const navigation = useNavigation();
   const actions = [
     {
-      name: 'Receipts',
+      name: 'NewReceipt',
       render: () => {
         return (
           <View style={styles.listItem}>
@@ -84,6 +84,10 @@ const BusinessTab = () => {
     },
     [navigation],
   );
+
+  const handleViewFinances = useCallback(() => {
+    Alert.alert('Coming soon', 'This feature is coming in a future release');
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -166,9 +170,9 @@ const BusinessTab = () => {
         </ActionCard>
       </View>
       <Button
-        onPress={() => {}}
         variantColor="white"
         title="View all finances"
+        onPress={handleViewFinances}
         style={applyStyles({elevation: 0})}
       />
       <FloatingAction

@@ -24,10 +24,10 @@ type Product = {
   id: string;
   name: string;
   weight: string;
-  price?: string;
+  price: string;
 };
 
-type ReceiptItem = Product & {quantity?: string};
+type ReceiptItem = Product & {quantity: string};
 
 type Customer = {
   id: string;
@@ -59,11 +59,12 @@ type Order = {
   completedOn: string;
 };
 type Payment = {
-  id: string;
+  id?: string;
   amount: number;
-  receivedBy: string;
+  receivedBy?: string;
   paymentMethod: string;
-  paidOn: string;
+  paidOn?: string;
+  note?: string;
 };
 
 declare module 'react-native-signature-capture';

@@ -34,3 +34,6 @@ export const handleFetchErrors = async <T extends any>(
 
 export const numberWithCommas = (x: number) =>
   x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
+
+export const formatCurrency = (amount: number) =>
+  `&#8358;${numberWithCommas(amount)}`;
