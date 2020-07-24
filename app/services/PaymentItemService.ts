@@ -17,12 +17,14 @@ export const savePaymentItem = ({
   price: string;
 }): void => {
   realm.write(() => {
+    const priceFloat = parseFloat(price);
+    const quantityFloat = parseFloat(quantity);
     const paymentItem: IPaymentItem = {
       payment,
       name,
-      quantity: parseFloat(quantity),
-      price: parseFloat(price),
-      total_price: quantity * price,
+      quantity: quantityFloat,
+      price: priceFloat,
+      total_price: quantityFloat * priceFloat,
       id: generateUniqueId(),
       created_at: new Date(),
     };
