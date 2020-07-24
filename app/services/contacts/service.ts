@@ -1,17 +1,17 @@
 import {Alert, PermissionsAndroid} from 'react-native';
 import Contacts, {Contact} from 'react-native-contacts';
 import flatten from 'lodash/flatten';
-import {IApiService} from '../api/service';
-import {IAuthService} from '../auth/service';
+import {IApiService} from '../api';
+import {IAuthService} from '../auth';
 import {IContact} from '../../models';
-import {IRealmService} from '../realm/service';
+import {IRealmService} from '../realm';
 
 export interface IContactsService {
   getAll: () => Promise<Contact[]>;
   loadContacts: () => Promise<void>;
 }
 
-export default class ContactsService implements IContactsService {
+export class ContactsService implements IContactsService {
   constructor(
     private realmService: IRealmService,
     private apiService: IApiService,

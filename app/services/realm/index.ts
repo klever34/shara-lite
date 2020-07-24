@@ -25,3 +25,5 @@ export const createRealm = async () => {
     schema: [Contact, Message, Conversation],
   });
 };
+
+export * from './service';

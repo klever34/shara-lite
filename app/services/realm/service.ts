@@ -27,7 +27,7 @@ export interface IRealmService {
   // updateConversation(conversation: IConversation): Promise<IConversation>;
 }
 
-export default class RealmService implements IRealmService {
+export class RealmService implements IRealmService {
   private realm: Realm | null = null;
 
   public getInstance() {

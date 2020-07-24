@@ -1,5 +1,4 @@
-import {IStorageService} from '../storage/service';
-import {requester} from '../api';
+import {IStorageService} from '../storage';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -14,20 +13,10 @@ export interface IAuthService {
 
   isLoggedIn(): boolean;
 
-  register(payload: {
-    firstname: string;
-    lastname: string;
-    country_code: string;
-    mobile: string;
-    password: string;
-  }): Promise<ApiResponse>;
-
-  logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
-
   logOut(): void;
 }
 
-export default class AuthService implements IAuthService {
+export class AuthService implements IAuthService {
   private user: User | null = null;
   private token: string | null = null;
 
@@ -64,38 +53,6 @@ export default class AuthService implements IAuthService {
 
   public isLoggedIn(): boolean {
     return !!this.token && !!this.user;
-  }
-
-  public async register(payload: {
-    firstname: string;
-    lastname: string;
-    mobile: string;
-    password: string;
-  }) {
-    try {
-      return await requester.post('/signup', payload);
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  public async logIn(payload: {mobile: string; password: string}) {
-    try {
-      const fetchResponse = await requester.post('/login', payload);
-      const {
-        data: {
-          credentials: {token},
-          user,
-        },
-      } = fetchResponse;
-      await this.storageService.setItem('token', token);
-      this.token = token;
-      await this.storageService.setItem('user', user);
-      this.user = user;
-      return fetchResponse;
-    } catch (error) {
-      throw error;
-    }
   }
 
   public async logOut() {

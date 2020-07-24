@@ -1,8 +1,8 @@
-import StorageService, {IStorageService} from './storage/service';
-import ContactsService, {IContactsService} from './contacts/service';
-import AuthService, {IAuthService} from './auth/service';
-import RealmService, {IRealmService} from './realm/service';
-import ApiService, {IApiService} from './api/service';
+import {StorageService, IStorageService} from './storage';
+import {ContactsService, IContactsService} from './contacts';
+import {AuthService, IAuthService} from './auth';
+import {RealmService, IRealmService} from './realm';
+import {ApiService, IApiService} from './api';
 
 let realmService: IRealmService | null = null;
 let apiService: IApiService | null = null;
@@ -10,18 +10,11 @@ let storageService: IStorageService | null = null;
 let contactsService: IContactsService | null = null;
 let authService: IAuthService | null = null;
 
-export const getApiService = () => {
-  if (!apiService) {
-    apiService = new ApiService();
-  }
-  return apiService as IApiService;
-};
-
 export const getRealmService = () => {
   if (!realmService) {
     realmService = new RealmService();
   }
-  return realmService as IRealmService;
+  return realmService;
 };
 
 export const getStorageService = () => {
@@ -36,6 +29,13 @@ export const getAuthService = () => {
     authService = new AuthService(getStorageService());
   }
   return authService;
+};
+
+export const getApiService = () => {
+  if (!apiService) {
+    apiService = new ApiService(getAuthService(), getStorageService());
+  }
+  return apiService;
 };
 
 export const getContactsService = () => {

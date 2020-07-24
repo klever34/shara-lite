@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {RootStackParamList} from '../../index';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {getAuthService} from '../../services';
+import {getApiService} from '../../services';
 import {colors} from '../../styles';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
@@ -52,10 +52,10 @@ export const Register = ({
       country_code: countryCode,
       mobile: `${countryCode}${mobile}`,
     };
-    const authService = getAuthService();
+    const apiService = getApiService();
     try {
       setLoading(true);
-      await authService.register(payload);
+      await apiService.register(payload);
       setLoading(false);
       navigation.reset({
         index: 0,
