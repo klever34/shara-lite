@@ -73,8 +73,8 @@ export const PaymentMethodModal = (props: Props) => {
           <FloatingLabelInput
             value={amount}
             label="Amount Paid"
+            keyboardType="numeric"
             onChangeText={handleAmountChange}
-            keyboardType="numbers-and-punctuation"
             leftIcon={
               <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
                 &#8358;

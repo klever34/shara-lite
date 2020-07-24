@@ -26,6 +26,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
     onFocus,
     onBlur,
     leftIcon,
+    inputStyle,
     containerStyle,
     ...rest
   } = props;
@@ -96,7 +97,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
         value={value}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        style={applyStyles(inputFieldStyle)}
+        style={applyStyles(inputFieldStyle, inputStyle)}
       />
     </View>
   );
