@@ -23,17 +23,9 @@ const Receipts = (props: any) => {
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);
 
-  const handleSelectCustomer = useCallback(
-    (item?: Customer) => {
-      onCustomerSelect({customer: item});
-      setSearchInputValue('');
-      setMyCustomers(customers);
-    },
-    [customers, onCustomerSelect],
-  );
-
   const handleCustomerSearch = useCallback(
     (searchedText: string) => {
+      setSearchInputValue(searchedText);
       const sort = (item: Customer, text: string) => {
         return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
       };
@@ -41,9 +33,6 @@ const Receipts = (props: any) => {
         return sort(item, searchedText);
       });
       setMyCustomers(ac);
-      setTimeout(() => {
-        setSearchInputValue(searchedText);
-      }, 0);
     },
     [customers],
   );
@@ -52,13 +41,31 @@ const Receipts = (props: any) => {
     onModalClose();
   }, [onModalClose]);
 
+  const handleSelectCustomer = useCallback(
+    (item?: Customer) => {
+      onCustomerSelect({customer: item});
+      setSearchInputValue('');
+      setMyCustomers(customers);
+      handleCloseModal();
+    },
+    [customers, onCustomerSelect, handleCloseModal],
+  );
+
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {
       return (
         <Touchable onPress={() => handleSelectCustomer(customer)}>
           <View style={styles.customerListItem}>
-            <Text style={applyStyles(styles.customerListItemText, 'text-400')}>
+            <Text
+              style={applyStyles(
+                styles.customerListItemText,
+                'pb-xs',
+                'text-400',
+              )}>
               {customer.name}
+            </Text>
+            <Text style={applyStyles({color: colors['gray-300']}, 'text-400')}>
+              {customer.mobile}
             </Text>
           </View>
         </Touchable>
@@ -88,6 +95,7 @@ const Receipts = (props: any) => {
             color={colors.primary}
           />
           <TextInput
+            autoFocus
             value={searchInputValue}
             style={applyStyles(styles.searchInput, 'text-400')}
             placeholder="Search Customer"
@@ -101,6 +109,19 @@ const Receipts = (props: any) => {
         renderItem={renderCustomerListItem}
         ListHeaderComponent={renderCustomerListHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
+        ListEmptyComponent={
+          <View
+            style={applyStyles('flex-1', 'items-center', 'justify-center', {
+              paddingVertical: 40,
+            })}>
+            <Text
+              style={applyStyles('heading-700', 'text-center', {
+                color: colors['gray-300'],
+              })}>
+              No results found
+            </Text>
+          </View>
+        }
       />
       <Button title="Close" variantColor="white" onPress={handleCloseModal} />
     </SafeAreaView>
@@ -166,7 +187,7 @@ const styles = StyleSheet.create({
   },
   customerListItemText: {
     fontSize: 16,
-    color: colors['gray-300'],
+    color: colors.primary,
   },
 });
 

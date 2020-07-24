@@ -17,17 +17,20 @@ import {
 import Touchable from '../../../components/Touchable';
 import Icon from '../../../components/Icon';
 import {Button} from '../../../components';
+import {isEmpty} from 'lodash';
 
 type Props = {
-  amountPaid: number;
   visible: boolean;
   timeTaken: number;
+  amountPaid: number;
+  customer: Customer;
   onClose: () => void;
-  isSubmitting: boolean;
   creditAmount: number;
+  isSubmitting: boolean;
   onComplete: () => void;
   onOpenShareModal: () => void;
   onOpenCustomerModal: () => void;
+  onPrintReceipt: () => void;
 };
 
 type StatusProps = {
@@ -46,11 +49,13 @@ type PageProps = {
 export const ReceiptStatusModal = (props: Props) => {
   const {
     visible,
+    customer,
     timeTaken,
     amountPaid,
     onComplete,
     isSubmitting,
     creditAmount,
+    onPrintReceipt,
     onOpenShareModal,
     onOpenCustomerModal,
   } = props;
@@ -81,6 +86,7 @@ export const ReceiptStatusModal = (props: Props) => {
       },
     },
   };
+
   return (
     <Modal transparent={false} animationType="slide" visible={visible}>
       <ScrollView>
@@ -104,9 +110,15 @@ export const ReceiptStatusModal = (props: Props) => {
               statusProps.success.style.text,
               'text-400',
             )}>
-            {`You have successfully issued a receipt for N${numberWithCommas(
-              amountPaid,
-            )} in Cash and N${numberWithCommas(creditAmount)} in Credit`}
+            You have successfully issued a receipt for{' '}
+            <Text style={applyStyles('text-700')}>
+              N{numberWithCommas(amountPaid)}
+            </Text>{' '}
+            in Cash and{' '}
+            <Text style={applyStyles('text-700', {color: colors.primary})}>
+              N{numberWithCommas(creditAmount)}
+            </Text>{' '}
+            in Credit
           </Text>
           <Text
             style={applyStyles(
@@ -119,42 +131,103 @@ export const ReceiptStatusModal = (props: Props) => {
         </View>
 
         <View style={applyStyles({marginBottom: 40, paddingHorizontal: 16})}>
-          <View
-            style={applyStyles('items-center, justify-center', {
-              marginBottom: 16,
-            })}>
-            <Text
-              style={applyStyles('text-400', 'text-center', {
-                color: colors['gray-100'],
-              })}>
-              Do you want to add the customers' details?
-            </Text>
-          </View>
-
-          <Touchable onPress={onOpenCustomerModal}>
-            <View
-              style={applyStyles('flex-row', 'items-center', 'justify-center', {
-                paddingVertical: 16,
-              })}>
-              <Icon
-                size={24}
-                type="ionicons"
-                name={
-                  Platform.select({
-                    android: 'md-add',
-                    ios: 'ios-add',
-                  }) as string
-                }
-                color={colors.primary}
-              />
-              <Text style={styles.addProductButtonText}>
-                Add customer details
+          {!isEmpty(customer) ? (
+            <>
+              <Text
+                style={applyStyles(
+                  'pb-md',
+                  'text-400',
+                  'text-uppercase',
+                  'text-center',
+                  {
+                    color: colors.primary,
+                  },
+                )}>
+                Customer details
               </Text>
-            </View>
-          </Touchable>
+              <Text
+                style={applyStyles(
+                  'pb-sm',
+                  'text-400',
+                  'text-center',
+                  'text-uppercase',
+                  {
+                    fontSize: 18,
+                    color: colors['gray-300'],
+                  },
+                )}>
+                {customer.name}
+              </Text>
+              <Text
+                style={applyStyles('pb-md', 'text-400', 'text-center', {
+                  color: colors['gray-300'],
+                })}>
+                {customer.mobile}
+              </Text>
+              <Touchable onPress={onOpenCustomerModal}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                    {
+                      paddingVertical: 16,
+                    },
+                  )}>
+                  <Icon
+                    size={24}
+                    name="edit"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text style={styles.addProductButtonText}>Edit details</Text>
+                </View>
+              </Touchable>
+            </>
+          ) : (
+            <>
+              <View
+                style={applyStyles('items-center, justify-center', {
+                  marginBottom: 16,
+                })}>
+                <Text
+                  style={applyStyles('text-400', 'text-center', {
+                    color: colors['gray-100'],
+                  })}>
+                  Do you want to add the customers' details?
+                </Text>
+              </View>
+              <Touchable onPress={onOpenCustomerModal}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                    {
+                      paddingVertical: 16,
+                    },
+                  )}>
+                  <Icon
+                    size={24}
+                    type="ionicons"
+                    name={
+                      Platform.select({
+                        android: 'md-add',
+                        ios: 'ios-add',
+                      }) as string
+                    }
+                    color={colors.primary}
+                  />
+                  <Text style={styles.addProductButtonText}>
+                    Add customer details
+                  </Text>
+                </View>
+              </Touchable>
+            </>
+          )}
           <Button
-            onPress={() => {}}
             variantColor="white"
+            onPress={onPrintReceipt}
             style={applyStyles({marginTop: 24})}>
             <View
               style={applyStyles('flex-row', 'items-center', 'justify-center')}>

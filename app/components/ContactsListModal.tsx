@@ -130,7 +130,7 @@ export const ContactsListModal = ({
   );
 
   return (
-    <Modal visible={visible}>
+    <Modal animationType="slide" visible={visible}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon

@@ -1,34 +1,30 @@
-import {Picker} from '@react-native-community/picker';
 import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
+  Modal,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
-import {Contact} from 'react-native-contacts';
 import {MainStackParamList} from '..';
 import {Button} from '../../../components/Button';
-import {ContactsListModal} from '../../../components/ContactsListModal';
 import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
-import Touchable from '../../../components/Touchable';
-import {
-  applyStyles,
-  generateUniqueId,
-  numberWithCommas,
-} from '../../../helpers/utils';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {savePayment} from '../../../services/PaymentService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
+import {PaymentMethodModal} from './PaymentMethodModal';
+import Receipts from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 
@@ -79,8 +75,6 @@ const summaryTableItemStyles = StyleSheet.create({
     color: colors['gray-200'],
   },
 });
-
-const paymentTypes = ['Cash', 'Bank Transfer', 'Mobile Money'];
 
 const SummaryTableHeader = () => {
   return (
@@ -149,9 +143,12 @@ const ReceiptSummary = ({
   const tax = 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [paymentType, setPaymentType] = useState(paymentTypes[0]);
+  const [paymentType, setPaymentType] = useState<
+    'cash' | 'transfer' | 'mobile'
+  >('cash');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [payments, setPayments] = useState<Payment[]>([]);
   const [customer, setCustomer] = useState<Customer | ICustomer>(
     customerProps || ({} as Customer),
   );
@@ -159,6 +156,7 @@ const ReceiptSummary = ({
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const creditAmount = totalAmount - amountPaid;
 
   //@ts-ignore
@@ -177,15 +175,6 @@ const ReceiptSummary = ({
   const handleAddProduct = useCallback(() => {
     navigation.navigate('NewReceipt');
   }, [navigation]);
-
-  const handlePaymentTypeChange = useCallback((value: string | number) => {
-    setPaymentType(value.toString());
-  }, []);
-
-  const handleAmountPaidChange = useCallback((value: string | number) => {
-    // @TODO Improve conversion
-    setAmountPaid(parseFloat(value.toString().replace(/,/g, '')));
-  }, []);
 
   const handleOpenSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(true);
@@ -211,14 +200,98 @@ const ReceiptSummary = ({
     setIsCustomerModalOpen(false);
   }, []);
 
-  const handleCustomerSelect = useCallback(
-    ({givenName, familyName, phoneNumbers}: Contact) => {
-      setCustomer({
-        created_at: new Date(),
-        id: generateUniqueId(),
-        mobile: phoneNumbers[0].number,
-        name: `${givenName} ${familyName}`,
+  const handleOpenPaymentModal = useCallback(
+    (type: 'cash' | 'transfer' | 'mobile') => {
+      setPaymentType(type);
+      setIsPaymentModalOpen(true);
+    },
+    [],
+  );
+
+  const handleClosePaymentModal = useCallback(() => {
+    setIsPaymentModalOpen(false);
+  }, []);
+
+  const handleOpenContactList = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactList = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
+
+  const handleSmsShare = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt sharing via SMS is coming in the next release',
+    );
+  }, []);
+
+  const handleEmailShare = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt sharing via Email is coming in the next release',
+    );
+  }, []);
+
+  const handleWhatsappShare = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt sharing via Whatsapp is coming in the next release',
+    );
+  }, []);
+
+  const handlePrintReceipt = useCallback(() => {
+    Alert.alert(
+      'Coming soon',
+      'Receipt printing is coming in the next release',
+    );
+  }, []);
+
+  const handleRemovePayment = useCallback(
+    (type: 'cash' | 'transfer' | 'mobile') => {
+      const result = payments.filter((item) => item.paymentMethod !== type);
+      setPayments(result);
+    },
+    [payments],
+  );
+
+  const handleSubmitPayment = useCallback(
+    (payment: Payment) => {
+      setPayments([...payments, payment]);
+    },
+    [payments],
+  );
+
+  const handlePaymentMethodAmountChange = useCallback(
+    (text: string, type: 'cash' | 'transfer' | 'mobile') => {
+      const result = payments.map((item) => {
+        if (item.paymentMethod === type) {
+          return {...item, amount: parseFloat(text)};
+        }
+        return item;
       });
+      setPayments(result);
+    },
+    [payments],
+  );
+
+  const getPaymentMethodAmount = useCallback(
+    (type: 'cash' | 'transfer' | 'mobile') => {
+      const paymentMethod = payments.find(
+        (item) => item.paymentMethod === type,
+      );
+      if (paymentMethod) {
+        return paymentMethod.amount.toString();
+      }
+      return '0';
+    },
+    [payments],
+  );
+
+  const handleCustomerSelect = useCallback(
+    ({customer: customerData}) => {
+      setCustomer(customerData);
     },
     [setCustomer],
   );
@@ -229,14 +302,6 @@ const ReceiptSummary = ({
     },
     [customer],
   );
-
-  const handleOpenContactList = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
-  const handleCloseContactList = useCallback(() => {
-    setIsContactListModalOpen(false);
-  }, []);
 
   const handleFinish = () => {
     setIsSubmitting(true);
@@ -278,6 +343,13 @@ const ReceiptSummary = ({
     setAmountPaid(total);
   }, [products]);
 
+  useEffect(() => {
+    if (payments.length) {
+      const paid = payments.reduce((acc, item) => acc + item.amount, 0);
+      setAmountPaid(paid);
+    }
+  }, [payments, totalAmount]);
+
   const renderSummaryItem = useCallback(
     ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
     [],
@@ -287,7 +359,15 @@ const ReceiptSummary = ({
     <KeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.scrollView} nestedScrollEnabled>
         <View>
-          <Text style={styles.sectionTitle}>Products</Text>
+          <Text style={applyStyles('pb-xs', styles.sectionTitle)}>
+            Products
+          </Text>
+          <Text
+            style={applyStyles('text-400', 'mb-xl', {
+              color: colors['gray-100'],
+            })}>
+            Here is a list of products being purchased
+          </Text>
           <View>
             <FlatList
               data={products}
@@ -337,7 +417,7 @@ const ReceiptSummary = ({
                 </View>
               </View>
             </View>
-            <Touchable onPress={handleAddProduct}>
+            <Button variantColor="white" onPress={handleAddProduct}>
               <View style={styles.addProductButton}>
                 <Icon
                   size={24}
@@ -350,96 +430,250 @@ const ReceiptSummary = ({
                   }
                   color={colors.primary}
                 />
-                <Text style={styles.addProductButtonText}>Add a product</Text>
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add product
+                </Text>
               </View>
-            </Touchable>
+            </Button>
           </View>
         </View>
         <View style={applyStyles({marginVertical: 24})}>
-          <View style={styles.pickerContainer}>
-            <Text style={applyStyles('text-400', styles.pickerLabel)}>
-              Select Payment method
-            </Text>
-            <Picker
-              mode="dropdown"
-              style={styles.picker}
-              prompt="Payment Method"
-              itemStyle={styles.pickerItem}
-              selectedValue={paymentType}
-              onValueChange={(itemValue) => handlePaymentTypeChange(itemValue)}>
-              {paymentTypes.map((type: string, index) => (
-                <Picker.Item label={type} value={type} key={index} />
-              ))}
-            </Picker>
-          </View>
-          <View style={applyStyles('flex-row', 'items-center')}>
+          <Text style={applyStyles('pb-xs', styles.sectionTitle)}>Payment</Text>
+          <Text
+            style={applyStyles('text-400', 'mb-xl', {
+              color: colors['gray-100'],
+            })}>
+            Select one or more payment methods
+          </Text>
+          {payments.map((item) => item.paymentMethod).includes('cash') ? (
+            <View style={applyStyles('mb-xs')}>
+              <View style={applyStyles('pb-sm')}>
+                <FloatingLabelInput
+                  label="Cash Payment"
+                  value={getPaymentMethodAmount('cash')}
+                  keyboardType="numbers-and-punctuation"
+                  onChangeText={(text) =>
+                    handlePaymentMethodAmountChange(text, 'cash')
+                  }
+                  leftIcon={
+                    <Text
+                      style={applyStyles(styles.textInputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+              <Button
+                variantColor="clear"
+                onPress={() => handleRemovePayment('cash')}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                  )}>
+                  <Icon
+                    size={24}
+                    name="trash-2"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Delete payment
+                  </Text>
+                </View>
+              </Button>
+            </View>
+          ) : (
+            <Button
+              variantColor="white"
+              style={applyStyles('mb-md')}
+              onPress={() => handleOpenPaymentModal('cash')}>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  type="feathericons"
+                  name="dollar-sign"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add cash payment
+                </Text>
+              </View>
+            </Button>
+          )}
+          {payments.map((item) => item.paymentMethod).includes('transfer') ? (
+            <View style={applyStyles('mb-xs')}>
+              <View style={applyStyles('pb-sm')}>
+                <FloatingLabelInput
+                  label="Bank Transfer"
+                  keyboardType="numbers-and-punctuation"
+                  value={getPaymentMethodAmount('transfer')}
+                  onChangeText={(text) =>
+                    handlePaymentMethodAmountChange(text, 'transfer')
+                  }
+                  leftIcon={
+                    <Text
+                      style={applyStyles(styles.textInputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+              <Button
+                variantColor="clear"
+                onPress={() => handleRemovePayment('transfer')}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                  )}>
+                  <Icon
+                    size={24}
+                    name="trash-2"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Delete payment
+                  </Text>
+                </View>
+              </Button>
+            </View>
+          ) : (
+            <Button
+              variantColor="white"
+              style={applyStyles('mb-md')}
+              onPress={() => handleOpenPaymentModal('transfer')}>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  name="repeat"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add bank transfer
+                </Text>
+              </View>
+            </Button>
+          )}
+          {payments.map((item) => item.paymentMethod).includes('mobile') ? (
+            <View style={applyStyles('mb-xs')}>
+              <View style={applyStyles('pb-sm')}>
+                <FloatingLabelInput
+                  label="Mobile Money"
+                  keyboardType="numbers-and-punctuation"
+                  value={getPaymentMethodAmount('mobile')}
+                  onChangeText={(text) =>
+                    handlePaymentMethodAmountChange(text, 'mobile')
+                  }
+                  leftIcon={
+                    <Text
+                      style={applyStyles(styles.textInputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+              <Button
+                variantColor="clear"
+                onPress={() => handleRemovePayment('mobile')}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                  )}>
+                  <Icon
+                    size={24}
+                    name="trash-2"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Delete payment
+                  </Text>
+                </View>
+              </Button>
+            </View>
+          ) : (
+            <Button
+              variantColor="white"
+              style={applyStyles('mb-md')}
+              onPress={() => handleOpenPaymentModal('mobile')}>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  name="smartphone"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Add mobile money
+                </Text>
+              </View>
+            </Button>
+          )}
+        </View>
+        {!!creditAmount && (
+          <View style={applyStyles({marginBottom: 80})}>
             <FloatingLabelInput
-              label="Amount Paid"
+              editable={false}
+              label="Remaining Balance"
               keyboardType="number-pad"
-              containerStyle={applyStyles({marginBottom: 12})}
-              value={numberWithCommas(amountPaid)}
-              onChangeText={(text) => handleAmountPaidChange(text)}
+              inputStyle={applyStyles({color: colors.primary})}
+              value={numberWithCommas(creditAmount)}
               leftIcon={
-                <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
+                <Text
+                  style={applyStyles(
+                    styles.textInputIconText,
+                    {color: colors.primary},
+                    'text-400',
+                  )}>
                   &#8358;
                 </Text>
               }
             />
           </View>
-          <FloatingLabelInput
-            editable={false}
-            label="Credit remaining"
-            keyboardType="number-pad"
-            inputStyle={applyStyles({color: colors.primary})}
-            value={numberWithCommas(creditAmount)}
-            leftIcon={
-              <Text
-                style={applyStyles(
-                  styles.textInputIconText,
-                  {color: colors.primary},
-                  'text-400',
-                )}>
-                &#8358;
-              </Text>
-            }
-          />
-        </View>
-
-        <View style={applyStyles({marginBottom: 40})}>
-          <View
-            style={applyStyles('items-center, justify-center', {
-              marginBottom: 16,
-            })}>
-            <Text
-              style={applyStyles('text-400', 'text-center', {
-                color: colors['gray-100'],
-              })}>
-              Are they paying via multiple methods?
-            </Text>
-          </View>
-
-          <Touchable onPress={handleAddProduct}>
-            <View
-              style={applyStyles('flex-row', 'items-center', 'justify-center', {
-                paddingVertical: 16,
-              })}>
-              <Icon
-                size={24}
-                type="ionicons"
-                name={
-                  Platform.select({
-                    android: 'md-add',
-                    ios: 'ios-add',
-                  }) as string
-                }
-                color={colors.primary}
-              />
-              <Text style={styles.addProductButtonText}>
-                Add payment method
-              </Text>
-            </View>
-          </Touchable>
-        </View>
+        )}
       </ScrollView>
       <View style={styles.actionButtons}>
         <Button
@@ -456,8 +690,8 @@ const ReceiptSummary = ({
           style={styles.actionButton}
         />
       </View>
-
       <ReceiptStatusModal
+        customer={customer}
         timeTaken={timeTaken}
         amountPaid={amountPaid}
         creditAmount={creditAmount}
@@ -465,10 +699,10 @@ const ReceiptSummary = ({
         isSubmitting={isSubmitting}
         visible={isSuccessModalOpen}
         onClose={handleCloseSuccessModal}
+        onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onOpenCustomerModal={handleOpenCustomerModal}
       />
-
       <CustomerDetailsModal
         customer={customer}
         visible={isCustomerModalOpen}
@@ -476,16 +710,27 @@ const ReceiptSummary = ({
         onUpdateCustomer={handleUpdateCustomer}
         onOpenContactList={handleOpenContactList}
       />
-
       <ShareReceiptModal
         visible={isShareModalOpen}
         onClose={handleCloseShareModal}
+        onSmsShare={handleSmsShare}
+        onEmailShare={handleEmailShare}
+        onWhatsappShare={handleWhatsappShare}
       />
-
-      <ContactsListModal
-        visible={isContactListModalOpen}
-        onClose={handleCloseContactList}
-        onContactSelect={handleCustomerSelect}
+      <Modal visible={isContactListModalOpen}>
+        <Receipts
+          onModalClose={handleCloseContactList}
+          onCustomerSelect={handleCustomerSelect}
+        />
+      </Modal>
+      <PaymentMethodModal
+        type={paymentType}
+        visible={isPaymentModalOpen}
+        onSubmit={handleSubmitPayment}
+        onClose={handleClosePaymentModal}
+        amount={
+          amountPaid === totalAmount ? totalAmount : totalAmount - amountPaid
+        }
       />
     </KeyboardAvoidingView>
   );
@@ -502,7 +747,6 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 18,
-    paddingBottom: 12,
     color: colors.primary,
     fontFamily: 'Rubik-Medium',
   },
@@ -519,29 +763,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Medium',
   },
   addProductButton: {
-    borderTopWidth: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    flexDirection: 'row',
-    borderBottomWidth: 1,
-    justifyContent: 'center',
-    borderTopColor: colors['gray-20'],
-    borderBottomColor: colors['gray-20'],
-  },
-  addPaymentButton: {
-    paddingVertical: 12,
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-  },
-  selectCustomerButton: {
-    marginBottom: 24,
-  },
-  addProductButtonText: {
-    paddingLeft: 12,
-    color: colors.primary,
-    textTransform: 'uppercase',
-    fontFamily: 'Rubik-Regular',
   },
   actionButtons: {
     borderTopWidth: 1,
@@ -555,41 +779,9 @@ const styles = StyleSheet.create({
   actionButton: {
     width: '48%',
   },
-  input: {
-    marginBottom: 16,
-  },
-  buttonStyle: {
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  buttonTextStyle: {
-    fontSize: 16,
-    textAlign: 'center',
-  },
-  pickerContainer: {
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderColor: colors['gray-200'],
-  },
-  pickerLabel: {
-    color: colors['gray-100'],
-  },
-  picker: {
-    paddingBottom: 12,
-    fontFamily: 'Rubik-Regular',
-  },
-  pickerItem: {
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-  },
   textInputIconText: {
     fontSize: 16,
     color: colors['gray-300'],
-  },
-  creditText: {
-    marginTop: 3,
-    color: colors.primary,
   },
 });
 

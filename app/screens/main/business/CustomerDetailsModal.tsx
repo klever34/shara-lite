@@ -2,7 +2,6 @@ import React from 'react';
 import {Modal, View, ScrollView, Text, StyleSheet} from 'react-native';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import Touchable from '../../../components/Touchable';
 import Icon from '../../../components/Icon';
 import {FloatingLabelInput, Button} from '../../../components';
 
@@ -10,7 +9,7 @@ type Props = {
   visible: boolean;
   customer: Customer;
   onClose: () => void;
-  onOpenContactList?: () => void;
+  onOpenContactList: () => void;
   onUpdateCustomer: (text: string, key: string) => void;
 };
 
@@ -26,55 +25,66 @@ export const CustomerDetailsModal = (props: Props) => {
     <Modal transparent={false} animationType="slide" visible={visible}>
       <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
         <View style={applyStyles({marginBottom: 48})}>
+          <Button style={applyStyles('mb-lg')} onPress={onOpenContactList}>
+            <View
+              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+              <Icon
+                size={24}
+                name="user"
+                type="feathericons"
+                color={colors.white}
+              />
+              <Text
+                style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                  color: colors.white,
+                })}>
+                Select customer
+              </Text>
+            </View>
+          </Button>
+
           <Text
-            style={applyStyles('mb-xl', 'text-400', {
+            style={applyStyles('mb-xl', 'text-center', 'text-400', {
+              color: colors['gray-100'],
+            })}>
+            Or enter customer details below
+          </Text>
+        </View>
+        <View>
+          <Text
+            style={applyStyles('text-400', {
               fontSize: 18,
               color: colors.primary,
             })}>
             Customer Details
           </Text>
-
-          <Touchable onPress={onOpenContactList}>
-            <View
-              style={applyStyles(
-                'px-lg',
-                'pt-md',
-                'pb-lg',
-                'mb-lg',
-                'flex-row',
-                'items-center',
-                'justify-space-between',
-                {borderBottomColor: colors['gray-50'], borderBottomWidth: 1},
-              )}>
-              <Text
-                style={applyStyles({
-                  fontSize: 16,
-                  color: colors['gray-100'],
-                })}>
-                Select from contacts
-              </Text>
-              <Icon
-                size={24}
-                name="users"
-                type="feathericons"
-                color={colors['gray-100']}
-              />
-            </View>
-          </Touchable>
-        </View>
-        <View>
-          <FloatingLabelInput
-            value={customer.name}
-            label="Type Customer Name"
-            containerStyle={applyStyles('pb-md')}
-            onChangeText={(text) => onUpdateCustomer(text, 'name')}
-          />
+          <View
+            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+            <Icon
+              size={24}
+              name="user"
+              type="feathericons"
+              color={colors.white}
+            />
+            <Text
+              style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                color: colors.white,
+              })}>
+              Select customer
+            </Text>
+          </View>
           <FloatingLabelInput
             label="Phone number"
             value={customer.mobile}
             keyboardType="number-pad"
-            containerStyle={applyStyles({paddingBottom: 80})}
+            containerStyle={applyStyles('pb-xl')}
             onChangeText={(text) => onUpdateCustomer(text, 'mobile')}
+          />
+          <FloatingLabelInput
+            value={customer.name}
+            label="Type Customer Name"
+            containerStyle={applyStyles({paddingBottom: 80})}
+            onChangeText={(text) => onUpdateCustomer(text, 'name')}
           />
         </View>
       </ScrollView>
