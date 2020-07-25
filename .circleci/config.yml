@@ -3,7 +3,9 @@ workflows:
   internal:
     jobs:
       - checkout_code:
-          context: shara-dev
+          context: shara-test
+          merged: false
+          commit: true
           filters:
             branches:
               ignore:
@@ -20,7 +22,7 @@ workflows:
                 - develop
                 - discovery
       - fastlane:
-          context: shara-dev
+          context: shara-test
           lane: internal
           requires:
             - checkout_code
@@ -35,6 +37,8 @@ workflows:
     jobs:
       - checkout_code:
           context: shara-dev
+          merged: true
+          commit: true
           filters:
             branches:
               only:
@@ -59,16 +63,65 @@ workflows:
             branches:
               only:
                 - discovery
-      # TODO Production Release Workflow
 jobs:
   checkout_code:
     docker:
       - image: circleci/node:12
+    parameters:
+      merged:
+        type: boolean
+        default: false
+      commit:
+        type: boolean
+        default: false
     steps:
       - checkout
       - run:
           name: Yarn Install Dependencies
           command: yarn install
+      - when:
+          condition: <<parameters.merged>>
+          steps:
+            - run:
+                name: Auto-versioning >>  When Master, Discovery or Develop bump patch
+                command: |
+                  CURRENT_VERSION=$(jq ".version" -r package.json)
+                  NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
+                  jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
+                  echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+      - unless:
+          condition: <<parameters.merged>>
+          steps:
+            - run:
+                name: Auto-versioning >> When unmerged i.e. feature branches, bump build
+                command: |
+                  CURRENT_VERSION=$(jq ".version" -r package.json)
+                  BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
+                  BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
+                  NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
+                  jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
+                  echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+      - when:
+          condition: <<parameters.commit>>
+          steps:
+            - add_ssh_keys:
+                fingerprints:
+                  - "90:6e:55:bd:ec:dd:c7:3b:72:d9:11:1c:74:e6:13:98"
+            - run:
+                name: Commit and Push version update
+                command: |
+                  git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
+                  git add package.json
+                  git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
+                  git push --set-upstream origin ${CIRCLE_BRANCH}
+            - when:
+                condition: <<parameters.merged>>
+                steps:
+                  - run:
+                      name: Create Tag and Push
+                      command: |
+                        git tag ${NEW_VERSION}
+                        git push --set-upstream origin ${NEW_VERSION}
       - run:
           name: Setup Credentials
           command: |
@@ -77,6 +130,8 @@ jobs:
             echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > android/app/shara.keystore
             echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
             echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> android/gradle.properties
+            sed -i "s#SHARA_VERSION_CODE#${CIRCLE_BUILD_NUM}#g" android/app/build.gradle
+            sed -i "s#SHARA_VERSION_NAME#${NEW_VERSION}#g" android/app/build.gradle
       - persist_to_workspace:
           paths: .
           root: .
