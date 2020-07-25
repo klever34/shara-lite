@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.5",
+  "version": "0.1.5-bugfix.one-on-one+build.652",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
