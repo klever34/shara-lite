@@ -12,7 +12,6 @@ workflows:
                 - master
                 - develop
                 - discovery
-                - feature/auto-versioning
       - test:
           requires:
             - checkout_code
@@ -22,7 +21,6 @@ workflows:
                 - master
                 - develop
                 - discovery
-                - feature/auto-versioning
       - fastlane:
           context: shara-test
           lane: internal
@@ -35,7 +33,6 @@ workflows:
                 - master
                 - develop
                 - discovery
-                - feature/auto-versioning
   discovery:
     jobs:
       - checkout_code:
