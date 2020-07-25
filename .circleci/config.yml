@@ -86,9 +86,10 @@ jobs:
         default: false
     steps:
       - checkout
-      - run:
-          name: Yarn Install Dependencies
-          command: yarn install
+      # TODO REMOVE
+#      - run:
+#          name: Yarn Install Dependencies
+#          command: yarn install
       - when:
           condition: <<parameters.merged>>
           steps:
@@ -109,7 +110,7 @@ jobs:
                 name: Auto-versioning >> When unmerged i.e. feature branches, bump build
                 command: |
                   CURRENT_VERSION=$(jq ".version" -r package.json)
-                  BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#+#g")
+                  BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
                   BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
                   NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
                   jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
