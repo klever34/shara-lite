@@ -4,7 +4,7 @@ workflows:
   test:
     jobs:
       - checkout_code:
-          merged: false
+          merged: true
           commit: true
           context: shara-test
           filters:
@@ -103,6 +103,7 @@ jobs:
                   echo "CIRCLE_BUILD_NUM: ${CIRCLE_BUILD_NUM}"
                   echo "CURRENT_VERSION: ${CURRENT_VERSION}"
                   echo "NEW_VERSION: ${NEW_VERSION}"
+                  git tag
       - unless:
           condition: <<parameters.merged>>
           steps:
@@ -133,6 +134,14 @@ jobs:
                   git add package.json
                   git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
                   git push --set-upstream origin ${CIRCLE_BRANCH}
+            - when:
+                condition: <<parameters.merged>>
+                steps:
+                  - run:
+                      name: Create Tag and Push
+                      command: |
+                        git tag ${NEW_VERSION}
+                        git push --set-upstream origin ${NEW_VERSION}
       - run:
           name: Setup Credentials
           command: |
