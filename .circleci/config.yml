@@ -1,20 +1,11 @@
 version: 2.1
 workflows:
-  # TODO Remove Test
-  test:
-    jobs:
-      - checkout_code:
-          merged: true
-          commit: true
-          context: shara-test
-          filters:
-            branches:
-              only:
-                - feature/auto-versioning
   internal:
     jobs:
       - checkout_code:
           context: shara-test
+          merged: false
+          commit: true
           filters:
             branches:
               ignore:
@@ -49,6 +40,8 @@ workflows:
     jobs:
       - checkout_code:
           context: shara-dev
+          merged: true
+          commit: true
           filters:
             branches:
               only:
@@ -86,10 +79,9 @@ jobs:
         default: false
     steps:
       - checkout
-      # TODO REMOVE
-#      - run:
-#          name: Yarn Install Dependencies
-#          command: yarn install
+      - run:
+          name: Yarn Install Dependencies
+          command: yarn install
       - when:
           condition: <<parameters.merged>>
           steps:
