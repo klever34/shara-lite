@@ -1,6 +1,6 @@
 {
   "name": "Shara",
-  "version": "0.1.4",
+  "version": "0.1.4-feature.auto-versioning+build.640",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
