@@ -6,7 +6,7 @@ workflows:
       - checkout_code:
           merged: false
           commit: true
-          context: shara-dev
+          context: shara-test
           filters:
             branches:
               only:
@@ -14,7 +14,7 @@ workflows:
   internal:
     jobs:
       - checkout_code:
-          context: shara-dev
+          context: shara-test
           filters:
             branches:
               ignore:
@@ -33,7 +33,7 @@ workflows:
                 - discovery
                 - feature/auto-versioning
       - fastlane:
-          context: shara-dev
+          context: shara-test
           lane: internal
           requires:
             - checkout_code
