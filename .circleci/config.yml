@@ -114,6 +114,8 @@ jobs:
                   NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
                   jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+                  echo "BRANCH_NAME: ${BRANCH_NAME}"
+                  echo "BRANCH_VERSION: ${BRANCH_VERSION}"
                   echo "CIRCLE_BUILD_NUM: ${CIRCLE_BUILD_NUM}"
                   echo "CURRENT_VERSION: ${CURRENT_VERSION}"
                   echo "NEW_VERSION: ${NEW_VERSION}"
