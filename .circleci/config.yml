@@ -126,7 +126,7 @@ jobs:
                 command: |
                   git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
                   git add package.json
-                  git commit "Bumped version to ${NEW_VERSION} [skip ci]"
+                  git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
                   git push --set-upstream origin ${CIRCLE_BRANCH}
       - run:
           name: Setup Credentials

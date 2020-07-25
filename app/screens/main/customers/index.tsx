@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
+import {useRealm} from '../../../services/realm';
 import {
   FlatList,
   Platform,
@@ -12,13 +13,18 @@ import {FAButton} from '../../../components';
 import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
 import {colors} from '../../../styles';
-import {customers} from '../data.json';
 import {applyStyles} from '../../../helpers/utils';
+import {getCustomers} from '../../../services/CustomerService';
+import {ICustomer} from '../../../models';
+import EmptyState from '../../../components/EmptyState';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
+  const realm = useRealm() as Realm;
+  const customers = getCustomers({realm});
+
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [myCustomers, setMyCustomers] = useState(customers);
+  const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
 
   const handleSelectCustomer = useCallback(
     (item?: Customer) => {
@@ -26,21 +32,24 @@ const CustomersTab = () => {
       setSearchInputValue('');
       setMyCustomers(customers);
     },
-    [navigation],
+    [navigation, customers],
   );
 
-  const handleCustomerSearch = useCallback((searchedText: string) => {
-    const sort = (item: Customer, text: string) => {
-      return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-    };
-    var ac = customers.filter((item: Customer) => {
-      return sort(item, searchedText);
-    });
-    setMyCustomers(ac);
-    setTimeout(() => {
-      setSearchInputValue(searchedText);
-    }, 0);
-  }, []);
+  const handleCustomerSearch = useCallback(
+    (searchedText: string) => {
+      const sort = (item: Customer, text: string) => {
+        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+      };
+      const ac = customers.filter((item: Customer) => {
+        return sort(item, searchedText);
+      });
+      setMyCustomers(ac);
+      setTimeout(() => {
+        setSearchInputValue(searchedText);
+      }, 0);
+    },
+    [customers],
+  );
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {
@@ -62,30 +71,40 @@ const CustomersTab = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon
-            size={24}
-            style={styles.searchInputIcon}
-            type="ionicons"
-            name="ios-search"
-            color={colors.primary}
+      {myCustomers.length ? (
+        <>
+          <View style={styles.searchContainer}>
+            <View style={styles.searchInputContainer}>
+              <Icon
+                size={24}
+                style={styles.searchInputIcon}
+                type="ionicons"
+                name="ios-search"
+                color={colors.primary}
+              />
+              <TextInput
+                value={searchInputValue}
+                style={styles.searchInput}
+                placeholder="Search Customer"
+                onChangeText={handleCustomerSearch}
+                placeholderTextColor={colors['gray-50']}
+              />
+            </View>
+          </View>
+          <FlatList
+            data={myCustomers}
+            renderItem={renderCustomerListItem}
+            ListHeaderComponent={renderCustomerListHeader}
+            keyExtractor={(item) => `${item.id}`}
           />
-          <TextInput
-            value={searchInputValue}
-            style={styles.searchInput}
-            placeholder="Search Customer"
-            onChangeText={handleCustomerSearch}
-            placeholderTextColor={colors['gray-50']}
-          />
-        </View>
-      </View>
-      <FlatList
-        data={myCustomers}
-        renderItem={renderCustomerListItem}
-        ListHeaderComponent={renderCustomerListHeader}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
-      />
+        </>
+      ) : (
+        <EmptyState
+          heading="Add a customer"
+          source={require('../../../assets/images/coming-soon.png')}
+          text="Click the button below to add a new customer"
+        />
+      )}
       <FAButton
         style={styles.fabButton}
         onPress={() => navigation.navigate('AddCustomer')}>

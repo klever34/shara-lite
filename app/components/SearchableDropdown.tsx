@@ -18,6 +18,7 @@ const SearchableDropdown = (props: any) => {
     onItemSelect,
     itemTextStyle,
     textInputProps,
+    emptyStateText,
     itemsContainerStyle,
   } = props;
   const [focus, setFocus] = useState(false);
@@ -66,13 +67,32 @@ const SearchableDropdown = (props: any) => {
 
   const renderFlatList = () => {
     if (focus) {
-      return (
+      return listItems.length ? (
         <FlatList
           data={listItems}
           renderItem={renderItems}
           style={applyStyles(itemsContainerStyle)}
           keyExtractor={(item, index) => index.toString()}
         />
+      ) : (
+        <View style={styles.emptyState}>
+          <Text
+            style={applyStyles(
+              'heading-700',
+              styles.emptyStateText,
+              styles.emptyStateHeading,
+            )}>
+            No results found
+          </Text>
+          <Text
+            style={applyStyles(
+              'text-400',
+              styles.emptyStateText,
+              styles.emptyStateDescription,
+            )}>
+            {emptyStateText}
+          </Text>
+        </View>
       );
     }
   };
@@ -153,6 +173,25 @@ const styles = StyleSheet.create({
   },
   listItemText: {
     fontSize: 16,
+  },
+  emptyState: {
+    paddingVertical: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyStateText: {
+    textAlign: 'center',
+  },
+  emptyStateHeading: {
+    fontSize: 16,
+    color: colors['gray-300'],
+  },
+  emptyStateDescription: {
+    fontSize: 14,
+    maxWidth: 300,
+    textAlign: 'center',
+    color: colors['gray-200'],
+    marginHorizontal: 'auto',
   },
 });
 

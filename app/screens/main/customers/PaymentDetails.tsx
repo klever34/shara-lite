@@ -3,9 +3,10 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
+import {IPayment} from '../../../models/Payment';
 
 const PaymentDetails = ({route}: any) => {
-  const {payment} = route.params;
+  const {payment}: {payment: IPayment} = route.params;
 
   return (
     <SafeAreaView style={styles.container}>
@@ -13,31 +14,25 @@ const PaymentDetails = ({route}: any) => {
         <View style={applyStyles('pb-md')}>
           <Text style={styles.itemTitle}>Amount</Text>
           <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-            &#8358;{numberWithCommas(payment.amount)}
+            &#8358;{numberWithCommas(payment.amount_paid)}
           </Text>
         </View>
         <View style={applyStyles('flex-row', 'justify-space-between')}>
           <View style={applyStyles('pb-md', {width: '48%'})}>
             <Text style={styles.itemTitle}>Payment Made</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {format(new Date(payment.paidOn), 'MMM dd, yyyy')}
+              {format(new Date(payment.created_at), 'MMM dd, yyyy')}
             </Text>
             <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-              {format(new Date(payment.paidOn), 'hh:mm:a')}
+              {format(new Date(payment.created_at), 'hh:mm:a')}
             </Text>
           </View>
           <View style={applyStyles('pb-md', {width: '48%'})}>
             <Text style={styles.itemTitle}>Payment Method</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {payment.paymentMethod}
+              {payment.type}
             </Text>
           </View>
-        </View>
-        <View style={applyStyles('pb-xl')}>
-          <Text style={styles.itemTitle}>Received By</Text>
-          <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-            {payment.receivedBy}
-          </Text>
         </View>
       </View>
     </SafeAreaView>

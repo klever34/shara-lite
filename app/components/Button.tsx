@@ -1,4 +1,4 @@
-import React, {ReactNode} from 'react';
+import React, {useCallback, ReactNode} from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -21,7 +21,9 @@ interface variantColorHexColorOptions {
 interface ButtonProps extends BaseButtonProps {
   style?: ViewStyle;
   isLoading?: boolean;
-  variantColor?: 'red' | 'white';
+  children?: React.ReactNode;
+  variant?: 'filled' | 'clear';
+  variantColor?: 'red' | 'white' | 'clear';
 }
 
 const styles = StyleSheet.create({
@@ -37,6 +39,10 @@ const styles = StyleSheet.create({
   },
   redButton: {
     backgroundColor: colors.primary,
+  },
+  clearButton: {
+    elevation: 0,
+    backgroundColor: colors.white,
   },
   text: {
     fontSize: 16,
@@ -57,6 +63,7 @@ export const Button = ({
   onPress,
   isLoading,
   disabled,
+  children,
   variantColor = 'red',
 }: ButtonProps) => {
   const variantColorStyles: variantColorStylesOptions = {
@@ -68,12 +75,30 @@ export const Button = ({
       button: styles.redButton,
       text: styles.redButtonText,
     },
+    clear: {
+      button: styles.clearButton,
+      text: styles.whiteButtonText,
+    },
   };
 
   const activityIndicatorColor: variantColorHexColorOptions = {
     white: colors.primary,
     red: colors.white,
   };
+
+  const renderContent = useCallback(() => {
+    if (title) {
+      return (
+        <Text
+          style={{...styles.text, ...variantColorStyles[variantColor].text}}>
+          {title}
+        </Text>
+      );
+    }
+    if (children) {
+      return children;
+    }
+  }, [title, children, variantColor, variantColorStyles]);
 
   return (
     <BaseButton
@@ -90,10 +115,7 @@ export const Button = ({
           color={activityIndicatorColor[variantColor]}
         />
       ) : (
-        <Text
-          style={{...styles.text, ...variantColorStyles[variantColor].text}}>
-          {title}
-        </Text>
+        renderContent()
       )}
     </BaseButton>
   );

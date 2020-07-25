@@ -1,5 +1,4 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useState, useCallback, useLayoutEffect} from 'react';
+import React, {useState, useCallback} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -9,54 +8,64 @@ import {
   View,
 } from 'react-native';
 import Icon from '../../../components/Icon';
-import AppMenu from '../../../components/Menu';
 import Touchable from '../../../components/Touchable';
+import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
-import {customers} from '../data.json';
 import {applyStyles} from '../../../helpers/utils';
+import {Button} from '../../../components';
+import {getCustomers} from '../../../services/CustomerService';
 
-const Receipts = () => {
-  //@ts-ignore
-  global.startTime = new Date().getTime();
-  const navigation = useNavigation();
+const Receipts = (props: any) => {
+  const {onCustomerSelect, onModalClose} = props;
+  const realm = useRealm() as Realm;
+  const customers = getCustomers({realm});
+
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
-    });
-  }, [navigation]);
+  const handleCustomerSearch = useCallback(
+    (searchedText: string) => {
+      setSearchInputValue(searchedText);
+      const sort = (item: Customer, text: string) => {
+        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+      };
+      var ac = customers.filter((item: Customer) => {
+        return sort(item, searchedText);
+      });
+      setMyCustomers(ac);
+    },
+    [customers],
+  );
+
+  const handleCloseModal = useCallback(() => {
+    onModalClose();
+  }, [onModalClose]);
 
   const handleSelectCustomer = useCallback(
     (item?: Customer) => {
-      navigation.navigate('NewReceipt', {customer: item});
+      onCustomerSelect({customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
+      handleCloseModal();
     },
-    [navigation],
+    [customers, onCustomerSelect, handleCloseModal],
   );
-
-  const handleCustomerSearch = useCallback((searchedText: string) => {
-    const sort = (item: Customer, text: string) => {
-      return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-    };
-    var ac = customers.filter((item: Customer) => {
-      return sort(item, searchedText);
-    });
-    setMyCustomers(ac);
-    setTimeout(() => {
-      setSearchInputValue(searchedText);
-    }, 0);
-  }, []);
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {
       return (
         <Touchable onPress={() => handleSelectCustomer(customer)}>
           <View style={styles.customerListItem}>
-            <Text style={applyStyles(styles.customerListItemText, 'text-400')}>
+            <Text
+              style={applyStyles(
+                styles.customerListItemText,
+                'pb-xs',
+                'text-400',
+              )}>
               {customer.name}
+            </Text>
+            <Text style={applyStyles({color: colors['gray-300']}, 'text-400')}>
+              {customer.mobile}
             </Text>
           </View>
         </Touchable>
@@ -86,6 +95,7 @@ const Receipts = () => {
             color={colors.primary}
           />
           <TextInput
+            autoFocus
             value={searchInputValue}
             style={applyStyles(styles.searchInput, 'text-400')}
             placeholder="Search Customer"
@@ -94,25 +104,26 @@ const Receipts = () => {
           />
         </View>
       </View>
-      <Touchable onPress={() => handleSelectCustomer()}>
-        <View style={styles.newCustomerButton}>
-          <Icon
-            size={24}
-            name="user-plus"
-            type="feathericons"
-            color={colors.primary}
-          />
-          <Text style={applyStyles(styles.newCustomerButtonText, 'text-400')}>
-            New Customer
-          </Text>
-        </View>
-      </Touchable>
       <FlatList
         data={myCustomers}
         renderItem={renderCustomerListItem}
         ListHeaderComponent={renderCustomerListHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
+        ListEmptyComponent={
+          <View
+            style={applyStyles('flex-1', 'items-center', 'justify-center', {
+              paddingVertical: 40,
+            })}>
+            <Text
+              style={applyStyles('heading-700', 'text-center', {
+                color: colors['gray-300'],
+              })}>
+              No results found
+            </Text>
+          </View>
+        }
       />
+      <Button title="Close" variantColor="white" onPress={handleCloseModal} />
     </SafeAreaView>
   );
 };
@@ -176,7 +187,7 @@ const styles = StyleSheet.create({
   },
   customerListItemText: {
     fontSize: 16,
-    color: colors['gray-300'],
+    color: colors.primary,
   },
 });
 
