@@ -3,8 +3,12 @@ import {ContactsService, IContactsService} from './contacts';
 import {AuthService, IAuthService} from './auth';
 import {RealmService, IRealmService} from './realm';
 import {ApiService, IApiService} from './api';
+import {IPubNubService, PubNubService} from './pubnub';
+import {INavigationService, NavigationService} from './navigation';
 
 let realmService: IRealmService | null = null;
+let pubNubService: IPubNubService | null = null;
+let navigationService: INavigationService | null = null;
 let apiService: IApiService | null = null;
 let storageService: IStorageService | null = null;
 let contactsService: IContactsService | null = null;
@@ -17,6 +21,20 @@ export const getRealmService = () => {
   return realmService;
 };
 
+export const getNavigationService = () => {
+  if (!navigationService) {
+    navigationService = new NavigationService();
+  }
+  return navigationService;
+};
+
+export const getPubNubService = () => {
+  if (!pubNubService) {
+    pubNubService = new PubNubService();
+  }
+  return pubNubService;
+};
+
 export const getStorageService = () => {
   if (!storageService) {
     storageService = new StorageService();
@@ -26,7 +44,12 @@ export const getStorageService = () => {
 
 export const getAuthService = () => {
   if (!authService) {
-    authService = new AuthService(getStorageService());
+    authService = new AuthService(
+      getStorageService(),
+      getRealmService(),
+      getPubNubService(),
+      getNavigationService(),
+    );
   }
   return authService;
 };
