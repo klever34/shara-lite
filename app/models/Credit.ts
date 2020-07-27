@@ -29,6 +29,11 @@ export class Credit implements Partial<ICredit> {
       customer_mobile: 'string?',
       customer: 'Customer?',
       receipt: 'Receipt?',
+      payments: {
+        type: 'linkingObjects',
+        objectType: 'CreditPayment',
+        property: 'credit',
+      },
     },
   };
 }
