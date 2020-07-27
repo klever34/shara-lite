@@ -58,12 +58,10 @@ type Order = {
   placedOn: string;
   completedOn: string;
 };
+
 type Payment = {
-  id?: string;
   amount: number;
-  receivedBy?: string;
-  paymentMethod: string;
-  paidOn?: string;
+  method: string;
   note?: string;
 };
 

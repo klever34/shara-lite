@@ -250,7 +250,7 @@ const ReceiptSummary = ({
 
   const handleRemovePayment = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
-      const result = payments.filter((item) => item.paymentMethod !== type);
+      const result = payments.filter((item) => item.method !== type);
       setPayments(result);
     },
     [payments],
@@ -266,7 +266,7 @@ const ReceiptSummary = ({
   const handlePaymentMethodAmountChange = useCallback(
     (text: string, type: 'cash' | 'transfer' | 'mobile') => {
       const result = payments.map((item) => {
-        if (item.paymentMethod === type) {
+        if (item.method === type) {
           return {...item, amount: parseFloat(text)};
         }
         return item;
@@ -278,11 +278,9 @@ const ReceiptSummary = ({
 
   const getPaymentMethodAmount = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
-      const paymentMethod = payments.find(
-        (item) => item.paymentMethod === type,
-      );
-      if (paymentMethod) {
-        return paymentMethod.amount.toString();
+      const method = payments.find((item) => item.method === type);
+      if (method) {
+        return method.amount.toString();
       }
       return '0';
     },
@@ -448,7 +446,7 @@ const ReceiptSummary = ({
             })}>
             Select one or more payment methods
           </Text>
-          {payments.map((item) => item.paymentMethod).includes('cash') ? (
+          {payments.map((item) => item.method).includes('cash') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
                 <FloatingLabelInput
@@ -516,7 +514,7 @@ const ReceiptSummary = ({
               </View>
             </Button>
           )}
-          {payments.map((item) => item.paymentMethod).includes('transfer') ? (
+          {payments.map((item) => item.method).includes('transfer') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
                 <FloatingLabelInput
@@ -584,7 +582,7 @@ const ReceiptSummary = ({
               </View>
             </Button>
           )}
-          {payments.map((item) => item.paymentMethod).includes('mobile') ? (
+          {payments.map((item) => item.method).includes('mobile') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
                 <FloatingLabelInput

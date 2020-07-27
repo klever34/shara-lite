@@ -1,11 +1,15 @@
 import {IPayment} from './Payment';
+import {IReceipt} from './Receipt';
+import {ICredit} from './Credit';
+import {BaseModelInterface, baseModelSchema} from './baseSchema';
 
-export interface ICustomer {
+export interface ICustomer extends BaseModelInterface {
   id: string;
   name: string;
   mobile: string;
-  created_at: Date;
+  receipts?: IReceipt[];
   payments?: IPayment[];
+  credits?: ICredit[];
 }
 
 export const modelName = 'Customer';
@@ -15,13 +19,22 @@ export class Customer implements Partial<ICustomer> {
     name: modelName,
     primaryKey: 'id',
     properties: {
-      id: 'string',
+      ...baseModelSchema,
       name: 'string',
       mobile: 'string',
-      created_at: 'date',
+      receipts: {
+        type: 'linkingObjects',
+        objectType: 'Receipt',
+        property: 'customer',
+      },
       payments: {
         type: 'linkingObjects',
         objectType: 'Payment',
+        property: 'customer',
+      },
+      credits: {
+        type: 'linkingObjects',
+        objectType: 'Credit',
         property: 'customer',
       },
     },

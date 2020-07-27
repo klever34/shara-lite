@@ -47,7 +47,7 @@ export const PaymentMethodModal = (props: Props) => {
   }, [onClose]);
 
   const handleSubmit = useCallback(() => {
-    const payload = {amount: parseFloat(amount), note, paymentMethod: type};
+    const payload = {amount: parseFloat(amount), note, method: type};
     onSubmit && onSubmit(payload);
     setAmount;
     handleClose();
