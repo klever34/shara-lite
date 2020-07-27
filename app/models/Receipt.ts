@@ -2,7 +2,6 @@ import {ICustomer} from './Customer';
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IReceipt extends BaseModelInterface {
-  id: string;
   amount_paid: number;
   tax: number;
   total_amount: number;
@@ -10,8 +9,6 @@ export interface IReceipt extends BaseModelInterface {
   customer_name?: string;
   customer_mobile?: string;
   customer?: ICustomer;
-  created_at?: Date;
-  updated_at?: Date;
 }
 
 export const modelName = 'Receipt';

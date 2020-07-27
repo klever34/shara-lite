@@ -3,6 +3,7 @@ import {BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IReceiptItem extends BaseModelInterface {
   name: string;
+  weight: string;
   quantity: number;
   price: number;
   total_price: number;
@@ -19,6 +20,7 @@ export class ReceiptItem implements Partial<IReceiptItem> {
     properties: {
       ...baseModelSchema,
       name: 'string',
+      weight: 'string',
       quantity: 'int',
       price: 'double',
       total_price: 'double',

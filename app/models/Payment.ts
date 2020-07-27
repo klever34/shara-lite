@@ -5,12 +5,12 @@ import {BaseModelInterface, baseModelSchema} from './baseSchema';
 export interface IPayment extends BaseModelInterface {
   amount_paid: number;
   type: string;
-  medium: string;
-  notes: string;
+  method: string;
+  note?: string;
   customer_name?: string;
   customer_mobile?: string;
   customer?: ICustomer;
-  receipt?: IReceipt;
+  receipt: IReceipt;
 }
 
 export const modelName = 'Payment';
@@ -23,8 +23,8 @@ export class Payment implements Partial<IPayment> {
       ...baseModelSchema,
       amount_paid: 'double',
       type: 'string',
-      medium: 'string',
-      notes: 'string',
+      method: 'string',
+      note: 'string?',
       customer_name: 'string?',
       customer_mobile: 'string?',
       customer: 'Customer?',
