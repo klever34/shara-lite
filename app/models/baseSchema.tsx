@@ -7,7 +7,7 @@ export interface BaseModelInterface {
 }
 
 export const baseModelSchema = {
-  id: {type: 'date', default: generateUniqueId()},
+  id: {type: 'string', default: generateUniqueId()},
   created_at: {type: 'date', default: new Date()},
   updated_at: {type: 'date', default: new Date()},
 };

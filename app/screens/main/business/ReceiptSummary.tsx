@@ -27,6 +27,7 @@ import {PaymentMethodModal} from './PaymentMethodModal';
 import Receipts from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import {saveReceipt} from '../../../services/ReceiptService';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -303,7 +304,8 @@ const ReceiptSummary = ({
 
   const handleFinish = () => {
     setIsSubmitting(true);
-    savePayment({
+    /*
+    saveReceipt({
       realm,
       customer,
       type: paymentType,
@@ -313,6 +315,7 @@ const ReceiptSummary = ({
       tax,
       products,
     });
+     */
     setTimeout(() => {
       setIsSubmitting(false);
       handleOpenSuccessModal();
