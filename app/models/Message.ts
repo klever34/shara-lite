@@ -4,7 +4,9 @@ export interface IMessage {
   created_at: Date;
   content: string;
   author: string;
-  timetoken?: string | number;
+  sent_timetoken?: string;
+  received_timetoken?: string;
+  read_timetoken?: string;
 }
 
 export class Message implements Partial<IMessage> {
@@ -17,7 +19,9 @@ export class Message implements Partial<IMessage> {
       created_at: 'date',
       content: 'string',
       author: 'string',
-      timetoken: 'string?',
+      sent_timetoken: 'string?',
+      received_timetoken: 'string?',
+      read_timetoken: 'string?',
     },
   };
 }

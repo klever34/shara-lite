@@ -22,6 +22,7 @@ export const savePaymentItem = ({
       name,
       quantity: parseFloat(quantity),
       price: parseFloat(price),
+      // @ts-ignore
       total_price: quantity * price,
       id: generateUniqueId(),
       created_at: new Date(),

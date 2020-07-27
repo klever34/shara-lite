@@ -34,7 +34,7 @@ const AppMenu = ({options}: AppMenuProps) => {
           return (
             <MenuOption
               customStyles={{
-                optionText: applyStyles('text-400', {
+                optionText: applyStyles('text-400 p-md text-base', {
                   color: colors['gray-300'],
                 }),
               }}
@@ -50,10 +50,9 @@ const AppMenu = ({options}: AppMenuProps) => {
 };
 
 export const styles = StyleSheet.create({
-  menuDropdown: {
-    padding: 8,
+  menuDropdown: applyStyles({
     maxWidth: 300,
-  },
+  }),
 });
 
 export default AppMenu;

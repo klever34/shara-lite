@@ -2,10 +2,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet, View} from 'react-native';
+import {ActivityIndicator, Alert, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
-import PushNotification from 'react-native-push-notification';
-import {getAuthService} from '../../services';
+import {
+  getAuthService,
+  getContactsService,
+  getRealmService,
+} from '../../services';
 import {colors} from '../../styles';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
@@ -27,10 +30,13 @@ import RecordPayment from './customers/RecordPayment';
 import CreditPayment from './customers/CreditPayment';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
+import SelectGroupMembersScreen from './SelectGroupMembersScreen';
+import SetGroupDetailsScreen from './SetGroupDetailsScreen';
+import {IContact, IConversation} from '../../models';
 
 export type MainStackParamList = {
   Home: undefined;
-  Chat: {title: string; channel: string};
+  Chat: IConversation;
   Contacts: undefined;
   Receipts: undefined;
   NewReceipt: {customer: Customer};
@@ -46,18 +52,31 @@ export type MainStackParamList = {
   CreditPayment: {creditDetails: CreditDetails};
   PaymentDetails: {payment: Payment};
   OrderDetails: {order: Order};
+
+  SelectGroupMembers: undefined;
+  SetGroupDetails: {members: IContact[]};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = ({navigation}: any) => {
-  const channelName = 'SHARA_GLOBAL';
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const [realm, setRealm] = useState<Realm | null>(null);
+  const [error, setError] = useState(false);
   useEffect(() => {
-    createRealm().then((nextRealm) => {
-      setRealm(nextRealm);
-    });
+    createRealm()
+      .then((nextRealm) => {
+        setRealm(nextRealm);
+        const realmService = getRealmService();
+        realmService.setInstance(nextRealm);
+      })
+      .catch(() => {
+        setError(true);
+        Alert.alert(
+          'Oops! Something went wrong.',
+          'Try clearing app data from application settings',
+        );
+      });
   }, []);
   useEffect(() => {
     const authService = getAuthService();
@@ -73,32 +92,26 @@ const MainScreens = ({navigation}: any) => {
   }, []);
 
   useEffect(() => {
-    PushNotification.configure({
-      onRegister: (token: PushNotificationToken) => {
-        if (pubNubClient) {
-          if (token.os === 'ios') {
-            pubNubClient.push.addChannels({
-              channels: [channelName],
-              device: token.token,
-              pushGateway: 'apns',
-            });
-          } else if (token.os === 'android') {
-            pubNubClient.push.addChannels({
-              channels: [channelName],
-              device: token.token,
-              pushGateway: 'gcm',
-            });
-          }
-        }
-      },
-
-      // (required) Called when a remote or local notification is opened or received
-      onNotification: () => {
-        navigation.navigate('Chat', {title: 'Shara Chat'});
-        PushNotification.cancelAllLocalNotifications();
-      },
+    const contactsService = getContactsService();
+    contactsService.loadContacts().catch((error) => {
+      Alert.alert(
+        'Error',
+        error.message,
+        [
+          {
+            text: 'OK',
+          },
+        ],
+        {
+          cancelable: false,
+        },
+      );
     });
-  }, [navigation, pubNubClient]);
+  }, [navigation]);
+
+  if (error) {
+    return null;
+  }
 
   if (!pubNubClient || !realm) {
     return (
@@ -145,6 +158,36 @@ const MainScreens = ({navigation}: any) => {
             name="Chat"
             component={ChatScreen}
             options={{
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="SelectGroupMembers"
+            component={SelectGroupMembersScreen}
+            options={{
+              headerTitle: 'New Group',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="SetGroupDetails"
+            component={SetGroupDetailsScreen}
+            options={{
+              headerTitle: 'New Group',
               headerStyle: {
                 backgroundColor: colors.primary,
               },

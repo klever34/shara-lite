@@ -6,7 +6,7 @@ export interface IStorageService {
   clear(): Promise<boolean>;
 }
 
-export default class StorageService implements IStorageService {
+export class StorageService implements IStorageService {
   async getItem<T>(key: string) {
     try {
       const data = await AsyncStorage.getItem(key);

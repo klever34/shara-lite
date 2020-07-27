@@ -1,7 +1,7 @@
 import React from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {getAuthService} from '../../services';
+import {getApiService} from '../../services';
 import {colors} from '../../styles';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
@@ -38,10 +38,10 @@ export const Login = ({navigation}: any) => {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
-    const authService = getAuthService();
+    const apiService = getApiService();
     try {
       setLoading(true);
-      await authService.logIn(payload);
+      await apiService.logIn(payload);
       setLoading(false);
       navigation.reset({
         index: 0,
