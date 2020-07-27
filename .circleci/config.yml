@@ -48,17 +48,12 @@ workflows:
       - test:
           requires:
             - checkout_code
-      - request-approval:
-          type: approval
-          requires:
-            - checkout_code
-            - test
       - fastlane:
           context: shara-dev
           lane: play
           track: internal
           requires:
-            - request-approval
+            - test
           filters:
             branches:
               only:
