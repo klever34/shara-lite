@@ -6,7 +6,7 @@ import {colors} from '../styles';
 type Props = {
   text?: string;
   heading?: string;
-  source: ImageProps['source'];
+  source?: ImageProps['source'];
 };
 
 const EmptyState = (props: Props) => {
@@ -19,7 +19,9 @@ const EmptyState = (props: Props) => {
         'items-center',
         styles.container,
       )}>
-      <Image style={applyStyles('pb-xl', styles.image)} source={source} />
+      {source && (
+        <Image style={applyStyles('pb-xl', styles.image)} source={source} />
+      )}
       {!!heading && (
         <Text style={applyStyles('pb-xs', 'heading-700', styles.heading)}>
           {heading}

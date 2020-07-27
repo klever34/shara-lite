@@ -19,7 +19,6 @@ import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
-import {savePayment} from '../../../services/PaymentService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
@@ -290,6 +289,7 @@ const ReceiptSummary = ({
 
   const handleCustomerSelect = useCallback(
     ({customer: customerData}) => {
+      console.log(customerData);
       setCustomer(customerData);
     },
     [setCustomer],
@@ -355,6 +355,8 @@ const ReceiptSummary = ({
     ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
     [],
   );
+
+  console.log(customer);
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -710,12 +712,16 @@ const ReceiptSummary = ({
         onClose={handleCloseCustomerModal}
         onUpdateCustomer={handleUpdateCustomer}
         onOpenContactList={handleOpenContactList}
+        onSelectCustomer={(data) => {
+          // console.log(data);
+          setCustomer(data);
+        }}
       />
       <ShareReceiptModal
         visible={isShareModalOpen}
-        onClose={handleCloseShareModal}
         onSmsShare={handleSmsShare}
         onEmailShare={handleEmailShare}
+        onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
       <Modal visible={isContactListModalOpen}>

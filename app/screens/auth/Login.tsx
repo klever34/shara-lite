@@ -1,5 +1,12 @@
 import React from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+} from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 import {getApiService} from '../../services';
 import {colors} from '../../styles';
@@ -65,7 +72,7 @@ export const Login = ({navigation}: any) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
           <Icon size={24} type="ionicons" name="md-arrow-back" />
@@ -105,7 +112,7 @@ export const Login = ({navigation}: any) => {
           <Text style={styles.helpSectionButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 

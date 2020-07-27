@@ -37,16 +37,18 @@ const CustomersTab = () => {
 
   const handleCustomerSearch = useCallback(
     (searchedText: string) => {
-      const sort = (item: Customer, text: string) => {
-        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-      };
-      const ac = customers.filter((item: Customer) => {
-        return sort(item, searchedText);
-      });
-      setMyCustomers(ac);
-      setTimeout(() => {
-        setSearchInputValue(searchedText);
-      }, 0);
+      setSearchInputValue(searchedText);
+      if (searchedText) {
+        const sort = (item: Customer, text: string) => {
+          return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+        };
+        const ac = customers.filter((item: Customer) => {
+          return sort(item, searchedText);
+        });
+        setMyCustomers(ac);
+      } else {
+        setMyCustomers(customers);
+      }
     },
     [customers],
   );
@@ -69,28 +71,39 @@ const CustomersTab = () => {
     [],
   );
 
+  if (!customers.length) {
+    return (
+      <EmptyState
+        heading="Add a customer"
+        source={require('../../../assets/images/coming-soon.png')}
+        text="Click the button below to add a new customer"
+      />
+    );
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputContainer}>
+          <Icon
+            size={24}
+            style={styles.searchInputIcon}
+            type="ionicons"
+            name="ios-search"
+            color={colors.primary}
+          />
+          <TextInput
+            value={searchInputValue}
+            style={styles.searchInput}
+            placeholder="Search Customer"
+            onChangeText={handleCustomerSearch}
+            placeholderTextColor={colors['gray-50']}
+          />
+        </View>
+      </View>
+
       {myCustomers.length ? (
         <>
-          <View style={styles.searchContainer}>
-            <View style={styles.searchInputContainer}>
-              <Icon
-                size={24}
-                style={styles.searchInputIcon}
-                type="ionicons"
-                name="ios-search"
-                color={colors.primary}
-              />
-              <TextInput
-                value={searchInputValue}
-                style={styles.searchInput}
-                placeholder="Search Customer"
-                onChangeText={handleCustomerSearch}
-                placeholderTextColor={colors['gray-50']}
-              />
-            </View>
-          </View>
           <FlatList
             data={myCustomers}
             renderItem={renderCustomerListItem}
@@ -100,8 +113,7 @@ const CustomersTab = () => {
         </>
       ) : (
         <EmptyState
-          heading="Add a customer"
-          source={require('../../../assets/images/coming-soon.png')}
+          heading="No results found"
           text="Click the button below to add a new customer"
         />
       )}

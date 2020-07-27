@@ -1,5 +1,6 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {Modal, View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet} from 'react-native';
+import Modal from 'react-native-modal';
 import {Button, FloatingLabelInput} from '../../../components';
 import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
@@ -54,57 +55,68 @@ export const PaymentMethodModal = (props: Props) => {
   }, [onSubmit, amount, note, type, handleClose]);
 
   return (
-    <Modal animationType="slide" visible={visible}>
+    <Modal
+      isVisible={visible}
+      onSwipeComplete={handleClose}
+      style={applyStyles({
+        margin: 0,
+        justifyContent: 'flex-end',
+      })}>
       <View
-        style={applyStyles('items-center', 'justify-center', 'py-lg', {
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-20'],
+        style={applyStyles({
+          backgroundColor: colors.white,
         })}>
-        <Text
-          style={applyStyles('text-500', 'text-uppercase', {
-            color: colors.primary,
+        <View
+          style={applyStyles('items-center', 'justify-center', 'py-lg', {
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
           })}>
-          {modalTitle[type]}
-        </Text>
-      </View>
-
-      <View style={applyStyles('flex-1', 'px-lg')}>
-        <View style={applyStyles('mb-md')}>
-          <FloatingLabelInput
-            value={amount}
-            label="Amount Paid"
-            keyboardType="numeric"
-            onChangeText={handleAmountChange}
-            leftIcon={
-              <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-                &#8358;
-              </Text>
-            }
-          />
+          <Text
+            style={applyStyles('text-500', 'text-uppercase', {
+              color: colors.primary,
+            })}>
+            {modalTitle[type]}
+          </Text>
         </View>
 
-        <View style={applyStyles('mb-md')}>
-          <FloatingLabelInput
-            multiline
-            value={note}
-            label="Note (optional)"
-            onChangeText={handleNoteChange}
+        <View style={applyStyles('px-lg')}>
+          <View style={applyStyles('mb-md')}>
+            <FloatingLabelInput
+              value={amount}
+              label="Amount Paid"
+              keyboardType="numeric"
+              onChangeText={handleAmountChange}
+              leftIcon={
+                <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
+                  &#8358;
+                </Text>
+              }
+            />
+          </View>
+
+          <View style={applyStyles('mb-md')}>
+            <FloatingLabelInput
+              multiline
+              value={note}
+              label="Note (optional)"
+              onChangeText={handleNoteChange}
+            />
+          </View>
+        </View>
+        <View style={styles.actionButtons}>
+          <Button
+            title="Cancel"
+            variantColor="clear"
+            onPress={handleClose}
+            style={styles.actionButton}
+          />
+          <Button
+            title="Done"
+            variantColor="red"
+            onPress={handleSubmit}
+            style={styles.actionButton}
           />
         </View>
-      </View>
-      <View style={styles.actionButtons}>
-        <Button
-          title="Cancel"
-          variantColor="clear"
-          onPress={handleClose}
-          style={styles.actionButton}
-        />
-        <Button
-          title="Done"
-          variantColor="red"
-          onPress={handleSubmit}
-          style={styles.actionButton}
-        />
       </View>
     </Modal>
   );

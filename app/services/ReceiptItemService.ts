@@ -1,6 +1,6 @@
-import Realm, {UpdateMode} from 'realm'
-import {IReceiptItem, modelName} from '../models/ReceiptItem'
-import {IReceipt} from '../models/Receipt'
+import Realm, {UpdateMode} from 'realm';
+import {IReceiptItem, modelName} from '../models/ReceiptItem';
+import {IReceipt} from '../models/Receipt';
 
 export const saveReceiptItem = ({
   realm,
@@ -10,13 +10,13 @@ export const saveReceiptItem = ({
   price,
   weight,
 }: {
-  realm: Realm
-  receipt: IReceipt
-  id: string
-  name: string
-  quantity: string
-  price: string
-  weight: string
+  realm: Realm;
+  receipt: IReceipt;
+  id: string;
+  name: string;
+  quantity: string;
+  price: string;
+  weight: string;
 }): void => {
   realm.write(() => {
     const paymentItem: IReceiptItem = {
@@ -26,8 +26,8 @@ export const saveReceiptItem = ({
       quantity: parseFloat(quantity),
       price: parseFloat(price),
       total_price: parseFloat(quantity) * parseFloat(price),
-    }
+    };
 
-    realm.create<IReceiptItem>(modelName, paymentItem, UpdateMode.Modified)
-  })
-}
+    realm.create<IReceiptItem>(modelName, paymentItem, UpdateMode.Modified);
+  });
+};

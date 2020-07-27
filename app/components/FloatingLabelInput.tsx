@@ -7,15 +7,16 @@ import {
   TextInputFocusEventData,
   TextInputProps,
   View,
-  ViewStyle,
 } from 'react-native';
-import {colors} from '../styles';
 import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
 
 export type FloatingLabelInputProps = {
   label?: string;
   containerStyle?: any;
-  inputStyle?: ViewStyle;
+  inputStyle?: {
+    [key: string]: any;
+  };
   leftIcon?: React.ReactNode | string;
 } & TextInputProps;
 
@@ -63,7 +64,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
     paddingLeft: 20,
   };
 
-  let inputFieldStyle = styles.inputField;
+  let inputFieldStyle = {...styles.inputField, ...inputStyle};
 
   if (leftIcon) {
     inputFieldStyle = {...styles.inputField, ...withLeftIconStyle};
@@ -97,7 +98,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
         value={value}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        style={applyStyles(inputFieldStyle, inputStyle)}
+        style={applyStyles(inputFieldStyle)}
       />
     </View>
   );

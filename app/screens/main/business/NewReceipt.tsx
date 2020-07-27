@@ -1,13 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {
-  FlatList,
-  SafeAreaView,
-  StyleSheet,
-  Text,
-  View,
-  ScrollView,
-} from 'react-native';
+import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import Modal from 'react-native-modal';
 import {Button} from '../../../components';
 import {FloatingLabelInput} from '../../../components';
 import AppMenu from '../../../components/Menu';
@@ -129,62 +123,40 @@ const NewReceipt = () => {
         ListHeaderComponent={renderRecentProductsHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
       />
-      {selectedProduct ? (
-        <>
-          <ScrollView style={styles.calculatorSection}>
-            <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
-              You have{' '}
-              <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
-              Products in your receipt
-            </Text>
-            <View>
-              <>
-                <Text
-                  style={applyStyles(
-                    styles.calculatorSectionHelperText,
-                    'text-500',
-                  )}>
-                  Adding this product to receipt
-                </Text>
-                <Text
-                  style={applyStyles(styles.selectedProductName, 'text-700')}>
-                  {selectedProduct?.name} ({selectedProduct?.weight})
-                </Text>
-                <View style={styles.calculatorSectionInputs}>
-                  <View
-                    style={applyStyles('flex-row', 'items-center', {
-                      width: '48%',
-                    })}>
-                    <FloatingLabelInput
-                      value={price}
-                      label="Unit Price"
-                      keyboardType="numeric"
-                      onChangeText={handlePriceChange}
-                      leftIcon={
-                        <Text
-                          style={applyStyles(styles.inputIconText, 'text-400')}>
-                          &#8358;
-                        </Text>
-                      }
-                    />
-                  </View>
-                  <View
-                    style={applyStyles('text-400', {
-                      width: '48%',
-                    })}>
-                    <FloatingLabelInput
-                      value={quantity}
-                      label="Quantity"
-                      keyboardType="numeric"
-                      onChangeText={handleQuantityChange}
-                    />
-                  </View>
-                </View>
-                <View style={styles.calculatorSectionInputs}>
+      <Modal
+        isVisible={!!selectedProduct}
+        style={applyStyles({
+          margin: 0,
+          justifyContent: 'flex-end',
+        })}>
+        <View style={styles.calculatorSection}>
+          <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
+            You have{' '}
+            <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
+            Products in your receipt
+          </Text>
+          <View>
+            <>
+              <Text
+                style={applyStyles(
+                  styles.calculatorSectionHelperText,
+                  'text-500',
+                )}>
+                Adding this product to receipt
+              </Text>
+              <Text style={applyStyles(styles.selectedProductName, 'text-700')}>
+                {selectedProduct?.name} ({selectedProduct?.weight})
+              </Text>
+              <View style={styles.calculatorSectionInputs}>
+                <View
+                  style={applyStyles('flex-row', 'items-center', {
+                    width: '48%',
+                  })}>
                   <FloatingLabelInput
-                    label="Subtotal"
-                    value={getSubtotal()}
+                    value={price}
+                    label="Unit Price"
                     keyboardType="numeric"
+                    onChangeText={handlePriceChange}
                     leftIcon={
                       <Text
                         style={applyStyles(styles.inputIconText, 'text-400')}>
@@ -193,27 +165,51 @@ const NewReceipt = () => {
                     }
                   />
                 </View>
-              </>
-            </View>
-          </ScrollView>
-          {!!selectedProduct && (
-            <View style={styles.calculatorSectionButtons}>
-              <Button
-                title="Done"
-                variantColor="clear"
-                onPress={handleDone}
-                style={styles.calculatorSectionButton}
-              />
-              <Button
-                variantColor="red"
-                title="Add next item"
-                onPress={handleAddItem}
-                style={styles.calculatorSectionButton}
-              />
-            </View>
-          )}
-        </>
-      ) : (
+                <View
+                  style={applyStyles('text-400', {
+                    width: '48%',
+                  })}>
+                  <FloatingLabelInput
+                    value={quantity}
+                    label="Quantity"
+                    keyboardType="numeric"
+                    onChangeText={handleQuantityChange}
+                  />
+                </View>
+              </View>
+              <View style={styles.calculatorSectionInputs}>
+                <FloatingLabelInput
+                  label="Subtotal"
+                  editable={false}
+                  value={getSubtotal()}
+                  keyboardType="numeric"
+                  leftIcon={
+                    <Text style={applyStyles(styles.inputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+            </>
+          </View>
+        </View>
+        <View style={styles.calculatorSectionButtons}>
+          <Button
+            variantColor="white"
+            title="Add next item"
+            onPress={handleAddItem}
+            style={styles.calculatorSectionButton}
+          />
+          <Button
+            title="Done"
+            variantColor="red"
+            onPress={handleDone}
+            style={styles.calculatorSectionButton}
+          />
+        </View>
+      </Modal>
+
+      {!selectedProduct && (
         <View style={styles.calculatorSection}>
           <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
             You have{' '}
@@ -257,6 +253,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 15,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    backgroundColor: colors.white,
     borderTopColor: colors['gray-20'],
   },
   receiptItemsCount: {
@@ -292,12 +289,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   calculatorSectionButtons: {
-    marginTop: 8,
     borderTopWidth: 1,
     alignItems: 'center',
     flexDirection: 'row',
     paddingVertical: 12,
     paddingHorizontal: 16,
+    backgroundColor: colors.white,
     justifyContent: 'space-between',
     borderTopColor: colors['gray-20'],
   },
