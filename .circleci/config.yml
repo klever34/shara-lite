@@ -50,6 +50,15 @@ workflows:
             - checkout_code
       - fastlane:
           context: shara-dev
+          lane: internal
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          context: shara-dev
           lane: play
           track: internal
           requires:
