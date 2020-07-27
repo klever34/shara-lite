@@ -18,12 +18,12 @@ export const savePayment = ({
 }: {
   realm: Realm;
   customer: ICustomer | Customer;
-  receipt: IReceipt;
+  receipt?: IReceipt;
   type: string;
   method: string;
   note?: string;
   amount: number;
-}): void => {
+}): IPayment => {
   const payment: IPayment = {
     type,
     method,
@@ -44,4 +44,6 @@ export const savePayment = ({
   realm.write(() => {
     realm.create<IPayment>(modelName, payment, UpdateMode.Modified);
   });
+
+  return payment;
 };

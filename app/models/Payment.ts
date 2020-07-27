@@ -10,7 +10,7 @@ export interface IPayment extends BaseModelInterface {
   customer_name?: string;
   customer_mobile?: string;
   customer?: ICustomer;
-  receipt: IReceipt;
+  receipt?: IReceipt;
 }
 
 export const modelName = 'Payment';
