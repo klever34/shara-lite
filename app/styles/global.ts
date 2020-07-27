@@ -17,6 +17,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'items-center': {
     alignItems: 'center',
   },
+  'flex-wrap': {
+    flexWrap: 'wrap',
+  },
+  'self-start': {
+    alignSelf: 'flex-start',
+  },
   center: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -44,6 +50,10 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'text-capitalize': {
     textTransform: 'capitalize',
+  },
+  'text-xl': {
+    fontSize: 20,
+    lineHeight: 24,
   },
   'text-lg': {
     fontSize: 18,

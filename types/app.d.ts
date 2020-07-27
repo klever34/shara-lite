@@ -8,16 +8,43 @@ type User = {
   updated_at: string;
 };
 
+type GroupChat = {
+  name: string;
+  uuid: string;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  id: number;
+};
+
+type GroupChatMember = {
+  id: number;
+  user_id: number;
+  group_chat_id: number;
+  is_admin: boolean;
+  created_at: string;
+  updated_at: string;
+  is_creator: boolean;
+  user: User;
+};
+
+type OneOnOneChannelCustom = {
+  type: '1-1';
+  members: string;
+};
+
+type GroupChannelCustom = {
+  type: 'group';
+  id: number;
+  creatorId: number;
+  creatorMobile: string;
+};
+
+type ChannelCustom = OneOnOneChannelCustom | GroupChannelCustom;
+
 type PushNotificationToken = {
   token: string;
   os: string;
-};
-
-type PushNotificationData = {
-  foreground: boolean;
-  userInteraction: boolean;
-  message: string;
-  data: any;
 };
 
 type Product = {
@@ -66,5 +93,3 @@ type Payment = {
 };
 
 declare module 'react-native-signature-capture';
-
-declare module 'react-native-push-notification';

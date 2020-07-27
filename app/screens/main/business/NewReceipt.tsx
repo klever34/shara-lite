@@ -8,8 +8,8 @@ import {
   View,
   ScrollView,
 } from 'react-native';
-import {Button} from '../../../components/Button';
-import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
+import {Button} from '../../../components';
+import {FloatingLabelInput} from '../../../components';
 import AppMenu from '../../../components/Menu';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import Touchable from '../../../components/Touchable';

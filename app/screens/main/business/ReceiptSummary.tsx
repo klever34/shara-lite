@@ -13,8 +13,8 @@ import {
   Alert,
 } from 'react-native';
 import {MainStackParamList} from '..';
-import {Button} from '../../../components/Button';
-import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
+import {Button} from '../../../components';
+import {FloatingLabelInput} from '../../../components';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
