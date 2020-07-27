@@ -24,7 +24,7 @@ export class Credit implements Partial<ICredit> {
       total_amount: 'double',
       amount_paid: 'double',
       amount_left: 'double',
-      fulfilled: {type: 'boolean', default: false},
+      fulfilled: {type: 'bool', default: false},
       customer_name: 'string?',
       customer_mobile: 'string?',
       customer: 'Customer?',
