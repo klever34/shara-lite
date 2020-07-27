@@ -34,18 +34,10 @@ const HomeScreen = () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
-      realm.write(() => {
-        realm.deleteAll();
-      });
-      pubNub.unsubscribeAll();
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Auth'}],
-      });
     } catch (e) {
       console.log('Error: ', e);
     }
-  }, [realm, pubNub, navigation]);
+  }, []);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (

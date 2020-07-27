@@ -1,4 +1,7 @@
 import {IStorageService} from '../storage';
+import {IRealmService} from '../realm';
+import {IPubNubService} from '../pubnub';
+import {INavigationService} from '../navigation';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -20,7 +23,12 @@ export class AuthService implements IAuthService {
   private user: User | null = null;
   private token: string | null = null;
 
-  constructor(private storageService: IStorageService) {}
+  constructor(
+    private storageService: IStorageService,
+    private dbService: IRealmService,
+    private pubNubService: IPubNubService,
+    private navigationService: INavigationService,
+  ) {}
 
   public async initialize(): Promise<void> {
     try {
@@ -56,8 +64,13 @@ export class AuthService implements IAuthService {
   }
 
   public async logOut() {
-    this.user = null;
-    this.token = null;
-    await this.storageService.clear();
+    if (this.isLoggedIn()) {
+      this.user = null;
+      this.token = null;
+      await this.storageService.clear();
+      this.dbService.clearDb();
+      this.pubNubService.getInstance()?.unsubscribeAll();
+      this.navigationService.goToAuth();
+    }
   }
 }

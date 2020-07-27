@@ -2,7 +2,6 @@ import flatten from 'lodash/flatten';
 import {IContact} from '../../models';
 import Config from 'react-native-config';
 import queryString from 'query-string';
-import {handleFetchErrors} from '../../helpers/utils';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 
@@ -48,39 +47,51 @@ export interface IApiService {
 }
 
 export class ApiService implements IApiService {
-  public requester: Requester;
   constructor(
     private authService: IAuthService,
     private storageService: IStorageService,
-  ) {
-    this.requester = {
-      get: <T extends any = any>(
-        url: string,
-        params: {[key: string]: string | number},
-      ) => {
-        return fetch(
-          `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${authService.getToken() ?? ''}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        ).then((...args) => handleFetchErrors<T>(...args));
-      },
-      post: <T extends any = any>(url: string, data: {[key: string]: any}) => {
-        return fetch(`${Config.API_BASE_URL}${url}`, {
-          method: 'POST',
+  ) {}
+
+  public requester: Requester = {
+    get: <T extends any = any>(
+      url: string,
+      params: {[key: string]: string | number},
+    ) => {
+      return fetch(
+        `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
+        {
+          method: 'GET',
           headers: {
-            Authorization: `Bearer ${authService.getToken() ?? ''}`,
+            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
-        }).then((...args) => handleFetchErrors<T>(...args));
-      },
-    };
-  }
+        },
+      ).then((...args) => this.handleFetchErrors<T>(...args));
+    },
+    post: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then((...args) => this.handleFetchErrors<T>(...args));
+    },
+  };
+
+  private handleFetchErrors = async <T extends any>(
+    response: Response,
+  ): Promise<T> => {
+    if (!response.ok) {
+      const jsonResponse = await response.json();
+      if (jsonResponse.message.includes('E_INVALID_JWT_TOKEN')) {
+        this.authService.logOut();
+      }
+      return Promise.reject(new Error(jsonResponse.message));
+    }
+    return (await response.json()) as Promise<T>;
+  };
 
   public async register(payload: {
     firstname: string;
