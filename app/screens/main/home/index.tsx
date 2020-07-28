@@ -268,21 +268,24 @@ const HomeScreen = () => {
             },
           );
         });
-        const conversations: IConversation[] = [];
+        const channels: string[] = [];
+        const conversations: {[channel: string]: IConversation} = {};
         for (let i = 0; i < data.length; i += 1) {
-          const {channel} = data[i];
+          const {channel: channelMetadata} = data[i];
           try {
             const conversation = await getConversationFromChannelMetadata(
-              channel,
+              channelMetadata,
             );
-            conversations.push(conversation);
+            const channel = channelMetadata.id;
+            channels.push(channel);
+            conversations[channel] = conversation;
           } catch (e) {
-            console.log('Fetching conversation Error: ', e, channel);
+            console.log('Fetching conversation Error: ', e, channelMetadata);
           }
         }
         realm.write(() => {
-          for (let i = 0; i < conversations.length; i += 1) {
-            const conversation = conversations[i];
+          for (let i = 0; i < channels.length; i += 1) {
+            const conversation = conversations[channels[i]];
             if (conversation.type === '1-1') {
               const contact = realm
                 .objects<IContact>('Contact')
@@ -292,13 +295,43 @@ const HomeScreen = () => {
                 contact.channel = conversation.channel;
               }
             }
-            realm.create<IConversation>(
+            conversations[channels[i]] = realm.create<IConversation>(
               'Conversation',
               conversation,
               Realm.UpdateMode.Modified,
             );
           }
         });
+        pubNub.fetchMessages(
+          {
+            channels,
+            count: 100,
+          },
+          (status, response) => {
+            if (status.error) {
+              console.log('Error: ', status);
+            } else {
+              Object.keys(response.channels).forEach((channel) => {
+                const messages: IMessage[] = response.channels[channel].map(
+                  ({message}) => message,
+                );
+                realm.write(() => {
+                  for (let i = 0; i < messages.length; i += 1) {
+                    const message = realm.create<IMessage>(
+                      'Message',
+                      messages[i],
+                      Realm.UpdateMode.Modified,
+                    );
+                    if (i === messages.length - 1) {
+                      const conversation = conversations[channel];
+                      conversation.lastMessage = message;
+                    }
+                  }
+                });
+              });
+            }
+          },
+        );
       } catch (e) {
         console.log('Fetching all conversations Error: ', e);
       }
