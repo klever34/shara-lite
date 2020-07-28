@@ -1,21 +1,21 @@
-import {ICustomer} from './Customer'
-import {BaseModelInterface, baseModelSchema} from './baseSchema'
-import {IPayment} from './Payment'
-import {IReceiptItem} from './ReceiptItem'
+import {ICustomer} from './Customer';
+import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {IPayment} from './Payment';
+import {IReceiptItem} from './ReceiptItem';
 
 export interface IReceipt extends BaseModelInterface {
-  amount_paid: number
-  tax: number
-  total_amount: number
-  credit_amount: number
-  customer_name?: string
-  customer_mobile?: string
-  customer?: ICustomer
-  payments?: IPayment[]
-  items?: IReceiptItem[]
+  amount_paid: number;
+  tax: number;
+  total_amount: number;
+  credit_amount: number;
+  customer_name?: string;
+  customer_mobile?: string;
+  customer?: ICustomer;
+  payments?: IPayment[];
+  items?: IReceiptItem[];
 }
 
-export const modelName = 'Receipt'
+export const modelName = 'Receipt';
 
 export class Receipt implements Partial<IReceipt> {
   public static schema: Realm.ObjectSchema = {
@@ -41,5 +41,5 @@ export class Receipt implements Partial<IReceipt> {
         property: 'receipt',
       },
     },
-  }
+  };
 }

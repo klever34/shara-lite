@@ -1,8 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
+import React, {useCallback, useState} from 'react';
+import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
 import Share from 'react-native-share';
-import React, {useState, useCallback} from 'react';
-import {FlatList, Platform, StyleSheet, Text, View, Alert} from 'react-native';
 import {FAButton} from '../../../components';
 import EmptyState from '../../../components/EmptyState';
 import Icon from '../../../components/Icon';

@@ -5,7 +5,6 @@ import React, {useCallback} from 'react';
 import {
   Image,
   ImageProps,
-  Platform,
   SafeAreaView,
   StyleSheet,
   Text,

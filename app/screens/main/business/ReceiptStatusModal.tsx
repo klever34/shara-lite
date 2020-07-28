@@ -1,22 +1,21 @@
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {colors} from '../../../styles';
 import format from 'date-fns/format';
-import React, {useState, useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
+  ImageProps,
   Modal,
   ScrollView,
-  Text,
-  View,
-  TextStyle,
-  ImageProps,
-  ViewStyle,
-  Platform,
   StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
 } from 'react-native';
-import Touchable from '../../../components/Touchable';
-import Icon from '../../../components/Icon';
 import {Button} from '../../../components';
+import Icon from '../../../components/Icon';
+import Touchable from '../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {colors} from '../../../styles';
 
 type Props = {
   visible: boolean;

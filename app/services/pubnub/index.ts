@@ -76,3 +76,5 @@ export const useTyping = (channel: string, input: string = '') => {
   }, [channel, pubNub, realm]);
   return typingMessage;
 };
+
+export * from './service';

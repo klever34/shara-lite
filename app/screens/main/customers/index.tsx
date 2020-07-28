@@ -1,22 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {useRealm} from '../../../services/realm';
-import {
-  FlatList,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import {FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
 import {FAButton} from '../../../components';
+import EmptyState from '../../../components/EmptyState';
 import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
-import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
-import {getCustomers} from '../../../services/CustomerService';
 import {ICustomer} from '../../../models';
-import EmptyState from '../../../components/EmptyState';
+import {getCustomers} from '../../../services/CustomerService';
+import {useRealm} from '../../../services/realm';
+import {colors} from '../../../styles';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
