@@ -21,14 +21,16 @@ import {Button} from '../../../components';
 type Props = {
   visible: boolean;
   timeTaken: number;
+  isSaving: boolean;
   amountPaid: number;
   customer: Customer;
   onClose: () => void;
   creditAmount: number;
-  isSubmitting: boolean;
+  isCompleting: boolean;
   onComplete: () => void;
   onPrintReceipt: () => void;
   onOpenShareModal: () => void;
+  onNewReceiptClick: () => void;
   onOpenCustomerModal: () => void;
 };
 
@@ -48,13 +50,15 @@ type PageProps = {
 export const ReceiptStatusModal = (props: Props) => {
   const {
     visible,
+    isSaving,
     timeTaken,
     amountPaid,
     onComplete,
-    isSubmitting,
+    isCompleting,
     creditAmount,
     onPrintReceipt,
     onOpenShareModal,
+    onNewReceiptClick,
     onOpenCustomerModal,
     customer: customerProps,
   } = props;
@@ -214,13 +218,8 @@ export const ReceiptStatusModal = (props: Props) => {
                   )}>
                   <Icon
                     size={24}
-                    type="ionicons"
-                    name={
-                      Platform.select({
-                        android: 'md-add',
-                        ios: 'ios-add',
-                      }) as string
-                    }
+                    name="plus"
+                    type="feathericons"
                     color={colors.primary}
                   />
                   <Text style={styles.addProductButtonText}>
@@ -252,8 +251,9 @@ export const ReceiptStatusModal = (props: Props) => {
           </Button>
           <Button
             variantColor="red"
-            onPress={onComplete}
+            isLoading={isSaving}
             title="Create new receipt"
+            onPress={onNewReceiptClick}
             style={applyStyles({marginTop: 24})}
           />
         </View>
@@ -283,7 +283,7 @@ export const ReceiptStatusModal = (props: Props) => {
           title="Finish"
           variantColor="red"
           onPress={onComplete}
-          isLoading={isSubmitting}
+          isLoading={isCompleting}
           style={styles.actionButton}
         />
       </View>

@@ -83,17 +83,7 @@ const CustomersTab = () => {
           style={styles.fabButton}
           onPress={() => navigation.navigate('AddCustomer')}>
           <View style={styles.fabButtonContent}>
-            <Icon
-              size={18}
-              type="ionicons"
-              name={
-                Platform.select({
-                  android: 'md-add',
-                  ios: 'ios-add',
-                }) as string
-              }
-              color="white"
-            />
+            <Icon size={18} name="plus" color="white" type="feathericons" />
             <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
               Add Customer
             </Text>
@@ -129,8 +119,8 @@ const CustomersTab = () => {
           <FlatList
             data={myCustomers}
             renderItem={renderCustomerListItem}
-            ListHeaderComponent={renderCustomerListHeader}
             keyExtractor={(item) => `${item.id}`}
+            ListHeaderComponent={renderCustomerListHeader}
           />
         </>
       ) : (
@@ -143,17 +133,7 @@ const CustomersTab = () => {
         style={styles.fabButton}
         onPress={() => navigation.navigate('AddCustomer')}>
         <View style={styles.fabButtonContent}>
-          <Icon
-            size={18}
-            type="ionicons"
-            name={
-              Platform.select({
-                android: 'md-add',
-                ios: 'ios-add',
-              }) as string
-            }
-            color="white"
-          />
+          <Icon size={18} name="plus" color="white" type="feathericons" />
           <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
             Add Customer
           </Text>

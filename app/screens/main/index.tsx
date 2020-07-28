@@ -4,34 +4,35 @@ import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, Alert, StyleSheet, View} from 'react-native';
 import Config from 'react-native-config';
+import Realm from 'realm';
+import getUuidByString from 'uuid-by-string';
+import {IContact, IConversation} from '../../models';
 import {
   getAuthService,
   getContactsService,
   getRealmService,
 } from '../../services';
-import {colors} from '../../styles';
-import ChatScreen from './ChatScreen';
-import ContactsScreen from './ContactsScreen';
-import HomeScreen from './home';
-import Realm from 'realm';
 import {createRealm, RealmProvider} from '../../services/realm';
-import getUuidByString from 'uuid-by-string';
-import Receipts from './business/Receipts';
-import NewReceipt from './business/NewReceipt';
-import StatusModal from './StatusModal';
+import {colors} from '../../styles';
+import Credit from './business/Credit';
+import Expenses from './business/Expenses';
 import Finances from './business/Finances';
 import Inventory from './business/Inventory';
-import Expenses from './business/Expenses';
-import Credit from './business/Credit';
+import MySales from './business/MySales';
+import NewReceipt from './business/NewReceipt';
+import Receipts from './business/Receipts';
+import ChatScreen from './ChatScreen';
+import ContactsScreen from './ContactsScreen';
 import AddCustomer from './customers/AddCustomer';
-import CustomerDetails from './customers/CustomerDetails';
-import RecordPayment from './customers/RecordPayment';
 import CreditPayment from './customers/CreditPayment';
+import CustomerDetails from './customers/CustomerDetails';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
+import RecordPayment from './customers/RecordPayment';
+import HomeScreen from './home';
 import SelectGroupMembersScreen from './SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './SetGroupDetailsScreen';
-import {IContact, IConversation} from '../../models';
+import StatusModal from './StatusModal';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -50,6 +51,7 @@ export type MainStackParamList = {
   CreditPayment: {creditDetails: CreditDetails};
   PaymentDetails: {payment: Payment};
   OrderDetails: {order: Order};
+  MySales: undefined;
 
   SelectGroupMembers: undefined;
   SetGroupDetails: {members: IContact[]};
@@ -370,6 +372,21 @@ const MainScreens = ({navigation}: any) => {
             component={OrderDetails}
             options={{
               title: 'Order Details',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="MySales"
+            component={MySales}
+            options={{
+              title: 'My Sales',
               headerStyle: {
                 backgroundColor: colors.primary,
               },

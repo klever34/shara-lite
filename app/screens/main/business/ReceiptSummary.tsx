@@ -5,7 +5,6 @@ import {
   FlatList,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -15,18 +14,18 @@ import Share from 'react-native-share';
 import {Button, CurrencyInput, FloatingLabelInput} from '../../../components';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
+import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {useRealm} from '../../../services/realm';
+import {saveReceipt} from '../../../services/ReceiptService';
 import {colors} from '../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
+import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import Receipts from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import {saveReceipt} from '../../../services/ReceiptService';
-import {EditProductModal} from './EditProductModal';
-import Touchable from '../../../components/Touchable';
 
 export type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -40,7 +39,7 @@ type Props = {
   onUpdateProductItem: (item: ReceiptItem) => void;
 };
 
-const summaryTableStyles = StyleSheet.create({
+export const summaryTableStyles = StyleSheet.create({
   row: {
     flexWrap: 'wrap',
     marginBottom: 12,
@@ -55,7 +54,7 @@ const summaryTableStyles = StyleSheet.create({
   },
 });
 
-const summaryTableHeaderStyles = StyleSheet.create({
+export const summaryTableHeaderStyles = StyleSheet.create({
   row: {
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-900'],
@@ -66,7 +65,7 @@ const summaryTableHeaderStyles = StyleSheet.create({
   },
 });
 
-const summaryTableItemStyles = StyleSheet.create({
+export const summaryTableItemStyles = StyleSheet.create({
   row: {
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-20'],
@@ -95,7 +94,7 @@ export const SummaryTableHeader = () => {
         style={applyStyles(summaryTableStyles['column-20'], {
           alignItems: 'flex-end',
         })}>
-        <Text style={summaryTableHeaderStyles.text}>Qty</Text>
+        <Text style={summaryTableHeaderStyles.text}>QTY</Text>
       </View>
       <View
         style={applyStyles(summaryTableStyles['column-40'], {
@@ -180,7 +179,8 @@ const ReceiptSummary = (props: Props) => {
   } = props;
   const tax = 0;
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
   const [paymentType, setPaymentType] = useState<
     'cash' | 'transfer' | 'mobile'
   >('cash');
@@ -411,36 +411,47 @@ const ReceiptSummary = (props: Props) => {
     handleOpenSuccessModal();
   };
 
+  const handleSaveReceipt = useCallback(
+    (callback: () => void, onSuccess?: () => void) => {
+      setTimeout(() => {
+        callback();
+        saveReceipt({
+          tax,
+          realm,
+          products,
+          payments,
+          customer,
+          amountPaid,
+          totalAmount,
+          creditAmount,
+        });
+        onClearReceipt();
+        onSuccess && onSuccess();
+        navigation.navigate('NewReceipt');
+      }, 2000);
+    },
+    [
+      amountPaid,
+      creditAmount,
+      customer,
+      navigation,
+      onClearReceipt,
+      payments,
+      products,
+      realm,
+      totalAmount,
+    ],
+  );
+
   const handleComplete = useCallback(() => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      saveReceipt({
-        tax,
-        realm,
-        products,
-        payments,
-        customer,
-        amountPaid,
-        totalAmount,
-        creditAmount,
-      });
-      handleCloseSuccessModal();
-      onClearReceipt();
-      navigation.navigate('NewReceipt');
-    }, 2000);
-  }, [
-    realm,
-    products,
-    payments,
-    customer,
-    amountPaid,
-    totalAmount,
-    creditAmount,
-    handleCloseSuccessModal,
-    onClearReceipt,
-    navigation,
-  ]);
+    setIsCompleting(true);
+    handleSaveReceipt(() => setIsCompleting(false));
+  }, [handleSaveReceipt]);
+
+  const handleNewReceiptClick = useCallback(() => {
+    setIsSaving(true);
+    handleSaveReceipt(() => setIsSaving(false));
+  }, [handleSaveReceipt]);
 
   useEffect(() => {
     const total = products
@@ -511,7 +522,15 @@ const ReceiptSummary = (props: Props) => {
                     )}>
                     Tax:
                   </Text>
-                  <Text>{tax}</Text>
+                  <Text
+                    style={applyStyles(
+                      {
+                        color: colors['gray-300'],
+                      },
+                      'text-400',
+                    )}>
+                    {tax}
+                  </Text>
                 </View>
                 <View
                   style={applyStyles(
@@ -538,13 +557,8 @@ const ReceiptSummary = (props: Props) => {
               <View style={styles.addProductButton}>
                 <Icon
                   size={24}
-                  type="ionicons"
-                  name={
-                    Platform.select({
-                      android: 'md-add',
-                      ios: 'ios-add',
-                    }) as string
-                  }
+                  name="plus"
+                  type="feathericons"
                   color={colors.primary}
                 />
                 <Text
@@ -800,21 +814,23 @@ const ReceiptSummary = (props: Props) => {
           title="Done"
           variantColor="red"
           onPress={handleFinish}
-          isLoading={isSubmitting}
+          isLoading={isCompleting}
           style={styles.actionButton}
         />
       </View>
       <ReceiptStatusModal
         customer={customer}
+        isSaving={isSaving}
         timeTaken={timeTaken}
         amountPaid={amountPaid}
         creditAmount={creditAmount}
         onComplete={handleComplete}
-        isSubmitting={isSubmitting}
+        isCompleting={isCompleting}
         visible={isSuccessModalOpen}
         onClose={handleCloseSuccessModal}
         onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
+        onNewReceiptClick={handleNewReceiptClick}
         onOpenCustomerModal={handleOpenCustomerModal}
       />
       <CustomerDetailsModal

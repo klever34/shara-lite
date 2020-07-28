@@ -156,8 +156,8 @@ export const ShareReceiptModal = ({
               style={applyStyles('flex-row', 'items-center', 'justify-center')}>
               <Icon
                 size={24}
-                name="logo-whatsapp"
                 type="ionicons"
+                name="logo-whatsapp"
                 color={colors.white}
               />
               <Text

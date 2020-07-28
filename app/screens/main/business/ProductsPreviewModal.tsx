@@ -24,7 +24,7 @@ export const ProductsPreviewModal = (props: Props) => {
   );
 
   return (
-    <Modal visible={visible}>
+    <Modal animationType="slide" visible={visible}>
       <View style={applyStyles('flex-1', 'px-md')}>
         <View style={applyStyles('flex-1')}>
           <View style={applyStyles({marginVertical: 32})}>

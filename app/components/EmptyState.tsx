@@ -6,11 +6,12 @@ import {colors} from '../styles';
 type Props = {
   text?: string;
   heading?: string;
+  style?: string | {[key: string]: any};
   source?: ImageProps['source'];
 };
 
 const EmptyState = (props: Props) => {
-  const {heading, source, text} = props;
+  const {style, heading, source, text} = props;
   return (
     <View
       style={applyStyles(
@@ -18,6 +19,7 @@ const EmptyState = (props: Props) => {
         'justify-center',
         'items-center',
         styles.container,
+        style,
       )}>
       {source && (
         <Image style={applyStyles('pb-xl', styles.image)} source={source} />
@@ -37,7 +39,6 @@ const EmptyState = (props: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.white,
   },
   heading: {
     fontSize: 24,
