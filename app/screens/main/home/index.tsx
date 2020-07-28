@@ -3,20 +3,19 @@ import {Alert, Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '../../../styles';
 import ChatListScreen from './ChatListScreen';
-import {getApiService, getAuthService} from '../../../services';
+import {getAuthService, getRealmService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../../components/Menu';
-import {applyStyles, decrypt, retryPromise} from '../../../helpers/utils';
+import {applyStyles, retryPromise} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/realm';
-import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
+import {MessageEvent, SignalEvent} from 'pubnub';
 import Realm from 'realm';
 import CustomersTab from '../customers';
 import BusinessTab from '../business';
 import PushNotification from 'react-native-push-notification';
 import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
-import noop from 'lodash/noop';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -36,17 +35,49 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     try {
       const authService = getAuthService();
       await authService.logOut();
+      const realmService = getRealmService();
+      realmService.clearRealm();
     } catch (e) {
       console.log('Error: ', e);
     }
   }, []);
+
+  const restoreAllMessages = useCallback(async () => {
+    const closeModal = openModal('Restoring messages...');
+    try {
+      const realmService = getRealmService();
+      await realmService.restoreAllMessages();
+    } catch (e) {
+      console.log('Error: ', e);
+    }
+    closeModal();
+  }, [openModal]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <AppMenu options={[{text: 'Log out', onSelect: handleLogout}]} />
+        <AppMenu
+          options={[
+            {
+              text: 'Restore Messages',
+              onSelect: () => {
+                Alert.alert('Backup Restore', 'Restore all your messages?', [
+                  {
+                    text: 'OK',
+                    onPress: restoreAllMessages,
+                  },
+                  {
+                    text: 'CANCEL',
+                  },
+                ]);
+              },
+            },
+            {text: 'Log out', onSelect: handleLogout},
+          ]}
+        />
       ),
     });
-  }, [handleLogout, navigation]);
+  }, [handleLogout, navigation, restoreAllMessages]);
 
   useEffect(() => {
     const channelGroups: string[] = [pubNub.getUUID()];
@@ -97,44 +128,6 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     });
   }, [navigation, realm]);
 
-  const getConversationFromChannelMetadata = useCallback(
-    async (
-      channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
-    ): Promise<IConversation> => {
-      const custom = channelMetadata.custom as ChannelCustom;
-      try {
-        let sender: string;
-        let members: string[];
-        if (custom.type === 'group') {
-          const apiService = getApiService();
-          const groupChatMembers = await apiService.getGroupMembers(custom.id);
-          members = groupChatMembers.map(({user: {mobile}}) => mobile);
-          sender = channelMetadata.name ?? '';
-        } else {
-          members = custom.members
-            .split(',')
-            .map((encryptedMember) => decrypt(encryptedMember));
-          const user = getAuthService().getUser();
-          sender = members.find((member) => member !== user?.mobile) ?? '';
-        }
-        return {
-          title: sender,
-          type: custom.type ?? '1-1',
-          members,
-          channel: channelMetadata.id,
-        };
-      } catch (e) {
-        console.log(
-          'getConversationFromChannelMetadata Error: ',
-          e,
-          channelMetadata,
-        );
-        throw e;
-      }
-    },
-    [],
-  );
-
   useEffect(() => {
     const listener = {
       message: async (evt: MessageEvent) => {
@@ -162,7 +155,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 channel,
                 include: {customFields: true},
               });
-              conversation = await getConversationFromChannelMetadata(
+              const realmService = getRealmService();
+              conversation = await realmService.getConversationFromChannelMetadata(
                 response.data,
               );
               realm.write(() => {
@@ -248,127 +242,14 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     return () => {
       pubNub.removeListener(listener);
     };
-  }, [getConversationFromChannelMetadata, pubNub, realm]);
-
-  const restoreAllMessages = useCallback(
-    async (
-      channels: string[],
-      conversations: {[channel: string]: IConversation},
-    ) => {
-      for (let i = 0; i < channels.length; i++) {
-        let channel = channels[i];
-        const count = 25;
-        let retrieved: number | undefined;
-        let start: string | number | undefined;
-        do {
-          const response = await pubNub.fetchMessages({
-            channels: [channel],
-            start,
-            count,
-          });
-          const messagePayload = response.channels[channel] ?? [];
-          realm.write(() => {
-            for (let j = 0; j < messagePayload.length; j += 1) {
-              let {message} = messagePayload[j];
-              if (!message.id) {
-                continue;
-              }
-              message = realm.create<IMessage>(
-                'Message',
-                message,
-                Realm.UpdateMode.Modified,
-              );
-              if (j === messagePayload.length - 1 && retrieved === undefined) {
-                const conversation = conversations[channel];
-                conversation.lastMessage = message;
-              }
-            }
-          });
-          retrieved = messagePayload.length;
-          start = messagePayload[0]?.timetoken;
-        } while (retrieved === count);
-      }
-    },
-    [pubNub, realm],
-  );
+  }, [pubNub, realm]);
 
   useEffect(() => {
-    (async () => {
-      let closeModal = noop;
-      try {
-        const {data} = await new Promise((resolve, reject) => {
-          pubNub.objects.getMemberships(
-            {
-              uuid: pubNub.getUUID(),
-              include: {
-                customChannelFields: true,
-              },
-            },
-            (status, response) => {
-              if (status.error) {
-                reject(status);
-              } else {
-                resolve(response);
-              }
-            },
-          );
-        });
-        const channels: string[] = [];
-        const conversations: {[channel: string]: IConversation} = {};
-        for (let i = 0; i < data.length; i += 1) {
-          const {channel: channelMetadata} = data[i];
-          try {
-            const conversation = await getConversationFromChannelMetadata(
-              channelMetadata,
-            );
-            const channel = channelMetadata.id;
-            channels.push(channel);
-            conversations[channel] = conversation;
-          } catch (e) {
-            console.log('Fetching conversation Error: ', e, channelMetadata);
-          }
-        }
-        realm.write(() => {
-          for (let i = 0; i < channels.length; i += 1) {
-            const conversation = conversations[channels[i]];
-            if (conversation.type === '1-1') {
-              const contact = realm
-                .objects<IContact>('Contact')
-                .filtered(`mobile = "${conversation.title}"`)[0];
-              if (contact) {
-                conversation.title = contact.fullName;
-                contact.channel = conversation.channel;
-              }
-            }
-            conversations[channels[i]] = realm.create<IConversation>(
-              'Conversation',
-              conversation,
-              Realm.UpdateMode.Modified,
-            );
-          }
-        });
-        Alert.alert('Backup Restore', 'Restore all your messages?', [
-          {
-            text: 'OK',
-            onPress: () => {
-              closeModal = openModal('Restoring messages...');
-              restoreAllMessages(channels, conversations);
-            },
-          },
-        ]);
-      } catch (e) {
-        console.log('Fetching all conversations Error: ', e);
-      } finally {
-        closeModal();
-      }
-    })().then();
-  }, [
-    getConversationFromChannelMetadata,
-    openModal,
-    pubNub,
-    realm,
-    restoreAllMessages,
-  ]);
+    const realmService = getRealmService();
+    realmService.restoreAllConversations().catch((e) => {
+      console.log('Error: ', e);
+    });
+  }, [openModal, pubNub, realm, restoreAllMessages]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
