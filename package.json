@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.8",
+  "version": "0.1.8-feature.share-receipt-whatsapp+build.723",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
