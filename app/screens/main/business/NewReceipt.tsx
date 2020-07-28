@@ -1,15 +1,23 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+  Modal as ReactNativeModal,
+} from 'react-native';
 import Modal from 'react-native-modal';
-import {Button} from '../../../components';
+import {Button, CurrencyInput} from '../../../components';
 import {FloatingLabelInput} from '../../../components';
 import AppMenu from '../../../components/Menu';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import Touchable from '../../../components/Touchable';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {products} from '../data.json';
+import ReceiptSummary from './ReceiptSummary';
 
 type RecentProductItemProps = {
   item: Product;
@@ -25,8 +33,9 @@ const NewReceipt = () => {
   );
 
   const [price, setPrice] = useState<string | undefined>('');
-  const [quantity, setQuantity] = useState<string | undefined>('');
   const [receipt, setReceipt] = useState<ReceiptItem[]>([]);
+  const [quantity, setQuantity] = useState<string | undefined>('');
+  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -62,6 +71,24 @@ const NewReceipt = () => {
     setPrice(item?.price?.toString());
   }, []);
 
+  const handleOpenSummaryModal = useCallback(() => {
+    setIsSummaryModalOpen(true);
+  }, []);
+
+  const handleCloseSummaryModal = useCallback(() => {
+    setIsSummaryModalOpen(false);
+  }, []);
+
+  const handleCloseProductModal = useCallback(() => {
+    setSelectedProduct(null);
+    setQuantity('');
+  }, []);
+
+  const handleClearReceipt = useCallback(() => {
+    setReceipt([]);
+    handleCloseSummaryModal();
+  }, [handleCloseSummaryModal]);
+
   const handleDone = useCallback(() => {
     let items = receipt;
     if (selectedProduct && quantity && price) {
@@ -74,8 +101,17 @@ const NewReceipt = () => {
       handleAddItem();
       items = [product, ...receipt];
     }
-    navigation.navigate('ReceiptSummary', {products: items});
-  }, [receipt, selectedProduct, quantity, price, handleAddItem, navigation]);
+    setReceipt(items);
+    setSelectedProduct(null);
+    handleOpenSummaryModal();
+  }, [
+    price,
+    receipt,
+    quantity,
+    handleAddItem,
+    selectedProduct,
+    handleOpenSummaryModal,
+  ]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -104,7 +140,8 @@ const NewReceipt = () => {
   const getSubtotal = useCallback(() => {
     const p = price ? parseFloat(price) : 0;
     const q = quantity ? parseFloat(quantity) : 0;
-    return (p * q).toString();
+    const total = p * q;
+    return numberWithCommas(total);
   }, [price, quantity]);
 
   return (
@@ -125,6 +162,8 @@ const NewReceipt = () => {
       />
       <Modal
         isVisible={!!selectedProduct}
+        onSwipeComplete={handleCloseProductModal}
+        onBackButtonPress={handleCloseProductModal}
         style={applyStyles({
           margin: 0,
           justifyContent: 'flex-end',
@@ -152,11 +191,10 @@ const NewReceipt = () => {
                   style={applyStyles('flex-row', 'items-center', {
                     width: '48%',
                   })}>
-                  <FloatingLabelInput
+                  <CurrencyInput
                     value={price}
                     label="Unit Price"
-                    keyboardType="numeric"
-                    onChangeText={handlePriceChange}
+                    onChange={handlePriceChange}
                     leftIcon={
                       <Text
                         style={applyStyles(styles.inputIconText, 'text-400')}>
@@ -182,7 +220,6 @@ const NewReceipt = () => {
                   label="Subtotal"
                   editable={false}
                   value={getSubtotal()}
-                  keyboardType="numeric"
                   leftIcon={
                     <Text style={applyStyles(styles.inputIconText, 'text-400')}>
                       &#8358;
@@ -208,6 +245,14 @@ const NewReceipt = () => {
           />
         </View>
       </Modal>
+
+      <ReactNativeModal visible={isSummaryModalOpen}>
+        <ReceiptSummary
+          products={receipt}
+          onClearReceipt={handleClearReceipt}
+          onCloseSummaryModal={handleCloseSummaryModal}
+        />
+      </ReactNativeModal>
 
       {!selectedProduct && (
         <View style={styles.calculatorSection}>

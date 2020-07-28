@@ -64,7 +64,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
     paddingLeft: 20,
   };
 
-  let inputFieldStyle = {...styles.inputField, ...inputStyle};
+  let inputFieldStyle = styles.inputField;
 
   if (leftIcon) {
     inputFieldStyle = {...styles.inputField, ...withLeftIconStyle};
@@ -98,7 +98,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
         value={value}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        style={applyStyles(inputFieldStyle)}
+        style={applyStyles('text-400', inputFieldStyle, inputStyle)}
       />
     </View>
   );

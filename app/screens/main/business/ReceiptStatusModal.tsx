@@ -1,7 +1,7 @@
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import format from 'date-fns/format';
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   Image,
   Modal,
@@ -17,7 +17,6 @@ import {
 import Touchable from '../../../components/Touchable';
 import Icon from '../../../components/Icon';
 import {Button} from '../../../components';
-import {isEmpty} from 'lodash';
 
 type Props = {
   visible: boolean;
@@ -28,9 +27,9 @@ type Props = {
   creditAmount: number;
   isSubmitting: boolean;
   onComplete: () => void;
+  onPrintReceipt: () => void;
   onOpenShareModal: () => void;
   onOpenCustomerModal: () => void;
-  onPrintReceipt: () => void;
 };
 
 type StatusProps = {
@@ -49,7 +48,6 @@ type PageProps = {
 export const ReceiptStatusModal = (props: Props) => {
   const {
     visible,
-    customer,
     timeTaken,
     amountPaid,
     onComplete,
@@ -58,7 +56,14 @@ export const ReceiptStatusModal = (props: Props) => {
     onPrintReceipt,
     onOpenShareModal,
     onOpenCustomerModal,
+    customer: customerProps,
   } = props;
+
+  const [customer, setCustomer] = useState(customerProps);
+
+  useEffect(() => {
+    setCustomer(customerProps);
+  }, [customerProps]);
 
   const statusProps: StatusProps = {
     success: {
@@ -131,7 +136,7 @@ export const ReceiptStatusModal = (props: Props) => {
         </View>
 
         <View style={applyStyles({marginBottom: 40, paddingHorizontal: 16})}>
-          {!isEmpty(customer) ? (
+          {customer.mobile ? (
             <>
               <Text
                 style={applyStyles(

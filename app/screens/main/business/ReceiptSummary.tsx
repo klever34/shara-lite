@@ -1,5 +1,4 @@
 import {useNavigation} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
@@ -12,8 +11,7 @@ import {
   View,
   Alert,
 } from 'react-native';
-import {MainStackParamList} from '..';
-import {Button} from '../../../components';
+import {Button, CurrencyInput} from '../../../components';
 import {FloatingLabelInput} from '../../../components';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
@@ -133,13 +131,15 @@ const SummaryTableItem = ({item}: SummaryTableItemProps) => {
   );
 };
 
-const ReceiptSummary = ({
-  route,
-}: StackScreenProps<MainStackParamList, 'ReceiptSummary'>) => {
+const ReceiptSummary = (props: {
+  products: ReceiptItem[];
+  onClearReceipt: () => void;
+  onCloseSummaryModal: () => void;
+}) => {
   const navigation = useNavigation();
   const realm = useRealm();
 
-  const {customer: customerProps, products} = route.params;
+  const {products, onCloseSummaryModal, onClearReceipt} = props;
   const tax = 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -150,7 +150,7 @@ const ReceiptSummary = ({
   const [totalAmount, setTotalAmount] = useState(0);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [customer, setCustomer] = useState<Customer | ICustomer>(
-    customerProps || ({} as Customer),
+    {} as Customer,
   );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
@@ -169,12 +169,12 @@ const ReceiptSummary = ({
   }, [navigation]);
 
   const handleCancel = useCallback(() => {
-    navigation.navigate('NewReceipt');
-  }, [navigation]);
+    onCloseSummaryModal();
+  }, [onCloseSummaryModal]);
 
   const handleAddProduct = useCallback(() => {
-    navigation.navigate('NewReceipt');
-  }, [navigation]);
+    onCloseSummaryModal();
+  }, [onCloseSummaryModal]);
 
   const handleOpenSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(true);
@@ -289,7 +289,6 @@ const ReceiptSummary = ({
 
   const handleCustomerSelect = useCallback(
     ({customer: customerData}) => {
-      console.log(customerData);
       setCustomer(customerData);
     },
     [setCustomer],
@@ -301,6 +300,10 @@ const ReceiptSummary = ({
     },
     [customer],
   );
+
+  const handleSetCustomer = useCallback((value: Customer) => {
+    setCustomer(value);
+  }, []);
 
   const handleFinish = () => {
     setIsSubmitting(true);
@@ -327,9 +330,10 @@ const ReceiptSummary = ({
     setTimeout(() => {
       setIsSubmitting(false);
       handleCloseSuccessModal();
+      onClearReceipt();
       navigation.navigate('NewReceipt');
     }, 2000);
-  }, [navigation, handleCloseSuccessModal]);
+  }, [navigation, onClearReceipt, handleCloseSuccessModal]);
 
   useEffect(() => {
     const total = products
@@ -355,8 +359,6 @@ const ReceiptSummary = ({
     ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
     [],
   );
-
-  console.log(customer);
 
   return (
     <KeyboardAvoidingView style={styles.container}>
@@ -454,12 +456,11 @@ const ReceiptSummary = ({
           {payments.map((item) => item.method).includes('cash') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
-                <FloatingLabelInput
+                <CurrencyInput
                   label="Cash Payment"
                   value={getPaymentMethodAmount('cash')}
-                  keyboardType="numbers-and-punctuation"
-                  onChangeText={(text) =>
-                    handlePaymentMethodAmountChange(text, 'cash')
+                  onChange={(text) =>
+                    handlePaymentMethodAmountChange(text.toString(), 'cash')
                   }
                   leftIcon={
                     <Text
@@ -522,12 +523,11 @@ const ReceiptSummary = ({
           {payments.map((item) => item.method).includes('transfer') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
-                <FloatingLabelInput
+                <CurrencyInput
                   label="Bank Transfer"
-                  keyboardType="numbers-and-punctuation"
                   value={getPaymentMethodAmount('transfer')}
-                  onChangeText={(text) =>
-                    handlePaymentMethodAmountChange(text, 'transfer')
+                  onChange={(text) =>
+                    handlePaymentMethodAmountChange(text.toString(), 'transfer')
                   }
                   leftIcon={
                     <Text
@@ -590,12 +590,11 @@ const ReceiptSummary = ({
           {payments.map((item) => item.method).includes('mobile') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
-                <FloatingLabelInput
+                <CurrencyInput
                   label="Mobile Money"
-                  keyboardType="numbers-and-punctuation"
                   value={getPaymentMethodAmount('mobile')}
-                  onChangeText={(text) =>
-                    handlePaymentMethodAmountChange(text, 'mobile')
+                  onChange={(text) =>
+                    handlePaymentMethodAmountChange(text.toString(), 'mobile')
                   }
                   leftIcon={
                     <Text
@@ -710,12 +709,9 @@ const ReceiptSummary = ({
         customer={customer}
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
+        onSelectCustomer={handleSetCustomer}
         onUpdateCustomer={handleUpdateCustomer}
         onOpenContactList={handleOpenContactList}
-        onSelectCustomer={(data) => {
-          // console.log(data);
-          setCustomer(data);
-        }}
       />
       <ShareReceiptModal
         visible={isShareModalOpen}

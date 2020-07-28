@@ -73,11 +73,33 @@ const CustomersTab = () => {
 
   if (!customers.length) {
     return (
-      <EmptyState
-        heading="Add a customer"
-        source={require('../../../assets/images/coming-soon.png')}
-        text="Click the button below to add a new customer"
-      />
+      <>
+        <EmptyState
+          heading="Add a customer"
+          source={require('../../../assets/images/coming-soon.png')}
+          text="Click the button below to add a new customer"
+        />
+        <FAButton
+          style={styles.fabButton}
+          onPress={() => navigation.navigate('AddCustomer')}>
+          <View style={styles.fabButtonContent}>
+            <Icon
+              size={18}
+              type="ionicons"
+              name={
+                Platform.select({
+                  android: 'md-add',
+                  ios: 'ios-add',
+                }) as string
+              }
+              color="white"
+            />
+            <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
+              Add Customer
+            </Text>
+          </View>
+        </FAButton>
+      </>
     );
   }
 

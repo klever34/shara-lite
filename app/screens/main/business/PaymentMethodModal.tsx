@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
-import {Button, FloatingLabelInput} from '../../../components';
+import {Button, FloatingLabelInput, CurrencyInput} from '../../../components';
 import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
 
@@ -33,8 +33,8 @@ export const PaymentMethodModal = (props: Props) => {
     setAmount(totalAmount.toString());
   }, [totalAmount]);
 
-  const handleAmountChange = useCallback((value: string) => {
-    setAmount(value);
+  const handleAmountChange = useCallback((value: number) => {
+    setAmount(value.toString());
   }, []);
 
   const handleNoteChange = useCallback((value: string) => {
@@ -50,7 +50,6 @@ export const PaymentMethodModal = (props: Props) => {
   const handleSubmit = useCallback(() => {
     const payload = {amount: parseFloat(amount), note, method: type};
     onSubmit && onSubmit(payload);
-    setAmount;
     handleClose();
   }, [onSubmit, amount, note, type, handleClose]);
 
@@ -81,11 +80,11 @@ export const PaymentMethodModal = (props: Props) => {
 
         <View style={applyStyles('px-lg')}>
           <View style={applyStyles('mb-md')}>
-            <FloatingLabelInput
+            <CurrencyInput
               value={amount}
               label="Amount Paid"
               keyboardType="numeric"
-              onChangeText={handleAmountChange}
+              onChange={handleAmountChange}
               leftIcon={
                 <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
                   &#8358;

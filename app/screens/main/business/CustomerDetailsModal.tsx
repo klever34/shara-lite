@@ -24,12 +24,11 @@ export const CustomerDetailsModal = (props: Props) => {
   } = props;
 
   const [customer, setCustomer] = useState(customerProps);
-  console.log({customer, customerProps});
 
   useEffect(() => {
-    // console.log(customerProps);
     setCustomer(customerProps);
-  }, [customerProps]);
+    onSelectCustomer(customerProps);
+  }, [customerProps, onSelectCustomer]);
 
   const handleDone = () => {
     onSelectCustomer(customer);

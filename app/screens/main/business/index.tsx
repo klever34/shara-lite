@@ -99,7 +99,7 @@ const BusinessTab = () => {
             Total sales
           </Text>
           <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(15365400)}
           </Text>
         </ActionCard>
       </View>
@@ -117,7 +117,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(15365400)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -133,7 +133,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors.primary,
             })}>
-            {numberWithCommas(1205400)}
+            &#8358;{numberWithCommas(1205400)}
           </Text>
         </ActionCard>
       </View>
@@ -151,7 +151,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            {numberWithCommas(14405000)}
+            &#8358;{numberWithCommas(14405000)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -165,7 +165,7 @@ const BusinessTab = () => {
           </Text>
           <Text
             style={applyStyles(styles.cardContent, {color: colors.primary})}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(15365400)}
           </Text>
         </ActionCard>
       </View>
