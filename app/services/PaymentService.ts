@@ -2,6 +2,7 @@ import Realm, {UpdateMode} from 'realm';
 import {ICustomer} from '../models';
 import {IPayment, modelName} from '../models/Payment';
 import {IReceipt} from '../models/Receipt';
+import {getBaseModelValues} from '../helpers/models';
 
 export const getPayments = ({realm}: {realm: Realm}): IPayment[] => {
   return (realm.objects<IPayment>(modelName) as unknown) as IPayment[];
@@ -30,6 +31,7 @@ export const savePayment = ({
     note,
     receipt,
     amount_paid: amount,
+    ...getBaseModelValues(),
   };
 
   if (customer.name) {

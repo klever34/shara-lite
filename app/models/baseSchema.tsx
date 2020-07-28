@@ -1,5 +1,3 @@
-import {generateUniqueId} from '../helpers/utils';
-
 export interface BaseModelInterface {
   id?: string;
   created_at?: Date;
@@ -7,7 +5,7 @@ export interface BaseModelInterface {
 }
 
 export const baseModelSchema = {
-  id: {type: 'string', default: generateUniqueId()},
-  created_at: {type: 'date', default: new Date()},
-  updated_at: {type: 'date', default: new Date()},
+  id: 'string',
+  created_at: 'date',
+  updated_at: 'date',
 };

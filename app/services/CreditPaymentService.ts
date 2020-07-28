@@ -3,6 +3,7 @@ import {ICustomer} from '../models';
 import {ICredit, modelName as creditModelName} from '../models/Credit';
 import {ICreditPayment, modelName} from '../models/CreditPayment';
 import {savePayment} from './PaymentService';
+import {getBaseModelValues} from '../helpers/models';
 
 export const getCreditPayments = ({
   realm,
@@ -71,6 +72,7 @@ export const saveCreditPayment = ({
         payment,
         credit,
         amount_paid: amount,
+        ...getBaseModelValues(),
       };
       realm.create<ICredit>(modelName, creditPayment, UpdateMode.Modified);
     });
