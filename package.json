@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.9-chore.sentry-integration+build.715",
+  "version": "0.1.9-chore.sentry-integration+build.742",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
