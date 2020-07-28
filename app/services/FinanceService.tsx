@@ -2,13 +2,13 @@ import {getReceipts} from './ReceiptService';
 import {getCredits} from './CreditService';
 import Realm from 'realm';
 
-export interface ISummary {
+export interface IFinanceSummary {
   totalSales: number;
   totalCredit: number;
   overdueCredit: number;
 }
 
-export const getSummary = ({realm}: {realm: Realm}): ISummary => {
+export const getSummary = ({realm}: {realm: Realm}): IFinanceSummary => {
   const receipts = getReceipts({realm});
   const credits = getCredits({realm});
 
@@ -16,7 +16,7 @@ export const getSummary = ({realm}: {realm: Realm}): ISummary => {
   const totalCredit = getTotalCredit({credits});
   const overdueCredit = getOverdueCredit({credits});
 
-  const summary: ISummary = {
+  const summary: IFinanceSummary = {
     totalSales,
     totalCredit,
     overdueCredit,
