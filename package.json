@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.9",
+  "version": "0.1.9-chore.sentry-integration+build.742",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -17,6 +17,7 @@
     "@react-navigation/material-top-tabs": "^5.2.12",
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.5.1",
+    "@sentry/react-native": "^1.6.3",
     "crypto-js": "^3.3.0",
     "cryptr": "^6.0.2",
     "date-fns": "^2.14.0",
@@ -26,6 +27,7 @@
     "pubnub-react": "^2.0.0",
     "query-string": "^6.13.1",
     "react": "16.11.0",
+    "react-error-boundary": "^2.3.1",
     "react-native": "0.62.2",
     "react-native-config": "^1.2.1",
     "react-native-contacts": "^5.2.3",

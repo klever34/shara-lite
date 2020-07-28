@@ -16,6 +16,7 @@ import {useRealm} from '../../services/realm';
 import {IContact, IConversation} from '../../models';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../components/ContactsList';
+import {useErrorHandler} from 'react-error-boundary';
 
 const ContactsScreen = () => {
   const navigation = useNavigation();
@@ -24,6 +25,7 @@ const ContactsScreen = () => {
   const [loadingContacts, setLoadingContacts] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
   // TODO: use useAsync hook for tracking loading state
+  const handleError = useErrorHandler();
   const loadContacts = useCallback(
     (showLoader = false) => {
       const contactsService = getContactsService();
@@ -36,6 +38,7 @@ const ContactsScreen = () => {
           setLoadingContacts(false);
         })
         .catch((error) => {
+          handleError(error);
           setLoadingContacts(false);
           Alert.alert(
             'Error',
@@ -54,7 +57,7 @@ const ContactsScreen = () => {
           );
         });
     },
-    [contacts.length, navigation],
+    [contacts.length, handleError, navigation],
   );
   useEffect(loadContacts, []);
   const inviteFriend = useCallback(async () => {
@@ -68,8 +71,10 @@ const ContactsScreen = () => {
         subject: title,
         message: `${message} ${url}`,
       });
-    } catch (e) {}
-  }, []);
+    } catch (e) {
+      handleError(e);
+    }
+  }, [handleError]);
   const navigateToChat = useCallback(
     (conversation: IConversation) => {
       navigation.dispatch(
@@ -157,10 +162,10 @@ const ContactsScreen = () => {
         }
       } catch (error) {
         setLoadingChat(false);
-        console.log('Error: ', error);
+        handleError(error);
       }
     },
-    [loadingChat, navigateToChat, realm],
+    [loadingChat, navigateToChat, realm, handleError],
   );
 
   return (
