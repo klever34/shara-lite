@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.9-feature.messages-sync+build.730",
+  "version": "0.1.9-feature.messages-sync+build.734",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
