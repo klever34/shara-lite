@@ -47,9 +47,19 @@ export default withErrorBoundary(App, {
   fallback: null,
   onError(error, componentStack) {
     if (process.env.NODE_ENV === 'production') {
-      Sentry.captureException(error);
+      Sentry.captureException(error, (scope) => {
+        if (componentStack) {
+          scope.addBreadcrumb({
+            category: 'exception.stack',
+            message: componentStack,
+            level: Sentry.Severity.Error,
+          });
+        }
+        return scope;
+      });
     } else {
-      console.log('Error: ', error, componentStack);
+      console.log('Error: ', error);
+      console.log('Stack: ', componentStack);
     }
   },
 });
