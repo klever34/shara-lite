@@ -45,7 +45,11 @@ const App = () => {
 export default withErrorBoundary(App, {
   // TODO: Design a better general error ui
   fallback: null,
-  onError(error) {
-    Sentry.captureException(error);
+  onError(error, componentStack) {
+    if (process.env.NODE_ENV === 'production') {
+      Sentry.captureException(error);
+    } else {
+      console.log('Error: ', error, componentStack);
+    }
   },
 });
