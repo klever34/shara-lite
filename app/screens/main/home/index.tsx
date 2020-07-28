@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Platform, SafeAreaView} from 'react-native';
+import {Alert, Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {colors} from '../../../styles';
 import ChatListScreen from './ChatListScreen';
@@ -15,6 +15,8 @@ import Realm from 'realm';
 import CustomersTab from '../customers';
 import BusinessTab from '../business';
 import PushNotification from 'react-native-push-notification';
+import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import noop from 'lodash/noop';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -25,7 +27,7 @@ type HomeTabParamList = {
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
-const HomeScreen = () => {
+const HomeScreen = ({openModal}: ModalWrapperFields) => {
   const navigation = useNavigation();
   const pubNub = usePubNub();
   const realm = useRealm();
@@ -248,8 +250,51 @@ const HomeScreen = () => {
     };
   }, [getConversationFromChannelMetadata, pubNub, realm]);
 
+  const restoreAllMessages = useCallback(
+    async (
+      channels: string[],
+      conversations: {[channel: string]: IConversation},
+    ) => {
+      for (let i = 0; i < channels.length; i++) {
+        let channel = channels[i];
+        const count = 25;
+        let retrieved: number | undefined;
+        let start: string | number | undefined;
+        do {
+          const response = await pubNub.fetchMessages({
+            channels: [channel],
+            start,
+            count,
+          });
+          const messagePayload = response.channels[channel] ?? [];
+          realm.write(() => {
+            for (let j = 0; j < messagePayload.length; j += 1) {
+              let {message} = messagePayload[j];
+              if (!message.id) {
+                continue;
+              }
+              message = realm.create<IMessage>(
+                'Message',
+                message,
+                Realm.UpdateMode.Modified,
+              );
+              if (j === messagePayload.length - 1 && retrieved === undefined) {
+                const conversation = conversations[channel];
+                conversation.lastMessage = message;
+              }
+            }
+          });
+          retrieved = messagePayload.length;
+          start = messagePayload[0]?.timetoken;
+        } while (retrieved === count);
+      }
+    },
+    [pubNub, realm],
+  );
+
   useEffect(() => {
     (async () => {
+      let closeModal = noop;
       try {
         const {data} = await new Promise((resolve, reject) => {
           pubNub.objects.getMemberships(
@@ -302,47 +347,28 @@ const HomeScreen = () => {
             );
           }
         });
-        for (let i = 0; i < channels.length; i++) {
-          let channel = channels[i];
-          const count = 25;
-          let retrieved: number | undefined;
-          let start: string | number | undefined;
-          do {
-            const response = await pubNub.fetchMessages({
-              channels: [channel],
-              start,
-              count,
-            });
-            const messagePayload = response.channels[channel] ?? [];
-            realm.write(() => {
-              for (let j = 0; j < messagePayload.length; j += 1) {
-                let {message} = messagePayload[j];
-                if (!message.id) {
-                  continue;
-                }
-                message = realm.create<IMessage>(
-                  'Message',
-                  message,
-                  Realm.UpdateMode.Modified,
-                );
-                if (
-                  j === messagePayload.length - 1 &&
-                  retrieved === undefined
-                ) {
-                  const conversation = conversations[channel];
-                  conversation.lastMessage = message;
-                }
-              }
-            });
-            retrieved = messagePayload.length;
-            start = messagePayload[0]?.timetoken;
-          } while (retrieved === count);
-        }
+        Alert.alert('Backup Restore', 'Restore all your messages?', [
+          {
+            text: 'OK',
+            onPress: () => {
+              closeModal = openModal('Restoring messages...');
+              restoreAllMessages(channels, conversations);
+            },
+          },
+        ]);
       } catch (e) {
         console.log('Fetching all conversations Error: ', e);
+      } finally {
+        closeModal();
       }
     })().then();
-  }, [getConversationFromChannelMetadata, pubNub, realm]);
+  }, [
+    getConversationFromChannelMetadata,
+    openModal,
+    pubNub,
+    realm,
+    restoreAllMessages,
+  ]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
@@ -375,4 +401,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default withModal(HomeScreen);

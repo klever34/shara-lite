@@ -1,29 +1,34 @@
 import React, {useCallback, useState} from 'react';
-import {ActivityIndicator, SafeAreaView, Text, View} from 'react-native';
+import {SafeAreaView, Text, View} from 'react-native';
 import {applyStyles} from '../../helpers/utils';
 import TextInput from '../../components/TextInput';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '.';
 import PlaceholderImage from '../../components/PlaceholderImage';
 import {FAButton} from '../../components';
-import Modal from 'react-native-modal';
-import {colors} from '../../styles';
 import {getApiService} from '../../services';
 import {IConversation} from '../../models';
 import {useRealm} from '../../services/realm';
 import {UpdateMode} from 'realm';
 import {CommonActions} from '@react-navigation/native';
+import {ModalWrapperFields, withModal} from '../../helpers/hocs';
+
+type SetGroupDetailsScreenProps = StackScreenProps<
+  MainStackParamList,
+  'SetGroupDetails'
+> &
+  ModalWrapperFields;
 
 const SetGroupDetailsScreen = ({
   navigation,
   route,
-}: StackScreenProps<MainStackParamList, 'SetGroupDetails'>) => {
+  openModal,
+}: SetGroupDetailsScreenProps) => {
   const realm = useRealm();
   const members = route.params.members;
-  const [modalVisible, setModalVisibility] = useState(false);
   const [groupName, setGroupName] = useState('');
   const submit = useCallback(() => {
-    setModalVisibility(true);
+    const closeModal = openModal('Creating Group...');
     const apiService = getApiService();
     apiService
       .createGroupChat(groupName, members)
@@ -58,9 +63,9 @@ const SetGroupDetailsScreen = ({
         }
       })
       .finally(() => {
-        setModalVisibility(false);
+        closeModal();
       });
-  }, [groupName, members, navigation, realm]);
+  }, [groupName, members, navigation, realm, openModal]);
   return (
     <SafeAreaView style={applyStyles('mx-lg mt-md flex-1')}>
       <TextInput
@@ -85,18 +90,8 @@ const SetGroupDetailsScreen = ({
         })}
       </View>
       {!!groupName && <FAButton iconName="checkmark" onPress={submit} />}
-      <Modal isVisible={modalVisible} style={applyStyles('items-center')}>
-        <View
-          style={applyStyles('p-lg flex-row items-center', {
-            borderRadius: 4,
-            backgroundColor: colors.white,
-          })}>
-          <ActivityIndicator size={32} style={applyStyles('mr-md')} />
-          <Text style={applyStyles('text-lg')}>Creating Group...</Text>
-        </View>
-      </Modal>
     </SafeAreaView>
   );
 };
 
-export default SetGroupDetailsScreen;
+export default withModal(SetGroupDetailsScreen);
