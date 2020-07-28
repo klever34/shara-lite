@@ -25,6 +25,7 @@ export interface IRealmService {
   //
   // createConversation(conversation: IConversation): Promise<IConversation>;
   // updateConversation(conversation: IConversation): Promise<IConversation>;
+  clearDb(): void;
 }
 
 export class RealmService implements IRealmService {
@@ -89,6 +90,13 @@ export class RealmService implements IRealmService {
       contacts as IContact[],
       Realm.UpdateMode.Modified,
     );
+  }
+
+  clearDb() {
+    const realm = this.realm as Realm;
+    realm.write(() => {
+      realm.deleteAll();
+    });
   }
 
   // createConversation(conversation: IConversation): Promise<IConversation> {

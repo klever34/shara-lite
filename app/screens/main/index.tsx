@@ -7,6 +7,7 @@ import Config from 'react-native-config';
 import {
   getAuthService,
   getContactsService,
+  getPubNubService,
   getRealmService,
 } from '../../services';
 import {colors} from '../../styles';
@@ -66,9 +67,9 @@ const MainScreens = ({navigation}: any) => {
   useEffect(() => {
     createRealm()
       .then((nextRealm) => {
-        setRealm(nextRealm);
         const realmService = getRealmService();
         realmService.setInstance(nextRealm);
+        setRealm(nextRealm);
       })
       .catch(() => {
         setError(true);
@@ -87,6 +88,8 @@ const MainScreens = ({navigation}: any) => {
         publishKey: Config.PUBNUB_PUB_KEY,
         uuid: getUuidByString(user.mobile),
       });
+      const pubNubService = getPubNubService();
+      pubNubService.setInstance(pubNub);
       setPubNubClient(pubNub);
     }
   }, []);
