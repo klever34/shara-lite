@@ -2,20 +2,23 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
+  Modal as ReactNativeModal,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
-  ScrollView,
 } from 'react-native';
-import {Button} from '../../../components/Button';
-import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
+import Modal from 'react-native-modal';
+import {Button, CurrencyInput, FloatingLabelInput} from '../../../components';
+import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import Touchable from '../../../components/Touchable';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {products} from '../data.json';
+import ReceiptSummary from './ReceiptSummary';
+import {ProductsPreviewModal} from './ProductsPreviewModal';
 
 type RecentProductItemProps = {
   item: Product;
@@ -31,8 +34,12 @@ const NewReceipt = () => {
   );
 
   const [price, setPrice] = useState<string | undefined>('');
-  const [quantity, setQuantity] = useState<string | undefined>('');
   const [receipt, setReceipt] = useState<ReceiptItem[]>([]);
+  const [quantity, setQuantity] = useState<string | undefined>('');
+  const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
+    false,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -68,6 +75,54 @@ const NewReceipt = () => {
     setPrice(item?.price?.toString());
   }, []);
 
+  const handleOpenSummaryModal = useCallback(() => {
+    setIsSummaryModalOpen(true);
+  }, []);
+
+  const handleCloseSummaryModal = useCallback(() => {
+    setIsSummaryModalOpen(false);
+  }, []);
+
+  const handleOpenProductsPreviewModal = useCallback(() => {
+    console.log('here');
+    setIsProductsPreviewModalOpen(true);
+  }, []);
+
+  const handleCloseProductsPreviewModal = useCallback(() => {
+    setIsProductsPreviewModalOpen(false);
+  }, []);
+
+  const handleCloseProductModal = useCallback(() => {
+    setSelectedProduct(null);
+    setQuantity('');
+  }, []);
+
+  const handleClearReceipt = useCallback(() => {
+    setReceipt([]);
+    handleCloseSummaryModal();
+  }, [handleCloseSummaryModal]);
+
+  const handleUpdateProductItem = useCallback(
+    (item: ReceiptItem) => {
+      setReceipt(
+        receipt.map((receiptItem) => {
+          if (receiptItem.id === item.id) {
+            return item;
+          }
+          return receiptItem;
+        }),
+      );
+    },
+    [receipt],
+  );
+
+  const handleRemoveProductItem = useCallback(
+    (item: ReceiptItem) => {
+      setReceipt(receipt.filter((receiptItem) => receiptItem.id !== item.id));
+    },
+    [receipt],
+  );
+
   const handleDone = useCallback(() => {
     let items = receipt;
     if (selectedProduct && quantity && price) {
@@ -80,8 +135,17 @@ const NewReceipt = () => {
       handleAddItem();
       items = [product, ...receipt];
     }
-    navigation.navigate('ReceiptSummary', {products: items});
-  }, [receipt, selectedProduct, quantity, price, handleAddItem, navigation]);
+    setReceipt(items);
+    setSelectedProduct(null);
+    handleOpenSummaryModal();
+  }, [
+    price,
+    receipt,
+    quantity,
+    handleAddItem,
+    selectedProduct,
+    handleOpenSummaryModal,
+  ]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -110,7 +174,8 @@ const NewReceipt = () => {
   const getSubtotal = useCallback(() => {
     const p = price ? parseFloat(price) : 0;
     const q = quantity ? parseFloat(quantity) : 0;
-    return (p * q).toString();
+    const total = p * q;
+    return numberWithCommas(total);
   }, [price, quantity]);
 
   return (
@@ -129,62 +194,67 @@ const NewReceipt = () => {
         ListHeaderComponent={renderRecentProductsHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
       />
-      {selectedProduct ? (
-        <>
-          <ScrollView style={styles.calculatorSection}>
-            <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
-              You have{' '}
-              <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
-              Products in your receipt
-            </Text>
+      <Modal
+        isVisible={!!selectedProduct}
+        onSwipeComplete={handleCloseProductModal}
+        onBackButtonPress={handleCloseProductModal}
+        style={applyStyles({
+          margin: 0,
+          justifyContent: 'flex-end',
+        })}>
+        <View style={styles.calculatorSection}>
+          <Touchable onPress={handleOpenProductsPreviewModal}>
             <View>
-              <>
-                <Text
+              <Text
+                style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
+                You have{' '}
+                <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
+                Products in your receipt
+              </Text>
+              {!!receipt.length && (
+                <View
                   style={applyStyles(
-                    styles.calculatorSectionHelperText,
-                    'text-500',
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
                   )}>
-                  Adding this product to receipt
-                </Text>
-                <Text
-                  style={applyStyles(styles.selectedProductName, 'text-700')}>
-                  {selectedProduct?.name} ({selectedProduct?.weight})
-                </Text>
-                <View style={styles.calculatorSectionInputs}>
-                  <View
-                    style={applyStyles('flex-row', 'items-center', {
-                      width: '48%',
+                  <Icon
+                    size={24}
+                    name="eye"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                      color: colors.primary,
                     })}>
-                    <FloatingLabelInput
-                      value={price}
-                      label="Unit Price"
-                      keyboardType="numeric"
-                      onChangeText={handlePriceChange}
-                      leftIcon={
-                        <Text
-                          style={applyStyles(styles.inputIconText, 'text-400')}>
-                          &#8358;
-                        </Text>
-                      }
-                    />
-                  </View>
-                  <View
-                    style={applyStyles('text-400', {
-                      width: '48%',
-                    })}>
-                    <FloatingLabelInput
-                      value={quantity}
-                      label="Quantity"
-                      keyboardType="numeric"
-                      onChangeText={handleQuantityChange}
-                    />
-                  </View>
+                    Tap to preview products
+                  </Text>
                 </View>
-                <View style={styles.calculatorSectionInputs}>
-                  <FloatingLabelInput
-                    label="Subtotal"
-                    value={getSubtotal()}
-                    keyboardType="numeric"
+              )}
+            </View>
+          </Touchable>
+          <View>
+            <>
+              <Text
+                style={applyStyles(
+                  styles.calculatorSectionHelperText,
+                  'text-500',
+                )}>
+                Adding this product to receipt
+              </Text>
+              <Text style={applyStyles(styles.selectedProductName, 'text-700')}>
+                {selectedProduct?.name} ({selectedProduct?.weight})
+              </Text>
+              <View style={styles.calculatorSectionInputs}>
+                <View
+                  style={applyStyles('flex-row', 'items-center', {
+                    width: '48%',
+                  })}>
+                  <CurrencyInput
+                    value={price}
+                    label="Unit Price"
+                    onChange={handlePriceChange}
                     leftIcon={
                       <Text
                         style={applyStyles(styles.inputIconText, 'text-400')}>
@@ -193,35 +263,81 @@ const NewReceipt = () => {
                     }
                   />
                 </View>
-              </>
-            </View>
-          </ScrollView>
-          {!!selectedProduct && (
-            <View style={styles.calculatorSectionButtons}>
-              <Button
-                title="Done"
-                variantColor="clear"
-                onPress={handleDone}
-                style={styles.calculatorSectionButton}
-              />
-              <Button
-                variantColor="red"
-                title="Add next item"
-                onPress={handleAddItem}
-                style={styles.calculatorSectionButton}
-              />
-            </View>
-          )}
-        </>
-      ) : (
-        <View style={styles.calculatorSection}>
+                <View
+                  style={applyStyles('text-400', {
+                    width: '48%',
+                  })}>
+                  <FloatingLabelInput
+                    value={quantity}
+                    label="Quantity"
+                    keyboardType="numeric"
+                    onChangeText={handleQuantityChange}
+                  />
+                </View>
+              </View>
+              <View style={styles.calculatorSectionInputs}>
+                <FloatingLabelInput
+                  label="Subtotal"
+                  editable={false}
+                  value={getSubtotal()}
+                  leftIcon={
+                    <Text style={applyStyles(styles.inputIconText, 'text-400')}>
+                      &#8358;
+                    </Text>
+                  }
+                />
+              </View>
+            </>
+          </View>
+        </View>
+        <View style={styles.calculatorSectionButtons}>
+          <Button
+            variantColor="white"
+            title="Add next item"
+            onPress={handleAddItem}
+            style={styles.calculatorSectionButton}
+          />
+          <Button
+            title="Done"
+            variantColor="red"
+            onPress={handleDone}
+            style={styles.calculatorSectionButton}
+          />
+        </View>
+      </Modal>
+
+      <ReactNativeModal visible={isSummaryModalOpen}>
+        <ReceiptSummary
+          products={receipt}
+          onClearReceipt={handleClearReceipt}
+          onRemoveProductItem={handleRemoveProductItem}
+          onUpdateProductItem={handleUpdateProductItem}
+          onCloseSummaryModal={handleCloseSummaryModal}
+        />
+      </ReactNativeModal>
+
+      <View style={styles.calculatorSection}>
+        {!selectedProduct && (
           <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
             You have{' '}
             <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
             Products in your receipt
           </Text>
-        </View>
-      )}
+        )}
+        {!!receipt.length && (
+          <Button
+            title="Done"
+            variantColor="red"
+            onPress={handleDone}
+            style={applyStyles('my-sm', 'w-full')}
+          />
+        )}
+      </View>
+      <ProductsPreviewModal
+        products={receipt}
+        visible={isProductsPreviewModalOpen}
+        onClose={handleCloseProductsPreviewModal}
+      />
     </SafeAreaView>
   );
 };
@@ -257,6 +373,7 @@ const styles = StyleSheet.create({
     borderTopWidth: 15,
     paddingVertical: 8,
     paddingHorizontal: 16,
+    backgroundColor: colors.white,
     borderTopColor: colors['gray-20'],
   },
   receiptItemsCount: {
@@ -292,12 +409,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   calculatorSectionButtons: {
-    marginTop: 8,
     borderTopWidth: 1,
     alignItems: 'center',
     flexDirection: 'row',
     paddingVertical: 12,
     paddingHorizontal: 16,
+    backgroundColor: colors.white,
     justifyContent: 'space-between',
     borderTopColor: colors['gray-20'],
   },

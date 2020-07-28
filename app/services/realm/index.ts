@@ -1,5 +1,5 @@
-import Realm from 'realm';
 import {createContext, useContext, useEffect, useState} from 'react';
+import Realm from 'realm';
 import {Contact, Message, Conversation, Customer} from '../../models';
 import {Payment} from '../../models/Payment';
 import {Credit} from '../../models/Credit';
@@ -23,7 +23,9 @@ export const useRealm = () => {
 };
 
 export const createRealm = async () => {
-  Realm.deleteFile({});
+  if (process.env.NODE_ENV === 'development') {
+    Realm.deleteFile({});
+  }
   return Realm.open({
     schema: [
       Contact,
@@ -38,3 +40,5 @@ export const createRealm = async () => {
     ],
   });
 };
+
+export * from './service';

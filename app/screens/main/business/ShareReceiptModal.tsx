@@ -1,15 +1,15 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {Modal, View, Text} from 'react-native';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import {Button} from '../../../components';
+import {Button, FloatingLabelInput} from '../../../components';
 import Icon from '../../../components/Icon';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   onSmsShare?: () => void;
-  onEmailShare?: () => void;
+  onEmailShare?: (email: string, callback: () => void) => void;
   onWhatsappShare?: () => void;
 };
 
@@ -20,20 +20,36 @@ export const ShareReceiptModal = ({
   onEmailShare,
   onWhatsappShare,
 }: Props) => {
+  const [email, setEmail] = useState('');
+  const [showEmailField, setShowEmailField] = useState(false);
+
+  const handleClearEmailField = useCallback(() => {
+    setEmail('');
+    setShowEmailField(false);
+  }, []);
+
   const handleSmsShare = useCallback(() => {
     onSmsShare && onSmsShare();
   }, [onSmsShare]);
 
   const handleEmailShare = useCallback(() => {
-    onEmailShare && onEmailShare();
-  }, [onEmailShare]);
+    onEmailShare && onEmailShare(email, handleClearEmailField);
+  }, [email, onEmailShare, handleClearEmailField]);
 
   const handleWhatsappShare = useCallback(() => {
     onWhatsappShare && onWhatsappShare();
   }, [onWhatsappShare]);
 
+  const handleEmailChange = useCallback((text) => {
+    setEmail(text);
+  }, []);
+
   return (
-    <Modal transparent={false} animationType="slide" visible={visible}>
+    <Modal
+      visible={visible}
+      transparent={false}
+      animationType="slide"
+      onRequestClose={onClose}>
       <View
         style={applyStyles(
           'px-lg',
@@ -49,26 +65,62 @@ export const ShareReceiptModal = ({
           Select a sharing option
         </Text>
 
-        <Button
-          variantColor="white"
-          style={applyStyles('w-full', 'mb-md')}
-          onPress={handleEmailShare}>
-          <View
-            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-            <Icon
-              size={24}
-              name="mail"
-              type="feathericons"
-              color={colors.primary}
+        {!showEmailField ? (
+          <Button
+            variantColor="white"
+            style={applyStyles('w-full', 'mb-md')}
+            onPress={() => setShowEmailField(true)}>
+            <View
+              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+              <Icon
+                size={24}
+                name="mail"
+                type="feathericons"
+                color={colors.primary}
+              />
+              <Text
+                style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                  color: colors['gray-200'],
+                })}>
+                Share via email
+              </Text>
+            </View>
+          </Button>
+        ) : (
+          <View style={applyStyles('w-full')}>
+            <FloatingLabelInput
+              value={email}
+              keyboardType="email-address"
+              label="Customer email address"
+              onChangeText={handleEmailChange}
+              inputStyle={applyStyles('mb-md')}
             />
-            <Text
-              style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                color: colors['gray-200'],
-              })}>
-              Share via email
-            </Text>
+            <Button
+              variantColor="white"
+              style={applyStyles('w-full', 'mb-md')}
+              onPress={handleEmailShare}>
+              <View
+                style={applyStyles(
+                  'flex-row',
+                  'items-center',
+                  'justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  name="mail"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                    color: colors['gray-200'],
+                  })}>
+                  Share via email
+                </Text>
+              </View>
+            </Button>
           </View>
-        </Button>
+        )}
         <Button
           variantColor="white"
           style={applyStyles('w-full', 'mb-xl')}
@@ -104,8 +156,8 @@ export const ShareReceiptModal = ({
               style={applyStyles('flex-row', 'items-center', 'justify-center')}>
               <Icon
                 size={24}
-                name="logo-whatsapp"
                 type="ionicons"
+                name="logo-whatsapp"
                 color={colors.white}
               />
               <Text

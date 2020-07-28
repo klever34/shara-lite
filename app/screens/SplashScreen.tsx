@@ -1,26 +1,15 @@
-import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect} from 'react';
-import {Image, StyleSheet, View, Text} from 'react-native';
-import {RootStackParamList} from '../index';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {colors, dimensions} from '../styles';
-import {getAuthService} from '../services';
+import {getAuthService, getNavigationService} from '../services';
+import {useNavigation} from '@react-navigation/native';
 
-type SplashScreenProps = StackScreenProps<RootStackParamList> & {};
-
-const styles = StyleSheet.create({
-  container: {
-    width: dimensions.fullWidth,
-    height: dimensions.fullHeight,
-    backgroundColor: colors.primary,
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {width: '75%', height: '9%', marginBottom: 16},
-  text: {color: colors.white, fontSize: 16, fontFamily: 'Rubik-Light'},
-});
-
-const SplashScreen = ({navigation}: SplashScreenProps) => {
+const SplashScreen = () => {
+  const navigation = useNavigation();
+  useEffect(() => {
+    const navigationService = getNavigationService();
+    navigationService.setInstance(navigation);
+  });
   const handleRedirect = useCallback(async () => {
     const authService = getAuthService();
     await authService.initialize();
@@ -51,5 +40,23 @@ const SplashScreen = ({navigation}: SplashScreenProps) => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width: dimensions.fullWidth,
+    height: dimensions.fullHeight,
+    backgroundColor: colors.primary,
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  image: {
+    width: '75%',
+    height: '9%',
+    marginBottom: 16,
+    resizeMode: 'contain',
+  },
+  text: {color: colors.white, fontSize: 16, fontFamily: 'Rubik-Light'},
+});
 
 export default SplashScreen;

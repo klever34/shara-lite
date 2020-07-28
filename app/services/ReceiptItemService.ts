@@ -25,7 +25,7 @@ export const saveReceiptItem = ({
       weight,
       quantity: parseFloat(quantity),
       price: parseFloat(price),
-      total_price: quantity * price,
+      total_price: parseFloat(quantity) * parseFloat(price),
     };
 
     realm.create<IReceiptItem>(modelName, paymentItem, UpdateMode.Modified);

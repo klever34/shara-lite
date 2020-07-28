@@ -1,5 +1,7 @@
 import {ICustomer} from './Customer';
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {IPayment} from './Payment';
+import {IReceiptItem} from './ReceiptItem';
 
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;
@@ -9,6 +11,8 @@ export interface IReceipt extends BaseModelInterface {
   customer_name?: string;
   customer_mobile?: string;
   customer?: ICustomer;
+  payments?: IPayment[];
+  items?: IReceiptItem[];
 }
 
 export const modelName = 'Receipt';

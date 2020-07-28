@@ -1,6 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {Image, StyleSheet, Text, View, Alert} from 'react-native';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+  TouchableOpacity,
+} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {colors} from '../../../styles';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
@@ -89,19 +96,29 @@ const BusinessTab = () => {
     Alert.alert('Coming soon', 'This feature is coming in a future release');
   }, []);
 
+  const handleNavigation = useCallback(
+    (route: string) => {
+      navigation.navigate(route);
+    },
+    [navigation],
+  );
+
   return (
     <View style={styles.container}>
       <View style={applyStyles('mb-lg')}>
-        <ActionCard
-          style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
-          <Text
-            style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
-            Total sales
-          </Text>
-          <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
-            {numberWithCommas(15365400)}
-          </Text>
-        </ActionCard>
+        <TouchableOpacity onPress={() => handleNavigation('MySales')}>
+          <ActionCard
+            style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
+            <Text
+              style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
+              My sales
+            </Text>
+            <Text
+              style={applyStyles(styles.cardContent, {color: colors.white})}>
+              &#8358;{numberWithCommas(15365400)}
+            </Text>
+          </ActionCard>
+        </TouchableOpacity>
       </View>
       <View style={applyStyles('flex-row', 'mb-lg', 'justify-space-between')}>
         <ActionCard
@@ -117,7 +134,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(15365400)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -133,7 +150,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors.primary,
             })}>
-            {numberWithCommas(1205400)}
+            &#8358;{numberWithCommas(1205400)}
           </Text>
         </ActionCard>
       </View>
@@ -151,7 +168,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            {numberWithCommas(14405000)}
+            &#8358;{numberWithCommas(14405000)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -165,7 +182,7 @@ const BusinessTab = () => {
           </Text>
           <Text
             style={applyStyles(styles.cardContent, {color: colors.primary})}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(15365400)}
           </Text>
         </ActionCard>
       </View>

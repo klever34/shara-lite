@@ -1,36 +1,36 @@
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {colors} from '../../../styles';
 import format from 'date-fns/format';
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   Image,
+  ImageProps,
   Modal,
   ScrollView,
-  Text,
-  View,
-  TextStyle,
-  ImageProps,
-  ViewStyle,
-  Platform,
   StyleSheet,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
 } from 'react-native';
-import Touchable from '../../../components/Touchable';
-import Icon from '../../../components/Icon';
 import {Button} from '../../../components';
-import {isEmpty} from 'lodash';
+import Icon from '../../../components/Icon';
+import Touchable from '../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {colors} from '../../../styles';
 
 type Props = {
   visible: boolean;
   timeTaken: number;
+  isSaving: boolean;
   amountPaid: number;
   customer: Customer;
   onClose: () => void;
   creditAmount: number;
-  isSubmitting: boolean;
+  isCompleting: boolean;
   onComplete: () => void;
-  onOpenShareModal: () => void;
-  onOpenCustomerModal: () => void;
   onPrintReceipt: () => void;
+  onOpenShareModal: () => void;
+  onNewReceiptClick: () => void;
+  onOpenCustomerModal: () => void;
 };
 
 type StatusProps = {
@@ -49,16 +49,24 @@ type PageProps = {
 export const ReceiptStatusModal = (props: Props) => {
   const {
     visible,
-    customer,
+    isSaving,
     timeTaken,
     amountPaid,
     onComplete,
-    isSubmitting,
+    isCompleting,
     creditAmount,
     onPrintReceipt,
     onOpenShareModal,
+    onNewReceiptClick,
     onOpenCustomerModal,
+    customer: customerProps,
   } = props;
+
+  const [customer, setCustomer] = useState(customerProps);
+
+  useEffect(() => {
+    setCustomer(customerProps);
+  }, [customerProps]);
 
   const statusProps: StatusProps = {
     success: {
@@ -131,7 +139,7 @@ export const ReceiptStatusModal = (props: Props) => {
         </View>
 
         <View style={applyStyles({marginBottom: 40, paddingHorizontal: 16})}>
-          {!isEmpty(customer) ? (
+          {customer.mobile ? (
             <>
               <Text
                 style={applyStyles(
@@ -209,13 +217,8 @@ export const ReceiptStatusModal = (props: Props) => {
                   )}>
                   <Icon
                     size={24}
-                    type="ionicons"
-                    name={
-                      Platform.select({
-                        android: 'md-add',
-                        ios: 'ios-add',
-                      }) as string
-                    }
+                    name="plus"
+                    type="feathericons"
                     color={colors.primary}
                   />
                   <Text style={styles.addProductButtonText}>
@@ -245,6 +248,13 @@ export const ReceiptStatusModal = (props: Props) => {
               </Text>
             </View>
           </Button>
+          <Button
+            variantColor="red"
+            isLoading={isSaving}
+            title="Create new receipt"
+            onPress={onNewReceiptClick}
+            style={applyStyles({marginTop: 24})}
+          />
         </View>
       </ScrollView>
       <View style={styles.actionButtons}>
@@ -271,8 +281,8 @@ export const ReceiptStatusModal = (props: Props) => {
         <Button
           title="Finish"
           variantColor="red"
-          isLoading={isSubmitting}
           onPress={onComplete}
+          isLoading={isCompleting}
           style={styles.actionButton}
         />
       </View>

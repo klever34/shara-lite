@@ -4,13 +4,10 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useMemo,
   useRef,
   useState,
 } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   FlatList,
   ImageBackground,
   Keyboard,
@@ -24,14 +21,15 @@ import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import Icon from '../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../components';
 import {ChatBubble} from '../../components/ChatBubble';
-import {generateUniqueId} from '../../helpers/utils';
+import {generateUniqueId, retryPromise} from '../../helpers/utils';
 import {colors} from '../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from './index';
 import {getAuthService} from '../../services';
 import {useRealm} from '../../services/realm';
 import {UpdateMode} from 'realm';
-import {IMessage} from '../../models';
+import {IConversation, IMessage} from '../../models';
+import {useTyping} from '../../services/pubnub';
 
 type MessageItemProps = {
   item: IMessage;
@@ -47,20 +45,90 @@ const ChatScreen = ({
   const inputRef = useRef<any>(null);
   const {channel, title} = route.params;
   const [input, setInput] = useState('');
-  const [hasMore, setHasMore] = useState(true);
-  const [isTyping, setIsTyping] = useState(false);
-  const [typingMessage, setTypingMessage] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const typingMessage = useTyping(channel, input);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
-  const user = useMemo<User>(() => {
-    const authService = getAuthService();
-    return authService.getUser() as User;
-  }, []);
   const realm = useRealm() as Realm;
   const messages = realm
     .objects<IMessage>('Message')
     .filtered(`channel = "${channel}"`)
     .sorted('created_at', true);
+
+  useEffect(() => {
+    const listener = () => {
+      const authService = getAuthService();
+      const user = authService.getUser();
+      try {
+        const markedMessages = realm
+          .objects<IMessage>('Message')
+          .filtered(
+            `channel = "${channel}" AND read_timetoken = null AND author != "${
+              user?.mobile ?? ''
+            }"`,
+          );
+        if (markedMessages.length) {
+          retryPromise(() => {
+            return new Promise<any>((resolve, reject) => {
+              pubNub.signal({channel, message: 'READ'}, (status, response) => {
+                if (status.error) {
+                  console.log('READ Signal Error: ', status);
+                  reject(status.errorData);
+                } else {
+                  resolve(response);
+                }
+              });
+            });
+          }).then((response) => {
+            realm.write(() => {
+              for (let i = 0; i < markedMessages.length; i += 1) {
+                markedMessages[i].read_timetoken = String(response.timetoken);
+              }
+            });
+          });
+        }
+      } catch (error) {
+        console.log('Error: ', error);
+      }
+    };
+    listener();
+    realm.addListener('change', listener);
+    return () => {
+      realm.removeListener('change', listener);
+    };
+  }, [channel, pubNub, realm]);
+
+  useEffect(() => {
+    const listener = {
+      signal: (evt: SignalEvent) => {
+        try {
+          if (evt.message === 'READ' && evt.publisher !== pubNub.getUUID()) {
+            const authService = getAuthService();
+            const user = authService.getUser();
+            const markedMessages = realm
+              .objects<IMessage>('Message')
+              .filtered(
+                `channel = "${channel}" AND author = "${
+                  user?.mobile ?? ''
+                }" AND read_timetoken = null AND sent_timetoken != null`,
+              );
+            if (markedMessages.length) {
+              realm.write(() => {
+                for (let i = 0; i < markedMessages.length; i += 1) {
+                  markedMessages[i].read_timetoken = evt.timetoken;
+                }
+              });
+            }
+          }
+        } catch (e) {
+          console.log('Signal Listener Error: ', e);
+        }
+      },
+    };
+    pubNub.addListener(listener);
+    return () => {
+      pubNub.removeListener(listener);
+    };
+  }, [channel, pubNub, realm]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => {
@@ -75,146 +143,67 @@ const ChatScreen = ({
       },
     });
   }, [navigation, title, typingMessage]);
-  const fetchHistory = useCallback(() => {
-    if (!hasMore) {
-      return;
-    }
-    let start: string | number | undefined;
-    if (messages.length) {
-      start = messages[messages.length - 1].timetoken;
-    }
-    const count = 20;
-    setIsLoading(true);
-    pubNub.history({channel, count, start}, (status, response) => {
-      setIsLoading(false);
-      if (response) {
-        let history: IMessage[] = response.messages.map((item) => {
-          const entry = item.entry as IMessage;
-          return {
-            ...entry,
-            timetoken: item.timetoken,
-          };
-        });
-        history = history.filter((message) => message.timetoken !== start);
-        if (history.length) {
-          if (history.length < count) {
-            setHasMore(false);
-          }
-          try {
-            realm.write(() => {
-              history.forEach((message) => {
-                realm.create(
-                  'Message',
-                  {
-                    ...message,
-                    created_at: new Date(message.created_at),
-                    timetoken: String(message.timetoken),
-                  },
-                  UpdateMode.Modified,
-                );
-              });
-            });
-          } catch (e) {
-            console.log('Error: ', e);
-          }
-        }
-      }
-    });
-  }, [channel, hasMore, messages, pubNub, realm]);
-
-  useEffect(fetchHistory, []);
-  useEffect(() => {
-    if (pubNub) {
-      const listener = {
-        signal: (envelope: SignalEvent) => {
-          if (
-            envelope.message === 'TYPING_ON' &&
-            envelope.publisher !== pubNub.getUUID()
-          ) {
-            setTypingMessage(`+${envelope.publisher} is typing...`);
-          } else {
-            setTypingMessage('');
-          }
-        },
-      };
-      // Add the listener to pubNub instance and subscribe to `chat` channel.
-      pubNub.addListener(listener);
-      // We need to return a function that will handle unsubscription on unmount
-      return () => {
-        pubNub.removeListener(listener);
-      };
-    }
-  }, [channel, pubNub, realm]);
-
-  useEffect(() => {
-    if (input && !isTyping) {
-      setIsTyping(true);
-      pubNub
-        .signal({
-          channel,
-          message: 'TYPING_ON',
-        })
-        .then();
-    } else if (!input && isTyping) {
-      setIsTyping(false);
-      pubNub
-        .signal({
-          channel,
-          message: 'TYPING_OFF',
-        })
-        .then();
-    }
-  }, [user, input, isTyping, pubNub, channel]);
 
   const handleSubmit = useCallback(() => {
     setInput('');
-    const message: IMessage = {
+    const authService = getAuthService();
+    const user = authService.getUser();
+    if (!user) {
+      return;
+    }
+    let message: IMessage = {
       id: generateUniqueId(),
       content: input,
       created_at: new Date(),
       author: user.mobile,
       channel,
     };
-    try {
-      realm.write(() => {
-        realm.create('Message', message, UpdateMode.Never);
-      });
-    } catch (e) {
-      console.log('Error: ', e);
-    }
     const messagePayload = {
       pn_gcm: {
         notification: {
           title: `${user?.firstname} ${user?.lastname}`,
           body: input,
         },
-        data: {
-          ...message,
-          channel,
-        },
+        data: message,
       },
       ...message,
     };
-    pubNub.publish({channel, message: messagePayload}, function (
-      status: PubnubStatus,
-      response: PublishResponse,
-    ) {
-      if (status.error) {
-        Alert.alert('Error', status.errorData?.message);
-      } else {
-        console.log('message Published w/ timetoken', response.timetoken);
-      }
+    try {
+      realm.write(() => {
+        message = realm.create<IMessage>('Message', message, UpdateMode.Never);
+        const conversation = realm
+          .objects<IConversation>('Conversation')
+          .filtered(`channel = "${message.channel}"`)[0];
+        conversation.lastMessage = message;
+      });
+    } catch (e) {
+      console.log('Error: ', e);
+    }
+    retryPromise(() => {
+      return new Promise<any>((resolve, reject) => {
+        // TODO: Separate message publish from notification publish
+        pubNub.publish({channel, message: messagePayload}, function (
+          status: PubnubStatus,
+          response: PublishResponse,
+        ) {
+          if (status.error) {
+            console.log('Error: ', status);
+            reject(status.errorData);
+          } else {
+            resolve(response);
+          }
+        });
+      });
+    }).then((response) => {
+      realm.write(() => {
+        message.sent_timetoken = String(response.timetoken);
+      });
     });
-  }, [channel, input, pubNub, realm, user]);
+  }, [channel, input, pubNub, realm]);
 
   const renderMessageItem = useCallback(
-    ({item: message}: MessageItemProps) => {
-      if (!user) {
-        return null;
-      }
-      return <ChatBubble message={message} user={user} />;
-    },
-    [user],
+    ({item: message}: MessageItemProps) => <ChatBubble message={message} />,
+    [],
   );
 
   const openEmojiBoard = useCallback(() => {
@@ -239,24 +228,10 @@ const ChatScreen = ({
       <ImageBackground
         source={require('../../assets/images/chat-wallpaper.png')}
         style={styles.chatBackground}>
-        {isLoading && (
-          <View style={styles.loadingSection}>
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator
-                size="small"
-                animating={isLoading}
-                color={colors.primary}
-              />
-            </View>
-          </View>
-        )}
-
         <FlatList
           inverted={true}
           style={styles.listContainer}
           renderItem={renderMessageItem}
-          onEndReached={fetchHistory}
-          onEndReachedThreshold={0.2}
           data={messages}
           keyExtractor={messageItemKeyExtractor}
         />

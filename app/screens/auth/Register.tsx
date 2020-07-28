@@ -2,18 +2,24 @@ import {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
 import {
   Alert,
+  ScrollView,
   StyleSheet,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {RootStackParamList} from '../../index';
-import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {getAuthService} from '../../services';
-import {colors} from '../../styles';
+import {
+  Button,
+  FloatingLabelInput,
+  PasswordField,
+  PhoneNumberField,
+} from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
+import {applyStyles} from '../../helpers/utils';
+import {RootStackParamList} from '../../index';
+import {getApiService} from '../../services';
+import {colors} from '../../styles';
 
 type Fields = {
   firstname: string;
@@ -52,10 +58,10 @@ export const Register = ({
       country_code: countryCode,
       mobile: `${countryCode}${mobile}`,
     };
-    const authService = getAuthService();
+    const apiService = getApiService();
     try {
       setLoading(true);
-      await authService.register(payload);
+      await apiService.register(payload);
       setLoading(false);
       navigation.reset({
         index: 0,
@@ -81,35 +87,37 @@ export const Register = ({
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
           <Icon size={24} type="ionicons" name="md-arrow-back" />
         </Touchable>
       </View>
-      <View style={styles.headerSection}>
+      <View style={applyStyles({marginBottom: 16})}>
         <Text style={styles.heading}>Sign Up</Text>
         <Text style={styles.description}>
-          Create an account so you can chat and do business faster and better.
+          Create an account to do business faster and better
         </Text>
       </View>
-      <View style={styles.headerSection}>
-        <View>
-          <TextInput
-            value={fields.firstname}
-            style={styles.inputField}
-            placeholder="First Name"
-            placeholderTextColor={colors['gray-50']}
-            onChangeText={(text) => onChangeText(text, 'firstname')}
-          />
-          <TextInput
-            value={fields.lastname}
-            placeholder="Last Name"
-            style={styles.inputField}
-            placeholderTextColor={colors['gray-50']}
-            onChangeText={(text) => onChangeText(text, 'lastname')}
-          />
+      <View>
+        <View style={applyStyles({marginBottom: 32})}>
           <View style={styles.inputFieldSpacer}>
+            <FloatingLabelInput
+              label="First Name"
+              value={fields.firstname}
+              inputStyle={styles.inputField}
+              onChangeText={(text) => onChangeText(text, 'firstname')}
+            />
+          </View>
+          <View style={styles.inputFieldSpacer}>
+            <FloatingLabelInput
+              label="Last Name"
+              value={fields.lastname}
+              inputStyle={styles.inputField}
+              onChangeText={(text) => onChangeText(text, 'lastname')}
+            />
+          </View>
+          <View style={applyStyles({paddingVertical: 18})}>
             <PhoneNumberField
               value={fields.mobile}
               countryCode={fields.countryCode}
@@ -122,18 +130,19 @@ export const Register = ({
               onChangeText={(text) => onChangeText(text, 'password')}
             />
           </View>
-
-          <Button
-            variantColor="red"
-            onPress={onSubmit}
-            isLoading={loading}
-            title="Create an account"
-            disabled={isButtonDisabled() || loading}
-          />
         </View>
       </View>
-
       <View>
+        <Button
+          variantColor="red"
+          onPress={onSubmit}
+          isLoading={loading}
+          title="Create an account"
+          style={applyStyles({
+            marginBottom: 24,
+          })}
+          disabled={isButtonDisabled() || loading}
+        />
         <TouchableOpacity
           style={styles.helpSection}
           onPress={() => handleNavigate('Login')}>
@@ -141,7 +150,7 @@ export const Register = ({
           <Text style={styles.helpSectionButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -151,9 +160,6 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   backButton: {
-    marginBottom: 48,
-  },
-  headerSection: {
     marginBottom: 48,
   },
   heading: {
@@ -174,10 +180,6 @@ const styles = StyleSheet.create({
   inputField: {
     fontSize: 18,
     width: '100%',
-    marginBottom: 24,
-    borderBottomWidth: 1,
-    fontFamily: 'Rubik-Regular',
-    borderColor: colors['gray-200'],
   },
   headerText: {
     fontSize: 40,
@@ -188,7 +190,7 @@ const styles = StyleSheet.create({
     fontFamily: 'CocogoosePro-Regular',
   },
   helpSection: {
-    marginBottom: 20,
+    marginBottom: 80,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -207,6 +209,6 @@ const styles = StyleSheet.create({
     textDecorationColor: colors.black,
   },
   inputFieldSpacer: {
-    marginBottom: 24,
+    paddingBottom: 18,
   },
 });
