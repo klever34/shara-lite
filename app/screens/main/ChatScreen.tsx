@@ -30,6 +30,7 @@ import {useRealm} from '../../services/realm';
 import {UpdateMode} from 'realm';
 import {IConversation, IMessage} from '../../models';
 import {useTyping} from '../../services/pubnub';
+import {useErrorHandler} from 'react-error-boundary';
 
 type MessageItemProps = {
   item: IMessage;
@@ -53,6 +54,7 @@ const ChatScreen = ({
     .filtered(`channel = "${channel}"`)
     .sorted('created_at', true);
 
+  const handleError = useErrorHandler();
   useEffect(() => {
     const listener = () => {
       const authService = getAuthService();
@@ -86,7 +88,7 @@ const ChatScreen = ({
           });
         }
       } catch (error) {
-        console.log('Error: ', error);
+        handleError(error);
       }
     };
     listener();
@@ -94,8 +96,7 @@ const ChatScreen = ({
     return () => {
       realm.removeListener('change', listener);
     };
-  }, [channel, pubNub, realm]);
-
+  }, [channel, handleError, pubNub, realm]);
   useEffect(() => {
     const listener = {
       signal: (evt: SignalEvent) => {
@@ -119,7 +120,7 @@ const ChatScreen = ({
             }
           }
         } catch (e) {
-          console.log('Signal Listener Error: ', e);
+          handleError(e);
         }
       },
     };
@@ -127,7 +128,7 @@ const ChatScreen = ({
     return () => {
       pubNub.removeListener(listener);
     };
-  }, [channel, pubNub, realm]);
+  }, [channel, handleError, pubNub, realm]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -143,7 +144,6 @@ const ChatScreen = ({
       },
     });
   }, [navigation, title, typingMessage]);
-
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();
@@ -177,7 +177,7 @@ const ChatScreen = ({
         conversation.lastMessage = message;
       });
     } catch (e) {
-      console.log('Error: ', e);
+      handleError(e);
     }
     retryPromise(() => {
       return new Promise<any>((resolve, reject) => {
@@ -199,7 +199,7 @@ const ChatScreen = ({
         message.sent_timetoken = String(response.timetoken);
       });
     });
-  }, [channel, input, pubNub, realm]);
+  }, [channel, handleError, input, pubNub, realm]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => <ChatBubble message={message} />,

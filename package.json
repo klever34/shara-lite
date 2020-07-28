@@ -27,6 +27,7 @@
     "pubnub-react": "^2.0.0",
     "query-string": "^6.13.1",
     "react": "16.11.0",
+    "react-error-boundary": "^2.3.1",
     "react-native": "0.62.2",
     "react-native-config": "^1.2.1",
     "react-native-contacts": "^5.2.3",

@@ -3,6 +3,8 @@ import React from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
+import {withErrorBoundary} from 'react-error-boundary';
+import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
@@ -40,4 +42,10 @@ const App = () => {
     </NavigationContainer>
   );
 };
-export default App;
+export default withErrorBoundary(App, {
+  // TODO: Design a better general error ui
+  fallback: null,
+  onError(error) {
+    Sentry.captureException(error);
+  },
+});
