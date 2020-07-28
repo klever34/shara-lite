@@ -89,6 +89,27 @@ const NewReceipt = () => {
     handleCloseSummaryModal();
   }, [handleCloseSummaryModal]);
 
+  const handleUpdateProductItem = useCallback(
+    (item: ReceiptItem) => {
+      setReceipt(
+        receipt.map((receiptItem) => {
+          if (receiptItem.id === item.id) {
+            return item;
+          }
+          return receiptItem;
+        }),
+      );
+    },
+    [receipt],
+  );
+
+  const handleRemoveProductItem = useCallback(
+    (item: ReceiptItem) => {
+      setReceipt(receipt.filter((receiptItem) => receiptItem.id !== item.id));
+    },
+    [receipt],
+  );
+
   const handleDone = useCallback(() => {
     let items = receipt;
     if (selectedProduct && quantity && price) {
@@ -250,6 +271,8 @@ const NewReceipt = () => {
         <ReceiptSummary
           products={receipt}
           onClearReceipt={handleClearReceipt}
+          onRemoveProductItem={handleRemoveProductItem}
+          onUpdateProductItem={handleUpdateProductItem}
           onCloseSummaryModal={handleCloseSummaryModal}
         />
       </ReactNativeModal>

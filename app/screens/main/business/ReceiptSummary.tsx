@@ -25,9 +25,19 @@ import Receipts from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 import {saveReceipt} from '../../../services/ReceiptService';
+import {EditProductModal} from './EditProductModal';
+import Touchable from '../../../components/Touchable';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
+};
+
+type Props = {
+  products: ReceiptItem[];
+  onClearReceipt: () => void;
+  onCloseSummaryModal: () => void;
+  onRemoveProductItem: (item: ReceiptItem) => void;
+  onUpdateProductItem: (item: ReceiptItem) => void;
 };
 
 const summaryTableStyles = StyleSheet.create({
@@ -97,49 +107,56 @@ const SummaryTableHeader = () => {
   );
 };
 
-const SummaryTableItem = ({item}: SummaryTableItemProps) => {
+const SummaryTableItem = ({
+  item,
+  onPress,
+}: SummaryTableItemProps & {onPress: (item: ReceiptItem) => void}) => {
   const price = item.price ? parseFloat(item.price) : 0;
   const quantity = item.quantity ? parseFloat(item.quantity) : 0;
   const subtotal = price * quantity;
 
   return (
-    <View
-      style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
-      <View style={summaryTableStyles['column-40']}>
-        <Text style={summaryTableItemStyles.text}>
-          {item.name} ({item.weight})
-        </Text>
-        <Text style={summaryTableItemStyles.subText}>
-          &#8358;{numberWithCommas(price)} Per Unit
-        </Text>
-      </View>
+    <Touchable onPress={() => onPress(item)}>
       <View
-        style={applyStyles(summaryTableStyles['column-20'], {
-          alignItems: 'flex-end',
-        })}>
-        <Text style={summaryTableItemStyles.text}>{quantity}</Text>
+        style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
+        <View style={summaryTableStyles['column-40']}>
+          <Text style={summaryTableItemStyles.text}>
+            {item.name} ({item.weight})
+          </Text>
+          <Text style={summaryTableItemStyles.subText}>
+            &#8358;{numberWithCommas(price)} Per Unit
+          </Text>
+        </View>
+        <View
+          style={applyStyles(summaryTableStyles['column-20'], {
+            alignItems: 'flex-end',
+          })}>
+          <Text style={summaryTableItemStyles.text}>{quantity}</Text>
+        </View>
+        <View
+          style={applyStyles(summaryTableStyles['column-40'], {
+            alignItems: 'flex-end',
+          })}>
+          <Text style={summaryTableItemStyles.text}>
+            &#8358;{numberWithCommas(subtotal)}
+          </Text>
+        </View>
       </View>
-      <View
-        style={applyStyles(summaryTableStyles['column-40'], {
-          alignItems: 'flex-end',
-        })}>
-        <Text style={summaryTableItemStyles.text}>
-          &#8358;{numberWithCommas(subtotal)}
-        </Text>
-      </View>
-    </View>
+    </Touchable>
   );
 };
 
-const ReceiptSummary = (props: {
-  products: ReceiptItem[];
-  onClearReceipt: () => void;
-  onCloseSummaryModal: () => void;
-}) => {
+const ReceiptSummary = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm();
 
-  const {products, onCloseSummaryModal, onClearReceipt} = props;
+  const {
+    products,
+    onClearReceipt,
+    onRemoveProductItem,
+    onUpdateProductItem,
+    onCloseSummaryModal,
+  } = props;
   const tax = 0;
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -152,11 +169,14 @@ const ReceiptSummary = (props: {
   const [customer, setCustomer] = useState<Customer | ICustomer>(
     {} as Customer,
   );
+  const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
+    null,
+  );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const creditAmount = totalAmount - amountPaid;
 
   //@ts-ignore
@@ -198,6 +218,14 @@ const ReceiptSummary = (props: {
 
   const handleCloseCustomerModal = useCallback(() => {
     setIsCustomerModalOpen(false);
+  }, []);
+
+  const handleOpenEditProductModal = useCallback((item: ReceiptItem) => {
+    setSelectedProduct(item);
+  }, []);
+
+  const handleCloseEditProductModal = useCallback(() => {
+    setSelectedProduct(null);
   }, []);
 
   const handleOpenPaymentModal = useCallback(
@@ -361,16 +389,16 @@ const ReceiptSummary = (props: {
   const handleFinish = () => {
     setIsSubmitting(true);
 
-    // saveReceipt({
-    //   tax,
-    //   realm,
-    //   products,
-    //   payments,
-    //   customer,
-    //   amountPaid,
-    //   totalAmount,
-    //   creditAmount,
-    // });
+    saveReceipt({
+      tax,
+      realm,
+      products,
+      payments,
+      customer,
+      amountPaid,
+      totalAmount,
+      creditAmount,
+    });
 
     setTimeout(() => {
       setIsSubmitting(false);
@@ -409,8 +437,10 @@ const ReceiptSummary = (props: {
   }, [payments, totalAmount]);
 
   const renderSummaryItem = useCallback(
-    ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
-    [],
+    ({item}: SummaryTableItemProps) => (
+      <SummaryTableItem onPress={handleOpenEditProductModal} item={item} />
+    ),
+    [handleOpenEditProductModal],
   );
 
   return (
@@ -787,6 +817,13 @@ const ReceiptSummary = (props: {
         amount={
           amountPaid === totalAmount ? totalAmount : totalAmount - amountPaid
         }
+      />
+      <EditProductModal
+        item={selectedProduct}
+        visible={!!selectedProduct}
+        onClose={handleCloseEditProductModal}
+        onRemoveProductItem={onRemoveProductItem}
+        onUpdateProductItem={onUpdateProductItem}
       />
     </KeyboardAvoidingView>
   );

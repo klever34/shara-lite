@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import {
   FloatingLabelInput,
   FloatingLabelInputProps,
@@ -19,6 +19,11 @@ export const CurrencyInput = (props: Props) => {
   const [value, setValue] = useState(
     valueProp ? toThousandString(numberValue) : '',
   );
+
+  useEffect(() => {
+    const number = valueProp ? parseFloat(valueProp) : 0;
+    setValue(toThousandString(number));
+  }, [valueProp]);
 
   const handleChange = useCallback(
     (text) => {
