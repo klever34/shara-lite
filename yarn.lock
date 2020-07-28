@@ -1082,10 +1082,10 @@
   version "15.7.3"
   resolved "https://registry.yarnpkg.com/@types/prop-types/-/prop-types-15.7.3.tgz#2ab0d5da2e5815f94b0b9d4b95d1e5f243ab2ca7"
 
-"@types/pubnub@^4.28.0":
-  version "4.28.0"
-  resolved "https://registry.yarnpkg.com/@types/pubnub/-/pubnub-4.28.0.tgz#5274071631b8b6adfe26bfeceabc22cbb17509a3"
-  integrity sha512-el3vfWqkKVm3clAeGB042ECsNcsIeJuyP1qhFWkp+zIoJexJvoiEuDJix+5lh1jNy9tW4d2/e2V3lW4jXQceEg==
+"@types/pubnub@^4.28.1":
+  version "4.28.1"
+  resolved "https://registry.yarnpkg.com/@types/pubnub/-/pubnub-4.28.1.tgz#9cf623b823afa8b901404d19c999345457a7b446"
+  integrity sha512-6PXAGk53mFzuBNQXgY2Bm2BXquR8wRRtlIoP4p81tiwwLjnW3UxzAlxc2wTTxjXayq+bsv8OeJgKJvJf+FJ48w==
 
 "@types/query-string@^6.3.0":
   version "6.3.0"

@@ -145,6 +145,7 @@ export class RealmService implements IRealmService {
             channels: [channel],
             start,
             count,
+            includeMessageActions: true,
           });
           const messagePayload = response.channels[channel] ?? [];
           this.realm.write(() => {
@@ -152,13 +153,22 @@ export class RealmService implements IRealmService {
               return;
             }
             for (let j = 0; j < messagePayload.length; j += 1) {
-              let {message} = messagePayload[j];
+              let {message, timetoken, actions} = messagePayload[j];
+              let delivered_timetoken = null;
+              let read_timetoken = null;
               if (!message.id) {
                 continue;
               }
+              let {message_delivered, message_read} = actions?.receipt ?? {};
+              if (message_delivered) {
+                delivered_timetoken = message_delivered[0].actionTimetoken;
+                if (message_read) {
+                  read_timetoken = message_read[0].actionTimetoken;
+                }
+              }
               message = this.realm.create<IMessage>(
                 'Message',
-                message,
+                {...message, timetoken, delivered_timetoken, read_timetoken},
                 Realm.UpdateMode.Modified,
               );
               if (j === messagePayload.length - 1 && retrieved === undefined) {

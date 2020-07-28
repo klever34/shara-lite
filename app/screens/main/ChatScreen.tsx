@@ -1,4 +1,4 @@
-import {PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
+import {PublishResponse, PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {
   useCallback,
@@ -30,6 +30,7 @@ import {useRealm} from '../../services/realm';
 import {UpdateMode} from 'realm';
 import {IConversation, IMessage} from '../../models';
 import {useTyping} from '../../services/pubnub';
+import {MessageActionEvent} from '../../../types/pubnub';
 
 type MessageItemProps = {
   item: IMessage;
@@ -66,24 +67,32 @@ const ChatScreen = ({
             }"`,
           );
         if (markedMessages.length) {
-          retryPromise(() => {
-            return new Promise<any>((resolve, reject) => {
-              pubNub.signal({channel, message: 'READ'}, (status, response) => {
-                if (status.error) {
-                  console.log('READ Signal Error: ', status);
-                  reject(status.errorData);
-                } else {
-                  resolve(response);
-                }
+          for (let i = 0; i < markedMessages.length; i += 1) {
+            const {timetoken} = markedMessages[i];
+            retryPromise(() => {
+              return new Promise<any>((resolve, reject) => {
+                pubNub.addMessageAction(
+                  {
+                    channel,
+                    messageTimetoken: timetoken as string,
+                    action: {type: 'receipt', value: 'message_read'},
+                  },
+                  (status, response) => {
+                    if (status.error) {
+                      console.log('READ Signal Error: ', status);
+                      reject(status.errorData);
+                    } else {
+                      resolve(response);
+                    }
+                  },
+                );
+              });
+            }).then((response) => {
+              realm.write(() => {
+                markedMessages[i].read_timetoken = String(response.timetoken);
               });
             });
-          }).then((response) => {
-            realm.write(() => {
-              for (let i = 0; i < markedMessages.length; i += 1) {
-                markedMessages[i].read_timetoken = String(response.timetoken);
-              }
-            });
-          });
+          }
         }
       } catch (error) {
         console.log('Error: ', error);
@@ -98,23 +107,18 @@ const ChatScreen = ({
 
   useEffect(() => {
     const listener = {
-      signal: (evt: SignalEvent) => {
+      messageAction: (evt: MessageActionEvent) => {
         try {
-          if (evt.message === 'READ' && evt.publisher !== pubNub.getUUID()) {
-            const authService = getAuthService();
-            const user = authService.getUser();
-            const markedMessages = realm
+          if (
+            evt.data.value === 'message_read' &&
+            evt.publisher !== pubNub.getUUID()
+          ) {
+            const message = realm
               .objects<IMessage>('Message')
-              .filtered(
-                `channel = "${channel}" AND author = "${
-                  user?.mobile ?? ''
-                }" AND read_timetoken = null AND sent_timetoken != null`,
-              );
-            if (markedMessages.length) {
+              .filtered(`timetoken="${evt.data.messageTimetoken}"`)[0];
+            if (message) {
               realm.write(() => {
-                for (let i = 0; i < markedMessages.length; i += 1) {
-                  markedMessages[i].read_timetoken = evt.timetoken;
-                }
+                message.read_timetoken = evt.timetoken;
               });
             }
           }
@@ -196,7 +200,7 @@ const ChatScreen = ({
       });
     }).then((response) => {
       realm.write(() => {
-        message.sent_timetoken = String(response.timetoken);
+        message.timetoken = String(response.timetoken);
       });
     });
   }, [channel, input, pubNub, realm]);

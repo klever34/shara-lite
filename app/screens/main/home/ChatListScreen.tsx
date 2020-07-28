@@ -33,7 +33,7 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
     .filtered(
       `channel = "${conversation.channel}" AND author != "${
         user?.mobile ?? ''
-      }" AND received_timetoken != null AND read_timetoken = null`,
+      }" AND delivered_timetoken != null AND read_timetoken = null`,
     );
   const dateText = useMemo(() => {
     if (!lastMessage) {

@@ -10,12 +10,13 @@ import {applyStyles, retryPromise} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../../services/realm';
-import {MessageEvent, SignalEvent} from 'pubnub';
+import {MessageEvent} from 'pubnub';
 import Realm from 'realm';
 import CustomersTab from '../customers';
 import BusinessTab from '../business';
 import PushNotification from 'react-native-push-notification';
 import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import {MessageActionEvent} from '../../../../types/pubnub';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -131,7 +132,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   useEffect(() => {
     const listener = {
       message: async (evt: MessageEvent) => {
-        const {channel, publisher} = evt;
+        const {channel, publisher, timetoken} = evt;
         const message = evt.message as IMessage;
         try {
           if (publisher !== pubNub.getUUID()) {
@@ -142,7 +143,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 {
                   ...message,
                   created_at: new Date(message.created_at),
-                  sent_timetoken: String(evt.timetoken),
+                  timetoken: String(timetoken),
                 },
                 Realm.UpdateMode.Modified,
               );
@@ -192,8 +193,12 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
             }
             retryPromise(() => {
               return new Promise<any>((resolve, reject) => {
-                pubNub.signal(
-                  {channel, message: 'RECEIVED'},
+                pubNub.addMessageAction(
+                  {
+                    channel,
+                    messageTimetoken: timetoken,
+                    action: {type: 'receipt', value: 'message_delivered'},
+                  },
                   (status, response) => {
                     if (status.error) {
                       console.log('RECEIVED Signal Error: ', status);
@@ -206,7 +211,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
               });
             }).then((response) => {
               realm.write(() => {
-                lastMessage.received_timetoken = String(response.timetoken);
+                lastMessage.delivered_timetoken = String(response.timetoken);
               });
             });
           }
@@ -214,22 +219,18 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           console.log('Message Listener Error: ', e.status || e);
         }
       },
-      signal: (evt: SignalEvent) => {
+      messageAction: (evt: MessageActionEvent) => {
         try {
           if (
-            evt.message === 'RECEIVED' &&
+            evt.data.value === 'message_delivered' &&
             evt.publisher !== pubNub.getUUID()
           ) {
-            const messages = realm
+            const message = realm
               .objects<IMessage>('Message')
-              .filtered(
-                `channel = "${evt.channel}" AND received_timetoken = null AND sent_timetoken != null`,
-              );
-            if (messages.length) {
+              .filtered(`timetoken = "${evt.data.messageTimetoken}"`)[0];
+            if (message) {
               realm.write(() => {
-                for (let i = 0; i < messages.length; i += 1) {
-                  messages[i].received_timetoken = evt.timetoken;
-                }
+                message.delivered_timetoken = evt.data.actionTimetoken;
               });
             }
           }
