@@ -17,6 +17,7 @@ import BusinessTab from '../business';
 import PushNotification from 'react-native-push-notification';
 import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
 import {MessageActionEvent} from '../../../../types/pubnub';
+import {useErrorHandler} from 'react-error-boundary';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -31,6 +32,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   const navigation = useNavigation();
   const pubNub = usePubNub();
   const realm = useRealm();
+  const handleError = useErrorHandler();
   const [notificationToken, setNotificationToken] = useState('');
   const handleLogout = useCallback(async () => {
     try {
@@ -39,9 +41,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
       const realmService = getRealmService();
       realmService.clearRealm();
     } catch (e) {
-      console.log('Error: ', e);
+      handleError(e);
     }
-  }, []);
+  }, [handleError]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('Restoring messages...');
@@ -49,10 +51,10 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
       const realmService = getRealmService();
       await realmService.restoreAllMessages();
     } catch (e) {
-      console.log('Error: ', e);
+      handleError(e);
     }
     closeModal();
-  }, [openModal]);
+  }, [handleError, openModal]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -91,18 +93,24 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
 
     const pushGateway = Platform.select({android: 'gcm', ios: 'apns'});
     if (pushGateway && notificationToken) {
-      pubNub.push.addChannels(
-        {
-          channels: [...channels, pubNub.getUUID()],
-          device: notificationToken,
-          pushGateway,
-        },
-        (status) => {
-          if (status.error) {
-            console.log('PubNub Error: ', status);
-          }
-        },
-      );
+      try {
+        new Promise<any>((resolve, reject) => {
+          pubNub.push.addChannels(
+            {
+              channels: [...channels, pubNub.getUUID()],
+              device: notificationToken,
+              pushGateway,
+            },
+            (status) => {
+              if (status.error) {
+                reject(status);
+              }
+            },
+          );
+        });
+      } catch (e) {
+        handleError(e);
+      }
     }
 
     return () => {
@@ -110,7 +118,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
         pubNub.unsubscribeAll();
       }
     };
-  }, [notificationToken, pubNub, realm]);
+  }, [handleError, notificationToken, pubNub, realm]);
 
   useEffect(() => {
     PushNotification.configure({
@@ -201,8 +209,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   },
                   (status, response) => {
                     if (status.error) {
-                      console.log('RECEIVED Signal Error: ', status);
-                      reject(status.errorData);
+                      reject(status);
                     } else {
                       resolve(response);
                     }
@@ -216,7 +223,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
             });
           }
         } catch (e) {
-          console.log('Message Listener Error: ', e.status || e);
+          handleError(e);
         }
       },
       messageAction: (evt: MessageActionEvent) => {
@@ -235,7 +242,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
             }
           }
         } catch (e) {
-          console.log('Signal Listener Error: ', e);
+          handleError(e);
         }
       },
     };
@@ -243,14 +250,12 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     return () => {
       pubNub.removeListener(listener);
     };
-  }, [pubNub, realm]);
+  }, [handleError, pubNub, realm]);
 
   useEffect(() => {
     const realmService = getRealmService();
-    realmService.restoreAllConversations().catch((e) => {
-      console.log('Error: ', e);
-    });
-  }, [openModal, pubNub, realm, restoreAllMessages]);
+    realmService.restoreAllConversations().catch(handleError);
+  }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

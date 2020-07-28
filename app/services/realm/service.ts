@@ -230,9 +230,7 @@ export class RealmService implements IRealmService {
           const channel = channelMetadata.id;
           channels.push(channel);
           conversations[channel] = conversation;
-        } catch (e) {
-          console.log('Fetching conversation Error: ', e, channelMetadata);
-        }
+        } catch (e) {}
       }
       this.realm.write(() => {
         if (!this.realm) {
@@ -257,7 +255,7 @@ export class RealmService implements IRealmService {
         }
       });
     } catch (e) {
-      console.log('Fetching all conversations Error: ', e);
+      throw e;
     }
   }
 

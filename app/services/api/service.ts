@@ -136,24 +136,28 @@ export class ApiService implements IApiService {
       });
       return channelName;
     } catch (e) {
-      console.log('createOneOnOneChannel Error: ', e);
       throw e;
     }
   }
 
-  getUserDetails(mobiles: string[]): Promise<User[]> {
-    const sizePerRequest = 20;
-    const requestNo = Math.ceil(mobiles.length / sizePerRequest);
-    return Promise.all(
-      Array.from({length: requestNo}).map((_, index) => {
-        return this.requester.post<{users: User[]}>('/users/check', {
-          mobiles: mobiles.slice(
-            sizePerRequest * index,
-            sizePerRequest * index + sizePerRequest,
-          ),
-        });
-      }),
-    ).then((responses) => flatten<User>(responses.map(({data}) => data.users)));
+  async getUserDetails(mobiles: string[]): Promise<User[]> {
+    try {
+      const sizePerRequest = 20;
+      const requestNo = Math.ceil(mobiles.length / sizePerRequest);
+      const responses = await Promise.all(
+        Array.from({length: requestNo}).map((_, index) => {
+          return this.requester.post<{users: User[]}>('/users/check', {
+            mobiles: mobiles.slice(
+              sizePerRequest * index,
+              sizePerRequest * index + sizePerRequest,
+            ),
+          });
+        }),
+      );
+      return flatten<User>(responses.map(({data}) => data.users));
+    } catch (e) {
+      throw e;
+    }
   }
 
   async getGroupMembers(groupId: number) {
@@ -168,7 +172,6 @@ export class ApiService implements IApiService {
       );
       return groupChatMembers;
     } catch (e) {
-      console.log('getGroupMembers Error: ', e);
       throw e;
     }
   }
@@ -183,7 +186,7 @@ export class ApiService implements IApiService {
       await this.addGroupChatMembers(groupChat.id, members);
       return groupChat;
     } catch (e) {
-      console.log('createGroupChat Error: ', e);
+      throw e;
     }
   }
 
@@ -200,7 +203,6 @@ export class ApiService implements IApiService {
       );
       return groupChatMembers;
     } catch (e) {
-      console.log('addGroupChatMembers Error: ', e);
       throw e;
     }
   }

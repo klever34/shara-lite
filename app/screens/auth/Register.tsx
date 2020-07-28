@@ -14,6 +14,7 @@ import {getApiService} from '../../services';
 import {colors} from '../../styles';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
+import {useErrorHandler} from 'react-error-boundary';
 
 type Fields = {
   firstname: string;
@@ -44,7 +45,7 @@ export const Register = ({
       countryCode: code,
     });
   };
-
+  const handleError = useErrorHandler();
   const onSubmit = async () => {
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
@@ -62,6 +63,7 @@ export const Register = ({
         routes: [{name: 'Login'}],
       });
     } catch (error) {
+      handleError(error);
       Alert.alert('Error', error.message);
     }
   };

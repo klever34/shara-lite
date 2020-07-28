@@ -9,13 +9,13 @@ export type ModalWrapperFields = {openModal: (text: string) => () => void};
 export const withModal = (Component: ElementType) => (
   props: ComponentProps<typeof Component> & ModalWrapperFields,
 ) => {
+  const [modalText, setModalText] = useState('');
   const [modalVisible, setModalVisibility] = useState(false);
-  const [text, setText] = useState('');
   const openModal = useCallback((text: string) => {
-    setText(text);
+    setModalText(text);
     setModalVisibility(true);
     return () => {
-      setText('');
+      setModalText('');
       setModalVisibility(false);
     };
   }, []);
@@ -29,7 +29,7 @@ export const withModal = (Component: ElementType) => (
             backgroundColor: colors.white,
           })}>
           <ActivityIndicator size={32} style={applyStyles('mr-md')} />
-          <Text style={applyStyles('text-lg')}>{text}</Text>
+          <Text style={applyStyles('text-lg')}>{modalText}</Text>
         </View>
       </Modal>
     </>

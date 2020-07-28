@@ -32,6 +32,7 @@ import SelectGroupMembersScreen from './SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './SetGroupDetailsScreen';
 import {IContact, IConversation} from '../../models';
 import {applyStyles} from '../../helpers/utils';
+import {useErrorHandler} from 'react-error-boundary';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -60,6 +61,7 @@ const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
+  const handleError = useErrorHandler();
   useEffect(() => {
     const authService = getAuthService();
     const user = authService.getUser();
@@ -78,6 +80,7 @@ const MainScreens = ({navigation}: any) => {
   useEffect(() => {
     const contactsService = getContactsService();
     contactsService.loadContacts().catch((error) => {
+      handleError(error);
       Alert.alert(
         'Error',
         error.message,
@@ -91,7 +94,7 @@ const MainScreens = ({navigation}: any) => {
         },
       );
     });
-  }, [navigation]);
+  }, [navigation, handleError]);
 
   if (!pubNubClient) {
     return (

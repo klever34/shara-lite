@@ -18,6 +18,7 @@ type SetGroupDetailsScreenProps = StackScreenProps<
   'SetGroupDetails'
 > &
   ModalWrapperFields;
+import {useErrorHandler} from 'react-error-boundary';
 
 const SetGroupDetailsScreen = ({
   navigation,
@@ -27,6 +28,7 @@ const SetGroupDetailsScreen = ({
   const realm = useRealm();
   const members = route.params.members;
   const [groupName, setGroupName] = useState('');
+  const handleError = useErrorHandler();
   const submit = useCallback(() => {
     const closeModal = openModal('Creating Group...');
     const apiService = getApiService();
@@ -59,13 +61,13 @@ const SetGroupDetailsScreen = ({
             );
           });
         } catch (e) {
-          console.log('Error: ', e);
+          handleError(e);
         }
       })
       .finally(() => {
         closeModal();
       });
-  }, [groupName, members, navigation, realm, openModal]);
+  }, [openModal, groupName, members, realm, navigation, handleError]);
   return (
     <SafeAreaView style={applyStyles('mx-lg mt-md flex-1')}>
       <TextInput

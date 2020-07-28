@@ -31,6 +31,7 @@ import {UpdateMode} from 'realm';
 import {IConversation, IMessage} from '../../models';
 import {useTyping} from '../../services/pubnub';
 import {MessageActionEvent} from '../../../types/pubnub';
+import {useErrorHandler} from 'react-error-boundary';
 
 type MessageItemProps = {
   item: IMessage;
@@ -54,6 +55,7 @@ const ChatScreen = ({
     .filtered(`channel = "${channel}"`)
     .sorted('created_at', true);
 
+  const handleError = useErrorHandler();
   useEffect(() => {
     const listener = () => {
       const authService = getAuthService();
@@ -79,8 +81,7 @@ const ChatScreen = ({
                   },
                   (status, response) => {
                     if (status.error) {
-                      console.log('READ Signal Error: ', status);
-                      reject(status.errorData);
+                      reject(status);
                     } else {
                       resolve(response);
                     }
@@ -95,7 +96,7 @@ const ChatScreen = ({
           }
         }
       } catch (error) {
-        console.log('Error: ', error);
+        handleError(error);
       }
     };
     listener();
@@ -103,8 +104,7 @@ const ChatScreen = ({
     return () => {
       realm.removeListener('change', listener);
     };
-  }, [channel, pubNub, realm]);
-
+  }, [channel, handleError, pubNub, realm]);
   useEffect(() => {
     const listener = {
       messageAction: (evt: MessageActionEvent) => {
@@ -123,7 +123,7 @@ const ChatScreen = ({
             }
           }
         } catch (e) {
-          console.log('Signal Listener Error: ', e);
+          handleError(e);
         }
       },
     };
@@ -131,7 +131,7 @@ const ChatScreen = ({
     return () => {
       pubNub.removeListener(listener);
     };
-  }, [channel, pubNub, realm]);
+  }, [channel, handleError, pubNub, realm]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -147,7 +147,6 @@ const ChatScreen = ({
       },
     });
   }, [navigation, title, typingMessage]);
-
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();
@@ -181,7 +180,7 @@ const ChatScreen = ({
         conversation.lastMessage = message;
       });
     } catch (e) {
-      console.log('Error: ', e);
+      handleError(e);
     }
     retryPromise(() => {
       return new Promise<any>((resolve, reject) => {
@@ -191,8 +190,7 @@ const ChatScreen = ({
           response: PublishResponse,
         ) {
           if (status.error) {
-            console.log('Error: ', status);
-            reject(status.errorData);
+            reject(status);
           } else {
             resolve(response);
           }
@@ -203,7 +201,7 @@ const ChatScreen = ({
         message.timetoken = String(response.timetoken);
       });
     });
-  }, [channel, input, pubNub, realm]);
+  }, [channel, handleError, input, pubNub, realm]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => <ChatBubble message={message} />,
