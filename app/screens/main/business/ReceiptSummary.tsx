@@ -1,6 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
@@ -9,10 +10,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert,
 } from 'react-native';
-import {Button, CurrencyInput} from '../../../components';
-import {FloatingLabelInput} from '../../../components';
+import Share from 'react-native-share';
+import {Button, CurrencyInput, FloatingLabelInput} from '../../../components';
 import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
@@ -220,26 +220,79 @@ const ReceiptSummary = (props: {
     setIsContactListModalOpen(false);
   }, []);
 
-  const handleSmsShare = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt sharing via SMS is coming in the next release',
-    );
-  }, []);
+  const handleSmsShare = useCallback(async () => {
+    // TODO: use better copy for shara invite
+    const shareOptions = {
+      url: 'https://shara.co/',
+      social: Share.Social.SMS,
+      message: 'Here is your receipt',
+      recipient: `${customer.mobile}`,
+      title: `Share receipt with ${customer.name}`,
+    };
 
-  const handleEmailShare = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt sharing via Email is coming in the next release',
-    );
-  }, []);
+    if (!customer.mobile) {
+      Alert.alert(
+        'Info',
+        'Please select a customer to share receipt with via Whatsapp',
+      );
+    } else {
+      try {
+        await Share.shareSingle(shareOptions);
+      } catch (e) {
+        Alert.alert('Error', e.error);
+      }
+    }
+  }, [customer.mobile, customer.name]);
 
-  const handleWhatsappShare = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt sharing via Whatsapp is coming in the next release',
-    );
-  }, []);
+  const handleEmailShare = useCallback(
+    async (email: string, callback: () => void) => {
+      // TODO: use better copy for shara invite
+      const shareOptions = {
+        email,
+        title: 'Share receipt',
+        url: 'https://shara.co/',
+        message: 'Here is your receipt',
+        subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
+      };
+
+      try {
+        await Share.open(shareOptions);
+        callback();
+      } catch (e) {
+        Alert.alert('Error', e.error);
+      }
+    },
+    [customer.name],
+  );
+
+  const handleWhatsappShare = useCallback(async () => {
+    // TODO: use better copy for shara invite
+    const shareOptions = {
+      url: 'https://shara.co/',
+      social: Share.Social.WHATSAPP,
+      message: 'Here is your receipt',
+      title: `Share receipt with ${customer.name}`,
+      whatsAppNumber: `+234${customer.mobile}`, // country code + phone number
+      // filename:  `data:image/png;base64,<base64_data>`,
+    };
+    const errorMessages = {
+      filename: 'Invalid file attached',
+      whatsAppNumber: 'Please check the phone number supplied',
+    } as {[key: string]: any};
+
+    if (!customer.mobile) {
+      Alert.alert(
+        'Info',
+        'Please select a customer to share receipt with via Whatsapp',
+      );
+    } else {
+      try {
+        await Share.shareSingle(shareOptions);
+      } catch (e) {
+        Alert.alert('Error', errorMessages[e.error]);
+      }
+    }
+  }, [customer.mobile, customer.name]);
 
   const handlePrintReceipt = useCallback(() => {
     Alert.alert(
@@ -307,18 +360,18 @@ const ReceiptSummary = (props: {
 
   const handleFinish = () => {
     setIsSubmitting(true);
-    /*
-    saveReceipt({
-      realm,
-      customer,
-      type: paymentType,
-      amountPaid,
-      totalAmount,
-      creditAmount,
-      tax,
-      products,
-    });
-     */
+
+    // saveReceipt({
+    //   tax,
+    //   realm,
+    //   products,
+    //   payments,
+    //   customer,
+    //   amountPaid,
+    //   totalAmount,
+    //   creditAmount,
+    // });
+
     setTimeout(() => {
       setIsSubmitting(false);
       handleOpenSuccessModal();

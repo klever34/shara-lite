@@ -250,6 +250,12 @@ export const ReceiptStatusModal = (props: Props) => {
               </Text>
             </View>
           </Button>
+          <Button
+            variantColor="red"
+            onPress={() => {}}
+            title="Create new receipt"
+            style={applyStyles({marginTop: 24})}
+          />
         </View>
       </ScrollView>
       <View style={styles.actionButtons}>

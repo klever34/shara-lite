@@ -43,7 +43,11 @@ export const CustomerDetailsModal = (props: Props) => {
   );
 
   return (
-    <Modal transparent={false} animationType="slide" visible={visible}>
+    <Modal
+      visible={visible}
+      transparent={false}
+      animationType="slide"
+      onRequestClose={onClose}>
       <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
         <View style={applyStyles({marginBottom: 48})}>
           <Button style={applyStyles('mb-lg')} onPress={onOpenContactList}>

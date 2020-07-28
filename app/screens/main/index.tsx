@@ -18,7 +18,6 @@ import {createRealm, RealmProvider} from '../../services/realm';
 import getUuidByString from 'uuid-by-string';
 import Receipts from './business/Receipts';
 import NewReceipt from './business/NewReceipt';
-import ReceiptSummary from './business/ReceiptSummary';
 import StatusModal from './StatusModal';
 import Finances from './business/Finances';
 import Inventory from './business/Inventory';
@@ -40,7 +39,6 @@ export type MainStackParamList = {
   Contacts: undefined;
   Receipts: undefined;
   NewReceipt: {customer: Customer};
-  ReceiptSummary: {customer: Customer; products: ReceiptItem[]};
   StatusModal: {status: string; text: string; onClick(): void};
   Finances: undefined;
   Inventory: undefined;
@@ -217,21 +215,6 @@ const MainScreens = ({navigation}: any) => {
             component={NewReceipt}
             options={{
               title: 'New Receipt',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="ReceiptSummary"
-            component={ReceiptSummary}
-            options={{
-              title: 'Receipt Summary',
               headerStyle: {
                 backgroundColor: colors.primary,
               },
