@@ -302,36 +302,42 @@ const HomeScreen = () => {
             );
           }
         });
-        pubNub.fetchMessages(
-          {
-            channels,
-            count: 100,
-          },
-          (status, response) => {
-            if (status.error) {
-              console.log('Error: ', status);
-            } else {
-              Object.keys(response.channels).forEach((channel) => {
-                const messages: IMessage[] = response.channels[channel].map(
-                  ({message}) => message,
+        for (let i = 0; i < channels.length; i++) {
+          let channel = channels[i];
+          const count = 25;
+          let retrieved: number | undefined;
+          let start: string | number | undefined;
+          do {
+            const response = await pubNub.fetchMessages({
+              channels: [channel],
+              start,
+              count,
+            });
+            const messagePayload = response.channels[channel] ?? [];
+            realm.write(() => {
+              for (let j = 0; j < messagePayload.length; j += 1) {
+                let {message} = messagePayload[j];
+                if (!message.id) {
+                  continue;
+                }
+                message = realm.create<IMessage>(
+                  'Message',
+                  message,
+                  Realm.UpdateMode.Modified,
                 );
-                realm.write(() => {
-                  for (let i = 0; i < messages.length; i += 1) {
-                    const message = realm.create<IMessage>(
-                      'Message',
-                      messages[i],
-                      Realm.UpdateMode.Modified,
-                    );
-                    if (i === messages.length - 1) {
-                      const conversation = conversations[channel];
-                      conversation.lastMessage = message;
-                    }
-                  }
-                });
-              });
-            }
-          },
-        );
+                if (
+                  j === messagePayload.length - 1 &&
+                  retrieved === undefined
+                ) {
+                  const conversation = conversations[channel];
+                  conversation.lastMessage = message;
+                }
+              }
+            });
+            retrieved = messagePayload.length;
+            start = messagePayload[0]?.timetoken;
+          } while (retrieved === count);
+        }
       } catch (e) {
         console.log('Fetching all conversations Error: ', e);
       }
