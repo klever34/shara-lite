@@ -252,7 +252,7 @@ export const ReceiptStatusModal = (props: Props) => {
           </Button>
           <Button
             variantColor="red"
-            onPress={() => {}}
+            onPress={onComplete}
             title="Create new receipt"
             style={applyStyles({marginTop: 24})}
           />
@@ -282,8 +282,8 @@ export const ReceiptStatusModal = (props: Props) => {
         <Button
           title="Finish"
           variantColor="red"
-          isLoading={isSubmitting}
           onPress={onComplete}
+          isLoading={isSubmitting}
           style={styles.actionButton}
         />
       </View>

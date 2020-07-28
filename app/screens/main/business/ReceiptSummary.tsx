@@ -28,7 +28,7 @@ import {saveReceipt} from '../../../services/ReceiptService';
 import {EditProductModal} from './EditProductModal';
 import Touchable from '../../../components/Touchable';
 
-type SummaryTableItemProps = {
+export type SummaryTableItemProps = {
   item: ReceiptItem;
 };
 
@@ -84,7 +84,7 @@ const summaryTableItemStyles = StyleSheet.create({
   },
 });
 
-const SummaryTableHeader = () => {
+export const SummaryTableHeader = () => {
   return (
     <View
       style={applyStyles(summaryTableStyles.row, summaryTableHeaderStyles.row)}>
@@ -107,16 +107,16 @@ const SummaryTableHeader = () => {
   );
 };
 
-const SummaryTableItem = ({
+export const SummaryTableItem = ({
   item,
   onPress,
-}: SummaryTableItemProps & {onPress: (item: ReceiptItem) => void}) => {
+}: SummaryTableItemProps & {onPress?: (item: ReceiptItem) => void}) => {
   const price = item.price ? parseFloat(item.price) : 0;
   const quantity = item.quantity ? parseFloat(item.quantity) : 0;
   const subtotal = price * quantity;
 
   return (
-    <Touchable onPress={() => onPress(item)}>
+    <Touchable onPress={onPress ? () => onPress(item) : () => {}}>
       <View
         style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
         <View style={summaryTableStyles['column-40']}>
@@ -140,6 +140,27 @@ const SummaryTableItem = ({
           <Text style={summaryTableItemStyles.text}>
             &#8358;{numberWithCommas(subtotal)}
           </Text>
+        </View>
+        <View
+          style={applyStyles('flex-row', 'w-full', {
+            justifyContent: 'flex-end',
+          })}>
+          <View
+            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+            <Icon
+              size={14}
+              name="edit"
+              type="feathericons"
+              color={colors.primary}
+            />
+            <Text
+              style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
+                fontSize: 12,
+                color: colors.primary,
+              })}>
+              Tap to edit
+            </Text>
+          </View>
         </View>
       </View>
     </Touchable>
@@ -387,34 +408,39 @@ const ReceiptSummary = (props: Props) => {
   }, []);
 
   const handleFinish = () => {
-    setIsSubmitting(true);
-
-    saveReceipt({
-      tax,
-      realm,
-      products,
-      payments,
-      customer,
-      amountPaid,
-      totalAmount,
-      creditAmount,
-    });
-
-    setTimeout(() => {
-      setIsSubmitting(false);
-      handleOpenSuccessModal();
-    }, 2000);
+    handleOpenSuccessModal();
   };
 
   const handleComplete = useCallback(() => {
     setIsSubmitting(true);
     setTimeout(() => {
       setIsSubmitting(false);
+      saveReceipt({
+        tax,
+        realm,
+        products,
+        payments,
+        customer,
+        amountPaid,
+        totalAmount,
+        creditAmount,
+      });
       handleCloseSuccessModal();
       onClearReceipt();
       navigation.navigate('NewReceipt');
     }, 2000);
-  }, [navigation, onClearReceipt, handleCloseSuccessModal]);
+  }, [
+    realm,
+    products,
+    payments,
+    customer,
+    amountPaid,
+    totalAmount,
+    creditAmount,
+    handleCloseSuccessModal,
+    onClearReceipt,
+    navigation,
+  ]);
 
   useEffect(() => {
     const total = products
@@ -452,9 +478,12 @@ const ReceiptSummary = (props: Props) => {
           </Text>
           <Text
             style={applyStyles('text-400', 'mb-xl', {
-              color: colors['gray-100'],
+              color: colors['gray-300'],
             })}>
-            Here is a list of products being purchased
+            Total{' '}
+            <Text style={applyStyles('text-700')}>
+              &#8358;{numberWithCommas(totalAmount)}
+            </Text>
           </Text>
           <View>
             <FlatList

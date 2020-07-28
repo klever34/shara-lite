@@ -2,15 +2,15 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
   FlatList,
+  Modal as ReactNativeModal,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
-  Modal as ReactNativeModal,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {Button, CurrencyInput} from '../../../components';
-import {FloatingLabelInput} from '../../../components';
+import {Button, CurrencyInput, FloatingLabelInput} from '../../../components';
+import Icon from '../../../components/Icon';
 import AppMenu from '../../../components/Menu';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import Touchable from '../../../components/Touchable';
@@ -18,6 +18,7 @@ import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {products} from '../data.json';
 import ReceiptSummary from './ReceiptSummary';
+import {ProductsPreviewModal} from './ProductsPreviewModal';
 
 type RecentProductItemProps = {
   item: Product;
@@ -36,6 +37,9 @@ const NewReceipt = () => {
   const [receipt, setReceipt] = useState<ReceiptItem[]>([]);
   const [quantity, setQuantity] = useState<string | undefined>('');
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
+    false,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -77,6 +81,15 @@ const NewReceipt = () => {
 
   const handleCloseSummaryModal = useCallback(() => {
     setIsSummaryModalOpen(false);
+  }, []);
+
+  const handleOpenProductsPreviewModal = useCallback(() => {
+    console.log('here');
+    setIsProductsPreviewModalOpen(true);
+  }, []);
+
+  const handleCloseProductsPreviewModal = useCallback(() => {
+    setIsProductsPreviewModalOpen(false);
   }, []);
 
   const handleCloseProductModal = useCallback(() => {
@@ -190,11 +203,37 @@ const NewReceipt = () => {
           justifyContent: 'flex-end',
         })}>
         <View style={styles.calculatorSection}>
-          <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
-            You have{' '}
-            <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
-            Products in your receipt
-          </Text>
+          <Touchable onPress={handleOpenProductsPreviewModal}>
+            <View>
+              <Text
+                style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
+                You have{' '}
+                <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
+                Products in your receipt
+              </Text>
+              {!!receipt.length && (
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                  )}>
+                  <Icon
+                    size={24}
+                    name="eye"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Tap to preview products
+                  </Text>
+                </View>
+              )}
+            </View>
+          </Touchable>
           <View>
             <>
               <Text
@@ -277,15 +316,28 @@ const NewReceipt = () => {
         />
       </ReactNativeModal>
 
-      {!selectedProduct && (
-        <View style={styles.calculatorSection}>
+      <View style={styles.calculatorSection}>
+        {!selectedProduct && (
           <Text style={applyStyles(styles.receiptItemsCountText, 'text-400')}>
             You have{' '}
             <Text style={styles.receiptItemsCount}>{receipt?.length}</Text>{' '}
             Products in your receipt
           </Text>
-        </View>
-      )}
+        )}
+        {!!receipt.length && (
+          <Button
+            title="Done"
+            variantColor="red"
+            onPress={handleDone}
+            style={applyStyles('my-sm', 'w-full')}
+          />
+        )}
+      </View>
+      <ProductsPreviewModal
+        products={receipt}
+        visible={isProductsPreviewModalOpen}
+        onClose={handleCloseProductsPreviewModal}
+      />
     </SafeAreaView>
   );
 };
