@@ -13,7 +13,7 @@ import Config from 'react-native-config';
 Sentry.init({
   dsn: Config.SENTRY_DSN,
   release: `${name}@${version}`,
-  environment: Config.SENTRY_ENVIRONMENT,
+  environment: Config.ENVIRONMENT,
 });
 YellowBox.ignoreWarnings(['Setting a timer']);
 AppRegistry.registerComponent(appName, () => App);
