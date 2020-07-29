@@ -85,7 +85,7 @@ export const Login = ({navigation}: any) => {
       </View>
       <View style={styles.headerSection}>
         <Text style={styles.heading}>Welcome Back!</Text>
-        <Text style={styles.description}>Sign in to your account</Text>
+        <Text style={styles.description}>Sign in to your account.</Text>
       </View>
       <View style={styles.form}>
         <View style={styles.inputField}>

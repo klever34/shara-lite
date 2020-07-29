@@ -100,7 +100,7 @@ export const Register = ({
       <View style={applyStyles({marginBottom: 16})}>
         <Text style={styles.heading}>Sign Up</Text>
         <Text style={styles.description}>
-          Create an account to do business faster and better
+          Create an account to do business faster and better.
         </Text>
       </View>
       <View>

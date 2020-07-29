@@ -128,10 +128,11 @@ const MainScreens = ({navigation}: any) => {
       </View>
     );
   }
+
   return (
     <RealmProvider value={realm}>
       <PubNubProvider client={pubNubClient}>
-        <MainStack.Navigator initialRouteName="BusinessSetup">
+        <MainStack.Navigator initialRouteName="Home">
           <MainStack.Screen
             name="Home"
             component={HomeScreen}
