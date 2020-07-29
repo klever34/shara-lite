@@ -4,14 +4,16 @@ import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import Icon from '../../../components/Icon';
 import {FloatingLabelInput, Button} from '../../../components';
+import {ICustomer} from '../../../models';
+import {saveCustomer} from '../../../services/CustomerService';
+import {useRealm} from '../../../services/realm';
 
 type Props = {
   visible: boolean;
-  customer: Customer;
+  customer?: ICustomer;
   onClose: () => void;
   onOpenContactList: () => void;
-  onSelectCustomer: (customer: Customer) => void;
-  onUpdateCustomer: (text: string, key: string) => void;
+  onSelectCustomer: (customer: ICustomer) => void;
 };
 
 export const CustomerDetailsModal = (props: Props) => {
@@ -24,20 +26,30 @@ export const CustomerDetailsModal = (props: Props) => {
   } = props;
 
   const [customer, setCustomer] = useState(customerProps);
+  const [isNewCustomer, setIsNewCustomer] = useState(false);
+
+  const realm = useRealm() as Realm;
 
   useEffect(() => {
     setCustomer(customerProps);
-    onSelectCustomer(customerProps);
-  }, [customerProps, onSelectCustomer]);
+  }, [customerProps]);
 
   const handleDone = () => {
-    onSelectCustomer(customer);
-    onClose();
+    if (customer) {
+      onSelectCustomer(customer);
+      if (isNewCustomer) {
+        saveCustomer({realm, customer});
+        setIsNewCustomer(false);
+      }
+      onClose();
+    }
   };
 
   const handleCustomerChange = useCallback(
     (value, key) => {
-      setCustomer({...customer, [key]: value});
+      const data = {...customer, [key]: value} as ICustomer | Customer;
+      setCustomer(data);
+      setIsNewCustomer(true);
     },
     [customer],
   );
@@ -85,13 +97,13 @@ export const CustomerDetailsModal = (props: Props) => {
           </Text>
           <FloatingLabelInput
             label="Phone number"
-            value={customer.mobile}
+            value={customer?.mobile}
             keyboardType="number-pad"
             containerStyle={applyStyles('pb-xl')}
             onChangeText={(text) => handleCustomerChange(text, 'mobile')}
           />
           <FloatingLabelInput
-            value={customer.name}
+            value={customer?.name}
             label="Type Customer Name"
             containerStyle={applyStyles({paddingBottom: 80})}
             onChangeText={(text) => handleCustomerChange(text, 'name')}

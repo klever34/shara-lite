@@ -1,5 +1,5 @@
 import {IReceipt} from 'app/models/Receipt';
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   FlatList,
   Modal,
@@ -10,15 +10,18 @@ import {
 } from 'react-native';
 import {Button} from '../../../components';
 import Icon from '../../../components/Icon';
+import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {ICustomer} from '../../../models';
 import {IReceiptItem} from '../../../models/ReceiptItem';
 import {colors} from '../../../styles';
+import {CustomerDetailsModal} from './CustomerDetailsModal';
+import Receipts from './Receipts';
 import {
   SummaryTableHeader,
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import Touchable from '../../../components/Touchable';
 
 type Props = {
   visible: boolean;
@@ -34,12 +37,49 @@ type ProductItemProps = {
 
 export default function ReceiptDetailsModal(props: Props) {
   const {receipt, visible, onClose, onPrintReceipt, onOpenShareModal} = props;
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [customer, setCustomer] = useState<Customer | ICustomer | undefined>(
+    receipt ? receipt.customer : ({} as Customer),
+  );
+  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
 
   const PAYMENT_METHOD_TEXT = {
     cash: 'Cash',
     transfer: 'Bank Transfer',
     mobile: 'Mobile Money',
   } as {[key: string]: string};
+
+  const handleOpenCustomerModal = useCallback(() => {
+    setIsCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseCustomerModal = useCallback(() => {
+    setIsCustomerModalOpen(false);
+  }, []);
+
+  const handleOpenCustomerListModal = useCallback(() => {
+    setIsCustomerListModalOpen(true);
+  }, []);
+
+  const handleCloseCustomerListModal = useCallback(() => {
+    setIsCustomerListModalOpen(false);
+  }, []);
+
+  const handleSetCustomer = useCallback((value: ICustomer) => {
+    setCustomer(value);
+  }, []);
+
+  const handleUpdateCustomer = useCallback(
+    (value, key) => {
+      console.log('here');
+      console.log({...customer, [key]: value});
+      setCustomer({...customer, [key]: value} as ICustomer);
+    },
+    [customer],
+  );
+  const handleCustomerSelect = useCallback(({customer: customerData}) => {
+    setCustomer(customerData);
+  }, []);
 
   const renderProductItem = useCallback(
     ({item}: ProductItemProps) => (
@@ -77,12 +117,12 @@ export default function ReceiptDetailsModal(props: Props) {
       <ScrollView style={applyStyles('px-lg', 'py-xl')}>
         <View
           style={applyStyles(
-            'py-lg',
-            'mb-xl',
+            'pb-md',
             'w-full',
             'flex-row',
             'justify-space-between',
             {
+              marginBottom: 40,
               borderBottomWidth: 1,
               borderBottomColor: colors['gray-20'],
             },
@@ -98,7 +138,7 @@ export default function ReceiptDetailsModal(props: Props) {
               {receipt?.customer?.mobile ? (
                 <Text>{receipt.customer_name}</Text>
               ) : (
-                <Touchable onPress={() => {}}>
+                <Touchable onPress={handleOpenCustomerModal}>
                   <View
                     style={applyStyles(
                       'flex-row',
@@ -316,6 +356,21 @@ export default function ReceiptDetailsModal(props: Props) {
           style={styles.actionButton}
         />
       </View>
+
+      <CustomerDetailsModal
+        customer={receipt?.customer}
+        visible={isCustomerModalOpen}
+        onClose={handleCloseCustomerModal}
+        onSelectCustomer={handleSetCustomer}
+        onOpenContactList={handleOpenCustomerListModal}
+      />
+
+      <Modal animationType="slide" visible={isCustomerListModalOpen}>
+        <Receipts
+          onModalClose={handleCloseCustomerListModal}
+          onCustomerSelect={handleCustomerSelect}
+        />
+      </Modal>
     </Modal>
   );
 }

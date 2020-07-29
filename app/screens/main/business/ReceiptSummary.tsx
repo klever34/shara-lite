@@ -396,13 +396,6 @@ const ReceiptSummary = (props: Props) => {
     [setCustomer],
   );
 
-  const handleUpdateCustomer = useCallback(
-    (value, key) => {
-      setCustomer({...customer, [key]: value});
-    },
-    [customer],
-  );
-
   const handleSetCustomer = useCallback((value: Customer) => {
     setCustomer(value);
   }, []);
@@ -844,7 +837,6 @@ const ReceiptSummary = (props: Props) => {
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
         onSelectCustomer={handleSetCustomer}
-        onUpdateCustomer={handleUpdateCustomer}
         onOpenContactList={handleOpenContactList}
       />
       <ShareReceiptModal

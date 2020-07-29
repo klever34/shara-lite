@@ -51,8 +51,6 @@ const Receipts = (props: any) => {
     [customers, onCustomerSelect, handleCloseModal],
   );
 
-  console.log({customers, myCustomers});
-
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerItemProps) => {
       return (

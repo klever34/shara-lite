@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
 import React, {useCallback, useState} from 'react';
-import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
+import {Alert, FlatList, StyleSheet, Text, View, Modal} from 'react-native';
 import Share from 'react-native-share';
 import {FAButton} from '../../../components';
 import EmptyState from '../../../components/EmptyState';
@@ -10,11 +10,14 @@ import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {IReceipt} from '../../../models/Receipt';
 import {useRealm} from '../../../services/realm';
-import {getReceipts} from '../../../services/ReceiptService';
+import {getReceipts, saveReceipt} from '../../../services/ReceiptService';
 import {colors} from '../../../styles';
 import ActionCard from '../customers/ActionCard';
 import ReceiptDetailsModal from './ReceiptDetailsModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import {CustomerDetailsModal} from './CustomerDetailsModal';
+import Receipts from './Receipts';
+import {ICustomer} from '../../../models';
 
 type ReceiptItemProps = {
   item: IReceipt;
@@ -238,6 +241,7 @@ export default function MySales() {
           </Text>
         </View>
       </FAButton>
+
       <ShareReceiptModal
         visible={isShareModalOpen}
         onSmsShare={handleSmsShare}
@@ -245,6 +249,7 @@ export default function MySales() {
         onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
+
       <ReceiptDetailsModal
         receipt={activeReceipt}
         visible={!!activeReceipt}
