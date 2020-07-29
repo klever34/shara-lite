@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.11-chore.heap-space+build.777",
+  "version": "0.1.12",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
