@@ -84,7 +84,6 @@ const NewReceipt = () => {
   }, []);
 
   const handleOpenProductsPreviewModal = useCallback(() => {
-    console.log('here');
     setIsProductsPreviewModalOpen(true);
   }, []);
 

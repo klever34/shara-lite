@@ -1,18 +1,19 @@
 import React from 'react';
+import {useErrorHandler} from 'react-error-boundary';
 import {
   Alert,
+  ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
   View,
-  ScrollView,
 } from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {getApiService} from '../../services';
-import {colors} from '../../styles';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
-import {useErrorHandler} from 'react-error-boundary';
+import {applyStyles} from '../../helpers/utils';
+import {getApiService} from '../../services';
+import {colors} from '../../styles';
 
 type Fields = {
   mobile: string;
@@ -77,7 +78,9 @@ export const Login = ({navigation}: any) => {
     <ScrollView style={styles.container}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
-          <Icon size={24} type="ionicons" name="md-arrow-back" />
+          <View style={applyStyles({height: 40, width: 40})}>
+            <Icon size={24} type="ionicons" name="md-arrow-back" />
+          </View>
         </Touchable>
       </View>
       <View style={styles.headerSection}>
@@ -124,7 +127,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   backButton: {
-    marginBottom: 48,
+    marginBottom: 16,
   },
   headerSection: {
     marginBottom: 48,

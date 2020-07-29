@@ -92,7 +92,9 @@ export const Register = ({
     <ScrollView style={styles.container}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
-          <Icon size={24} type="ionicons" name="md-arrow-back" />
+          <View style={applyStyles({height: 40, width: 40})}>
+            <Icon size={24} type="ionicons" name="md-arrow-back" />
+          </View>
         </Touchable>
       </View>
       <View style={applyStyles({marginBottom: 16})}>
@@ -162,7 +164,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   backButton: {
-    marginBottom: 48,
+    marginBottom: 24,
   },
   heading: {
     fontSize: 24,

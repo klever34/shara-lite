@@ -35,6 +35,7 @@ import SelectGroupMembersScreen from './SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './SetGroupDetailsScreen';
 import StatusModal from './StatusModal';
 import {useErrorHandler} from 'react-error-boundary';
+import {BusinessSetup} from '../BusinessSetup';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -54,7 +55,7 @@ export type MainStackParamList = {
   PaymentDetails: {payment: Payment};
   OrderDetails: {order: Order};
   MySales: undefined;
-
+  BusinessSetup: undefined;
   SelectGroupMembers: undefined;
   SetGroupDetails: {members: IContact[]};
 };
@@ -130,7 +131,7 @@ const MainScreens = ({navigation}: any) => {
   return (
     <RealmProvider value={realm}>
       <PubNubProvider client={pubNubClient}>
-        <MainStack.Navigator initialRouteName="Home">
+        <MainStack.Navigator initialRouteName="BusinessSetup">
           <MainStack.Screen
             name="Home"
             component={HomeScreen}
@@ -403,6 +404,13 @@ const MainScreens = ({navigation}: any) => {
               },
               headerTintColor: '#fff',
             }}
+          />
+          <MainStack.Screen
+            name="BusinessSetup"
+            options={{
+              headerShown: false,
+            }}
+            component={BusinessSetup}
           />
         </MainStack.Navigator>
       </PubNubProvider>

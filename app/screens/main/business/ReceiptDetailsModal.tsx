@@ -67,16 +67,9 @@ export default function ReceiptDetailsModal(props: Props) {
 
   const handleSetCustomer = useCallback((value: ICustomer) => {
     setCustomer(value);
+    //TODO: make call to save customer to receipt
   }, []);
 
-  const handleUpdateCustomer = useCallback(
-    (value, key) => {
-      console.log('here');
-      console.log({...customer, [key]: value});
-      setCustomer({...customer, [key]: value} as ICustomer);
-    },
-    [customer],
-  );
   const handleCustomerSelect = useCallback(({customer: customerData}) => {
     setCustomer(customerData);
   }, []);
@@ -358,7 +351,7 @@ export default function ReceiptDetailsModal(props: Props) {
       </View>
 
       <CustomerDetailsModal
-        customer={receipt?.customer}
+        customer={customer}
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
         onSelectCustomer={handleSetCustomer}

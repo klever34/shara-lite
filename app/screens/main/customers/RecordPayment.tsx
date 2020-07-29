@@ -12,7 +12,6 @@ const RecordPayment = () => {
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
-        console.log(payload);
         callback();
         navigation.navigate('CreditsTab');
       }, 300);

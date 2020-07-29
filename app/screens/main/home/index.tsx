@@ -36,10 +36,14 @@ const HomeScreen = () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      });
     } catch (e) {
       handleError(e);
     }
-  }, [handleError]);
+  }, [handleError, navigation]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -142,8 +146,9 @@ const HomeScreen = () => {
                 'Message',
                 {
                   ...message,
-                  created_at: new Date(message.created_at),
                   sent_timetoken: String(evt.timetoken),
+                  created_at:
+                    message.created_at && new Date(message.created_at),
                 },
                 Realm.UpdateMode.Modified,
               );
