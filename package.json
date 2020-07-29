@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.9-feature.new-receipt-flow-persistence+build.738",
+  "version": "0.1.9-feature.new-receipt-flow-persistence+build.790",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
