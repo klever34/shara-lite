@@ -18,20 +18,25 @@ import {
   View,
 } from 'react-native';
 import EmojiSelector, {Categories} from 'react-native-emoji-selector';
-import Icon from '../../components/Icon';
-import {BaseButton, baseButtonStyles} from '../../components';
-import {ChatBubble} from '../../components/ChatBubble';
-import {generateUniqueId, retryPromise} from '../../helpers/utils';
-import {colors} from '../../styles';
+import Icon from '../../../components/Icon';
+import {BaseButton, baseButtonStyles} from '../../../components';
+import {ChatBubble} from '../../../components/ChatBubble';
+import {
+  applyStyles,
+  generateUniqueId,
+  retryPromise,
+} from '../../../helpers/utils';
+import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from './index';
-import {getAuthService} from '../../services';
-import {useRealm} from '../../services/realm';
+import {MainStackParamList} from '../index';
+import {getAuthService} from '../../../services';
+import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
-import {IConversation, IMessage} from '../../models';
-import {useTyping} from '../../services/pubnub';
-import {MessageActionEvent} from '../../../types/pubnub';
+import {IConversation, IMessage} from '../../../models';
+import {useTyping} from '../../../services/pubnub';
+import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
+import Touchable from '../../../components/Touchable';
 
 type MessageItemProps = {
   item: IMessage;
@@ -137,12 +142,22 @@ const ChatScreen = ({
     navigation.setOptions({
       headerTitle: () => {
         return (
-          <View style={styles.headerTitle}>
-            <Text style={styles.headerTitleText}>{title}</Text>
-            {!!typingMessage && (
-              <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
-            )}
-          </View>
+          <Touchable
+            style={applyStyles('h-full')}
+            onPress={() => {
+              console.log('Navigate to Chat Details Page');
+            }}>
+            <View style={applyStyles('flex-col flex-1 h-full')}>
+              <Text style={styles.headerTitleText} numberOfLines={1}>
+                {title}
+              </Text>
+              {!!typingMessage && (
+                <Text style={styles.headerTitleDesc} numberOfLines={1}>
+                  {typingMessage}
+                </Text>
+              )}
+            </View>
+          </Touchable>
         );
       },
     });
@@ -228,7 +243,7 @@ const ChatScreen = ({
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require('../../assets/images/chat-wallpaper.png')}
+        source={require('../../../assets/images/chat-wallpaper.png')}
         style={styles.chatBackground}>
         <FlatList
           inverted={true}
@@ -350,9 +365,6 @@ const styles = StyleSheet.create({
   emojiButtonIcon: {
     opacity: 0.5,
     color: colors['gray-900'],
-  },
-  headerTitle: {
-    flexDirection: 'column',
   },
   headerTitleText: {
     color: 'white',

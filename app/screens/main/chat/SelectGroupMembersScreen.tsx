@@ -1,11 +1,11 @@
 import React, {useCallback, useState} from 'react';
-import {ScrollView, View, SafeAreaView} from 'react-native';
-import ContactsList from '../../components/ContactsList';
-import {IContact} from '../../models';
-import PlaceholderImage from '../../components/PlaceholderImage';
-import {applyStyles} from '../../helpers/utils';
-import Touchable from '../../components/Touchable';
-import {FAButton} from '../../components';
+import {SafeAreaView, ScrollView, View} from 'react-native';
+import ContactsList from '../../../components/ContactsList';
+import {IContact} from '../../../models';
+import PlaceholderImage from '../../../components/PlaceholderImage';
+import {applyStyles} from '../../../helpers/utils';
+import Touchable from '../../../components/Touchable';
+import {FAButton} from '../../../components';
 import {useNavigation} from '@react-navigation/native';
 
 const SelectGroupMembersScreen = () => {

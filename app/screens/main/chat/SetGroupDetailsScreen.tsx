@@ -1,24 +1,24 @@
 import React, {useCallback, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
-import {applyStyles} from '../../helpers/utils';
-import TextInput from '../../components/TextInput';
+import {applyStyles} from '../../../helpers/utils';
+import TextInput from '../../../components/TextInput';
 import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '.';
-import PlaceholderImage from '../../components/PlaceholderImage';
-import {FAButton} from '../../components';
-import {getApiService} from '../../services';
-import {IConversation} from '../../models';
-import {useRealm} from '../../services/realm';
+import {MainStackParamList} from '../index';
+import PlaceholderImage from '../../../components/PlaceholderImage';
+import {FAButton} from '../../../components';
+import {getApiService} from '../../../services';
+import {IConversation} from '../../../models';
+import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
 import {CommonActions} from '@react-navigation/native';
-import {ModalWrapperFields, withModal} from '../../helpers/hocs';
+import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import {useErrorHandler} from 'react-error-boundary';
 
 type SetGroupDetailsScreenProps = StackScreenProps<
   MainStackParamList,
   'SetGroupDetails'
 > &
   ModalWrapperFields;
-import {useErrorHandler} from 'react-error-boundary';
 
 const SetGroupDetailsScreen = ({
   navigation,

@@ -1,22 +1,22 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {colors} from '../../../styles';
-import ChatListScreen from './ChatListScreen';
-import {getAuthService, getRealmService} from '../../../services';
+import {colors} from '../../styles';
+import ChatListScreen from './chat/ChatListScreen';
+import {getAuthService, getRealmService} from '../../services';
 import {useNavigation} from '@react-navigation/native';
-import AppMenu from '../../../components/Menu';
-import {applyStyles, retryPromise} from '../../../helpers/utils';
-import {IContact, IConversation, IMessage} from '../../../models';
+import AppMenu from '../../components/Menu';
+import {applyStyles, retryPromise} from '../../helpers/utils';
+import {IContact, IConversation, IMessage} from '../../models';
 import {usePubNub} from 'pubnub-react';
-import {useRealm} from '../../../services/realm';
+import {useRealm} from '../../services/realm';
 import {MessageEvent} from 'pubnub';
 import Realm from 'realm';
-import CustomersTab from '../customers';
-import BusinessTab from '../business';
+import CustomersTab from './customers';
+import BusinessTab from './business';
 import PushNotification from 'react-native-push-notification';
-import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
-import {MessageActionEvent} from '../../../../types/pubnub';
+import {ModalWrapperFields, withModal} from '../../helpers/hocs';
+import {MessageActionEvent} from '../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 
 type HomeTabParamList = {

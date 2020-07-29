@@ -10,9 +10,9 @@ import {
   getPubNubService,
 } from '../../services';
 import {colors} from '../../styles';
-import ChatScreen from './ChatScreen';
-import ContactsScreen from './ContactsScreen';
-import HomeScreen from './home';
+import ChatScreen from './chat/ChatScreen';
+import ContactsScreen from './chat/ContactsScreen';
+import HomeScreen from './HomeScreen';
 import getUuidByString from 'uuid-by-string';
 import Receipts from './business/Receipts';
 import NewReceipt from './business/NewReceipt';
@@ -28,8 +28,8 @@ import RecordPayment from './customers/RecordPayment';
 import CreditPayment from './customers/CreditPayment';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
-import SelectGroupMembersScreen from './SelectGroupMembersScreen';
-import SetGroupDetailsScreen from './SetGroupDetailsScreen';
+import SelectGroupMembersScreen from './chat/SelectGroupMembersScreen';
+import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
 import {IContact, IConversation} from '../../models';
 import {applyStyles} from '../../helpers/utils';
 import {useErrorHandler} from 'react-error-boundary';
