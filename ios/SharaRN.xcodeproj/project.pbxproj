@@ -5,7 +5,6 @@
 	};
 	objectVersion = 46;
 	objects = {
-
 /* Begin PBXBuildFile section */
 		00E356F31AD99517003FC87E /* SharaRNTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 00E356F21AD99517003FC87E /* SharaRNTests.m */; };
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
@@ -36,7 +35,7 @@
 		DE6D369D28B14FAD86B6A9D4 /* AntDesign.ttf in Resources */ = {isa = PBXBuildFile; fileRef = DFE8E439BD6440F2A18BD257 /* AntDesign.ttf */; };
 		F3FFDEA8C28D056DD3CB8C75 /* libPods-SharaRN.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076E1F34EA09BBE00A5272ED /* libPods-SharaRN.a */; };
 		FF97DEE1975A40A58C7E752A /* EvilIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 68989F10DFFF4FCCA0535707 /* EvilIcons.ttf */; };
-		BBAA3DE42FDB4E6AAA343B00 /*  CocogoosePro-UltraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */; };
+		BBAA3DE42FDB4E6AAA343B00 /* CocogoosePro-UltraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 731D200EF38544E89AA13B0B /* CocogoosePro-UltraLight.otf */; };
 		47A7D71C4B0943E99E992479 /* CocogoosePro-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */; };
 		6A11E098B8E54643BFA9C944 /* CocogoosePro-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */; };
 		7D0557EA69C5427CBC568811 /* CocogoosePro-SemiLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */; };
@@ -109,7 +108,7 @@
 		ED2971642150620600B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = Platforms/AppleTVOS.platform/Developer/SDKs/AppleTVOS12.0.sdk/System/Library/Frameworks/JavaScriptCore.framework; sourceTree = DEVELOPER_DIR; };
 		EE17A47AC3DC6297355AF760 /* Pods-SharaRN-tvOSTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharaRN-tvOSTests.release.xcconfig"; path = "Target Support Files/Pods-SharaRN-tvOSTests/Pods-SharaRN-tvOSTests.release.xcconfig"; sourceTree = "<group>"; };
 		FE5431FE902246E40652F57A /* Pods-SharaRN-tvOS.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharaRN-tvOS.debug.xcconfig"; path = "Target Support Files/Pods-SharaRN-tvOS/Pods-SharaRN-tvOS.debug.xcconfig"; sourceTree = "<group>"; };
-		731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */ = {isa = PBXFileReference; name = " CocogoosePro-UltraLight.otf"; path = "../app/assets/fonts/ CocogoosePro-UltraLight.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		731D200EF38544E89AA13B0B /* CocogoosePro-UltraLight.otf */ = {isa = PBXFileReference; name = " CocogoosePro-UltraLight.otf"; path = "../app/assets/fonts/ CocogoosePro-UltraLight.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */ = {isa = PBXFileReference; name = "CocogoosePro-Light.otf"; path = "../app/assets/fonts/CocogoosePro-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */ = {isa = PBXFileReference; name = "CocogoosePro-Regular.otf"; path = "../app/assets/fonts/CocogoosePro-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */ = {isa = PBXFileReference; name = "CocogoosePro-SemiLight.otf"; path = "../app/assets/fonts/CocogoosePro-SemiLight.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
@@ -270,7 +269,7 @@
 				AFAC2FF7CEF143BBB6B71411 /* Octicons.ttf */,
 				0C4A3031661A4FC2ADF2F2C5 /* SimpleLineIcons.ttf */,
 				A3C6B74B43F945ECBD06F79B /* Zocial.ttf */,
-				731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */,
+				731D200EF38544E89AA13B0B /* CocogoosePro-UltraLight.otf */,
 				6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */,
 				09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */,
 				AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */,
@@ -320,6 +319,7 @@
 				00DD1BFF1BD5951E006B06BC /* Bundle React Native code and images */,
 				2BFE05A2628290B99B6471D9 /* [CP] Copy Pods Resources */,
 				EC1A3E7597A91FBAE9781D85 /* [CP-User] [RNFB] Core Configuration */,
+				089FD60707384DF895384561 /* Upload Debug Symbols to Sentry */,
 			);
 			buildRules = (
 			);
@@ -446,7 +446,7 @@
 				81501C0E23A84F98A4B1C50A /* Octicons.ttf in Resources */,
 				8929E6D5E474477DA45904F6 /* SimpleLineIcons.ttf in Resources */,
 				808B522AF3124444995D9CE1 /* Zocial.ttf in Resources */,
-				BBAA3DE42FDB4E6AAA343B00 /*  CocogoosePro-UltraLight.otf in Resources */,
+				BBAA3DE42FDB4E6AAA343B00 /* CocogoosePro-UltraLight.otf in Resources */,
 				47A7D71C4B0943E99E992479 /* CocogoosePro-Light.otf in Resources */,
 				6A11E098B8E54643BFA9C944 /* CocogoosePro-Regular.otf in Resources */,
 				7D0557EA69C5427CBC568811 /* CocogoosePro-SemiLight.otf in Resources */,
@@ -489,7 +489,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nexport NODE_BINARY=node\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode ../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
 		2A337A72AC8F02AD43D1ACED /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -599,7 +599,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "export NODE_BINARY=node\n../node_modules/react-native/scripts/react-native-xcode.sh";
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\nexport EXTRA_PACKAGER_ARGS=\"--sourcemap-output $DERIVED_FILE_DIR/main.jsbundle.map\"\nexport NODE_BINARY=node\n../node_modules/@sentry/cli/bin/sentry-cli react-native xcode ../node_modules/react-native/scripts/react-native-xcode.sh";
 		};
 		4FA602DF4A68A9C029796DDD /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -736,6 +736,20 @@
 			shellPath = /bin/sh;
 			shellScript = "export RCT_METRO_PORT=\"${RCT_METRO_PORT:=8081}\"\necho \"export RCT_METRO_PORT=${RCT_METRO_PORT}\" > \"${SRCROOT}/../node_modules/react-native/scripts/.packager.env\"\nif [ -z \"${RCT_NO_LAUNCH_PACKAGER+xxx}\" ] ; then\n  if nc -w 5 -z localhost ${RCT_METRO_PORT} ; then\n    if ! curl -s \"http://localhost:${RCT_METRO_PORT}/status\" | grep -q \"packager-status:running\" ; then\n      echo \"Port ${RCT_METRO_PORT} already in use, packager is either not running or not running correctly\"\n      exit 2\n    fi\n  else\n    open \"$SRCROOT/../node_modules/react-native/scripts/launchPackager.command\" || echo \"Can't start packager automatically\"\n  fi\nfi\n";
 			showEnvVarsInLog = 0;
+		};
+		089FD60707384DF895384561 /* Upload Debug Symbols to Sentry */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			name = "Upload Debug Symbols to Sentry";
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			shellPath = /bin/sh;
+			shellScript = "export SENTRY_PROPERTIES=sentry.properties\n../node_modules/@sentry/cli/bin/sentry-cli upload-dsym";
 		};
 /* End PBXShellScriptBuildPhase section */
 
