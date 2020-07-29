@@ -33,10 +33,12 @@ import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
 import {IContact, IConversation} from '../../models';
 import {applyStyles} from '../../helpers/utils';
 import {useErrorHandler} from 'react-error-boundary';
+import ChatDetailsScreen from './chat/ChatDetailsScreen';
 
 export type MainStackParamList = {
   Home: undefined;
   Chat: IConversation;
+  ChatDetails: IConversation;
   Contacts: undefined;
   Receipts: undefined;
   NewReceipt: {customer: Customer};
@@ -127,6 +129,20 @@ const MainScreens = ({navigation}: any) => {
         <MainStack.Screen
           name="Chat"
           component={ChatScreen}
+          options={{
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ChatDetails"
+          component={ChatDetailsScreen}
           options={{
             headerStyle: {
               backgroundColor: colors.primary,

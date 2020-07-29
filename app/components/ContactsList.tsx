@@ -16,10 +16,12 @@ type ContactsListProps = Omit<
   FlatListProps<IContact>,
   'data' | 'renderItem' | 'keyExtractor'
 > & {
+  filter?: string;
   onContactItemClick: (item: IContact) => void;
 };
 
 const ContactsList = ({
+  filter,
   onContactItemClick,
   ...restProps
 }: ContactsListProps) => {
@@ -37,9 +39,7 @@ const ContactsList = ({
               text={item.fullName}
               style={applyStyles('mr-md my-md')}
             />
-            <Text style={applyStyles('text-lg', 'font-bold')}>
-              {item.fullName}
-            </Text>
+            <Text style={applyStyles('text-lg')}>{item.fullName}</Text>
           </View>
         </Touchable>
       );
@@ -49,7 +49,7 @@ const ContactsList = ({
   return (
     <FlatList
       {...restProps}
-      data={contacts}
+      data={filter ? contacts.filtered(filter) : contacts}
       renderItem={renderContactItem}
       keyExtractor={(item: IContact) => item.mobile}
     />
