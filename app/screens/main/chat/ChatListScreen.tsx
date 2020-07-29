@@ -25,7 +25,7 @@ type ChatListItemProps = {
 const ChatListItem = ({conversation}: ChatListItemProps) => {
   const typingMessage = useTyping(conversation.channel);
   const navigation = useNavigation();
-  const lastMessage = conversation.lastMessage as IMessage;
+  const lastMessage = conversation.lastMessage;
   const realm = useRealm();
   const user = getAuthService().getUser();
   const messages = realm
@@ -33,9 +33,12 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
     .filtered(
       `channel = "${conversation.channel}" AND author != "${
         user?.mobile ?? ''
-      }" AND received_timetoken != null AND read_timetoken = null`,
+      }" AND delivered_timetoken != null AND read_timetoken = null`,
     );
   const dateText = useMemo(() => {
+    if (!lastMessage) {
+      return '';
+    }
     const createdAtDate = lastMessage.created_at;
     const midnight = new Date();
     midnight.setHours(0, 0, 0, 0);
@@ -56,7 +59,7 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
         return createdAtDate.toLocaleDateString();
       }
     }
-  }, [lastMessage.created_at]);
+  }, [lastMessage]);
   return (
     <Touchable
       onPress={() => {
@@ -77,22 +80,24 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
             </Text>
           </View>
           <View style={listItemStyles.messageContainer}>
-            <View style={applyStyles('flex-row items-center flex-1')}>
-              {!typingMessage && (
-                <MessageStatusIcon
-                  message={lastMessage}
-                  style={applyStyles('mr-xs')}
-                />
-              )}
-              <Text
-                style={applyStyles(
-                  listItemStyles.contentText,
-                  typingMessage && {color: 'green'},
+            {lastMessage && (
+              <View style={applyStyles('flex-row items-center flex-1')}>
+                {!typingMessage && (
+                  <MessageStatusIcon
+                    message={lastMessage}
+                    style={applyStyles('mr-xs')}
+                  />
                 )}
-                numberOfLines={1}>
-                {typingMessage || lastMessage.content}
-              </Text>
-            </View>
+                <Text
+                  style={applyStyles(
+                    listItemStyles.contentText,
+                    typingMessage && {color: 'green'},
+                  )}
+                  numberOfLines={1}>
+                  {typingMessage || lastMessage.content}
+                </Text>
+              </View>
+            )}
             {!!messages.length && (
               <View
                 style={applyStyles('center', {
@@ -121,7 +126,7 @@ const ChatListScreen = () => {
   const realm = useRealm() as Realm;
   const conversations = realm
     .objects<IConversation>('Conversation')
-    .filtered('lastMessage != null')
+    .filtered('lastMessage != null OR type = "group"')
     .sorted('lastMessage.created_at', true);
   const renderChatListItem = useCallback(
     ({item}: ListRenderItemInfo<IConversation>) => {
@@ -137,7 +142,7 @@ const ChatListScreen = () => {
         keyExtractor={(item) => item.channel}
       />
       <FAButton
-        iconName="text"
+        iconName="add"
         onPress={() => {
           navigation.navigate('Contacts');
         }}

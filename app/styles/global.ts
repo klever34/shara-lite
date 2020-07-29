@@ -1,4 +1,4 @@
-import {dimensions, spacing} from './variables';
+import {dimensions, spacing, colors} from './variables';
 import {StyleSheet} from 'react-native';
 
 export const globalStyles: {[key: string]: any} = StyleSheet.create({
@@ -129,6 +129,19 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`mb-${curr}`]: {marginBottom: spacing[curr]},
       [`ml-${curr}`]: {marginLeft: spacing[curr]},
       [`mr-${curr}`]: {marginRight: spacing[curr]},
+    };
+  }, {}),
+  ...Object.keys(colors).reduce((acc, curr) => {
+    return {
+      ...acc,
+      [`bg-${curr}`]: {backgroundColor: colors[curr]},
+      [`text-${curr}`]: {color: colors[curr]},
+    };
+  }, {}),
+  ...[0, 1, 2, 3, 4].reduce((acc, curr) => {
+    return {
+      ...acc,
+      [`elevation-${curr}`]: {elevation: curr},
     };
   }, {}),
 });

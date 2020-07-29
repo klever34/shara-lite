@@ -1,20 +1,22 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Platform, SafeAreaView} from 'react-native';
+import {Alert, Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {colors} from '../../../styles';
-import ChatListScreen from './ChatListScreen';
-import {getApiService, getAuthService} from '../../../services';
+import {colors} from '../../styles';
+import ChatListScreen from './chat/ChatListScreen';
+import {getAuthService, getRealmService} from '../../services';
 import {useNavigation} from '@react-navigation/native';
-import AppMenu from '../../../components/Menu';
-import {applyStyles, decrypt, retryPromise} from '../../../helpers/utils';
-import {IContact, IConversation, IMessage} from '../../../models';
+import AppMenu from '../../components/Menu';
+import {applyStyles, retryPromise} from '../../helpers/utils';
+import {IContact, IConversation, IMessage} from '../../models';
 import {usePubNub} from 'pubnub-react';
-import {useRealm} from '../../../services/realm';
-import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
+import {useRealm} from '../../services/realm';
+import {MessageEvent} from 'pubnub';
 import Realm from 'realm';
-import CustomersTab from '../customers';
-import BusinessTab from '../business';
+import CustomersTab from './customers';
+import BusinessTab from './business';
 import PushNotification from 'react-native-push-notification';
+import {ModalWrapperFields, withModal} from '../../helpers/hocs';
+import {MessageActionEvent} from '../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 
 type HomeTabParamList = {
@@ -26,7 +28,7 @@ type HomeTabParamList = {
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
-const HomeScreen = () => {
+const HomeScreen = ({openModal}: ModalWrapperFields) => {
   const navigation = useNavigation();
   const pubNub = usePubNub();
   const realm = useRealm();
@@ -40,13 +42,56 @@ const HomeScreen = () => {
       handleError(e);
     }
   }, [handleError]);
+
+  const restoreAllMessages = useCallback(async () => {
+    const closeModal = openModal('Restoring messages...');
+    try {
+      const realmService = getRealmService();
+      await realmService.restoreAllMessages();
+    } catch (e) {
+      handleError(e);
+    }
+    closeModal();
+  }, [handleError, openModal]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <AppMenu options={[{text: 'Log out', onSelect: handleLogout}]} />
+        <AppMenu
+          options={[
+            {
+              text: 'Restore Messages',
+              onSelect: () => {
+                Alert.alert('Backup Restore', 'Restore all your messages?', [
+                  {
+                    text: 'CANCEL',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: restoreAllMessages,
+                  },
+                ]);
+              },
+            },
+            {
+              text: 'Log out',
+              onSelect: () => {
+                Alert.alert('Log Out', 'Are you sure you want to log out?', [
+                  {
+                    text: 'CANCEL',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: handleLogout,
+                  },
+                ]);
+              },
+            },
+          ]}
+        />
       ),
     });
-  }, [handleLogout, navigation]);
+  }, [handleLogout, navigation, restoreAllMessages]);
 
   useEffect(() => {
     const channelGroups: string[] = [pubNub.getUUID()];
@@ -59,18 +104,24 @@ const HomeScreen = () => {
 
     const pushGateway = Platform.select({android: 'gcm', ios: 'apns'});
     if (pushGateway && notificationToken) {
-      pubNub.push.addChannels(
-        {
-          channels: [...channels, pubNub.getUUID()],
-          device: notificationToken,
-          pushGateway,
-        },
-        (status) => {
-          if (status.error) {
-            console.log('PubNub Error: ', status);
-          }
-        },
-      );
+      try {
+        new Promise<any>((resolve, reject) => {
+          pubNub.push.addChannels(
+            {
+              channels: [...channels, pubNub.getUUID()],
+              device: notificationToken,
+              pushGateway,
+            },
+            (status) => {
+              if (status.error) {
+                reject(status);
+              }
+            },
+          );
+        }).then();
+      } catch (e) {
+        handleError(e);
+      }
     }
 
     return () => {
@@ -78,7 +129,7 @@ const HomeScreen = () => {
         pubNub.unsubscribeAll();
       }
     };
-  }, [notificationToken, pubNub, realm]);
+  }, [handleError, notificationToken, pubNub, realm]);
 
   useEffect(() => {
     PushNotification.configure({
@@ -97,42 +148,10 @@ const HomeScreen = () => {
     });
   }, [navigation, realm]);
 
-  const getConversationFromChannelMetadata = useCallback(
-    async (
-      channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
-    ): Promise<IConversation> => {
-      const custom = channelMetadata.custom as ChannelCustom;
-      try {
-        let sender: string;
-        let members: string[];
-        if (custom.type === 'group') {
-          const apiService = getApiService();
-          const groupChatMembers = await apiService.getGroupMembers(custom.id);
-          members = groupChatMembers.map(({user: {mobile}}) => mobile);
-          sender = channelMetadata.name ?? '';
-        } else {
-          members = custom.members
-            .split(',')
-            .map((encryptedMember) => decrypt(encryptedMember));
-          const user = getAuthService().getUser();
-          sender = members.find((member) => member !== user?.mobile) ?? '';
-        }
-        return {
-          title: sender,
-          type: custom.type ?? '1-1',
-          members,
-          channel: channelMetadata.id,
-        };
-      } catch (e) {
-        throw e;
-      }
-    },
-    [],
-  );
   useEffect(() => {
     const listener = {
       message: async (evt: MessageEvent) => {
-        const {channel, publisher} = evt;
+        const {channel, publisher, timetoken} = evt;
         const message = evt.message as IMessage;
         try {
           if (publisher !== pubNub.getUUID()) {
@@ -143,7 +162,7 @@ const HomeScreen = () => {
                 {
                   ...message,
                   created_at: new Date(message.created_at),
-                  sent_timetoken: String(evt.timetoken),
+                  timetoken: String(timetoken),
                 },
                 Realm.UpdateMode.Modified,
               );
@@ -156,7 +175,8 @@ const HomeScreen = () => {
                 channel,
                 include: {customFields: true},
               });
-              conversation = await getConversationFromChannelMetadata(
+              const realmService = getRealmService();
+              conversation = await realmService.getConversationFromChannelMetadata(
                 response.data,
               );
               realm.write(() => {
@@ -192,12 +212,15 @@ const HomeScreen = () => {
             }
             retryPromise(() => {
               return new Promise<any>((resolve, reject) => {
-                pubNub.signal(
-                  {channel, message: 'RECEIVED'},
+                pubNub.addMessageAction(
+                  {
+                    channel,
+                    messageTimetoken: timetoken,
+                    action: {type: 'receipt', value: 'message_delivered'},
+                  },
                   (status, response) => {
                     if (status.error) {
-                      console.log('RECEIVED Signal Error: ', status);
-                      reject(status.errorData);
+                      reject(status);
                     } else {
                       resolve(response);
                     }
@@ -206,7 +229,7 @@ const HomeScreen = () => {
               });
             }).then((response) => {
               realm.write(() => {
-                lastMessage.received_timetoken = String(response.timetoken);
+                lastMessage.delivered_timetoken = String(response.timetoken);
               });
             });
           }
@@ -214,22 +237,18 @@ const HomeScreen = () => {
           handleError(e);
         }
       },
-      signal: (evt: SignalEvent) => {
+      messageAction: (evt: MessageActionEvent) => {
         try {
           if (
-            evt.message === 'RECEIVED' &&
+            evt.data.value === 'message_delivered' &&
             evt.publisher !== pubNub.getUUID()
           ) {
-            const messages = realm
+            const message = realm
               .objects<IMessage>('Message')
-              .filtered(
-                `channel = "${evt.channel}" AND received_timetoken = null AND sent_timetoken != null`,
-              );
-            if (messages.length) {
+              .filtered(`timetoken = "${evt.data.messageTimetoken}"`)[0];
+            if (message) {
               realm.write(() => {
-                for (let i = 0; i < messages.length; i += 1) {
-                  messages[i].received_timetoken = evt.timetoken;
-                }
+                message.delivered_timetoken = evt.data.actionTimetoken;
               });
             }
           }
@@ -242,64 +261,12 @@ const HomeScreen = () => {
     return () => {
       pubNub.removeListener(listener);
     };
-  }, [getConversationFromChannelMetadata, pubNub, realm, handleError]);
+  }, [handleError, pubNub, realm]);
 
   useEffect(() => {
-    (async () => {
-      try {
-        const {data} = await new Promise((resolve, reject) => {
-          pubNub.objects.getMemberships(
-            {
-              uuid: pubNub.getUUID(),
-              include: {
-                customChannelFields: true,
-              },
-            },
-            (status, response) => {
-              if (status.error) {
-                reject(status);
-              } else {
-                resolve(response);
-              }
-            },
-          );
-        });
-        const conversations: IConversation[] = [];
-        for (let i = 0; i < data.length; i += 1) {
-          const {channel} = data[i];
-          try {
-            const conversation = await getConversationFromChannelMetadata(
-              channel,
-            );
-            conversations.push(conversation);
-          } catch (e) {
-            handleError(e);
-          }
-        }
-        realm.write(() => {
-          for (let i = 0; i < conversations.length; i += 1) {
-            const conversation = conversations[i];
-            if (conversation.type === '1-1') {
-              const contact = realm
-                .objects<IContact>('Contact')
-                .filtered(`mobile = "${conversation.title}"`)[0];
-              if (contact) {
-                conversation.title = contact.fullName;
-                contact.channel = conversation.channel;
-              }
-            }
-            realm.create<IConversation>(
-              'Conversation',
-              conversation,
-              Realm.UpdateMode.Modified,
-            );
-          }
-        });
-      } catch (e) {
-        handleError(e);
-      }
-    })().then();
-  }, [handleError, getConversationFromChannelMetadata, pubNub, realm]);
+    const realmService = getRealmService();
+    realmService.restoreAllConversations().catch(handleError);
+  }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
@@ -332,4 +299,4 @@ const HomeScreen = () => {
   );
 };
 
-export default HomeScreen;
+export default withModal(HomeScreen);

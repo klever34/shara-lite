@@ -1,4 +1,4 @@
-import {PublishResponse, PubnubStatus, SignalEvent} from 'pubnub';
+import {PublishResponse, PubnubStatus} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {
   useCallback,
@@ -13,24 +13,25 @@ import {
   Keyboard,
   SafeAreaView,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
 import EmojiSelector, {Categories} from 'react-native-emoji-selector';
-import Icon from '../../components/Icon';
-import {BaseButton, baseButtonStyles} from '../../components';
-import {ChatBubble} from '../../components/ChatBubble';
-import {generateUniqueId, retryPromise} from '../../helpers/utils';
-import {colors} from '../../styles';
+import Icon from '../../../components/Icon';
+import {BaseButton, baseButtonStyles} from '../../../components';
+import {ChatBubble} from '../../../components/ChatBubble';
+import {generateUniqueId, retryPromise} from '../../../helpers/utils';
+import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from './index';
-import {getAuthService} from '../../services';
-import {useRealm} from '../../services/realm';
+import {MainStackParamList} from '../index';
+import {getAuthService} from '../../../services';
+import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
-import {IConversation, IMessage} from '../../models';
-import {useTyping} from '../../services/pubnub';
+import {IMessage} from '../../../models';
+import {useTyping} from '../../../services/pubnub';
+import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
+import HeaderTitle from '../../../components/HeaderTitle';
 
 type MessageItemProps = {
   item: IMessage;
@@ -44,7 +45,8 @@ const ChatScreen = ({
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
-  const {channel, title} = route.params;
+  const conversation = route.params;
+  const {channel, title} = conversation;
   const [input, setInput] = useState('');
   const typingMessage = useTyping(channel, input);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
@@ -68,24 +70,31 @@ const ChatScreen = ({
             }"`,
           );
         if (markedMessages.length) {
-          retryPromise(() => {
-            return new Promise<any>((resolve, reject) => {
-              pubNub.signal({channel, message: 'READ'}, (status, response) => {
-                if (status.error) {
-                  console.log('READ Signal Error: ', status);
-                  reject(status.errorData);
-                } else {
-                  resolve(response);
-                }
+          for (let i = 0; i < markedMessages.length; i += 1) {
+            const {timetoken} = markedMessages[i];
+            retryPromise(() => {
+              return new Promise<any>((resolve, reject) => {
+                pubNub.addMessageAction(
+                  {
+                    channel,
+                    messageTimetoken: timetoken as string,
+                    action: {type: 'receipt', value: 'message_read'},
+                  },
+                  (status, response) => {
+                    if (status.error) {
+                      reject(status);
+                    } else {
+                      resolve(response);
+                    }
+                  },
+                );
+              });
+            }).then((response) => {
+              realm.write(() => {
+                markedMessages[i].read_timetoken = String(response.timetoken);
               });
             });
-          }).then((response) => {
-            realm.write(() => {
-              for (let i = 0; i < markedMessages.length; i += 1) {
-                markedMessages[i].read_timetoken = String(response.timetoken);
-              }
-            });
-          });
+          }
         }
       } catch (error) {
         handleError(error);
@@ -99,23 +108,18 @@ const ChatScreen = ({
   }, [channel, handleError, pubNub, realm]);
   useEffect(() => {
     const listener = {
-      signal: (evt: SignalEvent) => {
+      messageAction: (evt: MessageActionEvent) => {
         try {
-          if (evt.message === 'READ' && evt.publisher !== pubNub.getUUID()) {
-            const authService = getAuthService();
-            const user = authService.getUser();
-            const markedMessages = realm
+          if (
+            evt.data.value === 'message_read' &&
+            evt.publisher !== pubNub.getUUID()
+          ) {
+            const message = realm
               .objects<IMessage>('Message')
-              .filtered(
-                `channel = "${channel}" AND author = "${
-                  user?.mobile ?? ''
-                }" AND read_timetoken = null AND sent_timetoken != null`,
-              );
-            if (markedMessages.length) {
+              .filtered(`timetoken="${evt.data.messageTimetoken}"`)[0];
+            if (message) {
               realm.write(() => {
-                for (let i = 0; i < markedMessages.length; i += 1) {
-                  markedMessages[i].read_timetoken = evt.timetoken;
-                }
+                message.read_timetoken = evt.timetoken;
               });
             }
           }
@@ -134,16 +138,17 @@ const ChatScreen = ({
     navigation.setOptions({
       headerTitle: () => {
         return (
-          <View style={styles.headerTitle}>
-            <Text style={styles.headerTitleText}>{title}</Text>
-            {!!typingMessage && (
-              <Text style={styles.headerTitleDesc}>{typingMessage}</Text>
-            )}
-          </View>
+          <HeaderTitle
+            title={title}
+            description={typingMessage}
+            onPress={() => {
+              navigation.navigate('ChatDetails', conversation);
+            }}
+          />
         );
       },
     });
-  }, [navigation, title, typingMessage]);
+  }, [conversation, navigation, title, typingMessage]);
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();
@@ -171,9 +176,6 @@ const ChatScreen = ({
     try {
       realm.write(() => {
         message = realm.create<IMessage>('Message', message, UpdateMode.Never);
-        const conversation = realm
-          .objects<IConversation>('Conversation')
-          .filtered(`channel = "${message.channel}"`)[0];
         conversation.lastMessage = message;
       });
     } catch (e) {
@@ -187,8 +189,7 @@ const ChatScreen = ({
           response: PublishResponse,
         ) {
           if (status.error) {
-            console.log('Error: ', status);
-            reject(status.errorData);
+            reject(status);
           } else {
             resolve(response);
           }
@@ -196,10 +197,10 @@ const ChatScreen = ({
       });
     }).then((response) => {
       realm.write(() => {
-        message.sent_timetoken = String(response.timetoken);
+        message.timetoken = String(response.timetoken);
       });
     });
-  }, [channel, handleError, input, pubNub, realm]);
+  }, [channel, conversation.lastMessage, handleError, input, pubNub, realm]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => <ChatBubble message={message} />,
@@ -226,7 +227,7 @@ const ChatScreen = ({
   return (
     <SafeAreaView style={styles.container}>
       <ImageBackground
-        source={require('../../assets/images/chat-wallpaper.png')}
+        source={require('../../../assets/images/chat-wallpaper.png')}
         style={styles.chatBackground}>
         <FlatList
           inverted={true}
@@ -348,9 +349,6 @@ const styles = StyleSheet.create({
   emojiButtonIcon: {
     opacity: 0.5,
     color: colors['gray-900'],
-  },
-  headerTitle: {
-    flexDirection: 'column',
   },
   headerTitleText: {
     color: 'white',
