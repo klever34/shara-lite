@@ -21,6 +21,7 @@ export class Message implements Partial<IMessage> {
       sent_timetoken: 'string?',
       received_timetoken: 'string?',
       read_timetoken: 'string?',
+      updated_at: 'date?',
     },
   };
 }
