@@ -9,6 +9,8 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
+import {useRealm} from '../../../services/realm';
+import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
 import {colors} from '../../../styles';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import ActionCard from '../customers/ActionCard';
@@ -16,6 +18,9 @@ import {Button} from '../../../components';
 
 const BusinessTab = () => {
   const navigation = useNavigation();
+  const realm = useRealm();
+  const financeSummary: IFinanceSummary = getSummary({realm});
+
   const actions = [
     {
       name: 'NewReceipt',
@@ -115,7 +120,7 @@ const BusinessTab = () => {
             </Text>
             <Text
               style={applyStyles(styles.cardContent, {color: colors.white})}>
-              &#8358;{numberWithCommas(15365400)}
+              &#8358;{numberWithCommas(financeSummary.totalSales)}
             </Text>
           </ActionCard>
         </TouchableOpacity>
@@ -168,7 +173,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(14405000)}
+            &#8358;{numberWithCommas(financeSummary.totalCredit)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -182,7 +187,7 @@ const BusinessTab = () => {
           </Text>
           <Text
             style={applyStyles(styles.cardContent, {color: colors.primary})}>
-            &#8358;{numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(financeSummary.overdueCredit)}
           </Text>
         </ActionCard>
       </View>

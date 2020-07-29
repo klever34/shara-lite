@@ -3,6 +3,8 @@ import {ICustomer} from '../models';
 import {IReceipt, modelName} from '../models/Receipt';
 import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment} from './PaymentService';
+import {getBaseModelValues} from '../helpers/models';
+import {saveCredit} from './CreditService';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -32,6 +34,7 @@ export const saveReceipt = ({
     amount_paid: amountPaid,
     total_amount: totalAmount,
     credit_amount: creditAmount,
+    ...getBaseModelValues(),
   };
 
   if (customer.name) {
@@ -64,4 +67,13 @@ export const saveReceipt = ({
       ...product,
     });
   });
+
+  if (creditAmount > 0) {
+    saveCredit({
+      creditAmount,
+      customer,
+      receipt,
+      realm,
+    });
+  }
 };
