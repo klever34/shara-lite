@@ -49,3 +49,20 @@ export const savePayment = ({
 
   return payment;
 };
+
+export const updatePayment = ({
+  realm,
+  payment,
+  updates,
+}: {
+  realm: Realm;
+  payment: IPayment;
+  updates: object;
+}) => {
+  const updatedPayment = {
+    id: payment.id,
+    ...updates,
+  };
+
+  realm.create<IPayment>(modelName, updatedPayment, UpdateMode.Modified);
+};

@@ -40,3 +40,20 @@ export const saveCredit = ({
     realm.create<ICredit>(modelName, credit, UpdateMode.Modified);
   });
 };
+
+export const updateCredit = ({
+  realm,
+  credit,
+  updates,
+}: {
+  realm: Realm;
+  credit: ICredit;
+  updates: object;
+}) => {
+  const updatedCredit = {
+    id: credit.id,
+    ...updates,
+  };
+
+  realm.create<ICredit>(modelName, updatedCredit, UpdateMode.Modified);
+};
