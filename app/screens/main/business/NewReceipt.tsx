@@ -99,8 +99,7 @@ const NewReceipt = () => {
 
   const handleClearReceipt = useCallback(() => {
     setReceipt([]);
-    handleCloseSummaryModal();
-  }, [handleCloseSummaryModal]);
+  }, []);
 
   const handleUpdateProductItem = useCallback(
     (item: ReceiptItem) => {

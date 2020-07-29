@@ -427,14 +427,12 @@ const ReceiptSummary = (props: Props) => {
         });
         onClearReceipt();
         onSuccess && onSuccess();
-        navigation.navigate('NewReceipt');
-      }, 2000);
+      }, 500);
     },
     [
       amountPaid,
       creditAmount,
       customer,
-      navigation,
       onClearReceipt,
       payments,
       products,
@@ -445,13 +443,22 @@ const ReceiptSummary = (props: Props) => {
 
   const handleComplete = useCallback(() => {
     setIsCompleting(true);
-    handleSaveReceipt(() => setIsCompleting(false));
-  }, [handleSaveReceipt]);
+    handleSaveReceipt(
+      () => setIsCompleting(false),
+      () => navigation.navigate('MySales'),
+    );
+  }, [handleSaveReceipt, navigation]);
 
   const handleNewReceiptClick = useCallback(() => {
     setIsSaving(true);
-    handleSaveReceipt(() => setIsSaving(false));
-  }, [handleSaveReceipt]);
+    handleSaveReceipt(
+      () => setIsSaving(false),
+      () => {
+        onCloseSummaryModal();
+        handleCloseSuccessModal();
+      },
+    );
+  }, [onCloseSummaryModal, handleCloseSuccessModal, handleSaveReceipt]);
 
   useEffect(() => {
     const total = products
@@ -827,7 +834,6 @@ const ReceiptSummary = (props: Props) => {
         onComplete={handleComplete}
         isCompleting={isCompleting}
         visible={isSuccessModalOpen}
-        onClose={handleCloseSuccessModal}
         onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onNewReceiptClick={handleNewReceiptClick}
