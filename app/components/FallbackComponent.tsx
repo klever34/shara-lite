@@ -3,10 +3,12 @@ import {Alert} from 'react-native';
 
 const FallbackComponent = () => {
   useEffect(() => {
-    Alert.alert(
-      'Oops! Something went wrong',
-      'Try restarting the app or contact support for further assistance',
-    );
+    if (process.env.NODE_ENV === 'production') {
+      Alert.alert(
+        'Oops! Something went wrong',
+        'Try restarting the app or contact support for further assistance',
+      );
+    }
   }, []);
   return null;
 };

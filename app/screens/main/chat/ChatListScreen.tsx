@@ -142,7 +142,7 @@ const ChatListScreen = () => {
         keyExtractor={(item) => item.channel}
       />
       <FAButton
-        iconName="text"
+        iconName="add"
         onPress={() => {
           navigation.navigate('Contacts');
         }}

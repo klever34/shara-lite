@@ -13,7 +13,6 @@ import {
   Keyboard,
   SafeAreaView,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -21,22 +20,18 @@ import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import Icon from '../../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../../components';
 import {ChatBubble} from '../../../components/ChatBubble';
-import {
-  applyStyles,
-  generateUniqueId,
-  retryPromise,
-} from '../../../helpers/utils';
+import {generateUniqueId, retryPromise} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import {getAuthService} from '../../../services';
 import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
-import {IConversation, IMessage} from '../../../models';
+import {IMessage} from '../../../models';
 import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
-import Touchable from '../../../components/Touchable';
+import HeaderTitle from '../../../components/HeaderTitle';
 
 type MessageItemProps = {
   item: IMessage;
@@ -50,7 +45,8 @@ const ChatScreen = ({
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
-  const {channel, title} = route.params;
+  const conversation = route.params;
+  const {channel, title} = conversation;
   const [input, setInput] = useState('');
   const typingMessage = useTyping(channel, input);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
@@ -142,26 +138,17 @@ const ChatScreen = ({
     navigation.setOptions({
       headerTitle: () => {
         return (
-          <Touchable
-            style={applyStyles('h-full')}
+          <HeaderTitle
+            title={title}
+            description={typingMessage}
             onPress={() => {
-              console.log('Navigate to Chat Details Page');
-            }}>
-            <View style={applyStyles('flex-col flex-1 h-full')}>
-              <Text style={styles.headerTitleText} numberOfLines={1}>
-                {title}
-              </Text>
-              {!!typingMessage && (
-                <Text style={styles.headerTitleDesc} numberOfLines={1}>
-                  {typingMessage}
-                </Text>
-              )}
-            </View>
-          </Touchable>
+              navigation.navigate('ChatDetails', conversation);
+            }}
+          />
         );
       },
     });
-  }, [navigation, title, typingMessage]);
+  }, [conversation, navigation, title, typingMessage]);
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();
@@ -189,9 +176,6 @@ const ChatScreen = ({
     try {
       realm.write(() => {
         message = realm.create<IMessage>('Message', message, UpdateMode.Never);
-        const conversation = realm
-          .objects<IConversation>('Conversation')
-          .filtered(`channel = "${message.channel}"`)[0];
         conversation.lastMessage = message;
       });
     } catch (e) {
@@ -216,7 +200,7 @@ const ChatScreen = ({
         message.timetoken = String(response.timetoken);
       });
     });
-  }, [channel, handleError, input, pubNub, realm]);
+  }, [channel, conversation.lastMessage, handleError, input, pubNub, realm]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => <ChatBubble message={message} />,
