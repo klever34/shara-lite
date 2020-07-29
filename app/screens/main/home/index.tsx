@@ -15,6 +15,7 @@ import Realm from 'realm';
 import CustomersTab from '../customers';
 import BusinessTab from '../business';
 import PushNotification from 'react-native-push-notification';
+import {useErrorHandler} from 'react-error-boundary';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -29,15 +30,16 @@ const HomeScreen = () => {
   const navigation = useNavigation();
   const pubNub = usePubNub();
   const realm = useRealm();
+  const handleError = useErrorHandler();
   const [notificationToken, setNotificationToken] = useState('');
   const handleLogout = useCallback(async () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
     } catch (e) {
-      console.log('Error: ', e);
+      handleError(e);
     }
-  }, []);
+  }, [handleError]);
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -122,17 +124,11 @@ const HomeScreen = () => {
           channel: channelMetadata.id,
         };
       } catch (e) {
-        console.log(
-          'getConversationFromChannelMetadata Error: ',
-          e,
-          channelMetadata,
-        );
         throw e;
       }
     },
     [],
   );
-
   useEffect(() => {
     const listener = {
       message: async (evt: MessageEvent) => {
@@ -215,7 +211,7 @@ const HomeScreen = () => {
             });
           }
         } catch (e) {
-          console.log('Message Listener Error: ', e.status || e);
+          handleError(e);
         }
       },
       signal: (evt: SignalEvent) => {
@@ -238,7 +234,7 @@ const HomeScreen = () => {
             }
           }
         } catch (e) {
-          console.log('Signal Listener Error: ', e);
+          handleError(e);
         }
       },
     };
@@ -246,7 +242,7 @@ const HomeScreen = () => {
     return () => {
       pubNub.removeListener(listener);
     };
-  }, [getConversationFromChannelMetadata, pubNub, realm]);
+  }, [getConversationFromChannelMetadata, pubNub, realm, handleError]);
 
   useEffect(() => {
     (async () => {
@@ -277,7 +273,7 @@ const HomeScreen = () => {
             );
             conversations.push(conversation);
           } catch (e) {
-            console.log('Fetching conversation Error: ', e, channel);
+            handleError(e);
           }
         }
         realm.write(() => {
@@ -300,10 +296,10 @@ const HomeScreen = () => {
           }
         });
       } catch (e) {
-        console.log('Fetching all conversations Error: ', e);
+        handleError(e);
       }
     })().then();
-  }, [getConversationFromChannelMetadata, pubNub, realm]);
+  }, [handleError, getConversationFromChannelMetadata, pubNub, realm]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
