@@ -45,7 +45,7 @@ export class Receipt implements Partial<IReceipt> {
       credit: {
         type: 'linkingObjects',
         objectType: 'Credit',
-        property: 'credit',
+        property: 'receipt',
       },
     },
   };
