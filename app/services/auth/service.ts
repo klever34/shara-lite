@@ -40,7 +40,9 @@ export class AuthService implements IAuthService {
         this.setUser(user);
         this.setToken(token);
       }
-    } catch (e) {}
+    } catch (e) {
+      throw e;
+    }
   }
 
   public getUser(): User | null {

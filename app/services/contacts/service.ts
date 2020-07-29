@@ -94,7 +94,7 @@ export class ContactsService implements IContactsService {
         (users.filter((user) => user.id !== me?.id) as unknown) as IContact[],
       );
     } catch (error) {
-      console.log('Error: ', error.message);
+      throw error;
     }
   }
 }

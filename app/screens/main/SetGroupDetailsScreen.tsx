@@ -13,6 +13,7 @@ import {IConversation} from '../../models';
 import {useRealm} from '../../services/realm';
 import {UpdateMode} from 'realm';
 import {CommonActions} from '@react-navigation/native';
+import {useErrorHandler} from 'react-error-boundary';
 
 const SetGroupDetailsScreen = ({
   navigation,
@@ -22,6 +23,7 @@ const SetGroupDetailsScreen = ({
   const members = route.params.members;
   const [modalVisible, setModalVisibility] = useState(false);
   const [groupName, setGroupName] = useState('');
+  const handleError = useErrorHandler();
   const submit = useCallback(() => {
     setModalVisibility(true);
     const apiService = getApiService();
@@ -54,13 +56,13 @@ const SetGroupDetailsScreen = ({
             );
           });
         } catch (e) {
-          console.log('Error: ', e);
+          handleError(e);
         }
       })
       .finally(() => {
         setModalVisibility(false);
       });
-  }, [groupName, members, navigation, realm]);
+  }, [groupName, members, navigation, realm, handleError]);
   return (
     <SafeAreaView style={applyStyles('mx-lg mt-md flex-1')}>
       <TextInput

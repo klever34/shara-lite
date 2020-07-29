@@ -34,6 +34,7 @@ import HomeScreen from './home';
 import SelectGroupMembersScreen from './SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './SetGroupDetailsScreen';
 import StatusModal from './StatusModal';
+import {useErrorHandler} from 'react-error-boundary';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -63,7 +64,8 @@ const MainStack = createStackNavigator<MainStackParamList>();
 const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const [realm, setRealm] = useState<Realm | null>(null);
-  const [error, setError] = useState(false);
+  const [realmError, setRealmError] = useState(false);
+  const handleError = useErrorHandler();
   useEffect(() => {
     createRealm()
       .then((nextRealm) => {
@@ -71,14 +73,15 @@ const MainScreens = ({navigation}: any) => {
         realmService.setInstance(nextRealm);
         setRealm(nextRealm);
       })
-      .catch(() => {
-        setError(true);
+      .catch((error) => {
+        handleError(error);
+        setRealmError(true);
         Alert.alert(
           'Oops! Something went wrong.',
           'Try clearing app data from application settings',
         );
       });
-  }, []);
+  }, [handleError]);
   useEffect(() => {
     const authService = getAuthService();
     const user = authService.getUser();
@@ -96,10 +99,11 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     const contactsService = getContactsService();
-    contactsService.loadContacts().catch((e) => {
+    contactsService.loadContacts().catch((error) => {
+      handleError(error);
       Alert.alert(
         'Error',
-        e.message,
+        error.message,
         [
           {
             text: 'OK',
@@ -110,9 +114,9 @@ const MainScreens = ({navigation}: any) => {
         },
       );
     });
-  }, [navigation]);
+  }, [navigation, handleError]);
 
-  if (error) {
+  if (realmError) {
     return null;
   }
 

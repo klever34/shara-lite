@@ -12,6 +12,7 @@ import {getApiService} from '../../services';
 import {colors} from '../../styles';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
+import {useErrorHandler} from 'react-error-boundary';
 
 type Fields = {
   mobile: string;
@@ -38,7 +39,7 @@ export const Login = ({navigation}: any) => {
       countryCode: code,
     });
   };
-
+  const handleError = useErrorHandler();
   const onSubmit = async () => {
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
@@ -55,6 +56,7 @@ export const Login = ({navigation}: any) => {
         routes: [{name: 'Main'}],
       });
     } catch (error) {
+      handleError(error);
       setLoading(false);
       Alert.alert('Error', error.message);
     }
