@@ -38,8 +38,6 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     try {
       const authService = getAuthService();
       await authService.logOut();
-      const realmService = getRealmService();
-      realmService.clearRealm();
     } catch (e) {
       handleError(e);
     }
@@ -66,16 +64,29 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
               onSelect: () => {
                 Alert.alert('Backup Restore', 'Restore all your messages?', [
                   {
-                    text: 'OK',
-                    onPress: restoreAllMessages,
+                    text: 'CANCEL',
                   },
                   {
-                    text: 'CANCEL',
+                    text: 'OK',
+                    onPress: restoreAllMessages,
                   },
                 ]);
               },
             },
-            {text: 'Log out', onSelect: handleLogout},
+            {
+              text: 'Log out',
+              onSelect: () => {
+                Alert.alert('Log Out', 'Are you sure you want to log out?', [
+                  {
+                    text: 'CANCEL',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: handleLogout,
+                  },
+                ]);
+              },
+            },
           ]}
         />
       ),
@@ -107,7 +118,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
               }
             },
           );
-        });
+        }).then();
       } catch (e) {
         handleError(e);
       }

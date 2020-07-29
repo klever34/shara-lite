@@ -7,6 +7,7 @@ import {useErrorHandler} from 'react-error-boundary';
 export const useTyping = (channel: string, input: string = '') => {
   const pubNub = usePubNub();
   const realm = useRealm();
+  const [reset, setReset] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
   const timer = useRef<number | null>(null);
@@ -60,15 +61,21 @@ export const useTyping = (channel: string, input: string = '') => {
     } catch (e) {
       handleError(e);
     }
-    timer.current = setTimeout(stopTyping, 10000);
+    timer.current = setTimeout(() => {
+      setReset(false);
+      stopTyping();
+    }, 10000);
   }, [channel, handleError, pubNub, stopTyping]);
   useEffect(() => {
     if (input && !isTyping) {
-      startTyping();
-    } else if (!input && isTyping) {
+      if (reset) {
+        startTyping();
+      }
+    } else if (!input) {
+      setReset(true);
       stopTyping();
     }
-  }, [input, isTyping, startTyping, stopTyping]);
+  }, [reset, input, isTyping, startTyping, stopTyping]);
   useEffect(() => {
     if (pubNub) {
       const listener = {

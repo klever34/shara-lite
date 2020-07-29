@@ -2,7 +2,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, Alert, View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import {
   getAuthService,
@@ -81,18 +81,6 @@ const MainScreens = ({navigation}: any) => {
     const contactsService = getContactsService();
     contactsService.loadContacts().catch((error) => {
       handleError(error);
-      Alert.alert(
-        'Error',
-        error.message,
-        [
-          {
-            text: 'OK',
-          },
-        ],
-        {
-          cancelable: false,
-        },
-      );
     });
   }, [navigation, handleError]);
 

@@ -14,6 +14,7 @@ import {getRealmService} from './services';
 import {ActivityIndicator, Alert, View} from 'react-native';
 import {colors} from './styles';
 import {applyStyles} from './helpers/utils';
+import FallbackComponent from './components/FallbackComponent';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -79,8 +80,7 @@ const App = () => {
 };
 
 export default withErrorBoundary(App, {
-  // TODO: Design a better general error ui
-  fallback: null,
+  FallbackComponent,
   onError(error, componentStack) {
     if (process.env.NODE_ENV === 'production') {
       Sentry.captureException(error, (scope) => {

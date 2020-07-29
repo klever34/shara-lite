@@ -1,11 +1,7 @@
 import React, {useCallback, useEffect} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {colors, dimensions} from '../styles';
-import {
-  getAuthService,
-  getNavigationService,
-  getRealmService,
-} from '../services';
+import {getAuthService, getNavigationService} from '../services';
 import {useNavigation} from '@react-navigation/native';
 
 const SplashScreen = () => {
@@ -23,8 +19,6 @@ const SplashScreen = () => {
         routes: [{name: 'Main'}],
       });
     } else {
-      const realmService = getRealmService();
-      realmService.clearRealm();
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],

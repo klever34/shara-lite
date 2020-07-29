@@ -64,12 +64,16 @@ export class AuthService implements IAuthService {
   }
 
   public async logOut() {
-    if (this.isLoggedIn()) {
-      this.user = null;
-      this.token = null;
-      await this.storageService.clear();
-      this.pubNubService.getInstance()?.unsubscribeAll();
-      this.navigationService.goToAuth();
+    try {
+      if (this.isLoggedIn()) {
+        this.user = null;
+        this.token = null;
+        await this.storageService.clear();
+        this.pubNubService.getInstance()?.unsubscribeAll();
+        this.navigationService.goToAuth();
+      }
+    } catch (e) {
+      throw e;
     }
   }
 }
