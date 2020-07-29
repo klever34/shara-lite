@@ -12,6 +12,7 @@ import {
   getContactsService,
   getPubNubService,
   getRealmService,
+  getApiService,
 } from '../../services';
 import {createRealm, RealmProvider} from '../../services/realm';
 import {colors} from '../../styles';
@@ -67,6 +68,13 @@ const MainScreens = ({navigation}: any) => {
   const [realm, setRealm] = useState<Realm | null>(null);
   const [realmError, setRealmError] = useState(false);
   const handleError = useErrorHandler();
+  const authService = getAuthService();
+
+  // TODO: set initial route based on if user has setup business
+  const initialRouteName = !authService.getUser()?.updated_at
+    ? 'BusinessSetup'
+    : 'Home';
+
   useEffect(() => {
     createRealm()
       .then((nextRealm) => {
@@ -84,7 +92,6 @@ const MainScreens = ({navigation}: any) => {
       });
   }, [handleError]);
   useEffect(() => {
-    const authService = getAuthService();
     const user = authService.getUser();
     if (user) {
       const pubNub = new PubNub({
@@ -132,7 +139,7 @@ const MainScreens = ({navigation}: any) => {
   return (
     <RealmProvider value={realm}>
       <PubNubProvider client={pubNubClient}>
-        <MainStack.Navigator initialRouteName="Home">
+        <MainStack.Navigator initialRouteName={initialRouteName}>
           <MainStack.Screen
             name="Home"
             component={HomeScreen}
