@@ -14,13 +14,6 @@ let storageService: IStorageService | null = null;
 let contactsService: IContactsService | null = null;
 let authService: IAuthService | null = null;
 
-export const getRealmService = () => {
-  if (!realmService) {
-    realmService = new RealmService();
-  }
-  return realmService;
-};
-
 export const getNavigationService = () => {
   if (!navigationService) {
     navigationService = new NavigationService();
@@ -46,7 +39,6 @@ export const getAuthService = () => {
   if (!authService) {
     authService = new AuthService(
       getStorageService(),
-      getRealmService(),
       getPubNubService(),
       getNavigationService(),
     );
@@ -59,6 +51,17 @@ export const getApiService = () => {
     apiService = new ApiService(getAuthService(), getStorageService());
   }
   return apiService;
+};
+
+export const getRealmService = () => {
+  if (!realmService) {
+    realmService = new RealmService(
+      getApiService(),
+      getAuthService(),
+      getPubNubService(),
+    );
+  }
+  return realmService;
 };
 
 export const getContactsService = () => {

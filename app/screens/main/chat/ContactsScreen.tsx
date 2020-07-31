@@ -4,18 +4,18 @@ import {
   getApiService,
   getAuthService,
   getContactsService,
-} from '../../services';
-import {applyStyles} from '../../helpers/utils';
-import Touchable from '../../components/Touchable';
+} from '../../../services';
+import {applyStyles} from '../../../helpers/utils';
+import Touchable from '../../../components/Touchable';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import Share from 'react-native-share';
-import AppMenu from '../../components/Menu';
-import Icon from '../../components/Icon';
-import {colors} from '../../styles';
-import {useRealm} from '../../services/realm';
-import {IContact, IConversation} from '../../models';
+import AppMenu from '../../../components/Menu';
+import Icon from '../../../components/Icon';
+import {colors} from '../../../styles';
+import {useRealm} from '../../../services/realm';
+import {IContact, IConversation} from '../../../models';
 import {UpdateMode} from 'realm';
-import ContactsList from '../../components/ContactsList';
+import ContactsList from '../../../components/ContactsList';
 import {useErrorHandler} from 'react-error-boundary';
 
 const ContactsScreen = () => {

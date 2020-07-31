@@ -1,5 +1,11 @@
 import Realm from 'realm';
-import {IContact} from '../../models';
+import {IContact, IConversation, IMessage} from '../../models';
+import {IPubNubService} from '../pubnub';
+import PubNub from 'pubnub';
+import {decrypt} from '../../helpers/utils';
+import Pubnub from 'pubnub';
+import {IApiService} from '../api';
+import {IAuthService} from '../auth';
 
 export interface IRealmService {
   getInstance(): Realm | null;
@@ -22,14 +28,27 @@ export interface IRealmService {
 
   // createMessage(message: IMessage): Promise<IMessage>;
   // updateMessage(message: IMessage): Promise<IMessage>;
-  //
+  restoreAllMessages(): Promise<void>;
+
   // createConversation(conversation: IConversation): Promise<IConversation>;
   // updateConversation(conversation: IConversation): Promise<IConversation>;
-  clearDb(): void;
+  restoreAllConversations(): Promise<void>;
+
+  getConversationFromChannelMetadata(
+    channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
+  ): Promise<IConversation>;
+
+  clearRealm(): void;
 }
 
 export class RealmService implements IRealmService {
   private realm: Realm | null = null;
+
+  constructor(
+    private apiService: IApiService,
+    private authService: IAuthService,
+    private pubNubService: IPubNubService,
+  ) {}
 
   public getInstance() {
     return this.realm;
@@ -92,11 +111,81 @@ export class RealmService implements IRealmService {
     );
   }
 
-  clearDb() {
+  clearRealm() {
     const realm = this.realm as Realm;
     realm.write(() => {
       realm.deleteAll();
     });
+  }
+
+  // createMessage(message: IMessage): Promise<IMessage> {
+  //   return new Promise<IConversation>((resolve, reject) => {});
+  // }
+  //
+  // updateMessage(message: IMessage): Promise<IMessage> {
+  //   return new Promise<IMessage>((resolve, reject) => {});
+  // }
+
+  async restoreAllMessages(): Promise<void> {
+    const pubNub = this.pubNubService.getInstance();
+    if (!this.realm || !pubNub) {
+      return;
+    }
+    const channels = this.realm
+      .objects<IConversation>('Conversation')
+      .map(({channel}) => channel);
+    try {
+      for (let i = 0; i < channels.length; i++) {
+        let channel = channels[i];
+        const count = 25;
+        let retrieved: number | undefined;
+        let start: string | number | undefined;
+        do {
+          const response = await pubNub.fetchMessages({
+            channels: [channel],
+            start,
+            count,
+            includeMessageActions: true,
+          });
+          const messagePayload = response.channels[channel] ?? [];
+          this.realm.write(() => {
+            if (!this.realm) {
+              return;
+            }
+            for (let j = 0; j < messagePayload.length; j += 1) {
+              let {message, timetoken, actions} = messagePayload[j];
+              let delivered_timetoken = null;
+              let read_timetoken = null;
+              if (!message.id) {
+                continue;
+              }
+              let {message_delivered, message_read} = actions?.receipt ?? {};
+              if (message_delivered) {
+                delivered_timetoken = message_delivered[0].actionTimetoken;
+                if (message_read) {
+                  read_timetoken = message_read[0].actionTimetoken;
+                }
+              }
+              message = this.realm.create<IMessage>(
+                'Message',
+                {...message, timetoken, delivered_timetoken, read_timetoken},
+                Realm.UpdateMode.Modified,
+              );
+              if (j === messagePayload.length - 1 && retrieved === undefined) {
+                const conversation = this.realm
+                  .objects<IConversation>('Conversation')
+                  .filtered(`channel="${channel}"`)[0];
+                conversation.lastMessage = message;
+              }
+            }
+          });
+          retrieved = messagePayload.length;
+          start = messagePayload[0]?.timetoken;
+        } while (retrieved === count);
+      }
+    } catch (e) {
+      throw e;
+    }
   }
 
   // createConversation(conversation: IConversation): Promise<IConversation> {
@@ -106,12 +195,98 @@ export class RealmService implements IRealmService {
   // updateConversation(conversation: IConversation): Promise<IConversation> {
   //   return new Promise<IConversation>((resolve, reject) => {});
   // }
-  //
-  // createMessage(message: IMessage): Promise<IMessage> {
-  //   return new Promise<IConversation>((resolve, reject) => {});
-  // }
-  //
-  // updateMessage(message: IMessage): Promise<IMessage> {
-  //   return new Promise<IMessage>((resolve, reject) => {});
-  // }
+
+  async restoreAllConversations(): Promise<void> {
+    const pubNub = this.pubNubService.getInstance();
+    if (!this.realm || !pubNub) {
+      return;
+    }
+    try {
+      const {data} = await new Promise((resolve, reject) => {
+        pubNub.objects.getMemberships(
+          {
+            uuid: pubNub.getUUID(),
+            include: {
+              customChannelFields: true,
+            },
+          },
+          (status, response) => {
+            if (status.error) {
+              reject(status);
+            } else {
+              resolve(response);
+            }
+          },
+        );
+      });
+      const channels: string[] = [];
+      const conversations: {[channel: string]: IConversation} = {};
+      for (let i = 0; i < data.length; i += 1) {
+        const {channel: channelMetadata} = data[i];
+        try {
+          const conversation = await this.getConversationFromChannelMetadata(
+            channelMetadata,
+          );
+          const channel = channelMetadata.id;
+          channels.push(channel);
+          conversations[channel] = conversation;
+        } catch (e) {}
+      }
+      this.realm.write(() => {
+        if (!this.realm) {
+          return;
+        }
+        for (let i = 0; i < channels.length; i += 1) {
+          const conversation = conversations[channels[i]];
+          if (conversation.type === '1-1') {
+            const contact = this.realm
+              .objects<IContact>('Contact')
+              .filtered(`mobile = "${conversation.title}"`)[0];
+            if (contact) {
+              conversation.title = contact.fullName;
+              contact.channel = conversation.channel;
+            }
+          }
+          conversations[channels[i]] = this.realm.create<IConversation>(
+            'Conversation',
+            conversation,
+            Realm.UpdateMode.Modified,
+          );
+        }
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getConversationFromChannelMetadata(
+    channelMetadata: Pubnub.ChannelMetadataObject<Pubnub.ObjectCustom>,
+  ): Promise<IConversation> {
+    const custom = channelMetadata.custom as ChannelCustom;
+    try {
+      let sender: string;
+      let members: string[];
+      if (custom.type === 'group') {
+        const groupChatMembers = await this.apiService.getGroupMembers(
+          custom.id,
+        );
+        members = groupChatMembers.map(({user: {mobile}}) => mobile);
+        sender = channelMetadata.name ?? '';
+      } else {
+        members = custom.members
+          .split(',')
+          .map((encryptedMember) => decrypt(encryptedMember));
+        const user = this.authService.getUser();
+        sender = members.find((member) => member !== user?.mobile) ?? '';
+      }
+      return {
+        title: sender,
+        type: custom.type ?? '1-1',
+        members,
+        channel: channelMetadata.id,
+      };
+    } catch (e) {
+      throw e;
+    }
+  }
 }

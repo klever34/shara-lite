@@ -4,8 +4,8 @@ export interface IMessage extends BaseModelInterface {
   channel: string;
   content: string;
   author: string;
-  sent_timetoken?: string;
-  received_timetoken?: string;
+  timetoken?: string;
+  delivered_timetoken?: string;
   read_timetoken?: string;
 }
 
@@ -18,8 +18,8 @@ export class Message implements Partial<IMessage> {
       channel: 'string',
       content: 'string',
       author: 'string',
-      sent_timetoken: 'string?',
-      received_timetoken: 'string?',
+      timetoken: 'string?',
+      delivered_timetoken: 'string?',
       read_timetoken: 'string?',
       updated_at: 'date?',
     },

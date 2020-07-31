@@ -40,7 +40,6 @@ export const Login = ({navigation}: any) => {
       countryCode: code,
     });
   };
-  const handleError = useErrorHandler();
   const onSubmit = async () => {
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
@@ -57,7 +56,6 @@ export const Login = ({navigation}: any) => {
         routes: [{name: 'Main'}],
       });
     } catch (error) {
-      handleError(error);
       setLoading(false);
       Alert.alert('Error', error.message);
     }

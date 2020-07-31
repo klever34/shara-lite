@@ -20,7 +20,6 @@ import {applyStyles} from '../../helpers/utils';
 import {RootStackParamList} from '../../index';
 import {getApiService} from '../../services';
 import {colors} from '../../styles';
-import {useErrorHandler} from 'react-error-boundary';
 
 type Fields = {
   firstname: string;
@@ -51,7 +50,6 @@ export const Register = ({
       countryCode: code,
     });
   };
-  const handleError = useErrorHandler();
   const onSubmit = async () => {
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
@@ -69,7 +67,7 @@ export const Register = ({
         routes: [{name: 'Login'}],
       });
     } catch (error) {
-      handleError(error);
+      setLoading(false);
       Alert.alert('Error', error.message);
     }
   };
@@ -82,10 +80,7 @@ export const Register = ({
   };
 
   const isButtonDisabled = () => {
-    if (Object.keys(fields).length < 5) {
-      return true;
-    }
-    return false;
+    return Object.keys(fields).length < 5;
   };
 
   return (

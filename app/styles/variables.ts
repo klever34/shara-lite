@@ -5,7 +5,7 @@ export const dimensions = {
   fullWidth: Dimensions.get('window').width,
 };
 
-export const colors = {
+export const colors: {[key: string]: string} = {
   'red-50': '#F4B1B1',
   primary: '#dd0404',
   white: '#FFF',
