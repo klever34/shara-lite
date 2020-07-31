@@ -15,7 +15,15 @@ import {
 } from '../../services';
 import {createRealm, RealmProvider} from '../../services/realm';
 import {colors} from '../../styles';
-import {NewReceipt, Receipts, Finances} from './business';
+import {
+  NewReceipt,
+  Receipts,
+  Finances,
+  TotalCredit,
+  OverdueCredit,
+  RecordCreditPayment,
+  CreditDetails,
+} from './business';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
 import AddCustomer from './customers/AddCustomer';
@@ -51,6 +59,10 @@ export type MainStackParamList = {
   BusinessSetup: undefined;
   SelectGroupMembers: undefined;
   SetGroupDetails: {members: IContact[]};
+  TotalCredit: undefined;
+  OverdueCredit: undefined;
+  RecordCreditPayment: undefined;
+  CreditDetails: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -351,6 +363,66 @@ const MainScreens = ({navigation}: any) => {
               headerShown: false,
             }}
             component={BusinessSetup}
+          />
+          <MainStack.Screen
+            name="TotalCredit"
+            component={TotalCredit}
+            options={{
+              title: 'Total Credit',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="OverdueCredit"
+            component={OverdueCredit}
+            options={{
+              title: 'Overdue Credit',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="RecordCreditPayment"
+            component={RecordCreditPayment}
+            options={{
+              title: 'Record Credit Payment',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
+          />
+          <MainStack.Screen
+            name="CreditDetails"
+            component={CreditDetails}
+            options={{
+              title: 'Credit Details',
+              headerStyle: {
+                backgroundColor: colors.primary,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'CocogoosePro-SemiLight',
+              },
+              headerTintColor: '#fff',
+            }}
           />
         </MainStack.Navigator>
       </PubNubProvider>

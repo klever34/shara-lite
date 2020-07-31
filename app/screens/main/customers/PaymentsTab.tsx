@@ -5,10 +5,10 @@ import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import ActionCard from './ActionCard';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
 import EmptyState from '../../../components/EmptyState';
+import {ActionCard} from '../../../components';
 
 const PaymentsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();

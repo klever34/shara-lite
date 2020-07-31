@@ -1,11 +1,10 @@
 import React from 'react';
 import {SafeAreaView, Text, View, StyleSheet} from 'react-native';
-import {Button} from '../../../components';
+import {Button, ActionCard} from '../../../components';
 import {colors} from '../../../styles';
 import {useNavigation} from '@react-navigation/native';
 import {numberWithCommas, applyStyles} from '../../../helpers/utils';
 import {FlatList} from 'react-native-gesture-handler';
-import ActionCard from './ActionCard';
 import {format} from 'date-fns/esm';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
@@ -85,7 +84,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
       <FlatList
         data={credits}
         renderItem={renderCreditItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => `${item.id}`}
       />
     </SafeAreaView>
   );

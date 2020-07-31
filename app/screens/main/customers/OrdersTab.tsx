@@ -6,7 +6,7 @@ import {FlatList} from 'react-native-gesture-handler';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {orders} from '../data.json';
-import ActionCard from './ActionCard';
+import {ActionCard} from '../../../components';
 
 const OrdersTab = () => {
   const navigation = useNavigation();

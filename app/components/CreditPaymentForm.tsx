@@ -1,9 +1,9 @@
 import {Picker} from '@react-native-community/picker';
 import React, {useCallback, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Button, FloatingLabelInput} from '../../../components';
-import {applyStyles} from '../../../helpers/utils';
-import {colors} from '../../../styles';
+import {Button, FloatingLabelInput} from '.';
+import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
 
 type Payload = {
   amount: string;
@@ -15,7 +15,7 @@ type Props = {
   onSubmit(data: Payload, callback: () => void): void;
 };
 
-const CreditPaymentForm = (props: Props) => {
+export const CreditPaymentForm = (props: Props) => {
   const {isLoading, onSubmit} = props;
   const [payload, setPayload] = useState<Payload>({
     paymentMethod: 'cash',
@@ -115,5 +115,3 @@ const styles = StyleSheet.create({
     color: colors['gray-300'],
   },
 });
-
-export default CreditPaymentForm;

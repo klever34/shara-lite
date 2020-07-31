@@ -6,8 +6,7 @@ import {useRealm} from '../../../services/realm';
 import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
 import {colors} from '../../../styles';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import ActionCard from '../customers/ActionCard';
-import {Button} from '../../../components';
+import {Button, ActionCard} from '../../../components';
 
 export const BusinessTab = () => {
   const realm = useRealm();
@@ -84,22 +83,26 @@ export const BusinessTab = () => {
   const handleActionItemClick = useCallback(
     (name?: string) => {
       if (name) {
-        navigation.navigate(name);
+        switch (name) {
+          case 'Credit':
+            navigation.navigate('Finances', {screen: 'Credit'});
+            break;
+          case 'Inventory':
+            navigation.navigate('Finances', {screen: 'Inventory'});
+            break;
+
+          default:
+            navigation.navigate(name);
+            break;
+        }
       }
     },
     [navigation],
   );
 
-  const handleNavigation = useCallback(
-    (route: string) => {
-      navigation.navigate(route);
-    },
-    [navigation],
-  );
-
   const handleViewFinances = useCallback(() => {
-    handleNavigation('Finances');
-  }, [handleNavigation]);
+    navigation.navigate('Finances', {screen: 'FinancesTab'});
+  }, [navigation]);
 
   return (
     <View style={styles.container}>

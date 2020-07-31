@@ -1,9 +1,9 @@
 import React from 'react';
 import {View, Text, StyleSheet, ViewStyle} from 'react-native';
-import Touchable from '../../../components/Touchable';
-import {colors} from '../../../styles';
-import Icon from '../../../components/Icon';
-import {applyStyles} from '../../../helpers/utils';
+import Touchable from './Touchable';
+import {colors} from '../styles';
+import Icon from '../components/Icon';
+import {applyStyles} from '../helpers/utils';
 
 type Props = {
   buttonIcon?: string;
@@ -13,7 +13,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-const ActionCard = (props: Props) => {
+export const ActionCard = (props: Props) => {
   const {children, onClick, style, buttonIcon, buttonText} = props;
   return (
     <View style={applyStyles(styles.container, {...style})}>
@@ -65,5 +65,3 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 });
-
-export default ActionCard;

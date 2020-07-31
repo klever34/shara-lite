@@ -2,12 +2,12 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useState} from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {colors} from '../../../styles';
-import {CreditPaymentForm} from '../../../components';
-import {ICreditPayment} from '../../../models/CreditPayment';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {colors} from '../../../../styles';
+import {CreditPaymentForm} from '../../../../components';
+import {ICreditPayment} from '../../../../models/CreditPayment';
 
-const CreditPayment = ({route}: any) => {
+export const CreditDetails = ({route}: any) => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const {creditDetails}: {creditDetails: ICreditPayment} = route.params;
@@ -28,15 +28,23 @@ const CreditPayment = ({route}: any) => {
   return (
     <SafeAreaView style={styles.container}>
       <View>
-        <View style={applyStyles('pb-md')}>
-          <Text style={styles.itemTitle}>Amount</Text>
-          <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-            &#8358;{numberWithCommas(creditDetails.amount_paid)}
-          </Text>
+        <View style={applyStyles('flex-row', 'justify-space-between')}>
+          <View style={applyStyles('pb-sm', {width: '48%'})}>
+            <Text style={styles.itemTitle}>Customer</Text>
+            <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+              {creditDetails.credit.customer_name}
+            </Text>
+          </View>
+          <View style={applyStyles('pb-sm', {width: '48%'})}>
+            <Text style={styles.itemTitle}>Amount</Text>
+            <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
+              &#8358;{numberWithCommas(creditDetails.credit.amount_left)}
+            </Text>
+          </View>
         </View>
         <View style={applyStyles('flex-row', 'justify-space-between')}>
-          <View style={applyStyles('pb-md', {width: '48%'})}>
-            <Text style={styles.itemTitle}>Given On</Text>
+          <View style={applyStyles('pb-sm', {width: '48%'})}>
+            <Text style={styles.itemTitle}>Given on</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
               {creditDetails.created_at
                 ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
@@ -48,8 +56,8 @@ const CreditPayment = ({route}: any) => {
                 : ''}
             </Text>
           </View>
-          <View style={applyStyles('pb-md', {width: '48%'})}>
-            <Text style={styles.itemTitle}>Due On</Text>
+          <View style={applyStyles('pb-sm', {width: '48%'})}>
+            <Text style={styles.itemTitle}>Due on</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
               {creditDetails.created_at
                 ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
@@ -61,13 +69,18 @@ const CreditPayment = ({route}: any) => {
                 : ''}
             </Text>
           </View>
-        </View>
-        <View style={applyStyles('pb-xl')}>
-          <Text style={styles.itemTitle}>Given By</Text>
-          <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>NA</Text>
         </View>
       </View>
-      <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
+      <View>
+        <Text
+          style={applyStyles('text-400', {
+            fontSize: 16,
+            color: colors.primary,
+          })}>
+          Credit Payment
+        </Text>
+        <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
+      </View>
     </SafeAreaView>
   );
 };
@@ -98,5 +111,3 @@ const styles = StyleSheet.create({
     fontSize: 12,
   },
 });
-
-export default CreditPayment;

@@ -1,9 +1,9 @@
 import React, {useState, useCallback} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import {CreditPaymentForm} from '../../../components';
+import {CreditPaymentForm} from '../../../../components';
 import {useNavigation} from '@react-navigation/native';
 
-const RecordPayment = () => {
+export const RecordCreditPayment = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -29,9 +29,7 @@ const RecordPayment = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 54,
+    paddingVertical: 32,
     paddingHorizontal: 16,
   },
 });
-
-export default RecordPayment;

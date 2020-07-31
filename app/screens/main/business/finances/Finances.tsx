@@ -2,20 +2,20 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {useNavigation} from '@react-navigation/native';
 import React, {useLayoutEffect} from 'react';
 import {SafeAreaView, View} from 'react-native';
-import AppMenu from '../../../..//components/Menu';
 import Icon from '../../../../components/Icon';
+import AppMenu from '../../../../components/Menu';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {MyCredit, MyInventory, MyReceipts} from './index';
 
-type FinancesTabParamList = {
+type TabStackParamList = {
   Credit: undefined;
   Receipts: undefined;
   Inventory: undefined;
 };
 
-const FinancesTab = createMaterialTopTabNavigator<FinancesTabParamList>();
+const TabStack = createMaterialTopTabNavigator<TabStackParamList>();
 
 export const Finances = () => {
   const navigation = useNavigation();
@@ -54,8 +54,7 @@ export const Finances = () => {
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
-      <FinancesTab.Navigator
-        initialRouteName="Receipts"
+      <TabStack.Navigator
         tabBarOptions={{
           activeTintColor: 'rgba(255,255,255, 1)',
           labelStyle: {fontFamily: 'Rubik-Regular'},
@@ -63,10 +62,10 @@ export const Finances = () => {
           indicatorStyle: {backgroundColor: colors.white},
           indicatorContainerStyle: {backgroundColor: colors.primary},
         }}>
-        <FinancesTab.Screen name="Receipts" component={MyReceipts} />
-        <FinancesTab.Screen name="Credit" component={MyCredit} />
-        <FinancesTab.Screen name="Inventory" component={MyInventory} />
-      </FinancesTab.Navigator>
+        <TabStack.Screen name="Receipts" component={MyReceipts} />
+        <TabStack.Screen name="Credit" component={MyCredit} />
+        <TabStack.Screen name="Inventory" component={MyInventory} />
+      </TabStack.Navigator>
     </SafeAreaView>
   );
 };

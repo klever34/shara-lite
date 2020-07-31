@@ -6,12 +6,13 @@ import {colors} from '../styles';
 type Props = {
   text?: string;
   heading?: string;
+  children?: React.ReactNode;
   style?: string | {[key: string]: any};
   source?: ImageProps['source'];
 };
 
 const EmptyState = (props: Props) => {
-  const {style, heading, source, text} = props;
+  const {style, children, heading, source, text} = props;
   return (
     <View
       style={applyStyles(
@@ -32,6 +33,7 @@ const EmptyState = (props: Props) => {
       {!!text && (
         <Text style={applyStyles(styles.text, 'text-400')}>{text}</Text>
       )}
+      {children}
     </View>
   );
 };
