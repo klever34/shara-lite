@@ -9,14 +9,18 @@ import {
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {Button, CurrencyInput, FloatingLabelInput} from '../../../components';
-import Icon from '../../../components/Icon';
-import AppMenu from '../../../components/Menu';
-import SearchableDropdown from '../../../components/SearchableDropdown';
-import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {colors} from '../../../styles';
-import {products} from '../data.json';
+import {
+  Button,
+  CurrencyInput,
+  FloatingLabelInput,
+} from '../../../../components';
+import Icon from '../../../../components/Icon';
+import AppMenu from '../../../../components/Menu';
+import SearchableDropdown from '../../../../components/SearchableDropdown';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {colors} from '../../../../styles';
+import {products} from '../../data.json';
 import ReceiptSummary from './ReceiptSummary';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 
@@ -24,7 +28,7 @@ type RecentProductItemProps = {
   item: Product;
 };
 
-const NewReceipt = () => {
+export const NewReceipt = () => {
   const navigation = useNavigation();
   //@ts-ignore
   global.startTime = new Date().getTime();
@@ -424,5 +428,3 @@ const styles = StyleSheet.create({
     color: colors['gray-300'],
   },
 });
-
-export default NewReceipt;

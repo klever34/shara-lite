@@ -12,17 +12,10 @@ import {
   getContactsService,
   getPubNubService,
   getRealmService,
-  getApiService,
 } from '../../services';
 import {createRealm, RealmProvider} from '../../services/realm';
 import {colors} from '../../styles';
-import Credit from './business/Credit';
-import Expenses from './business/Expenses';
-import Finances from './business/Finances';
-import Inventory from './business/Inventory';
-import MySales from './business/MySales';
-import NewReceipt from './business/NewReceipt';
-import Receipts from './business/Receipts';
+import {NewReceipt, Receipts, Finances} from './business';
 import ChatScreen from './ChatScreen';
 import ContactsScreen from './ContactsScreen';
 import AddCustomer from './customers/AddCustomer';
@@ -55,7 +48,6 @@ export type MainStackParamList = {
   CreditPayment: {creditDetails: CreditDetails};
   PaymentDetails: {payment: Payment};
   OrderDetails: {order: Order};
-  MySales: undefined;
   BusinessSetup: undefined;
   SelectGroupMembers: undefined;
   SetGroupDetails: {members: IContact[]};
@@ -103,7 +95,7 @@ const MainScreens = ({navigation}: any) => {
       pubNubService.setInstance(pubNub);
       setPubNubClient(pubNub);
     }
-  }, []);
+  }, [authService]);
 
   useEffect(() => {
     const contactsService = getContactsService();
@@ -252,52 +244,7 @@ const MainScreens = ({navigation}: any) => {
             name="Finances"
             component={Finances}
             options={{
-              title: 'Finances',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="Inventory"
-            component={Inventory}
-            options={{
-              title: 'Inventory',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="Expenses"
-            component={Expenses}
-            options={{
-              title: 'Expenses',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="Credit"
-            component={Credit}
-            options={{
-              title: 'Credit',
+              title: 'My Finances',
               headerStyle: {
                 backgroundColor: colors.primary,
               },
@@ -388,21 +335,6 @@ const MainScreens = ({navigation}: any) => {
             component={OrderDetails}
             options={{
               title: 'Order Details',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="MySales"
-            component={MySales}
-            options={{
-              title: 'My Sales',
               headerStyle: {
                 backgroundColor: colors.primary,
               },

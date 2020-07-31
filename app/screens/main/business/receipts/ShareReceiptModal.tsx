@@ -1,9 +1,9 @@
 import React, {useCallback, useState} from 'react';
 import {Modal, View, Text} from 'react-native';
-import {applyStyles} from '../../../helpers/utils';
-import {colors} from '../../../styles';
-import {Button, FloatingLabelInput} from '../../../components';
-import Icon from '../../../components/Icon';
+import {applyStyles} from '../../../../helpers/utils';
+import {colors} from '../../../../styles';
+import {Button, FloatingLabelInput} from '../../../../components';
+import Icon from '../../../../components/Icon';
 
 type Props = {
   visible: boolean;

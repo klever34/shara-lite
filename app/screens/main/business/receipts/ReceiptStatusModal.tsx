@@ -11,11 +11,11 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {Button} from '../../../components';
-import Icon from '../../../components/Icon';
-import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {colors} from '../../../styles';
+import {Button} from '../../../../components';
+import Icon from '../../../../components/Icon';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {colors} from '../../../../styles';
 
 type Props = {
   visible: boolean;
@@ -72,7 +72,7 @@ export const ReceiptStatusModal = (props: Props) => {
       heading: 'Success!',
       buttonText: 'Done',
       closeButtonColor: colors.primary,
-      icon: require('../../../assets/icons/check-circle.png'),
+      icon: require('../../../../assets/icons/check-circle.png'),
       buttonVariant: 'red',
       style: {
         text: {color: colors['gray-200']},
@@ -84,7 +84,7 @@ export const ReceiptStatusModal = (props: Props) => {
       heading: 'Error!',
       buttonText: 'Retry',
       closeButtonColor: colors.white,
-      icon: require('../../../assets/icons/x-circle.png'),
+      icon: require('../../../../assets/icons/x-circle.png'),
       buttonVariant: 'white',
       style: {
         text: {color: colors.white},

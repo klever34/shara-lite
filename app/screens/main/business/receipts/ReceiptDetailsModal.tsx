@@ -8,15 +8,15 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Button} from '../../../components';
-import Icon from '../../../components/Icon';
-import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {ICustomer} from '../../../models';
-import {IReceiptItem} from '../../../models/ReceiptItem';
-import {colors} from '../../../styles';
+import {Button} from '../../../../components';
+import Icon from '../../../../components/Icon';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {ICustomer} from '../../../../models';
+import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
-import Receipts from './Receipts';
+import {Receipts} from './Receipts';
 import {
   SummaryTableHeader,
   summaryTableItemStyles,
@@ -35,7 +35,7 @@ type ProductItemProps = {
   item: IReceiptItem;
 };
 
-export default function ReceiptDetailsModal(props: Props) {
+export function ReceiptDetailsModal(props: Props) {
   const {receipt, visible, onClose, onPrintReceipt, onOpenShareModal} = props;
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [customer, setCustomer] = useState<Customer | ICustomer | undefined>(

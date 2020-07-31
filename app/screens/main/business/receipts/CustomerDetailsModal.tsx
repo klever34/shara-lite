@@ -1,12 +1,12 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {Modal, View, ScrollView, Text, StyleSheet} from 'react-native';
-import {applyStyles} from '../../../helpers/utils';
-import {colors} from '../../../styles';
-import Icon from '../../../components/Icon';
-import {FloatingLabelInput, Button} from '../../../components';
-import {ICustomer} from '../../../models';
-import {saveCustomer} from '../../../services/CustomerService';
-import {useRealm} from '../../../services/realm';
+import {applyStyles} from '../../../../helpers/utils';
+import {colors} from '../../../../styles';
+import Icon from '../../../../components/Icon';
+import {FloatingLabelInput, Button} from '../../../../components';
+import {ICustomer} from '../../../../models';
+import {saveCustomer} from '../../../../services/CustomerService';
+import {useRealm} from '../../../../services/realm';
 
 type Props = {
   visible: boolean;

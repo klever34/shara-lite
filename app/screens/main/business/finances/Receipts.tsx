@@ -3,30 +3,25 @@ import format from 'date-fns/format';
 import React, {useCallback, useState} from 'react';
 import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
 import Share from 'react-native-share';
-import {FAButton} from '../../../components';
-import EmptyState from '../../../components/EmptyState';
-import Icon from '../../../components/Icon';
-import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {IReceipt} from '../../../models/Receipt';
-import {useRealm} from '../../../services/realm';
-import {getReceipts} from '../../../services/ReceiptService';
-import {colors} from '../../../styles';
-import ActionCard from '../customers/ActionCard';
-import ReceiptDetailsModal from './ReceiptDetailsModal';
-import {ShareReceiptModal} from './ShareReceiptModal';
+import {FAButton} from '../../../../components';
+import EmptyState from '../../../../components/EmptyState';
+import Icon from '../../../../components/Icon';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {IReceipt} from '../../../../models/Receipt';
+import {useRealm} from '../../../../services/realm';
+import {getReceipts} from '../../../../services/ReceiptService';
+import {colors} from '../../../../styles';
+import {ShareReceiptModal, ReceiptDetailsModal} from '../receipts';
 
 type ReceiptItemProps = {
   item: IReceipt;
 };
 
-export default function MySales() {
+export function MyReceipts() {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const receipts = getReceipts({realm});
-  const totalSales = receipts.reduce((acc, item) => {
-    return acc + item.total_amount;
-  }, 0);
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeReceipt, setActiveReceipt] = useState<IReceipt | null>(null);
@@ -190,43 +185,19 @@ export default function MySales() {
 
   return (
     <View style={styles.container}>
-      <View style={applyStyles('px-lg')}>
-        <ActionCard
-          style={applyStyles(styles.card, {
-            marginBottom: 32,
-            backgroundColor: colors.primary,
-          })}>
-          <Text
-            style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
-            My sales
-          </Text>
-          <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
-            &#8358;{numberWithCommas(totalSales)}
-          </Text>
-        </ActionCard>
-      </View>
-      <Text
-        style={applyStyles('pb-lg', 'px-lg', 'text-400', {
-          fontSize: 18,
-          color: colors.primary,
-        })}>
-        Receipts
-      </Text>
-      <View style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-        <FlatList
-          data={receipts}
-          renderItem={renderReceiptItem}
-          keyExtractor={(item) => `${item.id}`}
-          ListEmptyComponent={
-            <EmptyState
-              heading="No receipts"
-              style={applyStyles({marginTop: 32})}
-              source={require('../../../assets/images/coming-soon.png')}
-              text="Click the button below to create a receipt"
-            />
-          }
-        />
-      </View>
+      <FlatList
+        data={receipts}
+        renderItem={renderReceiptItem}
+        keyExtractor={(item) => `${item.id}`}
+        ListEmptyComponent={
+          <EmptyState
+            heading="No receipts"
+            style={applyStyles({marginTop: 32})}
+            source={require('../../../../assets/images/coming-soon.png')}
+            text="Click the button below to create a receipt"
+          />
+        }
+      />
 
       <FAButton
         style={styles.fabButton}
@@ -261,8 +232,7 @@ export default function MySales() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 32,
-    backgroundColor: colors['gray-10'],
+    backgroundColor: colors.white,
   },
   card: {
     padding: 16,

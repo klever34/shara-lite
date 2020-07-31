@@ -1,13 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {
-  Image,
-  StyleSheet,
-  Text,
-  View,
-  Alert,
-  TouchableOpacity,
-} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {useRealm} from '../../../services/realm';
 import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
@@ -16,9 +9,9 @@ import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import ActionCard from '../customers/ActionCard';
 import {Button} from '../../../components';
 
-const BusinessTab = () => {
-  const navigation = useNavigation();
+export const BusinessTab = () => {
   const realm = useRealm();
+  const navigation = useNavigation();
   const financeSummary: IFinanceSummary = getSummary({realm});
 
   const actions = [
@@ -97,10 +90,6 @@ const BusinessTab = () => {
     [navigation],
   );
 
-  const handleViewFinances = useCallback(() => {
-    Alert.alert('Coming soon', 'This feature is coming in a future release');
-  }, []);
-
   const handleNavigation = useCallback(
     (route: string) => {
       navigation.navigate(route);
@@ -108,22 +97,23 @@ const BusinessTab = () => {
     [navigation],
   );
 
+  const handleViewFinances = useCallback(() => {
+    handleNavigation('Finances');
+  }, [handleNavigation]);
+
   return (
     <View style={styles.container}>
       <View style={applyStyles('mb-lg')}>
-        <TouchableOpacity onPress={() => handleNavigation('MySales')}>
-          <ActionCard
-            style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
-            <Text
-              style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
-              My sales
-            </Text>
-            <Text
-              style={applyStyles(styles.cardContent, {color: colors.white})}>
-              &#8358;{numberWithCommas(financeSummary.totalSales)}
-            </Text>
-          </ActionCard>
-        </TouchableOpacity>
+        <ActionCard
+          style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
+          <Text
+            style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
+            My sales
+          </Text>
+          <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
+            &#8358;{numberWithCommas(financeSummary.totalSales)}
+          </Text>
+        </ActionCard>
       </View>
       <View style={applyStyles('flex-row', 'mb-lg', 'justify-space-between')}>
         <ActionCard
@@ -245,5 +235,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Medium',
   },
 });
-
-export default BusinessTab;

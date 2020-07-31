@@ -11,19 +11,23 @@ import {
   View,
 } from 'react-native';
 import Share from 'react-native-share';
-import {Button, CurrencyInput, FloatingLabelInput} from '../../../components';
-import Icon from '../../../components/Icon';
-import AppMenu from '../../../components/Menu';
-import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {ICustomer} from '../../../models';
-import {useRealm} from '../../../services/realm';
-import {saveReceipt} from '../../../services/ReceiptService';
-import {colors} from '../../../styles';
+import {
+  Button,
+  CurrencyInput,
+  FloatingLabelInput,
+} from '../../../../components';
+import Icon from '../../../../components/Icon';
+import AppMenu from '../../../../components/Menu';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {ICustomer} from '../../../../models';
+import {useRealm} from '../../../../services/realm';
+import {saveReceipt} from '../../../../services/ReceiptService';
+import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
 import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
-import Receipts from './Receipts';
+import {Receipts} from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 
@@ -438,7 +442,7 @@ const ReceiptSummary = (props: Props) => {
     setIsCompleting(true);
     handleSaveReceipt(
       () => setIsCompleting(false),
-      () => navigation.navigate('MySales'),
+      () => navigation.navigate('Finances'),
     );
   }, [handleSaveReceipt, navigation]);
 

@@ -1,8 +1,8 @@
 import React, {useCallback} from 'react';
 import {Modal, Text, View, FlatList} from 'react-native';
-import {applyStyles} from '../../../helpers/utils';
-import {Button} from '../../../components';
-import {colors} from '../../../styles';
+import {applyStyles} from '../../../../helpers/utils';
+import {Button} from '../../../../components';
+import {colors} from '../../../../styles';
 import {
   SummaryTableItemProps,
   SummaryTableItem,

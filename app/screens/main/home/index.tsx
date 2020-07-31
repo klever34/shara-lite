@@ -1,25 +1,24 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {colors} from '../../../styles';
-import ChatListScreen from './ChatListScreen';
-import {getApiService, getAuthService} from '../../../services';
 import {useNavigation} from '@react-navigation/native';
+import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
+import {usePubNub} from 'pubnub-react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
+import {Platform, SafeAreaView} from 'react-native';
+import PushNotification from 'react-native-push-notification';
+import Realm from 'realm';
 import AppMenu from '../../../components/Menu';
 import {applyStyles, decrypt, retryPromise} from '../../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../../models';
-import {usePubNub} from 'pubnub-react';
+import {getApiService, getAuthService} from '../../../services';
 import {useRealm} from '../../../services/realm';
-import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
-import Realm from 'realm';
+import {colors} from '../../../styles';
+import {BusinessTab} from '../business';
 import CustomersTab from '../customers';
-import BusinessTab from '../business';
-import PushNotification from 'react-native-push-notification';
-import {useErrorHandler} from 'react-error-boundary';
+import ChatListScreen from './ChatListScreen';
 
 type HomeTabParamList = {
   ChatList: undefined;
-  Contacts: undefined;
   Customers: undefined;
   Business: undefined;
 };

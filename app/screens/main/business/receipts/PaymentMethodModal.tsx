@@ -1,9 +1,13 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import Modal from 'react-native-modal';
-import {Button, FloatingLabelInput, CurrencyInput} from '../../../components';
-import {colors} from '../../../styles';
-import {applyStyles} from '../../../helpers/utils';
+import {
+  Button,
+  CurrencyInput,
+  FloatingLabelInput,
+} from '../../../../components';
+import {colors} from '../../../../styles';
+import {applyStyles} from '../../../../helpers/utils';
 
 type Props = {
   amount: number;

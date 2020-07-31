@@ -7,15 +7,15 @@ import {
   TextInput,
   View,
 } from 'react-native';
-import Icon from '../../../components/Icon';
-import Touchable from '../../../components/Touchable';
-import {useRealm} from '../../../services/realm';
-import {colors} from '../../../styles';
-import {applyStyles} from '../../../helpers/utils';
-import {Button} from '../../../components';
-import {getCustomers} from '../../../services/CustomerService';
+import Icon from '../../../../components/Icon';
+import Touchable from '../../../../components/Touchable';
+import {useRealm} from '../../../../services/realm';
+import {colors} from '../../../../styles';
+import {applyStyles} from '../../../../helpers/utils';
+import {Button} from '../../../../components';
+import {getCustomers} from '../../../../services/CustomerService';
 
-const Receipts = (props: any) => {
+export const Receipts = (props: any) => {
   const {onCustomerSelect, onModalClose} = props;
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
@@ -190,5 +190,3 @@ const styles = StyleSheet.create({
     color: colors.primary,
   },
 });
-
-export default Receipts;
