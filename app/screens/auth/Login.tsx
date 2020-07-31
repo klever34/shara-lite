@@ -77,7 +77,7 @@ export const Login = ({navigation}: any) => {
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
           <View style={applyStyles({height: 40, width: 40})}>
-            <Icon size={24} type="ionicons" name="md-arrow-back" />
+            <Icon size={24} type="feathericons" name="arrow-left" />
           </View>
         </Touchable>
       </View>

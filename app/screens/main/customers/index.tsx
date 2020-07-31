@@ -92,9 +92,9 @@ const CustomersTab = () => {
         <View style={styles.searchInputContainer}>
           <Icon
             size={24}
+            name="search"
+            type="feathericons"
             style={styles.searchInputIcon}
-            type="ionicons"
-            name="ios-search"
             color={colors.primary}
           />
           <TextInput

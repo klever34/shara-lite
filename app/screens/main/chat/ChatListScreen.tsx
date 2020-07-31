@@ -68,7 +68,7 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
       <View style={listItemStyles.container}>
         <PlaceholderImage
           text={conversation.title}
-          style={applyStyles('mr-md my-md')}
+          style={applyStyles('mr-md my-md text-700')}
         />
         <View style={listItemStyles.contentContainer}>
           <View style={listItemStyles.titleContainer}>
@@ -142,7 +142,8 @@ const ChatListScreen = () => {
         keyExtractor={(item) => item.channel}
       />
       <FAButton
-        iconName="add"
+        iconName="plus"
+        iconType="feathericons"
         onPress={() => {
           navigation.navigate('Contacts');
         }}
@@ -164,8 +165,8 @@ const listItemStyles = StyleSheet.create({
     borderBottomColor: colors['gray-20'],
   }),
   titleContainer: applyStyles('h-full flex-1 flex-row'),
-  titleText: applyStyles('flex-1 text-lg font-bold mb-sm'),
-  dateText: applyStyles('text-sm', {color: colors['gray-200']}),
+  titleText: applyStyles('flex-1 text-lg text-700 mb-sm'),
+  dateText: applyStyles('text-sm  text-400', {color: colors['gray-200']}),
   messageContainer: applyStyles('flex-row self-start'),
   contentText: applyStyles('text-base', {color: colors['gray-50']}),
 });

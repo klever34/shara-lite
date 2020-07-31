@@ -54,8 +54,8 @@ export const PhoneNumberField = (props: Props) => {
         />
         <Icon
           size={16}
-          type="ionicons"
-          name="ios-arrow-down"
+          type="feathericons"
+          name="chevron-down"
           color={colors['gray-50']}
           style={styles.arrowDownIcon}
         />

@@ -4,7 +4,6 @@ import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
-import Realm from 'realm';
 import getUuidByString from 'uuid-by-string';
 import {IContact, IConversation} from '../../models';
 import {
@@ -12,9 +11,7 @@ import {
   getContactsService,
   getPubNubService,
 } from '../../services';
-import {createRealm, RealmProvider} from '../../services/realm';
 import {colors} from '../../styles';
-<<<<<<< HEAD
 import {
   NewReceipt,
   Receipts,
@@ -24,43 +21,22 @@ import {
   RecordCreditPayment,
   CreditDetails,
 } from './business';
-import ChatScreen from './ChatScreen';
-import ContactsScreen from './ContactsScreen';
-=======
 import ChatScreen from './chat/ChatScreen';
 import ContactsScreen from './chat/ContactsScreen';
 import HomeScreen from './HomeScreen';
-import getUuidByString from 'uuid-by-string';
-import Receipts from './business/Receipts';
-import NewReceipt from './business/NewReceipt';
-import ReceiptSummary from './business/ReceiptSummary';
-import StatusModal from './StatusModal';
-import Finances from './business/Finances';
-import Inventory from './business/Inventory';
-import Expenses from './business/Expenses';
-import Credit from './business/Credit';
->>>>>>> discovery
 import AddCustomer from './customers/AddCustomer';
 import CreditPayment from './customers/CreditPayment';
 import CustomerDetails from './customers/CustomerDetails';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
-<<<<<<< HEAD
 import RecordPayment from './customers/RecordPayment';
-import HomeScreen from './home';
-import SelectGroupMembersScreen from './SelectGroupMembersScreen';
-import SetGroupDetailsScreen from './SetGroupDetailsScreen';
 import StatusModal from './StatusModal';
 import {useErrorHandler} from 'react-error-boundary';
 import {BusinessSetup} from '../BusinessSetup';
-=======
 import SelectGroupMembersScreen from './chat/SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
-import {IContact, IConversation} from '../../models';
 import {applyStyles} from '../../helpers/utils';
-import {useErrorHandler} from 'react-error-boundary';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
->>>>>>> discovery
 
 export type MainStackParamList = {
   Home: undefined;
@@ -102,26 +78,6 @@ const MainScreens = ({navigation}: any) => {
     : 'Home';
 
   useEffect(() => {
-<<<<<<< HEAD
-    createRealm()
-      .then((nextRealm) => {
-        const realmService = getRealmService();
-        realmService.setInstance(nextRealm);
-        setRealm(nextRealm);
-      })
-      .catch((error) => {
-        handleError(error);
-        setRealmError(true);
-        Alert.alert(
-          'Oops! Something went wrong.',
-          'Try clearing app data from application settings',
-        );
-      });
-  }, [handleError]);
-  useEffect(() => {
-=======
-    const authService = getAuthService();
->>>>>>> discovery
     const user = authService.getUser();
     if (user) {
       const pubNub = new PubNub({
@@ -151,296 +107,8 @@ const MainScreens = ({navigation}: any) => {
   }
 
   return (
-<<<<<<< HEAD
-    <RealmProvider value={realm}>
-      <PubNubProvider client={pubNubClient}>
-        <MainStack.Navigator initialRouteName={initialRouteName}>
-          <MainStack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{
-              title: 'Shara',
-              headerStyle: {
-                elevation: 0,
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontFamily: 'CocogoosePro-Regular',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="Contacts"
-            component={ContactsScreen}
-            options={{
-              title: 'Select Contact',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="Chat"
-            component={ChatScreen}
-            options={{
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="SelectGroupMembers"
-            component={SelectGroupMembersScreen}
-            options={{
-              headerTitle: 'New Group',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="SetGroupDetails"
-            component={SetGroupDetailsScreen}
-            options={{
-              headerTitle: 'New Group',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="Receipts"
-            component={Receipts}
-            options={{
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="NewReceipt"
-            component={NewReceipt}
-            options={{
-              title: 'New Receipt',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="StatusModal"
-            component={StatusModal}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="Finances"
-            component={Finances}
-            options={{
-              title: 'My Finances',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="AddCustomer"
-            component={AddCustomer}
-            options={{
-              title: 'Add Customer',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="CustomerDetails"
-            component={CustomerDetails}
-            options={({route}) => ({
-              title: route.params.customer.name,
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            })}
-          />
-          <MainStack.Screen
-            name="RecordPayment"
-            component={RecordPayment}
-            options={{
-              title: 'Record Payment',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="CreditPayment"
-            component={CreditPayment}
-            options={{
-              title: 'Credit Payment',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="PaymentDetails"
-            component={PaymentDetails}
-            options={{
-              title: 'Payment Details',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="OrderDetails"
-            component={OrderDetails}
-            options={{
-              title: 'Order Details',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="BusinessSetup"
-            options={{
-              headerShown: false,
-            }}
-            component={BusinessSetup}
-          />
-          <MainStack.Screen
-            name="TotalCredit"
-            component={TotalCredit}
-            options={{
-              title: 'Total Credit',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="OverdueCredit"
-            component={OverdueCredit}
-            options={{
-              title: 'Overdue Credit',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="RecordCreditPayment"
-            component={RecordCreditPayment}
-            options={{
-              title: 'Record Credit Payment',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-          <MainStack.Screen
-            name="CreditDetails"
-            component={CreditDetails}
-            options={{
-              title: 'Credit Details',
-              headerStyle: {
-                backgroundColor: colors.primary,
-              },
-              headerTitleStyle: {
-                fontSize: 16,
-                fontFamily: 'CocogoosePro-SemiLight',
-              },
-              headerTintColor: '#fff',
-            }}
-          />
-        </MainStack.Navigator>
-      </PubNubProvider>
-    </RealmProvider>
-=======
     <PubNubProvider client={pubNubClient}>
-      <MainStack.Navigator initialRouteName="Home">
+      <MainStack.Navigator initialRouteName={initialRouteName}>
         <MainStack.Screen
           name="Home"
           component={HomeScreen}
@@ -559,21 +227,6 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="ReceiptSummary"
-          component={ReceiptSummary}
-          options={{
-            title: 'Receipt Summary',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
           name="StatusModal"
           component={StatusModal}
           options={{headerShown: false}}
@@ -582,52 +235,7 @@ const MainScreens = ({navigation}: any) => {
           name="Finances"
           component={Finances}
           options={{
-            title: 'Finances',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Inventory"
-          component={Inventory}
-          options={{
-            title: 'Inventory',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Expenses"
-          component={Expenses}
-          options={{
-            title: 'Expenses',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Credit"
-          component={Credit}
-          options={{
-            title: 'Credit',
+            title: 'My Finances',
             headerStyle: {
               backgroundColor: colors.primary,
             },
@@ -728,9 +336,75 @@ const MainScreens = ({navigation}: any) => {
             headerTintColor: '#fff',
           }}
         />
+        <MainStack.Screen
+          name="BusinessSetup"
+          options={{
+            headerShown: false,
+          }}
+          component={BusinessSetup}
+        />
+        <MainStack.Screen
+          name="TotalCredit"
+          component={TotalCredit}
+          options={{
+            title: 'Total Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="OverdueCredit"
+          component={OverdueCredit}
+          options={{
+            title: 'Overdue Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="RecordCreditPayment"
+          component={RecordCreditPayment}
+          options={{
+            title: 'Record Credit Payment',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CreditDetails"
+          component={CreditDetails}
+          options={{
+            title: 'Credit Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
       </MainStack.Navigator>
     </PubNubProvider>
->>>>>>> discovery
   );
 };
 

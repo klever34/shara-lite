@@ -91,86 +91,91 @@ export const MyCredit = () => {
   );
 
   return (
-    <ScrollView
-      style={applyStyles('flex-1', {backgroundColor: colors['gray-20']})}>
-      <View style={applyStyles('p-xl')}>
-        <Button
-          title="record credit payment"
-          style={applyStyles('mb-lg', {width: '100%'})}
-          onPress={() => handleNavigation('RecordCreditPayment')}
-        />
-        <Touchable onPress={() => handleNavigation('TotalCredit')}>
-          <View
-            style={applyStyles('w-full p-lg mb-lg', {
-              elevation: 3,
-              borderRadius: 8,
-              backgroundColor: colors.white,
-            })}>
-            <Text
-              style={applyStyles('text-400 text-uppercase', {
-                color: colors['gray-200'],
+    <>
+      <ScrollView
+        style={applyStyles('flex-1', {backgroundColor: colors['gray-20']})}>
+        <View style={applyStyles('p-xl')}>
+          <Button
+            title="record credit payment"
+            style={applyStyles('mb-lg', {width: '100%'})}
+            onPress={() => handleNavigation('RecordCreditPayment')}
+          />
+          <Touchable onPress={() => handleNavigation('TotalCredit')}>
+            <View
+              style={applyStyles('w-full p-lg mb-lg', {
+                elevation: 3,
+                borderRadius: 8,
+                backgroundColor: colors.white,
               })}>
-              You are being owed
-            </Text>
+              <Text
+                style={applyStyles('text-400 text-uppercase', {
+                  color: colors['gray-200'],
+                })}>
+                You are being owed
+              </Text>
+              <Text
+                style={applyStyles('pb-xs text-700', {
+                  fontSize: 24,
+                  color: colors['gray-300'],
+                })}>
+                &#8358;{numberWithCommas(financeSummary.totalCredit)}
+              </Text>
+              <Text
+                style={applyStyles('text-400 text-uppercase', {
+                  color: colors.primary,
+                })}>
+                View details
+              </Text>
+            </View>
+          </Touchable>
+          <Touchable onPress={() => handleNavigation('OverdueCredit')}>
+            <View
+              style={applyStyles('w-full p-lg mb-lg', {
+                elevation: 3,
+                borderRadius: 8,
+                backgroundColor: colors.white,
+              })}>
+              <Text
+                style={applyStyles('text-400 text-uppercase', {
+                  color: colors['gray-200'],
+                })}>
+                You are to collect
+              </Text>
+              <Text
+                style={applyStyles('pb-xs text-700', {
+                  fontSize: 24,
+                  color: colors.primary,
+                })}>
+                &#8358;{numberWithCommas(financeSummary.overdueCredit)}
+              </Text>
+              <Text
+                style={applyStyles('text-400 text-uppercase', {
+                  color: colors.primary,
+                })}>
+                View details
+              </Text>
+            </View>
+          </Touchable>
+        </View>
+        {!!credits.length && (
+          <View style={applyStyles('h-full', {backgroundColor: colors.white})}>
             <Text
-              style={applyStyles('pb-xs text-700', {
-                fontSize: 24,
+              style={applyStyles('text-500 py-xs px-lg', {
+                borderBottomWidth: 1,
                 color: colors['gray-300'],
+                borderBottomColor: colors['gray-20'],
               })}>
-              &#8358;{numberWithCommas(financeSummary.totalCredit)}
+              Payment History
             </Text>
-            <Text
-              style={applyStyles('text-400 text-uppercase', {
-                color: colors.primary,
-              })}>
-              View details
-            </Text>
+            <FlatList
+              data={credits}
+              renderItem={renderCreditItem}
+              keyExtractor={(item) => `${item.id}`}
+            />
           </View>
-        </Touchable>
-        <Touchable onPress={() => handleNavigation('OverdueCredit')}>
-          <View
-            style={applyStyles('w-full p-lg mb-lg', {
-              elevation: 3,
-              borderRadius: 8,
-              backgroundColor: colors.white,
-            })}>
-            <Text
-              style={applyStyles('text-400 text-uppercase', {
-                color: colors['gray-200'],
-              })}>
-              You are to collect
-            </Text>
-            <Text
-              style={applyStyles('pb-xs text-700', {
-                fontSize: 24,
-                color: colors.primary,
-              })}>
-              &#8358;{numberWithCommas(financeSummary.overdueCredit)}
-            </Text>
-            <Text
-              style={applyStyles('text-400 text-uppercase', {
-                color: colors.primary,
-              })}>
-              View details
-            </Text>
-          </View>
-        </Touchable>
-      </View>
-      <View style={applyStyles('h-full', {backgroundColor: colors.white})}>
-        <Text
-          style={applyStyles('text-500 py-xs px-lg', {
-            borderBottomWidth: 1,
-            color: colors['gray-300'],
-            borderBottomColor: colors['gray-20'],
-          })}>
-          Payment History
-        </Text>
-        <FlatList
-          data={credits}
-          renderItem={renderCreditItem}
-          keyExtractor={(item) => `${item.id}`}
-        />
-      </View>
+        )}
+      </ScrollView>
+
       <FAButton
         style={styles.fabButton}
         onPress={() => navigation.navigate('RecordCreditPayment')}>
@@ -178,7 +183,7 @@ export const MyCredit = () => {
           <Icon size={18} name="plus" color="white" type="feathericons" />
         </View>
       </FAButton>
-    </ScrollView>
+    </>
   );
 };
 
