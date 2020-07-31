@@ -4,6 +4,8 @@ export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
   fullName: string;
   channel?: string;
+  groups?: string;
+  isMe: boolean;
 }
 
 export class Contact implements Partial<IContact> {
@@ -14,6 +16,8 @@ export class Contact implements Partial<IContact> {
       id: 'int',
       mobile: 'string',
       channel: 'string?',
+      groups: 'string?',
+      isMe: 'bool',
       firstname: 'string',
       lastname: 'string',
     },

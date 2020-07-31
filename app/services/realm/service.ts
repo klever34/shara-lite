@@ -237,8 +237,25 @@ export class RealmService implements IRealmService {
           return;
         }
         for (let i = 0; i < channels.length; i += 1) {
-          const conversation = conversations[channels[i]];
-          if (conversation.type === '1-1') {
+          const channel = channels[i];
+          const conversation = this.realm.create<IConversation>(
+            'Conversation',
+            conversations[channel],
+            Realm.UpdateMode.Modified,
+          );
+          if (conversation.type === 'group') {
+            const members = conversation.members;
+            for (let j = 0; j < members.length; j += 1) {
+              const contact = this.realm
+                .objects<IContact>('Contact')
+                .filtered(`mobile = "${members[j]}"`)[0];
+              if (contact) {
+                contact.groups = contact.groups
+                  ? `${contact.groups},${channel}`
+                  : channel;
+              }
+            }
+          } else {
             const contact = this.realm
               .objects<IContact>('Contact')
               .filtered(`mobile = "${conversation.title}"`)[0];
@@ -247,11 +264,6 @@ export class RealmService implements IRealmService {
               contact.channel = conversation.channel;
             }
           }
-          conversations[channels[i]] = this.realm.create<IConversation>(
-            'Conversation',
-            conversation,
-            Realm.UpdateMode.Modified,
-          );
         }
       });
     } catch (e) {
@@ -263,6 +275,7 @@ export class RealmService implements IRealmService {
     channelMetadata: Pubnub.ChannelMetadataObject<Pubnub.ObjectCustom>,
   ): Promise<IConversation> {
     const custom = channelMetadata.custom as ChannelCustom;
+    const channel = channelMetadata.id;
     try {
       let sender: string;
       let members: string[];
@@ -283,7 +296,7 @@ export class RealmService implements IRealmService {
         title: sender,
         type: custom.type ?? '1-1',
         members,
-        channel: channelMetadata.id,
+        channel,
       };
     } catch (e) {
       throw e;
