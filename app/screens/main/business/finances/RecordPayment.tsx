@@ -2,7 +2,7 @@ import React, {useState, useCallback} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import {useNavigation} from '@react-navigation/native';
-import {saveCredit} from '../../../../services/CreditService';
+import {saveCreditPayment} from '../../../../services/CreditPaymentService';
 import {useRealm} from '../../../../services/realm';
 
 export const RecordCreditPayment = () => {
@@ -15,7 +15,7 @@ export const RecordCreditPayment = () => {
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
-        saveCredit({realm, creditAmount: payload.amount});
+        saveCreditPayment({realm, ...payload});
         callback();
         navigation.goBack();
       }, 300);

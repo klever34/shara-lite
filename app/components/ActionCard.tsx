@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, Text, StyleSheet, ViewStyle} from 'react-native';
-import Touchable from './Touchable';
-import {colors} from '../styles';
-import Icon from '../components/Icon';
+import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
+import Touchable from './Touchable';
 
 type Props = {
   onClick?(): void;

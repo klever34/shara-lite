@@ -1,7 +1,7 @@
 import {Picker} from '@react-native-community/picker';
 import React, {useCallback, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Button, FloatingLabelInput} from '.';
+import {Button} from '.';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {CurrencyInput} from './CurrencyInput';

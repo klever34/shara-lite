@@ -1,8 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {SafeAreaView, StyleSheet, Text, View, FlatList} from 'react-native';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {ICustomer} from '../../../models';
@@ -34,10 +33,14 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Payment Made</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {format(new Date(payment.created_at), 'MMM dd, yyyy')}
+                {payment.created_at
+                  ? format(new Date(payment.created_at), 'MMM dd, yyyy')
+                  : ''}
               </Text>
               <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {format(new Date(payment.created_at), 'hh:mm:a')}
+                {payment.created_at
+                  ? format(new Date(payment.created_at), 'hh:mm:a')
+                  : ''}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
@@ -58,7 +61,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
         <FlatList
           data={payments}
           renderItem={renderPaymentItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => `${item.id}`}
         />
       ) : (
         <EmptyState

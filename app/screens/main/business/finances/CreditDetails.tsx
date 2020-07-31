@@ -7,8 +7,8 @@ import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
 import {colors} from '../../../../styles';
 import AppMenu from '../../../../components/Menu';
-import {updateCredit} from '../../../../services/CreditService';
 import {useRealm} from '../../../../services/realm';
+import {saveCreditPayment} from '../../../../services/CreditPaymentService';
 
 export const CreditDetails = ({route}: any) => {
   const realm = useRealm();
@@ -30,19 +30,10 @@ export const CreditDetails = ({route}: any) => {
         setIsLoading(true);
         setTimeout(() => {
           setIsLoading(false);
-          updateCredit({
+          saveCreditPayment({
             realm,
-            credit: creditDetails,
-            updates: {
-              ...creditDetails,
-              amount_paid: creditDetails.amount_paid + payload.amount,
-              amount_left:
-                creditDetails.total_amount -
-                (creditDetails.amount_paid + payload.amount),
-              fulfilled:
-                creditDetails.total_amount ===
-                creditDetails.amount_paid + payload.amount,
-            },
+            ...payload,
+            customer: creditDetails.customer,
           });
           callback();
           navigation.goBack();
