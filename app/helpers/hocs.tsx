@@ -1,37 +1,89 @@
 import React, {ComponentProps, ElementType, useCallback, useState} from 'react';
-import {applyStyles} from './utils';
-import {ActivityIndicator, Text, View} from 'react-native';
-import {colors} from '../styles';
-import Modal from 'react-native-modal';
+import LoadingModal from '../modals/LoadingModal';
+import {ModalPropsList, ModalVisibilityList} from '../../types/modal';
+import BottomHalfModal from '../modals/BottomHalfModal';
+import OptionsModal from '../modals/OptionsModal';
 
-export type ModalWrapperFields = {openModal: (text: string) => () => void};
+export type ModalWrapperFields = {
+  openModal: (
+    modalType: keyof ModalPropsList,
+    modalProps: ModalPropsList[keyof ModalPropsList],
+  ) => () => void;
+};
+
+const defaultModalPropsList: ModalPropsList = {
+  loading: {text: ''},
+  'bottom-half': {
+    renderContent: () => null,
+  },
+  options: {
+    options: [],
+  },
+};
+
+const defaultModalVisibility = Object.keys(defaultModalPropsList).reduce(
+  (acc, curr) => {
+    return {
+      ...acc,
+      [curr]: false,
+    };
+  },
+  {},
+) as ModalVisibilityList;
 
 export const withModal = (Component: ElementType) => (
   props: ComponentProps<typeof Component> & ModalWrapperFields,
 ) => {
-  const [modalText, setModalText] = useState('');
-  const [modalVisible, setModalVisibility] = useState(false);
-  const openModal = useCallback((text: string) => {
-    setModalText(text);
-    setModalVisibility(true);
-    return () => {
-      setModalText('');
-      setModalVisibility(false);
-    };
+  const [modalVisibility, setModalVisibility] = useState<ModalVisibilityList>(
+    defaultModalVisibility,
+  );
+  const [modalPropsList, setModalPropsList] = useState<ModalPropsList>(
+    defaultModalPropsList,
+  );
+
+  const closeModal = useCallback(() => {
+    setModalVisibility(defaultModalVisibility);
+    setModalPropsList(defaultModalPropsList);
   }, []);
+  const openModal = useCallback(
+    (
+      modalType: keyof ModalPropsList,
+      modalProps: ModalPropsList[typeof modalType],
+    ) => {
+      setModalPropsList((prevModalPropsList) => {
+        return {
+          ...prevModalPropsList,
+          [modalType]: modalProps,
+        };
+      });
+      setModalVisibility((prevModalVisibility) => {
+        return {
+          ...prevModalVisibility,
+          [modalType]: true,
+        };
+      });
+      return closeModal;
+    },
+    [closeModal],
+  );
   return (
     <>
       <Component {...props} openModal={openModal} />
-      <Modal isVisible={modalVisible} style={applyStyles('items-center')}>
-        <View
-          style={applyStyles('p-lg flex-row items-center', {
-            borderRadius: 4,
-            backgroundColor: colors.white,
-          })}>
-          <ActivityIndicator size={32} style={applyStyles('mr-md')} />
-          <Text style={applyStyles('text-lg')}>{modalText}</Text>
-        </View>
-      </Modal>
+      <LoadingModal
+        visible={modalVisibility.loading}
+        closeModal={closeModal}
+        {...modalPropsList.loading}
+      />
+      <BottomHalfModal
+        visible={modalVisibility['bottom-half']}
+        closeModal={closeModal}
+        {...modalPropsList['bottom-half']}
+      />
+      <OptionsModal
+        visible={modalVisibility.options}
+        closeModal={closeModal}
+        {...modalPropsList.options}
+      />
     </>
   );
 };

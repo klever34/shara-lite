@@ -1,5 +1,12 @@
 import React, {useCallback, useLayoutEffect} from 'react';
-import {SafeAreaView, Text, View, VirtualizedList} from 'react-native';
+import {
+  Button,
+  SafeAreaView,
+  Text,
+  View,
+  VirtualizedList,
+  Alert,
+} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '..';
 import HeaderTitle from '../../../components/HeaderTitle';
@@ -9,7 +16,7 @@ import {applyStyles} from '../../../helpers/utils';
 import ContactsList from '../../../components/ContactsList';
 import {useRealm} from '../../../services/realm';
 import {IContact} from '../../../models';
-import {getAuthService} from '../../../services';
+import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';
@@ -19,7 +26,9 @@ const getItemCount = () => 1;
 const ChatDetailsScreen = ({
   navigation,
   route,
-}: StackScreenProps<MainStackParamList, 'ChatDetails'>) => {
+  openModal,
+}: StackScreenProps<MainStackParamList, 'ChatDetails'> &
+  ModalWrapperFields) => {
   const conversation = route.params;
   const realm = useRealm();
   useLayoutEffect(() => {
@@ -33,7 +42,15 @@ const ChatDetailsScreen = ({
             {
               icon: 'create',
               onPress: () => {
-                console.log('Edit Group Name');
+                openModal('bottom-half', {
+                  renderContent: ({closeModal}) => {
+                    return (
+                      <View>
+                        <Button title="Cancel" onPress={closeModal} />
+                      </View>
+                    );
+                  },
+                });
               },
             },
             {
@@ -62,7 +79,7 @@ const ChatDetailsScreen = ({
         </View>
       ),
     });
-  }, [conversation.title, navigation]);
+  }, [conversation.title, navigation, openModal]);
   const participants = realm
     .objects<IContact>('Contact')
     .filtered(`groups CONTAINS "${conversation.channel}"`)
@@ -73,7 +90,18 @@ const ChatDetailsScreen = ({
   const renderView = useCallback(() => {
     return (
       <View>
-        <Touchable>
+        <Touchable
+          onPress={() => {
+            openModal('bottom-half', {
+              renderContent: ({closeModal}) => {
+                return (
+                  <View>
+                    <Button title="Cancel" onPress={closeModal} />
+                  </View>
+                );
+              },
+            });
+          }}>
           <View style={applyStyles('p-lg bg-white elevation-1 mb-md')}>
             <Text style={applyStyles('text-md')}>Add group description</Text>
           </View>
@@ -85,18 +113,28 @@ const ChatDetailsScreen = ({
           <ContactsList
             contacts={participants}
             getContactItemTitle={(item) => {
-              const me = getAuthService().getUser();
-              if (item.mobile === me?.mobile) {
+              if (item.isMe) {
                 return 'You';
               }
               return item.fullName;
             }}
-            onContactItemClick={(contact) => {
-              console.log(contact.mobile);
+            onContactItemClick={() => {
+              openModal('options', {
+                options: [
+                  {text: 'Make Admin', onPress: () => {}},
+                  {text: 'Remove', onPress: () => {}},
+                ],
+              });
             }}
           />
         </View>
-        <Touchable>
+        <Touchable
+          onPress={() => {
+            Alert.alert('', `Exit "${conversation.title}" group?`, [
+              {text: 'Cancel'},
+              {text: 'Exit'},
+            ]);
+          }}>
           <View
             style={applyStyles(
               'p-sm bg-white elevation-1 mb-md flex-row items-center',
@@ -119,7 +157,12 @@ const ChatDetailsScreen = ({
         </Touchable>
       </View>
     );
-  }, [conversation.members.length, participants]);
+  }, [
+    conversation.members.length,
+    conversation.title,
+    openModal,
+    participants,
+  ]);
   return (
     <SafeAreaView>
       <VirtualizedList
@@ -133,4 +176,4 @@ const ChatDetailsScreen = ({
   );
 };
 
-export default ChatDetailsScreen;
+export default withModal(ChatDetailsScreen);

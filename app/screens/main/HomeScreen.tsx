@@ -44,7 +44,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   }, [handleError]);
 
   const restoreAllMessages = useCallback(async () => {
-    const closeModal = openModal('Restoring messages...');
+    const closeModal = openModal('loading', {text: 'Restoring messages...'});
     try {
       const realmService = getRealmService();
       await realmService.restoreAllMessages();

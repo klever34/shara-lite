@@ -30,7 +30,7 @@ const SetGroupDetailsScreen = ({
   const [groupName, setGroupName] = useState('');
   const handleError = useErrorHandler();
   const submit = useCallback(() => {
-    const closeModal = openModal('Creating Group...');
+    const closeModal = openModal('loading', {text: 'Creating Group...'});
     const apiService = getApiService();
     apiService
       .createGroupChat(groupName, members)
