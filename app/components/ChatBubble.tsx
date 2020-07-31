@@ -2,7 +2,7 @@ import React, {memo, useMemo} from 'react';
 import format from 'date-fns/format';
 import {StyleProp, StyleSheet, Text, TextStyle, View} from 'react-native';
 import {colors} from '../styles';
-import {IContact, IChat, IMessage} from '../models';
+import {IContact, IConversation, IMessage} from '../models';
 import {useRealm} from '../services/realm';
 import MessageStatusIcon from './MessageStatusIcon';
 import {applyStyles} from '../helpers/utils';
@@ -19,10 +19,10 @@ export const ChatBubble = memo(({message}: ChatBubbleProps) => {
   const {created_at, author, content} = message;
   const realm = useRealm();
   const showSender = useMemo(() => {
-    const chat = realm
-      .objects<IChat>('Chat')
+    const conversation = realm
+      .objects<IConversation>('Conversation')
       .filtered(`channel = "${message.channel}"`)[0];
-    return !isAuthor && chat?.type !== '1-1';
+    return !isAuthor && conversation?.type !== '1-1';
   }, [isAuthor, message.channel, realm]);
   let sender = useMemo(() => {
     if (!author) {

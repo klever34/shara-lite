@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import {IContact, IChat, IMessage} from '../../models';
+import {IContact, IConversation, IMessage} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
 import {decrypt} from '../../helpers/utils';
@@ -30,13 +30,13 @@ export interface IRealmService {
   // updateMessage(message: IMessage): Promise<IMessage>;
   restoreAllMessages(): Promise<void>;
 
-  // createChat(chat: IChat): Promise<IChat>;
-  // updateChat(chat: IChat): Promise<IChat>;
-  restoreAllChats(): Promise<void>;
+  // createConversation(conversation: IConversation): Promise<IConversation>;
+  // updateConversation(conversation: IConversation): Promise<IConversation>;
+  restoreAllConversations(): Promise<void>;
 
-  getChatFromChannelMetadata(
+  getConversationFromChannelMetadata(
     channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
-  ): Promise<IChat>;
+  ): Promise<IConversation>;
 
   clearRealm(): void;
 }
@@ -119,7 +119,7 @@ export class RealmService implements IRealmService {
   }
 
   // createMessage(message: IMessage): Promise<IMessage> {
-  //   return new Promise<IChat>((resolve, reject) => {});
+  //   return new Promise<IConversation>((resolve, reject) => {});
   // }
   //
   // updateMessage(message: IMessage): Promise<IMessage> {
@@ -132,7 +132,7 @@ export class RealmService implements IRealmService {
       return;
     }
     const channels = this.realm
-      .objects<IChat>('Chat')
+      .objects<IConversation>('Conversation')
       .map(({channel}) => channel);
     try {
       for (let i = 0; i < channels.length; i++) {
@@ -172,10 +172,10 @@ export class RealmService implements IRealmService {
                 Realm.UpdateMode.Modified,
               );
               if (j === messagePayload.length - 1 && retrieved === undefined) {
-                const chat = this.realm
-                  .objects<IChat>('Chat')
+                const conversation = this.realm
+                  .objects<IConversation>('Conversation')
                   .filtered(`channel="${channel}"`)[0];
-                chat.lastMessage = message;
+                conversation.lastMessage = message;
               }
             }
           });
@@ -188,15 +188,15 @@ export class RealmService implements IRealmService {
     }
   }
 
-  // createChat(chat: IChat): Promise<IChat> {
-  //   return new Promise<IChat>((resolve, reject) => {});
+  // createConversation(conversation: IConversation): Promise<IConversation> {
+  //   return new Promise<IConversation>((resolve, reject) => {});
   // }
   //
-  // updateChat(chat: IChat): Promise<IChat> {
-  //   return new Promise<IChat>((resolve, reject) => {});
+  // updateConversation(conversation: IConversation): Promise<IConversation> {
+  //   return new Promise<IConversation>((resolve, reject) => {});
   // }
 
-  async restoreAllChats(): Promise<void> {
+  async restoreAllConversations(): Promise<void> {
     const pubNub = this.pubNubService.getInstance();
     if (!this.realm || !pubNub) {
       return;
@@ -220,14 +220,16 @@ export class RealmService implements IRealmService {
         );
       });
       const channels: string[] = [];
-      const chats: {[channel: string]: IChat} = {};
+      const conversations: {[channel: string]: IConversation} = {};
       for (let i = 0; i < data.length; i += 1) {
         const {channel: channelMetadata} = data[i];
         try {
-          const chat = await this.getChatFromChannelMetadata(channelMetadata);
+          const conversation = await this.getConversationFromChannelMetadata(
+            channelMetadata,
+          );
           const channel = channelMetadata.id;
           channels.push(channel);
-          chats[channel] = chat;
+          conversations[channel] = conversation;
         } catch (e) {}
       }
       this.realm.write(() => {
@@ -235,19 +237,19 @@ export class RealmService implements IRealmService {
           return;
         }
         for (let i = 0; i < channels.length; i += 1) {
-          const chat = chats[channels[i]];
-          if (chat.type === '1-1') {
+          const conversation = conversations[channels[i]];
+          if (conversation.type === '1-1') {
             const contact = this.realm
               .objects<IContact>('Contact')
-              .filtered(`mobile = "${chat.title}"`)[0];
+              .filtered(`mobile = "${conversation.title}"`)[0];
             if (contact) {
-              chat.title = contact.fullName;
-              contact.channel = chat.channel;
+              conversation.title = contact.fullName;
+              contact.channel = conversation.channel;
             }
           }
-          chats[channels[i]] = this.realm.create<IChat>(
-            'Chat',
-            chat,
+          conversations[channels[i]] = this.realm.create<IConversation>(
+            'Conversation',
+            conversation,
             Realm.UpdateMode.Modified,
           );
         }
@@ -257,9 +259,9 @@ export class RealmService implements IRealmService {
     }
   }
 
-  async getChatFromChannelMetadata(
+  async getConversationFromChannelMetadata(
     channelMetadata: Pubnub.ChannelMetadataObject<Pubnub.ObjectCustom>,
-  ): Promise<IChat> {
+  ): Promise<IConversation> {
     const custom = channelMetadata.custom as ChannelCustom;
     try {
       let sender: string;

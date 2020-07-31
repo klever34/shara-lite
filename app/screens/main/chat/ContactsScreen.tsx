@@ -13,7 +13,7 @@ import AppMenu from '../../../components/Menu';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
-import {IContact, IChat} from '../../../models';
+import {IContact, IConversation} from '../../../models';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
 import {useErrorHandler} from 'react-error-boundary';
@@ -76,14 +76,14 @@ const ContactsScreen = () => {
     }
   }, [handleError]);
   const navigateToChat = useCallback(
-    (chat: IChat) => {
+    (conversation: IConversation) => {
       navigation.dispatch(
         CommonActions.reset({
           routes: [
             {name: 'Home'},
             {
               name: 'Chat',
-              params: chat,
+              params: conversation,
             },
           ],
           index: 1,
@@ -129,7 +129,7 @@ const ContactsScreen = () => {
           .objects<IContact>('Contact')
           .filtered(`mobile = "${item.mobile}"`)[0];
         let channelName = contact.channel;
-        let chat: IChat;
+        let conversation: IConversation;
         const apiService = getApiService();
         if (!channelName) {
           setLoadingChat(true);
@@ -141,8 +141,8 @@ const ContactsScreen = () => {
             return;
           }
           realm.write(() => {
-            chat = realm.create<IChat>(
-              'Chat',
+            conversation = realm.create<IConversation>(
+              'Conversation',
               {
                 title: item.fullName,
                 channel: channelName,
@@ -152,13 +152,13 @@ const ContactsScreen = () => {
               UpdateMode.Modified,
             );
             contact.channel = channelName;
-            navigateToChat(chat);
+            navigateToChat(conversation);
           });
         } else {
-          chat = realm
-            .objects<IChat>('Chat')
+          conversation = realm
+            .objects<IConversation>('Conversation')
             .filtered(`channel = "${channelName}"`)[0];
-          navigateToChat(chat);
+          navigateToChat(conversation);
         }
       } catch (error) {
         setLoadingChat(false);

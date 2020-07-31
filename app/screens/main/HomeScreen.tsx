@@ -7,7 +7,7 @@ import {getAuthService, getRealmService} from '../../services';
 import {useNavigation} from '@react-navigation/native';
 import AppMenu from '../../components/Menu';
 import {applyStyles, retryPromise} from '../../helpers/utils';
-import {IContact, IChat, IMessage} from '../../models';
+import {IContact, IConversation, IMessage} from '../../models';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../../services/realm';
 import {MessageEvent} from 'pubnub';
@@ -97,8 +97,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     const channelGroups: string[] = [pubNub.getUUID()];
     const channels: string[] = [];
 
-    const chats = realm.objects<IChat>('Chat');
-    channels.push(...chats.map((chat) => chat.channel));
+    const conversations = realm.objects<IConversation>('Conversation');
+    channels.push(...conversations.map((conversation) => conversation.channel));
 
     pubNub.subscribe({channels, channelGroups});
 
@@ -138,10 +138,10 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
       },
       onNotification: (notification: any) => {
         if (!notification.foreground) {
-          const chat = realm
-            .objects<IChat>('Chat')
+          const conversation = realm
+            .objects<IConversation>('Conversation')
             .filtered(`channel = "${notification.channel}"`)[0];
-          navigation.navigate('Chat', chat);
+          navigation.navigate('Chat', conversation);
           PushNotification.cancelAllLocalNotifications();
         }
       },
@@ -167,32 +167,32 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 Realm.UpdateMode.Modified,
               );
             });
-            let chat: IChat = realm
-              .objects<IChat>('Chat')
+            let conversation: IConversation = realm
+              .objects<IConversation>('Conversation')
               .filtered(`channel = "${channel}"`)[0];
-            if (!chat) {
+            if (!conversation) {
               const response = await pubNub.objects.getChannelMetadata({
                 channel,
                 include: {customFields: true},
               });
               const realmService = getRealmService();
-              chat = await realmService.getChatFromChannelMetadata(
+              conversation = await realmService.getConversationFromChannelMetadata(
                 response.data,
               );
               realm.write(() => {
-                if (chat.type === '1-1') {
+                if (conversation.type === '1-1') {
                   const contact = realm
                     .objects<IContact>('Contact')
-                    .filtered(`mobile = "${chat.title}"`)[0];
+                    .filtered(`mobile = "${conversation.title}"`)[0];
                   if (contact) {
-                    chat.title = contact.fullName;
-                    contact.channel = chat.channel;
+                    conversation.title = contact.fullName;
+                    contact.channel = conversation.channel;
                   }
                 }
-                realm.create<IChat>(
-                  'Chat',
+                realm.create<IConversation>(
+                  'Conversation',
                   {
-                    ...chat,
+                    ...conversation,
                     lastMessage,
                   },
                   Realm.UpdateMode.Modified,
@@ -200,8 +200,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
               });
             } else {
               realm.write(() => {
-                realm.create<IChat>(
-                  'Chat',
+                realm.create<IConversation>(
+                  'Conversation',
                   {
                     channel,
                     lastMessage,
@@ -265,7 +265,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
 
   useEffect(() => {
     const realmService = getRealmService();
-    realmService.restoreAllChats().catch(handleError);
+    realmService.restoreAllConversations().catch(handleError);
   }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (
