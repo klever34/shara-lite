@@ -442,7 +442,9 @@ const ReceiptSummary = (props: Props) => {
     setIsCompleting(true);
     handleSaveReceipt(
       () => setIsCompleting(false),
-      () => navigation.navigate('Finances'),
+      () => {
+        navigation.navigate('Finances', {screen: 'Receipts'});
+      },
     );
   }, [handleSaveReceipt, navigation]);
 

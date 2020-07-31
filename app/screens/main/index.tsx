@@ -62,7 +62,7 @@ export type MainStackParamList = {
   TotalCredit: undefined;
   OverdueCredit: undefined;
   RecordCreditPayment: undefined;
-  CreditDetails: undefined;
+  CreditDetails: {creditDetails: CreditDetails};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();

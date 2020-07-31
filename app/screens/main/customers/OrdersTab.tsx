@@ -19,7 +19,6 @@ const OrdersTab = () => {
     return (
       <View style={styles.creditItem}>
         <ActionCard
-          buttonIcon="eye"
           buttonText="view details"
           onClick={() => handleViewDetails(order)}>
           <View style={applyStyles('pb-sm')}>

@@ -4,10 +4,11 @@ import {StyleSheet, Text, View} from 'react-native';
 import {Button, FloatingLabelInput} from '.';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
+import {CurrencyInput} from './CurrencyInput';
 
 type Payload = {
   amount: string;
-  paymentMethod: string | number;
+  method: string | number;
 };
 
 type Props = {
@@ -18,7 +19,7 @@ type Props = {
 export const CreditPaymentForm = (props: Props) => {
   const {isLoading, onSubmit} = props;
   const [payload, setPayload] = useState<Payload>({
-    paymentMethod: 'cash',
+    method: 'cash',
     amount: '',
   } as Payload);
 
@@ -43,12 +44,12 @@ export const CreditPaymentForm = (props: Props) => {
   return (
     <View>
       <View style={applyStyles('flex-row', 'items-center')}>
-        <FloatingLabelInput
+        <CurrencyInput
           label="Amount Paid"
           value={payload.amount}
           keyboardType="number-pad"
           containerStyle={styles.input}
-          onChangeText={(text) => handleChange(text, 'amount')}
+          onChange={(text) => handleChange(text, 'amount')}
           leftIcon={
             <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
               &#8358;
@@ -65,10 +66,8 @@ export const CreditPaymentForm = (props: Props) => {
           style={styles.picker}
           prompt="Payment Method"
           itemStyle={styles.pickerItem}
-          selectedValue={payload.paymentMethod}
-          onValueChange={(itemValue) =>
-            handleChange(itemValue, 'paymentMethod')
-          }>
+          selectedValue={payload.method}
+          onValueChange={(itemValue) => handleChange(itemValue, 'method')}>
           <Picker.Item label="Cash" value="Cash" />
           <Picker.Item label="Bank Transfer" value="Bank Transfer" />
           <Picker.Item label="Mobile Money" value="Mobile Money" />

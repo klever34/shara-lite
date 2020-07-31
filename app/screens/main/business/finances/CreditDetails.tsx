@@ -1,44 +1,75 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
-import React, {useCallback, useState} from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
+import React, {useCallback, useState, useLayoutEffect} from 'react';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
-import {ICreditPayment} from '../../../../models/CreditPayment';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {ICredit} from '../../../../models/Credit';
+import {colors} from '../../../../styles';
+import AppMenu from '../../../../components/Menu';
+import {updateCredit} from '../../../../services/CreditService';
+import {useRealm} from '../../../../services/realm';
 
 export const CreditDetails = ({route}: any) => {
+  const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const {creditDetails}: {creditDetails: ICreditPayment} = route.params;
+  const {creditDetails}: {creditDetails: ICredit} = route.params;
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <AppMenu options={[{text: 'Help', onSelect: () => {}}]} />
+      ),
+    });
+  }, [navigation]);
 
   const handleSubmit = useCallback(
     (payload, callback) => {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        console.log({...payload, ...creditDetails});
-        callback();
-        navigation.goBack();
-      }, 300);
+      if (creditDetails) {
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          updateCredit({
+            realm,
+            credit: creditDetails,
+            updates: {
+              ...creditDetails,
+              amount_paid: creditDetails.amount_paid + payload.amount,
+              amount_left:
+                creditDetails.total_amount -
+                (creditDetails.amount_paid + payload.amount),
+              fulfilled:
+                creditDetails.total_amount ===
+                creditDetails.amount_paid + payload.amount,
+            },
+          });
+          callback();
+          navigation.goBack();
+        }, 300);
+      }
     },
-    [navigation, creditDetails],
+    [realm, navigation, creditDetails],
   );
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View>
+    <ScrollView style={styles.container}>
+      <View
+        style={applyStyles('mb-xl pb-md', {
+          borderBottomColor: colors['gray-20'],
+          borderBottomWidth: 1,
+        })}>
         <View style={applyStyles('flex-row', 'justify-space-between')}>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Customer</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditDetails.credit.customer_name}
+              {creditDetails.customer_name}
             </Text>
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(creditDetails.credit.amount_left)}
+              &#8358;{numberWithCommas(creditDetails.amount_left)}
             </Text>
           </View>
         </View>
@@ -58,7 +89,10 @@ export const CreditDetails = ({route}: any) => {
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Due on</Text>
-            <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+            <Text
+              style={applyStyles(styles.itemDataMedium, 'text-400', {
+                color: colors.primary,
+              })}>
               {creditDetails.created_at
                 ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
                 : ''}
@@ -74,21 +108,23 @@ export const CreditDetails = ({route}: any) => {
       <View>
         <Text
           style={applyStyles('text-400', {
-            fontSize: 16,
+            fontSize: 18,
             color: colors.primary,
           })}>
           Credit Payment
         </Text>
-        <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
+        <View style={applyStyles({marginBottom: 100})}>
+          <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
+        </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 54,
+    paddingVertical: 40,
     paddingHorizontal: 16,
     backgroundColor: colors.white,
   },
@@ -97,8 +133,8 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     paddingBottom: 2,
-    color: colors.primary,
-    textTransform: 'capitalize',
+    color: colors['gray-200'],
+    textTransform: 'uppercase',
   },
   itemDataLarge: {
     fontSize: 18,
@@ -106,8 +142,10 @@ const styles = StyleSheet.create({
   },
   itemDataMedium: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
   itemDataSmall: {
     fontSize: 12,
+    color: colors['gray-300'],
   },
 });

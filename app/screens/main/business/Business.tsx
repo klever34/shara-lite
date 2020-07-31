@@ -132,7 +132,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(0)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -148,7 +148,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors.primary,
             })}>
-            &#8358;{numberWithCommas(1205400)}
+            &#8358;{numberWithCommas(0)}
           </Text>
         </ActionCard>
       </View>

@@ -22,7 +22,6 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
     return (
       <View style={styles.creditItem}>
         <ActionCard
-          buttonIcon="eye"
           buttonText="view details"
           onClick={() => handleViewDetails(payment)}>
           <View style={applyStyles('pb-sm')}>

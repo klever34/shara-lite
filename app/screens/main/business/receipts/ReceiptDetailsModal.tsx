@@ -22,6 +22,8 @@ import {
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
+import {updateReceipt} from '../../../../services/ReceiptService';
+import {useRealm} from '../../../../services/realm';
 
 type Props = {
   visible: boolean;
@@ -42,6 +44,7 @@ export function ReceiptDetailsModal(props: Props) {
     receipt ? receipt.customer : ({} as Customer),
   );
   const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
+  const realm = useRealm();
 
   const PAYMENT_METHOD_TEXT = {
     cash: 'Cash',
@@ -65,10 +68,14 @@ export function ReceiptDetailsModal(props: Props) {
     setIsCustomerListModalOpen(false);
   }, []);
 
-  const handleSetCustomer = useCallback((value: ICustomer) => {
-    setCustomer(value);
-    //TODO: make call to save customer to receipt
-  }, []);
+  const handleSaveCustomer = useCallback(
+    (value: ICustomer) => {
+      setCustomer(value);
+      //TODO: make call to save customer to receipt
+      receipt && updateReceipt({realm, customer: value, receipt});
+    },
+    [realm, receipt],
+  );
 
   const handleCustomerSelect = useCallback(({customer: customerData}) => {
     setCustomer(customerData);
@@ -129,7 +136,13 @@ export function ReceiptDetailsModal(props: Props) {
             </Text>
             <View>
               {receipt?.customer?.mobile ? (
-                <Text>{receipt.customer_name}</Text>
+                <Text
+                  style={applyStyles('text-400', {
+                    fontSize: 18,
+                    color: colors['gray-300'],
+                  })}>
+                  {receipt.customer.name}
+                </Text>
               ) : (
                 <Touchable onPress={handleOpenCustomerModal}>
                   <View
@@ -266,8 +279,8 @@ export function ReceiptDetailsModal(props: Props) {
             </Text>
           </View>
         </Button>
-        {!!(receipt?.payments || receipt?.credit_amount) && (
-          <View>
+        {!!(receipt?.payments?.length || receipt?.credit_amount) && (
+          <View style={applyStyles({paddingBottom: 100})}>
             <Text
               style={applyStyles('pb-lg', 'text-400', {
                 fontSize: 18,
@@ -354,7 +367,7 @@ export function ReceiptDetailsModal(props: Props) {
         customer={customer}
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
-        onSelectCustomer={handleSetCustomer}
+        onSelectCustomer={handleSaveCustomer}
         onOpenContactList={handleOpenCustomerListModal}
       />
 

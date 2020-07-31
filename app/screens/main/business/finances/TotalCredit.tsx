@@ -4,18 +4,20 @@ import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {ActionCard} from '../../../../components';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {ICreditPayment} from '../../../../models/CreditPayment';
 import {colors} from '../../../../styles';
-import {getCreditPayments} from './../../../../services/CreditPaymentService';
 import {useRealm} from '../../../../services/realm';
 import Touchable from '../../../../components/Touchable';
 import Icon from '../../../../components/Icon';
 import AppMenu from '../../../../components/Menu';
 import EmptyState from '../../../../components/EmptyState';
+import {getCredits} from '../../../../services/CreditService';
+import {ICredit} from '../../../../models/Credit';
 
 export const TotalCredit = () => {
   const realm = useRealm();
   const navigation = useNavigation();
+
+  const credits = getCredits({realm});
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -49,30 +51,27 @@ export const TotalCredit = () => {
     });
   }, [navigation]);
 
-  const credits = getCreditPayments({realm});
-
-  const handleViewDetails = (creditDetails: ICreditPayment) => {
-    navigation.navigate('CreditDetils', {creditDetails});
+  const handleViewDetails = (creditDetails: ICredit) => {
+    navigation.navigate('CreditDetails', {creditDetails});
   };
 
-  const renderCreditItem = ({item: creditDetails}: {item: ICreditPayment}) => {
+  const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {
     return (
       <View style={styles.creditItem}>
         <ActionCard
-          buttonIcon="eye"
           buttonText="view details"
           onClick={() => handleViewDetails(creditDetails)}>
           <View style={applyStyles('flex-row', 'justify-space-between')}>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Customer</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {creditDetails.credit.customer_name}
+                {creditDetails.customer_name}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Amount</Text>
               <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-                &#8358;{numberWithCommas(creditDetails.credit.amount_left)}
+                &#8358;{numberWithCommas(creditDetails.amount_left)}
               </Text>
             </View>
           </View>
@@ -92,7 +91,10 @@ export const TotalCredit = () => {
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Due on</Text>
-              <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+              <Text
+                style={applyStyles(styles.itemDataMedium, 'text-400', {
+                  color: colors.primary,
+                })}>
                 {creditDetails.created_at
                   ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
                   : ''}
@@ -110,7 +112,7 @@ export const TotalCredit = () => {
   };
   return (
     <SafeAreaView
-      style={applyStyles('flex-1', {
+      style={applyStyles('py-xl', 'flex-1', {
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
@@ -145,26 +147,6 @@ export const TotalCredit = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingTop: 32,
-    backgroundColor: colors['gray-10'],
-  },
-  header: {
-    marginBottom: 24,
-    alignItems: 'center',
-    paddingHorizontal: 32,
-    justifyContent: 'center',
-  },
-  totalCreditText: {
-    paddingBottom: 4,
-    color: colors.primary,
-  },
-  toalCreditAmount: {
-    fontSize: 24,
-    paddingBottom: 12,
-    color: colors['gray-300'],
-  },
   creditItem: {
     marginBottom: 12,
     marginHorizontal: 16,
@@ -174,8 +156,8 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     paddingBottom: 2,
-    color: colors.primary,
-    textTransform: 'capitalize',
+    color: colors['gray-100'],
+    textTransform: 'uppercase',
   },
   itemDataLarge: {
     fontSize: 18,
@@ -183,8 +165,10 @@ const styles = StyleSheet.create({
   },
   itemDataMedium: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
   itemDataSmall: {
     fontSize: 12,
+    color: colors['gray-300'],
   },
 });

@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useCallback} from 'react';
 import {Modal, View, ScrollView, Text, StyleSheet} from 'react-native';
-import {applyStyles} from '../../../../helpers/utils';
+import {applyStyles, generateUniqueId} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import Icon from '../../../../components/Icon';
 import {FloatingLabelInput, Button} from '../../../../components';
@@ -36,10 +36,18 @@ export const CustomerDetailsModal = (props: Props) => {
 
   const handleDone = () => {
     if (customer) {
-      onSelectCustomer(customer);
       if (isNewCustomer) {
-        saveCustomer({realm, customer});
+        const data = {
+          ...customer,
+          id: generateUniqueId(),
+          updated_at: new Date(),
+          created_at: new Date(),
+        };
+        saveCustomer({realm, customer: data});
         setIsNewCustomer(false);
+        onSelectCustomer(data);
+      } else {
+        onSelectCustomer(customer);
       }
       onClose();
     }

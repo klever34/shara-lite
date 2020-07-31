@@ -1,18 +1,26 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import format from 'date-fns/format';
+import {StyleSheet, Text, View, FlatList, ScrollView} from 'react-native';
 import {Button, FAButton} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {getSummary, IFinanceSummary} from '../../../../services/FinanceService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
+import {ICredit} from '../../../../models/Credit';
+import {getCredits} from '../../../../services/CreditService';
+
+type CreditItemProps = {
+  item: ICredit;
+};
 
 export const MyCredit = () => {
   const realm = useRealm();
   const navigation = useNavigation();
   const financeSummary: IFinanceSummary = getSummary({realm});
+  const credits = getCredits({realm});
 
   const handleNavigation = useCallback(
     (route: string) => {
@@ -21,8 +29,70 @@ export const MyCredit = () => {
     [navigation],
   );
 
+  const handleCreditItemClick = useCallback(
+    (creditDetails) => {
+      navigation.navigate('CreditDetails', {creditDetails});
+    },
+    [navigation],
+  );
+
+  const renderCreditItem = useCallback(
+    ({item: credit}: CreditItemProps) => {
+      return (
+        <Touchable onPress={() => handleCreditItemClick(credit)}>
+          <View
+            style={applyStyles(
+              'px-lg',
+              'py-lg',
+              'flex-row',
+              'justify-space-between',
+              {
+                borderBottomWidth: 1,
+                borderBottomColor: colors['gray-20'],
+              },
+            )}>
+            <View>
+              <Text
+                style={applyStyles('pb-sm', 'text-400', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                {credit?.customer?.name}
+              </Text>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors['gray-200'],
+                })}>
+                {credit.created_at && format(credit.created_at, 'MMM dd, yyyy')}
+              </Text>
+            </View>
+            <View style={applyStyles({alignItems: 'flex-end'})}>
+              <Text
+                style={applyStyles('pb-sm', 'text-400', {
+                  fontSize: 16,
+                  color: colors.primary,
+                })}>
+                &#8358;{numberWithCommas(credit.amount_left)}
+              </Text>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 14,
+                  color: colors['gray-200'],
+                })}>
+                {credit.receipt?.payments && credit.receipt?.payments[0].method}
+              </Text>
+            </View>
+          </View>
+        </Touchable>
+      );
+    },
+    [handleCreditItemClick],
+  );
+
   return (
-    <View style={applyStyles('flex-1', {backgroundColor: colors['gray-20']})}>
+    <ScrollView
+      style={applyStyles('flex-1', {backgroundColor: colors['gray-20']})}>
       <View style={applyStyles('p-xl')}>
         <Button
           title="record credit payment"
@@ -47,7 +117,7 @@ export const MyCredit = () => {
                 fontSize: 24,
                 color: colors['gray-300'],
               })}>
-              &#8358;{financeSummary.totalCredit}
+              &#8358;{numberWithCommas(financeSummary.totalCredit)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -75,7 +145,7 @@ export const MyCredit = () => {
                 fontSize: 24,
                 color: colors.primary,
               })}>
-              &#8358;{financeSummary.totalCredit}
+              &#8358;{numberWithCommas(financeSummary.overdueCredit)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -86,6 +156,21 @@ export const MyCredit = () => {
           </View>
         </Touchable>
       </View>
+      <View style={applyStyles('h-full', {backgroundColor: colors.white})}>
+        <Text
+          style={applyStyles('text-500 py-xs px-lg', {
+            borderBottomWidth: 1,
+            color: colors['gray-300'],
+            borderBottomColor: colors['gray-20'],
+          })}>
+          Payment History
+        </Text>
+        <FlatList
+          data={credits}
+          renderItem={renderCreditItem}
+          keyExtractor={(item) => `${item.id}`}
+        />
+      </View>
       <FAButton
         style={styles.fabButton}
         onPress={() => navigation.navigate('RecordCreditPayment')}>
@@ -93,7 +178,7 @@ export const MyCredit = () => {
           <Icon size={18} name="plus" color="white" type="feathericons" />
         </View>
       </FAButton>
-    </View>
+    </ScrollView>
   );
 };
 

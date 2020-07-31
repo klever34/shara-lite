@@ -146,7 +146,7 @@ export function MyReceipts() {
                   fontSize: 16,
                   color: colors['gray-300'],
                 })}>
-                {receipt.customer_name ? receipt.customer_name : 'No Customer'}
+                {receipt.customer?.name ? receipt.customer.name : 'No Customer'}
               </Text>
               <Text
                 style={applyStyles('text-400', {

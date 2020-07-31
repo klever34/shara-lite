@@ -6,7 +6,6 @@ import Icon from '../components/Icon';
 import {applyStyles} from '../helpers/utils';
 
 type Props = {
-  buttonIcon?: string;
   onClick?(): void;
   style?: ViewStyle;
   buttonText?: string;
@@ -14,7 +13,7 @@ type Props = {
 };
 
 export const ActionCard = (props: Props) => {
-  const {children, onClick, style, buttonIcon, buttonText} = props;
+  const {children, onClick, style, buttonText} = props;
   return (
     <View style={applyStyles(styles.container, {...style})}>
       {children}
@@ -27,12 +26,6 @@ export const ActionCard = (props: Props) => {
               'justify-center',
               styles.button,
             )}>
-            <Icon
-              size={16}
-              name={buttonIcon}
-              type="feathericons"
-              color={colors.primary}
-            />
             <Text style={applyStyles('text-400', styles.buttonText)}>
               {buttonText}
             </Text>

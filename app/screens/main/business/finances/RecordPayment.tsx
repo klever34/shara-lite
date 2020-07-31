@@ -2,8 +2,11 @@ import React, {useState, useCallback} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import {useNavigation} from '@react-navigation/native';
+import {saveCredit} from '../../../../services/CreditService';
+import {useRealm} from '../../../../services/realm';
 
 export const RecordCreditPayment = () => {
+  const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -12,11 +15,12 @@ export const RecordCreditPayment = () => {
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
+        saveCredit({realm, creditAmount: payload.amount});
         callback();
-        navigation.navigate('CreditsTab');
+        navigation.goBack();
       }, 300);
     },
-    [navigation],
+    [realm, navigation],
   );
 
   return (
