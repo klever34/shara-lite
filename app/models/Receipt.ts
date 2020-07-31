@@ -2,6 +2,7 @@ import {ICustomer} from './Customer';
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IPayment} from './Payment';
 import {IReceiptItem} from './ReceiptItem';
+import {ICredit} from './Credit';
 
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;
@@ -13,6 +14,7 @@ export interface IReceipt extends BaseModelInterface {
   customer?: ICustomer;
   payments?: IPayment[];
   items?: IReceiptItem[];
+  credit?: ICredit;
 }
 
 export const modelName = 'Receipt';
@@ -30,14 +32,19 @@ export class Receipt implements Partial<IReceipt> {
       customer_name: 'string?',
       customer_mobile: 'string?',
       customer: 'Customer?',
+      items: {
+        type: 'linkingObjects',
+        objectType: 'ReceiptItem',
+        property: 'receipt',
+      },
       payments: {
         type: 'linkingObjects',
         objectType: 'Payment',
         property: 'receipt',
       },
-      items: {
+      credit: {
         type: 'linkingObjects',
-        objectType: 'ReceiptItem',
+        objectType: 'Credit',
         property: 'receipt',
       },
     },

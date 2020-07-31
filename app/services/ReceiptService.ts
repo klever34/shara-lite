@@ -2,9 +2,9 @@ import Realm, {UpdateMode} from 'realm'
 import {ICustomer} from '../models'
 import {IReceipt, modelName} from '../models/Receipt'
 import {saveReceiptItem} from './ReceiptItemService'
-import {savePayment} from './PaymentService'
+import {savePayment, updatePayment} from './PaymentService'
 import {getBaseModelValues} from '../helpers/models'
-import {saveCredit} from './CreditService'
+import {saveCredit, updateCredit} from './CreditService'
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[]
@@ -76,4 +76,27 @@ export const saveReceipt = ({
       realm,
     })
   }
+}
+
+export const updateReceipt = ({
+  realm,
+  customer,
+  receipt,
+}: {
+  realm: Realm
+  customer: ICustomer
+  receipt: IReceipt
+}): void => {
+  realm.write(() => {
+    receipt.customer = customer
+
+    ;(receipt.payments || []).forEach(payment => {
+      updatePayment({realm, payment, updates: {customer}})
+    })
+
+    if (receipt.credit_amount > 0 && receipt.credit) {
+      receipt.credit.customer = customer
+      updateCredit({realm, credit: receipt.credit, updates: {customer}})
+    }
+  })
 }

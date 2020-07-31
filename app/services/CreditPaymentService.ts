@@ -1,9 +1,10 @@
 import Realm, {UpdateMode} from 'realm';
 import {ICustomer} from '../models';
-import {ICredit, modelName as creditModelName} from '../models/Credit';
+import {ICredit} from '../models/Credit';
 import {ICreditPayment, modelName} from '../models/CreditPayment';
 import {savePayment} from './PaymentService';
 import {getBaseModelValues} from '../helpers/models';
+import {updateCredit} from './CreditService';
 
 export const getCreditPayments = ({
   realm,
@@ -50,21 +51,21 @@ export const saveCreditPayment = ({
     }
 
     const amountLeftFromDeduction = amountLeft - credit.amount_left;
-    const updateData = {
+    const creditUpdates = {
       id: credit.id,
     };
 
     if (amountLeftFromDeduction >= 0) {
-      updateData.amount_left = 0;
-      updateData.fulfilled = true;
-      updateData.amount_paid = credit.amount_left;
+      creditUpdates.amount_left = 0;
+      creditUpdates.fulfilled = true;
+      creditUpdates.amount_paid = credit.amount_left;
     } else {
-      updateData.amount_left = Math.abs(amountLeftFromDeduction);
-      updateData.amount_paid = amountLeft;
+      creditUpdates.amount_left = Math.abs(amountLeftFromDeduction);
+      creditUpdates.amount_paid = amountLeft;
     }
 
     realm.write(() => {
-      realm.create(creditModelName, updateData, UpdateMode.Modified);
+      updateCredit({realm, credit, updates: creditUpdates});
     });
 
     realm.write(() => {
