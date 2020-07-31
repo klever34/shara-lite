@@ -30,15 +30,15 @@ import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
 import SelectGroupMembersScreen from './chat/SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
-import {IContact, IConversation} from '../../models';
+import {IContact, IChat} from '../../models';
 import {applyStyles} from '../../helpers/utils';
 import {useErrorHandler} from 'react-error-boundary';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 
 export type MainStackParamList = {
   Home: undefined;
-  Chat: IConversation;
-  ChatDetails: IConversation;
+  Chat: IChat;
+  ChatDetails: IChat;
   Contacts: undefined;
   Receipts: undefined;
   NewReceipt: {customer: Customer};

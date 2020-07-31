@@ -12,11 +12,11 @@ const ChatDetailsScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'ChatDetails'>) => {
-  const conversation = route.params;
+  const chat = route.params;
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => {
-        return <HeaderTitle title={conversation.title} />;
+        return <HeaderTitle title={chat.title} />;
       },
       headerRight: () => (
         <View style={applyStyles('flex-row mr-sm')}>
@@ -53,7 +53,7 @@ const ChatDetailsScreen = ({
         </View>
       ),
     });
-  }, [conversation.title, navigation]);
+  }, [chat.title, navigation]);
   return (
     <SafeAreaView>
       <ScrollView>
@@ -62,7 +62,7 @@ const ChatDetailsScreen = ({
         </View>
         <View style={applyStyles('pt-lg bg-white elevation-1 mb-md')}>
           <Text style={applyStyles('mx-lg text-md font-semibold mb-2')}>
-            {conversation.members.length} participants
+            {chat.members.length} participants
           </Text>
           <ContactsList
             onContactItemClick={(contact) => {

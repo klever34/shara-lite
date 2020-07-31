@@ -1,4 +1,4 @@
 export * from './Contact';
-export * from './Conversation';
+export * from './Chat';
 export * from './Customer';
 export * from './Message';

@@ -45,8 +45,8 @@ const ChatScreen = ({
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
-  const conversation = route.params;
-  const {channel, title} = conversation;
+  const chat = route.params;
+  const {channel, title} = chat;
   const [input, setInput] = useState('');
   const typingMessage = useTyping(channel, input);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
@@ -142,13 +142,13 @@ const ChatScreen = ({
             title={title}
             description={typingMessage}
             onPress={() => {
-              navigation.navigate('ChatDetails', conversation);
+              navigation.navigate('ChatDetails', chat);
             }}
           />
         );
       },
     });
-  }, [conversation, navigation, title, typingMessage]);
+  }, [chat, navigation, title, typingMessage]);
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();
@@ -176,7 +176,7 @@ const ChatScreen = ({
     try {
       realm.write(() => {
         message = realm.create<IMessage>('Message', message, UpdateMode.Never);
-        conversation.lastMessage = message;
+        chat.lastMessage = message;
       });
     } catch (e) {
       handleError(e);
@@ -200,7 +200,7 @@ const ChatScreen = ({
         message.timetoken = String(response.timetoken);
       });
     });
-  }, [channel, conversation.lastMessage, handleError, input, pubNub, realm]);
+  }, [channel, chat.lastMessage, handleError, input, pubNub, realm]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => <ChatBubble message={message} />,

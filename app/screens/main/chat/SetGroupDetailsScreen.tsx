@@ -7,7 +7,7 @@ import {MainStackParamList} from '../index';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import {FAButton} from '../../../components';
 import {getApiService} from '../../../services';
-import {IConversation} from '../../../models';
+import {IChat} from '../../../models';
 import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
 import {CommonActions} from '@react-navigation/native';
@@ -37,8 +37,8 @@ const SetGroupDetailsScreen = ({
       .then((groupChat) => {
         try {
           realm.write(() => {
-            const conversation = realm.create<IConversation>(
-              'Conversation',
+            const chat = realm.create<IChat>(
+              'Chat',
               {
                 title: groupChat.name,
                 type: 'group',
@@ -53,7 +53,7 @@ const SetGroupDetailsScreen = ({
                   {name: 'Home'},
                   {
                     name: 'Chat',
-                    params: conversation,
+                    params: chat,
                   },
                 ],
                 index: 1,

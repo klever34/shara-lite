@@ -1,6 +1,6 @@
 import {IMessage} from './Message';
 
-export interface IConversation {
+export interface IChat {
   channel: string;
   title: string;
   lastMessage?: IMessage;
@@ -8,9 +8,9 @@ export interface IConversation {
   members: string[];
 }
 
-export class Conversation implements Partial<IConversation> {
+export class Chat implements Partial<IChat> {
   public static schema: Realm.ObjectSchema = {
-    name: 'Conversation',
+    name: 'Chat',
     primaryKey: 'channel',
     properties: {
       channel: 'string',

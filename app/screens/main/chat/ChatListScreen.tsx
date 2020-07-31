@@ -11,7 +11,7 @@ import {useNavigation} from '@react-navigation/native';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
-import {IConversation, IMessage} from '../../../models';
+import {IChat, IMessage} from '../../../models';
 import {useRealm} from '../../../services/realm';
 import {useTyping} from '../../../services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
@@ -19,19 +19,19 @@ import MessageStatusIcon from '../../../components/MessageStatusIcon';
 import {getAuthService} from '../../../services';
 
 type ChatListItemProps = {
-  conversation: IConversation;
+  chat: IChat;
 };
 
-const ChatListItem = ({conversation}: ChatListItemProps) => {
-  const typingMessage = useTyping(conversation.channel);
+const ChatListItem = ({chat}: ChatListItemProps) => {
+  const typingMessage = useTyping(chat.channel);
   const navigation = useNavigation();
-  const lastMessage = conversation.lastMessage;
+  const lastMessage = chat.lastMessage;
   const realm = useRealm();
   const user = getAuthService().getUser();
   const messages = realm
     .objects<IMessage>('Message')
     .filtered(
-      `channel = "${conversation.channel}" AND author != "${
+      `channel = "${chat.channel}" AND author != "${
         user?.mobile ?? ''
       }" AND delivered_timetoken != null AND read_timetoken = null`,
     );
@@ -63,17 +63,17 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
   return (
     <Touchable
       onPress={() => {
-        navigation.navigate('Chat', conversation);
+        navigation.navigate('Chat', chat);
       }}>
       <View style={listItemStyles.container}>
         <PlaceholderImage
-          text={conversation.title}
+          text={chat.title}
           style={applyStyles('mr-md my-md')}
         />
         <View style={listItemStyles.contentContainer}>
           <View style={listItemStyles.titleContainer}>
             <Text style={listItemStyles.titleText} numberOfLines={1}>
-              {conversation.title}
+              {chat.title}
             </Text>
             <Text style={listItemStyles.dateText} numberOfLines={1}>
               {dateText}
@@ -124,20 +124,20 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const conversations = realm
-    .objects<IConversation>('Conversation')
+  const chats = realm
+    .objects<IChat>('Chat')
     .filtered('lastMessage != null OR type = "group"')
     .sorted('lastMessage.created_at', true);
   const renderChatListItem = useCallback(
-    ({item}: ListRenderItemInfo<IConversation>) => {
-      return <ChatListItem conversation={item} />;
+    ({item}: ListRenderItemInfo<IChat>) => {
+      return <ChatListItem chat={item} />;
     },
     [],
   );
   return (
     <View style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <FlatList
-        data={conversations}
+        data={chats}
         renderItem={renderChatListItem}
         keyExtractor={(item) => item.channel}
       />
