@@ -44,7 +44,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     } catch (e) {
       handleError(e);
     }
-  }, [handleError]);
+  }, [handleError, navigation]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('Restoring messages...');

@@ -1,9 +1,9 @@
-import Touchable from './Touchable';
-import {Platform, StyleSheet, View, ViewStyle} from 'react-native';
 import React from 'react';
-import {colors} from '../styles';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
 import Icon from './Icon';
+import Touchable from './Touchable';
 
 type FAButtonProps = {
   style?: ViewStyle;

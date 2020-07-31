@@ -1,5 +1,4 @@
 import React from 'react';
-import {useErrorHandler} from 'react-error-boundary';
 import {
   Alert,
   ScrollView,
