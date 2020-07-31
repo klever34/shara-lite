@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.10-feature.business-setup+build.810",
+  "version": "0.1.10-feature.business-setup+build.815",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
