@@ -1,12 +1,10 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import {Modal, View, ScrollView, Text, StyleSheet} from 'react-native';
-import {applyStyles, generateUniqueId} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, FloatingLabelInput} from '../../../../components';
 import Icon from '../../../../components/Icon';
-import {FloatingLabelInput, Button} from '../../../../components';
+import {applyStyles, generateUniqueId} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
-import {saveCustomer} from '../../../../services/CustomerService';
-import {useRealm} from '../../../../services/realm';
+import {colors} from '../../../../styles';
 
 type Props = {
   visible: boolean;
@@ -28,8 +26,6 @@ export const CustomerDetailsModal = (props: Props) => {
   const [customer, setCustomer] = useState(customerProps);
   const [isNewCustomer, setIsNewCustomer] = useState(false);
 
-  const realm = useRealm() as Realm;
-
   useEffect(() => {
     setCustomer(customerProps);
   }, [customerProps]);
@@ -43,7 +39,6 @@ export const CustomerDetailsModal = (props: Props) => {
           updated_at: new Date(),
           created_at: new Date(),
         };
-        saveCustomer({realm, customer: data});
         setIsNewCustomer(false);
         onSelectCustomer(data);
       } else {

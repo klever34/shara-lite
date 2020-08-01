@@ -14,7 +14,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
   const payments = customer.payments || [];
 
   const handleViewDetails = (payment: IPayment) => {
-    navigation.navigate('PaymentDetails', {payment});
+    navigation.navigate('CustomerPaymentDetails', {payment});
   };
 
   const renderPaymentItem = ({item: payment}: {item: IPayment}) => {
@@ -45,7 +45,11 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Payment Method</Text>
-              <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+              <Text
+                style={applyStyles(
+                  'text-400 text-capitalize',
+                  styles.itemDataMedium,
+                )}>
                 {payment.type}
               </Text>
             </View>
@@ -106,6 +110,7 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     color: colors.primary,
     textTransform: 'capitalize',
+    fontFamily: 'Rubik-Regular',
   },
   itemDataLarge: {
     fontSize: 18,
@@ -113,9 +118,11 @@ const styles = StyleSheet.create({
   },
   itemDataMedium: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
   itemDataSmall: {
     fontSize: 12,
+    color: colors['gray-300'],
   },
 });
 

@@ -71,7 +71,6 @@ export function ReceiptDetailsModal(props: Props) {
   const handleSaveCustomer = useCallback(
     (value: ICustomer) => {
       setCustomer(value);
-      //TODO: make call to save customer to receipt
       receipt && updateReceipt({realm, customer: value, receipt});
     },
     [realm, receipt],

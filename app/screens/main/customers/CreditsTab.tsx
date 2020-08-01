@@ -9,6 +9,7 @@ import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
+import {IPayment} from '../../../models/Payment';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
@@ -22,6 +23,11 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
     (total, {amount_left}) => total + amount_left,
     0,
   );
+  const paymentMethodLabel = {
+    cash: 'Cash',
+    transfer: 'Bank Transfer',
+    mobile: 'Mobile Money',
+  } as {[key: string]: string};
 
   const handleViewDetails = useCallback(
     (creditDetails: ICredit) => {
@@ -37,56 +43,72 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
     [navigation],
   );
 
-  const renderCreditItem = ({item: credit}: {item: ICredit}) => {
-    return (
-      <Touchable onPress={() => handleViewDetails(credit)}>
-        <View
-          style={applyStyles(
-            'px-lg',
-            'py-lg',
-            'flex-row',
-            'justify-space-between',
-            {
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
-            },
-          )}>
-          <View>
-            <Text
-              style={applyStyles('pb-sm', 'text-400', {
-                fontSize: 16,
-                color: colors['gray-300'],
-              })}>
-              {credit?.customer?.name}
-            </Text>
-            <Text
-              style={applyStyles('text-400', {
-                fontSize: 16,
-                color: colors['gray-200'],
-              })}>
-              {credit.created_at && format(credit.created_at, 'MMM dd, yyyy')}
-            </Text>
+  const getReceiptPaymentMethods = useCallback(
+    (payments: IPayment[]) => {
+      const paymentMethods = payments.map(
+        (item) => paymentMethodLabel[item.method],
+      );
+      const label = paymentMethods.toString().replace(',', ' & ');
+      return label;
+    },
+    [paymentMethodLabel],
+  );
+
+  const renderCreditItem = useCallback(
+    ({item: credit}: {item: ICredit}) => {
+      return (
+        <Touchable onPress={() => handleViewDetails(credit)}>
+          <View
+            style={applyStyles(
+              'px-lg',
+              'py-lg',
+              'flex-row',
+              'justify-space-between',
+              {
+                borderBottomWidth: 1,
+                borderBottomColor: colors['gray-20'],
+              },
+            )}>
+            <View>
+              <Text
+                style={applyStyles('pb-sm', 'text-400', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                {credit?.customer?.name}
+              </Text>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors['gray-200'],
+                })}>
+                {credit.created_at && format(credit.created_at, 'MMM dd, yyyy')}
+              </Text>
+            </View>
+            <View style={applyStyles({alignItems: 'flex-end'})}>
+              <Text
+                style={applyStyles('pb-sm', 'text-400', {
+                  fontSize: 16,
+                  color: colors.primary,
+                })}>
+                &#8358;{numberWithCommas(credit.amount_left)}
+              </Text>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 14,
+                  color: colors['gray-200'],
+                })}>
+                {credit?.receipt?.payments
+                  ? getReceiptPaymentMethods(credit.receipt.payments)
+                  : ''}
+              </Text>
+            </View>
           </View>
-          <View style={applyStyles({alignItems: 'flex-end'})}>
-            <Text
-              style={applyStyles('pb-sm', 'text-400', {
-                fontSize: 16,
-                color: colors.primary,
-              })}>
-              &#8358;{numberWithCommas(credit.amount_left)}
-            </Text>
-            <Text
-              style={applyStyles('text-400', {
-                fontSize: 14,
-                color: colors['gray-200'],
-              })}>
-              {credit.receipt?.payments && credit.receipt?.payments[0].method}
-            </Text>
-          </View>
-        </View>
-      </Touchable>
-    );
-  };
+        </Touchable>
+      );
+    },
+    [getReceiptPaymentMethods, handleViewDetails],
+  );
 
   return (
     <ScrollView style={styles.container}>

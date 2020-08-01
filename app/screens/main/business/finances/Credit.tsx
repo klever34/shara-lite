@@ -11,6 +11,7 @@ import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {ICredit} from '../../../../models/Credit';
 import {getCredits} from '../../../../services/CreditService';
+import {IPayment} from '../../../../models/Payment';
 
 type CreditItemProps = {
   item: ICredit;
@@ -22,6 +23,11 @@ export const MyCredit = () => {
   const financeSummary: IFinanceSummary = getSummary({realm});
   const credits = getCredits({realm});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
+  const paymentMethodLabel = {
+    cash: 'Cash',
+    transfer: 'Bank Transfer',
+    mobile: 'Mobile Money',
+  } as {[key: string]: string};
 
   const handleNavigation = useCallback(
     (route: string, options?: object) => {
@@ -35,6 +41,17 @@ export const MyCredit = () => {
       navigation.navigate('CreditDetails', {creditDetails});
     },
     [navigation],
+  );
+
+  const getReceiptPaymentMethods = useCallback(
+    (payments: IPayment[]) => {
+      const paymentMethods = payments.map(
+        (item) => paymentMethodLabel[item.method],
+      );
+      const label = paymentMethods.toString().replace(',', ' & ');
+      return label;
+    },
+    [paymentMethodLabel],
   );
 
   const renderCreditItem = useCallback(
@@ -74,21 +91,23 @@ export const MyCredit = () => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(credit.amount_left)}
+                &#8358;{numberWithCommas(credit.receipt?.total_amount)}
               </Text>
               <Text
                 style={applyStyles('text-400', {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {credit.receipt?.payments && credit.receipt?.payments[0].method}
+                {credit?.receipt?.payments
+                  ? getReceiptPaymentMethods(credit.receipt.payments)
+                  : ''}
               </Text>
             </View>
           </View>
         </Touchable>
       );
     },
-    [handleCreditItemClick],
+    [handleCreditItemClick, getReceiptPaymentMethods],
   );
 
   return (
