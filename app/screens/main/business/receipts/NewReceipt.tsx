@@ -14,6 +14,7 @@ import {
   CurrencyInput,
   FloatingLabelInput,
 } from '../../../../components';
+import {BluetoothModal} from '../../../../components/BluetoothModal';
 import Icon from '../../../../components/Icon';
 import AppMenu from '../../../../components/Menu';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
@@ -21,8 +22,8 @@ import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {products} from '../../data.json';
-import ReceiptSummary from './ReceiptSummary';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
+import ReceiptSummary from './ReceiptSummary';
 
 type RecentProductItemProps = {
   item: Product;
@@ -341,6 +342,7 @@ export const NewReceipt = () => {
         visible={isProductsPreviewModalOpen}
         onClose={handleCloseProductsPreviewModal}
       />
+      <BluetoothModal />
     </SafeAreaView>
   );
 };
