@@ -21,10 +21,11 @@ export const MyCredit = () => {
   const navigation = useNavigation();
   const financeSummary: IFinanceSummary = getSummary({realm});
   const credits = getCredits({realm});
+  const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
 
   const handleNavigation = useCallback(
-    (route: string) => {
-      navigation.navigate(route);
+    (route: string, options?: object) => {
+      navigation.navigate(route, options);
     },
     [navigation],
   );
@@ -93,14 +94,19 @@ export const MyCredit = () => {
   return (
     <>
       <ScrollView
-        style={applyStyles('flex-1', {backgroundColor: colors['gray-20']})}>
+        style={applyStyles('flex-1', {backgroundColor: colors['gray-10']})}>
         <View style={applyStyles('p-xl')}>
           <Button
             title="record credit payment"
             style={applyStyles('mb-lg', {width: '100%'})}
             onPress={() => handleNavigation('RecordCreditPayment')}
           />
-          <Touchable onPress={() => handleNavigation('TotalCredit')}>
+          <Touchable
+            onPress={() =>
+              handleNavigation('TotalCredit', {
+                credits,
+              })
+            }>
             <View
               style={applyStyles('w-full p-lg mb-lg', {
                 elevation: 3,
@@ -128,7 +134,12 @@ export const MyCredit = () => {
               </Text>
             </View>
           </Touchable>
-          <Touchable onPress={() => handleNavigation('OverdueCredit')}>
+          <Touchable
+            onPress={() =>
+              handleNavigation('OverdueCredit', {
+                credits: overdueCredit,
+              })
+            }>
             <View
               style={applyStyles('w-full p-lg mb-lg', {
                 elevation: 3,

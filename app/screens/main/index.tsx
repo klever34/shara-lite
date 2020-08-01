@@ -2,9 +2,11 @@ import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
+import {applyStyles} from '../../helpers/utils';
 import {IContact, IConversation} from '../../models';
 import {
   getAuthService,
@@ -12,31 +14,30 @@ import {
   getPubNubService,
 } from '../../services';
 import {colors} from '../../styles';
+import {BusinessSetup} from '../BusinessSetup';
 import {
-  NewReceipt,
-  Receipts,
-  Finances,
-  TotalCredit,
-  OverdueCredit,
-  RecordCreditPayment,
   CreditDetails,
+  Finances,
+  NewReceipt,
+  OverdueCredit,
+  Receipts,
+  RecordCreditPayment,
+  TotalCredit,
 } from './business';
+import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
 import ContactsScreen from './chat/ContactsScreen';
-import HomeScreen from './HomeScreen';
+import SelectGroupMembersScreen from './chat/SelectGroupMembersScreen';
+import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
 import AddCustomer from './customers/AddCustomer';
 import CreditPayment from './customers/CreditPayment';
 import CustomerDetails from './customers/CustomerDetails';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
+import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {useErrorHandler} from 'react-error-boundary';
-import {BusinessSetup} from '../BusinessSetup';
-import SelectGroupMembersScreen from './chat/SelectGroupMembersScreen';
-import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
-import {applyStyles} from '../../helpers/utils';
-import ChatDetailsScreen from './chat/ChatDetailsScreen';
+import {ICredit} from 'app/models/Credit';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -52,15 +53,17 @@ export type MainStackParamList = {
   Credit: undefined;
   AddCustomer: undefined;
   CustomerDetails: {customer: any};
-  RecordPayment: undefined;
-  CreditPayment: {creditDetails: CreditDetails};
-  PaymentDetails: {payment: Payment};
-  OrderDetails: {order: Order};
+  CustomerRecordCreditPayment: undefined;
+  CustomerCreditPayment: {creditDetails: CreditDetails};
+  CustomerPaymentDetails: {payment: Payment};
+  CustomerOrderDetails: {order: Order};
+  CustomerTotalCredit: {credits: ICredit[]};
+  CustomerOverdueCredit: {credits: ICredit[]};
   BusinessSetup: undefined;
   SelectGroupMembers: undefined;
   SetGroupDetails: {members: IContact[]};
-  TotalCredit: undefined;
-  OverdueCredit: undefined;
+  TotalCredit: {credits: ICredit[]};
+  OverdueCredit: {credits: ICredit[]};
   RecordCreditPayment: undefined;
   CreditDetails: {creditDetails: CreditDetails};
 };
@@ -277,7 +280,7 @@ const MainScreens = ({navigation}: any) => {
           })}
         />
         <MainStack.Screen
-          name="RecordPayment"
+          name="CustomerRecordCreditPayment"
           component={RecordPayment}
           options={{
             title: 'Record Payment',
@@ -292,7 +295,7 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="CreditPayment"
+          name="CustomerCreditPayment"
           component={CreditPayment}
           options={{
             title: 'Credit Payment',
@@ -307,7 +310,7 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="PaymentDetails"
+          name="CustomerPaymentDetails"
           component={PaymentDetails}
           options={{
             title: 'Payment Details',
@@ -322,10 +325,40 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="OrderDetails"
+          name="CustomerOrderDetails"
           component={OrderDetails}
           options={{
             title: 'Order Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerTotalCredit"
+          component={TotalCredit}
+          options={{
+            title: 'Total Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerOverdueCredit"
+          component={OverdueCredit}
+          options={{
+            title: 'Overdue Credit',
             headerStyle: {
               backgroundColor: colors.primary,
             },

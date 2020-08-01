@@ -3,21 +3,25 @@ import format from 'date-fns/format';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {ActionCard} from '../../../../components';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import {useRealm} from '../../../../services/realm';
-import Touchable from '../../../../components/Touchable';
+import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import AppMenu from '../../../../components/Menu';
-import EmptyState from '../../../../components/EmptyState';
-import {getCredits} from '../../../../services/CreditService';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
+import {colors} from '../../../../styles';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from '../..';
 
-export const TotalCredit = () => {
-  const realm = useRealm();
+export const TotalCredit = ({
+  route,
+}: StackScreenProps<
+  MainStackParamList,
+  'TotalCredit' | 'CustomerTotalCredit'
+>) => {
   const navigation = useNavigation();
 
-  const credits = getCredits({realm});
+  const credits = route.params.credits;
 
   useLayoutEffect(() => {
     navigation.setOptions({

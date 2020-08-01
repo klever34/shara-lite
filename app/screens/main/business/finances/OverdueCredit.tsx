@@ -1,22 +1,26 @@
 import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
 import format from 'date-fns/format';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {getCredits} from '../../../../services/CreditService';
+import {MainStackParamList} from '../..';
 import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import AppMenu from '../../../../components/Menu';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
 import {ICredit} from '../../../../models/Credit';
+import {colors} from '../../../../styles';
 
-export const OverdueCredit = () => {
-  const realm = useRealm();
+export const OverdueCredit = ({
+  route,
+}: StackScreenProps<
+  MainStackParamList,
+  'OverdueCredit' | 'CustomerOverdueCredit'
+>) => {
   const navigation = useNavigation();
-  const credits = getCredits({realm});
+  const credits = route.params.credits;
 
   useLayoutEffect(() => {
     navigation.setOptions({

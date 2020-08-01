@@ -15,6 +15,7 @@ const CustomersTab = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
+  console.log(customers);
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);

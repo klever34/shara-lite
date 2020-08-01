@@ -6,7 +6,7 @@ import {colors} from '../../../styles';
 
 const DetailsTab = () => {
   return (
-    <ScrollView style={applyStyles({backgroundColor: colors.white})}>
+    <ScrollView style={applyStyles({backgroundColor: colors['gray-10']})}>
       <EmptyState
         heading="Coming Soon"
         source={require('../../../assets/images/coming-soon.png')}
