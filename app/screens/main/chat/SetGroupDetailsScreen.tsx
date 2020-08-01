@@ -30,7 +30,7 @@ const SetGroupDetailsScreen = ({
   const [groupName, setGroupName] = useState('');
   const handleError = useErrorHandler();
   const submit = useCallback(() => {
-    const closeModal = openModal('Creating Group...');
+    const closeModal = openModal('loading', {text: 'Creating Group...'});
     const apiService = getApiService();
     apiService
       .createGroupChat(groupName, members)
@@ -40,7 +40,7 @@ const SetGroupDetailsScreen = ({
             const conversation = realm.create<IConversation>(
               'Conversation',
               {
-                title: groupChat.name,
+                name: groupChat.name,
                 type: 'group',
                 channel: groupChat.uuid,
                 members: members.map((member) => member.mobile),

@@ -10,12 +10,12 @@ import {
 } from 'react-native';
 import {Button} from '../../../components';
 import {FloatingLabelInput} from '../../../components';
-import AppMenu from '../../../components/Menu';
 import SearchableDropdown from '../../../components/SearchableDropdown';
 import Touchable from '../../../components/Touchable';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {products} from '../data.json';
+import HeaderRight from '../../../components/HeaderRight';
 
 type RecentProductItemProps = {
   item: Product;
@@ -36,7 +36,7 @@ const NewReceipt = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
+      headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);
 

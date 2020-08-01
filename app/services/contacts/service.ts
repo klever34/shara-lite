@@ -89,9 +89,15 @@ export class ContactsService implements IContactsService {
           ),
         ),
       );
-      const users = await this.apiService.getUserDetails(numbers);
+      let users = await this.apiService.getUserDetails(numbers);
+      users = users.map((user) => {
+        return {
+          ...user,
+          isMe: user.id === me?.id,
+        };
+      });
       await this.realmService.updateMultipleContacts(
-        (users.filter((user) => user.id !== me?.id) as unknown) as IContact[],
+        (users as unknown) as IContact[],
       );
     } catch (error) {
       throw error;

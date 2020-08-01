@@ -11,6 +11,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'justify-center': {
     justifyContent: 'center',
   },
+  'justify-end': {
+    justifyContent: 'flex-end',
+  },
   'justify-space-between': {
     justifyContent: 'space-between',
   },
@@ -110,6 +113,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
       ...acc,
+      // padding
       [`p-${curr}`]: {padding: spacing[curr]},
       [`py-${curr}`]: {paddingVertical: spacing[curr]},
       [`px-${curr}`]: {paddingHorizontal: spacing[curr]},
@@ -117,11 +121,8 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`pb-${curr}`]: {paddingBottom: spacing[curr]},
       [`pl-${curr}`]: {paddingLeft: spacing[curr]},
       [`pr-${curr}`]: {paddingRight: spacing[curr]},
-    };
-  }, {}),
-  ...Object.keys(spacing).reduce((acc, curr) => {
-    return {
-      ...acc,
+
+      // margin
       [`m-${curr}`]: {margin: spacing[curr]},
       [`my-${curr}`]: {marginVertical: spacing[curr]},
       [`mx-${curr}`]: {marginHorizontal: spacing[curr]},
@@ -129,6 +130,16 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`mb-${curr}`]: {marginBottom: spacing[curr]},
       [`ml-${curr}`]: {marginLeft: spacing[curr]},
       [`mr-${curr}`]: {marginRight: spacing[curr]},
+
+      // height
+      [`h-${curr}`]: {height: spacing[curr]},
+
+      // width
+      [`w-${curr}`]: {width: spacing[curr]},
+
+      // border
+      [`rounded-${curr}`]: {borderRadius: spacing[curr]},
+      [`border-${curr}`]: {borderWidth: spacing[curr]},
     };
   }, {}),
   ...Object.keys(colors).reduce((acc, curr) => {
@@ -136,6 +147,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       ...acc,
       [`bg-${curr}`]: {backgroundColor: colors[curr]},
       [`text-${curr}`]: {color: colors[curr]},
+      [`border-${curr}`]: {borderColor: colors[curr]},
     };
   }, {}),
   ...[0, 1, 2, 3, 4].reduce((acc, curr) => {

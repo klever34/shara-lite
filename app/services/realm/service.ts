@@ -3,7 +3,6 @@ import {IContact, IConversation, IMessage} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
 import {decrypt} from '../../helpers/utils';
-import Pubnub from 'pubnub';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
 
@@ -237,21 +236,33 @@ export class RealmService implements IRealmService {
           return;
         }
         for (let i = 0; i < channels.length; i += 1) {
-          const conversation = conversations[channels[i]];
-          if (conversation.type === '1-1') {
+          const channel = channels[i];
+          const conversation = this.realm.create<IConversation>(
+            'Conversation',
+            conversations[channel],
+            Realm.UpdateMode.Modified,
+          );
+          if (conversation.type === 'group') {
+            const members = conversation.members;
+            for (let j = 0; j < members.length; j += 1) {
+              const contact = this.realm
+                .objects<IContact>('Contact')
+                .filtered(`mobile = "${members[j]}"`)[0];
+              if (contact) {
+                contact.groups = contact.groups
+                  ? `${contact.groups},${channel}`
+                  : channel;
+              }
+            }
+          } else {
             const contact = this.realm
               .objects<IContact>('Contact')
-              .filtered(`mobile = "${conversation.title}"`)[0];
+              .filtered(`mobile = "${conversation.name}"`)[0];
             if (contact) {
-              conversation.title = contact.fullName;
+              conversation.name = contact.fullName;
               contact.channel = conversation.channel;
             }
           }
-          conversations[channels[i]] = this.realm.create<IConversation>(
-            'Conversation',
-            conversation,
-            Realm.UpdateMode.Modified,
-          );
         }
       });
     } catch (e) {
@@ -260,31 +271,39 @@ export class RealmService implements IRealmService {
   }
 
   async getConversationFromChannelMetadata(
-    channelMetadata: Pubnub.ChannelMetadataObject<Pubnub.ObjectCustom>,
+    channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
   ): Promise<IConversation> {
     const custom = channelMetadata.custom as ChannelCustom;
+    const channel = channelMetadata.id;
     try {
-      let sender: string;
       let members: string[];
       if (custom.type === 'group') {
         const groupChatMembers = await this.apiService.getGroupMembers(
           custom.id,
         );
         members = groupChatMembers.map(({user: {mobile}}) => mobile);
-        sender = channelMetadata.name ?? '';
+        return {
+          id: String(custom.id),
+          creatorId: String(custom.creatorId),
+          creatorMobile: decrypt(custom.creatorMobile),
+          name: channelMetadata.name ?? '',
+          type: 'group',
+          members,
+          channel,
+        };
       } else {
         members = custom.members
           .split(',')
           .map((encryptedMember) => decrypt(encryptedMember));
         const user = this.authService.getUser();
-        sender = members.find((member) => member !== user?.mobile) ?? '';
+        const sender = members.find((member) => member !== user?.mobile) ?? '';
+        return {
+          name: sender,
+          type: custom.type ?? '1-1',
+          members,
+          channel,
+        };
       }
-      return {
-        title: sender,
-        type: custom.type ?? '1-1',
-        members,
-        channel: channelMetadata.id,
-      };
     } catch (e) {
       throw e;
     }

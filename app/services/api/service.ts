@@ -14,6 +14,10 @@ export type Requester = {
     url: string,
     data: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
+  patch: <T extends any = any>(
+    url: string,
+    data: {[key: string]: any},
+  ) => Promise<ApiResponse<T>>;
 };
 
 export interface IApiService {
@@ -39,6 +43,14 @@ export interface IApiService {
     name: string,
     members: IContact[],
   ): Promise<GroupChat & {members: IContact[]}>;
+
+  updateGroupChat(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+    },
+  ): Promise<GroupChat>;
 
   addGroupChatMembers(
     groupChatId: number,
@@ -71,6 +83,16 @@ export class ApiService implements IApiService {
     post: <T extends any = any>(url: string, data: {[key: string]: any}) => {
       return fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then((...args) => this.handleFetchErrors<T>(...args));
+    },
+    patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
+        method: 'PATCH',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
@@ -184,6 +206,26 @@ export class ApiService implements IApiService {
         name,
       });
       await this.addGroupChatMembers(groupChat.id, members);
+      return groupChat;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async updateGroupChat(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+    },
+  ): Promise<GroupChat> {
+    try {
+      const {
+        data: {groupChat},
+      } = await this.requester.patch<{groupChat: GroupChat}>(
+        `/group-chat/${id}`,
+        data,
+      );
       return groupChat;
     } catch (e) {
       throw e;

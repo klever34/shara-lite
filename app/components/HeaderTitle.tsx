@@ -1,6 +1,6 @@
 import React from 'react';
 import {applyStyles} from '../helpers/utils';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
 import {noop} from 'lodash';
 
@@ -8,16 +8,18 @@ type HeaderTitleProps = {
   title: string;
   description?: string;
   onPress?: () => void;
+  style?: ViewStyle;
 };
 
 const HeaderTitle = ({
   title,
   description = '',
   onPress = noop,
+  style = {},
 }: HeaderTitleProps) => {
   return (
-    <Touchable style={applyStyles('h-full')} onPress={onPress}>
-      <View style={applyStyles('flex-col flex-1 h-full')}>
+    <Touchable onPress={onPress}>
+      <View style={applyStyles('flex-1 h-40 justify-center', style)}>
         <Text style={styles.headerTitleText} numberOfLines={1}>
           {title}
         </Text>
