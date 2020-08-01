@@ -93,3 +93,4 @@ type Payment = {
 }
 
 declare module 'react-native-signature-capture'
+declare module 'react-native-bluetooth-escpos-printer'
