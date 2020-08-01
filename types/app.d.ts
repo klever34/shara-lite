@@ -66,7 +66,7 @@ type ApiResponse<T extends any = any> = {
   message: string
 }
 type CustomerItemProps = {
-  item: Customer
+  item: ICustomer
 }
 type CreditDetails = {
   id: string

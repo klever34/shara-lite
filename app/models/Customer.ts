@@ -4,7 +4,6 @@ import {ICredit} from './Credit';
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface ICustomer extends BaseModelInterface {
-  id: string;
   name: string;
   mobile: string;
   receipts?: IReceipt[];

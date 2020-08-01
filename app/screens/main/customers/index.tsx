@@ -20,7 +20,7 @@ const CustomersTab = () => {
   const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
 
   const handleSelectCustomer = useCallback(
-    (item?: Customer) => {
+    (item?: ICustomer) => {
       navigation.navigate('CustomerDetails', {customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
@@ -32,10 +32,10 @@ const CustomersTab = () => {
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
-        const sort = (item: Customer, text: string) => {
+        const sort = (item: ICustomer, text: string) => {
           return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
-        const ac = customers.filter((item: Customer) => {
+        const ac = customers.filter((item: ICustomer) => {
           return sort(item, searchedText);
         });
         setMyCustomers(ac);

@@ -2,11 +2,10 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button} from '../../../components/Button';
-import {generateUniqueId} from '../../../helpers/utils';
+import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 import {saveCustomer} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
-import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 
 const AddCustomer = () => {
   const navigation = useNavigation();
@@ -25,12 +24,9 @@ const AddCustomer = () => {
 
   const handleSubmit = useCallback(() => {
     if (name && mobile) {
-      const id = generateUniqueId();
       const customer = {
-        id,
         name,
         mobile,
-        created_at: new Date(),
       };
       saveCustomer({realm, customer});
       setIsLoading(true);
