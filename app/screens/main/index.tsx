@@ -8,6 +8,9 @@ import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {applyStyles} from '../../helpers/utils';
 import {IContact, IConversation} from '../../models';
+import {ICredit} from '../../models/Credit';
+import {ICreditPayment} from '../../models/CreditPayment';
+import {IPayment} from '../../models/Payment';
 import {
   getAuthService,
   getContactsService,
@@ -17,6 +20,7 @@ import {colors} from '../../styles';
 import {BusinessSetup} from '../BusinessSetup';
 import {
   CreditDetails,
+  CreditPaymentDetails,
   Finances,
   NewReceipt,
   OverdueCredit,
@@ -31,13 +35,13 @@ import SelectGroupMembersScreen from './chat/SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
 import AddCustomer from './customers/AddCustomer';
 import CreditPayment from './customers/CreditPayment';
+import {CustomerCreditPaymentDetails} from './customers/CreditPaymentDetails';
 import CustomerDetails from './customers/CustomerDetails';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {ICredit} from 'app/models/Credit';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -58,6 +62,7 @@ export type MainStackParamList = {
   CustomerPaymentDetails: {payment: Payment};
   CustomerOrderDetails: {order: Order};
   CustomerTotalCredit: {credits: ICredit[]};
+  CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
   CustomerOverdueCredit: {credits: ICredit[]};
   BusinessSetup: undefined;
   SelectGroupMembers: undefined;
@@ -66,6 +71,7 @@ export type MainStackParamList = {
   OverdueCredit: {credits: ICredit[]};
   RecordCreditPayment: undefined;
   CreditDetails: {creditDetails: CreditDetails};
+  CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -370,6 +376,21 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
+          name="CustomerCreditPaymentDetails"
+          component={CustomerCreditPaymentDetails}
+          options={{
+            title: 'Credit Payment Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
           name="BusinessSetup"
           options={{
             headerShown: false,
@@ -426,6 +447,21 @@ const MainScreens = ({navigation}: any) => {
           component={CreditDetails}
           options={{
             title: 'Credit Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CreditPaymentDetails"
+          component={CreditPaymentDetails}
+          options={{
+            title: 'Credit Payment Details',
             headerStyle: {
               backgroundColor: colors.primary,
             },

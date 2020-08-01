@@ -1,20 +1,20 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback} from 'react';
 import format from 'date-fns/format';
-import {StyleSheet, Text, View, FlatList, ScrollView} from 'react-native';
+import React, {useCallback} from 'react';
+import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, FAButton} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {ICreditPayment} from '../../../../models/CreditPayment';
+import {getCreditPayments} from '../../../../services/CreditPaymentService';
 import {getSummary, IFinanceSummary} from '../../../../services/FinanceService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
-import {ICredit} from '../../../../models/Credit';
 import {getCredits} from '../../../../services/CreditService';
-import {IPayment} from '../../../../models/Payment';
 
 type CreditItemProps = {
-  item: ICredit;
+  item: ICreditPayment;
 };
 
 export const MyCredit = () => {
@@ -22,6 +22,7 @@ export const MyCredit = () => {
   const navigation = useNavigation();
   const financeSummary: IFinanceSummary = getSummary({realm});
   const credits = getCredits({realm});
+  const creditsPayments = getCreditPayments({realm});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
   const paymentMethodLabel = {
     cash: 'Cash',
@@ -37,27 +38,16 @@ export const MyCredit = () => {
   );
 
   const handleCreditItemClick = useCallback(
-    (creditDetails) => {
-      navigation.navigate('CreditDetails', {creditDetails});
+    (creditPaymentDetails) => {
+      navigation.navigate('CreditPaymentDetails', {creditPaymentDetails});
     },
     [navigation],
   );
 
-  const getReceiptPaymentMethods = useCallback(
-    (payments: IPayment[]) => {
-      const paymentMethods = payments.map(
-        (item) => paymentMethodLabel[item.method],
-      );
-      const label = paymentMethods.toString().replace(',', ' & ');
-      return label;
-    },
-    [paymentMethodLabel],
-  );
-
   const renderCreditItem = useCallback(
-    ({item: credit}: CreditItemProps) => {
+    ({item}: CreditItemProps) => {
       return (
-        <Touchable onPress={() => handleCreditItemClick(credit)}>
+        <Touchable onPress={() => handleCreditItemClick(item)}>
           <View
             style={applyStyles(
               'px-lg',
@@ -75,14 +65,14 @@ export const MyCredit = () => {
                   fontSize: 16,
                   color: colors['gray-300'],
                 })}>
-                {credit?.customer?.name}
+                {item.credit?.customer?.name}
               </Text>
               <Text
                 style={applyStyles('text-400', {
                   fontSize: 16,
                   color: colors['gray-200'],
                 })}>
-                {credit.created_at && format(credit.created_at, 'MMM dd, yyyy')}
+                {item.created_at && format(item.created_at, 'MMM dd, yyyy')}
               </Text>
             </View>
             <View style={applyStyles({alignItems: 'flex-end'})}>
@@ -91,23 +81,21 @@ export const MyCredit = () => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(credit.receipt?.total_amount)}
+                &#8358;{numberWithCommas(item.amount_paid)}
               </Text>
               <Text
                 style={applyStyles('text-400', {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {credit?.receipt?.payments
-                  ? getReceiptPaymentMethods(credit.receipt.payments)
-                  : ''}
+                {paymentMethodLabel[item.payment.method]}
               </Text>
             </View>
           </View>
         </Touchable>
       );
     },
-    [handleCreditItemClick, getReceiptPaymentMethods],
+    [handleCreditItemClick, paymentMethodLabel],
   );
 
   return (
@@ -143,7 +131,7 @@ export const MyCredit = () => {
                   fontSize: 24,
                   color: colors['gray-300'],
                 })}>
-                &#8358;{numberWithCommas(financeSummary.totalCredit)}
+                &#8358;{numberWithCommas(financeSummary.overdueCredit)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-uppercase', {
@@ -187,7 +175,7 @@ export const MyCredit = () => {
             </View>
           </Touchable>
         </View>
-        {!!credits.length && (
+        {!!creditsPayments.length && (
           <View style={applyStyles('h-full', {backgroundColor: colors.white})}>
             <Text
               style={applyStyles('text-500 py-xs px-lg', {
@@ -198,7 +186,7 @@ export const MyCredit = () => {
               Payment History
             </Text>
             <FlatList
-              data={credits}
+              data={creditsPayments}
               renderItem={renderCreditItem}
               keyExtractor={(item) => `${item.id}`}
             />

@@ -7,31 +7,28 @@ import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
-import {ICredit} from '../../../models/Credit';
-import {colors} from '../../../styles';
 import {IPayment} from '../../../models/Payment';
+import {colors} from '../../../styles';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
   const credits = customer.credits || [];
+  const creditPayments = customer.payments || [];
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
   const totalCreditsAmount = credits.reduce(
-    (total, {total_amount}) => total + total_amount,
+    (total, {amount_left}) => total + amount_left,
     0,
   );
   const overdueCreditsAmount = credits.reduce(
     (total, {amount_left}) => total + amount_left,
     0,
   );
-  const paymentMethodLabel = {
-    cash: 'Cash',
-    transfer: 'Bank Transfer',
-    mobile: 'Mobile Money',
-  } as {[key: string]: string};
 
   const handleViewDetails = useCallback(
-    (creditDetails: ICredit) => {
-      navigation.navigate('CustomerCreditPayment', {creditDetails});
+    (creditPaymentDetails: IPayment) => {
+      navigation.navigate('CustomerCreditPaymentDetails', {
+        creditPaymentDetails,
+      });
     },
     [navigation],
   );
@@ -43,19 +40,8 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
     [navigation],
   );
 
-  const getReceiptPaymentMethods = useCallback(
-    (payments: IPayment[]) => {
-      const paymentMethods = payments.map(
-        (item) => paymentMethodLabel[item.method],
-      );
-      const label = paymentMethods.toString().replace(',', ' & ');
-      return label;
-    },
-    [paymentMethodLabel],
-  );
-
   const renderCreditItem = useCallback(
-    ({item: credit}: {item: ICredit}) => {
+    ({item: credit}: {item: IPayment}) => {
       return (
         <Touchable onPress={() => handleViewDetails(credit)}>
           <View
@@ -91,23 +77,21 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(credit.amount_left)}
+                &#8358;{numberWithCommas(credit.amount_paid)}
               </Text>
               <Text
-                style={applyStyles('text-400', {
+                style={applyStyles('text-400 text-capitalize', {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {credit?.receipt?.payments
-                  ? getReceiptPaymentMethods(credit.receipt.payments)
-                  : ''}
+                {credit.type}
               </Text>
             </View>
           </View>
         </Touchable>
       );
     },
-    [getReceiptPaymentMethods, handleViewDetails],
+    [handleViewDetails],
   );
 
   return (
@@ -196,7 +180,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
             Payment History
           </Text>
           <FlatList
-            data={credits}
+            data={creditPayments}
             renderItem={renderCreditItem}
             keyExtractor={(item) => `${item.id}`}
           />
