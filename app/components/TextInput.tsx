@@ -1,9 +1,18 @@
 import React from 'react';
-import {StyleSheet, TextInput as RNTextInput} from 'react-native';
+import {
+  StyleSheet,
+  TextInput as RNTextInput,
+  TextInputProps as RNTextInputProps,
+} from 'react-native';
 import {colors} from '../styles';
+import {applyStyles} from '../helpers/utils';
 
-const TextInput = ({...restProps}) => {
-  return <RNTextInput {...restProps} style={styles.inputField} />;
+type TextInputProps = RNTextInputProps & {};
+
+const TextInput = ({style, ...restProps}: TextInputProps) => {
+  return (
+    <RNTextInput {...restProps} style={applyStyles(styles.inputField, style)} />
+  );
 };
 
 const styles = StyleSheet.create({

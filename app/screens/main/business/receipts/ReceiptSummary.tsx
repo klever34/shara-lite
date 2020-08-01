@@ -17,7 +17,6 @@ import {
   FloatingLabelInput,
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
-import AppMenu from '../../../../components/Menu';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
@@ -30,6 +29,7 @@ import {PaymentMethodModal} from './PaymentMethodModal';
 import {Receipts} from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import HeaderRight from '../../../components/HeaderRight';
 
 export type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -209,7 +209,7 @@ const ReceiptSummary = (props: Props) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
+      headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);
 

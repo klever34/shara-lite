@@ -67,13 +67,13 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
       }}>
       <View style={listItemStyles.container}>
         <PlaceholderImage
-          text={conversation.title}
-          style={applyStyles('mr-md my-md text-700')}
+          text={conversation.name}
+          style={applyStyles('mr-md my-md')}
         />
         <View style={listItemStyles.contentContainer}>
           <View style={listItemStyles.titleContainer}>
             <Text style={listItemStyles.titleText} numberOfLines={1}>
-              {conversation.title}
+              {conversation.name}
             </Text>
             <Text style={listItemStyles.dateText} numberOfLines={1}>
               {dateText}
@@ -142,8 +142,7 @@ const ChatListScreen = () => {
         keyExtractor={(item) => item.channel}
       />
       <FAButton
-        iconName="plus"
-        iconType="feathericons"
+        iconName="text"
         onPress={() => {
           navigation.navigate('Contacts');
         }}

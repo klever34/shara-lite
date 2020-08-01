@@ -3,13 +3,13 @@ import {useNavigation} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
 import React, {useCallback, useLayoutEffect} from 'react';
 import {SafeAreaView} from 'react-native';
-import AppMenu from '../../../components/Menu';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import CreditsTab from './CreditsTab';
 import DetailsTab from './DetailsTab';
 import OrdersTab from './OrdersTab';
 import PaymentsTab from './PaymentsTab';
+import HeaderRight from '../../../components/HeaderRight';
 
 type CustomerDetailsParamList = {
   Details: undefined;
@@ -28,13 +28,13 @@ const CustomerDetails = ({route}: {route: any}) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
       headerLeft: () => (
         <HeaderBackButton
           tintColor={colors.white}
           onPress={() => navigation.navigate('Customers')}
         />
       ),
+      headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);
 

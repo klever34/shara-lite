@@ -1,3 +1,5 @@
+type Falsy = undefined | null | false;
+
 type User = {
   id: number
   firstname: string
@@ -9,6 +11,7 @@ type User = {
 }
 
 type GroupChat = {
+<<<<<<< HEAD
   name: string
   uuid: string
   created_by: number
@@ -16,6 +19,16 @@ type GroupChat = {
   updated_at: string
   id: number
 }
+=======
+  name: string;
+  description: string | null;
+  uuid: string;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  id: number;
+};
+>>>>>>> discovery
 
 type GroupChatMember = {
   id: number

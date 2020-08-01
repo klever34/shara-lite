@@ -19,7 +19,35 @@ export const colors: {[key: string]: string} = {
   black: '#222222',
 };
 
+const sizes = [
+  0,
+  1,
+  2,
+  4,
+  6,
+  8,
+  12,
+  16,
+  20,
+  24,
+  28,
+  32,
+  40,
+  48,
+  56,
+  64,
+  72,
+  80,
+  96,
+];
+
 export const spacing: {[key: string]: number} = {
+  ...sizes.reduce((acc, curr) => {
+    return {
+      ...acc,
+      [curr]: curr,
+    };
+  }, {}),
   xs: 4,
   sm: 8,
   md: 12,

@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.12-feature.business-setup+build.852",
+  "version": "0.1.13",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -49,7 +49,7 @@
     "react-native-share": "^3.6.0",
     "react-native-signature-capture": "^0.4.10",
     "react-native-tab-view": "^2.14.4",
-    "react-native-vector-icons": "^7.0.0",
+    "react-native-vector-icons": "6.6.0",
     "react-native-webview": "^10.3.2",
     "readable-stream": "1.0.33",
     "realm": "^6.0.2",
