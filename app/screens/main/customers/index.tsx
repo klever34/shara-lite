@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, useEffect} from 'react';
 import {FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
 import {FAButton} from '../../../components';
 import EmptyState from '../../../components/EmptyState';
@@ -18,6 +18,14 @@ const CustomersTab = () => {
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
+
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      const customers = getCustomers({realm});
+      setMyCustomers(customers);
+    });
+    return unsubscribe;
+  }, [navigation, realm]);
 
   const handleSelectCustomer = useCallback(
     (item?: ICustomer) => {
