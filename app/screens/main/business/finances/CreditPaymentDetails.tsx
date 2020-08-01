@@ -2,10 +2,10 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import AppMenu from '../../../../components/Menu';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {ICreditPayment} from '../../../../models/CreditPayment';
 import {colors} from '../../../../styles';
+import HeaderRight from '../../../../components/HeaderRight';
 
 export const CreditPaymentDetails = ({route}: any) => {
   const navigation = useNavigation();
@@ -16,7 +16,7 @@ export const CreditPaymentDetails = ({route}: any) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <AppMenu options={[{text: 'Help', onSelect: () => {}}]} />
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);

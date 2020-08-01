@@ -152,7 +152,7 @@ const ChatDetailsScreen = ({
           />
         );
       },
-      headerRight: () => <HeaderRight options={options} />,
+      headerRight: () => <HeaderRight menuOptions={options} />,
     });
   }, [
     conversation.name,

@@ -3,11 +3,11 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useLayoutEffect} from 'react';
 import {SafeAreaView, View} from 'react-native';
 import Icon from '../../../../components/Icon';
-import AppMenu from '../../../../components/Menu';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {MyCredit, MyInventory, MyReceipts} from './index';
+import HeaderRight from '../../../../components/HeaderRight';
 
 type TabStackParamList = {
   Credit: undefined;
@@ -45,7 +45,7 @@ export const Finances = () => {
             </View>
           </Touchable>
           <View style={applyStyles('px-xs', {width: '33%'})}>
-            <AppMenu options={[{text: 'Help', onSelect: () => {}}]} />
+            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
           </View>
         </View>
       ),

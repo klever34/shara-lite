@@ -15,7 +15,7 @@ export const RecordCreditPayment = () => {
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
-        saveCreditPayment({realm, ...payload});
+        saveCreditPayment({realm, customer: {}, ...payload});
         callback();
         navigation.goBack();
       }, 300);

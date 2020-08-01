@@ -16,13 +16,14 @@ import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
+import {ICustomer} from '../../../../models';
 
 type Props = {
   visible: boolean;
   timeTaken: number;
   isSaving: boolean;
   amountPaid: number;
-  customer: Customer;
+  customer: Customer | ICustomer;
   creditAmount: number;
   isCompleting: boolean;
   onComplete: () => void;

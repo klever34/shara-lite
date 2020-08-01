@@ -15,11 +15,11 @@ import {
   FloatingLabelInput,
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
-import AppMenu from '../../../../components/Menu';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
+import HeaderRight from '../../../../components/HeaderRight';
 import {products} from '../../data.json';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
@@ -47,7 +47,7 @@ export const NewReceipt = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
+      headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);
 

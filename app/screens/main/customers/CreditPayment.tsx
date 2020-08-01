@@ -3,12 +3,12 @@ import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {CreditPaymentForm} from '../../../components';
-import AppMenu from '../../../components/Menu';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
 import {saveCreditPayment} from '../../../services/CreditPaymentService';
+import HeaderRight from '../../../components/HeaderRight';
 
 const CreditPayment = ({route}: any) => {
   const realm = useRealm();
@@ -19,7 +19,7 @@ const CreditPayment = ({route}: any) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <AppMenu options={[{text: 'Help', onSelect: () => {}}]} />
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);

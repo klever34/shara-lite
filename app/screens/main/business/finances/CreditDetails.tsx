@@ -6,9 +6,9 @@ import {CreditPaymentForm} from '../../../../components';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
 import {colors} from '../../../../styles';
-import AppMenu from '../../../../components/Menu';
 import {useRealm} from '../../../../services/realm';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
+import HeaderRight from '../../../../components/HeaderRight';
 
 export const CreditDetails = ({route}: any) => {
   const realm = useRealm();
@@ -19,7 +19,7 @@ export const CreditDetails = ({route}: any) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <AppMenu options={[{text: 'Help', onSelect: () => {}}]} />
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);

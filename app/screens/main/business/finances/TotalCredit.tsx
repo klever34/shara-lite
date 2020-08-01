@@ -5,7 +5,7 @@ import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
-import AppMenu from '../../../../components/Menu';
+import HeaderRight from '../../../../components/HeaderRight';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
@@ -48,7 +48,7 @@ export const TotalCredit = ({
             </View>
           </Touchable>
           <View style={applyStyles('px-xs', {width: '33%'})}>
-            <AppMenu options={[{text: 'Help', onSelect: () => {}}]} />
+            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
           </View>
         </View>
       ),

@@ -29,7 +29,7 @@ import {PaymentMethodModal} from './PaymentMethodModal';
 import {Receipts} from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import HeaderRight from '../../../components/HeaderRight';
+import HeaderRight from '../../../../components/HeaderRight';
 
 export type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -400,7 +400,7 @@ const ReceiptSummary = (props: Props) => {
     [setCustomer],
   );
 
-  const handleSetCustomer = useCallback((value: Customer) => {
+  const handleSetCustomer = useCallback((value: ICustomer) => {
     setCustomer(value);
   }, []);
 
