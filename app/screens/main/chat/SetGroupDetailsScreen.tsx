@@ -40,7 +40,7 @@ const SetGroupDetailsScreen = ({
             const conversation = realm.create<IConversation>(
               'Conversation',
               {
-                title: groupChat.name,
+                name: groupChat.name,
                 type: 'group',
                 channel: groupChat.uuid,
                 members: members.map((member) => member.mobile),

@@ -5,7 +5,6 @@ import {colors} from '../../styles';
 import ChatListScreen from './chat/ChatListScreen';
 import {getAuthService, getRealmService} from '../../services';
 import {useNavigation} from '@react-navigation/native';
-import AppMenu from '../../components/Menu';
 import {applyStyles, retryPromise} from '../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../models';
 import {usePubNub} from 'pubnub-react';
@@ -18,6 +17,7 @@ import PushNotification from 'react-native-push-notification';
 import {ModalWrapperFields, withModal} from '../../helpers/hocs';
 import {MessageActionEvent} from '../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
+import HeaderRight from '../../components/HeaderRight';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -57,8 +57,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <AppMenu
-          options={[
+        <HeaderRight
+          menuOptions={[
             {
               text: 'Restore Messages',
               onSelect: () => {
@@ -183,9 +183,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 if (conversation.type === '1-1') {
                   const contact = realm
                     .objects<IContact>('Contact')
-                    .filtered(`mobile = "${conversation.title}"`)[0];
+                    .filtered(`mobile = "${conversation.name}"`)[0];
                   if (contact) {
-                    conversation.title = contact.fullName;
+                    conversation.name = contact.fullName;
                     contact.channel = conversation.channel;
                   }
                 }

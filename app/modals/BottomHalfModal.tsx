@@ -25,7 +25,7 @@ const BottomHalfModal = ({
 };
 
 const styles = StyleSheet.create({
-  content: applyStyles('bg-white p-md', {
+  content: applyStyles('bg-white', {
     borderRadius: 4,
   }),
 });

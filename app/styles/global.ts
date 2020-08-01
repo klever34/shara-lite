@@ -137,8 +137,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       // width
       [`w-${curr}`]: {width: spacing[curr]},
 
-      // border radius
+      // border
       [`rounded-${curr}`]: {borderRadius: spacing[curr]},
+      [`border-${curr}`]: {borderWidth: spacing[curr]},
     };
   }, {}),
   ...Object.keys(colors).reduce((acc, curr) => {
@@ -146,6 +147,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       ...acc,
       [`bg-${curr}`]: {backgroundColor: colors[curr]},
       [`text-${curr}`]: {color: colors[curr]},
+      [`border-${curr}`]: {borderColor: colors[curr]},
     };
   }, {}),
   ...[0, 1, 2, 3, 4].reduce((acc, curr) => {

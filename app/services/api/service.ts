@@ -44,10 +44,13 @@ export interface IApiService {
     members: IContact[],
   ): Promise<GroupChat & {members: IContact[]}>;
 
-  updateGroupChat(data: {
-    name?: string;
-    description?: string;
-  }): Promise<GroupChat>;
+  updateGroupChat(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+    },
+  ): Promise<GroupChat>;
 
   addGroupChatMembers(
     groupChatId: number,
@@ -209,15 +212,18 @@ export class ApiService implements IApiService {
     }
   }
 
-  async updateGroupChat(data: {
-    name?: string;
-    description?: string;
-  }): Promise<GroupChat> {
+  async updateGroupChat(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+    },
+  ): Promise<GroupChat> {
     try {
       const {
         data: {groupChat},
       } = await this.requester.patch<{groupChat: GroupChat}>(
-        '/group-chat',
+        `/group-chat/${id}`,
         data,
       );
       return groupChat;

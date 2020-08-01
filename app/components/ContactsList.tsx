@@ -18,7 +18,7 @@ type ContactsListProps = Omit<
   FlatListProps<IContact>,
   'data' | 'renderItem' | 'keyExtractor'
 > & {
-  contacts: Collection<IContact>;
+  contacts?: Collection<IContact>;
   getContactItemTitle?: (item: IContact) => string;
   onContactItemClick: (item: IContact) => void;
 };

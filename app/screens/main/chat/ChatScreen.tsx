@@ -46,7 +46,7 @@ const ChatScreen = ({
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
   const conversation = route.params;
-  const {channel, title} = conversation;
+  const {channel, name} = conversation;
   const [input, setInput] = useState('');
   const typingMessage = useTyping(channel, input);
   const [showEmojiBoard, setShowEmojiBoard] = useState(false);
@@ -139,7 +139,7 @@ const ChatScreen = ({
       headerTitle: () => {
         return (
           <HeaderTitle
-            title={title}
+            title={name}
             description={typingMessage}
             onPress={() => {
               navigation.navigate('ChatDetails', conversation);
@@ -148,7 +148,7 @@ const ChatScreen = ({
         );
       },
     });
-  }, [conversation, navigation, title, typingMessage]);
+  }, [conversation, navigation, name, typingMessage]);
   const handleSubmit = useCallback(() => {
     setInput('');
     const authService = getAuthService();

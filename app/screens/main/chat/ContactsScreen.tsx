@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {ActivityIndicator, Alert, Text, View} from 'react-native';
+import {Alert, Text, View} from 'react-native';
 import {
   getApiService,
   getAuthService,
@@ -9,7 +9,6 @@ import {applyStyles} from '../../../helpers/utils';
 import Touchable from '../../../components/Touchable';
 import {CommonActions, useNavigation} from '@react-navigation/native';
 import Share from 'react-native-share';
-import AppMenu from '../../../components/Menu';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
@@ -17,6 +16,7 @@ import {IContact, IConversation} from '../../../models';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
 import {useErrorHandler} from 'react-error-boundary';
+import HeaderRight from '../../../components/HeaderRight';
 
 const ContactsScreen = () => {
   const navigation = useNavigation();
@@ -95,27 +95,19 @@ const ContactsScreen = () => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row')}>
-          {(loadingContacts || loadingChat) && (
-            <ActivityIndicator
-              color={colors.white}
-              size={24}
-              style={applyStyles('mr-md')}
-            />
-          )}
-          <AppMenu
-            options={[
-              {
-                text: 'Refresh',
-                onSelect: () => loadContacts(true),
-              },
-              {
-                text: 'Invite a friend',
-                onSelect: inviteFriend,
-              },
-            ]}
-          />
-        </View>
+        <HeaderRight
+          loading={loadingContacts || loadingChat}
+          menuOptions={[
+            {
+              text: 'Refresh',
+              onSelect: () => loadContacts(true),
+            },
+            {
+              text: 'Invite a friend',
+              onSelect: inviteFriend,
+            },
+          ]}
+        />
       ),
     });
   }, [inviteFriend, loadContacts, loadingChat, loadingContacts, navigation]);
@@ -144,7 +136,7 @@ const ContactsScreen = () => {
             conversation = realm.create<IConversation>(
               'Conversation',
               {
-                title: item.fullName,
+                name: item.fullName,
                 channel: channelName,
                 type: '1-1',
                 members: [user.mobile, item.mobile],

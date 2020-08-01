@@ -4,11 +4,17 @@ import promiseRetry from 'promise-retry';
 import {globalStyles} from '../styles';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
+import {TextStyle, ViewStyle, StyleProp} from 'react-native';
 
 export const generateUniqueId = () => uuidV4();
 
 export const applyStyles = (
-  ...styles: ({[key: string]: any} | string)[]
+  ...styles: (
+    | {[key: string]: any}
+    | StyleProp<ViewStyle>
+    | StyleProp<TextStyle>
+    | string
+  )[]
 ): {[key: string]: any} =>
   styles.reduce<{[key: string]: any}>((acc, curr) => {
     if (typeof curr === 'string') {

@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
@@ -10,13 +11,10 @@ import {
   StyleSheet,
   Text,
   View,
-  Alert,
 } from 'react-native';
 import {MainStackParamList} from '..';
-import {Button} from '../../../components';
-import {FloatingLabelInput} from '../../../components';
+import {Button, FloatingLabelInput} from '../../../components';
 import Icon from '../../../components/Icon';
-import AppMenu from '../../../components/Menu';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {savePayment} from '../../../services/PaymentService';
@@ -27,6 +25,7 @@ import {PaymentMethodModal} from './PaymentMethodModal';
 import Receipts from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import HeaderRight from '../../../components/HeaderRight';
 
 type SummaryTableItemProps = {
   item: ReceiptItem;
@@ -164,7 +163,7 @@ const ReceiptSummary = ({
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <AppMenu options={[]} />,
+      headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);
 
