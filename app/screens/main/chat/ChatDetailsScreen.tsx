@@ -21,7 +21,7 @@ const keyExtractor = () => 'key';
 const getItem = () => null;
 const getItemCount = () => 1;
 
-type EditPropertyProps = {
+type EditTextPropertyProps = {
   placeholder: string;
   description?: string;
   initialValue?: string;
@@ -35,7 +35,7 @@ const EditTextProperty = ({
   onCancel,
   onDone,
   initialValue = '',
-}: EditPropertyProps) => {
+}: EditTextPropertyProps) => {
   const [value, setValue] = useState(initialValue);
   return (
     <View style={applyStyles('pt-md')}>

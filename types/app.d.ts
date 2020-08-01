@@ -1,3 +1,5 @@
+type Falsy = undefined | null | false;
+
 type User = {
   id: number;
   firstname: string;

@@ -6,6 +6,7 @@ import {
   TouchableNativeFeedbackProps,
 } from 'react-native';
 import React, {ReactElement} from 'react';
+import throttle from 'lodash/throttle';
 
 type TouchableProps = (
   | TouchableNativeFeedbackProps
@@ -18,6 +19,7 @@ const Touchable = ({onPress, children, ...restProps}: TouchableProps) => {
   if (!onPress) {
     return children;
   }
+  onPress = throttle(onPress, 1000);
   return (
     Platform.select({
       android: (
