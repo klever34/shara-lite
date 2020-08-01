@@ -1,4 +1,4 @@
-import React, {useCallback, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
 import {Alert, SafeAreaView, Text, View, VirtualizedList} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '..';
@@ -29,7 +29,7 @@ type EditPropertyProps = {
   onDone: (value: string) => void;
 };
 
-const EditProperty = ({
+const EditTextProperty = ({
   placeholder,
   description = '',
   onCancel,
@@ -79,11 +79,42 @@ const ChatDetailsScreen = ({
   const conversation = route.params;
   const realm = useRealm();
   const handleError = useErrorHandler();
+  const isCreator = useMemo(() => {
+    const me = getAuthService().getUser();
+    return conversation.creatorId === String(me?.id);
+  }, [conversation.creatorId]);
+
+  const editTextProperty = useCallback(
+    async (property: 'name' | 'description', value: string) => {
+      const apiService = getApiService();
+      try {
+        if (!conversation.id) {
+          return;
+        }
+        const groupChat = await apiService.updateGroupChat(conversation.id, {
+          [property]: value,
+        });
+        realm.write(() => {
+          realm.create<IConversation>(
+            'Conversation',
+            {
+              channel: conversation.channel,
+              name: groupChat.name,
+            },
+            UpdateMode.Modified,
+          );
+        });
+      } catch (e) {
+        handleError(e);
+      }
+    },
+    [conversation.channel, conversation.id, handleError, realm],
+  );
+
   useLayoutEffect(() => {
     const options: HeaderRightOption[] = [];
     if (conversation.type === 'group') {
-      const me = getAuthService().getUser();
-      if (conversation.creatorId === String(me?.id)) {
+      if (isCreator) {
         options.push(
           {
             icon: 'create',
@@ -91,35 +122,10 @@ const ChatDetailsScreen = ({
               openModal('bottom-half', {
                 renderContent: ({closeModal}) => {
                   return (
-                    <EditProperty
+                    <EditTextProperty
                       placeholder="Edit group name"
                       initialValue={conversation.name}
-                      onDone={async (name) => {
-                        const apiService = getApiService();
-                        try {
-                          if (!conversation.id) {
-                            return;
-                          }
-                          const groupChat = await apiService.updateGroupChat(
-                            conversation.id,
-                            {
-                              name,
-                            },
-                          );
-                          realm.write(() => {
-                            realm.create<IConversation>(
-                              'Conversation',
-                              {
-                                channel: conversation.channel,
-                                name: groupChat.name,
-                              },
-                              UpdateMode.Modified,
-                            );
-                          });
-                        } catch (e) {
-                          handleError(e);
-                        }
-                      }}
+                      onDone={(name) => editTextProperty('name', name)}
                       onCancel={closeModal}
                     />
                   );
@@ -149,15 +155,12 @@ const ChatDetailsScreen = ({
       headerRight: () => <HeaderRight options={options} />,
     });
   }, [
-    conversation.channel,
-    conversation.creatorId,
-    conversation.id,
     conversation.name,
     conversation.type,
-    handleError,
+    editTextProperty,
+    isCreator,
     navigation,
     openModal,
-    realm,
   ]);
   const participants = realm
     .objects<IContact>('Contact')
@@ -169,43 +172,49 @@ const ChatDetailsScreen = ({
   const renderView = useCallback(() => {
     return (
       <View>
-        <Touchable
-          onPress={() => {
-            openModal('bottom-half', {
-              renderContent: ({closeModal}) => {
-                return (
-                  <EditProperty
-                    placeholder="Add group description"
-                    initialValue={conversation.description}
-                    onDone={async (description) => {
-                      const apiService = getApiService();
-                      try {
-                        if (!conversation.id) {
-                          return;
-                        }
-                        const response = await apiService.updateGroupChat(
-                          conversation.id,
-                          {
-                            description,
-                          },
-                        );
-                        console.log(response);
-                      } catch (e) {
-                        handleError(e);
-                      }
-                    }}
-                    onCancel={closeModal}
-                  />
-                );
-              },
-            });
-          }}>
-          <View style={applyStyles('p-lg bg-white elevation-1 mb-md')}>
-            <Text style={applyStyles('text-md')}>Add group description</Text>
-          </View>
-        </Touchable>
+        {conversation.type === 'group' &&
+          (conversation.description || isCreator) && (
+            <Touchable
+              onPress={
+                isCreator
+                  ? () => {
+                      openModal('bottom-half', {
+                        renderContent: ({closeModal}) => {
+                          return (
+                            <EditTextProperty
+                              placeholder="Add group description"
+                              initialValue={conversation.description}
+                              onDone={(description) =>
+                                editTextProperty('description', description)
+                              }
+                              onCancel={closeModal}
+                            />
+                          );
+                        },
+                      });
+                    }
+                  : undefined
+              }>
+              <View style={applyStyles('p-lg bg-white elevation-1 mb-md')}>
+                {conversation.description ? (
+                  <>
+                    <Text style={applyStyles('text-base mb-xs')}>
+                      Group description
+                    </Text>
+                    <Text style={applyStyles('text-sm')}>
+                      {conversation.description}
+                    </Text>
+                  </>
+                ) : (
+                  <Text style={applyStyles('text-base')}>
+                    Add group description
+                  </Text>
+                )}
+              </View>
+            </Touchable>
+          )}
         <View style={applyStyles('pt-lg bg-white elevation-1 mb-md')}>
-          <Text style={applyStyles('mx-lg text-md font-semibold mb-sm')}>
+          <Text style={applyStyles('mx-lg text-base font-semibold mb-sm')}>
             {conversation.members.length} participants
           </Text>
           <ContactsList
@@ -259,10 +268,11 @@ const ChatDetailsScreen = ({
     );
   }, [
     conversation.description,
-    conversation.id,
     conversation.members.length,
     conversation.name,
-    handleError,
+    conversation.type,
+    editTextProperty,
+    isCreator,
     openModal,
     participants,
   ]);

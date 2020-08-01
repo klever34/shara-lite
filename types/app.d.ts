@@ -10,6 +10,7 @@ type User = {
 
 type GroupChat = {
   name: string;
+  description: string | null;
   uuid: string;
   created_by: number;
   created_at: string;

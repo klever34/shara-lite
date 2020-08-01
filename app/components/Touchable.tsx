@@ -5,10 +5,33 @@ import {
   TouchableNativeFeedback,
   TouchableNativeFeedbackProps,
 } from 'react-native';
-import {ElementType} from 'react';
+import React, {ReactElement} from 'react';
 
-const Touchable: ElementType<
-  TouchableNativeFeedbackProps | TouchableHighlightProps
-> = Platform.OS === 'android' ? TouchableNativeFeedback : TouchableHighlight;
+type TouchableProps = (
+  | TouchableNativeFeedbackProps
+  | TouchableHighlightProps
+) & {
+  children: ReactElement;
+};
+
+const Touchable = ({onPress, children, ...restProps}: TouchableProps) => {
+  if (!onPress) {
+    return children;
+  }
+  return (
+    Platform.select({
+      android: (
+        <TouchableNativeFeedback onPress={onPress} {...restProps}>
+          {children}
+        </TouchableNativeFeedback>
+      ),
+      ios: (
+        <TouchableHighlight onPress={onPress} {...restProps}>
+          {children}
+        </TouchableHighlight>
+      ),
+    }) ?? null
+  );
+};
 
 export default Touchable;
