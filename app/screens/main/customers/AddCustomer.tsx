@@ -1,12 +1,11 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {KeyboardAvoidingView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button} from '../../../components/Button';
-import {generateUniqueId} from '../../../helpers/utils';
+import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 import {saveCustomer} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
-import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
 
 const AddCustomer = () => {
   const navigation = useNavigation();
@@ -25,12 +24,9 @@ const AddCustomer = () => {
 
   const handleSubmit = useCallback(() => {
     if (name && mobile) {
-      const id = generateUniqueId();
       const customer = {
-        id,
         name,
         mobile,
-        created_at: new Date(),
       };
       saveCustomer({realm, customer});
       setIsLoading(true);
@@ -42,7 +38,7 @@ const AddCustomer = () => {
   }, [navigation, name, mobile, realm]);
 
   return (
-    <KeyboardAvoidingView style={styles.container}>
+    <ScrollView style={styles.container}>
       <Text style={styles.title}>Customer Details</Text>
       <View>
         <View style={styles.formInputs}>
@@ -64,11 +60,12 @@ const AddCustomer = () => {
         <Button
           variantColor="red"
           title="Add customer"
-          onPress={handleSubmit}
           isLoading={isLoading}
+          style={styles.button}
+          onPress={handleSubmit}
         />
       </View>
-    </KeyboardAvoidingView>
+    </ScrollView>
   );
 };
 
@@ -90,6 +87,9 @@ const styles = StyleSheet.create({
     paddingBottom: 40,
     color: colors.primary,
     fontFamily: 'Rubik-Regular',
+  },
+  button: {
+    marginBottom: 40,
   },
 });
 

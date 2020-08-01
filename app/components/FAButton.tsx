@@ -1,13 +1,19 @@
-import Touchable from './Touchable';
-import {Platform, StyleSheet, View, ViewStyle} from 'react-native';
 import React from 'react';
-import {colors} from '../styles';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
 import Icon from './Icon';
+import Touchable from './Touchable';
 
 type FAButtonProps = {
   style?: ViewStyle;
   color?: string;
+  iconType?:
+    | 'ionicons'
+    | 'feathericons'
+    | 'octicons'
+    | 'material-icons'
+    | 'material-community-icons';
   iconName?: string;
   children?: React.ReactNode;
   onPress?: () => void;
@@ -17,6 +23,7 @@ export const FAButton = ({
   style,
   children,
   iconName,
+  iconType = 'ionicons',
   color = colors.primary,
   onPress,
 }: FAButtonProps) => {
@@ -31,17 +38,7 @@ export const FAButton = ({
         {children ? (
           children
         ) : (
-          <Icon
-            type="ionicons"
-            name={
-              Platform.select({
-                android: 'md-' + iconName,
-                ios: 'ios-' + iconName,
-              }) as string
-            }
-            color="white"
-            size={24}
-          />
+          <Icon type={iconType} name={iconName} color="white" size={24} />
         )}
       </View>
     </Touchable>

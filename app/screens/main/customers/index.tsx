@@ -1,22 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
-import {useRealm} from '../../../services/realm';
-import {
-  FlatList,
-  Platform,
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-} from 'react-native';
+import React, {useCallback, useState, useEffect} from 'react';
+import {FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
 import {FAButton} from '../../../components';
+import EmptyState from '../../../components/EmptyState';
 import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
-import {colors} from '../../../styles';
 import {applyStyles} from '../../../helpers/utils';
-import {getCustomers} from '../../../services/CustomerService';
 import {ICustomer} from '../../../models';
-import EmptyState from '../../../components/EmptyState';
+import {getCustomers} from '../../../services/CustomerService';
+import {useRealm} from '../../../services/realm';
+import {colors} from '../../../styles';
 
 const CustomersTab = () => {
   const navigation = useNavigation();
@@ -26,8 +19,16 @@ const CustomersTab = () => {
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
 
+  useEffect(() => {
+    const unsubscribe = navigation.addListener('focus', () => {
+      const customers = getCustomers({realm});
+      setMyCustomers(customers);
+    });
+    return unsubscribe;
+  }, [navigation, realm]);
+
   const handleSelectCustomer = useCallback(
-    (item?: Customer) => {
+    (item?: ICustomer) => {
       navigation.navigate('CustomerDetails', {customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
@@ -37,16 +38,18 @@ const CustomersTab = () => {
 
   const handleCustomerSearch = useCallback(
     (searchedText: string) => {
-      const sort = (item: Customer, text: string) => {
-        return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-      };
-      const ac = customers.filter((item: Customer) => {
-        return sort(item, searchedText);
-      });
-      setMyCustomers(ac);
-      setTimeout(() => {
-        setSearchInputValue(searchedText);
-      }, 0);
+      setSearchInputValue(searchedText);
+      if (searchedText) {
+        const sort = (item: ICustomer, text: string) => {
+          return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
+        };
+        const ac = customers.filter((item: ICustomer) => {
+          return sort(item, searchedText);
+        });
+        setMyCustomers(ac);
+      } else {
+        setMyCustomers(customers);
+      }
     },
     [customers],
   );
@@ -69,39 +72,61 @@ const CustomersTab = () => {
     [],
   );
 
+  if (!customers.length) {
+    return (
+      <>
+        <EmptyState
+          heading="Add a customer"
+          source={require('../../../assets/images/coming-soon.png')}
+          text="Click the button below to add a new customer"
+        />
+        <FAButton
+          style={styles.fabButton}
+          onPress={() => navigation.navigate('AddCustomer')}>
+          <View style={styles.fabButtonContent}>
+            <Icon size={18} name="plus" color="white" type="feathericons" />
+            <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
+              Add Customer
+            </Text>
+          </View>
+        </FAButton>
+      </>
+    );
+  }
+
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <View style={styles.searchInputContainer}>
+          <Icon
+            size={24}
+            name="search"
+            type="feathericons"
+            style={styles.searchInputIcon}
+            color={colors.primary}
+          />
+          <TextInput
+            value={searchInputValue}
+            style={styles.searchInput}
+            placeholder="Search Customer"
+            onChangeText={handleCustomerSearch}
+            placeholderTextColor={colors['gray-50']}
+          />
+        </View>
+      </View>
+
       {myCustomers.length ? (
         <>
-          <View style={styles.searchContainer}>
-            <View style={styles.searchInputContainer}>
-              <Icon
-                size={24}
-                style={styles.searchInputIcon}
-                type="ionicons"
-                name="ios-search"
-                color={colors.primary}
-              />
-              <TextInput
-                value={searchInputValue}
-                style={styles.searchInput}
-                placeholder="Search Customer"
-                onChangeText={handleCustomerSearch}
-                placeholderTextColor={colors['gray-50']}
-              />
-            </View>
-          </View>
           <FlatList
             data={myCustomers}
             renderItem={renderCustomerListItem}
-            ListHeaderComponent={renderCustomerListHeader}
             keyExtractor={(item) => `${item.id}`}
+            ListHeaderComponent={renderCustomerListHeader}
           />
         </>
       ) : (
         <EmptyState
-          heading="Add a customer"
-          source={require('../../../assets/images/coming-soon.png')}
+          heading="No results found"
           text="Click the button below to add a new customer"
         />
       )}
@@ -109,17 +134,7 @@ const CustomersTab = () => {
         style={styles.fabButton}
         onPress={() => navigation.navigate('AddCustomer')}>
         <View style={styles.fabButtonContent}>
-          <Icon
-            size={18}
-            type="ionicons"
-            name={
-              Platform.select({
-                android: 'md-add',
-                ios: 'ios-add',
-              }) as string
-            }
-            color="white"
-          />
+          <Icon size={18} name="plus" color="white" type="feathericons" />
           <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
             Add Customer
           </Text>

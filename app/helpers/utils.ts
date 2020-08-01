@@ -24,7 +24,7 @@ export const applyStyles = (
     return {...acc, ...curr};
   }, {});
 
-export const numberWithCommas = (x: number) =>
+export const numberWithCommas = (x: number | undefined) =>
   x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
 
 export const retryPromise = (

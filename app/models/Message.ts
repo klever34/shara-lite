@@ -1,7 +1,7 @@
-export interface IMessage {
-  id: string;
+import {BaseModelInterface, baseModelSchema} from './baseSchema';
+
+export interface IMessage extends BaseModelInterface {
   channel: string;
-  created_at: Date;
   content: string;
   author: string;
   timetoken?: string;
@@ -14,14 +14,14 @@ export class Message implements Partial<IMessage> {
     name: 'Message',
     primaryKey: 'id',
     properties: {
-      id: 'string',
+      ...baseModelSchema,
       channel: 'string',
-      created_at: 'date',
       content: 'string',
       author: 'string',
       timetoken: 'string?',
       delivered_timetoken: 'string?',
       read_timetoken: 'string?',
+      updated_at: 'date?',
     },
   };
 }

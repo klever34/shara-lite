@@ -1,37 +1,49 @@
 import {useNavigation} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
   Modal,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import {MainStackParamList} from '..';
-import {Button, FloatingLabelInput} from '../../../components';
-import Icon from '../../../components/Icon';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import {ICustomer} from '../../../models';
-import {savePayment} from '../../../services/PaymentService';
-import {useRealm} from '../../../services/realm';
-import {colors} from '../../../styles';
+import Share from 'react-native-share';
+import {
+  Button,
+  CurrencyInput,
+  FloatingLabelInput,
+} from '../../../../components';
+import Icon from '../../../../components/Icon';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {ICustomer} from '../../../../models';
+import {useRealm} from '../../../../services/realm';
+import {saveReceipt} from '../../../../services/ReceiptService';
+import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
+import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
-import Receipts from './Receipts';
+import {Receipts} from './Receipts';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import HeaderRight from '../../../components/HeaderRight';
+import HeaderRight from '../../../../components/HeaderRight';
 
-type SummaryTableItemProps = {
+export type SummaryTableItemProps = {
   item: ReceiptItem;
 };
 
-const summaryTableStyles = StyleSheet.create({
+type Props = {
+  products: ReceiptItem[];
+  onClearReceipt: () => void;
+  onCloseSummaryModal: () => void;
+  onRemoveProductItem: (item: ReceiptItem) => void;
+  onUpdateProductItem: (item: ReceiptItem) => void;
+};
+
+export const summaryTableStyles = StyleSheet.create({
   row: {
     flexWrap: 'wrap',
     marginBottom: 12,
@@ -46,7 +58,7 @@ const summaryTableStyles = StyleSheet.create({
   },
 });
 
-const summaryTableHeaderStyles = StyleSheet.create({
+export const summaryTableHeaderStyles = StyleSheet.create({
   row: {
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-900'],
@@ -57,7 +69,7 @@ const summaryTableHeaderStyles = StyleSheet.create({
   },
 });
 
-const summaryTableItemStyles = StyleSheet.create({
+export const summaryTableItemStyles = StyleSheet.create({
   row: {
     borderBottomWidth: 1,
     borderBottomColor: colors['gray-20'],
@@ -75,7 +87,7 @@ const summaryTableItemStyles = StyleSheet.create({
   },
 });
 
-const SummaryTableHeader = () => {
+export const SummaryTableHeader = () => {
   return (
     <View
       style={applyStyles(summaryTableStyles.row, summaryTableHeaderStyles.row)}>
@@ -86,7 +98,7 @@ const SummaryTableHeader = () => {
         style={applyStyles(summaryTableStyles['column-20'], {
           alignItems: 'flex-end',
         })}>
-        <Text style={summaryTableHeaderStyles.text}>Qty</Text>
+        <Text style={summaryTableHeaderStyles.text}>QTY</Text>
       </View>
       <View
         style={applyStyles(summaryTableStyles['column-40'], {
@@ -98,50 +110,81 @@ const SummaryTableHeader = () => {
   );
 };
 
-const SummaryTableItem = ({item}: SummaryTableItemProps) => {
+export const SummaryTableItem = ({
+  item,
+  onPress,
+}: SummaryTableItemProps & {onPress?: (item: ReceiptItem) => void}) => {
   const price = item.price ? parseFloat(item.price) : 0;
   const quantity = item.quantity ? parseFloat(item.quantity) : 0;
   const subtotal = price * quantity;
 
   return (
-    <View
-      style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
-      <View style={summaryTableStyles['column-40']}>
-        <Text style={summaryTableItemStyles.text}>
-          {item.name} ({item.weight})
-        </Text>
-        <Text style={summaryTableItemStyles.subText}>
-          &#8358;{numberWithCommas(price)} Per Unit
-        </Text>
-      </View>
+    <Touchable onPress={onPress ? () => onPress(item) : () => {}}>
       <View
-        style={applyStyles(summaryTableStyles['column-20'], {
-          alignItems: 'flex-end',
-        })}>
-        <Text style={summaryTableItemStyles.text}>{quantity}</Text>
+        style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
+        <View style={summaryTableStyles['column-40']}>
+          <Text style={summaryTableItemStyles.text}>
+            {item.name} ({item.weight})
+          </Text>
+          <Text style={summaryTableItemStyles.subText}>
+            &#8358;{numberWithCommas(price)} Per Unit
+          </Text>
+        </View>
+        <View
+          style={applyStyles(summaryTableStyles['column-20'], {
+            alignItems: 'flex-end',
+          })}>
+          <Text style={summaryTableItemStyles.text}>{quantity}</Text>
+        </View>
+        <View
+          style={applyStyles(summaryTableStyles['column-40'], {
+            alignItems: 'flex-end',
+          })}>
+          <Text style={summaryTableItemStyles.text}>
+            &#8358;{numberWithCommas(subtotal)}
+          </Text>
+        </View>
+        <View
+          style={applyStyles('flex-row', 'w-full', {
+            justifyContent: 'flex-end',
+          })}>
+          <View
+            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+            <Icon
+              size={14}
+              name="edit"
+              type="feathericons"
+              color={colors.primary}
+            />
+            <Text
+              style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
+                fontSize: 12,
+                color: colors.primary,
+              })}>
+              Tap to edit
+            </Text>
+          </View>
+        </View>
       </View>
-      <View
-        style={applyStyles(summaryTableStyles['column-40'], {
-          alignItems: 'flex-end',
-        })}>
-        <Text style={summaryTableItemStyles.text}>
-          &#8358;{numberWithCommas(subtotal)}
-        </Text>
-      </View>
-    </View>
+    </Touchable>
   );
 };
 
-const ReceiptSummary = ({
-  route,
-}: StackScreenProps<MainStackParamList, 'ReceiptSummary'>) => {
+const ReceiptSummary = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm();
 
-  const {customer: customerProps, products} = route.params;
+  const {
+    products,
+    onClearReceipt,
+    onRemoveProductItem,
+    onUpdateProductItem,
+    onCloseSummaryModal,
+  } = props;
   const tax = 0;
 
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
+  const [isCompleting, setIsCompleting] = useState(false);
   const [paymentType, setPaymentType] = useState<
     'cash' | 'transfer' | 'mobile'
   >('cash');
@@ -149,13 +192,16 @@ const ReceiptSummary = ({
   const [totalAmount, setTotalAmount] = useState(0);
   const [payments, setPayments] = useState<Payment[]>([]);
   const [customer, setCustomer] = useState<Customer | ICustomer>(
-    customerProps || ({} as Customer),
+    {} as Customer,
+  );
+  const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
+    null,
   );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
+  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const creditAmount = totalAmount - amountPaid;
 
   //@ts-ignore
@@ -168,12 +214,12 @@ const ReceiptSummary = ({
   }, [navigation]);
 
   const handleCancel = useCallback(() => {
-    navigation.navigate('NewReceipt');
-  }, [navigation]);
+    onCloseSummaryModal();
+  }, [onCloseSummaryModal]);
 
   const handleAddProduct = useCallback(() => {
-    navigation.navigate('NewReceipt');
-  }, [navigation]);
+    onCloseSummaryModal();
+  }, [onCloseSummaryModal]);
 
   const handleOpenSuccessModal = useCallback(() => {
     setIsSuccessModalOpen(true);
@@ -199,6 +245,14 @@ const ReceiptSummary = ({
     setIsCustomerModalOpen(false);
   }, []);
 
+  const handleOpenEditProductModal = useCallback((item: ReceiptItem) => {
+    setSelectedProduct(item);
+  }, []);
+
+  const handleCloseEditProductModal = useCallback(() => {
+    setSelectedProduct(null);
+  }, []);
+
   const handleOpenPaymentModal = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
       setPaymentType(type);
@@ -219,26 +273,79 @@ const ReceiptSummary = ({
     setIsContactListModalOpen(false);
   }, []);
 
-  const handleSmsShare = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt sharing via SMS is coming in the next release',
-    );
-  }, []);
+  const handleSmsShare = useCallback(async () => {
+    // TODO: use better copy for shara invite
+    const shareOptions = {
+      url: 'https://shara.co/',
+      social: Share.Social.SMS,
+      message: 'Here is your receipt',
+      recipient: `${customer.mobile}`,
+      title: `Share receipt with ${customer.name}`,
+    };
 
-  const handleEmailShare = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt sharing via Email is coming in the next release',
-    );
-  }, []);
+    if (!customer.mobile) {
+      Alert.alert(
+        'Info',
+        'Please select a customer to share receipt with via Whatsapp',
+      );
+    } else {
+      try {
+        await Share.shareSingle(shareOptions);
+      } catch (e) {
+        Alert.alert('Error', e.error);
+      }
+    }
+  }, [customer.mobile, customer.name]);
 
-  const handleWhatsappShare = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt sharing via Whatsapp is coming in the next release',
-    );
-  }, []);
+  const handleEmailShare = useCallback(
+    async (email: string, callback: () => void) => {
+      // TODO: use better copy for shara invite
+      const shareOptions = {
+        email,
+        title: 'Share receipt',
+        url: 'https://shara.co/',
+        message: 'Here is your receipt',
+        subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
+      };
+
+      try {
+        await Share.open(shareOptions);
+        callback();
+      } catch (e) {
+        Alert.alert('Error', e.error);
+      }
+    },
+    [customer.name],
+  );
+
+  const handleWhatsappShare = useCallback(async () => {
+    // TODO: use better copy for shara invite
+    const shareOptions = {
+      url: 'https://shara.co/',
+      social: Share.Social.WHATSAPP,
+      message: 'Here is your receipt',
+      title: `Share receipt with ${customer.name}`,
+      whatsAppNumber: `+234${customer.mobile}`, // country code + phone number
+      // filename:  `data:image/png;base64,<base64_data>`,
+    };
+    const errorMessages = {
+      filename: 'Invalid file attached',
+      whatsAppNumber: 'Please check the phone number supplied',
+    } as {[key: string]: any};
+
+    if (!customer.mobile) {
+      Alert.alert(
+        'Info',
+        'Please select a customer to share receipt with via Whatsapp',
+      );
+    } else {
+      try {
+        await Share.shareSingle(shareOptions);
+      } catch (e) {
+        Alert.alert('Error', errorMessages[e.error]);
+      }
+    }
+  }, [customer.mobile, customer.name]);
 
   const handlePrintReceipt = useCallback(() => {
     Alert.alert(
@@ -249,7 +356,7 @@ const ReceiptSummary = ({
 
   const handleRemovePayment = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
-      const result = payments.filter((item) => item.paymentMethod !== type);
+      const result = payments.filter((item) => item.method !== type);
       setPayments(result);
     },
     [payments],
@@ -265,7 +372,7 @@ const ReceiptSummary = ({
   const handlePaymentMethodAmountChange = useCallback(
     (text: string, type: 'cash' | 'transfer' | 'mobile') => {
       const result = payments.map((item) => {
-        if (item.paymentMethod === type) {
+        if (item.method === type) {
           return {...item, amount: parseFloat(text)};
         }
         return item;
@@ -277,11 +384,9 @@ const ReceiptSummary = ({
 
   const getPaymentMethodAmount = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
-      const paymentMethod = payments.find(
-        (item) => item.paymentMethod === type,
-      );
-      if (paymentMethod) {
-        return paymentMethod.amount.toString();
+      const method = payments.find((item) => item.method === type);
+      if (method) {
+        return method.amount.toString();
       }
       return '0';
     },
@@ -295,39 +400,64 @@ const ReceiptSummary = ({
     [setCustomer],
   );
 
-  const handleUpdateCustomer = useCallback(
-    (value, key) => {
-      setCustomer({...customer, [key]: value});
-    },
-    [customer],
-  );
+  const handleSetCustomer = useCallback((value: ICustomer) => {
+    setCustomer(value);
+  }, []);
 
   const handleFinish = () => {
-    setIsSubmitting(true);
-    savePayment({
-      realm,
-      customer,
-      type: paymentType,
-      amountPaid,
-      totalAmount,
-      creditAmount,
-      tax,
-      products,
-    });
-    setTimeout(() => {
-      setIsSubmitting(false);
-      handleOpenSuccessModal();
-    }, 2000);
+    handleOpenSuccessModal();
   };
 
+  const handleSaveReceipt = useCallback(
+    (callback: () => void, onSuccess?: () => void) => {
+      setTimeout(() => {
+        callback();
+        saveReceipt({
+          tax,
+          realm,
+          products,
+          payments,
+          customer,
+          amountPaid,
+          totalAmount,
+          creditAmount,
+        });
+        onClearReceipt();
+        onSuccess && onSuccess();
+      }, 500);
+    },
+    [
+      amountPaid,
+      creditAmount,
+      customer,
+      onClearReceipt,
+      payments,
+      products,
+      realm,
+      totalAmount,
+    ],
+  );
+
   const handleComplete = useCallback(() => {
-    setIsSubmitting(true);
-    setTimeout(() => {
-      setIsSubmitting(false);
-      handleCloseSuccessModal();
-      navigation.navigate('NewReceipt');
-    }, 2000);
-  }, [navigation, handleCloseSuccessModal]);
+    setIsCompleting(true);
+    handleSaveReceipt(
+      () => setIsCompleting(false),
+      () => {
+        navigation.navigate('Finances', {screen: 'Receipts'});
+      },
+    );
+  }, [handleSaveReceipt, navigation]);
+
+  const handleNewReceiptClick = useCallback(() => {
+    setIsSaving(true);
+    handleSaveReceipt(
+      () => setIsSaving(false),
+      () => {
+        onCloseSummaryModal();
+        handleCloseSuccessModal();
+      },
+    );
+  }, [onCloseSummaryModal, handleCloseSuccessModal, handleSaveReceipt]);
 
   useEffect(() => {
     const total = products
@@ -350,8 +480,10 @@ const ReceiptSummary = ({
   }, [payments, totalAmount]);
 
   const renderSummaryItem = useCallback(
-    ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
-    [],
+    ({item}: SummaryTableItemProps) => (
+      <SummaryTableItem onPress={handleOpenEditProductModal} item={item} />
+    ),
+    [handleOpenEditProductModal],
   );
 
   return (
@@ -363,9 +495,12 @@ const ReceiptSummary = ({
           </Text>
           <Text
             style={applyStyles('text-400', 'mb-xl', {
-              color: colors['gray-100'],
+              color: colors['gray-300'],
             })}>
-            Here is a list of products being purchased
+            Total{' '}
+            <Text style={applyStyles('text-700')}>
+              &#8358;{numberWithCommas(totalAmount)}
+            </Text>
           </Text>
           <View>
             <FlatList
@@ -393,7 +528,15 @@ const ReceiptSummary = ({
                     )}>
                     Tax:
                   </Text>
-                  <Text>{tax}</Text>
+                  <Text
+                    style={applyStyles(
+                      {
+                        color: colors['gray-300'],
+                      },
+                      'text-400',
+                    )}>
+                    {tax}
+                  </Text>
                 </View>
                 <View
                   style={applyStyles(
@@ -420,13 +563,8 @@ const ReceiptSummary = ({
               <View style={styles.addProductButton}>
                 <Icon
                   size={24}
-                  type="ionicons"
-                  name={
-                    Platform.select({
-                      android: 'md-add',
-                      ios: 'ios-add',
-                    }) as string
-                  }
+                  name="plus"
+                  type="feathericons"
                   color={colors.primary}
                 />
                 <Text
@@ -447,15 +585,14 @@ const ReceiptSummary = ({
             })}>
             Select one or more payment methods
           </Text>
-          {payments.map((item) => item.paymentMethod).includes('cash') ? (
+          {payments.map((item) => item.method).includes('cash') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
-                <FloatingLabelInput
+                <CurrencyInput
                   label="Cash Payment"
                   value={getPaymentMethodAmount('cash')}
-                  keyboardType="numbers-and-punctuation"
-                  onChangeText={(text) =>
-                    handlePaymentMethodAmountChange(text, 'cash')
+                  onChange={(text) =>
+                    handlePaymentMethodAmountChange(text.toString(), 'cash')
                   }
                   leftIcon={
                     <Text
@@ -515,15 +652,14 @@ const ReceiptSummary = ({
               </View>
             </Button>
           )}
-          {payments.map((item) => item.paymentMethod).includes('transfer') ? (
+          {payments.map((item) => item.method).includes('transfer') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
-                <FloatingLabelInput
+                <CurrencyInput
                   label="Bank Transfer"
-                  keyboardType="numbers-and-punctuation"
                   value={getPaymentMethodAmount('transfer')}
-                  onChangeText={(text) =>
-                    handlePaymentMethodAmountChange(text, 'transfer')
+                  onChange={(text) =>
+                    handlePaymentMethodAmountChange(text.toString(), 'transfer')
                   }
                   leftIcon={
                     <Text
@@ -583,15 +719,14 @@ const ReceiptSummary = ({
               </View>
             </Button>
           )}
-          {payments.map((item) => item.paymentMethod).includes('mobile') ? (
+          {payments.map((item) => item.method).includes('mobile') ? (
             <View style={applyStyles('mb-xs')}>
               <View style={applyStyles('pb-sm')}>
-                <FloatingLabelInput
+                <CurrencyInput
                   label="Mobile Money"
-                  keyboardType="numbers-and-punctuation"
                   value={getPaymentMethodAmount('mobile')}
-                  onChangeText={(text) =>
-                    handlePaymentMethodAmountChange(text, 'mobile')
+                  onChange={(text) =>
+                    handlePaymentMethodAmountChange(text.toString(), 'mobile')
                   }
                   leftIcon={
                     <Text
@@ -685,35 +820,36 @@ const ReceiptSummary = ({
           title="Done"
           variantColor="red"
           onPress={handleFinish}
-          isLoading={isSubmitting}
+          isLoading={isCompleting}
           style={styles.actionButton}
         />
       </View>
       <ReceiptStatusModal
         customer={customer}
+        isSaving={isSaving}
         timeTaken={timeTaken}
         amountPaid={amountPaid}
         creditAmount={creditAmount}
         onComplete={handleComplete}
-        isSubmitting={isSubmitting}
+        isCompleting={isCompleting}
         visible={isSuccessModalOpen}
-        onClose={handleCloseSuccessModal}
         onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
+        onNewReceiptClick={handleNewReceiptClick}
         onOpenCustomerModal={handleOpenCustomerModal}
       />
       <CustomerDetailsModal
         customer={customer}
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
-        onUpdateCustomer={handleUpdateCustomer}
+        onSelectCustomer={handleSetCustomer}
         onOpenContactList={handleOpenContactList}
       />
       <ShareReceiptModal
         visible={isShareModalOpen}
-        onClose={handleCloseShareModal}
         onSmsShare={handleSmsShare}
         onEmailShare={handleEmailShare}
+        onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
       <Modal visible={isContactListModalOpen}>
@@ -730,6 +866,13 @@ const ReceiptSummary = ({
         amount={
           amountPaid === totalAmount ? totalAmount : totalAmount - amountPaid
         }
+      />
+      <EditProductModal
+        item={selectedProduct}
+        visible={!!selectedProduct}
+        onClose={handleCloseEditProductModal}
+        onRemoveProductItem={onRemoveProductItem}
+        onUpdateProductItem={onUpdateProductItem}
       />
     </KeyboardAvoidingView>
   );

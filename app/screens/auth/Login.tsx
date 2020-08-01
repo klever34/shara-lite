@@ -1,10 +1,18 @@
 import React from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {getApiService} from '../../services';
-import {colors} from '../../styles';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
+import {applyStyles} from '../../helpers/utils';
+import {getApiService} from '../../services';
+import {colors} from '../../styles';
 
 type Fields = {
   mobile: string;
@@ -64,15 +72,17 @@ export const Login = ({navigation}: any) => {
   };
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
-          <Icon size={24} type="ionicons" name="md-arrow-back" />
+          <View style={applyStyles({height: 40, width: 40})}>
+            <Icon size={24} type="feathericons" name="arrow-left" />
+          </View>
         </Touchable>
       </View>
       <View style={styles.headerSection}>
         <Text style={styles.heading}>Welcome Back!</Text>
-        <Text style={styles.description}>Sign in to your account</Text>
+        <Text style={styles.description}>Sign in to your account.</Text>
       </View>
       <View style={styles.form}>
         <View style={styles.inputField}>
@@ -104,7 +114,7 @@ export const Login = ({navigation}: any) => {
           <Text style={styles.helpSectionButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -114,7 +124,7 @@ const styles = StyleSheet.create({
     padding: 32,
   },
   backButton: {
-    marginBottom: 48,
+    marginBottom: 16,
   },
   headerSection: {
     marginBottom: 48,

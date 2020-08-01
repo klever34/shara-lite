@@ -21,15 +21,21 @@ const PaymentDetails = ({route}: any) => {
           <View style={applyStyles('pb-md', {width: '48%'})}>
             <Text style={styles.itemTitle}>Payment Made</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {format(new Date(payment.created_at), 'MMM dd, yyyy')}
+              {payment.created_at &&
+                format(new Date(payment.created_at), 'MMM dd, yyyy')}
             </Text>
             <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-              {format(new Date(payment.created_at), 'hh:mm:a')}
+              {payment.created_at &&
+                format(new Date(payment.created_at), 'hh:mm:a')}
             </Text>
           </View>
           <View style={applyStyles('pb-md', {width: '48%'})}>
             <Text style={styles.itemTitle}>Payment Method</Text>
-            <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+            <Text
+              style={applyStyles(
+                'text-400 text-capitalize',
+                styles.itemDataMedium,
+              )}>
               {payment.type}
             </Text>
           </View>
@@ -42,7 +48,7 @@ const PaymentDetails = ({route}: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 54,
+    paddingVertical: 24,
     paddingHorizontal: 16,
     backgroundColor: colors.white,
   },
@@ -52,6 +58,7 @@ const styles = StyleSheet.create({
   itemTitle: {
     paddingBottom: 2,
     color: colors.primary,
+    fontFamily: 'Rubik-Regular',
     textTransform: 'capitalize',
   },
   itemDataLarge: {
@@ -60,9 +67,11 @@ const styles = StyleSheet.create({
   },
   itemDataMedium: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
   itemDataSmall: {
     fontSize: 12,
+    color: colors['gray-300'],
   },
 });
 

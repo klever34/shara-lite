@@ -1,28 +1,68 @@
-import React from 'react';
-import {Modal, View, ScrollView, Text, StyleSheet} from 'react-native';
-import {applyStyles} from '../../../helpers/utils';
-import {colors} from '../../../styles';
-import Icon from '../../../components/Icon';
-import {FloatingLabelInput, Button} from '../../../components';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, FloatingLabelInput} from '../../../../components';
+import Icon from '../../../../components/Icon';
+import {applyStyles, generateUniqueId} from '../../../../helpers/utils';
+import {ICustomer} from '../../../../models';
+import {colors} from '../../../../styles';
 
 type Props = {
   visible: boolean;
-  customer: Customer;
+  customer?: ICustomer;
   onClose: () => void;
   onOpenContactList: () => void;
-  onUpdateCustomer: (text: string, key: string) => void;
+  onSelectCustomer: (customer: ICustomer) => void;
 };
 
 export const CustomerDetailsModal = (props: Props) => {
   const {
     visible,
-    customer,
     onClose,
-    onUpdateCustomer,
+    onSelectCustomer,
     onOpenContactList,
+    customer: customerProps,
   } = props;
+
+  const [customer, setCustomer] = useState(customerProps);
+  const [isNewCustomer, setIsNewCustomer] = useState(false);
+
+  useEffect(() => {
+    setCustomer(customerProps);
+  }, [customerProps]);
+
+  const handleDone = () => {
+    if (customer) {
+      if (isNewCustomer) {
+        const data = {
+          ...customer,
+          id: generateUniqueId(),
+          updated_at: new Date(),
+          created_at: new Date(),
+        };
+        setIsNewCustomer(false);
+        onSelectCustomer(data);
+      } else {
+        onSelectCustomer(customer);
+      }
+      onClose();
+    }
+  };
+
+  const handleCustomerChange = useCallback(
+    (value, key) => {
+      const data = {...customer, [key]: value} as ICustomer | Customer;
+      setCustomer(data);
+      setIsNewCustomer(true);
+    },
+    [customer],
+  );
+
   return (
-    <Modal transparent={false} animationType="slide" visible={visible}>
+    <Modal
+      visible={visible}
+      transparent={false}
+      animationType="slide"
+      onRequestClose={onClose}>
       <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
         <View style={applyStyles({marginBottom: 48})}>
           <Button style={applyStyles('mb-lg')} onPress={onOpenContactList}>
@@ -52,39 +92,24 @@ export const CustomerDetailsModal = (props: Props) => {
         </View>
         <View>
           <Text
-            style={applyStyles('text-400', {
+            style={applyStyles('pb-sm', 'text-400', {
               fontSize: 18,
               color: colors.primary,
             })}>
             Customer Details
           </Text>
-          <View
-            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-            <Icon
-              size={24}
-              name="user"
-              type="feathericons"
-              color={colors.white}
-            />
-            <Text
-              style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
-                color: colors.white,
-              })}>
-              Select customer
-            </Text>
-          </View>
           <FloatingLabelInput
             label="Phone number"
-            value={customer.mobile}
+            value={customer?.mobile}
             keyboardType="number-pad"
             containerStyle={applyStyles('pb-xl')}
-            onChangeText={(text) => onUpdateCustomer(text, 'mobile')}
+            onChangeText={(text) => handleCustomerChange(text, 'mobile')}
           />
           <FloatingLabelInput
-            value={customer.name}
+            value={customer?.name}
             label="Type Customer Name"
             containerStyle={applyStyles({paddingBottom: 80})}
-            onChangeText={(text) => onUpdateCustomer(text, 'name')}
+            onChangeText={(text) => handleCustomerChange(text, 'name')}
           />
         </View>
       </ScrollView>
@@ -102,8 +127,8 @@ export const CustomerDetailsModal = (props: Props) => {
         </Button>
         <Button
           title="Done"
-          onPress={onClose}
           variantColor="red"
+          onPress={handleDone}
           style={styles.actionButton}
         />
       </View>

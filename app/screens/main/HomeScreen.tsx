@@ -12,7 +12,7 @@ import {useRealm} from '../../services/realm';
 import {MessageEvent} from 'pubnub';
 import Realm from 'realm';
 import CustomersTab from './customers';
-import BusinessTab from './business';
+import {BusinessTab} from './business';
 import PushNotification from 'react-native-push-notification';
 import {ModalWrapperFields, withModal} from '../../helpers/hocs';
 import {MessageActionEvent} from '../../../types/pubnub';
@@ -21,7 +21,6 @@ import HeaderRight from '../../components/HeaderRight';
 
 type HomeTabParamList = {
   ChatList: undefined;
-  Contacts: undefined;
   Customers: undefined;
   Business: undefined;
 };
@@ -38,10 +37,14 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     try {
       const authService = getAuthService();
       await authService.logOut();
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      });
     } catch (e) {
       handleError(e);
     }
-  }, [handleError]);
+  }, [handleError, navigation]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Restoring messages...'});

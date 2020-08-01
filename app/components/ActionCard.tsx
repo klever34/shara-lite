@@ -1,20 +1,18 @@
 import React from 'react';
-import {View, Text, StyleSheet, ViewStyle} from 'react-native';
-import Touchable from '../../../components/Touchable';
-import {colors} from '../../../styles';
-import Icon from '../../../components/Icon';
-import {applyStyles} from '../../../helpers/utils';
+import {StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
+import Touchable from './Touchable';
 
 type Props = {
-  buttonIcon?: string;
   onClick?(): void;
   style?: ViewStyle;
   buttonText?: string;
   children: React.ReactNode;
 };
 
-const ActionCard = (props: Props) => {
-  const {children, onClick, style, buttonIcon, buttonText} = props;
+export const ActionCard = (props: Props) => {
+  const {children, onClick, style, buttonText} = props;
   return (
     <View style={applyStyles(styles.container, {...style})}>
       {children}
@@ -27,12 +25,6 @@ const ActionCard = (props: Props) => {
               'justify-center',
               styles.button,
             )}>
-            <Icon
-              size={16}
-              name={buttonIcon}
-              type="feathericons"
-              color={colors.primary}
-            />
             <Text style={applyStyles('text-400', styles.buttonText)}>
               {buttonText}
             </Text>
@@ -65,5 +57,3 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 });
-
-export default ActionCard;

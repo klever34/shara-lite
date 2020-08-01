@@ -117,8 +117,8 @@ const SearchableDropdown = (props: any) => {
           <Icon
             size={24}
             style={styles.searchInputIcon}
-            type="ionicons"
-            name="ios-search"
+            type="feathericons"
+            name="search"
             color={colors.primary}
           />
           <TextInput

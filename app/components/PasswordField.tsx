@@ -1,7 +1,8 @@
 import React from 'react';
-import {StyleSheet, TextInput, TouchableOpacity, View} from 'react-native';
+import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import Icon from '../components/Icon';
 import {colors} from '../styles';
+import {FloatingLabelInput} from './FloatingLabelInput';
 
 type Props = {
   value: string;
@@ -20,11 +21,11 @@ export const PasswordField = (props: Props) => {
   return (
     <View style={styles.container}>
       <View style={styles.inputFieldContainer}>
-        <TextInput
+        <FloatingLabelInput
           value={value}
           autoCapitalize="none"
           secureTextEntry={secure}
-          placeholder={placeholder}
+          label={placeholder}
           style={styles.inputField}
           placeholderTextColor={colors['gray-50']}
           onChangeText={(text) => onChangeText(text)}
@@ -58,7 +59,7 @@ const styles = StyleSheet.create({
     borderColor: colors['gray-200'],
   },
   toggleButtonContainer: {
-    top: 16,
+    top: 32,
     right: 8,
     position: 'absolute',
   },

@@ -1,14 +1,18 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback} from 'react';
-import {Image, StyleSheet, Text, View, Alert} from 'react-native';
+import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
+import {useRealm} from '../../../services/realm';
+import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
 import {colors} from '../../../styles';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
-import ActionCard from '../customers/ActionCard';
-import {Button} from '../../../components';
+import {Button, ActionCard} from '../../../components';
 
-const BusinessTab = () => {
+export const BusinessTab = () => {
+  const realm = useRealm();
   const navigation = useNavigation();
+  const financeSummary: IFinanceSummary = getSummary({realm});
+
   const actions = [
     {
       name: 'NewReceipt',
@@ -79,15 +83,26 @@ const BusinessTab = () => {
   const handleActionItemClick = useCallback(
     (name?: string) => {
       if (name) {
-        navigation.navigate(name);
+        switch (name) {
+          case 'Credit':
+            navigation.navigate('Finances', {screen: 'Credit'});
+            break;
+          case 'Inventory':
+            navigation.navigate('Finances', {screen: 'Inventory'});
+            break;
+
+          default:
+            navigation.navigate(name);
+            break;
+        }
       }
     },
     [navigation],
   );
 
   const handleViewFinances = useCallback(() => {
-    Alert.alert('Coming soon', 'This feature is coming in a future release');
-  }, []);
+    navigation.navigate('Finances', {screen: 'FinancesTab'});
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
@@ -96,10 +111,10 @@ const BusinessTab = () => {
           style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
           <Text
             style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
-            Total sales
+            My sales
           </Text>
           <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(financeSummary.totalSales)}
           </Text>
         </ActionCard>
       </View>
@@ -117,7 +132,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(0)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -133,7 +148,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors.primary,
             })}>
-            {numberWithCommas(1205400)}
+            &#8358;{numberWithCommas(0)}
           </Text>
         </ActionCard>
       </View>
@@ -151,7 +166,7 @@ const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            {numberWithCommas(14405000)}
+            &#8358;{numberWithCommas(financeSummary.totalCredit)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -165,7 +180,7 @@ const BusinessTab = () => {
           </Text>
           <Text
             style={applyStyles(styles.cardContent, {color: colors.primary})}>
-            {numberWithCommas(15365400)}
+            &#8358;{numberWithCommas(financeSummary.overdueCredit)}
           </Text>
         </ActionCard>
       </View>
@@ -223,5 +238,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Medium',
   },
 });
-
-export default BusinessTab;

@@ -2,38 +2,46 @@ import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
+import getUuidByString from 'uuid-by-string';
+import {applyStyles} from '../../helpers/utils';
+import {IContact, IConversation} from '../../models';
+import {ICredit} from '../../models/Credit';
+import {ICreditPayment} from '../../models/CreditPayment';
+import {IPayment} from '../../models/Payment';
 import {
   getAuthService,
   getContactsService,
   getPubNubService,
 } from '../../services';
 import {colors} from '../../styles';
+import {BusinessSetup} from '../BusinessSetup';
+import {
+  CreditDetails,
+  CreditPaymentDetails,
+  Finances,
+  NewReceipt,
+  OverdueCredit,
+  Receipts,
+  RecordCreditPayment,
+  TotalCredit,
+} from './business';
+import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
 import ContactsScreen from './chat/ContactsScreen';
-import HomeScreen from './HomeScreen';
-import getUuidByString from 'uuid-by-string';
-import Receipts from './business/Receipts';
-import NewReceipt from './business/NewReceipt';
-import ReceiptSummary from './business/ReceiptSummary';
-import StatusModal from './StatusModal';
-import Finances from './business/Finances';
-import Inventory from './business/Inventory';
-import Expenses from './business/Expenses';
-import Credit from './business/Credit';
-import AddCustomer from './customers/AddCustomer';
-import CustomerDetails from './customers/CustomerDetails';
-import RecordPayment from './customers/RecordPayment';
-import CreditPayment from './customers/CreditPayment';
-import OrderDetails from './customers/OrderDetails';
-import PaymentDetails from './customers/PaymentDetails';
 import SelectGroupMembersScreen from './chat/SelectGroupMembersScreen';
 import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
-import {IContact, IConversation} from '../../models';
-import {applyStyles} from '../../helpers/utils';
-import {useErrorHandler} from 'react-error-boundary';
-import ChatDetailsScreen from './chat/ChatDetailsScreen';
+import AddCustomer from './customers/AddCustomer';
+import CreditPayment from './customers/CreditPayment';
+import {CustomerCreditPaymentDetails} from './customers/CreditPaymentDetails';
+import CustomerDetails from './customers/CustomerDetails';
+import OrderDetails from './customers/OrderDetails';
+import PaymentDetails from './customers/PaymentDetails';
+import RecordPayment from './customers/RecordPayment';
+import HomeScreen from './HomeScreen';
+import StatusModal from './StatusModal';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -42,7 +50,6 @@ export type MainStackParamList = {
   Contacts: undefined;
   Receipts: undefined;
   NewReceipt: {customer: Customer};
-  ReceiptSummary: {customer: Customer; products: ReceiptItem[]};
   StatusModal: {status: string; text: string; onClick(): void};
   Finances: undefined;
   Inventory: undefined;
@@ -50,13 +57,21 @@ export type MainStackParamList = {
   Credit: undefined;
   AddCustomer: undefined;
   CustomerDetails: {customer: any};
-  RecordPayment: undefined;
-  CreditPayment: {creditDetails: CreditDetails};
-  PaymentDetails: {payment: Payment};
-  OrderDetails: {order: Order};
-
+  CustomerRecordCreditPayment: undefined;
+  CustomerCreditPayment: {creditDetails: CreditDetails};
+  CustomerPaymentDetails: {payment: Payment};
+  CustomerOrderDetails: {order: Order};
+  CustomerTotalCredit: {credits: ICredit[]};
+  CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
+  CustomerOverdueCredit: {credits: ICredit[]};
+  BusinessSetup: undefined;
   SelectGroupMembers: undefined;
   SetGroupDetails: {members: IContact[]};
+  TotalCredit: {credits: ICredit[]};
+  OverdueCredit: {credits: ICredit[]};
+  RecordCreditPayment: undefined;
+  CreditDetails: {creditDetails: CreditDetails};
+  CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -64,8 +79,14 @@ const MainStack = createStackNavigator<MainStackParamList>();
 const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
+  const authService = getAuthService();
+
+  // TODO: set initial route based on if user has setup business
+  const initialRouteName = !authService.getUser()?.updated_at
+    ? 'BusinessSetup'
+    : 'Home';
+
   useEffect(() => {
-    const authService = getAuthService();
     const user = authService.getUser();
     if (user) {
       const pubNub = new PubNub({
@@ -77,7 +98,7 @@ const MainScreens = ({navigation}: any) => {
       pubNubService.setInstance(pubNub);
       setPubNubClient(pubNub);
     }
-  }, []);
+  }, [authService]);
 
   useEffect(() => {
     const contactsService = getContactsService();
@@ -93,9 +114,10 @@ const MainScreens = ({navigation}: any) => {
       </View>
     );
   }
+
   return (
     <PubNubProvider client={pubNubClient}>
-      <MainStack.Navigator initialRouteName="Home">
+      <MainStack.Navigator initialRouteName={initialRouteName}>
         <MainStack.Screen
           name="Home"
           component={HomeScreen}
@@ -214,21 +236,6 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="ReceiptSummary"
-          component={ReceiptSummary}
-          options={{
-            title: 'Receipt Summary',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
           name="StatusModal"
           component={StatusModal}
           options={{headerShown: false}}
@@ -237,52 +244,7 @@ const MainScreens = ({navigation}: any) => {
           name="Finances"
           component={Finances}
           options={{
-            title: 'Finances',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Inventory"
-          component={Inventory}
-          options={{
-            title: 'Inventory',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Expenses"
-          component={Expenses}
-          options={{
-            title: 'Expenses',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Credit"
-          component={Credit}
-          options={{
-            title: 'Credit',
+            title: 'My Finances',
             headerStyle: {
               backgroundColor: colors.primary,
             },
@@ -324,7 +286,7 @@ const MainScreens = ({navigation}: any) => {
           })}
         />
         <MainStack.Screen
-          name="RecordPayment"
+          name="CustomerRecordCreditPayment"
           component={RecordPayment}
           options={{
             title: 'Record Payment',
@@ -339,7 +301,7 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="CreditPayment"
+          name="CustomerCreditPayment"
           component={CreditPayment}
           options={{
             title: 'Credit Payment',
@@ -354,7 +316,7 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="PaymentDetails"
+          name="CustomerPaymentDetails"
           component={PaymentDetails}
           options={{
             title: 'Payment Details',
@@ -369,10 +331,137 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="OrderDetails"
+          name="CustomerOrderDetails"
           component={OrderDetails}
           options={{
             title: 'Order Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerTotalCredit"
+          component={TotalCredit}
+          options={{
+            title: 'Total Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerOverdueCredit"
+          component={OverdueCredit}
+          options={{
+            title: 'Overdue Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerCreditPaymentDetails"
+          component={CustomerCreditPaymentDetails}
+          options={{
+            title: 'Credit Payment Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="BusinessSetup"
+          options={{
+            headerShown: false,
+          }}
+          component={BusinessSetup}
+        />
+        <MainStack.Screen
+          name="TotalCredit"
+          component={TotalCredit}
+          options={{
+            title: 'Total Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="OverdueCredit"
+          component={OverdueCredit}
+          options={{
+            title: 'Overdue Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="RecordCreditPayment"
+          component={RecordCreditPayment}
+          options={{
+            title: 'Record Credit Payment',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CreditDetails"
+          component={CreditDetails}
+          options={{
+            title: 'Credit Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CreditPaymentDetails"
+          component={CreditPaymentDetails}
+          options={{
+            title: 'Credit Payment Details',
             headerStyle: {
               backgroundColor: colors.primary,
             },

@@ -1,5 +1,6 @@
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
+import {HeaderBackButton} from '@react-navigation/stack';
 import React, {useCallback, useLayoutEffect} from 'react';
 import {SafeAreaView} from 'react-native';
 import {applyStyles} from '../../../helpers/utils';
@@ -27,6 +28,12 @@ const CustomerDetails = ({route}: {route: any}) => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerLeft: () => (
+        <HeaderBackButton
+          tintColor={colors.white}
+          onPress={() => navigation.navigate('Customers')}
+        />
+      ),
       headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);

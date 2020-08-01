@@ -1,8 +1,8 @@
 import Realm, {UpdateMode} from 'realm';
 import {ICustomer} from '../models';
 import {IPayment, modelName} from '../models/Payment';
-import {generateUniqueId} from '../helpers/utils';
-import {savePaymentItem} from './PaymentItemService';
+import {IReceipt} from '../models/Receipt';
+import {getBaseModelValues} from '../helpers/models';
 
 export const getPayments = ({realm}: {realm: Realm}): IPayment[] => {
   return (realm.objects<IPayment>(modelName) as unknown) as IPayment[];
@@ -11,30 +11,27 @@ export const getPayments = ({realm}: {realm: Realm}): IPayment[] => {
 export const savePayment = ({
   realm,
   customer,
+  receipt,
   type,
-  amountPaid,
-  totalAmount,
-  creditAmount,
-  tax,
-  products,
+  method,
+  note,
+  amount,
 }: {
   realm: Realm;
   customer: ICustomer | Customer;
+  receipt?: IReceipt;
   type: string;
-  amountPaid: number;
-  totalAmount: number;
-  creditAmount: number;
-  tax: number;
-  products: ReceiptItem[];
-}): void => {
+  method: string;
+  note?: string;
+  amount: number;
+}): IPayment => {
   const payment: IPayment = {
     type,
-    tax,
-    amount_paid: amountPaid,
-    total_amount: totalAmount,
-    credit_amount: creditAmount,
-    id: generateUniqueId(),
-    created_at: new Date(),
+    method,
+    note,
+    receipt,
+    amount_paid: amount,
+    ...getBaseModelValues(),
   };
 
   if (customer.name) {
@@ -50,11 +47,22 @@ export const savePayment = ({
     realm.create<IPayment>(modelName, payment, UpdateMode.Modified);
   });
 
-  products.forEach((product) => {
-    savePaymentItem({
-      realm,
-      payment,
-      ...product,
-    });
-  });
+  return payment;
+};
+
+export const updatePayment = ({
+  realm,
+  payment,
+  updates,
+}: {
+  realm: Realm;
+  payment: IPayment;
+  updates: object;
+}) => {
+  const updatedPayment = {
+    id: payment.id,
+    ...updates,
+  };
+
+  realm.create<IPayment>(modelName, updatedPayment, UpdateMode.Modified);
 };

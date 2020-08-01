@@ -1,28 +1,26 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
 import React from 'react';
-import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {SafeAreaView, StyleSheet, Text, View, FlatList} from 'react-native';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import ActionCard from './ActionCard';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
 import EmptyState from '../../../components/EmptyState';
+import {ActionCard} from '../../../components';
 
 const PaymentsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
   const payments = customer.payments || [];
 
   const handleViewDetails = (payment: IPayment) => {
-    navigation.navigate('PaymentDetails', {payment});
+    navigation.navigate('CustomerPaymentDetails', {payment});
   };
 
   const renderPaymentItem = ({item: payment}: {item: IPayment}) => {
     return (
       <View style={styles.creditItem}>
         <ActionCard
-          buttonIcon="eye"
           buttonText="view details"
           onClick={() => handleViewDetails(payment)}>
           <View style={applyStyles('pb-sm')}>
@@ -35,15 +33,23 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Payment Made</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {format(new Date(payment.created_at), 'MMM dd, yyyy')}
+                {payment.created_at
+                  ? format(new Date(payment.created_at), 'MMM dd, yyyy')
+                  : ''}
               </Text>
               <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {format(new Date(payment.created_at), 'hh:mm:a')}
+                {payment.created_at
+                  ? format(new Date(payment.created_at), 'hh:mm:a')
+                  : ''}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Payment Method</Text>
-              <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+              <Text
+                style={applyStyles(
+                  'text-400 text-capitalize',
+                  styles.itemDataMedium,
+                )}>
                 {payment.type}
               </Text>
             </View>
@@ -59,7 +65,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
         <FlatList
           data={payments}
           renderItem={renderPaymentItem}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => `${item.id}`}
         />
       ) : (
         <EmptyState
@@ -104,6 +110,7 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     color: colors.primary,
     textTransform: 'capitalize',
+    fontFamily: 'Rubik-Regular',
   },
   itemDataLarge: {
     fontSize: 18,
@@ -111,9 +118,11 @@ const styles = StyleSheet.create({
   },
   itemDataMedium: {
     fontSize: 16,
+    color: colors['gray-300'],
   },
   itemDataSmall: {
     fontSize: 12,
+    color: colors['gray-300'],
   },
 });
 
