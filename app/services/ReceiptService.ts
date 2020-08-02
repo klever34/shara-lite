@@ -93,9 +93,12 @@ export const updateReceipt = ({
       updatePayment({realm, payment, updates: {customer}});
     });
 
-    if (receipt.credit_amount > 0 && receipt.credit) {
-      receipt.credit.customer = customer;
-      updateCredit({realm, credit: receipt.credit, updates: {customer}});
+    if (
+      receipt.credit_amount > 0 &&
+      receipt.credits &&
+      receipt.credits.length
+    ) {
+      updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
   });
 };

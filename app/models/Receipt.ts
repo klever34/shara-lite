@@ -14,7 +14,7 @@ export interface IReceipt extends BaseModelInterface {
   customer?: ICustomer;
   payments?: IPayment[];
   items?: IReceiptItem[];
-  credit?: ICredit;
+  credits?: ICredit[];
 }
 
 export const modelName = 'Receipt';
@@ -42,7 +42,7 @@ export class Receipt implements Partial<IReceipt> {
         objectType: 'Payment',
         property: 'receipt',
       },
-      credit: {
+      credits: {
         type: 'linkingObjects',
         objectType: 'Credit',
         property: 'receipt',
