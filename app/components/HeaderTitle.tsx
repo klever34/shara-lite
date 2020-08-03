@@ -2,7 +2,6 @@ import React from 'react';
 import {applyStyles} from '../helpers/utils';
 import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
-import {noop} from 'lodash';
 
 type HeaderTitleProps = {
   title: string;
@@ -14,7 +13,7 @@ type HeaderTitleProps = {
 const HeaderTitle = ({
   title,
   description = '',
-  onPress = noop,
+  onPress,
   style = {},
 }: HeaderTitleProps) => {
   return (
