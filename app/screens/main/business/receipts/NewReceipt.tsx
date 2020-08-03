@@ -13,6 +13,7 @@ import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
+  BluetoothModal,
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
@@ -341,6 +342,7 @@ export const NewReceipt = () => {
         visible={isProductsPreviewModalOpen}
         onClose={handleCloseProductsPreviewModal}
       />
+      <BluetoothModal />
     </SafeAreaView>
   );
 };
