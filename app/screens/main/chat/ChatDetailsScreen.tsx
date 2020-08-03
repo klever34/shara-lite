@@ -99,7 +99,7 @@ const ChatDetailsScreen = ({
             'Conversation',
             {
               channel: conversation.channel,
-              name: groupChat.name,
+              [property]: groupChat.description,
             },
             UpdateMode.Modified,
           );
@@ -152,7 +152,7 @@ const ChatDetailsScreen = ({
           />
         );
       },
-      headerRight: () => <HeaderRight menuOptions={options} />,
+      headerRight: () => <HeaderRight options={options} />,
     });
   }, [
     conversation.name,
