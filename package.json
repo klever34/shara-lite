@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.14-feature.bluetooth-printer-setup+build.896",
+  "version": "0.1.14-feature.bluetooth-printer-setup+build.900",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
