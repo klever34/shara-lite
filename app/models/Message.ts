@@ -7,6 +7,7 @@ export interface IMessage extends BaseModelInterface {
   timetoken?: string;
   delivered_timetoken?: string;
   read_timetoken?: string;
+  created_at: Date;
 }
 
 export class Message implements Partial<IMessage> {
@@ -21,7 +22,7 @@ export class Message implements Partial<IMessage> {
       timetoken: 'string?',
       delivered_timetoken: 'string?',
       read_timetoken: 'string?',
-      updated_at: 'date?',
+      created_at: 'date',
     },
   };
 }
