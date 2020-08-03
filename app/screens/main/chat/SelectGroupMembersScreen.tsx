@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {SafeAreaView, ScrollView, View} from 'react-native';
+import {Platform, SafeAreaView, ScrollView, View} from 'react-native';
 import ContactsList from '../../../components/ContactsList';
 import {IContact} from '../../../models';
 import PlaceholderImage from '../../../components/PlaceholderImage';
@@ -58,7 +58,13 @@ const SelectGroupMembersScreen = () => {
         }
       />
       {!!selectedContacts.length && (
-        <FAButton iconName="arrow-forward" onPress={next} />
+        <FAButton
+          iconName={Platform.select({
+            android: 'md-arrow-forward',
+            ios: 'ios-arrow-forward',
+          })}
+          onPress={next}
+        />
       )}
     </SafeAreaView>
   );

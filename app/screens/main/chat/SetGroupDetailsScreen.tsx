@@ -1,5 +1,5 @@
 import React, {useCallback, useState} from 'react';
-import {SafeAreaView, Text, View} from 'react-native';
+import {Platform, SafeAreaView, Text, View} from 'react-native';
 import {applyStyles} from '../../../helpers/utils';
 import TextInput from '../../../components/TextInput';
 import {StackScreenProps} from '@react-navigation/stack';
@@ -91,7 +91,15 @@ const SetGroupDetailsScreen = ({
           );
         })}
       </View>
-      {!!groupName && <FAButton iconName="checkmark" onPress={submit} />}
+      {!!groupName && (
+        <FAButton
+          iconName={Platform.select({
+            android: 'md-checkmark',
+            ios: 'ios-checkmark',
+          })}
+          onPress={submit}
+        />
+      )}
     </SafeAreaView>
   );
 };
