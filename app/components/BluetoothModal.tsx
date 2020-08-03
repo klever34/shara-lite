@@ -21,21 +21,37 @@ import Touchable from './Touchable';
 type BluetoothDevice = {address: string; name?: string};
 type BluetoothDeviceItem = {item: BluetoothDevice};
 type Props = {
-  visible?: boolean;
+  print?: boolean;
+  error?: boolean;
+  success?: boolean;
   onClose?: () => void;
+  onPrintReceipt?: () => void;
 };
 
-export const BluetoothModal = () => {
+export const BluetoothModal = ({
+  error,
+  print,
+  success,
+  onClose,
+  onPrintReceipt,
+}: Props) => {
   const [section, setSection] = useState(0);
   const [visible, setVisible] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
+  const [isPrinting, setIsPrinting] = useState(print || false);
   const [devices, setDevices] = useState<BluetoothDevice[]>([]);
+  const [isPrintError, setIsPrintError] = useState(error || false);
+  const [isPrintSuccess, setIsPrintSuccess] = useState(success || false);
 
   const _listeners: any[] = [];
 
   const handleClose = useCallback(() => {
     setVisible(false);
-  }, []);
+    setIsPrinting(false);
+    setIsPrintError(false);
+    setIsPrintSuccess(false);
+    onClose && onClose();
+  }, [onClose]);
 
   const handleBluetoothScan = useCallback(() => {
     setIsScanning(true);
@@ -52,6 +68,30 @@ export const BluetoothModal = () => {
     );
   }, [devices]);
 
+  const handleEnableBluetooth = useCallback(() => {
+    BluetoothManager.enableBluetooth().then(
+      (r: any[]) => {
+        var paired = [];
+        if (r && r.length > 0) {
+          for (var i = 0; i < r.length; i++) {
+            try {
+              paired.push(JSON.parse(r[i]));
+              setDevices([...paired, ...devices]);
+              setSection(1);
+            } catch (e) {
+              //ignore
+            }
+          }
+        } else {
+          handleBluetoothScan();
+        }
+      },
+      (error: any) => {
+        Alert.alert('Error', JSON.stringify(error));
+      },
+    );
+  }, [devices, handleBluetoothScan]);
+
   const handleConnect = useCallback((rowData) => {
     BluetoothManager.connect(rowData.address).then(
       (s: any) => {
@@ -64,9 +104,12 @@ export const BluetoothModal = () => {
     );
   }, []);
 
+  const handlePrintReceipt = useCallback(() => {
+    onPrintReceipt && onPrintReceipt();
+  }, [onPrintReceipt]);
+
   const deviceAlreadyPaired = useCallback(
     (rsp: {devices: BluetoothDevice[]} | {devices: string}) => {
-      console.log('paring');
       var ds = null;
       if (typeof rsp.devices === 'object') {
         ds = rsp.devices;
@@ -78,7 +121,6 @@ export const BluetoothModal = () => {
       if (ds && ds.length) {
         let paired = devices;
         paired = paired.concat(ds || []);
-        console.log(paired, '83');
         setDevices(paired);
 
         // get default printer and connect automatically
@@ -97,7 +139,6 @@ export const BluetoothModal = () => {
 
   const deviceFoundEvent = useCallback(
     (rsp: {device: BluetoothDevice} | {device: string}) => {
-      console.log('finding');
       var r: any | null = null;
       try {
         if (typeof rsp.device === 'object') {
@@ -117,7 +158,6 @@ export const BluetoothModal = () => {
           //CHECK DEPLICATED HERE...
           if (duplicated === -1) {
             found.push(r);
-            console.log(found, '122');
             setDevices(found);
 
             // get default printer and connect automatically
@@ -135,29 +175,6 @@ export const BluetoothModal = () => {
     },
     [devices, handleConnect],
   );
-
-  const handleEnableBluetooth = useCallback(() => {
-    BluetoothManager.enableBluetooth().then(
-      (r: any[]) => {
-        var paired = [];
-        if (r && r.length > 0) {
-          for (var i = 0; i < r.length; i++) {
-            try {
-              paired.push(JSON.parse(r[i]));
-              setDevices([...paired, ...devices]);
-            } catch (e) {
-              //ignore
-            }
-          }
-        } else {
-          handleBluetoothScan();
-        }
-      },
-      (error: any) => {
-        Alert.alert('Error', JSON.stringify(error));
-      },
-    );
-  }, [devices, handleBluetoothScan]);
 
   const renderBluetoothDevice = useCallback(
     ({item: device}: BluetoothDeviceItem) => {
@@ -260,6 +277,96 @@ export const BluetoothModal = () => {
     );
   }, [devices, handleBluetoothScan, renderBluetoothDevice]);
 
+  const renderPrintInProgress = useCallback(() => {
+    return (
+      <View
+        style={applyStyles('px-lg pb-xl items-center justify-center', {
+          paddingTop: 48,
+        })}>
+        <Icon
+          size={48}
+          name="printer"
+          type="feathericons"
+          color={colors['gray-50']}
+          style={applyStyles('mb-lg')}
+        />
+        <Text
+          style={applyStyles('text-400 text-center pb-xl', {
+            fontSize: 16,
+            color: colors['gray-200'],
+          })}>
+          Print in progress...
+        </Text>
+        <Button
+          title="Cancel"
+          onPress={handleClose}
+          style={applyStyles('w-full')}
+        />
+      </View>
+    );
+  }, [handleClose]);
+
+  const renderPrintSuccess = useCallback(() => {
+    return (
+      <View
+        style={applyStyles('px-lg pb-xl items-center justify-center', {
+          paddingTop: 48,
+        })}>
+        <Icon
+          size={48}
+          name="check-circle"
+          type="feathericons"
+          color={colors.primary}
+          style={applyStyles('mb-lg')}
+        />
+        <Text
+          style={applyStyles('text-400 text-center pb-xl', {
+            fontSize: 16,
+            color: colors['gray-200'],
+          })}>
+          Print Successful
+        </Text>
+        <Button
+          title="Done"
+          onPress={handleClose}
+          style={applyStyles('w-full')}
+        />
+      </View>
+    );
+  }, [handleClose]);
+
+  const renderPrintError = useCallback(() => {
+    return (
+      <View
+        style={applyStyles('px-lg pb-xl items-center justify-center', {
+          paddingTop: 48,
+        })}>
+        <Icon
+          size={48}
+          name="x-circle"
+          type="feathericons"
+          color={colors.primary}
+          style={applyStyles('mb-lg')}
+        />
+        <Text
+          style={applyStyles('text-400 text-center pb-xl px-xl', {
+            fontSize: 16,
+            color: colors['gray-200'],
+          })}>
+          We encountered an error while trying to print.
+        </Text>
+        <View style={applyStyles('flex-row w-full justify-space-between')}>
+          <View style={applyStyles({width: '48%'})}>
+            <Button title="Cancel" variantColor="clear" onPress={handleClose} />
+          </View>
+          <View style={applyStyles({width: '48%'})}>
+            <Button title="Retry" onPress={handlePrintReceipt} />
+          </View>
+        </View>
+      </View>
+    );
+  }, [handleClose, handlePrintReceipt]);
+
   useEffect(() => {
     BluetoothManager.isBluetoothEnabled().then(
       (enabled: boolean) => {
@@ -333,6 +440,28 @@ export const BluetoothModal = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  useEffect(() => {
+    if (print) {
+      setVisible(true);
+      setIsPrinting(true);
+      setSection(2);
+    }
+  }, [print]);
+
+  useEffect(() => {
+    if (success) {
+      setSection(3);
+      setIsPrintSuccess(true);
+    }
+  }, [success]);
+
+  useEffect(() => {
+    if (error) {
+      setIsPrintError(true);
+      setSection(4);
+    }
+  }, [error]);
+
   return (
     <Modal
       isVisible={visible}
@@ -364,6 +493,9 @@ export const BluetoothModal = () => {
           <View>
             {section === 0 && renderSetupBluetooth()}
             {section === 1 && renderDeviceList()}
+            {section === 2 && isPrinting && renderPrintInProgress()}
+            {section === 3 && isPrintSuccess && renderPrintSuccess()}
+            {section === 4 && isPrintError && renderPrintError()}
           </View>
         )}
       </View>

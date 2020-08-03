@@ -37,6 +37,7 @@ export type SummaryTableItemProps = {
 
 type Props = {
   products: ReceiptItem[];
+  onPrintReceipt: () => void;
   onClearReceipt: () => void;
   onCloseSummaryModal: () => void;
   onRemoveProductItem: (item: ReceiptItem) => void;
@@ -177,6 +178,7 @@ const ReceiptSummary = (props: Props) => {
   const {
     products,
     onClearReceipt,
+    onPrintReceipt,
     onRemoveProductItem,
     onUpdateProductItem,
     onCloseSummaryModal,
@@ -346,13 +348,6 @@ const ReceiptSummary = (props: Props) => {
       }
     }
   }, [customer.mobile, customer.name]);
-
-  const handlePrintReceipt = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt printing is coming in the next release',
-    );
-  }, []);
 
   const handleRemovePayment = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
@@ -833,7 +828,7 @@ const ReceiptSummary = (props: Props) => {
         onComplete={handleComplete}
         isCompleting={isCompleting}
         visible={isSuccessModalOpen}
-        onPrintReceipt={handlePrintReceipt}
+        onPrintReceipt={onPrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onNewReceiptClick={handleNewReceiptClick}
         onOpenCustomerModal={handleOpenCustomerModal}

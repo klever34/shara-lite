@@ -1,12 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
+  BluetoothEscposPrinter,
+  BluetoothManager,
+} from 'react-native-bluetooth-escpos-printer';
+import {
   FlatList,
   Modal as ReactNativeModal,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {
@@ -45,6 +50,9 @@ export const NewReceipt = () => {
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
     false,
   );
+  const [isPrinting, setIsPrinting] = useState(false);
+  const [isPrintError, setIsPrintError] = useState(false);
+  const [isPrintSuccess, setIsPrintSuccess] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -150,6 +158,68 @@ export const NewReceipt = () => {
     selectedProduct,
     handleOpenSummaryModal,
   ]);
+
+  const handleClosePrinterModal = useCallback(() => {
+    setIsPrinting(false);
+    setIsPrintError(false);
+    setIsPrintSuccess(false);
+  }, []);
+
+  const handlePrintReceipt = useCallback(async () => {
+    setIsPrinting(true);
+    try {
+      // TODO Connect to Bluetooth Printer
+      const printer = 'DC:0D:30:91:67:90'; // the device address scanned.
+      await BluetoothManager.connect(printer);
+      const receiptStyles = {
+        header: {
+          widthtimes: 2,
+          heigthtimes: 2,
+          fonttype: 1,
+        },
+        subheader: {
+          widthtimes: 1,
+          heigthtimes: 1,
+          fonttype: 1,
+        },
+        product: {
+          widthtimes: 0,
+          heigthtimes: 0,
+          fonttype: 1,
+        },
+      };
+      // TODO Print Receipt
+      await BluetoothEscposPrinter.printerAlign(
+        BluetoothEscposPrinter.ALIGN.LEFT,
+      );
+      await BluetoothEscposPrinter.printText(
+        '--------------------------------\n\r',
+        {},
+      );
+      await BluetoothEscposPrinter.printText(
+        'Receipt\n\r',
+        receiptStyles.header,
+      );
+      await BluetoothEscposPrinter.printText(
+        'Products\n\r',
+        receiptStyles.subheader,
+      );
+      for (const product of receipt) {
+        const p = parseFloat(product.price);
+        const q = parseFloat(product.quantity);
+        const total = Math.imul(q, p).toString();
+        await BluetoothEscposPrinter.printText(
+          `${product.quantity} X ${product.name} @ N${product.price}/pcs = N${total} \n\r`,
+          receiptStyles.product,
+        );
+      }
+      setIsPrintSuccess(true);
+      // TODO Print Payments
+    } catch (err) {
+      Alert.alert('Bluetooth Status', err.toString());
+      setIsPrintError(true);
+    }
+  }, [receipt]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -314,6 +384,7 @@ export const NewReceipt = () => {
         <ReceiptSummary
           products={receipt}
           onClearReceipt={handleClearReceipt}
+          onPrintReceipt={handlePrintReceipt}
           onRemoveProductItem={handleRemoveProductItem}
           onUpdateProductItem={handleUpdateProductItem}
           onCloseSummaryModal={handleCloseSummaryModal}
@@ -342,7 +413,13 @@ export const NewReceipt = () => {
         visible={isProductsPreviewModalOpen}
         onClose={handleCloseProductsPreviewModal}
       />
-      <BluetoothModal />
+      <BluetoothModal
+        print={isPrinting}
+        error={isPrintError}
+        success={isPrintSuccess}
+        onClose={handleClosePrinterModal}
+        onPrintReceipt={handlePrintReceipt}
+      />
     </SafeAreaView>
   );
 };
