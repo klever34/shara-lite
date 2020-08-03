@@ -26,11 +26,11 @@ type GroupChatMember = {
   id: number;
   user_id: number;
   group_chat_id: number;
-  is_admin: boolean;
+  is_admin?: boolean;
   created_at: string;
   updated_at: string;
   is_creator: boolean;
-  user: User;
+  user?: User;
 };
 
 type OneOnOneChannelCustom = {

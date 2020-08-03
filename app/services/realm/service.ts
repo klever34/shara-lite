@@ -5,6 +5,8 @@ import PubNub from 'pubnub';
 import {decrypt} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
+import {ChannelCustom} from '../../../types/app';
+import compact from 'lodash/compact';
 
 export interface IRealmService {
   getInstance(): Realm | null;
@@ -281,7 +283,9 @@ export class RealmService implements IRealmService {
         const groupChatMembers = await this.apiService.getGroupMembers(
           custom.id,
         );
-        members = groupChatMembers.map(({user: {mobile}}) => mobile);
+        members = compact(
+          groupChatMembers.map((member) => member.user?.mobile),
+        );
         return {
           id: String(custom.id),
           creatorId: String(custom.creatorId),

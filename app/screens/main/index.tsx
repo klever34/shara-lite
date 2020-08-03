@@ -42,6 +42,8 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
+import {Results} from 'realm';
+import {FAButtonProps} from '../../components';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -65,8 +67,16 @@ export type MainStackParamList = {
   CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
   CustomerOverdueCredit: {credits: ICredit[]};
   BusinessSetup: undefined;
-  SelectGroupMembers: undefined;
-  SetGroupDetails: {members: IContact[]};
+  SelectGroupMembers: {
+    participants?: Results<IContact>;
+    title: string;
+    next: (selectedMembers: IContact[]) => FAButtonProps;
+  };
+  SetGroupDetails: {
+    participants: IContact[];
+    title: string;
+    next: (groupName: string) => FAButtonProps;
+  };
   TotalCredit: {credits: ICredit[]};
   OverdueCredit: {credits: ICredit[]};
   RecordCreditPayment: undefined;
@@ -117,7 +127,13 @@ const MainScreens = ({navigation}: any) => {
 
   return (
     <PubNubProvider client={pubNubClient}>
-      <MainStack.Navigator initialRouteName={initialRouteName}>
+      <MainStack.Navigator
+        initialRouteName={initialRouteName}
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.primary,
+          },
+        }}>
         <MainStack.Screen
           name="Home"
           component={HomeScreen}
@@ -138,9 +154,6 @@ const MainScreens = ({navigation}: any) => {
           component={ContactsScreen}
           options={{
             title: 'Select Contact',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -152,9 +165,6 @@ const MainScreens = ({navigation}: any) => {
           name="Chat"
           component={ChatScreen}
           options={{
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -166,9 +176,6 @@ const MainScreens = ({navigation}: any) => {
           name="ChatDetails"
           component={ChatDetailsScreen}
           options={{
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -180,10 +187,6 @@ const MainScreens = ({navigation}: any) => {
           name="SelectGroupMembers"
           component={SelectGroupMembersScreen}
           options={{
-            headerTitle: 'New Group',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -195,10 +198,6 @@ const MainScreens = ({navigation}: any) => {
           name="SetGroupDetails"
           component={SetGroupDetailsScreen}
           options={{
-            headerTitle: 'New Group',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -210,9 +209,6 @@ const MainScreens = ({navigation}: any) => {
           name="Receipts"
           component={Receipts}
           options={{
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -225,9 +221,6 @@ const MainScreens = ({navigation}: any) => {
           component={NewReceipt}
           options={{
             title: 'New Receipt',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -245,9 +238,6 @@ const MainScreens = ({navigation}: any) => {
           component={Finances}
           options={{
             title: 'My Finances',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -260,9 +250,6 @@ const MainScreens = ({navigation}: any) => {
           component={AddCustomer}
           options={{
             title: 'Add Customer',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -275,9 +262,6 @@ const MainScreens = ({navigation}: any) => {
           component={CustomerDetails}
           options={({route}) => ({
             title: route.params.customer.name,
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -290,9 +274,6 @@ const MainScreens = ({navigation}: any) => {
           component={RecordPayment}
           options={{
             title: 'Record Payment',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -305,9 +286,6 @@ const MainScreens = ({navigation}: any) => {
           component={CreditPayment}
           options={{
             title: 'Credit Payment',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -320,9 +298,6 @@ const MainScreens = ({navigation}: any) => {
           component={PaymentDetails}
           options={{
             title: 'Payment Details',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -335,9 +310,6 @@ const MainScreens = ({navigation}: any) => {
           component={OrderDetails}
           options={{
             title: 'Order Details',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -350,9 +322,6 @@ const MainScreens = ({navigation}: any) => {
           component={TotalCredit}
           options={{
             title: 'Total Credit',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -365,9 +334,6 @@ const MainScreens = ({navigation}: any) => {
           component={OverdueCredit}
           options={{
             title: 'Overdue Credit',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -380,9 +346,6 @@ const MainScreens = ({navigation}: any) => {
           component={CustomerCreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -402,9 +365,6 @@ const MainScreens = ({navigation}: any) => {
           component={TotalCredit}
           options={{
             title: 'Total Credit',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -417,9 +377,6 @@ const MainScreens = ({navigation}: any) => {
           component={OverdueCredit}
           options={{
             title: 'Overdue Credit',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -432,9 +389,6 @@ const MainScreens = ({navigation}: any) => {
           component={RecordCreditPayment}
           options={{
             title: 'Record Credit Payment',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -447,9 +401,6 @@ const MainScreens = ({navigation}: any) => {
           component={CreditDetails}
           options={{
             title: 'Credit Details',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -462,9 +413,6 @@ const MainScreens = ({navigation}: any) => {
           component={CreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',

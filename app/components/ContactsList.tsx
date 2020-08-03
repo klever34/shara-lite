@@ -20,12 +20,16 @@ type ContactsListProps = Omit<
 > & {
   contacts?: Collection<IContact>;
   getContactItemTitle?: (item: IContact) => string;
+  getContactItemDescription?: (item: IContact) => string;
+  shouldClickContactItem?: (item: IContact) => boolean;
   onContactItemClick: (item: IContact) => void;
 };
 
 const ContactsList = ({
   contacts,
   getContactItemTitle = (item: IContact) => item.fullName,
+  getContactItemDescription = () => '',
+  shouldClickContactItem = () => true,
   onContactItemClick,
   ...restProps
 }: ContactsListProps) => {
@@ -38,24 +42,45 @@ const ContactsList = ({
       .sorted('firstname');
   const renderContactItem = useCallback(
     ({item}: ListRenderItemInfo<IContact>) => {
+      const title = getContactItemTitle(item);
+      const description = getContactItemDescription(item);
+      const itemClickable = shouldClickContactItem(item);
       return (
         <Touchable
-          onPress={() => {
-            onContactItemClick(item);
-          }}>
+          onPress={
+            itemClickable
+              ? () => {
+                  onContactItemClick(item);
+                }
+              : undefined
+          }>
           <View style={applyStyles('flex-row items-center px-md')}>
             <PlaceholderImage
               text={item.fullName}
               style={applyStyles('mr-md my-md')}
             />
-            <Text style={applyStyles('text-lg')}>
-              {getContactItemTitle(item)}
-            </Text>
+            <View>
+              <Text
+                style={applyStyles(
+                  'text-lg mb-xs',
+                  !itemClickable && 'text-gray-100',
+                )}>
+                {title}
+              </Text>
+              {!!description && (
+                <Text style={applyStyles('text-base')}>{description}</Text>
+              )}
+            </View>
           </View>
         </Touchable>
       );
     },
-    [getContactItemTitle, onContactItemClick],
+    [
+      getContactItemDescription,
+      getContactItemTitle,
+      onContactItemClick,
+      shouldClickContactItem,
+    ],
   );
   return (
     <FlatList

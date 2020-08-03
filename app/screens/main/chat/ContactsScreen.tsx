@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, Text, View} from 'react-native';
+import {Alert, Platform, Text, View} from 'react-native';
 import {
   getApiService,
   getAuthService,
@@ -7,7 +7,7 @@ import {
 } from '../../../services';
 import {applyStyles} from '../../../helpers/utils';
 import Touchable from '../../../components/Touchable';
-import {CommonActions, useNavigation} from '@react-navigation/native';
+import {CommonActions} from '@react-navigation/native';
 import Share from 'react-native-share';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
@@ -17,9 +17,14 @@ import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderRight from '../../../components/HeaderRight';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from '../index';
+import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
 
-const ContactsScreen = () => {
-  const navigation = useNavigation();
+const ContactsScreen = ({
+  navigation,
+  openModal,
+}: StackScreenProps<MainStackParamList, 'Contacts'> & ModalWrapperFields) => {
   const realm = useRealm() as Realm;
   const contacts = realm.objects<IContact>('Contact').sorted('firstname');
   const [loadingContacts, setLoadingContacts] = useState(false);
@@ -166,7 +171,73 @@ const ContactsScreen = () => {
       ListHeaderComponent={
         <Touchable
           onPress={() => {
-            navigation.navigate('SelectGroupMembers');
+            const title = 'New Group';
+            navigation.navigate('SelectGroupMembers', {
+              title,
+              next: (participants: IContact[]) => ({
+                iconName: Platform.select({
+                  android: 'md-arrow-forward',
+                  ios: 'ios-arrow-forward',
+                }),
+                onPress: () => {
+                  navigation.navigate('SetGroupDetails', {
+                    participants,
+                    title,
+                    next: (groupName: string) => {
+                      return {
+                        iconName: Platform.select({
+                          android: 'md-checkmark',
+                          ios: 'ios-checkmark',
+                        }),
+                        onPress: () => {
+                          const closeModal = openModal('loading', {
+                            text: 'Creating Group...',
+                          });
+                          const apiService = getApiService();
+                          apiService
+                            .createGroupChat(groupName, participants)
+                            .then((groupChat) => {
+                              try {
+                                realm.write(() => {
+                                  const conversation = realm.create<
+                                    IConversation
+                                  >(
+                                    'Conversation',
+                                    {
+                                      name: groupChat.name,
+                                      type: 'group',
+                                      channel: groupChat.uuid,
+                                      members: participants.map(
+                                        (member) => member.mobile,
+                                      ),
+                                    },
+                                    UpdateMode.Modified,
+                                  );
+                                  navigation.dispatch(
+                                    CommonActions.reset({
+                                      routes: [
+                                        {name: 'Home'},
+                                        {
+                                          name: 'Chat',
+                                          params: conversation,
+                                        },
+                                      ],
+                                      index: 1,
+                                    }),
+                                  );
+                                });
+                              } catch (e) {
+                                handleError(e);
+                              }
+                            })
+                            .finally(closeModal);
+                        },
+                      };
+                    },
+                  });
+                },
+              }),
+            });
           }}>
           <View style={applyStyles('flex-row items-center p-md')}>
             <View
@@ -221,4 +292,4 @@ const ContactsScreen = () => {
   );
 };
 
-export default ContactsScreen;
+export default withModal(ContactsScreen);

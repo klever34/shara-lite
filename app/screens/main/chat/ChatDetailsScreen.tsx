@@ -1,5 +1,12 @@
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
-import {Alert, SafeAreaView, Text, View, VirtualizedList} from 'react-native';
+import {
+  Alert,
+  Platform,
+  SafeAreaView,
+  Text,
+  View,
+  VirtualizedList,
+} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '..';
 import HeaderTitle from '../../../components/HeaderTitle';
@@ -76,8 +83,15 @@ const ChatDetailsScreen = ({
   openModal,
 }: StackScreenProps<MainStackParamList, 'ChatDetails'> &
   ModalWrapperFields) => {
-  const conversation = route.params;
   const realm = useRealm();
+  const conversation = route.params;
+  const participants = realm
+    .objects<IContact>('Contact')
+    .filtered(`groups CONTAINS "${conversation.channel}"`)
+    .sorted([
+      ['isMe', true],
+      ['firstname', false],
+    ]);
   const handleError = useErrorHandler();
   const isCreator = useMemo(() => {
     const me = getAuthService().getUser();
@@ -136,7 +150,62 @@ const ChatDetailsScreen = ({
           {
             icon: 'person-add',
             onPress: () => {
-              console.log('Add Participant');
+              navigation.navigate('SelectGroupMembers', {
+                participants,
+                title: 'Add participants',
+                next: (selectedContacts: IContact[]) => ({
+                  iconName: Platform.select({
+                    android: 'md-checkmark',
+                    ios: 'ios-checkmark',
+                  }),
+                  onPress: () => {
+                    navigation.goBack();
+                    if (!conversation.id) {
+                      return;
+                    }
+                    const closeModal = openModal('loading', {
+                      text: 'Adding participants',
+                    });
+                    const apiService = getApiService();
+                    apiService
+                      .addGroupChatMembers(conversation.id, selectedContacts)
+                      .then((groupChatMembers) => {
+                        try {
+                          realm.write(() => {
+                            conversation.members.push(
+                              ...groupChatMembers.map((member) => {
+                                const contact = realm
+                                  .objects<IContact>('Contact')
+                                  .filtered(`id = "${member.user_id}"`)[0];
+                                return contact.mobile;
+                              }),
+                            );
+                            for (
+                              let i = 0;
+                              i < selectedContacts.length;
+                              i += 1
+                            ) {
+                              const contact = selectedContacts[i];
+                              realm.create<IContact>(
+                                'Contact',
+                                {
+                                  mobile: contact.mobile,
+                                  groups:
+                                    contact.groups + ',' + conversation.channel,
+                                },
+                                UpdateMode.Modified,
+                              );
+                            }
+                          });
+                        } catch (e) {
+                          handleError(e);
+                        }
+                      })
+                      .catch(handleError)
+                      .finally(closeModal);
+                  },
+                }),
+              });
             },
           },
         );
@@ -155,20 +224,19 @@ const ChatDetailsScreen = ({
       headerRight: () => <HeaderRight options={options} />,
     });
   }, [
+    conversation.channel,
+    conversation.id,
+    conversation.members,
     conversation.name,
     conversation.type,
     editTextProperty,
+    handleError,
     isCreator,
     navigation,
     openModal,
+    participants,
+    realm,
   ]);
-  const participants = realm
-    .objects<IContact>('Contact')
-    .filtered(`groups CONTAINS "${conversation.channel}"`)
-    .sorted([
-      ['isMe', true],
-      ['firstname', false],
-    ]);
   const renderView = useCallback(() => {
     return (
       <View>

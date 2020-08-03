@@ -1,16 +1,27 @@
-import React, {useCallback, useState} from 'react';
-import {Platform, SafeAreaView, ScrollView, View} from 'react-native';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {SafeAreaView, ScrollView, View} from 'react-native';
 import ContactsList from '../../../components/ContactsList';
 import {IContact} from '../../../models';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import {applyStyles} from '../../../helpers/utils';
 import Touchable from '../../../components/Touchable';
 import {FAButton} from '../../../components';
-import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from '../index';
+import HeaderTitle from '../../../components/HeaderTitle';
 
-const SelectGroupMembersScreen = () => {
-  const navigation = useNavigation();
+const SelectGroupMembersScreen = ({
+  navigation,
+  route,
+}: StackScreenProps<MainStackParamList, 'SelectGroupMembers'>) => {
+  const {participants, title, next} = route.params;
   const [selectedContacts, setSelectedContacts] = useState<IContact[]>([]);
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerTitle: () => <HeaderTitle title={title} />,
+    });
+  });
+
   const toggleContactSelect = useCallback((item: IContact) => {
     setSelectedContacts((prevSelectedContacts) => {
       const index = prevSelectedContacts.findIndex(
@@ -26,14 +37,21 @@ const SelectGroupMembersScreen = () => {
     });
   }, []);
 
-  const next = useCallback(() => {
-    navigation.navigate('SetGroupDetails', {members: selectedContacts});
-  }, [navigation, selectedContacts]);
+  const isMember = useCallback(
+    (contact: IContact) => {
+      return !!participants?.filtered(`mobile = "${contact.mobile}"`)[0];
+    },
+    [participants],
+  );
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <ContactsList
         onContactItemClick={toggleContactSelect}
+        shouldClickContactItem={(item) => !isMember(item)}
+        getContactItemDescription={(item) =>
+          isMember(item) ? 'Already added to this group' : ''
+        }
         ListHeaderComponent={
           selectedContacts.length ? (
             <ScrollView horizontal style={applyStyles('mx-md')}>
@@ -57,15 +75,7 @@ const SelectGroupMembersScreen = () => {
           ) : null
         }
       />
-      {!!selectedContacts.length && (
-        <FAButton
-          iconName={Platform.select({
-            android: 'md-arrow-forward',
-            ios: 'ios-arrow-forward',
-          })}
-          onPress={next}
-        />
-      )}
+      {!!selectedContacts.length && <FAButton {...next(selectedContacts)} />}
     </SafeAreaView>
   );
 };
