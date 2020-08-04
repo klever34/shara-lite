@@ -5,6 +5,7 @@ import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment, updatePayment} from './PaymentService';
 import {getBaseModelValues} from '../helpers/models';
 import {saveCredit, updateCredit} from './CreditService';
+import {Customer, Payment, ReceiptItem} from '../../types/app';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -18,7 +19,7 @@ export const saveReceipt = ({
   totalAmount,
   creditAmount,
   payments,
-  products,
+  receiptItems,
 }: {
   realm: Realm;
   customer: ICustomer | Customer;
@@ -27,7 +28,7 @@ export const saveReceipt = ({
   creditAmount: number;
   tax: number;
   payments: Payment[];
-  products: ReceiptItem[];
+  receiptItems: ReceiptItem[];
 }): void => {
   const receipt: IReceipt = {
     tax,
@@ -60,11 +61,11 @@ export const saveReceipt = ({
     });
   });
 
-  products.forEach((product) => {
+  receiptItems.forEach((receiptItem) => {
     saveReceiptItem({
       realm,
       receipt,
-      ...product,
+      receiptItem,
     });
   });
 

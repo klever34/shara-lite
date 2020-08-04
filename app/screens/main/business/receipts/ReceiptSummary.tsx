@@ -415,7 +415,7 @@ const ReceiptSummary = (props: Props) => {
         saveReceipt({
           tax,
           realm,
-          products,
+          receiptItems: products,
           payments,
           customer,
           amountPaid,
