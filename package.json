@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.14-feature.group-chat-crud+build.920",
+  "version": "0.1.14-feature.group-chat-crud+build.936",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
