@@ -7,5 +7,4 @@ declare module 'react-native-config' {
 
   export const ENVIRONMENT: string
   export const API_BASE_URL: string
-  export const API_BASE_URL_TEST: string
 }

@@ -73,7 +73,7 @@ export class ApiService implements IApiService {
       params: {[key: string]: string | number},
     ) => {
       return fetch(
-        `${Config.API_BASE_URL_TEST}${url}?${queryString.stringify(params)}`,
+        `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
         {
           method: 'GET',
           headers: {
@@ -88,7 +88,7 @@ export class ApiService implements IApiService {
       data: {[key: string]: any},
       options?: {[key: string]: any},
     ) => {
-      return fetch(`${Config.API_BASE_URL_TEST}${url}`, {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
@@ -99,7 +99,7 @@ export class ApiService implements IApiService {
       }).then((...args) => this.handleFetchErrors<T>(...args))
     },
     patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
-      return fetch(`${Config.API_BASE_URL_TEST}${url}`, {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
