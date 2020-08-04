@@ -202,7 +202,7 @@ const ReceiptSummary = (props: Props) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const creditAmount = totalAmount - amountPaid;
+  const creditAmount = payments.length ? totalAmount - amountPaid : totalAmount;
 
   //@ts-ignore
   const timeTaken = new Date().getTime() - global.startTime;
@@ -415,12 +415,12 @@ const ReceiptSummary = (props: Props) => {
         saveReceipt({
           tax,
           realm,
-          receiptItems: products,
           payments,
           customer,
           amountPaid,
           totalAmount,
           creditAmount,
+          receiptItems: products,
         });
         onClearReceipt();
         onSuccess && onSuccess();

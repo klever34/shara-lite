@@ -113,22 +113,18 @@ export function ReceiptDetailsModal(props: Props) {
 
   return (
     <Modal visible={visible} animationType="slide">
-      <ScrollView style={applyStyles('px-lg', 'py-xl')}>
+      <ScrollView style={applyStyles('px-lg py-xl')}>
         <View
           style={applyStyles(
-            'pb-md',
-            'w-full',
-            'flex-row',
-            'justify-space-between',
+            'pb-md mb-lg w-full flex-row justify-space-between',
             {
-              marginBottom: 40,
               borderBottomWidth: 1,
               borderBottomColor: colors['gray-20'],
             },
           )}>
           <View style={applyStyles({width: '48%'})}>
             <Text
-              style={applyStyles('pb-xs', 'text-400', {
+              style={applyStyles('pb-sm', 'text-400', {
                 color: colors['gray-200'],
               })}>
               Receipt for
@@ -143,32 +139,13 @@ export function ReceiptDetailsModal(props: Props) {
                   {receipt.customer.name}
                 </Text>
               ) : (
-                <Touchable onPress={handleOpenCustomerModal}>
-                  <View
-                    style={applyStyles(
-                      'flex-row',
-                      'items-center',
-                      'justify-center',
-                    )}>
-                    <Icon
-                      size={24}
-                      name="plus"
-                      type="feathericons"
-                      color={colors.primary}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-sm',
-                        'text-400',
-                        'text-uppercase',
-                        {
-                          color: colors.primary,
-                        },
-                      )}>
-                      Add customer
-                    </Text>
-                  </View>
-                </Touchable>
+                <Text
+                  style={applyStyles('text-400', {
+                    fontSize: 12,
+                    color: colors['gray-50'],
+                  })}>
+                  - No customer details
+                </Text>
               )}
             </View>
           </View>
@@ -187,6 +164,27 @@ export function ReceiptDetailsModal(props: Props) {
               &#8358;{numberWithCommas(receipt?.total_amount)}
             </Text>
           </View>
+        </View>
+        <View>
+          <Touchable onPress={handleOpenCustomerModal}>
+            <View
+              style={applyStyles(
+                'py-lg mb-xl flex-row items-center justify-center',
+              )}>
+              <Icon
+                size={24}
+                name="plus"
+                type="feathericons"
+                color={colors.primary}
+              />
+              <Text
+                style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                  color: colors.primary,
+                })}>
+                Add customer
+              </Text>
+            </View>
+          </Touchable>
         </View>
         <View>
           <Text

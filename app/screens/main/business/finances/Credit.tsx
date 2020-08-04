@@ -1,6 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
 import React, {useCallback} from 'react';
+import {useFocusEffect} from '@react-navigation/native';
 import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, FAButton} from '../../../../components';
 import Icon from '../../../../components/Icon';
