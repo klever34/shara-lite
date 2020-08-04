@@ -52,6 +52,16 @@ const SelectGroupMembersScreen = ({
         getContactItemDescription={(item) =>
           isMember(item) ? 'Already added to this group' : ''
         }
+        getContactItemImageProps={(item) => ({
+          indicator: selectedContacts.find(
+            (selected) => selected.mobile === item.mobile,
+          )
+            ? {
+                icon: {type: 'material-icons', name: 'check'},
+                style: applyStyles('bg-green'),
+              }
+            : undefined,
+        })}
         ListHeaderComponent={
           selectedContacts.length ? (
             <ScrollView horizontal style={applyStyles('mx-md')}>
@@ -66,6 +76,13 @@ const SelectGroupMembersScreen = ({
                       <PlaceholderImage
                         text={contact.fullName}
                         style={applyStyles('m-sm')}
+                        indicator={{
+                          style: applyStyles('bg-gray-300'),
+                          icon: {
+                            type: 'material-icons',
+                            name: 'close',
+                          },
+                        }}
                       />
                     </View>
                   </Touchable>

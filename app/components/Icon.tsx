@@ -1,6 +1,6 @@
 import React, {memo} from 'react';
 
-type IconProps = {
+export type IconProps = {
   type:
     | 'ionicons'
     | 'octicons'
