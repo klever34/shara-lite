@@ -19,8 +19,8 @@ export class Product implements Partial<IProduct> {
       name: 'string',
       sku: 'string',
       price: 'double',
+      quantity: {type: 'int', default: 0},
       weight: 'string?',
-      quantity: 'int?',
     },
   };
 }
