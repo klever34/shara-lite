@@ -146,13 +146,20 @@ const ChatScreen = ({
     };
   }, [channel, handleError, pubNub, realm]);
 
+  const headerDescription = useMemo(() => {
+    if (conversation.type === 'group') {
+      return typingMessage || 'tap here for group info';
+    }
+    return typingMessage;
+  }, [conversation.type, typingMessage]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => {
         return (
           <HeaderTitle
             title={name}
-            description={typingMessage}
+            description={headerDescription}
             onPress={() => {
               navigation.navigate('ChatDetails', conversation);
             }}
@@ -160,7 +167,7 @@ const ChatScreen = ({
         );
       },
     });
-  }, [conversation, navigation, name, typingMessage]);
+  }, [conversation, headerDescription, name, navigation]);
   const handleSubmit = useCallback(() => {
     setInput('');
     if (!me) {
