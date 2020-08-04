@@ -347,22 +347,24 @@ const ChatDetailsScreen = ({
               </View>
             </Touchable>
           )}
-        <View style={applyStyles('pt-lg bg-white elevation-1 mb-md')}>
-          <Text style={applyStyles('mx-lg text-base font-semibold mb-sm')}>
-            {conversation.members.length} participants
-          </Text>
-          <ContactsList
-            contacts={participants}
-            shouldClickContactItem={(item) => !item.isMe}
-            getContactItemTitle={(item) => {
-              if (item.isMe) {
-                return 'You';
-              }
-              return item.fullName;
-            }}
-            onContactItemClick={onParticipantClick}
-          />
-        </View>
+        {conversation.type === 'group' && (
+          <View style={applyStyles('pt-lg bg-white elevation-1 mb-md')}>
+            <Text style={applyStyles('mx-lg text-base font-semibold mb-sm')}>
+              {conversation.members.length} participants
+            </Text>
+            <ContactsList
+              contacts={participants}
+              shouldClickContactItem={(item) => !item.isMe}
+              getContactItemTitle={(item) => {
+                if (item.isMe) {
+                  return 'You';
+                }
+                return item.fullName;
+              }}
+              onContactItemClick={onParticipantClick}
+            />
+          </View>
+        )}
         {conversation.type === 'group' && (
           <Touchable
             onPress={() => {
