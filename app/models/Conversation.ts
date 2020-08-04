@@ -7,7 +7,7 @@ export interface IConversation {
   members: string[];
   name: string;
   description?: string;
-  id?: string;
+  id: string;
   creatorId?: string;
   creatorMobile?: string;
 }
@@ -21,7 +21,7 @@ export class Conversation implements Partial<IConversation> {
       type: 'string',
       lastMessage: 'Message?',
       name: 'string',
-      id: 'string?',
+      id: 'string',
       creatorId: 'string?',
       creatorMobile: 'string?',
       description: 'string?',

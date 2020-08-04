@@ -24,6 +24,10 @@ export type Requester = {
     url: string,
     data: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
+  delete: <T extends any = any>(
+    url: string,
+    data: {[key: string]: any},
+  ) => Promise<void>;
 };
 
 export interface IApiService {
@@ -62,6 +66,11 @@ export interface IApiService {
     groupChatId: number | string,
     members: IContact[],
   ): Promise<GroupChatMember[]>;
+
+  removeGroupChatMembers(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<void>;
 }
 
 export class ApiService implements IApiService {
@@ -84,7 +93,7 @@ export class ApiService implements IApiService {
             'Content-Type': 'application/json',
           },
         },
-      ).then((...args) => this.handleFetchErrors<T>(...args));
+      ).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
     post: <T extends any = any>(url: string, data: {[key: string]: any}) => {
       return fetch(`${Config.API_BASE_URL}${url}`, {
@@ -94,11 +103,21 @@ export class ApiService implements IApiService {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      }).then((...args) => this.handleFetchErrors<T>(...args));
+      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
     patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
       return fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+    },
+    delete: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
+        method: 'DELETE',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
@@ -110,13 +129,16 @@ export class ApiService implements IApiService {
 
   private handleFetchErrors = async <T extends any>(
     response: Response,
-  ): Promise<T> => {
+  ): Promise<T | void> => {
     if (!response.ok) {
       const jsonResponse = await response.json();
       if (jsonResponse.message.includes('E_INVALID_JWT_TOKEN')) {
         this.authService.logOut();
       }
       return Promise.reject(new Error(jsonResponse.message));
+    }
+    if (response.status === 204) {
+      return;
     }
     return (await response.json()) as Promise<T>;
   };
@@ -250,6 +272,19 @@ export class ApiService implements IApiService {
         },
       );
       return groupChatMembers;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async removeGroupChatMembers(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<any> {
+    try {
+      await this.requester.delete<{
+        groupChatMembers: GroupChatMember[];
+      }>('/group-chat-member', {group_chat_id: groupChatId, user_id: userId});
     } catch (e) {
       throw e;
     }

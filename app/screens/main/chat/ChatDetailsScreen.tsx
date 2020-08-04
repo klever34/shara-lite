@@ -22,6 +22,7 @@ import {getApiService, getAuthService} from '../../../services';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderRight, {HeaderRightOption} from '../../../components/HeaderRight';
 import {UpdateMode} from 'realm';
+import {ModalPropsList} from '../../../../types/modal';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';
@@ -237,6 +238,66 @@ const ChatDetailsScreen = ({
     participants,
     realm,
   ]);
+
+  const onParticipantClick = useCallback(
+    (contact: IContact) => {
+      const selectParticipantOptions: ModalPropsList['options']['options'] = [];
+      if (conversation.type === 'group') {
+        if (isCreator) {
+          selectParticipantOptions.push({
+            text: 'Remove',
+            onPress: async () => {
+              closeOptionsModal();
+              const closeModal = openModal('loading', {
+                text: 'Removing...',
+              });
+              try {
+                const apiService = getApiService();
+                await apiService.removeGroupChatMembers(
+                  conversation.id,
+                  contact.id,
+                );
+                realm.write(() => {
+                  conversation.members = conversation.members.filter(
+                    (member) => member !== contact.mobile,
+                  );
+                  realm.create<IContact>(
+                    'Contact',
+                    {
+                      mobile: contact.mobile,
+                      groups: contact.groups
+                        .split(',')
+                        .filter((channel) => channel !== conversation.channel)
+                        .join(','),
+                    },
+                    UpdateMode.Modified,
+                  );
+                });
+              } catch (e) {
+                handleError(e);
+              } finally {
+                closeModal();
+              }
+            },
+          });
+        }
+      }
+      const closeOptionsModal = openModal('options', {
+        options: selectParticipantOptions,
+      });
+    },
+    [
+      conversation.channel,
+      conversation.id,
+      conversation.members,
+      conversation.type,
+      handleError,
+      isCreator,
+      openModal,
+      realm,
+    ],
+  );
+
   const renderView = useCallback(() => {
     return (
       <View>
@@ -287,26 +348,14 @@ const ChatDetailsScreen = ({
           </Text>
           <ContactsList
             contacts={participants}
+            shouldClickContactItem={(item) => !item.isMe}
             getContactItemTitle={(item) => {
               if (item.isMe) {
                 return 'You';
               }
               return item.fullName;
             }}
-            onContactItemClick={() => {
-              openModal('options', {
-                options: [
-                  {
-                    text: 'Make Admin',
-                    onPress: () => {},
-                  },
-                  {
-                    text: 'Remove',
-                    onPress: () => {},
-                  },
-                ],
-              });
-            }}
+            onContactItemClick={onParticipantClick}
           />
         </View>
         <Touchable
@@ -341,6 +390,7 @@ const ChatDetailsScreen = ({
     conversation.type,
     editTextProperty,
     isCreator,
+    onParticipantClick,
     openModal,
     participants,
   ]);

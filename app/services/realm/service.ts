@@ -2,7 +2,7 @@ import Realm from 'realm';
 import {IContact, IConversation, IMessage} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
-import {decrypt} from '../../helpers/utils';
+import {decrypt, generateUniqueId} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
 import {ChannelCustom} from '../../../types/app';
@@ -302,6 +302,7 @@ export class RealmService implements IRealmService {
         const user = this.authService.getUser();
         const sender = members.find((member) => member !== user?.mobile) ?? '';
         return {
+          id: generateUniqueId(),
           name: sender,
           type: custom.type ?? '1-1',
           members,
