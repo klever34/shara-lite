@@ -261,11 +261,77 @@ const ChatDetailsScreen = ({
     [conversation.channel, conversation.members, realm],
   );
 
+  const admins = (conversation?.admins ?? []).reduce<{[key: string]: boolean}>(
+    (acc, curr) => {
+      return {
+        ...acc,
+        [curr]: true,
+      };
+    },
+    {},
+  );
+
+  const isAdmin = useCallback(
+    (contact: IContact) => {
+      return admins[contact.mobile];
+    },
+    [admins],
+  );
+
   const onParticipantClick = useCallback(
     (contact: IContact) => {
       const selectParticipantOptions: ModalPropsList['options']['options'] = [];
       if (conversation.type === 'group') {
         if (isCreator) {
+          if (!isAdmin(contact)) {
+            selectParticipantOptions.push({
+              text: 'Make group admin',
+              onPress: async () => {
+                closeOptionsModal();
+                const closeModal = openModal('loading', {
+                  text: 'Adding...',
+                });
+                try {
+                  const apiService = getApiService();
+                  await apiService.setGroupAdmin(conversation.id, contact.id);
+                  realm.write(() => {
+                    conversation.admins?.push(contact.mobile);
+                  });
+                } catch (e) {
+                  handleError(e);
+                } finally {
+                  closeModal();
+                }
+              },
+            });
+          } else {
+            selectParticipantOptions.push({
+              text: 'Remove group admin',
+              onPress: async () => {
+                closeOptionsModal();
+                const closeModal = openModal('loading', {
+                  text: 'Removing...',
+                });
+                try {
+                  const apiService = getApiService();
+                  await apiService.setGroupAdmin(
+                    conversation.id,
+                    contact.id,
+                    false,
+                  );
+                  realm.write(() => {
+                    conversation.admins = conversation.admins?.filter(
+                      (mobile) => mobile !== contact.mobile,
+                    );
+                  });
+                } catch (e) {
+                  handleError(e);
+                } finally {
+                  closeModal();
+                }
+              },
+            });
+          }
           selectParticipantOptions.push({
             text: `Remove ${contact.fullName}`,
             onPress: () => {
@@ -306,33 +372,17 @@ const ChatDetailsScreen = ({
       });
     },
     [
+      conversation.admins,
       conversation.id,
       conversation.name,
       conversation.type,
       handleError,
+      isAdmin,
       isCreator,
       openModal,
+      realm,
       removeGroupChatMember,
     ],
-  );
-
-  const admins = useMemo(() => {
-    return (conversation?.admins ?? []).reduce<{[key: string]: boolean}>(
-      (acc, curr) => {
-        return {
-          ...acc,
-          [curr]: true,
-        };
-      },
-      {},
-    );
-  }, [conversation]);
-
-  const isAdmin = useCallback(
-    (contact: IContact) => {
-      return admins[contact.mobile];
-    },
-    [admins],
   );
 
   const renderView = useCallback(() => {

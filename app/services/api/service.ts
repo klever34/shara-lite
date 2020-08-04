@@ -70,6 +70,12 @@ export interface IApiService {
     groupChatId: number | string,
     userId: number | string,
   ): Promise<void>;
+
+  setGroupAdmin(
+    groupChatId: number | string,
+    userId: number | string,
+    isAdmin?: boolean,
+  ): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -299,6 +305,24 @@ export class ApiService implements IApiService {
       }>('/group-chat-member/leave', {
         group_chat_id: groupChatId,
         user_id: userId,
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async setGroupAdmin(
+    groupChatId: number | string,
+    userId: number | string,
+    isAdmin: boolean = true,
+  ): Promise<any> {
+    try {
+      await this.requester.patch<{
+        groupChatMembers: GroupChatMember[];
+      }>('/group-chat-member/admin', {
+        group_chat_id: groupChatId,
+        user_id: userId,
+        is_admin: isAdmin,
       });
     } catch (e) {
       throw e;
