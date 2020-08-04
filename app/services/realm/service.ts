@@ -282,6 +282,13 @@ export class RealmService implements IRealmService {
         const groupChatMembers = await this.apiService.getGroupMembers(
           custom.id,
         );
+        const admins = compact(
+          groupChatMembers
+            .filter((member) => {
+              return !!member.is_admin;
+            })
+            .map((member) => member.user?.mobile),
+        );
         members = compact(
           groupChatMembers.map((member) => member.user?.mobile),
         );
@@ -291,6 +298,7 @@ export class RealmService implements IRealmService {
           creatorMobile: decrypt(custom.creatorMobile),
           name: channelMetadata.name ?? '',
           type: 'group',
+          admins,
           members,
           channel,
         };

@@ -11,7 +11,13 @@ import MainScreens from './screens/main';
 import Realm from 'realm';
 import {createRealm, RealmProvider} from './services/realm';
 import {getRealmService} from './services';
-import {ActivityIndicator, Alert, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  View,
+  BackHandler,
+  Platform,
+} from 'react-native';
 import {colors} from './styles';
 import {applyStyles} from './helpers/utils';
 import FallbackComponent from './components/FallbackComponent';
@@ -39,6 +45,18 @@ const App = () => {
         Alert.alert(
           'Oops! Something went wrong.',
           'Try clearing app data from application settings',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                if (process.env.NODE_ENV === 'production') {
+                  if (Platform.OS === 'android') {
+                    BackHandler.exitApp();
+                  }
+                }
+              },
+            },
+          ],
         );
       });
   }, []);

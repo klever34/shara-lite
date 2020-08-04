@@ -316,6 +316,25 @@ const ChatDetailsScreen = ({
     ],
   );
 
+  const admins = useMemo(() => {
+    return (conversation?.admins ?? []).reduce<{[key: string]: boolean}>(
+      (acc, curr) => {
+        return {
+          ...acc,
+          [curr]: true,
+        };
+      },
+      {},
+    );
+  }, [conversation]);
+
+  const isAdmin = useCallback(
+    (contact: IContact) => {
+      return admins[contact.mobile];
+    },
+    [admins],
+  );
+
   const renderView = useCallback(() => {
     return (
       <View>
@@ -367,6 +386,16 @@ const ChatDetailsScreen = ({
             </Text>
             <ContactsList
               contacts={participants}
+              getContactItemRight={(contact) =>
+                isAdmin(contact) ? (
+                  <Text
+                    style={applyStyles(
+                      'border-1 border-green rounded-4 py-2 px-6 text-green',
+                    )}>
+                    Group Admin
+                  </Text>
+                ) : null
+              }
               shouldClickContactItem={(item) => !item.isMe}
               getContactItemTitle={(item) => {
                 if (item.isMe) {
@@ -438,6 +467,7 @@ const ChatDetailsScreen = ({
     conversation.type,
     editTextProperty,
     handleError,
+    isAdmin,
     isCreator,
     onParticipantClick,
     openModal,

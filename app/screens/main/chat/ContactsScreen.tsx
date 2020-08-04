@@ -26,6 +26,7 @@ const ContactsScreen = ({
   openModal,
 }: StackScreenProps<MainStackParamList, 'Contacts'> & ModalWrapperFields) => {
   const realm = useRealm() as Realm;
+  const me = getAuthService().getUser();
   const contacts = realm.objects<IContact>('Contact').sorted('firstname');
   const [loadingContacts, setLoadingContacts] = useState(false);
   const [loadingChat, setLoadingChat] = useState(false);
@@ -131,10 +132,8 @@ const ContactsScreen = ({
         if (!channelName) {
           setLoadingChat(true);
           channelName = await apiService.createOneOnOneChannel(item.mobile);
-          const authService = getAuthService();
           setLoadingChat(false);
-          const user = authService.getUser();
-          if (!user) {
+          if (!me) {
             return;
           }
           realm.write(() => {
@@ -145,7 +144,7 @@ const ContactsScreen = ({
                 name: item.fullName,
                 channel: channelName,
                 type: '1-1',
-                members: [user.mobile, item.mobile],
+                members: [me.mobile, item.mobile],
               },
               UpdateMode.Modified,
             );
@@ -163,7 +162,7 @@ const ContactsScreen = ({
         handleError(error);
       }
     },
-    [loadingChat, navigateToChat, realm, handleError],
+    [loadingChat, realm, me, navigateToChat, handleError],
   );
 
   return (
@@ -209,6 +208,7 @@ const ContactsScreen = ({
                                       name: groupChat.name,
                                       type: 'group',
                                       channel: groupChat.uuid,
+                                      admins: [me?.mobile],
                                       members: participants.map(
                                         (member) => member.mobile,
                                       ),

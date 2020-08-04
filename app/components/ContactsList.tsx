@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {ReactNode, useCallback} from 'react';
 import {
   FlatList,
   FlatListProps,
@@ -22,6 +22,7 @@ type ContactsListProps = Omit<
   getContactItemTitle?: (item: IContact) => string;
   getContactItemDescription?: (item: IContact) => string;
   shouldClickContactItem?: (item: IContact) => boolean;
+  getContactItemRight?: (item: IContact) => ReactNode;
   onContactItemClick: (item: IContact) => void;
 };
 
@@ -29,6 +30,7 @@ const ContactsList = ({
   contacts,
   getContactItemTitle = (item: IContact) => item.fullName,
   getContactItemDescription = () => '',
+  getContactItemRight = () => null,
   shouldClickContactItem = () => true,
   onContactItemClick,
   ...restProps
@@ -59,7 +61,7 @@ const ContactsList = ({
               text={item.fullName}
               style={applyStyles('mr-md my-md')}
             />
-            <View>
+            <View style={applyStyles('flex-1')}>
               <Text
                 style={applyStyles(
                   'text-lg mb-xs',
@@ -71,12 +73,14 @@ const ContactsList = ({
                 <Text style={applyStyles('text-base')}>{description}</Text>
               )}
             </View>
+            {getContactItemRight(item)}
           </View>
         </Touchable>
       );
     },
     [
       getContactItemDescription,
+      getContactItemRight,
       getContactItemTitle,
       onContactItemClick,
       shouldClickContactItem,
