@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.14-feature.business-setup-integration+build.928",
+  "version": "0.1.14-feature.business-setup-integration+build.956",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
