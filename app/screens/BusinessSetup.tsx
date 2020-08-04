@@ -10,6 +10,7 @@ import Touchable from '../components/Touchable';
 import {applyStyles} from '../helpers/utils';
 import {RootStackParamList} from '../index';
 import {colors} from '../styles';
+import {ImagePickerOptions} from 'react-native-image-picker/src/internal/types';
 
 type Fields = {
   address: string;
@@ -71,7 +72,7 @@ export const BusinessSetup = ({
   }, []);
 
   const handleAddPicture = useCallback(() => {
-    const options = {
+    const options: ImagePickerOptions = {
       maxWidth: 256,
       maxHeight: 256,
       noData: true,

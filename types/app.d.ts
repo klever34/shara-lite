@@ -1,5 +1,3 @@
-import {ICustomer} from '../app/models';
-
 type Falsy = undefined | null | false;
 
 type User = {
@@ -69,9 +67,6 @@ type Customer = {
 type ApiResponse<T extends any = any> = {
   data: any;
   message: string;
-};
-type CustomerItemProps = {
-  item: ICustomer;
 };
 type CreditDetails = {
   id: string;

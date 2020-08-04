@@ -18,7 +18,6 @@ import {ModalWrapperFields, withModal} from '../../helpers/hocs';
 import {MessageActionEvent} from '../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderRight from '../../components/HeaderRight';
-import {PushNotificationToken} from '../../../types/app';
 
 type HomeTabParamList = {
   ChatList: undefined;

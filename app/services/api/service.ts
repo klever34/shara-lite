@@ -4,12 +4,6 @@ import Config from 'react-native-config';
 import queryString from 'query-string';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
-import {
-  ApiResponse,
-  GroupChat,
-  GroupChatMember,
-  User,
-} from '../../../types/app';
 
 export type Requester = {
   get: <T extends any = any>(

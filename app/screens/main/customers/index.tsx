@@ -11,6 +11,10 @@ import {getCustomers} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
 
+type CustomerItemProps = {
+  item: ICustomer;
+};
+
 const CustomersTab = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
@@ -21,8 +25,8 @@ const CustomersTab = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const customers = getCustomers({realm});
-      setMyCustomers(customers);
+      const nextCustomers = getCustomers({realm});
+      setMyCustomers(nextCustomers);
     });
     return unsubscribe;
   }, [navigation, realm]);

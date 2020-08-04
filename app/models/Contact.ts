@@ -1,5 +1,4 @@
 import capitalize from 'lodash/capitalize';
-import {User} from '../../types/app';
 
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {

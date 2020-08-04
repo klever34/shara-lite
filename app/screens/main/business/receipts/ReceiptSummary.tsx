@@ -277,6 +277,7 @@ const ReceiptSummary = (props: Props) => {
     // TODO: use better copy for shara invite
     const shareOptions = {
       url: 'https://shara.co/',
+      // @ts-ignore
       social: Share.Social.SMS,
       message: 'Here is your receipt',
       recipient: `${customer.mobile}`,

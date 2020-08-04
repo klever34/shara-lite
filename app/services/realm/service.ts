@@ -5,7 +5,6 @@ import PubNub from 'pubnub';
 import {decrypt, generateUniqueId} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import {ChannelCustom} from '../../../types/app';
 import compact from 'lodash/compact';
 
 export interface IRealmService {
