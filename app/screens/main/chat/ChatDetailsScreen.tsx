@@ -114,7 +114,7 @@ const ChatDetailsScreen = ({
             'Conversation',
             {
               channel: conversation.channel,
-              [property]: groupChat.description,
+              [property]: groupChat[property],
             },
             UpdateMode.Modified,
           );
@@ -267,24 +267,36 @@ const ChatDetailsScreen = ({
       if (conversation.type === 'group') {
         if (isCreator) {
           selectParticipantOptions.push({
-            text: 'Remove',
-            onPress: async () => {
+            text: `Remove ${contact.fullName}`,
+            onPress: () => {
               closeOptionsModal();
-              const closeModal = openModal('loading', {
-                text: 'Removing...',
-              });
-              try {
-                const apiService = getApiService();
-                await apiService.removeGroupChatMember(
-                  conversation.id,
-                  contact.id,
-                );
-                removeGroupChatMember(contact);
-              } catch (e) {
-                handleError(e);
-              } finally {
-                closeModal();
-              }
+              Alert.alert(
+                '',
+                `Remove ${contact.fullName} from "${conversation.name}"?`,
+                [
+                  {text: 'Cancel'},
+                  {
+                    text: 'OK',
+                    onPress: async () => {
+                      const closeModal = openModal('loading', {
+                        text: 'Removing...',
+                      });
+                      try {
+                        const apiService = getApiService();
+                        await apiService.removeGroupChatMember(
+                          conversation.id,
+                          contact.id,
+                        );
+                        removeGroupChatMember(contact);
+                      } catch (e) {
+                        handleError(e);
+                      } finally {
+                        closeModal();
+                      }
+                    },
+                  },
+                ],
+              );
             },
           });
         }
@@ -295,6 +307,7 @@ const ChatDetailsScreen = ({
     },
     [
       conversation.id,
+      conversation.name,
       conversation.type,
       handleError,
       isCreator,

@@ -5,7 +5,7 @@ import {
   getAuthService,
   getContactsService,
 } from '../../../services';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles, generateUniqueId} from '../../../helpers/utils';
 import Touchable from '../../../components/Touchable';
 import {CommonActions} from '@react-navigation/native';
 import Share from 'react-native-share';
@@ -141,6 +141,7 @@ const ContactsScreen = ({
             conversation = realm.create<IConversation>(
               'Conversation',
               {
+                id: generateUniqueId(),
                 name: item.fullName,
                 channel: channelName,
                 type: '1-1',
@@ -204,6 +205,7 @@ const ContactsScreen = ({
                                   >(
                                     'Conversation',
                                     {
+                                      id: groupChat.id,
                                       name: groupChat.name,
                                       type: 'group',
                                       channel: groupChat.uuid,
