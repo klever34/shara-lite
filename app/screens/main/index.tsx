@@ -11,6 +11,7 @@ import {IContact, IConversation} from '../../models';
 import {ICredit} from '../../models/Credit';
 import {ICreditPayment} from '../../models/CreditPayment';
 import {IPayment} from '../../models/Payment';
+import {IProduct} from '../../models/Product';
 import {
   getAuthService,
   getContactsService,
@@ -19,6 +20,7 @@ import {
 import {colors} from '../../styles';
 import {BusinessSetup} from '../BusinessSetup';
 import {
+  AddProduct,
   CreditDetails,
   CreditPaymentDetails,
   Finances,
@@ -27,6 +29,8 @@ import {
   Receipts,
   RecordCreditPayment,
   TotalCredit,
+  ViewProductDetails,
+  EditProduct,
 } from './business';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
@@ -72,6 +76,9 @@ export type MainStackParamList = {
   RecordCreditPayment: undefined;
   CreditDetails: {creditDetails: CreditDetails};
   CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};
+  AddProduct: undefined;
+  ViewProductDetails: {product: IProduct};
+  EditProduct: {product: IProduct};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -459,6 +466,51 @@ const MainScreens = ({navigation}: any) => {
           component={CreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="AddProduct"
+          component={AddProduct}
+          options={{
+            title: 'Add Product',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="EditProduct"
+          component={EditProduct}
+          options={{
+            title: 'Edit Product',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ViewProductDetails"
+          component={ViewProductDetails}
+          options={{
+            title: 'Product Details',
             headerStyle: {
               backgroundColor: colors.primary,
             },

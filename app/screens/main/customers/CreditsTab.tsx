@@ -100,7 +100,9 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
         <Button
           title="record credit payment"
           style={applyStyles('mb-lg', {width: '100%'})}
-          onPress={() => handleNavigation('CustomerRecordCreditPayment')}
+          onPress={() =>
+            handleNavigation('CustomerRecordCreditPayment', {customer})
+          }
         />
         <Touchable
           onPress={() =>

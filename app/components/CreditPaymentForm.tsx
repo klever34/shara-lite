@@ -8,7 +8,7 @@ import {CurrencyInput} from './CurrencyInput';
 
 type Payload = {
   amount: string;
-  method: string | number;
+  method: string;
 };
 
 type Props = {

@@ -1,4 +1,4 @@
-import {IReceipt} from 'app/models/Receipt';
+import {IReceipt} from '../../../../models/Receipt';
 import React, {useCallback, useState} from 'react';
 import {
   FlatList,

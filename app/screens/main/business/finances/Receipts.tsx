@@ -53,6 +53,7 @@ export function MyReceipts() {
     // TODO: use better copy for shara invite
     const shareOptions = {
       url: 'https://shara.co/',
+      //@ts-ignore
       social: Share.Social.SMS,
       message: 'Here is your receipt',
       recipient: `${activeReceipt?.customer_mobile}`,
