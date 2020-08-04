@@ -61,3 +61,15 @@ export const restockProduct = ({
     updates,
   });
 };
+
+export const deleteProduct = ({
+  realm,
+  product,
+}: {
+  realm: Realm;
+  product: IProduct;
+}) => {
+  realm.write(() => {
+    realm.delete(product);
+  });
+};
