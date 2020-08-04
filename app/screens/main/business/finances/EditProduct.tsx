@@ -6,6 +6,7 @@ import {
   FloatingLabelInput,
   Button,
 } from '../../../../components';
+import omit from 'lodash/omit';
 import {IProduct} from '../../../../models/Product';
 import {colors} from '../../../../styles';
 import {useRealm} from '../../../../services/realm';
@@ -23,9 +24,8 @@ export const EditProduct = ({
   const realm = useRealm();
   const navigation = useNavigation();
   const {product: productProps} = route.params;
-  const {name, sku, price} = productProps;
   const [isLoading, setIsLoading] = useState(false);
-  const [product, setProduct] = useState<Payload>({name, sku, price});
+  const [product, setProduct] = useState<Payload>(omit(productProps, []));
 
   useLayoutEffect(() => {
     navigation.setOptions({

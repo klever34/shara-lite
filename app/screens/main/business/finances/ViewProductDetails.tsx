@@ -1,21 +1,21 @@
-import {
-  useNavigation,
-  useFocusEffect,
-  useCallback,
-} from '@react-navigation/native';
+import {useNavigation, useFocusEffect} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Button} from '../../../../components';
-import React, {useState, useLayoutEffect} from 'react';
+import React, {useState, useCallback, useLayoutEffect} from 'react';
 import {ScrollView, Text, View, Alert} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
+import {getProduct} from '../../../../services/ProductService';
+import {useRealm} from '../../../../services/realm';
+import {IProduct} from 'app/models/Product';
 
 export const ViewProductDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ViewProductDetails'>) => {
   const {product: productParams} = route.params;
+  const realm = useRealm();
   const navigation = useNavigation();
   const [product, setProduct] = useState(productParams);
 
@@ -23,11 +23,11 @@ export const ViewProductDetails = ({
 
   useFocusEffect(
     useCallback(() => {
-      const {product: productParams} = route.params;
-      const unsubscribe = (user) => setUser(data);
+      const product = getProduct({realm, product: productParams}) as IProduct;
+      const unsubscribe = () => setProduct(product);
 
       return () => unsubscribe();
-    }, []),
+    }, [productParams, realm]),
   );
 
   const handleEditProduct = useCallback(() => {
