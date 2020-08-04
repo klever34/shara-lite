@@ -67,7 +67,12 @@ export interface IApiService {
     members: IContact[],
   ): Promise<GroupChatMember[]>;
 
-  removeGroupChatMembers(
+  removeGroupChatMember(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<void>;
+
+  leaveGroupChat(
     groupChatId: number | string,
     userId: number | string,
   ): Promise<void>;
@@ -277,7 +282,7 @@ export class ApiService implements IApiService {
     }
   }
 
-  async removeGroupChatMembers(
+  async removeGroupChatMember(
     groupChatId: number | string,
     userId: number | string,
   ): Promise<any> {
@@ -285,6 +290,22 @@ export class ApiService implements IApiService {
       await this.requester.delete<{
         groupChatMembers: GroupChatMember[];
       }>('/group-chat-member', {group_chat_id: groupChatId, user_id: userId});
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async leaveGroupChat(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<any> {
+    try {
+      await this.requester.delete<{
+        groupChatMembers: GroupChatMember[];
+      }>('/group-chat-member/leave', {
+        group_chat_id: groupChatId,
+        user_id: userId,
+      });
     } catch (e) {
       throw e;
     }

@@ -239,6 +239,28 @@ const ChatDetailsScreen = ({
     realm,
   ]);
 
+  const removeGroupChatMember = useCallback(
+    (contact: IContact) => {
+      realm.write(() => {
+        conversation.members = conversation.members.filter(
+          (member) => member !== contact.mobile,
+        );
+        realm.create<IContact>(
+          'Contact',
+          {
+            mobile: contact.mobile,
+            groups: contact.groups
+              .split(',')
+              .filter((channel) => channel !== conversation.channel)
+              .join(','),
+          },
+          UpdateMode.Modified,
+        );
+      });
+    },
+    [conversation.channel, conversation.members, realm],
+  );
+
   const onParticipantClick = useCallback(
     (contact: IContact) => {
       const selectParticipantOptions: ModalPropsList['options']['options'] = [];
@@ -253,26 +275,11 @@ const ChatDetailsScreen = ({
               });
               try {
                 const apiService = getApiService();
-                await apiService.removeGroupChatMembers(
+                await apiService.removeGroupChatMember(
                   conversation.id,
                   contact.id,
                 );
-                realm.write(() => {
-                  conversation.members = conversation.members.filter(
-                    (member) => member !== contact.mobile,
-                  );
-                  realm.create<IContact>(
-                    'Contact',
-                    {
-                      mobile: contact.mobile,
-                      groups: contact.groups
-                        .split(',')
-                        .filter((channel) => channel !== conversation.channel)
-                        .join(','),
-                    },
-                    UpdateMode.Modified,
-                  );
-                });
+                removeGroupChatMember(contact);
               } catch (e) {
                 handleError(e);
               } finally {
@@ -287,14 +294,12 @@ const ChatDetailsScreen = ({
       });
     },
     [
-      conversation.channel,
       conversation.id,
-      conversation.members,
       conversation.type,
       handleError,
       isCreator,
       openModal,
-      realm,
+      removeGroupChatMember,
     ],
   );
 
@@ -358,41 +363,71 @@ const ChatDetailsScreen = ({
             onContactItemClick={onParticipantClick}
           />
         </View>
-        <Touchable
-          onPress={() => {
-            Alert.alert('', `Exit "${conversation.name}" group?`, [
-              {text: 'Cancel'},
-              {text: 'Exit'},
-            ]);
-          }}>
-          <View
-            style={applyStyles(
-              'p-sm bg-white elevation-1 mb-md flex-row items-center',
-            )}>
+        {conversation.type === 'group' && (
+          <Touchable
+            onPress={() => {
+              Alert.alert('', `Exit "${conversation.name}" group?`, [
+                {text: 'Cancel'},
+                {
+                  text: 'Exit',
+                  onPress: async () => {
+                    const closeModal = openModal('loading', {
+                      text: 'Removing...',
+                    });
+                    try {
+                      const apiService = getApiService();
+                      const me = getAuthService().getUser();
+                      if (!me) {
+                        return;
+                      }
+                      await apiService.leaveGroupChat(conversation.id, me.id);
+                      const myContact = participants.filtered(
+                        `mobile = "${me.mobile}"`,
+                      )[0];
+                      removeGroupChatMember(myContact);
+                    } catch (e) {
+                      handleError(e);
+                    } finally {
+                      closeModal();
+                    }
+                  },
+                },
+              ]);
+            }}>
             <View
-              style={applyStyles('center mx-xs mr-md w-48 h-48 rounded-24')}>
-              <Icon
-                type="ionicons"
-                style={applyStyles('text-gray-200')}
-                size={28}
-                name="md-exit"
-              />
+              style={applyStyles(
+                'p-sm bg-white elevation-1 mb-md flex-row items-center',
+              )}>
+              <View
+                style={applyStyles('center mx-xs mr-md w-48 h-48 rounded-24')}>
+                <Icon
+                  type="ionicons"
+                  style={applyStyles('text-primary')}
+                  size={28}
+                  name="md-exit"
+                />
+              </View>
+              <Text style={applyStyles('text-lg font-semibold text-primary')}>
+                Exit group
+              </Text>
             </View>
-            <Text style={applyStyles('text-lg font-semibold')}>Exit group</Text>
-          </View>
-        </Touchable>
+          </Touchable>
+        )}
       </View>
     );
   }, [
     conversation.description,
+    conversation.id,
     conversation.members.length,
     conversation.name,
     conversation.type,
     editTextProperty,
+    handleError,
     isCreator,
     onParticipantClick,
     openModal,
     participants,
+    removeGroupChatMember,
   ]);
   return (
     <SafeAreaView>

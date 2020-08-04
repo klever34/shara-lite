@@ -1,6 +1,7 @@
 import {IStorageService} from '../storage';
 import {IPubNubService} from '../pubnub';
 import {INavigationService} from '../navigation';
+import {User} from '../../../types/app';
 
 export interface IAuthService {
   initialize(): Promise<void>;
