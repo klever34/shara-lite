@@ -1,12 +1,13 @@
-import {Dimensions} from 'react-native';
+import {Dimensions} from 'react-native'
 
 export const dimensions = {
   fullHeight: Dimensions.get('window').height,
   fullWidth: Dimensions.get('window').width,
-};
+}
 
 export const colors: {[key: string]: string} = {
   'red-50': '#F4B1B1',
+  'red-200': '#DD0404',
   primary: '#dd0404',
   white: '#FFF',
   'gray-10': '#F5F5F5',
@@ -17,7 +18,7 @@ export const colors: {[key: string]: string} = {
   'gray-300': '#363636',
   'gray-900': '#1A202C',
   black: '#222222',
-};
+}
 
 const sizes = [
   0,
@@ -39,18 +40,18 @@ const sizes = [
   72,
   80,
   96,
-];
+]
 
 export const spacing: {[key: string]: number} = {
   ...sizes.reduce((acc, curr) => {
     return {
       ...acc,
       [curr]: curr,
-    };
+    }
   }, {}),
   xs: 4,
   sm: 8,
   md: 12,
   lg: 16,
   xl: 24,
-};
+}

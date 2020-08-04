@@ -1,33 +1,33 @@
-import {StackScreenProps} from '@react-navigation/stack';
-import React, {useRef, useState, useCallback} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useRef, useState} from 'react';
+import {Alert, Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import SignatureCapture from 'react-native-signature-capture';
-import {Alert, ScrollView, StyleSheet, Text, View, Image} from 'react-native';
+import RNFetchBlob from 'rn-fetch-blob';
 import {Button, FloatingLabelInput} from '../components';
 import Icon from '../components/Icon';
 import Touchable from '../components/Touchable';
 import {applyStyles} from '../helpers/utils';
-import {RootStackParamList} from '../index';
+import {getApiService, getAuthService} from '../services';
 import {colors} from '../styles';
 
 type Fields = {
   address: string;
-  signature: string;
   business_name: string;
 };
 
-export const BusinessSetup = ({
-  navigation,
-}: StackScreenProps<RootStackParamList>) => {
+export const BusinessSetup = () => {
   const ref = useRef<any>(null);
   const [loading, setLoading] = useState(false);
   const [signature, setSignature] = useState(false);
-  const [profileImage, setProfileImage] = useState('');
+  const [profileImage, setProfileImage] = useState<any | undefined>();
   const [fields, setFields] = useState<Fields>({} as Fields);
   const [isSignatureCaptureShown, setIsSignatureCaptureShown] = useState(false);
+  const navigation = useNavigation();
 
-  const handleError = useErrorHandler();
+  const apiService = getApiService();
+  const authService = getAuthService();
+  const user = authService.getUser();
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -36,31 +36,12 @@ export const BusinessSetup = ({
     });
   };
 
-  const saveSign = useCallback(() => {
-    ref.current.saveImage();
-  }, []);
-
-  const resetSign = useCallback(() => {
-    ref.current.resetImage();
-    setSignature(false);
-  }, []);
-
-  const onSaveEvent = useCallback((result: any) => {
-    //result.encoded - for the base64 encoded png
-    //result.pathName - for the file path name
-    console.log(result);
-  }, []);
-
-  const onDragEvent = useCallback(() => {
-    setSignature(true);
-  }, []);
-
-  const isButtonDisabled = () => {
+  const isButtonDisabled = useCallback(() => {
     if (Object.keys(fields).length < 2) {
       return true;
     }
     return false;
-  };
+  }, [fields]);
 
   const handleShowSignatureCapture = useCallback(() => {
     setIsSignatureCaptureShown(true);
@@ -81,48 +62,108 @@ export const BusinessSetup = ({
       takePhotoButtonTitle: 'Take a Photo',
     };
     ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
       if (response.didCancel) {
         // do nothing
       } else if (response.error) {
         Alert.alert('Error', response.error);
       } else {
-        const {uri} = response;
-        setProfileImage(uri);
+        const {uri, type, fileName} = response;
         const extensionIndex = uri.lastIndexOf('.');
         const extension = uri.slice(extensionIndex + 1);
         const allowedExtensions = ['jpg', 'jpeg', 'png'];
-        //TODO: make API call to save image and get image url
         if (!allowedExtensions.includes(extension)) {
           return Alert.alert('Error', 'That file type is not allowed.');
         }
+        const image = {
+          uri,
+          type,
+          name: fileName,
+        };
+        setProfileImage(image);
       }
     });
   }, []);
 
   const handleSkip = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
-
-  const handleSubmit = async () => {
-    // const apiService = getApiService();
-    if (!isButtonDisabled()) {
-      try {
-        setLoading(true);
-        saveSign();
-        // await apiService.register(fields);
-        setLoading(false);
-        handleHideSignatureCapture();
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Main'}],
-        });
-      } catch (error) {
-        handleError(error);
-        Alert.alert('Error', error.message);
-      }
+    if (user?.businesses && user?.businesses.length) {
+      navigation.goBack();
+    } else {
+      navigation.navigate('Home');
     }
-  };
+  }, [navigation, user]);
+
+  const saveSign = useCallback(() => {
+    if (ref.current) {
+      ref.current.saveImage();
+    }
+  }, []);
+
+  const resetSign = useCallback(() => {
+    if (ref.current) {
+      ref.current.resetImage();
+      setSignature(false);
+    }
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (signatureFile?: any) => {
+      const payload = new FormData();
+      payload.append('name', fields.business_name);
+      payload.append('address', fields.address);
+      profileImage && payload.append('profileImageFile', profileImage);
+      signatureFile && payload.append('signatureImageFile', signatureFile);
+
+      if (!isButtonDisabled()) {
+        try {
+          setLoading(true);
+          await apiService.businessSetup(payload);
+          setLoading(false);
+          handleHideSignatureCapture();
+          if (user?.businesses && user?.businesses.length) {
+            navigation.goBack();
+          } else {
+            navigation.navigate('Home');
+          }
+        } catch (error) {
+          setLoading(false);
+          Alert.alert('Error', error.message);
+        }
+      }
+    },
+    [
+      user,
+      apiService,
+      navigation,
+      fields.address,
+      profileImage,
+      isButtonDisabled,
+      fields.business_name,
+      handleHideSignatureCapture,
+    ],
+  );
+
+  const onSaveWithSignature = useCallback(
+    async (result: {encoded: string; pathName: string}) => {
+      const dirs = RNFetchBlob.fs.dirs;
+      const path = dirs.DCIMDir + '/signature.png';
+      RNFetchBlob.fs.writeFile(path, result.encoded, 'base64').then(() => {
+        handleSubmit({
+          uri: `file://${path}`,
+          name: 'signature.png',
+          type: 'image/png',
+        });
+      });
+    },
+    [handleSubmit],
+  );
+
+  const onSaveWithoutSignature = useCallback(async () => {
+    handleSubmit();
+  }, [handleSubmit]);
+
+  const onDragEvent = useCallback(() => {
+    setSignature(true);
+  }, []);
 
   return (
     <View
@@ -155,7 +196,7 @@ export const BusinessSetup = ({
                       borderRadius: 16,
                       backgroundColor: colors['gray-20'],
                     })}
-                    source={{uri: profileImage}}
+                    source={{uri: profileImage.uri}}
                   />
                 ) : (
                   <View
@@ -222,10 +263,10 @@ export const BusinessSetup = ({
                     showBorder={false}
                     viewMode={'portrait'}
                     showTitleLabel={false}
-                    onSaveEvent={onSaveEvent}
                     onDragEvent={onDragEvent}
                     showNativeButtons={false}
                     saveImageFileInExtStorage={false}
+                    onSaveEvent={onSaveWithSignature}
                     style={applyStyles('flex-1 w-full h-full')}
                   />
                 </View>
@@ -298,8 +339,8 @@ export const BusinessSetup = ({
           variantColor="red"
           disabled={loading}
           isLoading={loading}
-          onPress={handleSubmit}
           style={styles.actionButton}
+          onPress={signature ? saveSign : onSaveWithoutSignature}
         />
       </View>
     </View>

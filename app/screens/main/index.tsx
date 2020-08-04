@@ -80,14 +80,11 @@ const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
   const authService = getAuthService();
-
-  // TODO: set initial route based on if user has setup business
-  const initialRouteName = !authService.getUser()?.updated_at
-    ? 'BusinessSetup'
-    : 'Home';
+  const user = authService.getUser();
+  const initialRouteName =
+    user?.businesses && user?.businesses.length ? 'Home' : 'BusinessSetup';
 
   useEffect(() => {
-    const user = authService.getUser();
     if (user) {
       const pubNub = new PubNub({
         subscribeKey: Config.PUBNUB_SUB_KEY,
@@ -98,7 +95,7 @@ const MainScreens = ({navigation}: any) => {
       pubNubService.setInstance(pubNub);
       setPubNubClient(pubNub);
     }
-  }, [authService]);
+  }, [user]);
 
   useEffect(() => {
     const contactsService = getContactsService();

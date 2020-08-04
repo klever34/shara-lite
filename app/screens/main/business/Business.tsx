@@ -7,10 +7,14 @@ import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
 import {colors} from '../../../styles';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {Button, ActionCard} from '../../../components';
+import Touchable from '../../../components/Touchable';
+import {getAuthService} from '../../../services';
 
 export const BusinessTab = () => {
   const realm = useRealm();
   const navigation = useNavigation();
+  const authService = getAuthService();
+  const user = authService.getUser();
   const financeSummary: IFinanceSummary = getSummary({realm});
 
   const actions = [
@@ -106,6 +110,23 @@ export const BusinessTab = () => {
 
   return (
     <View style={styles.container}>
+      {!(user?.businesses && user?.businesses.length) && (
+        <Touchable onPress={() => navigation.navigate('BusinessSetup')}>
+          <View
+            style={applyStyles('mb-xl px-xs py-sm', {
+              fontSize: 14,
+              borderRadius: 8,
+              backgroundColor: colors['red-50'],
+            })}>
+            <Text
+              style={applyStyles('text-500 text-center', {
+                color: colors['red-200'],
+              })}>
+              Tap here to complete your Business Setup
+            </Text>
+          </View>
+        </Touchable>
+      )}
       <View style={applyStyles('mb-lg')}>
         <ActionCard
           style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
