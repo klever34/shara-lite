@@ -209,9 +209,12 @@ const ContactsScreen = ({
                                       type: 'group',
                                       channel: groupChat.uuid,
                                       admins: [me?.mobile],
-                                      members: participants.map(
-                                        (member) => member.mobile,
-                                      ),
+                                      members: [
+                                        me?.mobile,
+                                        ...participants.map(
+                                          (member) => member.mobile,
+                                        ),
+                                      ],
                                     },
                                     UpdateMode.Modified,
                                   );
