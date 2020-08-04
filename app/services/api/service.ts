@@ -271,6 +271,7 @@ export class ApiService implements IApiService {
       let user = this.authService.getUser() as User
       user = {...user, businesses: [business]}
       this.authService.setUser(user)
+      await this.storageService.setItem('user', user)
       return fetchResponse
     } catch (error) {
       throw error
