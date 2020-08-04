@@ -39,7 +39,9 @@ export const updateProduct = ({
     ...updates,
   };
 
-  realm.create<IProduct>(modelName, updatedProduct, UpdateMode.Modified);
+  realm.write(() => {
+    realm.create<IProduct>(modelName, updatedProduct, UpdateMode.Modified);
+  });
 };
 
 export const restockProduct = ({
@@ -59,5 +61,17 @@ export const restockProduct = ({
     realm,
     product,
     updates,
+  });
+};
+
+export const deleteProduct = ({
+  realm,
+  product,
+}: {
+  realm: Realm;
+  product: IProduct;
+}) => {
+  realm.write(() => {
+    realm.delete(product);
   });
 };

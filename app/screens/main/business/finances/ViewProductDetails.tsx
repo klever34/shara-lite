@@ -1,7 +1,11 @@
-import {useNavigation} from '@react-navigation/native';
+import {
+  useNavigation,
+  useFocusEffect,
+  useCallback,
+} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {Button} from '../../../../components';
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useState, useLayoutEffect} from 'react';
 import {ScrollView, Text, View, Alert} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
@@ -11,10 +15,20 @@ import {MainStackParamList} from '../../index';
 export const ViewProductDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ViewProductDetails'>) => {
-  const {product} = route.params;
+  const {product: productParams} = route.params;
   const navigation = useNavigation();
+  const [product, setProduct] = useState(productParams);
 
   const onDeleteProduct = useCallback(() => {}, []);
+
+  useFocusEffect(
+    useCallback(() => {
+      const {product: productParams} = route.params;
+      const unsubscribe = (user) => setUser(data);
+
+      return () => unsubscribe();
+    }, []),
+  );
 
   const handleEditProduct = useCallback(() => {
     navigation.navigate('EditProduct', {product});
@@ -96,21 +110,23 @@ export const ViewProductDetails = ({
             &#8358;{numberWithCommas(product.price)}
           </Text>
         </View>
-        <View style={applyStyles({width: '48%'})}>
-          <Text
-            style={applyStyles('pb-sm text-400 text-uppercase', {
-              color: colors['gray-100'],
-            })}>
-            Units in stock
-          </Text>
-          <Text
-            style={applyStyles('pb-sm text-400', {
-              fontSize: 16,
-              color: colors['gray-300'],
-            })}>
-            {product.sku}
-          </Text>
-        </View>
+        {!!product.quantity && (
+          <View style={applyStyles({width: '48%'})}>
+            <Text
+              style={applyStyles('pb-sm text-400 text-uppercase', {
+                color: colors['gray-100'],
+              })}>
+              Units in stock
+            </Text>
+            <Text
+              style={applyStyles('pb-sm text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              {product.quantity}
+            </Text>
+          </View>
+        )}
       </View>
       <View
         style={applyStyles('flex-row w-full justify-space-between', {
