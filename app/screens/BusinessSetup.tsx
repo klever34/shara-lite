@@ -172,7 +172,7 @@ export const BusinessSetup = () => {
       })}>
       <ScrollView style={styles.container}>
         <View style={applyStyles('mb-lg')}>
-          <Touchable onPress={() => navigation.goBack()}>
+          <Touchable onPress={handleSkip}>
             <View style={applyStyles({height: 40, width: 40})}>
               <Icon size={24} type="feathericons" name="arrow-left" />
             </View>
