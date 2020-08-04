@@ -204,7 +204,7 @@ const ContactsScreen = ({
                                   >(
                                     'Conversation',
                                     {
-                                      id: groupChat.id,
+                                      id: String(groupChat.id),
                                       name: groupChat.name,
                                       type: 'group',
                                       channel: groupChat.uuid,
