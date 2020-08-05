@@ -30,6 +30,9 @@ import {
   TotalCredit,
   ViewProductDetails,
   EditProduct,
+  Suppliers,
+  DeliveryAgents,
+  ReceiveInventory,
 } from './business';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
@@ -82,6 +85,9 @@ export type MainStackParamList = {
   AddProduct: undefined;
   ViewProductDetails: {product: string};
   EditProduct: {product: IProduct};
+  Suppliers: undefined;
+  ReceiveInventory: undefined;
+  DeliveryAgents: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -515,6 +521,51 @@ const MainScreens = ({navigation}: any) => {
           component={ViewProductDetails}
           options={{
             title: 'Product Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="Suppliers"
+          component={Suppliers}
+          options={{
+            title: 'Suppliers',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="DeliveryAgents"
+          component={DeliveryAgents}
+          options={{
+            title: 'Delivery Agents',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ReceiveInventory"
+          component={ReceiveInventory}
+          options={{
+            title: 'Receive Inventory',
             headerStyle: {
               backgroundColor: colors.primary,
             },
