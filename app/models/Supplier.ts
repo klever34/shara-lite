@@ -1,9 +1,9 @@
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
-import {InventoryStock} from './InventoryStock';
+import {IInventoryStock} from './InventoryStock';
 
 export interface ISupplier extends BaseModelInterface {
   name: string;
-  suppliedInventories?: InventoryStock[];
+  suppliedInventories?: IInventoryStock[];
 }
 
 export const modelName = 'Supplier';
