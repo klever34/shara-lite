@@ -1,3 +1,5 @@
+import {IProduct} from "../app/models/Product";
+
 type Falsy = undefined | null | false;
 
 type User = {
