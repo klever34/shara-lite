@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.15",
+  "version": "0.1.15-feature.inventory-management+build.977",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
