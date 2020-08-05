@@ -59,7 +59,7 @@ export const ReceiveInventoryStock = ({
   }, [navigation]);
 
   const handleAddItem = useCallback(() => {
-    if (price && quantity) {
+    if (quantity) {
       const product = {
         supplier,
         quantity,
@@ -113,7 +113,7 @@ export const ReceiveInventoryStock = ({
 
   const handleDone = useCallback(() => {
     let items = inventoryStock;
-    if (selectedProduct && quantity && price) {
+    if (selectedProduct && quantity) {
       const product = {
         quantity,
         supplier,
@@ -121,7 +121,7 @@ export const ReceiveInventoryStock = ({
         product: selectedProduct,
       } as InventoryStockItem;
 
-      // handleAddItem();
+      handleAddItem();
       items = [product, ...inventoryStock];
     }
     setInventoryStock(items);
@@ -131,10 +131,10 @@ export const ReceiveInventoryStock = ({
     inventoryStock,
     selectedProduct,
     quantity,
-    price,
     handleOpenSummaryModal,
     supplier,
-    // handleAddItem,
+    price,
+    handleAddItem,
   ]);
 
   const renderRecentProducts = useCallback(
