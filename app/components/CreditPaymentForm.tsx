@@ -78,6 +78,7 @@ export const CreditPaymentForm = (props: Props) => {
         isLoading={isLoading}
         onPress={handleSubmit}
         title="Confirm payment"
+        style={applyStyles({marginBottom: 40})}
       />
     </View>
   );

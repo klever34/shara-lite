@@ -16,7 +16,7 @@ import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
-import {Receipts} from './Receipts';
+import {CustomersList} from './CustomersList';
 import {
   SummaryTableHeader,
   summaryTableItemStyles,
@@ -165,27 +165,29 @@ export function ReceiptDetailsModal(props: Props) {
             </Text>
           </View>
         </View>
-        <View>
-          <Touchable onPress={handleOpenCustomerModal}>
-            <View
-              style={applyStyles(
-                'py-lg mb-xl flex-row items-center justify-center',
-              )}>
-              <Icon
-                size={24}
-                name="plus"
-                type="feathericons"
-                color={colors.primary}
-              />
-              <Text
-                style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                  color: colors.primary,
-                })}>
-                Add customer
-              </Text>
-            </View>
-          </Touchable>
-        </View>
+        {!receipt?.customer?.name && (
+          <View>
+            <Touchable onPress={handleOpenCustomerModal}>
+              <View
+                style={applyStyles(
+                  'py-lg mb-xl flex-row items-center justify-center',
+                )}>
+                <Icon
+                  size={24}
+                  name="plus"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                    color: colors.primary,
+                  })}>
+                  Add customer
+                </Text>
+              </View>
+            </Touchable>
+          </View>
+        )}
         <View>
           <Text
             style={applyStyles('pb-sm', 'text-400', {
@@ -369,7 +371,7 @@ export function ReceiptDetailsModal(props: Props) {
       />
 
       <Modal animationType="slide" visible={isCustomerListModalOpen}>
-        <Receipts
+        <CustomersList
           onModalClose={handleCloseCustomerListModal}
           onCustomerSelect={handleCustomerSelect}
         />

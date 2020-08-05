@@ -194,7 +194,9 @@ export const NewReceipt = () => {
         items={products}
         searchTerm="name"
         onItemSelect={handleSelectProduct}
+        noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
+        noResultsAction={() => navigation.navigate('AddProduct')}
         emptyStateText="We don't have this item in our database, you can help us update our system by adding it as a new item."
       />
       <FlatList
@@ -203,6 +205,25 @@ export const NewReceipt = () => {
         renderItem={renderRecentProducts}
         ListHeaderComponent={renderRecentProductsHeader}
         keyExtractor={(item, index) => `${item.id}-${index}`}
+        ListEmptyComponent={
+          <View
+            style={applyStyles('px-lg flex-1 items-center justify-center', {
+              paddingVertical: 100,
+            })}>
+            <Text
+              style={applyStyles('mb-xs heading-700', 'text-center', {
+                color: colors['gray-300'],
+              })}>
+              No products found
+            </Text>
+            <Button
+              title="Add Products"
+              variantColor="clear"
+              style={applyStyles('w-full')}
+              onPress={() => navigation.navigate('AddProduct')}
+            />
+          </View>
+        }
       />
       <Modal
         isVisible={!!selectedProduct}

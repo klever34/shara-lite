@@ -2,15 +2,19 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useState, useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {CreditPaymentForm} from '../../../../components';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
-import {useRealm} from '../../../../services/realm';
-import {saveCreditPayment} from '../../../../services/CreditPaymentService';
-import HeaderRight from '../../../../components/HeaderRight';
+import {CreditPaymentForm} from '../../../components';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {ICredit} from '../../../models/Credit';
+import {colors} from '../../../styles';
+import {useRealm} from '../../../services/realm';
+import {saveCreditPayment} from '../../../services/CreditPaymentService';
+import HeaderRight from '../../../components/HeaderRight';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from '..';
 
-export const CreditDetails = ({route}: any) => {
+export const CustomerCreditDetails = ({
+  route,
+}: StackScreenProps<MainStackParamList, 'CustomerCreditDetails'>) => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +40,7 @@ export const CreditDetails = ({route}: any) => {
             customer: creditDetails.customer,
           });
           callback();
-          navigation.navigate('Finances', {screen: 'Credit'});
+          navigation.navigate('CustomerDetails', {screen: 'CreditsTab'});
         }, 300);
       }
     },

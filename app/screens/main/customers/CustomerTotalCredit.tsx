@@ -2,20 +2,20 @@ import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {ActionCard} from '../../../../components';
-import EmptyState from '../../../../components/EmptyState';
-import Icon from '../../../../components/Icon';
-import HeaderRight from '../../../../components/HeaderRight';
-import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
+import {ActionCard} from '../../../components';
+import EmptyState from '../../../components/EmptyState';
+import Icon from '../../../components/Icon';
+import HeaderRight from '../../../components/HeaderRight';
+import Touchable from '../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {ICredit} from '../../../models/Credit';
+import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '../..';
+import {MainStackParamList} from '../index';
 
-export const TotalCredit = ({
+export const CustomerTotalCredit = ({
   route,
-}: StackScreenProps<MainStackParamList, 'TotalCredit'>) => {
+}: StackScreenProps<MainStackParamList, 'CustomerTotalCredit'>) => {
   const navigation = useNavigation();
 
   const credits = route.params.credits;
@@ -53,7 +53,7 @@ export const TotalCredit = ({
   }, [navigation]);
 
   const handleViewDetails = (creditDetails: ICredit) => {
-    navigation.navigate('CreditDetails', {creditDetails});
+    navigation.navigate('CustomerCreditDetails', {creditDetails});
   };
 
   const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {
@@ -124,7 +124,7 @@ export const TotalCredit = ({
           <EmptyState
             heading="No credit"
             style={applyStyles({marginTop: 32})}
-            source={require('../../../../assets/images/coming-soon.png')}>
+            source={require('../../../assets/images/coming-soon.png')}>
             <Touchable
               onPress={() => navigation.navigate('RecordCreditPayment')}>
               <View

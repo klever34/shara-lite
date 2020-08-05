@@ -26,7 +26,6 @@ import {
   Finances,
   NewReceipt,
   OverdueCredit,
-  Receipts,
   RecordCreditPayment,
   TotalCredit,
   ViewProductDetails,
@@ -46,6 +45,9 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
+import {CustomerTotalCredit} from './customers/CustomerTotalCredit';
+import {CustomerOverdueCredit} from './customers/CustomerOverdueCredit';
+import {CustomerCreditDetails} from './customers/CustomerCreditDetails';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -68,13 +70,14 @@ export type MainStackParamList = {
   CustomerTotalCredit: {credits: ICredit[]};
   CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
   CustomerOverdueCredit: {credits: ICredit[]};
+  CustomerCreditDetails: {creditDetails: ICredit};
   BusinessSetup: undefined;
   SelectGroupMembers: undefined;
   SetGroupDetails: {members: IContact[]};
   TotalCredit: {credits: ICredit[]};
   OverdueCredit: {credits: ICredit[]};
   RecordCreditPayment: undefined;
-  CreditDetails: {creditDetails: CreditDetails};
+  CreditDetails: {creditDetails: ICredit};
   CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};
   AddProduct: undefined;
   ViewProductDetails: {product: string};
@@ -200,20 +203,6 @@ const MainScreens = ({navigation}: any) => {
           component={SetGroupDetailsScreen}
           options={{
             headerTitle: 'New Group',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
-          name="Receipts"
-          component={Receipts}
-          options={{
             headerStyle: {
               backgroundColor: colors.primary,
             },
@@ -351,7 +340,7 @@ const MainScreens = ({navigation}: any) => {
         />
         <MainStack.Screen
           name="CustomerTotalCredit"
-          component={TotalCredit}
+          component={CustomerTotalCredit}
           options={{
             title: 'Total Credit',
             headerStyle: {
@@ -366,7 +355,22 @@ const MainScreens = ({navigation}: any) => {
         />
         <MainStack.Screen
           name="CustomerOverdueCredit"
-          component={OverdueCredit}
+          component={CustomerOverdueCredit}
+          options={{
+            title: 'Overdue Credit',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerCreditDetails"
+          component={CustomerCreditDetails}
           options={{
             title: 'Overdue Credit',
             headerStyle: {

@@ -15,10 +15,7 @@ import HeaderRight from '../../../../components/HeaderRight';
 
 export const OverdueCredit = ({
   route,
-}: StackScreenProps<
-  MainStackParamList,
-  'OverdueCredit' | 'CustomerOverdueCredit'
->) => {
+}: StackScreenProps<MainStackParamList, 'OverdueCredit'>) => {
   const navigation = useNavigation();
   const credits = route.params.credits;
 

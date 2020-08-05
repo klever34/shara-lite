@@ -26,7 +26,7 @@ import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
 import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
-import {Receipts} from './Receipts';
+import {CustomersList} from './CustomersList';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 import HeaderRight from '../../../../components/HeaderRight';
@@ -855,7 +855,7 @@ const ReceiptSummary = (props: Props) => {
         onWhatsappShare={handleWhatsappShare}
       />
       <Modal visible={isContactListModalOpen}>
-        <Receipts
+        <CustomersList
           onModalClose={handleCloseContactList}
           onCustomerSelect={handleCustomerSelect}
         />

@@ -1,23 +1,22 @@
 import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
 import format from 'date-fns/format';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {ActionCard} from '../../../../components';
-import EmptyState from '../../../../components/EmptyState';
-import Icon from '../../../../components/Icon';
-import HeaderRight from '../../../../components/HeaderRight';
-import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
-import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '../..';
+import {MainStackParamList} from '../index';
+import {ActionCard} from '../../../components';
+import EmptyState from '../../../components/EmptyState';
+import Icon from '../../../components/Icon';
+import Touchable from '../../../components/Touchable';
+import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {ICredit} from '../../../models/Credit';
+import {colors} from '../../../styles';
+import HeaderRight from '../../../components/HeaderRight';
 
-export const TotalCredit = ({
+export const CustomerOverdueCredit = ({
   route,
-}: StackScreenProps<MainStackParamList, 'TotalCredit'>) => {
+}: StackScreenProps<MainStackParamList, 'CustomerOverdueCredit'>) => {
   const navigation = useNavigation();
-
   const credits = route.params.credits;
 
   useLayoutEffect(() => {
@@ -53,7 +52,7 @@ export const TotalCredit = ({
   }, [navigation]);
 
   const handleViewDetails = (creditDetails: ICredit) => {
-    navigation.navigate('CreditDetails', {creditDetails});
+    navigation.navigate('CustomerCreditDetails', {creditDetails});
   };
 
   const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {
@@ -66,7 +65,7 @@ export const TotalCredit = ({
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Customer</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {creditDetails.customer?.name}
+                {creditDetails.customer_name}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
@@ -111,6 +110,7 @@ export const TotalCredit = ({
       </View>
     );
   };
+
   return (
     <SafeAreaView
       style={applyStyles('py-xl', 'flex-1', {
@@ -124,7 +124,7 @@ export const TotalCredit = ({
           <EmptyState
             heading="No credit"
             style={applyStyles({marginTop: 32})}
-            source={require('../../../../assets/images/coming-soon.png')}>
+            source={require('../../../assets/images/coming-soon.png')}>
             <Touchable
               onPress={() => navigation.navigate('RecordCreditPayment')}>
               <View
@@ -152,12 +152,9 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginHorizontal: 16,
   },
-  item: {
-    paddingBottom: 16,
-  },
   itemTitle: {
     paddingBottom: 2,
-    color: colors['gray-100'],
+    color: colors['gray-200'],
     textTransform: 'uppercase',
   },
   itemDataLarge: {
