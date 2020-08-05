@@ -36,6 +36,7 @@ import {ShareReceiptModal} from './ShareReceiptModal';
 import HeaderRight from '../../../../components/HeaderRight';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
+import {Payment} from '../../../../../types/app';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -199,9 +200,7 @@ const ReceiptSummary = (props: Props) => {
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [customer, setCustomer] = useState<Customer | ICustomer>(
-    {} as Customer,
-  );
+  const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
   );

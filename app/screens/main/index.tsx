@@ -5,7 +5,9 @@ import React, {useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
+import {Results} from 'realm';
 import getUuidByString from 'uuid-by-string';
+import {FAButtonProps} from '../../components';
 import {applyStyles} from '../../helpers/utils';
 import {IContact, IConversation} from '../../models';
 import {ICredit} from '../../models/Credit';
@@ -21,18 +23,20 @@ import {colors} from '../../styles';
 import {BusinessSetup} from '../BusinessSetup';
 import {
   AddProduct,
+  AddSupplier,
   CreditDetails,
   CreditPaymentDetails,
+  DeliveryAgents,
+  EditProduct,
   Finances,
   NewReceipt,
   OverdueCredit,
+  ReceiveInventory,
   RecordCreditPayment,
+  Suppliers,
   TotalCredit,
   ViewProductDetails,
-  EditProduct,
-  Suppliers,
-  DeliveryAgents,
-  ReceiveInventory,
+  ReceiveInventoryStock,
 } from './business';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
@@ -42,17 +46,16 @@ import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
 import AddCustomer from './customers/AddCustomer';
 import CreditPayment from './customers/CreditPayment';
 import {CustomerCreditPaymentDetails} from './customers/CreditPaymentDetails';
+import {CustomerCreditDetails} from './customers/CustomerCreditDetails';
 import CustomerDetails from './customers/CustomerDetails';
+import {CustomerOverdueCredit} from './customers/CustomerOverdueCredit';
+import {CustomerTotalCredit} from './customers/CustomerTotalCredit';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {CustomerTotalCredit} from './customers/CustomerTotalCredit';
-import {CustomerOverdueCredit} from './customers/CustomerOverdueCredit';
-import {CustomerCreditDetails} from './customers/CustomerCreditDetails';
-import {Results} from 'realm';
-import {FAButtonProps} from '../../components';
+import {ISupplier} from 'app/models/Supplier';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -60,7 +63,7 @@ export type MainStackParamList = {
   ChatDetails: IConversation;
   Contacts: undefined;
   Receipts: undefined;
-  NewReceipt: {customer: Customer};
+  NewReceipt: undefined;
   StatusModal: {status: string; text: string; onClick(): void};
   Finances: undefined;
   Inventory: undefined;
@@ -69,9 +72,9 @@ export type MainStackParamList = {
   AddCustomer: undefined;
   CustomerDetails: {customer: any};
   CustomerRecordCreditPayment: undefined;
-  CustomerCreditPayment: {creditDetails: CreditDetails};
-  CustomerPaymentDetails: {payment: Payment};
-  CustomerOrderDetails: {order: Order};
+  CustomerCreditPayment: {creditDetails: ICredit};
+  CustomerPaymentDetails: {payment: IPayment};
+  CustomerOrderDetails: {order: any};
   CustomerTotalCredit: {credits: ICredit[]};
   CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
   CustomerOverdueCredit: {credits: ICredit[]};
@@ -98,6 +101,8 @@ export type MainStackParamList = {
   Suppliers: undefined;
   ReceiveInventory: undefined;
   DeliveryAgents: undefined;
+  AddSupplier: undefined;
+  ReceiveInventoryStock: {supplier: ISupplier};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -517,6 +522,36 @@ const MainScreens = ({navigation}: any) => {
           component={ReceiveInventory}
           options={{
             title: 'Receive Inventory',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ReceiveInventoryStock"
+          component={ReceiveInventoryStock}
+          options={{
+            title: 'Receive Inventory',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="AddSupplier"
+          component={AddSupplier}
+          options={{
+            title: 'Add Supplier',
             headerStyle: {
               backgroundColor: colors.primary,
             },

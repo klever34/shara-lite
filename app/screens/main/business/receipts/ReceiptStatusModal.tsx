@@ -23,7 +23,7 @@ type Props = {
   timeTaken: number;
   isSaving: boolean;
   amountPaid: number;
-  customer: Customer | ICustomer;
+  customer: ICustomer;
   creditAmount: number;
   isCompleting: boolean;
   onComplete: () => void;

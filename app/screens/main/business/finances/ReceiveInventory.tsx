@@ -8,54 +8,54 @@ import TextInput from '../../../../components/TextInput';
 import {useNavigation} from '@react-navigation/native';
 import {useRealm} from '../../../../services/realm';
 import Touchable from '../../../../components/Touchable';
-import {getCustomers} from '../../../../services/CustomerService';
-import {ICustomer} from '../../../../models';
+import {ISupplier} from '../../../../models/Supplier';
+import {getSuppliers} from '../../../../services/SupplierService';
 
 type SupplierItemProps = {
-  item: ICustomer;
+  item: ISupplier;
 };
 
 export const ReceiveInventory = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
+  const suppliers = getSuppliers({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
+  const [mySuppliers, setMySuppliers] = useState<ISupplier[]>(suppliers);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const customersData = getCustomers({realm});
-      setMyCustomers(customersData);
+      const suppliersData = getSuppliers({realm});
+      setMySuppliers(suppliersData);
     });
     return unsubscribe;
   }, [navigation, realm]);
 
   const handleSelectSupplier = useCallback(
-    (item?: ICustomer) => {
-      navigation.navigate('CustomerDetails', {customer: item});
+    (item?: ISupplier) => {
+      navigation.navigate('ReceiveInventoryStock', {supplier: item});
       setSearchInputValue('');
-      setMyCustomers(customers);
+      setMySuppliers(suppliers);
     },
-    [navigation, customers],
+    [navigation, suppliers],
   );
 
   const handleSupplierSearch = useCallback(
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
-        const sort = (item: ICustomer, text: string) => {
+        const sort = (item: ISupplier, text: string) => {
           return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
-        const ac = customers.filter((item: ICustomer) => {
+        const ac = suppliers.filter((item: ISupplier) => {
           return sort(item, searchedText);
         });
-        setMyCustomers(ac);
+        setMySuppliers(ac);
       } else {
-        setMyCustomers(customers);
+        setMySuppliers(suppliers);
       }
     },
-    [customers],
+    [suppliers],
   );
 
   const handleAddSupplier = useCallback(() => {
@@ -122,14 +122,14 @@ export const ReceiveInventory = () => {
         </View>
       </Touchable>
       <FlatList
-        data={myCustomers}
+        data={mySuppliers}
         renderItem={renderSupplierListItem}
         keyExtractor={(item) => `${item.id}`}
         ListHeaderComponent={renderSupplierListHeader}
         ListEmptyComponent={
           <EmptyState
             heading={
-              !customers.length ? 'No Suppliers Added' : 'No results found'
+              !suppliers.length ? 'No Suppliers Added' : 'No results found'
             }
             source={require('../../../../assets/images/coming-soon.png')}
             text="Click on the add supplier button above to create a supplier"

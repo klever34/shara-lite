@@ -8,32 +8,32 @@ import {useNavigation} from '@react-navigation/native';
 import {useRealm} from '../../../../services/realm';
 import Touchable from '../../../../components/Touchable';
 import EmptyState from '../../../../components/EmptyState';
-import {ICustomer} from '../../../../models';
-import {getCustomers} from '../../../../services/CustomerService';
+import {getSuppliers} from '../../../../services/SupplierService';
+import {ISupplier} from '../../../../models/Supplier';
 
 type SupplierItemProps = {
-  item: ICustomer;
+  item: ISupplier;
 };
 
 export const Suppliers = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const suppliers = getCustomers({realm});
+  const suppliers = getSuppliers({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [mySuppliers, setMySuppliers] = useState<ICustomer[]>(suppliers);
+  const [mySuppliers, setMySuppliers] = useState<ISupplier[]>(suppliers);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const customersData = getCustomers({realm});
-      setMySuppliers(customersData);
+      const suppliersData = getSuppliers({realm});
+      setMySuppliers(suppliersData);
     });
     return unsubscribe;
   }, [navigation, realm]);
 
   const handleSelectSupplier = useCallback(
-    (item?: ICustomer) => {
-      navigation.navigate('CustomerDetails', {customer: item});
+    (item?: ISupplier) => {
+      navigation.navigate('ReceiveInventoryStock', {supplier: item});
       setSearchInputValue('');
       setMySuppliers(suppliers);
     },
@@ -44,10 +44,10 @@ export const Suppliers = () => {
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
-        const sort = (item: ICustomer, text: string) => {
+        const sort = (item: ISupplier, text: string) => {
           return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
-        const ac = suppliers.filter((item: ICustomer) => {
+        const ac = suppliers.filter((item: ISupplier) => {
           return sort(item, searchedText);
         });
         setMySuppliers(ac);
@@ -101,7 +101,11 @@ export const Suppliers = () => {
         </View>
       </View>
       <Touchable onPress={handleAddSupplier}>
-        <View style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+        <View
+          style={applyStyles('flex-row px-lg py-lg items-center', {
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
           <Icon
             size={24}
             name="user-plus"
@@ -109,7 +113,7 @@ export const Suppliers = () => {
             color={colors.primary}
           />
           <Text
-            style={applyStyles('text-400', {
+            style={applyStyles('text-400 pl-md', {
               fontSize: 16,
               color: colors['gray-300'],
             })}>
@@ -124,7 +128,9 @@ export const Suppliers = () => {
         ListHeaderComponent={renderSupplierListHeader}
         ListEmptyComponent={
           <EmptyState
-            heading="No Suppliers Added"
+            heading={
+              !suppliers.length ? 'No Suppliers Added' : 'No results found'
+            }
             source={require('../../../../assets/images/coming-soon.png')}
             text="Click on the add supplier button above to create a supplier"
           />
