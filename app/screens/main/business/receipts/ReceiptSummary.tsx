@@ -471,7 +471,6 @@ const ReceiptSummary = (props: Props) => {
       .reduce((acc, curr) => acc + curr, 0);
 
     setTotalAmount(total);
-    setAmountPaid(total);
   }, [products]);
 
   useEffect(() => {
@@ -479,7 +478,7 @@ const ReceiptSummary = (props: Props) => {
       const paid = payments.reduce((acc, item) => acc + item.amount, 0);
       setAmountPaid(paid);
     }
-  }, [payments, totalAmount]);
+  }, [payments]);
 
   const renderSummaryItem = useCallback(
     ({item}: SummaryTableItemProps) => (
