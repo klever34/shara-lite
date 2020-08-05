@@ -8,7 +8,7 @@ import {
 } from '../../../../components';
 import {colors} from '../../../../styles';
 import {applyStyles} from '../../../../helpers/utils';
-import {Payment} from '../../../../types/app';
+import {Payment} from '../../../../../types/app';
 
 type Props = {
   amount: number;
