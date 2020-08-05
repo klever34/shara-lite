@@ -20,25 +20,29 @@ import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import HeaderRight from '../../../../components/HeaderRight';
-import {products} from '../../data.json';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
+import {getProducts} from '../../../../services/ProductService';
+import {useRealm} from '../../../../services/realm';
+import {IProduct} from '../../../../models/Product';
+import {IReceiptItem} from 'app/models/ReceiptItem';
 
 type RecentProductItemProps = {
-  item: Product;
+  item: IProduct;
 };
 
 export const NewReceipt = () => {
+  const realm = useRealm();
   const navigation = useNavigation();
   //@ts-ignore
   global.startTime = new Date().getTime();
 
-  const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
-    null,
-  );
+  const products = getProducts({realm});
+
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
   const [price, setPrice] = useState<string | undefined>('');
-  const [receipt, setReceipt] = useState<ReceiptItem[]>([]);
+  const [receipt, setReceipt] = useState<IReceiptItem[]>([]);
   const [quantity, setQuantity] = useState<string | undefined>('');
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
@@ -53,11 +57,13 @@ export const NewReceipt = () => {
 
   const handleAddItem = useCallback(() => {
     if (price && quantity) {
-      const product: ReceiptItem = {
+      const product = {
         ...selectedProduct,
-        price,
-        quantity,
-      } as ReceiptItem;
+        price: parseFloat(price),
+        product: selectedProduct,
+        name: selectedProduct?.name,
+        quantity: parseFloat(quantity),
+      } as IReceiptItem;
       setReceipt([product, ...receipt]);
       setSelectedProduct(null);
       setPrice('');
@@ -73,9 +79,8 @@ export const NewReceipt = () => {
     setQuantity(item);
   }, []);
 
-  const handleSelectProduct = useCallback((item: Product) => {
-    const payload = item as ReceiptItem;
-    setSelectedProduct(payload);
+  const handleSelectProduct = useCallback((item: IProduct) => {
+    setSelectedProduct(item);
     setPrice(item?.price?.toString());
   }, []);
 
@@ -106,7 +111,7 @@ export const NewReceipt = () => {
   }, [handleCloseSummaryModal]);
 
   const handleUpdateProductItem = useCallback(
-    (item: ReceiptItem) => {
+    (item: IReceiptItem) => {
       setReceipt(
         receipt.map((receiptItem) => {
           if (receiptItem.id === item.id) {
@@ -120,7 +125,7 @@ export const NewReceipt = () => {
   );
 
   const handleRemoveProductItem = useCallback(
-    (item: ReceiptItem) => {
+    (item: IReceiptItem) => {
       setReceipt(receipt.filter((receiptItem) => receiptItem.id !== item.id));
     },
     [receipt],
@@ -129,11 +134,12 @@ export const NewReceipt = () => {
   const handleDone = useCallback(() => {
     let items = receipt;
     if (selectedProduct && quantity && price) {
-      const product: ReceiptItem = {
+      const product = {
         ...selectedProduct,
-        price,
-        quantity,
-      } as ReceiptItem;
+        price: parseFloat(price),
+        product: selectedProduct,
+        quantity: parseFloat(quantity),
+      } as IReceiptItem;
 
       handleAddItem();
       items = [product, ...receipt];
@@ -156,7 +162,8 @@ export const NewReceipt = () => {
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
             <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
-              {product.name} ({product.weight})
+              {product.sku} - {product.name}{' '}
+              {product.weight ? `(${product.weight}))` : ''}
             </Text>
           </View>
         </Touchable>
@@ -247,7 +254,8 @@ export const NewReceipt = () => {
                 Adding this product to receipt
               </Text>
               <Text style={applyStyles(styles.selectedProductName, 'text-700')}>
-                {selectedProduct?.name} ({selectedProduct?.weight})
+                {selectedProduct?.name}{' '}
+                {selectedProduct?.weight ? `${selectedProduct.weight}` : ''}
               </Text>
               <View style={styles.calculatorSectionInputs}>
                 <View
