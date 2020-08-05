@@ -16,6 +16,10 @@ import {Button} from '../../../../components';
 import {getCustomers} from '../../../../services/CustomerService';
 import {ICustomer} from '../../../../models';
 
+type CustomerItemProps = {
+  item: ICustomer;
+};
+
 export const CustomersList = (props: any) => {
   const {onCustomerSelect, onModalClose} = props;
   const realm = useRealm() as Realm;
