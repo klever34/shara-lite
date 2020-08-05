@@ -66,15 +66,12 @@ export const restockProduct = ({
 
 export const getProduct = ({
   realm,
-  product,
+  productId,
 }: {
   realm: Realm
-  product: IProduct
+  productId: string
 }) => {
-  if (product.id) {
-    return realm.objectForPrimaryKey(modelName, product.id)
-  }
-  return product
+  return realm.objectForPrimaryKey(modelName, productId) as IProduct
 }
 
 export const deleteProduct = ({

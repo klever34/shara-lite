@@ -5898,9 +5898,9 @@ readable-stream@2, readable-stream@^2.0.1, readable-stream@^2.0.6, readable-stre
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-realm@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/realm/-/realm-6.0.2.tgz#d51abb9be03ddbf5a16fbe9c65cb8e09889c7d4b"
+realm@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/realm/-/realm-6.0.4.tgz#cb5171c8a2f4641bd5ccf6ed1e314b2021e2b669"
   dependencies:
     command-line-args "^4.0.6"
     deepmerge "2.1.0"

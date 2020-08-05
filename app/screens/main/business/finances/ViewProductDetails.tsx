@@ -7,28 +7,33 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
-import {getProduct} from '../../../../services/ProductService';
+import {getProduct, deleteProduct} from '../../../../services/ProductService';
 import {useRealm} from '../../../../services/realm';
 import {IProduct} from 'app/models/Product';
 
 export const ViewProductDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ViewProductDetails'>) => {
-  const {product: productParams} = route.params;
+  const {product: productId} = route.params;
   const realm = useRealm();
   const navigation = useNavigation();
-  const [product, setProduct] = useState(productParams);
-
-  const onDeleteProduct = useCallback(() => {}, []);
+  const [product, setProduct] = useState<IProduct>({} as IProduct);
 
   useFocusEffect(
     useCallback(() => {
-      const product = getProduct({realm, product: productParams}) as IProduct;
-      const unsubscribe = () => setProduct(product);
+      console.log('here');
+      const product = getProduct({realm, productId});
+      setProduct(product);
+      const unsubscribe = () => setProduct({} as IProduct);
 
       return () => unsubscribe();
-    }, [productParams, realm]),
+    }, [productId, realm]),
   );
+
+  const onDeleteProduct = useCallback(() => {
+    deleteProduct({realm, product});
+    navigation.navigate('Inventory');
+  }, [realm, product, navigation]);
 
   const handleEditProduct = useCallback(() => {
     navigation.navigate('EditProduct', {product});
@@ -75,7 +80,7 @@ export const ViewProductDetails = ({
               fontSize: 16,
               color: colors['gray-300'],
             })}>
-            {product.name}
+            {product?.name}
           </Text>
         </View>
         <View style={applyStyles({width: '48%'})}>
@@ -90,7 +95,7 @@ export const ViewProductDetails = ({
               fontSize: 16,
               color: colors['gray-300'],
             })}>
-            {product.sku}
+            {product?.sku}
           </Text>
         </View>
       </View>
@@ -107,10 +112,10 @@ export const ViewProductDetails = ({
               fontSize: 16,
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(product.price)}
+            &#8358;{numberWithCommas(product?.price)}
           </Text>
         </View>
-        {!!product.quantity && (
+        {!!product?.quantity && (
           <View style={applyStyles({width: '48%'})}>
             <Text
               style={applyStyles('pb-sm text-400 text-uppercase', {

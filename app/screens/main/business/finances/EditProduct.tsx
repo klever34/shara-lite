@@ -48,13 +48,15 @@ export const EditProduct = ({
   }, []);
 
   const handleSubmit = useCallback(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      updateProduct({realm, product: productProps, updates: product});
-      setIsLoading(false);
-      clearForm();
-      navigation.goBack();
-    }, 300);
+    if (Object.keys(product).length === 3) {
+      setIsLoading(true);
+      setTimeout(() => {
+        updateProduct({realm, product: productProps, updates: product});
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+      }, 300);
+    }
   }, [realm, clearForm, productProps, product, navigation]);
 
   return (

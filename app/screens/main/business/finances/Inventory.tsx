@@ -97,7 +97,7 @@ export function MyInventory() {
 
   const handleProductItemClick = useCallback(
     (product) => {
-      navigation.navigate('ViewProductDetails', {product});
+      navigation.navigate('ViewProductDetails', {product: product.id});
     },
     [navigation],
   );

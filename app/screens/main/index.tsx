@@ -77,7 +77,7 @@ export type MainStackParamList = {
   CreditDetails: {creditDetails: CreditDetails};
   CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};
   AddProduct: undefined;
-  ViewProductDetails: {product: IProduct};
+  ViewProductDetails: {product: string};
   EditProduct: {product: IProduct};
 };
 
