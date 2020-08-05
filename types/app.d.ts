@@ -1,4 +1,4 @@
-type Falsy = undefined | null | false;
+type Falsy = undefined | null | false
 
 type User = {
   id: number
@@ -8,27 +8,29 @@ type User = {
   country_code: string
   created_at: string
   updated_at: string
+  businesses: Business[]
+}
+
+type Business = {
+  id: string
+  name: string
+  user_id: string
+  address?: string
+  created_at: string
+  updated_at: string
+  profile_image_url?: string | null
+  signature_image_url?: string | null
 }
 
 type GroupChat = {
-<<<<<<< HEAD
   name: string
+  description: string | null
   uuid: string
   created_by: number
   created_at: string
   updated_at: string
   id: number
 }
-=======
-  name: string;
-  description: string | null;
-  uuid: string;
-  created_by: number;
-  created_at: string;
-  updated_at: string;
-  id: number;
-};
->>>>>>> discovery
 
 type GroupChatMember = {
   id: number

@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.14",
+  "version": "0.1.14-feature.business-setup-integration+build.960",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -35,6 +35,7 @@
     "react-native-device-info": "^5.6.1",
     "react-native-emoji-selector": "^0.1.8",
     "react-native-floating-action": "^1.20.0",
+    "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-get-random-values": "^1.4.0",
     "react-native-image-picker": "^2.3.3",
@@ -52,6 +53,7 @@
     "react-native-webview": "^10.3.2",
     "readable-stream": "1.0.33",
     "realm": "^6.0.2",
+    "rn-fetch-blob": "^0.12.0",
     "uuid": "^8.2.0",
     "uuid-by-string": "^3.0.2"
   },
