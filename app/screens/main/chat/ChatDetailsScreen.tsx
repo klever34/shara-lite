@@ -96,8 +96,8 @@ const ChatDetailsScreen = ({
   const handleError = useErrorHandler();
   const isCreator = useMemo(() => {
     const me = getAuthService().getUser();
-    return conversation.creatorId === String(me?.id);
-  }, [conversation.creatorId]);
+    return conversation.creator === String(me?.mobile);
+  }, [conversation.creator]);
 
   const editTextProperty = useCallback(
     async (property: 'name' | 'description', value: string) => {

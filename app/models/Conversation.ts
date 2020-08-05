@@ -2,15 +2,16 @@ import {IMessage} from './Message';
 
 export interface IConversation {
   channel: string;
-  type: '1-1' | 'group';
-  lastMessage?: IMessage;
-  admins?: string[];
-  members: string[];
-  name: string;
-  description?: string;
   id: string;
-  creatorId?: string;
-  creatorMobile?: string;
+  type: '1-1' | 'group';
+  name: string;
+  members: string[];
+  lastMessage?: IMessage;
+
+  // group chat
+  admins?: string[];
+  description?: string;
+  creator?: string;
 }
 
 export class Conversation implements Partial<IConversation> {
@@ -26,8 +27,7 @@ export class Conversation implements Partial<IConversation> {
       name: 'string',
       description: 'string?',
       id: 'string',
-      creatorId: 'string?',
-      creatorMobile: 'string?',
+      creator: 'string?',
     },
   };
 }

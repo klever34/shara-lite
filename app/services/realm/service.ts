@@ -293,10 +293,10 @@ export class RealmService implements IRealmService {
         members = compact(
           groupChatMembers.map((member) => member.user?.mobile),
         );
+        const creator = decrypt(custom.creatorMobile);
         return {
           id: String(custom.id),
-          creatorId: String(custom.creatorId),
-          creatorMobile: decrypt(custom.creatorMobile),
+          creator,
           name: channelMetadata.name ?? '',
           type: 'group',
           admins,
@@ -306,7 +306,7 @@ export class RealmService implements IRealmService {
       } else {
         members = custom.members
           .split(',')
-          .map((encryptedMember: any) => decrypt(encryptedMember));
+          .map((encryptedMember) => decrypt(encryptedMember));
         const user = this.authService.getUser();
         const sender =
           members.find((member: any) => member !== user?.mobile) ?? '';

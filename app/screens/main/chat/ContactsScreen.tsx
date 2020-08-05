@@ -208,6 +208,7 @@ const ContactsScreen = ({
                                       name: groupChat.name,
                                       type: 'group',
                                       channel: groupChat.uuid,
+                                      creator: me?.mobile,
                                       admins: [me?.mobile],
                                       members: [
                                         me?.mobile,
