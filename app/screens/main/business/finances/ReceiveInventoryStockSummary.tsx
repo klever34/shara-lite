@@ -171,8 +171,15 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
             />
           </View>
         </View>
-        <View style={applyStyles({marginVertical: 48})}>
-          <View style={applyStyles('flex-row', 'items-center')}>
+        <Text
+          style={applyStyles('mt-xl mb-lg text-400', {
+            fontSize: 18,
+            color: colors.primary,
+          })}>
+          Delivery Agent Details
+        </Text>
+        <View style={applyStyles({marginBottom: 48})}>
+          <View style={applyStyles('mb-xl flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Phone Number"
               keyboardType="phone-pad"

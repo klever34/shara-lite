@@ -81,7 +81,7 @@ export const Suppliers = () => {
   );
 
   return (
-    <View style={applyStyles({backgroundColor: colors['gray-10']})}>
+    <View style={applyStyles({backgroundColor: colors.white})}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon
