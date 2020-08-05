@@ -1,21 +1,15 @@
 import React, {useState, useCallback, useLayoutEffect} from 'react';
 import {ScrollView, Text, View} from 'react-native';
 import {applyStyles} from '../../../../helpers/utils';
-import {
-  CurrencyInput,
-  FloatingLabelInput,
-  Button,
-} from '../../../../components';
-import {IProduct} from '../../../../models/Product';
 import {colors} from '../../../../styles';
+import {FloatingLabelInput, Button} from '../../../../components';
 import {useRealm} from '../../../../services/realm';
-import {saveProduct} from '../../../../services/ProductService';
 import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
-export const AddProduct = () => {
+export const AddSupplier = () => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -62,31 +56,29 @@ export const AddProduct = () => {
           fontSize: 18,
           color: colors.primary,
         })}>
-        Product Details
+        Supplier Details
       </Text>
       <View style={applyStyles('flex-row', 'items-center')}>
         <FloatingLabelInput
-          label="Product Name"
+          label="Name"
           value={product.name}
           onChangeText={(text) => handleChange(text, 'name')}
         />
       </View>
       <View style={applyStyles('flex-row', 'items-center')}>
         <FloatingLabelInput
-          label="Product SKU"
-          value={product.sku}
+          label="Address"
+          value={product.address}
           onChangeText={(text) => handleChange(text, 'sku')}
         />
       </View>
-      <View>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <CurrencyInput
-            label="Price"
-            keyboardType="number-pad"
-            onChange={(text) => handleChange(text, 'price')}
-            value={product.price ? product.price.toString() : ''}
-          />
-        </View>
+      <View style={applyStyles('flex-row', 'items-center')}>
+        <FloatingLabelInput
+          label="Phone number"
+          value={product.mobile}
+          keyboardType="number-pad"
+          onChangeText={(text) => handleChange(text, 'sku')}
+        />
       </View>
       <Button
         title="Add product"

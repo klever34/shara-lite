@@ -191,12 +191,17 @@ export function MyReceipts() {
         renderItem={renderReceiptItem}
         keyExtractor={(item) => `${item.id}`}
         ListEmptyComponent={
-          <EmptyState
-            heading="No receipts"
-            style={applyStyles({marginTop: 32})}
-            source={require('../../../../assets/images/coming-soon.png')}
-            text="Click the button below to create a receipt"
-          />
+          <View
+            style={applyStyles('flex-1', 'items-center', 'justify-center', {
+              paddingVertical: 40,
+            })}>
+            <Text
+              style={applyStyles('heading-700', 'text-center', {
+                color: colors['gray-300'],
+              })}>
+              No results found
+            </Text>
+          </View>
         }
       />
 
