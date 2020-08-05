@@ -5,6 +5,16 @@ import {IInventoryStock, modelName} from '../models/InventoryStock';
 import {generateUniqueId} from '../helpers/utils';
 import {restockProduct} from './ProductService';
 
+export const getReceivedStocks = ({
+  realm,
+}: {
+  realm: Realm;
+}): IInventoryStock[] => {
+  return (realm.objects<IInventoryStock>(
+    modelName,
+  ) as unknown) as IInventoryStock[];
+};
+
 export const addNewStocks = ({
   realm,
   stockItems,
