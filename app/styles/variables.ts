@@ -7,6 +7,7 @@ export const dimensions = {
 
 export const colors: {[key: string]: string} = {
   'red-50': '#F4B1B1',
+  'red-200': '#DD0404',
   primary: '#dd0404',
   white: '#FFF',
   'gray-10': '#F5F5F5',

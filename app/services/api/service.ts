@@ -13,6 +13,7 @@ export type Requester = {
   post: <T extends any = any>(
     url: string,
     data: {[key: string]: any},
+    config?: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
   patch: <T extends any = any>(
     url: string,
@@ -76,6 +77,8 @@ export interface IApiService {
     userId: number | string,
     isAdmin?: boolean,
   ): Promise<any>;
+
+  businessSetup(payload: FormData): Promise<ApiResponse>;
 }
 
 export class ApiService implements IApiService {
@@ -100,14 +103,19 @@ export class ApiService implements IApiService {
         },
       ).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
-    post: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+    post: <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+      config?: {[key: string]: any},
+    ) => {
       return fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
+          ...config?.headers,
         },
-        body: JSON.stringify(data),
+        body: config ? data : JSON.stringify(data),
       }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
     patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
@@ -279,6 +287,27 @@ export class ApiService implements IApiService {
       return groupChatMembers;
     } catch (e) {
       throw e;
+    }
+  }
+
+  async businessSetup(payload: FormData) {
+    try {
+      const fetchResponse = await this.requester.post('/business', payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const {
+        data: {business},
+      }: {data: {business: Business}} = fetchResponse;
+
+      let user = this.authService.getUser() as User;
+      user = {...user, businesses: [business]};
+      this.authService.setUser(user);
+      await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
     }
   }
 

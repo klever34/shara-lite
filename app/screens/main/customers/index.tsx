@@ -25,8 +25,8 @@ const CustomersTab = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const nextCustomers = getCustomers({realm});
-      setMyCustomers(nextCustomers);
+      const customersData = getCustomers({realm});
+      setMyCustomers(customersData);
     });
     return unsubscribe;
   }, [navigation, realm]);
