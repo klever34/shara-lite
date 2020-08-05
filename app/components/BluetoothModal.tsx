@@ -21,7 +21,9 @@
 // type BluetoothDevice = {address: string; name?: string};
 // type BluetoothDeviceItem = {item: BluetoothDevice};
 
-// export const BluetoothModal = () => {
+export const BluetoothModal = () => {
+  return null;
+};
 //   const [section, setSection] = useState(0);
 //   const [visible, setVisible] = useState(false);
 //   const [isScanning, setIsScanning] = useState(false);

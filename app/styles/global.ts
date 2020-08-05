@@ -33,6 +33,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'flex-1': {
     flex: 1,
   },
+  relative: {
+    position: 'relative',
+  },
+  absolute: {
+    position: 'absolute',
+  },
   'w-full': {
     width: '100%',
   },
@@ -140,6 +146,16 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       // border
       [`rounded-${curr}`]: {borderRadius: spacing[curr]},
       [`border-${curr}`]: {borderWidth: spacing[curr]},
+
+      // positions
+      [`top-${curr}`]: {top: spacing[curr]},
+      [`-top-${curr}`]: {top: spacing[curr] * -1},
+      [`right-${curr}`]: {right: spacing[curr]},
+      [`-right-${curr}`]: {right: spacing[curr] * -1},
+      [`bottom-${curr}`]: {bottom: spacing[curr]},
+      [`-bottom-${curr}`]: {bottom: spacing[curr] * -1},
+      [`left-${curr}`]: {left: spacing[curr]},
+      [`-left-${curr}`]: {left: spacing[curr] * -1},
     };
   }, {}),
   ...Object.keys(colors).reduce((acc, curr) => {

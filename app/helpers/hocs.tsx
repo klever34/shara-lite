@@ -5,9 +5,9 @@ import BottomHalfModal from '../modals/BottomHalfModal';
 import OptionsModal from '../modals/OptionsModal';
 
 export type ModalWrapperFields = {
-  openModal: (
-    modalType: keyof ModalPropsList,
-    modalProps: ModalPropsList[keyof ModalPropsList],
+  openModal: <K extends keyof ModalPropsList>(
+    modalType: K,
+    modalProps: ModalPropsList[K],
   ) => () => void;
 };
 

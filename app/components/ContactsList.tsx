@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {ReactNode, useCallback} from 'react';
 import {
   FlatList,
   FlatListProps,
@@ -10,7 +10,7 @@ import {useRealm} from '../services/realm';
 import {IContact} from '../models';
 import Touchable from './Touchable';
 import {applyStyles} from '../helpers/utils';
-import PlaceholderImage from './PlaceholderImage';
+import PlaceholderImage, {PlaceholderImageProps} from './PlaceholderImage';
 import {Collection} from 'realm';
 import {getAuthService} from '../services';
 
@@ -20,12 +20,20 @@ type ContactsListProps = Omit<
 > & {
   contacts?: Collection<IContact>;
   getContactItemTitle?: (item: IContact) => string;
+  getContactItemDescription?: (item: IContact) => string;
+  getContactItemImageProps?: (item: IContact) => Partial<PlaceholderImageProps>;
+  shouldClickContactItem?: (item: IContact) => boolean;
+  getContactItemRight?: (item: IContact) => ReactNode;
   onContactItemClick: (item: IContact) => void;
 };
 
 const ContactsList = ({
   contacts,
   getContactItemTitle = (item: IContact) => item.fullName,
+  getContactItemDescription = () => '',
+  getContactItemImageProps = () => ({}),
+  getContactItemRight = () => null,
+  shouldClickContactItem = () => true,
   onContactItemClick,
   ...restProps
 }: ContactsListProps) => {
@@ -38,24 +46,49 @@ const ContactsList = ({
       .sorted('firstname');
   const renderContactItem = useCallback(
     ({item}: ListRenderItemInfo<IContact>) => {
+      const title = getContactItemTitle(item);
+      const description = getContactItemDescription(item);
+      const itemClickable = shouldClickContactItem(item);
       return (
         <Touchable
-          onPress={() => {
-            onContactItemClick(item);
-          }}>
+          onPress={
+            itemClickable
+              ? () => {
+                  onContactItemClick(item);
+                }
+              : undefined
+          }>
           <View style={applyStyles('flex-row items-center px-md')}>
             <PlaceholderImage
+              {...getContactItemImageProps(item)}
               text={item.fullName}
               style={applyStyles('mr-md my-md')}
             />
-            <Text style={applyStyles('text-lg')}>
-              {getContactItemTitle(item)}
-            </Text>
+            <View style={applyStyles('flex-1')}>
+              <Text
+                style={applyStyles(
+                  'text-lg mb-xs',
+                  !itemClickable && 'text-gray-100',
+                )}>
+                {title}
+              </Text>
+              {!!description && (
+                <Text style={applyStyles('text-base')}>{description}</Text>
+              )}
+            </View>
+            {getContactItemRight(item)}
           </View>
         </Touchable>
       );
     },
-    [getContactItemTitle, onContactItemClick],
+    [
+      getContactItemDescription,
+      getContactItemImageProps,
+      getContactItemRight,
+      getContactItemTitle,
+      onContactItemClick,
+      shouldClickContactItem,
+    ],
   );
   return (
     <FlatList

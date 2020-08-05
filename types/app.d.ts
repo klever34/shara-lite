@@ -1,4 +1,4 @@
-type Falsy = undefined | null | false
+type Falsy = undefined | null | false;
 
 type User = {
   id: number
@@ -13,62 +13,62 @@ type User = {
 }
 
 type Business = {
-  id: string
-  name: string
-  user_id: string
-  address?: string
-  created_at: string
-  updated_at: string
-  profile_image_url?: string | null
-  signature_image_url?: string | null
-}
+  id: string;
+  name: string;
+  user_id: string;
+  address?: string;
+  created_at: string;
+  updated_at: string;
+  profile_image_url?: string | null;
+  signature_image_url?: string | null;
+};
 
 type GroupChat = {
-  name: string
-  description: string | null
-  uuid: string
-  created_by: number
-  created_at: string
-  updated_at: string
-  id: number
-}
+  name: string;
+  description: string | null;
+  uuid: string;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  id: number;
+};
 
 type GroupChatMember = {
-  id: number
-  user_id: number
-  group_chat_id: number
-  is_admin: boolean
-  created_at: string
-  updated_at: string
-  is_creator: boolean
-  user: User
-}
+  id: number;
+  user_id: number;
+  group_chat_id: number;
+  is_admin?: boolean;
+  created_at: string;
+  updated_at: string;
+  is_creator: boolean;
+  user?: User;
+};
 
 type OneOnOneChannelCustom = {
-  type: '1-1'
-  members: string
-}
+  type: '1-1';
+  members: string;
+};
 
 type GroupChannelCustom = {
-  type: 'group'
-  id: number
-  creatorId: number
-  creatorMobile: string
-}
+  type: 'group';
+  id: number;
+  creatorId: number;
+  creatorMobile: string;
+};
 
-type ChannelCustom = OneOnOneChannelCustom | GroupChannelCustom
+type ChannelCustom = OneOnOneChannelCustom | GroupChannelCustom;
 
 type PushNotificationToken = {
-  token: string
-  os: string
-}
+  token: string;
+  os: string;
+};
 
 type Product = {
-  id: string
-  name: string
-  weight: string
-  price: string
-}
+  id: string;
+  name: string;
+  weight: string;
+  price: string;
+};
 
 type ReceiptItem = {
   quantity: string
@@ -77,40 +77,38 @@ type ReceiptItem = {
 }
 
 type Customer = {
-  id: string
-  mobile: string
-  name: string
-}
+  id: string;
+  mobile: string;
+  name: string;
+};
 type ApiResponse<T extends any = any> = {
-  data: any
-  message: string
-}
-type CustomerItemProps = {
-  item: ICustomer
-}
+  data: any;
+  message: string;
+};
 type CreditDetails = {
-  id: string
-  amount: number
-  givenOn: string
-  dueOn: string
-  givenBy: string
-}
+  id: string;
+  amount: number;
+  givenOn: string;
+  dueOn: string;
+  givenBy: string;
+};
 type Order = {
-  id: string
-  amount: number
-  paymentMethod: string
-  status: string
-  deliveryType: string
-  location: string
-  placedOn: string
-  completedOn: string
-}
+  id: string;
+  amount: number;
+  paymentMethod: string;
+  status: string;
+  deliveryType: string;
+  location: string;
+  placedOn: string;
+  completedOn: string;
+};
 
 type Payment = {
-  amount: number
-  method: string
-  note?: string
-}
+  amount: number;
+  method: string;
+  note?: string;
+};
 
-declare module 'react-native-signature-capture'
-declare module 'react-native-bluetooth-escpos-printer'
+// @ts-ignore
+declare module 'react-native-signature-capture';
+declare module 'react-native-bluetooth-escpos-printer';

@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -15,12 +16,17 @@ import {
   StyleSheet,
   TextInput,
   View,
+  Text,
 } from 'react-native';
 import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import Icon from '../../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../../components';
 import {ChatBubble} from '../../../components/ChatBubble';
-import {generateUniqueId, retryPromise} from '../../../helpers/utils';
+import {
+  applyStyles,
+  generateUniqueId,
+  retryPromise,
+} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
@@ -55,18 +61,24 @@ const ChatScreen = ({
     .objects<IMessage>('Message')
     .filtered(`channel = "${channel}"`)
     .sorted('created_at', true);
+  const me = getAuthService().getUser();
+
+  const canChat = useMemo(() => {
+    if (conversation.type === 'group') {
+      return !!conversation.members.find((mobile) => me?.mobile === mobile);
+    }
+    return true;
+  }, [conversation.members, conversation.type, me]);
 
   const handleError = useErrorHandler();
   useEffect(() => {
     const listener = () => {
-      const authService = getAuthService();
-      const user = authService.getUser();
       try {
         const markedMessages = realm
           .objects<IMessage>('Message')
           .filtered(
             `channel = "${channel}" AND read_timetoken = null AND author != "${
-              user?.mobile ?? ''
+              me?.mobile ?? ''
             }"`,
           );
         if (markedMessages.length) {
@@ -105,7 +117,7 @@ const ChatScreen = ({
     return () => {
       realm.removeListener('change', listener);
     };
-  }, [channel, handleError, pubNub, realm]);
+  }, [channel, handleError, me, pubNub, realm]);
   useEffect(() => {
     const listener = {
       messageAction: (evt: MessageActionEvent) => {
@@ -134,13 +146,20 @@ const ChatScreen = ({
     };
   }, [channel, handleError, pubNub, realm]);
 
+  const headerDescription = useMemo(() => {
+    if (conversation.type === 'group') {
+      return typingMessage || 'tap here for group info';
+    }
+    return typingMessage;
+  }, [conversation.type, typingMessage]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerTitle: () => {
         return (
           <HeaderTitle
             title={name}
-            description={typingMessage}
+            description={headerDescription}
             onPress={() => {
               navigation.navigate('ChatDetails', conversation);
             }}
@@ -148,25 +167,23 @@ const ChatScreen = ({
         );
       },
     });
-  }, [conversation, navigation, name, typingMessage]);
+  }, [conversation, headerDescription, name, navigation]);
   const handleSubmit = useCallback(() => {
     setInput('');
-    const authService = getAuthService();
-    const user = authService.getUser();
-    if (!user) {
+    if (!me) {
       return;
     }
     let message: IMessage = {
       id: generateUniqueId(),
       content: input,
       created_at: new Date(),
-      author: user.mobile,
+      author: me.mobile,
       channel,
     };
     const messagePayload = {
       pn_gcm: {
         notification: {
-          title: `${user?.firstname} ${user?.lastname}`,
+          title: `${me?.firstname} ${me?.lastname}`,
           body: input,
         },
         data: message,
@@ -200,7 +217,15 @@ const ChatScreen = ({
         message.timetoken = String(response.timetoken);
       });
     });
-  }, [channel, conversation.lastMessage, handleError, input, pubNub, realm]);
+  }, [
+    channel,
+    conversation.lastMessage,
+    handleError,
+    input,
+    me,
+    pubNub,
+    realm,
+  ]);
 
   const renderMessageItem = useCallback(
     ({item: message}: MessageItemProps) => <ChatBubble message={message} />,
@@ -236,40 +261,49 @@ const ChatScreen = ({
           data={messages}
           keyExtractor={messageItemKeyExtractor}
         />
-        <View style={styles.inputContainer}>
-          <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
-            <Icon
-              type="material-icons"
-              size={22}
-              style={styles.emojiButtonIcon}
-              name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
-            />
-          </BaseButton>
-          <TextInput
-            multiline
-            value={input}
-            ref={inputRef}
-            returnKeyType="send"
-            onChangeText={setInput}
-            style={styles.textInput}
-            onFocus={closeEmojiBoard}
-            onSubmitEditing={handleSubmit}
-            enablesReturnKeyAutomatically={true}
-            placeholder="Type a message"
-          />
-          {!!input && (
-            <BaseButton
-              title="Send"
-              style={styles.submitButton}
-              onPress={handleSubmit}>
+        {canChat ? (
+          <View style={styles.inputContainer}>
+            <BaseButton style={styles.emojiButton} onPress={toggleEmojiBoard}>
               <Icon
                 type="material-icons"
-                name="send"
-                style={baseButtonStyles.icon}
+                size={22}
+                style={styles.emojiButtonIcon}
+                name={showEmojiBoard ? 'keyboard' : 'insert-emoticon'}
               />
             </BaseButton>
-          )}
-        </View>
+            <TextInput
+              multiline
+              value={input}
+              ref={inputRef}
+              returnKeyType="send"
+              onChangeText={setInput}
+              style={styles.textInput}
+              onFocus={closeEmojiBoard}
+              onSubmitEditing={handleSubmit}
+              enablesReturnKeyAutomatically={true}
+              placeholder="Type a message"
+            />
+            {!!input && (
+              <BaseButton
+                title="Send"
+                style={styles.submitButton}
+                onPress={handleSubmit}>
+                <Icon
+                  type="material-icons"
+                  name="send"
+                  style={baseButtonStyles.icon}
+                />
+              </BaseButton>
+            )}
+          </View>
+        ) : (
+          <View style={applyStyles('bg-white p-lg')}>
+            <Text style={applyStyles('text-center text-gray-200')}>
+              You can't send messages to this group because you're no longer a
+              participant
+            </Text>
+          </View>
+        )}
       </ImageBackground>
 
       {showEmojiBoard && (

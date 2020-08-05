@@ -48,6 +48,7 @@ export const PhoneNumberField = (props: Props) => {
           withFlag={false}
           onSelect={onSelect}
           withCallingCodeButton
+          // @ts-ignore
           placeholder="Country"
           countryCode={country.cca2}
           containerButtonStyle={styles.pickerButton}

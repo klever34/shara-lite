@@ -11,6 +11,10 @@ import {getCustomers} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
 
+type CustomerItemProps = {
+  item: ICustomer;
+};
+
 const CustomersTab = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
