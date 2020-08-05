@@ -1,36 +1,36 @@
-type Falsy = undefined | null | false
+type Falsy = undefined | null | false;
 
 type User = {
-  id: number
-  firstname: string
-  lastname: string
-  mobile: string
-  country_code: string
-  created_at: string
-  updated_at: string
-  businesses: Business[]
-}
+  id: number;
+  firstname: string;
+  lastname: string;
+  mobile: string;
+  country_code: string;
+  created_at: string;
+  updated_at: string;
+  businesses: Business[];
+};
 
 type Business = {
-  id: string
-  name: string
-  user_id: string
-  address?: string
-  created_at: string
-  updated_at: string
-  profile_image_url?: string | null
-  signature_image_url?: string | null
-}
+  id: string;
+  name: string;
+  user_id: string;
+  address?: string;
+  created_at: string;
+  updated_at: string;
+  profile_image_url?: string | null;
+  signature_image_url?: string | null;
+};
 
 type GroupChat = {
-  name: string
-  description: string | null
-  uuid: string
-  created_by: number
-  created_at: string
-  updated_at: string
-  id: number
-}
+  name: string;
+  description: string | null;
+  uuid: string;
+  created_by: number;
+  created_at: string;
+  updated_at: string;
+  id: number;
+};
 
 type GroupChatMember = {
   id: number;
