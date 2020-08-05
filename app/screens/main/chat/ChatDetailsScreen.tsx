@@ -1,5 +1,12 @@
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
-import {Alert, SafeAreaView, Text, View, VirtualizedList} from 'react-native';
+import {
+  Alert,
+  Platform,
+  SafeAreaView,
+  Text,
+  View,
+  VirtualizedList,
+} from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '..';
 import HeaderTitle from '../../../components/HeaderTitle';
@@ -15,6 +22,7 @@ import {getApiService, getAuthService} from '../../../services';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderRight, {HeaderRightOption} from '../../../components/HeaderRight';
 import {UpdateMode} from 'realm';
+import {ModalPropsList} from '../../../../types/modal';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';
@@ -76,8 +84,15 @@ const ChatDetailsScreen = ({
   openModal,
 }: StackScreenProps<MainStackParamList, 'ChatDetails'> &
   ModalWrapperFields) => {
-  const conversation = route.params;
   const realm = useRealm();
+  const conversation = route.params;
+  const participants = realm
+    .objects<IContact>('Contact')
+    .filtered(`groups CONTAINS "${conversation.channel}"`)
+    .sorted([
+      ['isMe', true],
+      ['firstname', false],
+    ]);
   const handleError = useErrorHandler();
   const isCreator = useMemo(() => {
     const me = getAuthService().getUser();
@@ -99,7 +114,7 @@ const ChatDetailsScreen = ({
             'Conversation',
             {
               channel: conversation.channel,
-              name: groupChat.name,
+              [property]: groupChat[property],
             },
             UpdateMode.Modified,
           );
@@ -136,7 +151,62 @@ const ChatDetailsScreen = ({
           {
             icon: 'person-add',
             onPress: () => {
-              console.log('Add Participant');
+              navigation.navigate('SelectGroupMembers', {
+                participants,
+                title: 'Add participants',
+                next: (selectedContacts: IContact[]) => ({
+                  iconName: Platform.select({
+                    android: 'md-checkmark',
+                    ios: 'ios-checkmark',
+                  }),
+                  onPress: () => {
+                    navigation.goBack();
+                    if (!conversation.id) {
+                      return;
+                    }
+                    const closeModal = openModal('loading', {
+                      text: 'Adding participants',
+                    });
+                    const apiService = getApiService();
+                    apiService
+                      .addGroupChatMembers(conversation.id, selectedContacts)
+                      .then((groupChatMembers) => {
+                        try {
+                          realm.write(() => {
+                            conversation.members.push(
+                              ...groupChatMembers.map((member) => {
+                                const contact = realm
+                                  .objects<IContact>('Contact')
+                                  .filtered(`id = "${member.user_id}"`)[0];
+                                return contact.mobile;
+                              }),
+                            );
+                            for (
+                              let i = 0;
+                              i < selectedContacts.length;
+                              i += 1
+                            ) {
+                              const contact = selectedContacts[i];
+                              realm.create<IContact>(
+                                'Contact',
+                                {
+                                  mobile: contact.mobile,
+                                  groups:
+                                    contact.groups + ',' + conversation.channel,
+                                },
+                                UpdateMode.Modified,
+                              );
+                            }
+                          });
+                        } catch (e) {
+                          handleError(e);
+                        }
+                      })
+                      .catch(handleError)
+                      .finally(closeModal);
+                  },
+                }),
+              });
             },
           },
         );
@@ -152,23 +222,169 @@ const ChatDetailsScreen = ({
           />
         );
       },
-      headerRight: () => <HeaderRight menuOptions={options} />,
+      headerRight: () => <HeaderRight options={options} />,
     });
   }, [
+    conversation.channel,
+    conversation.id,
+    conversation.members,
     conversation.name,
     conversation.type,
     editTextProperty,
+    handleError,
     isCreator,
     navigation,
     openModal,
+    participants,
+    realm,
   ]);
-  const participants = realm
-    .objects<IContact>('Contact')
-    .filtered(`groups CONTAINS "${conversation.channel}"`)
-    .sorted([
-      ['isMe', true],
-      ['firstname', false],
-    ]);
+
+  const removeGroupChatMember = useCallback(
+    (contact: IContact) => {
+      realm.write(() => {
+        conversation.members = conversation.members.filter(
+          (member) => member !== contact.mobile,
+        );
+        realm.create<IContact>(
+          'Contact',
+          {
+            mobile: contact.mobile,
+            groups: contact.groups
+              .split(',')
+              .filter((channel) => channel !== conversation.channel)
+              .join(','),
+          },
+          UpdateMode.Modified,
+        );
+      });
+    },
+    [conversation.channel, conversation.members, realm],
+  );
+
+  const admins = (conversation?.admins ?? []).reduce<{[key: string]: boolean}>(
+    (acc, curr) => {
+      return {
+        ...acc,
+        [curr]: true,
+      };
+    },
+    {},
+  );
+
+  const isAdmin = useCallback(
+    (contact: IContact) => {
+      return admins[contact.mobile];
+    },
+    [admins],
+  );
+
+  const onParticipantClick = useCallback(
+    (contact: IContact) => {
+      const selectParticipantOptions: ModalPropsList['options']['options'] = [];
+      if (conversation.type === 'group') {
+        if (isCreator) {
+          if (!isAdmin(contact)) {
+            selectParticipantOptions.push({
+              text: 'Make group admin',
+              onPress: async () => {
+                closeOptionsModal();
+                const closeModal = openModal('loading', {
+                  text: 'Adding...',
+                });
+                try {
+                  const apiService = getApiService();
+                  await apiService.setGroupAdmin(conversation.id, contact.id);
+                  realm.write(() => {
+                    conversation.admins?.push(contact.mobile);
+                  });
+                } catch (e) {
+                  handleError(e);
+                } finally {
+                  closeModal();
+                }
+              },
+            });
+          } else {
+            selectParticipantOptions.push({
+              text: 'Remove group admin',
+              onPress: async () => {
+                closeOptionsModal();
+                const closeModal = openModal('loading', {
+                  text: 'Removing...',
+                });
+                try {
+                  const apiService = getApiService();
+                  await apiService.setGroupAdmin(
+                    conversation.id,
+                    contact.id,
+                    false,
+                  );
+                  realm.write(() => {
+                    conversation.admins = conversation.admins?.filter(
+                      (mobile) => mobile !== contact.mobile,
+                    );
+                  });
+                } catch (e) {
+                  handleError(e);
+                } finally {
+                  closeModal();
+                }
+              },
+            });
+          }
+          selectParticipantOptions.push({
+            text: `Remove ${contact.fullName}`,
+            onPress: () => {
+              closeOptionsModal();
+              Alert.alert(
+                '',
+                `Remove ${contact.fullName} from "${conversation.name}"?`,
+                [
+                  {text: 'Cancel'},
+                  {
+                    text: 'OK',
+                    onPress: async () => {
+                      const closeModal = openModal('loading', {
+                        text: 'Removing...',
+                      });
+                      try {
+                        const apiService = getApiService();
+                        await apiService.removeGroupChatMember(
+                          conversation.id,
+                          contact.id,
+                        );
+                        removeGroupChatMember(contact);
+                      } catch (e) {
+                        handleError(e);
+                      } finally {
+                        closeModal();
+                      }
+                    },
+                  },
+                ],
+              );
+            },
+          });
+        }
+      }
+      const closeOptionsModal = openModal('options', {
+        options: selectParticipantOptions,
+      });
+    },
+    [
+      conversation.admins,
+      conversation.id,
+      conversation.name,
+      conversation.type,
+      handleError,
+      isAdmin,
+      isCreator,
+      openModal,
+      realm,
+      removeGroupChatMember,
+    ],
+  );
+
   const renderView = useCallback(() => {
     return (
       <View>
@@ -213,68 +429,100 @@ const ChatDetailsScreen = ({
               </View>
             </Touchable>
           )}
-        <View style={applyStyles('pt-lg bg-white elevation-1 mb-md')}>
-          <Text style={applyStyles('mx-lg text-base font-semibold mb-sm')}>
-            {conversation.members.length} participants
-          </Text>
-          <ContactsList
-            contacts={participants}
-            getContactItemTitle={(item) => {
-              if (item.isMe) {
-                return 'You';
+        {conversation.type === 'group' && (
+          <View style={applyStyles('pt-lg bg-white elevation-1 mb-md')}>
+            <Text style={applyStyles('mx-lg text-base font-semibold mb-sm')}>
+              {conversation.members.length} participants
+            </Text>
+            <ContactsList
+              contacts={participants}
+              getContactItemRight={(contact) =>
+                isAdmin(contact) ? (
+                  <Text
+                    style={applyStyles(
+                      'border-1 border-green rounded-4 py-2 px-6 text-green',
+                    )}>
+                    Group Admin
+                  </Text>
+                ) : null
               }
-              return item.fullName;
-            }}
-            onContactItemClick={() => {
-              openModal('options', {
-                options: [
-                  {
-                    text: 'Make Admin',
-                    onPress: () => {},
-                  },
-                  {
-                    text: 'Remove',
-                    onPress: () => {},
-                  },
-                ],
-              });
-            }}
-          />
-        </View>
-        <Touchable
-          onPress={() => {
-            Alert.alert('', `Exit "${conversation.name}" group?`, [
-              {text: 'Cancel'},
-              {text: 'Exit'},
-            ]);
-          }}>
-          <View
-            style={applyStyles(
-              'p-sm bg-white elevation-1 mb-md flex-row items-center',
-            )}>
-            <View
-              style={applyStyles('center mx-xs mr-md w-48 h-48 rounded-24')}>
-              <Icon
-                type="ionicons"
-                style={applyStyles('text-gray-200')}
-                size={28}
-                name="md-exit"
-              />
-            </View>
-            <Text style={applyStyles('text-lg font-semibold')}>Exit group</Text>
+              shouldClickContactItem={(item) => !item.isMe}
+              getContactItemTitle={(item) => {
+                if (item.isMe) {
+                  return 'You';
+                }
+                return item.fullName;
+              }}
+              onContactItemClick={onParticipantClick}
+            />
           </View>
-        </Touchable>
+        )}
+        {conversation.type === 'group' && (
+          <Touchable
+            onPress={() => {
+              Alert.alert('', `Exit "${conversation.name}" group?`, [
+                {text: 'Cancel'},
+                {
+                  text: 'Exit',
+                  onPress: async () => {
+                    const closeModal = openModal('loading', {
+                      text: 'Removing...',
+                    });
+                    try {
+                      const apiService = getApiService();
+                      const me = getAuthService().getUser();
+                      if (!me) {
+                        return;
+                      }
+                      await apiService.leaveGroupChat(conversation.id, me.id);
+                      const myContact = participants.filtered(
+                        `mobile = "${me.mobile}"`,
+                      )[0];
+                      removeGroupChatMember(myContact);
+                    } catch (e) {
+                      handleError(e);
+                    } finally {
+                      closeModal();
+                    }
+                  },
+                },
+              ]);
+            }}>
+            <View
+              style={applyStyles(
+                'p-sm bg-white elevation-1 mb-md flex-row items-center',
+              )}>
+              <View
+                style={applyStyles('center mx-xs mr-md w-48 h-48 rounded-24')}>
+                <Icon
+                  type="ionicons"
+                  style={applyStyles('text-primary')}
+                  size={28}
+                  name="md-exit"
+                />
+              </View>
+              <Text style={applyStyles('text-lg font-semibold text-primary')}>
+                Exit group
+              </Text>
+            </View>
+          </Touchable>
+        )}
       </View>
     );
   }, [
     conversation.description,
+    conversation.id,
     conversation.members.length,
     conversation.name,
     conversation.type,
     editTextProperty,
+    handleError,
+    isAdmin,
     isCreator,
+    onParticipantClick,
     openModal,
     participants,
+    removeGroupChatMember,
   ]);
   return (
     <SafeAreaView>

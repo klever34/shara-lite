@@ -1,13 +1,13 @@
 {
   "name": "shara",
-  "version": "0.1.15",
+  "version": "0.1.15-feature.group-chat-crud+build.981",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "eslint app --ext .js,.jsx,.ts,.tsx --fix"
+    "lint": "tsc && eslint app --ext .js,.jsx,.ts,.tsx --fix"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.11.0",

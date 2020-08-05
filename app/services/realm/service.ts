@@ -2,9 +2,10 @@ import Realm from 'realm';
 import {IContact, IConversation, IMessage} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
-import {decrypt} from '../../helpers/utils';
+import {decrypt, generateUniqueId} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
+import compact from 'lodash/compact';
 
 export interface IRealmService {
   getInstance(): Realm | null;
@@ -281,13 +282,23 @@ export class RealmService implements IRealmService {
         const groupChatMembers = await this.apiService.getGroupMembers(
           custom.id,
         );
-        members = groupChatMembers.map(({user: {mobile}}) => mobile);
+        const admins = compact(
+          groupChatMembers
+            .filter((member) => {
+              return !!member.is_admin;
+            })
+            .map((member) => member.user?.mobile),
+        );
+        members = compact(
+          groupChatMembers.map((member) => member.user?.mobile),
+        );
         return {
           id: String(custom.id),
           creatorId: String(custom.creatorId),
           creatorMobile: decrypt(custom.creatorMobile),
           name: channelMetadata.name ?? '',
           type: 'group',
+          admins,
           members,
           channel,
         };
@@ -298,6 +309,7 @@ export class RealmService implements IRealmService {
         const user = this.authService.getUser();
         const sender = members.find((member) => member !== user?.mobile) ?? '';
         return {
+          id: generateUniqueId(),
           name: sender,
           type: custom.type ?? '1-1',
           members,

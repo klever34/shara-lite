@@ -5,7 +5,7 @@ import {colors} from '../styles';
 import Icon from './Icon';
 import Touchable from './Touchable';
 
-type FAButtonProps = {
+export type FAButtonProps = {
   style?: ViewStyle;
   color?: string;
   iconType?:

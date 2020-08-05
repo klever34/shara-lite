@@ -14,6 +14,11 @@ import {colors} from '../../../../styles';
 import {applyStyles} from '../../../../helpers/utils';
 import {Button} from '../../../../components';
 import {getCustomers} from '../../../../services/CustomerService';
+import {ICustomer} from '../../../../models';
+
+type CustomerItemProps = {
+  item: ICustomer;
+};
 
 export const Receipts = (props: any) => {
   const {onCustomerSelect, onModalClose} = props;
@@ -26,10 +31,10 @@ export const Receipts = (props: any) => {
   const handleCustomerSearch = useCallback(
     (searchedText: string) => {
       setSearchInputValue(searchedText);
-      const sort = (item: Customer, text: string) => {
+      const sort = (item: ICustomer, text: string) => {
         return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
       };
-      var ac = customers.filter((item: Customer) => {
+      const ac = customers.filter((item: ICustomer) => {
         return sort(item, searchedText);
       });
       setMyCustomers(ac);
@@ -42,7 +47,7 @@ export const Receipts = (props: any) => {
   }, [onModalClose]);
 
   const handleSelectCustomer = useCallback(
-    (item?: Customer) => {
+    (item?: ICustomer) => {
       onCustomerSelect({customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
