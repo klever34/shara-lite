@@ -77,7 +77,7 @@ const SelectGroupMembersScreen = ({
                         text={contact.fullName}
                         style={applyStyles('m-sm')}
                         indicator={{
-                          style: applyStyles('bg-gray-300'),
+                          style: applyStyles('bg-gray-200'),
                           icon: {
                             type: 'material-icons',
                             name: 'close',
