@@ -29,7 +29,6 @@ export class InventoryStock implements Partial<InventoryStock> {
       name: 'string',
       sku: 'string',
       quantity: 'int',
-      price: 'double',
       cost_price: 'double?',
       total_cost_price: 'double?',
       weight: 'string?',
