@@ -38,7 +38,7 @@ export const addNewStocks = ({
         name: stockItem.product.name,
         sku: stockItem.product.sku,
         weight: stockItem.product.weight,
-        quantity: parseInt(stockItem.quantity),
+        quantity: parseInt(stockItem.quantity, 10),
         product: stockItem.product,
         supplier: stockItem.supplier,
         ...getBaseModelValues(),

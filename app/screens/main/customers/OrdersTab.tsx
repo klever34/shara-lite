@@ -11,11 +11,11 @@ import EmptyState from '../../../components/EmptyState';
 const OrdersTab = () => {
   const navigation = useNavigation();
 
-  const handleViewDetails = (order: Order) => {
+  const handleViewDetails = (order: any) => {
     navigation.navigate('OrderDetails', {order});
   };
 
-  const renderOrderItem = ({item: order}: {item: Order}) => {
+  const renderOrderItem = ({item: order}: {item: any}) => {
     return (
       <View style={styles.creditItem}>
         <ActionCard

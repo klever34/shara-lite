@@ -21,8 +21,8 @@ export const ViewProductDetails = ({
 
   useFocusEffect(
     useCallback(() => {
-      const product = getProduct({realm, productId});
-      setProduct(product);
+      const productFromDB = getProduct({realm, productId});
+      setProduct(productFromDB);
       const unsubscribe = () => setProduct({} as IProduct);
 
       return () => unsubscribe();

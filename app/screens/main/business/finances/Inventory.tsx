@@ -22,8 +22,8 @@ export function MyInventory() {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const productsDB = getProducts({realm});
-      setPoducts(productsDB);
+      const productsFromDB = getProducts({realm});
+      setPoducts(productsFromDB);
     });
     return unsubscribe;
   }, [navigation, realm]);

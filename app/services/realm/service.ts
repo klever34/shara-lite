@@ -6,6 +6,7 @@ import {decrypt, generateUniqueId} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
 import compact from 'lodash/compact';
+import {ChannelCustom} from '../../../types/app';
 
 export interface IRealmService {
   getInstance(): Realm | null;
@@ -305,9 +306,10 @@ export class RealmService implements IRealmService {
       } else {
         members = custom.members
           .split(',')
-          .map((encryptedMember) => decrypt(encryptedMember));
+          .map((encryptedMember: any) => decrypt(encryptedMember));
         const user = this.authService.getUser();
-        const sender = members.find((member) => member !== user?.mobile) ?? '';
+        const sender =
+          members.find((member: any) => member !== user?.mobile) ?? '';
         return {
           id: generateUniqueId(),
           name: sender,

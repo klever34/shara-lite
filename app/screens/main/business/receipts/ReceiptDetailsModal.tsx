@@ -24,6 +24,7 @@ import {
 } from './ReceiptSummary';
 import {updateReceipt} from '../../../../services/ReceiptService';
 import {useRealm} from '../../../../services/realm';
+import {Customer} from '../../../../../types/app';
 
 type Props = {
   visible: boolean;

@@ -21,7 +21,7 @@ export const saveReceiptItem = ({
       name: receiptItem.product.name,
       sku: receiptItem.product.sku,
       weight: receiptItem.product.weight,
-      quantity: parseInt(quantity),
+      quantity: parseInt(quantity, 10),
       price: parseFloat(price),
       total_price: parseFloat(quantity) * parseFloat(price),
       product: receiptItem.product,
