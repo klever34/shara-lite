@@ -84,7 +84,7 @@ workflows:
     jobs:
       - checkout_code:
           context: shara-qa
-          merged: false
+          merged: true
           commit: false
           filters:
             branches:
