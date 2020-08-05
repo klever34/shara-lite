@@ -1,16 +1,19 @@
+import {IProduct} from '../app/models/Product';
+import {ISupplier} from '../app/models/Supplier';
+
 type Falsy = undefined | null | false;
 
 type User = {
-  id: number
-  firstname: string
-  lastname: string
-  mobile: string
-  country_code: string
-  created_at: string
-  updated_at: string
-  currency_code: string
-  businesses: Business[]
-}
+  id: number;
+  firstname: string;
+  lastname: string;
+  mobile: string;
+  country_code: string;
+  created_at: string;
+  updated_at: string;
+  currency_code: string;
+  businesses: Business[];
+};
 
 type Business = {
   id: string;
@@ -71,10 +74,17 @@ type Product = {
 };
 
 type ReceiptItem = {
-  quantity: string
-  price: string
-  product: IProduct
-}
+  quantity: string;
+  price: string;
+  product: IProduct;
+};
+
+type InventoryStockItem = {
+  quantity: string;
+  cost_price?: string;
+  supplier: ISupplier;
+  product: IProduct;
+};
 
 type Customer = {
   id: string;
