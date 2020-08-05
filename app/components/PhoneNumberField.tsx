@@ -1,6 +1,8 @@
+import isEmpty from 'lodash/isEmpty';
 import React from 'react';
 import {StyleSheet, TextInput, TextInputProperties, View} from 'react-native';
-import CountryPicker from 'react-native-country-picker-modal';
+import CountryPicker, {Country} from 'react-native-country-picker-modal';
+import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import Icon from './Icon';
 
@@ -19,17 +21,9 @@ export const PhoneNumberField = (props: Props) => {
   const {value, countryCode, onChangeText, ...rest} = props;
   const [phoneNumber, setPhoneNumber] = React.useState(value || '');
   const [callingCode, setCallingCode] = React.useState(countryCode || '234');
-  const [country, setCountry] = React.useState<any>({
-    cca2: 'NG',
-    currency: ['NGN'],
-    callingCode: ['234'],
-    region: 'Africa',
-    subregion: 'Western Africa',
-    flag: 'flag-ng',
-    name: 'Nigeria',
-  });
+  const [country, setCountry] = React.useState<Country>({} as Country);
 
-  const onSelect = (selectCountry: any) => {
+  const onSelect = (selectCountry: Country) => {
     const selectCountryCode = selectCountry.callingCode[0];
     setCallingCode(selectCountryCode);
     setCountry(selectCountry);
@@ -41,9 +35,11 @@ export const PhoneNumberField = (props: Props) => {
     onChangeText({code: callingCode, number: numberInput});
   };
 
+  const pickerStyles = isEmpty(country) ? {top: 6} : {top: 3};
+
   return (
     <View style={styles.container}>
-      <View style={styles.picker}>
+      <View style={applyStyles(styles.picker, pickerStyles)}>
         <CountryPicker
           withModal
           withEmoji
@@ -51,14 +47,16 @@ export const PhoneNumberField = (props: Props) => {
           withCallingCode
           withFlag={false}
           onSelect={onSelect}
-          countryCode={country.cca2}
           withCallingCodeButton
+          // @ts-ignore
+          placeholder="Country"
+          countryCode={country.cca2}
           containerButtonStyle={styles.pickerButton}
         />
         <Icon
           size={16}
-          type="ionicons"
-          name="ios-arrow-down"
+          type="feathericons"
+          name="chevron-down"
           color={colors['gray-50']}
           style={styles.arrowDownIcon}
         />
@@ -88,17 +86,18 @@ const styles = StyleSheet.create({
     width: '100%',
     borderBottomWidth: 1,
     fontFamily: 'Rubik-Regular',
-    borderColor: colors['gray-200'],
+    borderColor: colors['gray-300'],
   },
   picker: {
-    top: 4,
+    marginBottom: 0,
     paddingRight: 12,
+    paddingBottom: 0,
   },
   pickerButton: {
     width: 100,
-    paddingBottom: 12,
+    paddingBottom: 15,
     borderBottomWidth: 1,
-    borderColor: colors['gray-200'],
+    borderColor: colors['gray-300'],
   },
   arrowDownIcon: {
     position: 'absolute',

@@ -2,10 +2,15 @@ import {IMessage} from './Message';
 
 export interface IConversation {
   channel: string;
-  title: string;
-  lastMessage?: IMessage;
   type: '1-1' | 'group';
+  lastMessage?: IMessage;
+  admins?: string[];
   members: string[];
+  name: string;
+  description?: string;
+  id: string;
+  creatorId?: string;
+  creatorMobile?: string;
 }
 
 export class Conversation implements Partial<IConversation> {
@@ -14,10 +19,15 @@ export class Conversation implements Partial<IConversation> {
     primaryKey: 'channel',
     properties: {
       channel: 'string',
-      title: 'string',
-      lastMessage: 'Message?',
       type: 'string',
+      lastMessage: 'Message?',
+      admins: 'string?[]',
       members: 'string[]',
+      name: 'string',
+      description: 'string?',
+      id: 'string',
+      creatorId: 'string?',
+      creatorMobile: 'string?',
     },
   };
 }

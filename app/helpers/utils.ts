@@ -4,11 +4,12 @@ import promiseRetry from 'promise-retry';
 import {globalStyles} from '../styles';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
+import {TextStyle, ViewStyle} from 'react-native';
 
 export const generateUniqueId = () => uuidV4();
 
 export const applyStyles = (
-  ...styles: ({[key: string]: any} | string)[]
+  ...styles: ({[key: string]: any} | ViewStyle | TextStyle | string | Falsy)[]
 ): {[key: string]: any} =>
   styles.reduce<{[key: string]: any}>((acc, curr) => {
     if (typeof curr === 'string') {
@@ -23,19 +24,7 @@ export const applyStyles = (
     return {...acc, ...curr};
   }, {});
 
-export const handleFetchErrors = async <T extends any>(
-  response: Response,
-): Promise<T> => {
-  if (!response.ok) {
-    const jsonResponse = await response.json();
-    return Promise.reject(
-      new Error(jsonResponse.mesage || jsonResponse.message),
-    );
-  }
-  return (await response.json()) as Promise<T>;
-};
-
-export const numberWithCommas = (x: number) =>
+export const numberWithCommas = (x: number | undefined) =>
   x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
 
 export const retryPromise = (

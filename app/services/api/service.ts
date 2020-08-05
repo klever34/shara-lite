@@ -2,7 +2,6 @@ import flatten from 'lodash/flatten';
 import {IContact} from '../../models';
 import Config from 'react-native-config';
 import queryString from 'query-string';
-import {handleFetchErrors} from '../../helpers/utils';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 
@@ -14,7 +13,16 @@ export type Requester = {
   post: <T extends any = any>(
     url: string,
     data: {[key: string]: any},
+    config?: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
+  patch: <T extends any = any>(
+    url: string,
+    data: {[key: string]: any},
+  ) => Promise<ApiResponse<T>>;
+  delete: <T extends any = any>(
+    url: string,
+    data: {[key: string]: any},
+  ) => Promise<void>;
 };
 
 export interface IApiService {
@@ -41,46 +49,112 @@ export interface IApiService {
     members: IContact[],
   ): Promise<GroupChat & {members: IContact[]}>;
 
+  updateGroupChat(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+    },
+  ): Promise<GroupChat>;
+
   addGroupChatMembers(
-    groupChatId: number,
+    groupChatId: number | string,
     members: IContact[],
   ): Promise<GroupChatMember[]>;
+
+  removeGroupChatMember(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<void>;
+
+  leaveGroupChat(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<void>;
+
+  setGroupAdmin(
+    groupChatId: number | string,
+    userId: number | string,
+    isAdmin?: boolean,
+  ): Promise<any>;
+
+  businessSetup(payload: FormData): Promise<ApiResponse>;
 }
 
 export class ApiService implements IApiService {
-  public requester: Requester;
   constructor(
     private authService: IAuthService,
     private storageService: IStorageService,
-  ) {
-    this.requester = {
-      get: <T extends any = any>(
-        url: string,
-        params: {[key: string]: string | number},
-      ) => {
-        return fetch(
-          `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${authService.getToken() ?? ''}`,
-              'Content-Type': 'application/json',
-            },
-          },
-        ).then((...args) => handleFetchErrors<T>(...args));
-      },
-      post: <T extends any = any>(url: string, data: {[key: string]: any}) => {
-        return fetch(`${Config.API_BASE_URL}${url}`, {
-          method: 'POST',
+  ) {}
+
+  public requester: Requester = {
+    get: <T extends any = any>(
+      url: string,
+      params: {[key: string]: string | number},
+    ) => {
+      return fetch(
+        `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
+        {
+          method: 'GET',
           headers: {
-            Authorization: `Bearer ${authService.getToken() ?? ''}`,
+            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify(data),
-        }).then((...args) => handleFetchErrors<T>(...args));
-      },
-    };
-  }
+        },
+      ).then((...args) => this.handleFetchErrors<T>(...args) as T);
+    },
+    post: <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+      config?: {[key: string]: any},
+    ) => {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+          'Content-Type': 'application/json',
+          ...config?.headers,
+        },
+        body: config ? data : JSON.stringify(data),
+      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+    },
+    patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
+        method: 'PATCH',
+        headers: {
+          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+    },
+    delete: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+      return fetch(`${Config.API_BASE_URL}${url}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      }).then((...args) => this.handleFetchErrors<T>(...args));
+    },
+  };
+
+  private handleFetchErrors = async <T extends any>(
+    response: Response,
+  ): Promise<T | void> => {
+    if (!response.ok) {
+      const jsonResponse = await response.json();
+      if (jsonResponse.message.includes('E_INVALID_JWT_TOKEN')) {
+        this.authService.logOut();
+      }
+      return Promise.reject(new Error(jsonResponse.message));
+    }
+    if (response.status === 204) {
+      return;
+    }
+    return (await response.json()) as Promise<T>;
+  };
 
   public async register(payload: {
     firstname: string;
@@ -125,24 +199,28 @@ export class ApiService implements IApiService {
       });
       return channelName;
     } catch (e) {
-      console.log('createOneOnOneChannel Error: ', e);
       throw e;
     }
   }
 
-  getUserDetails(mobiles: string[]): Promise<User[]> {
-    const sizePerRequest = 20;
-    const requestNo = Math.ceil(mobiles.length / sizePerRequest);
-    return Promise.all(
-      Array.from({length: requestNo}).map((_, index) => {
-        return this.requester.post<{users: User[]}>('/users/check', {
-          mobiles: mobiles.slice(
-            sizePerRequest * index,
-            sizePerRequest * index + sizePerRequest,
-          ),
-        });
-      }),
-    ).then((responses) => flatten<User>(responses.map(({data}) => data.users)));
+  async getUserDetails(mobiles: string[]): Promise<User[]> {
+    try {
+      const sizePerRequest = 20;
+      const requestNo = Math.ceil(mobiles.length / sizePerRequest);
+      const responses = await Promise.all(
+        Array.from({length: requestNo}).map((_, index) => {
+          return this.requester.post<{users: User[]}>('/users/check', {
+            mobiles: mobiles.slice(
+              sizePerRequest * index,
+              sizePerRequest * index + sizePerRequest,
+            ),
+          });
+        }),
+      );
+      return flatten<User>(responses.map(({data}) => data.users));
+    } catch (e) {
+      throw e;
+    }
   }
 
   async getGroupMembers(groupId: number) {
@@ -157,7 +235,6 @@ export class ApiService implements IApiService {
       );
       return groupChatMembers;
     } catch (e) {
-      console.log('getGroupMembers Error: ', e);
       throw e;
     }
   }
@@ -172,7 +249,27 @@ export class ApiService implements IApiService {
       await this.addGroupChatMembers(groupChat.id, members);
       return groupChat;
     } catch (e) {
-      console.log('createGroupChat Error: ', e);
+      throw e;
+    }
+  }
+
+  async updateGroupChat(
+    id: string,
+    data: {
+      name?: string;
+      description?: string;
+    },
+  ): Promise<GroupChat> {
+    try {
+      const {
+        data: {groupChat},
+      } = await this.requester.patch<{groupChat: GroupChat}>(
+        `/group-chat/${id}`,
+        data,
+      );
+      return groupChat;
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -189,7 +286,74 @@ export class ApiService implements IApiService {
       );
       return groupChatMembers;
     } catch (e) {
-      console.log('addGroupChatMembers Error: ', e);
+      throw e;
+    }
+  }
+
+  async businessSetup(payload: FormData) {
+    try {
+      const fetchResponse = await this.requester.post('/business', payload, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      const {
+        data: {business},
+      }: {data: {business: Business}} = fetchResponse;
+
+      let user = this.authService.getUser() as User;
+      user = {...user, businesses: [business]};
+      this.authService.setUser(user);
+      await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async removeGroupChatMember(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<any> {
+    try {
+      await this.requester.delete<{
+        groupChatMembers: GroupChatMember[];
+      }>('/group-chat-member', {group_chat_id: groupChatId, user_id: userId});
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async leaveGroupChat(
+    groupChatId: number | string,
+    userId: number | string,
+  ): Promise<any> {
+    try {
+      await this.requester.delete<{
+        groupChatMembers: GroupChatMember[];
+      }>('/group-chat-member/leave', {
+        group_chat_id: groupChatId,
+        user_id: userId,
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async setGroupAdmin(
+    groupChatId: number | string,
+    userId: number | string,
+    isAdmin: boolean = true,
+  ): Promise<any> {
+    try {
+      await this.requester.patch<{
+        groupChatMembers: GroupChatMember[];
+      }>('/group-chat-member/admin', {
+        group_chat_id: groupChatId,
+        user_id: userId,
+        is_admin: isAdmin,
+      });
+    } catch (e) {
       throw e;
     }
   }

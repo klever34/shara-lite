@@ -1,4 +1,6 @@
 import {IStorageService} from '../storage';
+import {IPubNubService} from '../pubnub';
+import {INavigationService} from '../navigation';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -20,7 +22,11 @@ export class AuthService implements IAuthService {
   private user: User | null = null;
   private token: string | null = null;
 
-  constructor(private storageService: IStorageService) {}
+  constructor(
+    private storageService: IStorageService,
+    private pubNubService: IPubNubService,
+    private navigationService: INavigationService,
+  ) {}
 
   public async initialize(): Promise<void> {
     try {
@@ -32,7 +38,9 @@ export class AuthService implements IAuthService {
         this.setUser(user);
         this.setToken(token);
       }
-    } catch (e) {}
+    } catch (e) {
+      throw e;
+    }
   }
 
   public getUser(): User | null {
@@ -56,8 +64,16 @@ export class AuthService implements IAuthService {
   }
 
   public async logOut() {
-    this.user = null;
-    this.token = null;
-    await this.storageService.clear();
+    try {
+      if (this.isLoggedIn()) {
+        this.user = null;
+        this.token = null;
+        await this.storageService.clear();
+        this.pubNubService.getInstance()?.unsubscribeAll();
+        this.navigationService.goToAuth();
+      }
+    } catch (e) {
+      throw e;
+    }
   }
 }

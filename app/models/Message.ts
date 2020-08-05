@@ -1,12 +1,12 @@
 export interface IMessage {
   id: string;
   channel: string;
-  created_at: Date;
   content: string;
   author: string;
-  sent_timetoken?: string;
-  received_timetoken?: string;
+  timetoken?: string;
+  delivered_timetoken?: string;
   read_timetoken?: string;
+  created_at: Date;
 }
 
 export class Message implements Partial<IMessage> {
@@ -16,12 +16,12 @@ export class Message implements Partial<IMessage> {
     properties: {
       id: 'string',
       channel: 'string',
-      created_at: 'date',
       content: 'string',
       author: 'string',
-      sent_timetoken: 'string?',
-      received_timetoken: 'string?',
+      timetoken: 'string?',
+      delivered_timetoken: 'string?',
       read_timetoken: 'string?',
+      created_at: 'date',
     },
   };
 }

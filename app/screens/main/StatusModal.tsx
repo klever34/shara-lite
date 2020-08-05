@@ -5,7 +5,6 @@ import React, {useCallback} from 'react';
 import {
   Image,
   ImageProps,
-  Platform,
   SafeAreaView,
   StyleSheet,
   Text,
@@ -78,15 +77,10 @@ const StatusModal = ({
       {status === 'error' && (
         <Touchable onPress={handleCloseModal} style={styles.closeButton}>
           <Icon
-            type="ionicons"
-            name={
-              Platform.select({
-                android: 'md-close',
-                ios: 'ios-close',
-              }) as string
-            }
-            color={type.closeButtonColor}
             size={16}
+            name="plus"
+            type="feathericons"
+            color={type.closeButtonColor}
           />
         </Touchable>
       )}

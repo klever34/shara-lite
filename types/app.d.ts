@@ -1,3 +1,5 @@
+type Falsy = undefined | null | false;
+
 type User = {
   id: number;
   firstname: string;
@@ -6,10 +8,23 @@ type User = {
   country_code: string;
   created_at: string;
   updated_at: string;
+  businesses: Business[];
+};
+
+type Business = {
+  id: string;
+  name: string;
+  user_id: string;
+  address?: string;
+  created_at: string;
+  updated_at: string;
+  profile_image_url?: string | null;
+  signature_image_url?: string | null;
 };
 
 type GroupChat = {
   name: string;
+  description: string | null;
   uuid: string;
   created_by: number;
   created_at: string;
@@ -21,11 +36,11 @@ type GroupChatMember = {
   id: number;
   user_id: number;
   group_chat_id: number;
-  is_admin: boolean;
+  is_admin?: boolean;
   created_at: string;
   updated_at: string;
   is_creator: boolean;
-  user: User;
+  user?: User;
 };
 
 type OneOnOneChannelCustom = {
@@ -65,9 +80,6 @@ type ApiResponse<T extends any = any> = {
   data: any;
   message: string;
 };
-type CustomerItemProps = {
-  item: Customer;
-};
 type CreditDetails = {
   id: string;
   amount: number;
@@ -85,13 +97,13 @@ type Order = {
   placedOn: string;
   completedOn: string;
 };
+
 type Payment = {
-  id?: string;
   amount: number;
-  receivedBy?: string;
-  paymentMethod: string;
-  paidOn?: string;
+  method: string;
   note?: string;
 };
 
+// @ts-ignore
 declare module 'react-native-signature-capture';
+declare module 'react-native-bluetooth-escpos-printer';

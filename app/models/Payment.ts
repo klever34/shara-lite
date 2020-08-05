@@ -1,16 +1,16 @@
 import {ICustomer} from './Customer';
+import {IReceipt} from './Receipt';
+import {BaseModelInterface, baseModelSchema} from './baseSchema';
 
-export interface IPayment {
-  id: string;
+export interface IPayment extends BaseModelInterface {
+  amount_paid: number;
+  type: string;
+  method: string;
+  note?: string;
   customer_name?: string;
   customer_mobile?: string;
   customer?: ICustomer;
-  type: string;
-  amount_paid: number;
-  total_amount: number;
-  tax: number;
-  credit_amount: number;
-  created_at: Date;
+  receipt?: IReceipt;
 }
 
 export const modelName = 'Payment';
@@ -20,16 +20,15 @@ export class Payment implements Partial<IPayment> {
     name: 'Payment',
     primaryKey: 'id',
     properties: {
-      id: 'string',
+      ...baseModelSchema,
+      amount_paid: 'double',
+      type: 'string',
+      method: 'string',
+      note: 'string?',
       customer_name: 'string?',
       customer_mobile: 'string?',
       customer: 'Customer?',
-      type: 'string',
-      amount_paid: 'double',
-      total_amount: 'double',
-      tax: 'double',
-      credit_amount: 'double',
-      created_at: 'date',
+      receipt: 'Receipt?',
     },
   };
 }

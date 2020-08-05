@@ -5,8 +5,8 @@ import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {applyStyles, numberWithCommas} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import {orders} from '../data.json';
-import ActionCard from './ActionCard';
+import {ActionCard} from '../../../components';
+import EmptyState from '../../../components/EmptyState';
 
 const OrdersTab = () => {
   const navigation = useNavigation();
@@ -19,7 +19,6 @@ const OrdersTab = () => {
     return (
       <View style={styles.creditItem}>
         <ActionCard
-          buttonIcon="eye"
           buttonText="view details"
           onClick={() => handleViewDetails(order)}>
           <View style={applyStyles('pb-sm')}>
@@ -84,9 +83,17 @@ const OrdersTab = () => {
   return (
     <SafeAreaView style={styles.container}>
       <FlatList
-        data={orders}
+        data={[]}
         renderItem={renderOrderItem}
         keyExtractor={(item) => item.id}
+        ListEmptyComponent={
+          <EmptyState
+            heading="Coming soon"
+            style={applyStyles({marginTop: 32})}
+            source={require('../../../assets/images/coming-soon.png')}
+            text="We’re working on this page right now, it’ll be available shortly."
+          />
+        }
       />
     </SafeAreaView>
   );

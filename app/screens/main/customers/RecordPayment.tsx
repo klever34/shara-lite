@@ -1,6 +1,6 @@
 import React, {useState, useCallback} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
-import CreditPaymentForm from './CreditPaymentForm';
+import {CreditPaymentForm} from '../../../components';
 import {useNavigation} from '@react-navigation/native';
 
 const RecordPayment = () => {
@@ -12,7 +12,6 @@ const RecordPayment = () => {
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
-        console.log(payload);
         callback();
         navigation.navigate('CreditsTab');
       }, 300);

@@ -1,4 +1,4 @@
-import {dimensions, spacing} from './variables';
+import {dimensions, spacing, colors} from './variables';
 import {StyleSheet} from 'react-native';
 
 export const globalStyles: {[key: string]: any} = StyleSheet.create({
@@ -10,6 +10,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'justify-center': {
     justifyContent: 'center',
+  },
+  'justify-end': {
+    justifyContent: 'flex-end',
   },
   'justify-space-between': {
     justifyContent: 'space-between',
@@ -29,6 +32,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'flex-1': {
     flex: 1,
+  },
+  relative: {
+    position: 'relative',
+  },
+  absolute: {
+    position: 'absolute',
   },
   'w-full': {
     width: '100%',
@@ -110,6 +119,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
       ...acc,
+      // padding
       [`p-${curr}`]: {padding: spacing[curr]},
       [`py-${curr}`]: {paddingVertical: spacing[curr]},
       [`px-${curr}`]: {paddingHorizontal: spacing[curr]},
@@ -117,11 +127,8 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`pb-${curr}`]: {paddingBottom: spacing[curr]},
       [`pl-${curr}`]: {paddingLeft: spacing[curr]},
       [`pr-${curr}`]: {paddingRight: spacing[curr]},
-    };
-  }, {}),
-  ...Object.keys(spacing).reduce((acc, curr) => {
-    return {
-      ...acc,
+
+      // margin
       [`m-${curr}`]: {margin: spacing[curr]},
       [`my-${curr}`]: {marginVertical: spacing[curr]},
       [`mx-${curr}`]: {marginHorizontal: spacing[curr]},
@@ -129,6 +136,40 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`mb-${curr}`]: {marginBottom: spacing[curr]},
       [`ml-${curr}`]: {marginLeft: spacing[curr]},
       [`mr-${curr}`]: {marginRight: spacing[curr]},
+
+      // height
+      [`h-${curr}`]: {height: spacing[curr]},
+
+      // width
+      [`w-${curr}`]: {width: spacing[curr]},
+
+      // border
+      [`rounded-${curr}`]: {borderRadius: spacing[curr]},
+      [`border-${curr}`]: {borderWidth: spacing[curr]},
+
+      // positions
+      [`top-${curr}`]: {top: spacing[curr]},
+      [`-top-${curr}`]: {top: spacing[curr] * -1},
+      [`right-${curr}`]: {right: spacing[curr]},
+      [`-right-${curr}`]: {right: spacing[curr] * -1},
+      [`bottom-${curr}`]: {bottom: spacing[curr]},
+      [`-bottom-${curr}`]: {bottom: spacing[curr] * -1},
+      [`left-${curr}`]: {left: spacing[curr]},
+      [`-left-${curr}`]: {left: spacing[curr] * -1},
+    };
+  }, {}),
+  ...Object.keys(colors).reduce((acc, curr) => {
+    return {
+      ...acc,
+      [`bg-${curr}`]: {backgroundColor: colors[curr]},
+      [`text-${curr}`]: {color: colors[curr]},
+      [`border-${curr}`]: {borderColor: colors[curr]},
+    };
+  }, {}),
+  ...[0, 1, 2, 3, 4].reduce((acc, curr) => {
+    return {
+      ...acc,
+      [`elevation-${curr}`]: {elevation: curr},
     };
   }, {}),
 });
