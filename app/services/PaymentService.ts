@@ -3,6 +3,7 @@ import {ICustomer} from '../models';
 import {IPayment, modelName} from '../models/Payment';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
+import {Customer} from '../../types/app';
 
 export const getPayments = ({realm}: {realm: Realm}): IPayment[] => {
   return (realm.objects<IPayment>(modelName) as unknown) as IPayment[];

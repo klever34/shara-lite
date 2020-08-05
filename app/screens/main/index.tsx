@@ -5,12 +5,15 @@ import React, {useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
+import {Results} from 'realm';
 import getUuidByString from 'uuid-by-string';
+import {FAButtonProps} from '../../components';
 import {applyStyles} from '../../helpers/utils';
 import {IContact, IConversation} from '../../models';
 import {ICredit} from '../../models/Credit';
 import {ICreditPayment} from '../../models/CreditPayment';
 import {IPayment} from '../../models/Payment';
+import {IProduct} from '../../models/Product';
 import {
   getAuthService,
   getContactsService,
@@ -19,14 +22,21 @@ import {
 import {colors} from '../../styles';
 import {BusinessSetup} from '../BusinessSetup';
 import {
+  AddProduct,
+  AddSupplier,
   CreditDetails,
   CreditPaymentDetails,
+  DeliveryAgents,
+  EditProduct,
   Finances,
   NewReceipt,
   OverdueCredit,
-  Receipts,
+  ReceiveInventory,
   RecordCreditPayment,
+  Suppliers,
   TotalCredit,
+  ViewProductDetails,
+  ReceiveInventoryStock,
 } from './business';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
@@ -36,14 +46,16 @@ import SetGroupDetailsScreen from './chat/SetGroupDetailsScreen';
 import AddCustomer from './customers/AddCustomer';
 import CreditPayment from './customers/CreditPayment';
 import {CustomerCreditPaymentDetails} from './customers/CreditPaymentDetails';
+import {CustomerCreditDetails} from './customers/CustomerCreditDetails';
 import CustomerDetails from './customers/CustomerDetails';
+import {CustomerOverdueCredit} from './customers/CustomerOverdueCredit';
+import {CustomerTotalCredit} from './customers/CustomerTotalCredit';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {Results} from 'realm';
-import {FAButtonProps} from '../../components';
+import {ISupplier} from 'app/models/Supplier';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -51,7 +63,7 @@ export type MainStackParamList = {
   ChatDetails: IConversation;
   Contacts: undefined;
   Receipts: undefined;
-  NewReceipt: {customer: Customer};
+  NewReceipt: undefined;
   StatusModal: {status: string; text: string; onClick(): void};
   Finances: undefined;
   Inventory: undefined;
@@ -60,12 +72,13 @@ export type MainStackParamList = {
   AddCustomer: undefined;
   CustomerDetails: {customer: any};
   CustomerRecordCreditPayment: undefined;
-  CustomerCreditPayment: {creditDetails: CreditDetails};
-  CustomerPaymentDetails: {payment: Payment};
-  CustomerOrderDetails: {order: Order};
+  CustomerCreditPayment: {creditDetails: ICredit};
+  CustomerPaymentDetails: {payment: IPayment};
+  CustomerOrderDetails: {order: any};
   CustomerTotalCredit: {credits: ICredit[]};
   CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
   CustomerOverdueCredit: {credits: ICredit[]};
+  CustomerCreditDetails: {creditDetails: ICredit};
   BusinessSetup: undefined;
   SelectGroupMembers: {
     participants?: Results<IContact>;
@@ -80,8 +93,16 @@ export type MainStackParamList = {
   TotalCredit: {credits: ICredit[]};
   OverdueCredit: {credits: ICredit[]};
   RecordCreditPayment: undefined;
-  CreditDetails: {creditDetails: CreditDetails};
+  CreditDetails: {creditDetails: ICredit};
   CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};
+  AddProduct: undefined;
+  ViewProductDetails: {product: string};
+  EditProduct: {product: IProduct};
+  Suppliers: undefined;
+  ReceiveInventory: undefined;
+  DeliveryAgents: undefined;
+  AddSupplier: undefined;
+  ReceiveInventoryStock: {supplier: ISupplier};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -203,17 +224,6 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="Receipts"
-          component={Receipts}
-          options={{
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
-        />
-        <MainStack.Screen
           name="NewReceipt"
           component={NewReceipt}
           options={{
@@ -316,7 +326,7 @@ const MainScreens = ({navigation}: any) => {
         />
         <MainStack.Screen
           name="CustomerTotalCredit"
-          component={TotalCredit}
+          component={CustomerTotalCredit}
           options={{
             title: 'Total Credit',
             headerTitleStyle: {
@@ -328,9 +338,24 @@ const MainScreens = ({navigation}: any) => {
         />
         <MainStack.Screen
           name="CustomerOverdueCredit"
-          component={OverdueCredit}
+          component={CustomerOverdueCredit}
           options={{
             title: 'Overdue Credit',
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerCreditDetails"
+          component={CustomerCreditDetails}
+          options={{
+            title: 'Credit Payment',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
@@ -410,6 +435,126 @@ const MainScreens = ({navigation}: any) => {
           component={CreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="AddProduct"
+          component={AddProduct}
+          options={{
+            title: 'Add Product',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="EditProduct"
+          component={EditProduct}
+          options={{
+            title: 'Edit Product',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ViewProductDetails"
+          component={ViewProductDetails}
+          options={{
+            title: 'Product Details',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="Suppliers"
+          component={Suppliers}
+          options={{
+            title: 'Suppliers',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="DeliveryAgents"
+          component={DeliveryAgents}
+          options={{
+            title: 'Delivery Agents',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ReceiveInventory"
+          component={ReceiveInventory}
+          options={{
+            title: 'Receive Inventory',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ReceiveInventoryStock"
+          component={ReceiveInventoryStock}
+          options={{
+            title: 'Receive Inventory',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="AddSupplier"
+          component={AddSupplier}
+          options={{
+            title: 'Add Supplier',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',

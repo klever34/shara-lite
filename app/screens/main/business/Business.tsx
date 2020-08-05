@@ -5,7 +5,7 @@ import {FloatingAction} from 'react-native-floating-action';
 import {useRealm} from '../../../services/realm';
 import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
 import {colors} from '../../../styles';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {Button, ActionCard} from '../../../components';
 import Touchable from '../../../components/Touchable';
 import {getAuthService} from '../../../services';
@@ -135,7 +135,7 @@ export const BusinessTab = () => {
             My sales
           </Text>
           <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
-            &#8358;{numberWithCommas(financeSummary.totalSales)}
+            {amountWithCurrency(financeSummary.totalSales)}
           </Text>
         </ActionCard>
       </View>
@@ -153,7 +153,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(0)}
+            {amountWithCurrency(0)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -169,7 +169,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors.primary,
             })}>
-            &#8358;{numberWithCommas(0)}
+            {amountWithCurrency(0)}
           </Text>
         </ActionCard>
       </View>
@@ -187,7 +187,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(financeSummary.totalCredit)}
+            {amountWithCurrency(financeSummary.totalCredit)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -201,7 +201,7 @@ export const BusinessTab = () => {
           </Text>
           <Text
             style={applyStyles(styles.cardContent, {color: colors.primary})}>
-            &#8358;{numberWithCommas(financeSummary.overdueCredit)}
+            {amountWithCurrency(financeSummary.overdueCredit)}
           </Text>
         </ActionCard>
       </View>

@@ -18,7 +18,11 @@ import {
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {
+  applyStyles,
+  amountWithCurrency,
+  numberWithCommas,
+} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {useRealm} from '../../../../services/realm';
 import {saveReceipt} from '../../../../services/ReceiptService';
@@ -26,21 +30,24 @@ import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
 import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
-import {Receipts} from './Receipts';
+import {CustomersList} from './CustomersList';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 import HeaderRight from '../../../../components/HeaderRight';
+import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService} from '../../../../services';
+import {Payment} from '../../../../../types/app';
 
 export type SummaryTableItemProps = {
-  item: ReceiptItem;
+  item: IReceiptItem;
 };
 
 type Props = {
-  products: ReceiptItem[];
+  products: IReceiptItem[];
   onClearReceipt: () => void;
   onCloseSummaryModal: () => void;
-  onRemoveProductItem: (item: ReceiptItem) => void;
-  onUpdateProductItem: (item: ReceiptItem) => void;
+  onRemoveProductItem: (item: IReceiptItem) => void;
+  onUpdateProductItem: (item: IReceiptItem) => void;
 };
 
 export const summaryTableStyles = StyleSheet.create({
@@ -113,9 +120,9 @@ export const SummaryTableHeader = () => {
 export const SummaryTableItem = ({
   item,
   onPress,
-}: SummaryTableItemProps & {onPress?: (item: ReceiptItem) => void}) => {
-  const price = item.price ? parseFloat(item.price) : 0;
-  const quantity = item.quantity ? parseFloat(item.quantity) : 0;
+}: SummaryTableItemProps & {onPress?: (item: IReceiptItem) => void}) => {
+  const price = item.price ? item.price : 0;
+  const quantity = item.quantity ? item.quantity : 0;
   const subtotal = price * quantity;
 
   return (
@@ -124,10 +131,10 @@ export const SummaryTableItem = ({
         style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
         <View style={summaryTableStyles['column-40']}>
           <Text style={summaryTableItemStyles.text}>
-            {item.name} ({item.weight})
+            {item.product.name} {item.product.weight ? `(${item.weight})` : ''}
           </Text>
           <Text style={summaryTableItemStyles.subText}>
-            &#8358;{numberWithCommas(price)} Per Unit
+            {amountWithCurrency(price)} Per Unit
           </Text>
         </View>
         <View
@@ -141,7 +148,7 @@ export const SummaryTableItem = ({
             alignItems: 'flex-end',
           })}>
           <Text style={summaryTableItemStyles.text}>
-            &#8358;{numberWithCommas(subtotal)}
+            {amountWithCurrency(subtotal)}
           </Text>
         </View>
         <View
@@ -173,6 +180,8 @@ export const SummaryTableItem = ({
 const ReceiptSummary = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm();
+  const authService = getAuthService();
+  const currency = authService.getUserCurrency();
 
   const {
     products,
@@ -191,10 +200,8 @@ const ReceiptSummary = (props: Props) => {
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [customer, setCustomer] = useState<Customer | ICustomer>(
-    {} as Customer,
-  );
-  const [selectedProduct, setSelectedProduct] = useState<ReceiptItem | null>(
+  const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
+  const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
   );
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -202,7 +209,7 @@ const ReceiptSummary = (props: Props) => {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const creditAmount = totalAmount - amountPaid;
+  const creditAmount = payments.length ? totalAmount - amountPaid : totalAmount;
 
   //@ts-ignore
   const timeTaken = new Date().getTime() - global.startTime;
@@ -245,7 +252,7 @@ const ReceiptSummary = (props: Props) => {
     setIsCustomerModalOpen(false);
   }, []);
 
-  const handleOpenEditProductModal = useCallback((item: ReceiptItem) => {
+  const handleOpenEditProductModal = useCallback((item: IReceiptItem) => {
     setSelectedProduct(item);
   }, []);
 
@@ -416,12 +423,12 @@ const ReceiptSummary = (props: Props) => {
         saveReceipt({
           tax,
           realm,
-          products,
           payments,
           customer,
           amountPaid,
           totalAmount,
           creditAmount,
+          receiptItems: products,
         });
         onClearReceipt();
         onSuccess && onSuccess();
@@ -463,14 +470,13 @@ const ReceiptSummary = (props: Props) => {
   useEffect(() => {
     const total = products
       .map(({quantity, price}) => {
-        const itemPrice = price ? parseFloat(price) : 0;
-        const itemQuantity = quantity ? parseFloat(quantity) : 0;
+        const itemPrice = price ? price : 0;
+        const itemQuantity = quantity ? quantity : 0;
         return itemPrice * itemQuantity;
       })
       .reduce((acc, curr) => acc + curr, 0);
 
     setTotalAmount(total);
-    setAmountPaid(total);
   }, [products]);
 
   useEffect(() => {
@@ -478,7 +484,7 @@ const ReceiptSummary = (props: Props) => {
       const paid = payments.reduce((acc, item) => acc + item.amount, 0);
       setAmountPaid(paid);
     }
-  }, [payments, totalAmount]);
+  }, [payments]);
 
   const renderSummaryItem = useCallback(
     ({item}: SummaryTableItemProps) => (
@@ -500,7 +506,7 @@ const ReceiptSummary = (props: Props) => {
             })}>
             Total{' '}
             <Text style={applyStyles('text-700')}>
-              &#8358;{numberWithCommas(totalAmount)}
+              {amountWithCurrency(totalAmount)}
             </Text>
           </Text>
           <View>
@@ -508,7 +514,7 @@ const ReceiptSummary = (props: Props) => {
               data={products}
               nestedScrollEnabled
               renderItem={renderSummaryItem}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => `${item.id}`}
               ListHeaderComponent={SummaryTableHeader}
             />
             <View style={styles.totalSectionContainer}>
@@ -555,7 +561,7 @@ const ReceiptSummary = (props: Props) => {
                     Total:
                   </Text>
                   <Text style={styles.totalAmountText}>
-                    &#8358;{numberWithCommas(totalAmount)}
+                    {amountWithCurrency(totalAmount)}
                   </Text>
                 </View>
               </View>
@@ -594,12 +600,6 @@ const ReceiptSummary = (props: Props) => {
                   value={getPaymentMethodAmount('cash')}
                   onChange={(text) =>
                     handlePaymentMethodAmountChange(text.toString(), 'cash')
-                  }
-                  leftIcon={
-                    <Text
-                      style={applyStyles(styles.textInputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
                   }
                 />
               </View>
@@ -662,12 +662,6 @@ const ReceiptSummary = (props: Props) => {
                   onChange={(text) =>
                     handlePaymentMethodAmountChange(text.toString(), 'transfer')
                   }
-                  leftIcon={
-                    <Text
-                      style={applyStyles(styles.textInputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
-                  }
                 />
               </View>
               <Button
@@ -729,12 +723,6 @@ const ReceiptSummary = (props: Props) => {
                   onChange={(text) =>
                     handlePaymentMethodAmountChange(text.toString(), 'mobile')
                   }
-                  leftIcon={
-                    <Text
-                      style={applyStyles(styles.textInputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
-                  }
                 />
               </View>
               <Button
@@ -794,7 +782,7 @@ const ReceiptSummary = (props: Props) => {
               editable={false}
               label="Remaining Balance"
               keyboardType="number-pad"
-              inputStyle={applyStyles({color: colors.primary})}
+              inputStyle={applyStyles({color: colors.primary, paddingLeft: 32})}
               value={numberWithCommas(creditAmount)}
               leftIcon={
                 <Text
@@ -803,7 +791,7 @@ const ReceiptSummary = (props: Props) => {
                     {color: colors.primary},
                     'text-400',
                   )}>
-                  &#8358;
+                  {currency}
                 </Text>
               }
             />
@@ -854,7 +842,7 @@ const ReceiptSummary = (props: Props) => {
         onWhatsappShare={handleWhatsappShare}
       />
       <Modal visible={isContactListModalOpen}>
-        <Receipts
+        <CustomersList
           onModalClose={handleCloseContactList}
           onCustomerSelect={handleCustomerSelect}
         />

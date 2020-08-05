@@ -3,7 +3,7 @@ import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {CreditPaymentForm} from '../../../components';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
@@ -52,13 +52,13 @@ const CreditPayment = ({route}: any) => {
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Customer</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditDetails.customer_name}
+              {creditDetails.customer?.name}
             </Text>
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(creditDetails.amount_left)}
+              {amountWithCurrency(creditDetails.amount_left)}
             </Text>
           </View>
         </View>

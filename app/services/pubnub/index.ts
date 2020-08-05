@@ -61,6 +61,7 @@ export const useTyping = (channel: string, input: string = '') => {
     } catch (e) {
       handleError(e);
     }
+    //@ts-ignore
     timer.current = setTimeout(() => {
       setReset(false);
       stopTyping();

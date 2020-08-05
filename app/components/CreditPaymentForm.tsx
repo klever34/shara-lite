@@ -8,7 +8,7 @@ import {CurrencyInput} from './CurrencyInput';
 
 type Payload = {
   amount: string;
-  method: string | number;
+  method: string;
 };
 
 type Props = {
@@ -50,11 +50,6 @@ export const CreditPaymentForm = (props: Props) => {
           keyboardType="number-pad"
           containerStyle={styles.input}
           onChange={(text) => handleChange(text, 'amount')}
-          leftIcon={
-            <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-              &#8358;
-            </Text>
-          }
         />
       </View>
       <View style={styles.pickerContainer}>
@@ -78,6 +73,7 @@ export const CreditPaymentForm = (props: Props) => {
         isLoading={isLoading}
         onPress={handleSubmit}
         title="Confirm payment"
+        style={applyStyles({marginBottom: 40})}
       />
     </View>
   );
@@ -108,9 +104,5 @@ const styles = StyleSheet.create({
   pickerItem: {
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-  },
-  textInputIconText: {
-    fontSize: 16,
-    color: colors['gray-300'],
   },
 });

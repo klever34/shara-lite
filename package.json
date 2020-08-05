@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.16",
+  "version": "0.1.18-discovery",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -18,6 +18,7 @@
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.5.1",
     "@sentry/react-native": "^1.6.3",
+    "country-currency-map": "^2.1.7",
     "crypto-js": "^3.3.0",
     "cryptr": "^6.0.2",
     "date-fns": "^2.14.0",
@@ -52,7 +53,7 @@
     "react-native-vector-icons": "6.6.0",
     "react-native-webview": "^10.3.2",
     "readable-stream": "1.0.33",
-    "realm": "^6.0.2",
+    "realm": "^6.0.4",
     "rn-fetch-blob": "^0.12.0",
     "uuid": "^8.2.0",
     "uuid-by-string": "^3.0.2"

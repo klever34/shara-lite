@@ -6,6 +6,9 @@ import {Credit} from '../../models/Credit';
 import {CreditPayment} from '../../models/CreditPayment';
 import {Receipt} from '../../models/Receipt';
 import {ReceiptItem} from '../../models/ReceiptItem';
+import {Product} from '../../models/Product';
+import {Supplier} from '../../models/Supplier';
+import {InventoryStock} from '../../models/InventoryStock';
 
 const RealmContext = createContext<Realm | null>(null);
 export const RealmProvider = RealmContext.Provider;
@@ -34,9 +37,12 @@ export const createRealm = async () => {
       Customer,
       Credit,
       CreditPayment,
+      InventoryStock,
       Payment,
+      Product,
       Receipt,
       ReceiptItem,
+      Supplier,
     ],
   });
 };

@@ -2199,6 +2199,12 @@ cosmiconfig@^6.0.0:
     path-type "^4.0.0"
     yaml "^1.7.2"
 
+country-currency-map@^2.1.7:
+  version "2.1.7"
+  resolved "https://registry.yarnpkg.com/country-currency-map/-/country-currency-map-2.1.7.tgz#5c7d16b4aba42bf2eaa2760fb0856a5dbfd53666"
+  dependencies:
+    lodash.findkey "4.6.0"
+
 create-react-class@*, create-react-class@^15.6.3:
   version "15.6.3"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.6.3.tgz#2d73237fb3f970ae6ebe011a9e66f46dbca80036"
@@ -4413,6 +4419,10 @@ locate-path@^5.0.0:
   dependencies:
     p-locate "^4.1.0"
 
+lodash.findkey@4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.findkey/-/lodash.findkey-4.6.0.tgz#83058e903b51cbb759d09ccf546dea3ea39c4718"
+
 lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
@@ -5905,9 +5915,9 @@ readable-stream@2, readable-stream@^2.0.1, readable-stream@^2.0.6, readable-stre
     string_decoder "~1.1.1"
     util-deprecate "~1.0.1"
 
-realm@^6.0.2:
-  version "6.0.2"
-  resolved "https://registry.yarnpkg.com/realm/-/realm-6.0.2.tgz#d51abb9be03ddbf5a16fbe9c65cb8e09889c7d4b"
+realm@^6.0.4:
+  version "6.0.4"
+  resolved "https://registry.yarnpkg.com/realm/-/realm-6.0.4.tgz#cb5171c8a2f4641bd5ccf6ed1e314b2021e2b669"
   dependencies:
     command-line-args "^4.0.6"
     deepmerge "2.1.0"

@@ -3,7 +3,6 @@ import {BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IPayment} from './Payment';
 import {IReceiptItem} from './ReceiptItem';
 import {ICredit} from './Credit';
-
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;
   tax: number;
@@ -14,11 +13,9 @@ export interface IReceipt extends BaseModelInterface {
   customer?: ICustomer;
   payments?: IPayment[];
   items?: IReceiptItem[];
-  credit?: ICredit;
+  credits?: ICredit[];
 }
-
 export const modelName = 'Receipt';
-
 export class Receipt implements Partial<IReceipt> {
   public static schema: Realm.ObjectSchema = {
     name: 'Receipt',
@@ -42,7 +39,7 @@ export class Receipt implements Partial<IReceipt> {
         objectType: 'Payment',
         property: 'receipt',
       },
-      credit: {
+      credits: {
         type: 'linkingObjects',
         objectType: 'Credit',
         property: 'receipt',
