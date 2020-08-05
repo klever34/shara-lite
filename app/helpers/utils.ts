@@ -6,6 +6,7 @@ import CryptoJS from 'crypto-js'
 import Config from 'react-native-config'
 import {TextStyle, ViewStyle} from 'react-native'
 import {getAuthService} from '../services'
+import {Falsy} from '../types/app'
 
 export const generateUniqueId = () => uuidV4()
 

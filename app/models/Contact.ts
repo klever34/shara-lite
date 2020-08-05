@@ -1,11 +1,12 @@
-import capitalize from 'lodash/capitalize';
+import capitalize from 'lodash/capitalize'
+import {User} from '../../types/app'
 
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
-  fullName: string;
-  channel?: string;
-  groups: string;
-  isMe: boolean;
+  fullName: string
+  channel?: string
+  groups: string
+  isMe: boolean
 }
 
 export class Contact implements Partial<IContact> {
@@ -21,14 +22,14 @@ export class Contact implements Partial<IContact> {
       firstname: 'string',
       lastname: 'string',
     },
-  };
-  public firstname: string | undefined;
-  public lastname: string | undefined;
-  public get fullName() {
-    let name = capitalize(this.firstname);
+  }
+  public firstname: string | undefined
+  public lastname: string | undefined
+  public get fullName () {
+    let name = capitalize(this.firstname)
     if (this.lastname) {
-      name += ' ' + capitalize(this.lastname);
+      name += ' ' + capitalize(this.lastname)
     }
-    return name;
+    return name
   }
 }
