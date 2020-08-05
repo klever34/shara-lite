@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, Modal} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
@@ -9,12 +9,35 @@ import {ICredit} from '../../../../models/Credit';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
+import Touchable from '../../../../components/Touchable';
+import Icon from '../../../../components/Icon';
+import {ICustomer} from '../../../../models';
+import {CustomersList} from '../receipts';
 
 export const CreditDetails = ({route}: any) => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCustomersListModalOpen, setIsCustomersListModalOpen] = useState(
+    false,
+  );
+  const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const {creditDetails}: {creditDetails: ICredit} = route.params;
+
+  const handleOpenCustomersList = useCallback(() => {
+    setIsCustomersListModalOpen(true);
+  }, []);
+
+  const handleCloseCustomersList = useCallback(() => {
+    setIsCustomersListModalOpen(false);
+  }, []);
+
+  const handleCustomerSelect = useCallback(
+    ({customer: customerData}) => {
+      setCustomer(customerData);
+    },
+    [setCustomer],
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -33,14 +56,14 @@ export const CreditDetails = ({route}: any) => {
           saveCreditPayment({
             realm,
             ...payload,
-            customer: creditDetails.customer,
+            customer: creditDetails.customer || customer,
           });
           callback();
           navigation.navigate('Finances', {screen: 'Credit'});
         }, 300);
       }
     },
-    [realm, navigation, creditDetails],
+    [realm, customer, navigation, creditDetails],
   );
 
   return (
@@ -54,7 +77,7 @@ export const CreditDetails = ({route}: any) => {
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Customer</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditDetails.customer?.name || 'No customer'}
+              {creditDetails.customer?.name || customer.name || 'No customer'}
             </Text>
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
@@ -98,16 +121,45 @@ export const CreditDetails = ({route}: any) => {
       </View>
       <View>
         <Text
-          style={applyStyles('text-400', {
+          style={applyStyles('text-400 mb-lg', {
             fontSize: 18,
             color: colors.primary,
           })}>
           Credit Payment
         </Text>
         <View style={applyStyles({marginBottom: 100})}>
+          {!creditDetails.customer?.name && (
+            <Touchable onPress={handleOpenCustomersList}>
+              <View
+                style={applyStyles('mb-sm flex-row py-lg items-center', {
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors['gray-300'],
+                })}>
+                <Icon
+                  size={24}
+                  name="users"
+                  type="feathericons"
+                  color={colors['gray-50']}
+                />
+                <Text
+                  style={applyStyles('pl-md text-400', {
+                    fontSize: 18,
+                    color: colors['gray-50'],
+                  })}>
+                  {customer.name ? 'Change customer' : 'Select customer'}
+                </Text>
+              </View>
+            </Touchable>
+          )}
           <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
         </View>
       </View>
+      <Modal animationType="slide" visible={isCustomersListModalOpen}>
+        <CustomersList
+          onModalClose={handleCloseCustomersList}
+          onCustomerSelect={handleCustomerSelect}
+        />
+      </Modal>
     </ScrollView>
   );
 };
