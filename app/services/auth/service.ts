@@ -1,6 +1,9 @@
 import {IStorageService} from '../storage';
 import {IPubNubService} from '../pubnub';
 import {INavigationService} from '../navigation';
+//@ts-ignore
+import {getCurrency} from 'country-currency-map';
+import {User} from '../../../types/app';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -16,6 +19,8 @@ export interface IAuthService {
   isLoggedIn(): boolean;
 
   logOut(): void;
+
+  getUserCurrency(): string;
 }
 
 export class AuthService implements IAuthService {
@@ -75,5 +80,14 @@ export class AuthService implements IAuthService {
     } catch (e) {
       throw e;
     }
+  }
+
+  public getUserCurrency(): string {
+    const user = this.user;
+    const currency = getCurrency(user?.currency_code).symbolFormat.replace(
+      '{#}',
+      '',
+    );
+    return currency;
   }
 }

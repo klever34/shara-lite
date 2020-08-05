@@ -3,6 +3,7 @@ import {ICustomer} from '../models';
 import {ICredit, modelName} from '../models/Credit';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
+import {Customer} from '../../types/app';
 
 export const getCredits = ({realm}: {realm: Realm}): ICredit[] => {
   return (realm.objects<ICredit>(modelName) as unknown) as ICredit[];

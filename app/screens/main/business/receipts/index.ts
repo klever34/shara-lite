@@ -6,5 +6,5 @@ export * from './ProductsPreviewModal';
 export * from './ReceiptDetailsModal';
 export * from './ReceiptStatusModal';
 export * from './ReceiptSummary';
-export * from './Receipts';
+export * from './CustomersList';
 export * from './ShareReceiptModal';

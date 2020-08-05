@@ -5,6 +5,7 @@ import Icon from '../../../../components/Icon';
 import {applyStyles, generateUniqueId} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {colors} from '../../../../styles';
+import {Customer} from '../../../../../types/app';
 
 type Props = {
   visible: boolean;

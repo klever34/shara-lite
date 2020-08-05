@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useRef, useState} from 'react';
 import {Alert, Image, ScrollView, StyleSheet, Text, View} from 'react-native';
 import ImagePicker from 'react-native-image-picker';
+//@ts-ignore
 import SignatureCapture from 'react-native-signature-capture';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Button, FloatingLabelInput} from '../components';

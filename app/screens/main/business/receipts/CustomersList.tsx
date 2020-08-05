@@ -20,7 +20,7 @@ type CustomerItemProps = {
   item: ICustomer;
 };
 
-export const Receipts = (props: any) => {
+export const CustomersList = (props: any) => {
   const {onCustomerSelect, onModalClose} = props;
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
@@ -34,7 +34,7 @@ export const Receipts = (props: any) => {
       const sort = (item: ICustomer, text: string) => {
         return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
       };
-      const ac = customers.filter((item: ICustomer) => {
+      var ac = customers.filter((item: ICustomer) => {
         return sort(item, searchedText);
       });
       setMyCustomers(ac);

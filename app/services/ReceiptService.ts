@@ -5,6 +5,8 @@ import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment, updatePayment} from './PaymentService';
 import {getBaseModelValues} from '../helpers/models';
 import {saveCredit, updateCredit} from './CreditService';
+import {Customer, Payment} from '../../types/app';
+import {IReceiptItem} from '../models/ReceiptItem';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -18,7 +20,7 @@ export const saveReceipt = ({
   totalAmount,
   creditAmount,
   payments,
-  products,
+  receiptItems,
 }: {
   realm: Realm;
   customer: ICustomer | Customer;
@@ -27,7 +29,7 @@ export const saveReceipt = ({
   creditAmount: number;
   tax: number;
   payments: Payment[];
-  products: ReceiptItem[];
+  receiptItems: IReceiptItem[];
 }): void => {
   const receipt: IReceipt = {
     tax,
@@ -60,11 +62,11 @@ export const saveReceipt = ({
     });
   });
 
-  products.forEach((product) => {
+  receiptItems.forEach((receiptItem: any) => {
     saveReceiptItem({
       realm,
       receipt,
-      ...product,
+      receiptItem,
     });
   });
 
@@ -93,9 +95,12 @@ export const updateReceipt = ({
       updatePayment({realm, payment, updates: {customer}});
     });
 
-    if (receipt.credit_amount > 0 && receipt.credit) {
-      receipt.credit.customer = customer;
-      updateCredit({realm, credit: receipt.credit, updates: {customer}});
+    if (
+      receipt.credit_amount > 0 &&
+      receipt.credits &&
+      receipt.credits.length
+    ) {
+      updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
   });
 };

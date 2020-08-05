@@ -8,13 +8,15 @@ import {
 } from '../../../../components';
 import {colors} from '../../../../styles';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService} from '../../../../services';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  item: ReceiptItem | null;
-  onUpdateProductItem: (item: ReceiptItem) => void;
-  onRemoveProductItem: (item: ReceiptItem) => void;
+  item: IReceiptItem | null;
+  onUpdateProductItem: (item: IReceiptItem) => void;
+  onRemoveProductItem: (item: IReceiptItem) => void;
 };
 
 export const EditProductModal = (props: Props) => {
@@ -26,15 +28,17 @@ export const EditProductModal = (props: Props) => {
     onRemoveProductItem,
   } = props;
   const [price, setPrice] = useState<string | undefined>(
-    item ? item.price : '',
+    item ? item.price.toString() : '',
   );
   const [quantity, setQuantity] = useState<string | undefined>(
-    item ? item.quantity : '',
+    item ? item.quantity.toString() : '',
   );
+  const authService = getAuthService();
+  const currency = authService.getUserCurrency();
 
   useEffect(() => {
-    setPrice(item?.price);
-    setQuantity(item?.quantity);
+    setPrice(item?.price.toString());
+    setQuantity(item?.quantity.toString());
   }, [item]);
 
   const handlePriceChange = useCallback((text) => {
@@ -59,7 +63,11 @@ export const EditProductModal = (props: Props) => {
   }, [handleClose, item, onRemoveProductItem]);
 
   const handleUpdate = useCallback(() => {
-    const payload = {...item, price, quantity} as ReceiptItem;
+    const payload = {
+      ...item,
+      price: price ? parseFloat(price) : 0,
+      quantity: quantity ? parseFloat(quantity) : 0,
+    } as IReceiptItem;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
   }, [item, price, quantity, onUpdateProductItem, handleClose]);
@@ -98,11 +106,6 @@ export const EditProductModal = (props: Props) => {
                   value={price}
                   label="Unit Price"
                   onChange={handlePriceChange}
-                  leftIcon={
-                    <Text style={applyStyles(styles.inputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
-                  }
                 />
               </View>
               <View
@@ -124,7 +127,7 @@ export const EditProductModal = (props: Props) => {
                 value={getSubtotal()}
                 leftIcon={
                   <Text style={applyStyles(styles.inputIconText, 'text-400')}>
-                    &#8358;
+                    {currency}
                   </Text>
                 }
               />
