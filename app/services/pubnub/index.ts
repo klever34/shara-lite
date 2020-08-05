@@ -10,7 +10,7 @@ export const useTyping = (channel: string, input: string = '') => {
   const [reset, setReset] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
-  const timer = useRef<number | null>(null);
+  const timer = useRef<NodeJS.Timeout | null>(null);
   const handleError = useErrorHandler();
   const stopTyping = useCallback(async () => {
     if (timer.current) {
