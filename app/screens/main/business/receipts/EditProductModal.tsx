@@ -9,6 +9,7 @@ import {
 import {colors} from '../../../../styles';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService} from '../../../../services';
 
 type Props = {
   visible: boolean;
@@ -32,6 +33,8 @@ export const EditProductModal = (props: Props) => {
   const [quantity, setQuantity] = useState<string | undefined>(
     item ? item.quantity.toString() : '',
   );
+  const authService = getAuthService();
+  const currency = authService.getUserCurrency();
 
   useEffect(() => {
     setPrice(item?.price.toString());
@@ -103,11 +106,6 @@ export const EditProductModal = (props: Props) => {
                   value={price}
                   label="Unit Price"
                   onChange={handlePriceChange}
-                  leftIcon={
-                    <Text style={applyStyles(styles.inputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
-                  }
                 />
               </View>
               <View
@@ -129,7 +127,7 @@ export const EditProductModal = (props: Props) => {
                 value={getSubtotal()}
                 leftIcon={
                   <Text style={applyStyles(styles.inputIconText, 'text-400')}>
-                    &#8358;
+                    {currency}
                   </Text>
                 }
               />

@@ -8,7 +8,7 @@ import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
 import {colors} from '../../../../styles';
 import HeaderRight from '../../../../components/HeaderRight';
@@ -71,7 +71,7 @@ export const OverdueCredit = ({
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Amount</Text>
               <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-                &#8358;{numberWithCommas(creditDetails.amount_left)}
+                {amountWithCurrency(creditDetails.amount_left)}
               </Text>
             </View>
           </View>

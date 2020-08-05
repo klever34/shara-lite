@@ -1,18 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
 import React, {useCallback} from 'react';
-import {useFocusEffect} from '@react-navigation/native';
 import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, FAButton} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICreditPayment} from '../../../../models/CreditPayment';
 import {getCreditPayments} from '../../../../services/CreditPaymentService';
+import {getCredits} from '../../../../services/CreditService';
 import {getSummary, IFinanceSummary} from '../../../../services/FinanceService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
-import {getCredits} from '../../../../services/CreditService';
 
 type CreditItemProps = {
   item: ICreditPayment;
@@ -82,7 +81,7 @@ export const MyCredit = () => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(item.amount_paid)}
+                {amountWithCurrency(item.amount_paid)}
               </Text>
               <Text
                 style={applyStyles('text-400', {
@@ -132,7 +131,7 @@ export const MyCredit = () => {
                   fontSize: 24,
                   color: colors['gray-300'],
                 })}>
-                &#8358;{numberWithCommas(financeSummary.overdueCredit)}
+                {amountWithCurrency(financeSummary.overdueCredit)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-uppercase', {
@@ -165,7 +164,7 @@ export const MyCredit = () => {
                   fontSize: 24,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(financeSummary.overdueCredit)}
+                {amountWithCurrency(financeSummary.overdueCredit)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-uppercase', {

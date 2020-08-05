@@ -7,7 +7,7 @@ import {FAButton} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
 import {IReceipt} from '../../../../models/Receipt';
 import {useRealm} from '../../../../services/realm';
 import {getReceipts} from '../../../../services/ReceiptService';
@@ -166,7 +166,7 @@ export function MyReceipts() {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(receipt.total_amount)}
+                {amountWithCurrency(receipt.total_amount)}
               </Text>
               <Text
                 style={applyStyles('text-400', {

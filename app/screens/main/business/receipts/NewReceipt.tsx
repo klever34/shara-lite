@@ -25,7 +25,8 @@ import ReceiptSummary from './ReceiptSummary';
 import {getProducts} from '../../../../services/ProductService';
 import {useRealm} from '../../../../services/realm';
 import {IProduct} from '../../../../models/Product';
-import {IReceiptItem} from 'app/models/ReceiptItem';
+import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService} from '../../../../services';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -48,6 +49,8 @@ export const NewReceipt = () => {
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
     false,
   );
+  const authService = getAuthService();
+  const currency = authService.getUserCurrency();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -287,12 +290,6 @@ export const NewReceipt = () => {
                     value={price}
                     label="Unit Price"
                     onChange={handlePriceChange}
-                    leftIcon={
-                      <Text
-                        style={applyStyles(styles.inputIconText, 'text-400')}>
-                        &#8358;
-                      </Text>
-                    }
                   />
                 </View>
                 <View
@@ -311,10 +308,11 @@ export const NewReceipt = () => {
                 <FloatingLabelInput
                   label="Subtotal"
                   editable={false}
+                  inputStyle={applyStyles({paddingLeft: 32})}
                   value={getSubtotal()}
                   leftIcon={
                     <Text style={applyStyles(styles.inputIconText, 'text-400')}>
-                      &#8358;
+                      {currency}
                     </Text>
                   }
                 />

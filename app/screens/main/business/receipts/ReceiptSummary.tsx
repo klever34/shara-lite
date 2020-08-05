@@ -18,7 +18,11 @@ import {
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {
+  applyStyles,
+  amountWithCurrency,
+  numberWithCommas,
+} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {useRealm} from '../../../../services/realm';
 import {saveReceipt} from '../../../../services/ReceiptService';
@@ -31,6 +35,7 @@ import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 import HeaderRight from '../../../../components/HeaderRight';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService} from '../../../../services';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -128,7 +133,7 @@ export const SummaryTableItem = ({
             {item.product.name} {item.product.weight ? `(${item.weight})` : ''}
           </Text>
           <Text style={summaryTableItemStyles.subText}>
-            &#8358;{numberWithCommas(price)} Per Unit
+            {amountWithCurrency(price)} Per Unit
           </Text>
         </View>
         <View
@@ -142,7 +147,7 @@ export const SummaryTableItem = ({
             alignItems: 'flex-end',
           })}>
           <Text style={summaryTableItemStyles.text}>
-            &#8358;{numberWithCommas(subtotal)}
+            {amountWithCurrency(subtotal)}
           </Text>
         </View>
         <View
@@ -174,6 +179,8 @@ export const SummaryTableItem = ({
 const ReceiptSummary = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm();
+  const authService = getAuthService();
+  const currency = authService.getUserCurrency();
 
   const {
     products,
@@ -500,7 +507,7 @@ const ReceiptSummary = (props: Props) => {
             })}>
             Total{' '}
             <Text style={applyStyles('text-700')}>
-              &#8358;{numberWithCommas(totalAmount)}
+              {amountWithCurrency(totalAmount)}
             </Text>
           </Text>
           <View>
@@ -555,7 +562,7 @@ const ReceiptSummary = (props: Props) => {
                     Total:
                   </Text>
                   <Text style={styles.totalAmountText}>
-                    &#8358;{numberWithCommas(totalAmount)}
+                    {amountWithCurrency(totalAmount)}
                   </Text>
                 </View>
               </View>
@@ -594,12 +601,6 @@ const ReceiptSummary = (props: Props) => {
                   value={getPaymentMethodAmount('cash')}
                   onChange={(text) =>
                     handlePaymentMethodAmountChange(text.toString(), 'cash')
-                  }
-                  leftIcon={
-                    <Text
-                      style={applyStyles(styles.textInputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
                   }
                 />
               </View>
@@ -662,12 +663,6 @@ const ReceiptSummary = (props: Props) => {
                   onChange={(text) =>
                     handlePaymentMethodAmountChange(text.toString(), 'transfer')
                   }
-                  leftIcon={
-                    <Text
-                      style={applyStyles(styles.textInputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
-                  }
                 />
               </View>
               <Button
@@ -729,12 +724,6 @@ const ReceiptSummary = (props: Props) => {
                   onChange={(text) =>
                     handlePaymentMethodAmountChange(text.toString(), 'mobile')
                   }
-                  leftIcon={
-                    <Text
-                      style={applyStyles(styles.textInputIconText, 'text-400')}>
-                      &#8358;
-                    </Text>
-                  }
                 />
               </View>
               <Button
@@ -794,7 +783,7 @@ const ReceiptSummary = (props: Props) => {
               editable={false}
               label="Remaining Balance"
               keyboardType="number-pad"
-              inputStyle={applyStyles({color: colors.primary})}
+              inputStyle={applyStyles({color: colors.primary, paddingLeft: 32})}
               value={numberWithCommas(creditAmount)}
               leftIcon={
                 <Text
@@ -803,7 +792,7 @@ const ReceiptSummary = (props: Props) => {
                     {color: colors.primary},
                     'text-400',
                   )}>
-                  &#8358;
+                  {currency}
                 </Text>
               }
             />

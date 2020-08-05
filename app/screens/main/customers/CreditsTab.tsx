@@ -5,7 +5,7 @@ import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
 import {colors} from '../../../styles';
@@ -77,7 +77,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(credit.amount_paid)}
+                {amountWithCurrency(credit.amount_paid)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-capitalize', {
@@ -127,7 +127,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors['gray-300'],
               })}>
-              &#8358;{numberWithCommas(totalCreditsAmount)}
+              {amountWithCurrency(totalCreditsAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -160,7 +160,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors.primary,
               })}>
-              &#8358;{numberWithCommas(overdueCreditsAmount)}
+              {amountWithCurrency(overdueCreditsAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {

@@ -48,15 +48,13 @@ export const EditProduct = ({
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (Object.keys(product).length === 3) {
-      setIsLoading(true);
-      setTimeout(() => {
-        updateProduct({realm, product: productProps, updates: product});
-        setIsLoading(false);
-        clearForm();
-        navigation.goBack();
-      }, 300);
-    }
+    setIsLoading(true);
+    setTimeout(() => {
+      updateProduct({realm, product: productProps, updates: product});
+      setIsLoading(false);
+      clearForm();
+      navigation.goBack();
+    }, 300);
   }, [realm, clearForm, productProps, product, navigation]);
 
   return (
@@ -87,11 +85,6 @@ export const EditProduct = ({
             keyboardType="number-pad"
             onChange={(text) => handleChange(text, 'price')}
             value={product.price ? product.price.toString() : ''}
-            leftIcon={
-              <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-                &#8358;
-              </Text>
-            }
           />
         </View>
       </View>
@@ -110,9 +103,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.primary,
     fontFamily: 'Rubik-Regular',
-  },
-  textInputIconText: {
-    fontSize: 16,
-    color: colors['gray-300'],
   },
 });

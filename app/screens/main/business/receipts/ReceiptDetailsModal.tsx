@@ -11,7 +11,7 @@ import {
 import {Button} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {colors} from '../../../../styles';
@@ -86,10 +86,10 @@ export function ReceiptDetailsModal(props: Props) {
         style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
         <View style={summaryTableStyles['column-40']}>
           <Text style={summaryTableItemStyles.text}>
-            {item.name} ({item.weight})
+            {item.name} {item.weight ? `(${item.weight})` : ''}
           </Text>
           <Text style={summaryTableItemStyles.subText}>
-            &#8358;{numberWithCommas(item.price)} Per Unit
+            {amountWithCurrency(item.price)} Per Unit
           </Text>
         </View>
         <View
@@ -103,7 +103,7 @@ export function ReceiptDetailsModal(props: Props) {
             alignItems: 'flex-end',
           })}>
           <Text style={summaryTableItemStyles.text}>
-            &#8358;{numberWithCommas(item.price * item.quantity)}
+            {amountWithCurrency(item.price * item.quantity)}
           </Text>
         </View>
       </View>
@@ -161,7 +161,7 @@ export function ReceiptDetailsModal(props: Props) {
                 fontSize: 18,
                 color: colors.primary,
               })}>
-              &#8358;{numberWithCommas(receipt?.total_amount)}
+              {amountWithCurrency(receipt?.total_amount)}
             </Text>
           </View>
         </View>
@@ -250,7 +250,7 @@ export function ReceiptDetailsModal(props: Props) {
                       Total:
                     </Text>
                     <Text style={styles.totalAmountText}>
-                      &#8358;{numberWithCommas(receipt?.total_amount)}
+                      {amountWithCurrency(receipt?.total_amount)}
                     </Text>
                   </View>
                 </View>
@@ -295,7 +295,7 @@ export function ReceiptDetailsModal(props: Props) {
               )}>
               <View style={applyStyles({width: '48%'})}>
                 {receipt?.payments?.map((item) => (
-                  <View>
+                  <View style={applyStyles('pb-lg')}>
                     <Text
                       style={applyStyles('pb-xs', 'text-400', {
                         color: colors['gray-200'],
@@ -307,7 +307,7 @@ export function ReceiptDetailsModal(props: Props) {
                         fontSize: 16,
                         color: colors['gray-300'],
                       })}>
-                      &#8358;{numberWithCommas(item.amount_paid)}
+                      {amountWithCurrency(item.amount_paid)}
                     </Text>
                   </View>
                 ))}
@@ -325,7 +325,7 @@ export function ReceiptDetailsModal(props: Props) {
                       fontSize: 16,
                       color: colors.primary,
                     })}>
-                    &#8358;{numberWithCommas(receipt?.credit_amount)}
+                    {amountWithCurrency(receipt?.credit_amount)}
                   </Text>
                 </View>
               )}

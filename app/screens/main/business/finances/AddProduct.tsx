@@ -79,11 +79,6 @@ export const AddProduct = () => {
             keyboardType="number-pad"
             onChange={(text) => handleChange(text, 'price')}
             value={product.price ? product.price.toString() : ''}
-            leftIcon={
-              <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-                &#8358;
-              </Text>
-            }
           />
         </View>
       </View>
@@ -102,9 +97,5 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: colors.primary,
     fontFamily: 'Rubik-Regular',
-  },
-  textInputIconText: {
-    fontSize: 16,
-    color: colors['gray-300'],
   },
 });

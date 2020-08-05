@@ -89,11 +89,6 @@ export const PaymentMethodModal = (props: Props) => {
               label="Amount Paid"
               keyboardType="numeric"
               onChange={handleAmountChange}
-              leftIcon={
-                <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-                  &#8358;
-                </Text>
-              }
             />
           </View>
 
@@ -135,9 +130,5 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     width: '48%',
-  },
-  textInputIconText: {
-    fontSize: 16,
-    color: colors['gray-300'],
   },
 });

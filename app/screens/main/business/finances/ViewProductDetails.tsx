@@ -4,7 +4,7 @@ import {Button} from '../../../../components';
 import React, {useState, useCallback, useLayoutEffect} from 'react';
 import {ScrollView, Text, View, Alert} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
 import {getProduct, deleteProduct} from '../../../../services/ProductService';
@@ -21,7 +21,6 @@ export const ViewProductDetails = ({
 
   useFocusEffect(
     useCallback(() => {
-      console.log('here');
       const product = getProduct({realm, productId});
       setProduct(product);
       const unsubscribe = () => setProduct({} as IProduct);
@@ -112,7 +111,7 @@ export const ViewProductDetails = ({
               fontSize: 16,
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(product?.price)}
+            {amountWithCurrency(product?.price)}
           </Text>
         </View>
         {!!product?.quantity && (

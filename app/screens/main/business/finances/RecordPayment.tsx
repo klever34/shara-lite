@@ -30,7 +30,6 @@ export const RecordCreditPayment = () => {
 
   const handleCustomerSelect = useCallback(
     ({customer: customerData}) => {
-      console.log(customerData);
       setCustomer(customerData);
     },
     [setCustomer],

@@ -372,7 +372,7 @@ const MainScreens = ({navigation}: any) => {
           name="CustomerCreditDetails"
           component={CustomerCreditDetails}
           options={{
-            title: 'Overdue Credit',
+            title: 'Credit Payment',
             headerStyle: {
               backgroundColor: colors.primary,
             },

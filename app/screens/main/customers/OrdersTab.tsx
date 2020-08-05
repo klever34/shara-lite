@@ -3,7 +3,7 @@ import {format} from 'date-fns/esm';
 import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {ActionCard} from '../../../components';
 import EmptyState from '../../../components/EmptyState';
@@ -24,7 +24,7 @@ const OrdersTab = () => {
           <View style={applyStyles('pb-sm')}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(order.amount)}
+              {amountWithCurrency(order.amount)}
             </Text>
           </View>
           <View style={applyStyles('flex-row', 'justify-space-between')}>

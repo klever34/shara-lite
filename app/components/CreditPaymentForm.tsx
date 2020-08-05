@@ -50,11 +50,6 @@ export const CreditPaymentForm = (props: Props) => {
           keyboardType="number-pad"
           containerStyle={styles.input}
           onChange={(text) => handleChange(text, 'amount')}
-          leftIcon={
-            <Text style={applyStyles(styles.textInputIconText, 'text-400')}>
-              &#8358;
-            </Text>
-          }
         />
       </View>
       <View style={styles.pickerContainer}>
@@ -109,9 +104,5 @@ const styles = StyleSheet.create({
   pickerItem: {
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-  },
-  textInputIconText: {
-    fontSize: 16,
-    color: colors['gray-300'],
   },
 });
