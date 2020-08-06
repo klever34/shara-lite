@@ -37,6 +37,7 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
 import {Payment} from '../../../../../types/app';
+import {ReceiptImage} from './ReceiptImage';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -798,6 +799,7 @@ const ReceiptSummary = (props: Props) => {
           </View>
         )}
       </ScrollView>
+      <ReceiptImage text="Hello world" />
       <View style={styles.actionButtons}>
         <Button
           title="Cancel"
