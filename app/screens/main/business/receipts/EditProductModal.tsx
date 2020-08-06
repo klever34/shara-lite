@@ -95,7 +95,8 @@ export const EditProductModal = (props: Props) => {
         <View style={styles.calculatorSection}>
           <View>
             <Text style={applyStyles(styles.selectedProductName, 'text-700')}>
-              {item?.name} ({item?.weight})
+              {`${item?.product.sku}-${item?.product.name}`}{' '}
+              {item?.weight ? `(${item?.weight})` : ''}
             </Text>
             <View style={styles.calculatorSectionInputs}>
               <View

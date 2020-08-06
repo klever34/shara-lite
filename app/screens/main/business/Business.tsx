@@ -40,11 +40,27 @@ export const BusinessTab = () => {
         return (
           <View style={styles.listItem}>
             <Text style={applyStyles(styles.listItemText, 'text-500')}>
-              Record inventory
+              View inventory
             </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/inventory.png')}
+            />
+          </View>
+        );
+      },
+    },
+    {
+      name: 'AddProduct',
+      render: () => {
+        return (
+          <View style={styles.listItem}>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Add new product
+            </Text>
+            <Image
+              style={styles.listItemIcon}
+              source={require('../../../assets/icons/business/add.png')}
             />
           </View>
         );
