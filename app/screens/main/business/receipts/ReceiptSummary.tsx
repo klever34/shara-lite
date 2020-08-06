@@ -316,8 +316,8 @@ const ReceiptSummary = (props: Props) => {
       const shareOptions = {
         email,
         title: 'Share receipt',
-        url: 'https://shara.co/',
         message: 'Here is your receipt',
+        url: `data:image/png;base64,${receiptImage}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
@@ -328,18 +328,17 @@ const ReceiptSummary = (props: Props) => {
         Alert.alert('Error', e.error);
       }
     },
-    [customer.name],
+    [customer.name, receiptImage],
   );
 
   const handleWhatsappShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      // url: 'https://shara.co/',
       social: Share.Social.WHATSAPP,
       message: 'Here is your receipt',
       title: `Share receipt with ${customer.name}`,
-      whatsAppNumber: `${customer.mobile}`, // country code + phone number
       url: `data:image/png;base64,${receiptImage}`,
+      whatsAppNumber: `${customer.mobile}`, // country code + phone number
     };
     const errorMessages = {
       filename: 'Invalid file attached',
