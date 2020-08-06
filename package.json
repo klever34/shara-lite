@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.18-discovery",
+  "version": "0.1.18-feature.receipt-image+build.1061",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
