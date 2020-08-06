@@ -58,23 +58,6 @@ export const NewReceipt = () => {
       headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);
-
-  const handleAddItem = useCallback(() => {
-    if (price && quantity) {
-      const product = {
-        ...selectedProduct,
-        price: parseFloat(price),
-        product: selectedProduct,
-        name: selectedProduct?.name,
-        quantity: parseFloat(quantity),
-      } as IReceiptItem;
-      setReceipt([product, ...receipt]);
-      setSelectedProduct(null);
-      setPrice('');
-      setQuantity('');
-    }
-  }, [price, quantity, receipt, selectedProduct]);
-
   const handlePriceChange = useCallback((item) => {
     setPrice(item);
   }, []);
@@ -114,6 +97,37 @@ export const NewReceipt = () => {
     handleCloseSummaryModal();
   }, [handleCloseSummaryModal]);
 
+  const handleAddItem = useCallback(() => {
+    if (price && quantity) {
+      const product = {
+        ...selectedProduct,
+        price: parseFloat(price),
+        product: selectedProduct,
+        name: selectedProduct?.name,
+        quantity: parseFloat(quantity),
+      } as IReceiptItem;
+      if (receipt.map((item) => item.id).includes(product?.id)) {
+        console.log('here');
+        setReceipt(
+          receipt.map((item) => {
+            if (item.id === product.id) {
+              return {
+                ...item,
+                quantity: item.quantity + parseFloat(quantity),
+              };
+            }
+            return item;
+          }),
+        );
+      } else {
+        setReceipt([product, ...receipt]);
+      }
+      setSelectedProduct(null);
+      setPrice('');
+      setQuantity('');
+    }
+  }, [price, quantity, receipt, selectedProduct]);
+
   const handleUpdateProductItem = useCallback(
     (item: IReceiptItem) => {
       setReceipt(
@@ -146,7 +160,21 @@ export const NewReceipt = () => {
       } as IReceiptItem;
 
       handleAddItem();
-      items = [product, ...receipt];
+
+      if (receipt.map((item) => item.id).includes(product?.id)) {
+        console.log('here');
+        items = receipt.map((item) => {
+          if (item.id === product.id) {
+            return {
+              ...item,
+              quantity: item.quantity + parseFloat(quantity),
+            };
+          }
+          return item;
+        });
+      } else {
+        items = [product, ...receipt];
+      }
     }
     if ((selectedProduct && quantity && price) || items.length) {
       setReceipt(items);
