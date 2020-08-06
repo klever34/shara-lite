@@ -801,7 +801,7 @@ const ReceiptSummary = (props: Props) => {
             />
           </View>
         )}
-        <View>
+        <View style={applyStyles({opacity: 0, height: 0})}>
           <ReceiptImage
             tax={tax}
             user={user}

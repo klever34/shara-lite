@@ -12,7 +12,12 @@ import {IReceipt} from '../../../../models/Receipt';
 import {useRealm} from '../../../../services/realm';
 import {getReceipts} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
-import {ShareReceiptModal, ReceiptDetailsModal} from '../receipts';
+import {
+  ShareReceiptModal,
+  ReceiptDetailsModal,
+  ReceiptImage,
+} from '../receipts';
+import {getAuthService} from '../../../../services';
 
 type ReceiptItemProps = {
   item: IReceipt;
@@ -22,7 +27,10 @@ export function MyReceipts() {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const receipts = getReceipts({realm});
+  const authService = getAuthService();
+  const user = authService.getUser();
 
+  const [receiptImage, setReceiptImage] = useState('');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeReceipt, setActiveReceipt] = useState<IReceipt | null>(null);
 
@@ -80,11 +88,11 @@ export function MyReceipts() {
       const shareOptions = {
         email,
         title: 'Share receipt',
-        url: 'https://shara.co/',
         message: 'Here is your receipt',
         subject: activeReceipt?.customer_name
           ? `${activeReceipt?.customer_name}'s Receipt`
           : 'Your Receipt',
+        url: `data:image/png;base64,${receiptImage}`,
       };
 
       try {
@@ -94,18 +102,17 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     },
-    [activeReceipt],
+    [activeReceipt, receiptImage],
   );
 
   const handleWhatsappShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      url: 'https://shara.co/',
       social: Share.Social.WHATSAPP,
       message: 'Here is your receipt',
+      url: `data:image/png;base64,${receiptImage}`,
+      whatsAppNumber: `${activeReceipt?.customer_mobile}`,
       title: `Share receipt with ${activeReceipt?.customer_name}`,
-      whatsAppNumber: `+234${activeReceipt?.customer_mobile}`, // country code + phone number
-      // filename:  `data:image/png;base64,<base64_data>`,
     };
     const errorMessages = {
       filename: 'Invalid file attached',
@@ -124,7 +131,7 @@ export function MyReceipts() {
         Alert.alert('Error', errorMessages[e.error]);
       }
     }
-  }, [activeReceipt]);
+  }, [activeReceipt, receiptImage]);
 
   const renderReceiptItem = useCallback(
     ({item: receipt}: ReceiptItemProps) => {
@@ -225,6 +232,18 @@ export function MyReceipts() {
         onOpenShareModal={handleOpenShareModal}
         onClose={handleCloseReceiptDetailsModal}
       />
+      {activeReceipt && (
+        <View style={applyStyles({opacity: 0, height: 0})}>
+          <ReceiptImage
+            user={user}
+            tax={activeReceipt?.tax}
+            products={activeReceipt?.items}
+            customer={activeReceipt?.customer}
+            totalAmount={activeReceipt?.total_amount}
+            getImageUri={(data) => setReceiptImage(data)}
+          />
+        </View>
+      )}
     </View>
   );
 }

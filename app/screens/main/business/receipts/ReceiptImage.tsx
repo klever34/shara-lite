@@ -15,11 +15,11 @@ import {
 } from './ReceiptSummary';
 
 type Props = {
-  tax: number;
+  tax?: number;
   user: User | null;
-  customer: ICustomer;
-  totalAmount: number;
-  products: IReceiptItem[];
+  customer?: ICustomer;
+  totalAmount?: number;
+  products?: IReceiptItem[];
   getImageUri: (base64: string) => void;
 };
 
@@ -31,6 +31,7 @@ export class ReceiptImage extends Component<Props, State> {
   state = {
     uri: '',
   };
+
   onCapture = async (uri: any) => {
     RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
       this.setState({uri: data});
