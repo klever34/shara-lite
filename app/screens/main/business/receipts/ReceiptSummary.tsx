@@ -37,7 +37,6 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
 import {Payment} from '../../../../../types/app';
-import {ReceiptImage} from './ReceiptImage';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -186,6 +185,7 @@ const ReceiptSummary = (props: Props) => {
   const authService = getAuthService();
   const user = authService.getUser();
   const currency = authService.getUserCurrency();
+  const businessInfo = user?.businesses[0];
 
   const {
     products,
@@ -208,7 +208,6 @@ const ReceiptSummary = (props: Props) => {
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
   );
-  const [receiptImage, setReceiptImage] = useState('');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -311,13 +310,16 @@ const ReceiptSummary = (props: Props) => {
   }, [customer.mobile, customer.name]);
 
   const handleEmailShare = useCallback(
-    async (email: string, callback: () => void) => {
+    async (
+      {email, receiptImage}: {email: string; receiptImage: string},
+      callback: () => void,
+    ) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
         email,
         title: 'Share receipt',
-        message: 'Here is your receipt',
         url: `data:image/png;base64,${receiptImage}`,
+        message: `Here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
@@ -328,36 +330,39 @@ const ReceiptSummary = (props: Props) => {
         Alert.alert('Error', e.error);
       }
     },
-    [customer.name, receiptImage],
+    [customer.name, businessInfo],
   );
 
-  const handleWhatsappShare = useCallback(async () => {
-    // TODO: use better copy for shara invite
-    const shareOptions = {
-      social: Share.Social.WHATSAPP,
-      message: 'Here is your receipt',
-      title: `Share receipt with ${customer.name}`,
-      url: `data:image/png;base64,${receiptImage}`,
-      whatsAppNumber: `${customer.mobile}`, // country code + phone number
-    };
-    const errorMessages = {
-      filename: 'Invalid file attached',
-      whatsAppNumber: 'Please check the phone number supplied',
-    } as {[key: string]: any};
+  const handleWhatsappShare = useCallback(
+    async (receiptImage: string) => {
+      // TODO: use better copy for shara invite
+      const shareOptions = {
+        social: Share.Social.WHATSAPP,
+        title: `Share receipt with ${customer.name}`,
+        url: `data:image/png;base64,${receiptImage}`,
+        message: `Here is your receipt from ${businessInfo?.name}`,
+        whatsAppNumber: `${customer.mobile}`, // country code + phone number
+      };
+      const errorMessages = {
+        filename: 'Invalid file attached',
+        whatsAppNumber: 'Please check the phone number supplied',
+      } as {[key: string]: any};
 
-    if (!customer.mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', errorMessages[e.error]);
+      if (!customer.mobile) {
+        Alert.alert(
+          'Info',
+          'Please select a customer to share receipt with via Whatsapp',
+        );
+      } else {
+        try {
+          await Share.shareSingle(shareOptions);
+        } catch (e) {
+          Alert.alert('Error', errorMessages[e.error]);
+        }
       }
-    }
-  }, [customer.mobile, customer.name, receiptImage]);
+    },
+    [customer.mobile, customer.name, businessInfo],
+  );
 
   const handlePrintReceipt = useCallback(() => {
     Alert.alert(
@@ -801,16 +806,6 @@ const ReceiptSummary = (props: Props) => {
             />
           </View>
         )}
-        <View style={applyStyles({opacity: 0, height: 0})}>
-          <ReceiptImage
-            tax={tax}
-            user={user}
-            products={products}
-            customer={customer}
-            totalAmount={totalAmount}
-            getImageUri={(data) => setReceiptImage(data)}
-          />
-        </View>
       </ScrollView>
       <View style={styles.actionButtons}>
         <Button
@@ -849,6 +844,10 @@ const ReceiptSummary = (props: Props) => {
         onOpenContactList={handleOpenContactList}
       />
       <ShareReceiptModal
+        tax={tax}
+        products={products}
+        customer={customer}
+        totalAmount={totalAmount}
         visible={isShareModalOpen}
         onSmsShare={handleSmsShare}
         onEmailShare={handleEmailShare}
