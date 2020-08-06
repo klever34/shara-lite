@@ -982,9 +982,10 @@
   resolved "https://registry.yarnpkg.com/@segment/analytics-react-native/-/analytics-react-native-1.2.1.tgz#c03f4db65de6433ae53737753ff8438abc0efd36"
   integrity sha512-06oOhHZy3CiWlkXHSZwkYLb24RR900mB9Itzut9SAIWZ+gwA18XMoGVdGb3MXcrJX2bievy3oRbkvKY3ehSvxA==
 
-"@sentry/browser@^5.19.0":
+"@sentry/browser@5.20.1", "@sentry/browser@^5.20.1":
   version "5.20.1"
   resolved "https://registry.yarnpkg.com/@sentry/browser/-/browser-5.20.1.tgz#be59522d0914d58309e1367d997d4b3cd5385d7e"
+  integrity sha512-ClykuvrEsMKgAvifx5VHzRjchwYbJFX8YiIicYx+Wr3MXL2jLG6OEfHHJwJeyBL2C3vxd5O0KPK3pGMR9wPMLA==
   dependencies:
     "@sentry/core" "5.20.1"
     "@sentry/types" "5.20.1"
@@ -1001,9 +1002,10 @@
     progress "^2.0.3"
     proxy-from-env "^1.1.0"
 
-"@sentry/core@5.20.1", "@sentry/core@^5.19.0":
+"@sentry/core@5.20.1", "@sentry/core@^5.20.1":
   version "5.20.1"
   resolved "https://registry.yarnpkg.com/@sentry/core/-/core-5.20.1.tgz#857cc7186931c37ff032a1bcb573600ebacde961"
+  integrity sha512-gG622/UY2TePruF6iUzgVrbIX5vN8w2cjlWFo1Est8MvCfQsz8agGaLMCAyl5hCGJ6K2qTUZDOlbCNIKoMclxg==
   dependencies:
     "@sentry/hub" "5.20.1"
     "@sentry/minimal" "5.20.1"
@@ -1011,7 +1013,7 @@
     "@sentry/utils" "5.20.1"
     tslib "^1.9.3"
 
-"@sentry/hub@5.20.1", "@sentry/hub@^5.19.0":
+"@sentry/hub@5.20.1", "@sentry/hub@^5.20.1":
   version "5.20.1"
   resolved "https://registry.yarnpkg.com/@sentry/hub/-/hub-5.20.1.tgz#05e83ba972a96e9d7225a64c7d3728aa9fcefc4e"
   dependencies:
@@ -1019,9 +1021,10 @@
     "@sentry/utils" "5.20.1"
     tslib "^1.9.3"
 
-"@sentry/integrations@^5.19.0":
+"@sentry/integrations@^5.20.1":
   version "5.20.1"
   resolved "https://registry.yarnpkg.com/@sentry/integrations/-/integrations-5.20.1.tgz#c42dd53c2162b96bf4da641cd1c2bd53c0bbdce3"
+  integrity sha512-VpeZHYT8Fvw1J5478MqXXORf3Ftpt34YM4e+sTPuGrmf4Gro7lXdyownqiSaa7kwwNVQEV3zMlRDczVZzXQThw==
   dependencies:
     "@sentry/types" "5.20.1"
     "@sentry/utils" "5.20.1"
@@ -1035,23 +1038,37 @@
     "@sentry/types" "5.20.1"
     tslib "^1.9.3"
 
-"@sentry/react-native@^1.6.3":
-  version "1.6.3"
-  resolved "https://registry.yarnpkg.com/@sentry/react-native/-/react-native-1.6.3.tgz#80c68d6bc7f10bd4b7eb12e1b028620a1fadbcc5"
+"@sentry/react-native@^1.7.1":
+  version "1.7.1"
+  resolved "https://registry.yarnpkg.com/@sentry/react-native/-/react-native-1.7.1.tgz#208ab7547d720ef89fb98532af66755cc5c27bfc"
+  integrity sha512-UmGuCX51Mf9Ry2vD/6Ep98jRbm0PiNi1oVi7Ke2gaoVS3YhwbTqx8eTHpHvFm0kEGQbuM8MkYdD1s6oMCvmeHg==
   dependencies:
-    "@sentry/browser" "^5.19.0"
-    "@sentry/core" "^5.19.0"
-    "@sentry/hub" "^5.19.0"
-    "@sentry/integrations" "^5.19.0"
-    "@sentry/types" "^5.19.0"
-    "@sentry/utils" "^5.19.0"
+    "@sentry/browser" "^5.20.1"
+    "@sentry/core" "^5.20.1"
+    "@sentry/hub" "^5.20.1"
+    "@sentry/integrations" "^5.20.1"
+    "@sentry/react" "^5.20.1"
+    "@sentry/types" "^5.20.1"
+    "@sentry/utils" "^5.20.1"
     "@sentry/wizard" "^1.1.4"
 
-"@sentry/types@5.20.1", "@sentry/types@^5.19.0":
+"@sentry/react@^5.20.1":
+  version "5.20.1"
+  resolved "https://registry.yarnpkg.com/@sentry/react/-/react-5.20.1.tgz#b6da27a87e3301f9eb7e5960f8b5591f4ce4d811"
+  integrity sha512-NT0y8fqAaNHHdj+eLN2sjc/MDQgi5RLstpAqQkxNbfl+AEp0S0Naho6rMhTUd2kZVg0GwPi0snePw7HSjxpUHg==
+  dependencies:
+    "@sentry/browser" "5.20.1"
+    "@sentry/minimal" "5.20.1"
+    "@sentry/types" "5.20.1"
+    "@sentry/utils" "5.20.1"
+    hoist-non-react-statics "^3.3.2"
+    tslib "^1.9.3"
+
+"@sentry/types@5.20.1", "@sentry/types@^5.20.1":
   version "5.20.1"
   resolved "https://registry.yarnpkg.com/@sentry/types/-/types-5.20.1.tgz#ccc4fa4c9d0f94d93014b04e674762d5d5cd30a2"
 
-"@sentry/utils@5.20.1", "@sentry/utils@^5.19.0":
+"@sentry/utils@5.20.1", "@sentry/utils@^5.20.1":
   version "5.20.1"
   resolved "https://registry.yarnpkg.com/@sentry/utils/-/utils-5.20.1.tgz#68cfae0d0e3b321b4649b59f30265024b29eae63"
   dependencies:
@@ -3343,9 +3360,10 @@ hoist-non-react-statics@^2.3.1:
   version "2.5.5"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-2.5.5.tgz#c5903cf409c0dfd908f388e619d86b9c1174cb47"
 
-hoist-non-react-statics@^3.3.0:
+hoist-non-react-statics@^3.3.0, hoist-non-react-statics@^3.3.2:
   version "3.3.2"
   resolved "https://registry.yarnpkg.com/hoist-non-react-statics/-/hoist-non-react-statics-3.3.2.tgz#ece0acaf71d62c2969c2ec59feff42a4b1a85b45"
+  integrity sha512-/gGivxi8JPKWNm/W0jSmzcMPpfpPLc3dY/6GxhX2hQ9iGj3aDfklV4ET7NjKpSinLpJ5vafa9iiGIEZg10SfBw==
   dependencies:
     react-is "^16.7.0"
 
