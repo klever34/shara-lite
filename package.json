@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.19-chore.analytics-integration+build.1081",
+  "version": "0.1.20-discovery",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
@@ -53,6 +53,7 @@
     "react-native-tab-view": "^2.14.4",
     "react-native-ux-cam": "^5.2.0",
     "react-native-vector-icons": "6.6.0",
+    "react-native-view-shot": "^3.1.2",
     "react-native-webview": "^10.3.2",
     "readable-stream": "1.0.33",
     "realm": "^6.0.4",

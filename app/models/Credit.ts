@@ -7,6 +7,7 @@ export interface ICredit extends BaseModelInterface {
   amount_paid: number;
   amount_left: number;
   fulfilled?: boolean;
+  due_date?: Date;
   customer_name?: string;
   customer_mobile?: string;
   customer?: ICustomer;
@@ -24,6 +25,7 @@ export class Credit implements Partial<ICredit> {
       total_amount: 'double',
       amount_paid: 'double',
       amount_left: 'double',
+      due_date: 'date?',
       fulfilled: {type: 'bool', default: false},
       customer_name: 'string?',
       customer_mobile: 'string?',

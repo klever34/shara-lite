@@ -151,37 +151,41 @@ export const SummaryTableItem = ({
             {amountWithCurrency(subtotal)}
           </Text>
         </View>
-        <View
-          style={applyStyles('flex-row', 'w-full', {
-            justifyContent: 'flex-end',
-          })}>
+        {onPress && (
           <View
-            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-            <Icon
-              size={14}
-              name="edit"
-              type="feathericons"
-              color={colors.primary}
-            />
-            <Text
-              style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
-                fontSize: 12,
-                color: colors.primary,
-              })}>
-              Tap to edit
-            </Text>
+            style={applyStyles('flex-row', 'w-full', {
+              justifyContent: 'flex-end',
+            })}>
+            <View
+              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+              <Icon
+                size={14}
+                name="edit"
+                type="feathericons"
+                color={colors.primary}
+              />
+              <Text
+                style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
+                  fontSize: 12,
+                  color: colors.primary,
+                })}>
+                Tap to edit
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
       </View>
     </Touchable>
   );
 };
 
 const ReceiptSummary = (props: Props) => {
-  const navigation = useNavigation();
   const realm = useRealm();
+  const navigation = useNavigation();
   const authService = getAuthService();
+  const user = authService.getUser();
   const currency = authService.getUserCurrency();
+  const businessInfo = user?.businesses[0];
 
   const {
     products,
@@ -306,13 +310,16 @@ const ReceiptSummary = (props: Props) => {
   }, [customer.mobile, customer.name]);
 
   const handleEmailShare = useCallback(
-    async (email: string, callback: () => void) => {
+    async (
+      {email, receiptImage}: {email: string; receiptImage: string},
+      callback: () => void,
+    ) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
         email,
         title: 'Share receipt',
-        url: 'https://shara.co/',
-        message: 'Here is your receipt',
+        url: `data:image/png;base64,${receiptImage}`,
+        message: `Here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
@@ -323,37 +330,39 @@ const ReceiptSummary = (props: Props) => {
         Alert.alert('Error', e.error);
       }
     },
-    [customer.name],
+    [customer.name, businessInfo],
   );
 
-  const handleWhatsappShare = useCallback(async () => {
-    // TODO: use better copy for shara invite
-    const shareOptions = {
-      url: 'https://shara.co/',
-      social: Share.Social.WHATSAPP,
-      message: 'Here is your receipt',
-      title: `Share receipt with ${customer.name}`,
-      whatsAppNumber: `+234${customer.mobile}`, // country code + phone number
-      // filename:  `data:image/png;base64,<base64_data>`,
-    };
-    const errorMessages = {
-      filename: 'Invalid file attached',
-      whatsAppNumber: 'Please check the phone number supplied',
-    } as {[key: string]: any};
+  const handleWhatsappShare = useCallback(
+    async (receiptImage: string) => {
+      // TODO: use better copy for shara invite
+      const shareOptions = {
+        social: Share.Social.WHATSAPP,
+        title: `Share receipt with ${customer.name}`,
+        url: `data:image/png;base64,${receiptImage}`,
+        message: `Here is your receipt from ${businessInfo?.name}`,
+        whatsAppNumber: `${customer.mobile}`, // country code + phone number
+      };
+      const errorMessages = {
+        filename: 'Invalid file attached',
+        whatsAppNumber: 'Please check the phone number supplied',
+      } as {[key: string]: any};
 
-    if (!customer.mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', errorMessages[e.error]);
+      if (!customer.mobile) {
+        Alert.alert(
+          'Info',
+          'Please select a customer to share receipt with via Whatsapp',
+        );
+      } else {
+        try {
+          await Share.shareSingle(shareOptions);
+        } catch (e) {
+          Alert.alert('Error', errorMessages[e.error]);
+        }
       }
-    }
-  }, [customer.mobile, customer.name]);
+    },
+    [customer.mobile, customer.name, businessInfo],
+  );
 
   const handlePrintReceipt = useCallback(() => {
     Alert.alert(
@@ -835,6 +844,10 @@ const ReceiptSummary = (props: Props) => {
         onOpenContactList={handleOpenContactList}
       />
       <ShareReceiptModal
+        tax={tax}
+        products={products}
+        customer={customer}
+        totalAmount={totalAmount}
         visible={isShareModalOpen}
         onSmsShare={handleSmsShare}
         onEmailShare={handleEmailShare}

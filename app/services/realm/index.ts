@@ -9,6 +9,7 @@ import {ReceiptItem} from '../../models/ReceiptItem';
 import {Product} from '../../models/Product';
 import {Supplier} from '../../models/Supplier';
 import {InventoryStock} from '../../models/InventoryStock';
+import {DeliveryAgent} from '../../models/DeliveryAgent';
 
 const RealmContext = createContext<Realm | null>(null);
 export const RealmProvider = RealmContext.Provider;
@@ -32,12 +33,13 @@ export const createRealm = async () => {
   return Realm.open({
     schema: [
       Contact,
-      Message,
       Conversation,
       Customer,
       Credit,
       CreditPayment,
+      DeliveryAgent,
       InventoryStock,
+      Message,
       Payment,
       Product,
       Receipt,
