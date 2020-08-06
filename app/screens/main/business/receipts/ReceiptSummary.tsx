@@ -152,36 +152,39 @@ export const SummaryTableItem = ({
             {amountWithCurrency(subtotal)}
           </Text>
         </View>
-        <View
-          style={applyStyles('flex-row', 'w-full', {
-            justifyContent: 'flex-end',
-          })}>
+        {onPress && (
           <View
-            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-            <Icon
-              size={14}
-              name="edit"
-              type="feathericons"
-              color={colors.primary}
-            />
-            <Text
-              style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
-                fontSize: 12,
-                color: colors.primary,
-              })}>
-              Tap to edit
-            </Text>
+            style={applyStyles('flex-row', 'w-full', {
+              justifyContent: 'flex-end',
+            })}>
+            <View
+              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+              <Icon
+                size={14}
+                name="edit"
+                type="feathericons"
+                color={colors.primary}
+              />
+              <Text
+                style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
+                  fontSize: 12,
+                  color: colors.primary,
+                })}>
+                Tap to edit
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
       </View>
     </Touchable>
   );
 };
 
 const ReceiptSummary = (props: Props) => {
-  const navigation = useNavigation();
   const realm = useRealm();
+  const navigation = useNavigation();
   const authService = getAuthService();
+  const user = authService.getUser();
   const currency = authService.getUserCurrency();
 
   const {
@@ -205,6 +208,7 @@ const ReceiptSummary = (props: Props) => {
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
   );
+  const [receiptImage, setReceiptImage] = useState('');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
@@ -330,12 +334,12 @@ const ReceiptSummary = (props: Props) => {
   const handleWhatsappShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      url: 'https://shara.co/',
+      // url: 'https://shara.co/',
       social: Share.Social.WHATSAPP,
       message: 'Here is your receipt',
       title: `Share receipt with ${customer.name}`,
-      whatsAppNumber: `+234${customer.mobile}`, // country code + phone number
-      // filename:  `data:image/png;base64,<base64_data>`,
+      whatsAppNumber: `${customer.mobile}`, // country code + phone number
+      url: `data:image/png;base64,${receiptImage}`,
     };
     const errorMessages = {
       filename: 'Invalid file attached',
@@ -354,7 +358,7 @@ const ReceiptSummary = (props: Props) => {
         Alert.alert('Error', errorMessages[e.error]);
       }
     }
-  }, [customer.mobile, customer.name]);
+  }, [customer.mobile, customer.name, receiptImage]);
 
   const handlePrintReceipt = useCallback(() => {
     Alert.alert(
@@ -798,8 +802,17 @@ const ReceiptSummary = (props: Props) => {
             />
           </View>
         )}
+        <View>
+          <ReceiptImage
+            tax={tax}
+            user={user}
+            products={products}
+            customer={customer}
+            totalAmount={totalAmount}
+            getImageUri={(data) => setReceiptImage(data)}
+          />
+        </View>
       </ScrollView>
-      <ReceiptImage text="Hello world" />
       <View style={styles.actionButtons}>
         <Button
           title="Cancel"

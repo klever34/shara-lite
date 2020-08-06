@@ -1,5 +1,5 @@
-import {dimensions, spacing, colors} from './variables';
-import {StyleSheet} from 'react-native';
+import {dimensions, spacing, colors} from './variables'
+import {StyleSheet} from 'react-native'
 
 export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'flex-row': {
@@ -19,6 +19,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'items-center': {
     alignItems: 'center',
+  },
+  'items-end': {
+    alignItems: 'flex-end',
   },
   'flex-wrap': {
     flexWrap: 'wrap',
@@ -53,6 +56,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'text-center': {
     textAlign: 'center',
+  },
+  'text-left': {
+    textAlign: 'left',
+  },
+  'text-right': {
+    textAlign: 'right',
   },
   'text-uppercase': {
     textTransform: 'uppercase',
@@ -156,7 +165,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`-bottom-${curr}`]: {bottom: spacing[curr] * -1},
       [`left-${curr}`]: {left: spacing[curr]},
       [`-left-${curr}`]: {left: spacing[curr] * -1},
-    };
+    }
   }, {}),
   ...Object.keys(colors).reduce((acc, curr) => {
     return {
@@ -164,12 +173,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`bg-${curr}`]: {backgroundColor: colors[curr]},
       [`text-${curr}`]: {color: colors[curr]},
       [`border-${curr}`]: {borderColor: colors[curr]},
-    };
+    }
   }, {}),
   ...[0, 1, 2, 3, 4].reduce((acc, curr) => {
     return {
       ...acc,
       [`elevation-${curr}`]: {elevation: curr},
-    };
+    }
   }, {}),
-});
+})
