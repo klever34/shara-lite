@@ -3,7 +3,7 @@ import React, {useEffect, useState} from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {withErrorBoundary} from 'react-error-boundary';
+import {useErrorHandler, withErrorBoundary} from 'react-error-boundary';
 import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
@@ -18,9 +18,16 @@ import {
   BackHandler,
   Platform,
 } from 'react-native';
+import analytics from '@segment/analytics-react-native';
+import Config from 'react-native-config';
 import {colors} from './styles';
 import {applyStyles} from './helpers/utils';
 import FallbackComponent from './components/FallbackComponent';
+// @ts-ignore
+import RNUxcam from 'react-native-ux-cam';
+
+RNUxcam.optIntoSchematicRecordings();
+RNUxcam.startWithKey(Config.UXCAM_KEY);
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -33,6 +40,17 @@ const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   const [realm, setRealm] = useState<Realm | null>(null);
   const [error, setError] = useState(false);
+  const handleError = useErrorHandler();
+
+  useEffect(() => {
+    analytics
+      .setup(Config.SEGMENT_KEY, {
+        recordScreenViews: true,
+        trackAppLifecycleEvents: true,
+      })
+      .catch(handleError);
+  }, [handleError]);
+
   useEffect(() => {
     createRealm()
       .then((nextRealm) => {
