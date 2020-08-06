@@ -26,9 +26,6 @@ import FallbackComponent from './components/FallbackComponent';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 
-RNUxcam.optIntoSchematicRecordings();
-RNUxcam.startWithKey(Config.UXCAM_KEY);
-
 export type RootStackParamList = {
   Splash: undefined;
   Auth: undefined;
@@ -43,12 +40,16 @@ const App = () => {
   const handleError = useErrorHandler();
 
   useEffect(() => {
-    analytics
-      .setup(Config.SEGMENT_KEY, {
-        recordScreenViews: true,
-        trackAppLifecycleEvents: true,
-      })
-      .catch(handleError);
+    if (process.env.NODE_ENV === 'production') {
+      analytics
+        .setup(Config.SEGMENT_KEY, {
+          recordScreenViews: true,
+          trackAppLifecycleEvents: true,
+        })
+        .catch(handleError);
+      RNUxcam.optIntoSchematicRecordings();
+      RNUxcam.startWithKey(Config.UXCAM_KEY);
+    }
   }, [handleError]);
 
   useEffect(() => {
