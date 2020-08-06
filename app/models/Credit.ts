@@ -6,7 +6,7 @@ export interface ICredit extends BaseModelInterface {
   total_amount: number
   amount_paid: number
   amount_left: number
-  fulfilled?: boolean11
+  fulfilled?: boolean
   due_date?: Date
   customer_name?: string
   customer_mobile?: string

@@ -7,17 +7,13 @@ import {FAButton} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {IReceipt} from '../../../../models/Receipt';
+import {getAuthService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
 import {getReceipts} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
-import {
-  ShareReceiptModal,
-  ReceiptDetailsModal,
-  ReceiptImage,
-} from '../receipts';
-import {getAuthService} from '../../../../services';
+import {ReceiptDetailsModal, ShareReceiptModal} from '../receipts';
 
 type ReceiptItemProps = {
   item: IReceipt;
@@ -29,8 +25,8 @@ export function MyReceipts() {
   const receipts = getReceipts({realm});
   const authService = getAuthService();
   const user = authService.getUser();
+  const businessInfo = user?.businesses[0];
 
-  const [receiptImage, setReceiptImage] = useState('');
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeReceipt, setActiveReceipt] = useState<IReceipt | null>(null);
 
@@ -83,12 +79,15 @@ export function MyReceipts() {
   }, [activeReceipt]);
 
   const handleEmailShare = useCallback(
-    async (email: string, callback: () => void) => {
+    async (
+      {email, receiptImage}: {email: string; receiptImage: string},
+      callback: () => void,
+    ) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
         email,
         title: 'Share receipt',
-        message: 'Here is your receipt',
+        message: `Here is your receipt from ${businessInfo?.name}`,
         subject: activeReceipt?.customer_name
           ? `${activeReceipt?.customer_name}'s Receipt`
           : 'Your Receipt',
@@ -102,36 +101,39 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     },
-    [activeReceipt, receiptImage],
+    [activeReceipt, businessInfo],
   );
 
-  const handleWhatsappShare = useCallback(async () => {
-    // TODO: use better copy for shara invite
-    const shareOptions = {
-      social: Share.Social.WHATSAPP,
-      message: 'Here is your receipt',
-      url: `data:image/png;base64,${receiptImage}`,
-      whatsAppNumber: `${activeReceipt?.customer_mobile}`,
-      title: `Share receipt with ${activeReceipt?.customer_name}`,
-    };
-    const errorMessages = {
-      filename: 'Invalid file attached',
-      whatsAppNumber: 'Please check the phone number supplied',
-    } as {[key: string]: any};
+  const handleWhatsappShare = useCallback(
+    async (receiptImage: string) => {
+      // TODO: use better copy for shara invite
+      const shareOptions = {
+        social: Share.Social.WHATSAPP,
+        url: `data:image/png;base64,${receiptImage}`,
+        whatsAppNumber: `${activeReceipt?.customer_mobile}`,
+        message: `Here is your receipt from ${businessInfo?.name}`,
+        title: `Share receipt with ${activeReceipt?.customer_name}`,
+      };
+      const errorMessages = {
+        filename: 'Invalid file attached',
+        whatsAppNumber: 'Please check the phone number supplied',
+      } as {[key: string]: any};
 
-    if (!activeReceipt?.customer_mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', errorMessages[e.error]);
+      if (!activeReceipt?.customer_mobile) {
+        Alert.alert(
+          'Info',
+          'Please select a customer to share receipt with via Whatsapp',
+        );
+      } else {
+        try {
+          await Share.shareSingle(shareOptions);
+        } catch (e) {
+          Alert.alert('Error', errorMessages[e.error]);
+        }
       }
-    }
-  }, [activeReceipt, receiptImage]);
+    },
+    [activeReceipt, businessInfo],
+  );
 
   const renderReceiptItem = useCallback(
     ({item: receipt}: ReceiptItemProps) => {
@@ -218,11 +220,15 @@ export function MyReceipts() {
       </FAButton>
 
       <ShareReceiptModal
+        tax={activeReceipt?.tax}
         visible={isShareModalOpen}
         onSmsShare={handleSmsShare}
+        products={activeReceipt?.items}
         onEmailShare={handleEmailShare}
         onClose={handleCloseShareModal}
+        customer={activeReceipt?.customer}
         onWhatsappShare={handleWhatsappShare}
+        totalAmount={activeReceipt?.total_amount}
       />
 
       <ReceiptDetailsModal
@@ -232,18 +238,6 @@ export function MyReceipts() {
         onOpenShareModal={handleOpenShareModal}
         onClose={handleCloseReceiptDetailsModal}
       />
-      {activeReceipt && (
-        <View style={applyStyles({opacity: 0, height: 0})}>
-          <ReceiptImage
-            user={user}
-            tax={activeReceipt?.tax}
-            products={activeReceipt?.items}
-            customer={activeReceipt?.customer}
-            totalAmount={activeReceipt?.total_amount}
-            getImageUri={(data) => setReceiptImage(data)}
-          />
-        </View>
-      )}
     </View>
   );
 }
