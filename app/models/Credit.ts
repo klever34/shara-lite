@@ -1,19 +1,20 @@
-import {ICustomer} from './Customer';
-import {IReceipt} from './Receipt';
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {ICustomer} from './Customer'
+import {IReceipt} from './Receipt'
+import {BaseModelInterface, baseModelSchema} from './baseSchema'
 
 export interface ICredit extends BaseModelInterface {
-  total_amount: number;
-  amount_paid: number;
-  amount_left: number;
-  fulfilled?: boolean;
-  customer_name?: string;
-  customer_mobile?: string;
-  customer?: ICustomer;
-  receipt?: IReceipt;
+  total_amount: number
+  amount_paid: number
+  amount_left: number
+  fulfilled?: boolean11
+  due_date?: Date
+  customer_name?: string
+  customer_mobile?: string
+  customer?: ICustomer
+  receipt?: IReceipt
 }
 
-export const modelName = 'Credit';
+export const modelName = 'Credit'
 
 export class Credit implements Partial<ICredit> {
   public static schema: Realm.ObjectSchema = {
@@ -24,6 +25,7 @@ export class Credit implements Partial<ICredit> {
       total_amount: 'double',
       amount_paid: 'double',
       amount_left: 'double',
+      due_date: 'date?',
       fulfilled: {type: 'bool', default: false},
       customer_name: 'string?',
       customer_mobile: 'string?',
@@ -35,5 +37,5 @@ export class Credit implements Partial<ICredit> {
         property: 'credit',
       },
     },
-  };
+  }
 }
