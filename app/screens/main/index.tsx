@@ -56,6 +56,7 @@ import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
+import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -102,6 +103,7 @@ export type MainStackParamList = {
   ReceiveInventory: undefined;
   DeliveryAgents: undefined;
   AddSupplier: undefined;
+  AddDeliveryAgent: undefined;
   ReceiveInventoryStock: {supplier: ISupplier};
 };
 
@@ -555,6 +557,18 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="AddDeliveryAgent"
+          component={AddDeliveryAgent}
+          options={{
+            title: 'Add Delivery Agent',
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',
