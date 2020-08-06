@@ -328,7 +328,7 @@ const ReceiptSummary = (props: Props) => {
         email,
         title: 'Share receipt',
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Here is your receipt from ${businessInfo?.name}`,
+        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
@@ -349,7 +349,7 @@ const ReceiptSummary = (props: Props) => {
         social: Share.Social.WHATSAPP,
         title: `Share receipt with ${customer.name}`,
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Here is your receipt from ${businessInfo?.name}`,
+        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
         whatsAppNumber: `${customer.mobile}`, // country code + phone number
       };
       const errorMessages = {

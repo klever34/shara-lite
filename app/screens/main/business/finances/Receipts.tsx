@@ -87,9 +87,9 @@ export function MyReceipts() {
       const shareOptions = {
         email,
         title: 'Share receipt',
-        message: `Here is your receipt from ${businessInfo?.name}`,
-        subject: activeReceipt?.customer_name
-          ? `${activeReceipt?.customer_name}'s Receipt`
+        message: `Hi ${activeReceipt?.customer?.name}, here is your receipt from ${businessInfo?.name}`,
+        subject: activeReceipt?.customer?.name
+          ? `${activeReceipt?.customer.name}'s Receipt`
           : 'Your Receipt',
         url: `data:image/png;base64,${receiptImage}`,
       };
@@ -110,9 +110,9 @@ export function MyReceipts() {
       const shareOptions = {
         social: Share.Social.WHATSAPP,
         url: `data:image/png;base64,${receiptImage}`,
-        whatsAppNumber: `${activeReceipt?.customer_mobile}`,
-        message: `Here is your receipt from ${businessInfo?.name}`,
-        title: `Share receipt with ${activeReceipt?.customer_name}`,
+        whatsAppNumber: `${activeReceipt?.customer?.mobile}`,
+        message: `Hi ${activeReceipt?.customer?.name}, Here is your receipt from ${businessInfo?.name}`,
+        title: `Share receipt with ${activeReceipt?.customer?.name}`,
       };
       const errorMessages = {
         filename: 'Invalid file attached',

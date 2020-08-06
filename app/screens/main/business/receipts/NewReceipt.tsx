@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {
@@ -147,9 +148,13 @@ export const NewReceipt = () => {
       handleAddItem();
       items = [product, ...receipt];
     }
-    setReceipt(items);
-    setSelectedProduct(null);
-    handleOpenSummaryModal();
+    if ((selectedProduct && quantity && price) || items.length) {
+      setReceipt(items);
+      setSelectedProduct(null);
+      handleOpenSummaryModal();
+    } else {
+      Alert.alert('Error', 'Please select at least one product item');
+    }
   }, [
     price,
     receipt,
@@ -230,6 +235,7 @@ export const NewReceipt = () => {
       />
       <Modal
         isVisible={!!selectedProduct}
+        onBackdropPress={handleCloseProductModal}
         onSwipeComplete={handleCloseProductModal}
         onBackButtonPress={handleCloseProductModal}
         style={applyStyles({
