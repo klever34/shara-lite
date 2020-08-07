@@ -56,6 +56,10 @@ import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
+import analytics, {JsonMap} from '@segment/analytics-react-native';
+// @ts-ignore
+import RNUxcam from 'react-native-ux-cam';
+import {isNumber, isString} from 'lodash';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -110,10 +114,22 @@ const MainStack = createStackNavigator<MainStackParamList>();
 const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
-  const authService = getAuthService();
-  const user = authService.getUser();
+  const user = getAuthService().getUser();
   const initialRouteName =
     user?.businesses && user?.businesses.length ? 'Home' : 'BusinessSetup';
+
+  useEffect(() => {
+    if (user) {
+      analytics.identify(String(user.id), user as JsonMap).catch(handleError);
+      RNUxcam.setUserIdentity(String(user.id));
+      Object.keys(user).forEach((prop) => {
+        const value = user[prop as keyof typeof user];
+        if (isNumber(value) || isString(value)) {
+          RNUxcam.setUserProperty(prop, String(value));
+        }
+      });
+    }
+  }, [handleError, user]);
 
   useEffect(() => {
     if (user) {
