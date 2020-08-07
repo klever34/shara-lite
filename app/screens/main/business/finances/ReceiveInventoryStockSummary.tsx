@@ -15,11 +15,9 @@ import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {addNewStocks} from '../../../../services/InventoryStockService';
 import {useRealm} from '../../../../services/realm';
+import {IDeliveryAgent} from 'app/models/DeliveryAgent';
 
-type Payload = {
-  agent_full_name?: string | undefined;
-  agent_mobile?: string | undefined;
-};
+type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
 
 export type SummaryTableItemProps = {
   item: InventoryStockItem;
@@ -183,15 +181,15 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
             <FloatingLabelInput
               label="Phone Number"
               keyboardType="phone-pad"
-              value={agent.agent_mobile}
-              onChangeText={(text) => handleChange(text, 'agent_mobile')}
+              value={agent.mobile}
+              onChangeText={(text) => handleChange(text, 'mobile')}
             />
           </View>
           <View style={applyStyles('flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Full Name"
-              value={agent.agent_full_name}
-              onChangeText={(text) => handleChange(text, 'agent_full_name')}
+              value={agent.full_name}
+              onChangeText={(text) => handleChange(text, 'full_name')}
             />
           </View>
         </View>

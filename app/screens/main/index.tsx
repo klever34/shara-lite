@@ -37,6 +37,7 @@ import {
   TotalCredit,
   ViewProductDetails,
   ReceiveInventoryStock,
+  ReceivedInventoryList,
 } from './business';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
@@ -105,6 +106,7 @@ export type MainStackParamList = {
   AddSupplier: undefined;
   AddDeliveryAgent: undefined;
   ReceiveInventoryStock: {supplier: ISupplier};
+  ReceivedInventoryList: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -569,6 +571,21 @@ const MainScreens = ({navigation}: any) => {
           component={AddDeliveryAgent}
           options={{
             title: 'Add Delivery Agent',
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="ReceivedInventoryList"
+          component={ReceivedInventoryList}
+          options={{
+            title: 'Received Inventory',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
             headerTitleStyle: {
               fontSize: 16,
               fontFamily: 'CocogoosePro-SemiLight',

@@ -131,6 +131,7 @@ export const DeliveryAgents = () => {
         data={myDeliveryAgents}
         renderItem={renderDeliveryAgentListItem}
         keyExtractor={(item) => `${item.id}`}
+        style={applyStyles({backgroundColor: colors.white})}
         ListHeaderComponent={renderDeliveryAgentListHeader}
         ListEmptyComponent={
           <EmptyState

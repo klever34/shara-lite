@@ -78,6 +78,22 @@ export function MyInventory() {
       },
     },
     {
+      name: 'ReceivedInventoryList',
+      render: () => {
+        return (
+          <View style={styles.listItem}>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              View Received Inventory
+            </Text>
+            <Image
+              style={styles.listItemIcon}
+              source={require('../../../../assets/icons/business/box.png')}
+            />
+          </View>
+        );
+      },
+    },
+    {
       name: 'AddProduct',
       render: () => {
         return (

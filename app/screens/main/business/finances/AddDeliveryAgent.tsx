@@ -54,20 +54,20 @@ export const AddDeliveryAgent = () => {
         backgroundColor: colors.white,
       })}>
       <Text
-        style={applyStyles('text-400', {
+        style={applyStyles('text-400 pb-xl', {
           fontSize: 18,
           color: colors.primary,
         })}>
         Delivery Agent Details
       </Text>
-      <View style={applyStyles('flex-row', 'items-center')}>
+      <View style={applyStyles('flex-row pb-xl items-center')}>
         <FloatingLabelInput
           label="Name"
           value={deliveryAgent.full_name}
           onChangeText={(text) => handleChange(text, 'full_name')}
         />
       </View>
-      <View style={applyStyles('flex-row', 'items-center')}>
+      <View style={applyStyles('flex-row pb-xl items-center')}>
         <FloatingLabelInput
           label="Phone number"
           value={deliveryAgent.mobile}
