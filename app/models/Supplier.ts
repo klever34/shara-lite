@@ -13,7 +13,7 @@ export const modelName = 'Supplier';
 export class Supplier implements Partial<ISupplier> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       name: 'string',

@@ -18,7 +18,7 @@ export const modelName = 'Payment';
 export class Payment implements Partial<IPayment> {
   public static schema: Realm.ObjectSchema = {
     name: 'Payment',
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       amount_paid: 'double',

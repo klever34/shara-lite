@@ -16,7 +16,7 @@ export const modelName = 'Customer';
 export class Customer implements Partial<ICustomer> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       name: 'string',

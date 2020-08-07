@@ -24,7 +24,7 @@ export const modelName = 'InventoryStock';
 export class InventoryStock implements Partial<InventoryStock> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       batch_id: 'string',

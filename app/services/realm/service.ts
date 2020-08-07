@@ -7,6 +7,9 @@ import {IApiService} from '../api';
 import {IAuthService} from '../auth';
 import compact from 'lodash/compact';
 import {ChannelCustom} from '../../../types/app';
+import {createRealm} from './index';
+import {getRealmService} from '../index';
+import {Alert, BackHandler, Platform} from 'react-native';
 
 export interface IRealmService {
   getInstance(): Realm | null;
@@ -114,9 +117,11 @@ export class RealmService implements IRealmService {
 
   clearRealm() {
     const realm = this.realm as Realm;
-    realm.write(() => {
-      realm.deleteAll();
-    });
+    if (realm) {
+      realm.write(() => {
+        realm.deleteAll();
+      });
+    }
   }
 
   // createMessage(message: IMessage): Promise<IMessage> {

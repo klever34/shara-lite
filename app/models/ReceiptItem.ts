@@ -18,7 +18,7 @@ export const modelName = 'ReceiptItem';
 export class ReceiptItem implements Partial<IReceiptItem> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       name: 'string',

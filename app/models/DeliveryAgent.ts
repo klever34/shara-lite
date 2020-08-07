@@ -12,7 +12,7 @@ export const modelName = 'DeliveryAgent';
 export class DeliveryAgent implements Partial<IDeliveryAgent> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       full_name: 'string',

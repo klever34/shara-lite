@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   Alert,
   ScrollView,
@@ -13,6 +13,8 @@ import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
 import {getApiService} from '../../services';
 import {colors} from '../../styles';
+import {loginToRealm} from '../../services/realm';
+import {RealmContext} from '../../services/realm/provider';
 
 type Fields = {
   mobile: string;
@@ -21,6 +23,8 @@ type Fields = {
 };
 
 export const Login = ({navigation}: any) => {
+  // @ts-ignore
+  const {updateRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -48,12 +52,23 @@ export const Login = ({navigation}: any) => {
     const apiService = getApiService();
     try {
       setLoading(true);
-      await apiService.logIn(payload);
+      const response = await apiService.logIn(payload);
+      const {
+        data: {
+          realmCredentials: {jwt},
+          user,
+        },
+      } = response;
+      const realm = await loginToRealm({
+        realmJwt: jwt,
+        user,
+      });
       setLoading(false);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
       });
+      updateRealm(realm);
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);

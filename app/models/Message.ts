@@ -12,7 +12,7 @@ export interface IMessage {
 export class Message implements Partial<IMessage> {
   public static schema: Realm.ObjectSchema = {
     name: 'Message',
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       id: 'string',
       channel: 'string',

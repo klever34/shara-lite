@@ -182,13 +182,16 @@ export class ApiService implements IApiService {
       const {
         data: {
           credentials: {token},
+          // realmCredentials: {jwt},
           user,
         },
       } = fetchResponse;
       await this.storageService.setItem('token', token);
       await this.storageService.setItem('user', user);
+      await this.storageService.setItem('realmJwt', '');
       this.authService.setToken(token);
       this.authService.setUser(user);
+      this.authService.setRealmJwt('');
       return fetchResponse;
     } catch (error) {
       throw error;

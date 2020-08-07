@@ -6,6 +6,8 @@ export interface BaseModelInterface {
 
 export const baseModelSchema = {
   id: 'string',
+  _id: 'string',
+  _partition: {type: 'string', default: 'shara-test'},
   created_at: 'date?',
   updated_at: 'date?',
 };

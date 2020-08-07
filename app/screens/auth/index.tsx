@@ -9,9 +9,9 @@ const AuthStack = createStackNavigator();
 
 const AuthScreens = () => {
   useEffect(() => {
-    const realmService = getRealmService();
+    // const realmService = getRealmService();
     const timer = setTimeout(() => {
-      realmService.clearRealm();
+      // realmService.clearRealm();
       clearTimeout(timer);
     }, 100);
   }, []);

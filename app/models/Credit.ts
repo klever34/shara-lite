@@ -19,7 +19,7 @@ export const modelName = 'Credit';
 export class Credit implements Partial<ICredit> {
   public static schema: Realm.ObjectSchema = {
     name: 'Credit',
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       total_amount: 'double',
