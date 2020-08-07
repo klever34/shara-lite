@@ -12,27 +12,25 @@ import {Supplier} from '../../models/Supplier';
 import {InventoryStock} from '../../models/InventoryStock';
 import {DeliveryAgent} from '../../models/DeliveryAgent';
 import {RealmContext} from './provider';
-import {getAuthService, getRealmService} from '../index';
+import {getRealmService} from '../index';
 import {Alert, BackHandler, Platform} from 'react-native';
-import {AuthService} from '../auth';
+import {StorageService} from '../storage';
 
 const schema = [
-  // Contact,
-  // Conversation,
+  Contact,
+  Conversation,
   Customer,
   Credit,
   CreditPayment,
   DeliveryAgent,
   InventoryStock,
-  // Message,
+  Message,
   Payment,
   Product,
   Receipt,
   ReceiptItem,
   Supplier,
 ];
-
-const authService = getAuthService();
 
 export const useRealm = (): Realm => {
   // @ts-ignore
@@ -57,19 +55,20 @@ export const createRealm = async ({
     // Realm.deleteFile({});
   }
 
+  const partitionValue = await getRealmPartitionKey();
+
   const config = {
     schema,
     sync: {
       user: realmUser,
-      partitionValue: getRealmPartitionKey(),
+      partitionValue,
     },
   };
   return Realm.open(config);
 };
 
-export const loginToRealm = async (): Promise<Realm> => {
+export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
   try {
-    const jwt = authService.getRealmJwt();
     // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
     const appId = 'shara-discovery-fhacl';
@@ -106,8 +105,10 @@ export const loginToRealm = async (): Promise<Realm> => {
   }
 };
 
-export const getRealmPartitionKey = (): string => {
-  const user = authService.getUser();
+const getRealmPartitionKey = async (): Promise<string> => {
+  const storageService = new StorageService();
+  const user = await storageService.getItem('user');
+  // @ts-ignore
   return user ? user.id.toString() : '';
 };
 

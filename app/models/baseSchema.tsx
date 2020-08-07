@@ -1,5 +1,7 @@
 import {ObjectId} from 'bson';
-import {getRealmPartitionKey} from '../services/realm';
+import {StorageService} from '../services/storage';
+
+let partitionKey = '';
 
 export interface BaseModelInterface {
   _id?: ObjectId;
@@ -15,12 +17,26 @@ export const baseModelSchema = {
   updated_at: 'date?',
 };
 
+const getRealmPartitionKey = async (): Promise<void> => {
+  const storageService = new StorageService();
+  const user = await storageService.getItem('user');
+  // @ts-ignore
+  partitionKey = user ? user.id.toString() : '';
+};
+
+const getLocalRealmPartitionKey = () => {
+  if (!partitionKey) {
+    getRealmPartitionKey().then();
+  }
+  return partitionKey;
+};
+
 export class BaseModel {
   public _id: ObjectId;
   public _partition: string;
 
-  constructor({id = new ObjectId()} = {}) {
-    this._partition = getRealmPartitionKey();
-    this._id = id;
+  constructor({_id = new ObjectId()} = {}) {
+    this._partition = getLocalRealmPartitionKey();
+    this._id = _id;
   }
 }

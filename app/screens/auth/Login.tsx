@@ -52,8 +52,13 @@ export const Login = ({navigation}: any) => {
     const apiService = getApiService();
     try {
       setLoading(true);
-      await apiService.logIn(payload);
-      const realm = await loginToRealm();
+      const loginResponse = await apiService.logIn(payload);
+      const {
+        data: {
+          realmCredentials: {jwt},
+        },
+      } = loginResponse;
+      const realm = await loginToRealm({jwt});
       setLoading(false);
       navigation.reset({
         index: 0,

@@ -16,9 +16,9 @@ export interface IAuthService {
 
   setToken(token: string): void;
 
-  getRealmJwt(): string | null;
+  getRealmCredentials(): string | null;
 
-  setRealmJwt(realmJwt: string): void;
+  setRealmCredentials(realmCredentials: any): void;
 
   isLoggedIn(): boolean;
 
@@ -30,7 +30,7 @@ export interface IAuthService {
 export class AuthService implements IAuthService {
   private user: User | null = null;
   private token: string | null = null;
-  private realmJwt: string | null = null;
+  private realmCredentials: string | null = null;
 
   constructor(
     private storageService: IStorageService,
@@ -40,17 +40,17 @@ export class AuthService implements IAuthService {
 
   public async initialize(): Promise<void> {
     try {
-      const [user, token, realmJwt] = await Promise.all([
+      const [user, token, realmCredentials] = await Promise.all([
         this.storageService.getItem<User>('user'),
         this.storageService.getItem<string>('token'),
-        this.storageService.getItem<string>('realmJwt'),
+        this.storageService.getItem<string>('realmCredentials'),
       ]);
       if (user && token) {
         this.setUser(user);
         this.setToken(token);
       }
-      if (realmJwt) {
-        this.setRealmJwt(realmJwt);
+      if (realmCredentials) {
+        this.setRealmCredentials(realmCredentials);
       }
     } catch (e) {
       throw e;
@@ -65,12 +65,12 @@ export class AuthService implements IAuthService {
     this.user = user;
   }
 
-  public setRealmJwt(realmJwt: string) {
-    this.realmJwt = realmJwt;
+  public setRealmCredentials(realmCredentials: any) {
+    this.realmCredentials = realmCredentials;
   }
 
-  public getRealmJwt(): string | null {
-    return this.realmJwt;
+  public getRealmCredentials(): string | null {
+    return this.realmCredentials;
   }
 
   public getToken(): string | null {

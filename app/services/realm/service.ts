@@ -14,9 +14,10 @@ import {IApiService} from '../api';
 import {IAuthService} from '../auth';
 import compact from 'lodash/compact';
 import {ChannelCustom} from '../../../types/app';
-import {createRealm, getRealmPartitionKey} from './index';
+import {createRealm} from './index';
 import {getRealmService} from '../index';
 import {Alert, BackHandler, Platform} from 'react-native';
+import {ObjectId} from 'bson';
 
 export interface IRealmService {
   getInstance(): Realm | null;
@@ -263,11 +264,18 @@ export class RealmService implements IRealmService {
         if (!this.realm) {
           return;
         }
+
         for (let i = 0; i < channels.length; i += 1) {
           const channel = channels[i];
+          const newConvo = new Conversation();
+          const updates = {
+            _partition: newConvo._partition,
+            _id: newConvo._id,
+          };
+
           const conversation = this.realm.create<IConversation>(
             'Conversation',
-            {...conversations[channel], _partition: getRealmPartitionKey()},
+            {...conversations[channel], ...updates},
             Realm.UpdateMode.Modified,
           );
           if (conversation.type === 'group') {
