@@ -120,7 +120,7 @@ export const RecordCreditPayment = () => {
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
         onSelectCustomer={handleSetCustomer}
-        onOpenContactList={handleOpenCustomersList}
+        onOpenCustomerList={handleOpenCustomersList}
       />
     </ScrollView>
   );
