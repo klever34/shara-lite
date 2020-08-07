@@ -282,6 +282,7 @@ export const ReceiptStatusModal = (props: Props) => {
           title="Finish"
           variantColor="red"
           onPress={onComplete}
+          disabled={isCompleting}
           isLoading={isCompleting}
           style={styles.actionButton}
         />

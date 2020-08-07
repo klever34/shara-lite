@@ -30,19 +30,6 @@ export const saveCreditPayment = ({
   method: string;
   note?: string;
 }): void => {
-  const paymentData = {
-    customer,
-    amount,
-    method,
-    note,
-    type: 'credit',
-  };
-
-  const payment = savePayment({
-    realm,
-    ...paymentData,
-  });
-
   const credits = customer.credits;
   let amountLeft = amount;
 
@@ -60,6 +47,7 @@ export const saveCreditPayment = ({
       creditUpdates.amount_left = 0;
       creditUpdates.fulfilled = true;
       creditUpdates.amount_paid = credit.amount_left;
+      amountLeft = amountLeftFromDeduction;
     } else {
       creditUpdates.amount_left = Math.abs(amountLeftFromDeduction);
       creditUpdates.amount_paid = amountLeft;
@@ -67,6 +55,19 @@ export const saveCreditPayment = ({
 
     realm.write(() => {
       updateCredit({realm, credit, updates: creditUpdates});
+    });
+
+    const paymentData = {
+      customer,
+      amount: creditUpdates.amount_paid,
+      method,
+      note,
+      type: 'credit',
+    };
+
+    const payment = savePayment({
+      realm,
+      ...paymentData,
     });
 
     realm.write(() => {

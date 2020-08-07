@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -7,14 +7,14 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {Button} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
+import {applyStyles} from '../../../../helpers/utils';
+import {ICustomer} from '../../../../models';
+import {getCustomers} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
-import {applyStyles} from '../../../../helpers/utils';
-import {Button} from '../../../../components';
-import {getCustomers} from '../../../../services/CustomerService';
-import {ICustomer} from '../../../../models';
 
 type CustomerItemProps = {
   item: ICustomer;

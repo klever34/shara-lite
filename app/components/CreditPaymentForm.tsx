@@ -70,6 +70,7 @@ export const CreditPaymentForm = (props: Props) => {
       </View>
 
       <Button
+        disabled={isLoading}
         isLoading={isLoading}
         onPress={handleSubmit}
         title="Confirm payment"

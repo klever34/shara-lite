@@ -54,7 +54,6 @@ export const CreditDetails = ({route}: any) => {
       if (creditDetails) {
         setIsLoading(true);
         setTimeout(() => {
-          console.log(customer);
           setIsLoading(false);
           if (!creditDetails.customer) {
             updateReceipt({
