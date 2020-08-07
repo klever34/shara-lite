@@ -1,6 +1,6 @@
 import {ICustomer} from './Customer';
 import {IReceipt} from './Receipt';
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface ICredit extends BaseModelInterface {
   total_amount: number;
@@ -16,7 +16,7 @@ export interface ICredit extends BaseModelInterface {
 
 export const modelName = 'Credit';
 
-export class Credit implements Partial<ICredit> {
+export class Credit extends BaseModel implements Partial<ICredit> {
   public static schema: Realm.ObjectSchema = {
     name: 'Credit',
     primaryKey: '_id',

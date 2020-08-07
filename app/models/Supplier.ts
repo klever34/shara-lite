@@ -1,4 +1,4 @@
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IInventoryStock} from './InventoryStock';
 
 export interface ISupplier extends BaseModelInterface {
@@ -10,7 +10,7 @@ export interface ISupplier extends BaseModelInterface {
 
 export const modelName = 'Supplier';
 
-export class Supplier implements Partial<ISupplier> {
+export class Supplier extends BaseModel implements Partial<ISupplier> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
     primaryKey: '_id',

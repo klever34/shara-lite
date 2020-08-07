@@ -1,7 +1,11 @@
+import {ObjectId} from 'bson';
 import {IProduct} from './Product';
 import {ISupplier} from './Supplier';
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {DeliveryAgent} from './DeliveryAgent';
+import {getAuthService} from '../services';
+
+const authService = getAuthService();
 
 export interface IInventoryStock extends BaseModelInterface {
   supplier_name: string;
@@ -21,7 +25,8 @@ export interface IInventoryStock extends BaseModelInterface {
 
 export const modelName = 'InventoryStock';
 
-export class InventoryStock implements Partial<InventoryStock> {
+export class InventoryStock extends BaseModel
+  implements Partial<InventoryStock> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
     primaryKey: '_id',

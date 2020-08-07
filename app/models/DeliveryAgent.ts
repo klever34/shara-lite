@@ -1,4 +1,4 @@
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IInventoryStock} from './InventoryStock';
 
 export interface IDeliveryAgent extends BaseModelInterface {
@@ -9,7 +9,8 @@ export interface IDeliveryAgent extends BaseModelInterface {
 
 export const modelName = 'DeliveryAgent';
 
-export class DeliveryAgent implements Partial<IDeliveryAgent> {
+export class DeliveryAgent extends BaseModel
+  implements Partial<IDeliveryAgent> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
     primaryKey: '_id',

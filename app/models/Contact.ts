@@ -1,5 +1,6 @@
 import capitalize from 'lodash/capitalize';
 import {User} from '../../types/app';
+import {BaseModel, baseModelSchema} from './baseSchema';
 
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
@@ -9,11 +10,12 @@ export interface IContact
   isMe: boolean;
 }
 
-export class Contact implements Partial<IContact> {
+export class Contact extends BaseModel implements Partial<IContact> {
   public static schema: Realm.ObjectSchema = {
     name: 'Contact',
     primaryKey: 'mobile',
     properties: {
+      ...baseModelSchema,
       id: {type: 'int', indexed: true},
       mobile: 'string',
       channel: 'string?',

@@ -1,4 +1,6 @@
-export interface IMessage {
+import {BaseModel, BaseModelInterface} from './baseSchema';
+
+export interface IMessage extends BaseModelInterface {
   id: string;
   channel: string;
   content: string;
@@ -6,10 +8,9 @@ export interface IMessage {
   timetoken?: string;
   delivered_timetoken?: string;
   read_timetoken?: string;
-  created_at: Date;
 }
 
-export class Message implements Partial<IMessage> {
+export class Message extends BaseModel implements Partial<IMessage> {
   public static schema: Realm.ObjectSchema = {
     name: 'Message',
     primaryKey: '_id',

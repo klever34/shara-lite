@@ -48,7 +48,11 @@ export const useRealm = () => {
   return realm;
 };
 
-export const createRealm = async ({realmUser}: {realmUser: any}) => {
+export const createRealm = async ({
+  realmUser,
+}: {
+  realmUser: any;
+}): Promise<Realm> => {
   if (process.env.NODE_ENV === 'development') {
     // Realm.deleteFile({});
   }
@@ -63,9 +67,10 @@ export const createRealm = async ({realmUser}: {realmUser: any}) => {
   return Realm.open(config);
 };
 
-export const loginToRealm = async () => {
+export const loginToRealm = async (): Promise<Realm> => {
   try {
     const jwt = authService.getRealmJwt();
+    // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
     const appId = 'shara-discovery-fhacl';
     const appConfig = {
@@ -74,7 +79,6 @@ export const loginToRealm = async () => {
     // @ts-ignore
     const app = new Realm.App(appConfig);
     const realmUser = await app.logIn(credentials);
-    // @ts-ignore
     const realm = await createRealm({realmUser});
     console.log('Realm user -->', realm, omit(realm, []));
     const realmService = getRealmService();

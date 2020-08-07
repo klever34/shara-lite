@@ -52,23 +52,14 @@ export const Login = ({navigation}: any) => {
     const apiService = getApiService();
     try {
       setLoading(true);
-      const response = await apiService.logIn(payload);
-      const {
-        data: {
-          realmCredentials: {jwt},
-          user,
-        },
-      } = response;
-      const realm = await loginToRealm({
-        realmJwt: jwt,
-        user,
-      });
+      await apiService.logIn(payload);
+      const realm = await loginToRealm();
       setLoading(false);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
       });
-      updateRealm(realm);
+      updateRealm && updateRealm(realm);
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);
