@@ -91,6 +91,8 @@ target 'SharaRN' do
 
   pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
 
+  pod 'react-native-view-shot', :path => '../node_modules/react-native-view-shot'
+
   target 'SharaRNTests' do
     inherit! :complete
     # Pods for testing

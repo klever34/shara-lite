@@ -1,5 +1,6 @@
 import {IProduct} from '../app/models/Product';
 import {ISupplier} from '../app/models/Supplier';
+import {DeliveryAgent} from '../app/models/DeliveryAgent';
 
 type Falsy = undefined | null | false;
 
@@ -84,6 +85,7 @@ type InventoryStockItem = {
   cost_price?: string;
   supplier: ISupplier;
   product: IProduct;
+  delivery_agent: DeliveryAgent;
 };
 
 type Customer = {
