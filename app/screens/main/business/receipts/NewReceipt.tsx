@@ -236,7 +236,6 @@ export const NewReceipt = () => {
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
         noResultsAction={() => navigation.navigate('AddProduct')}
-        emptyStateText="We don't have this item in our database, you can help us update our system by adding it as a new item."
       />
       <FlatList
         data={products}

@@ -46,6 +46,10 @@ export function ReceiptDetailsModal(props: Props) {
   );
   const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
   const realm = useRealm();
+  const creditAmountLeft = receipt?.credits?.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
 
   const PAYMENT_METHOD_TEXT = {
     cash: 'Cash',
@@ -313,7 +317,7 @@ export function ReceiptDetailsModal(props: Props) {
                   </View>
                 ))}
               </View>
-              {!!receipt?.credit_amount && (
+              {!!creditAmountLeft && (
                 <View style={applyStyles({width: '48%'})}>
                   <Text
                     style={applyStyles('pb-xs', 'text-400', {
@@ -326,7 +330,7 @@ export function ReceiptDetailsModal(props: Props) {
                       fontSize: 16,
                       color: colors.primary,
                     })}>
-                    {amountWithCurrency(receipt?.credit_amount)}
+                    {amountWithCurrency(creditAmountLeft)}
                   </Text>
                 </View>
               )}
