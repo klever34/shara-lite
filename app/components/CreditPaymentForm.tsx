@@ -64,8 +64,8 @@ export const CreditPaymentForm = (props: Props) => {
           selectedValue={payload.method}
           onValueChange={(itemValue) => handleChange(itemValue, 'method')}>
           <Picker.Item label="Cash" value="Cash" />
-          <Picker.Item label="Bank Transfer" value="Bank Transfer" />
-          <Picker.Item label="Mobile Money" value="Mobile Money" />
+          <Picker.Item label="Bank Transfer" value="transfer" />
+          <Picker.Item label="Mobile Money" value="mobile" />
         </Picker>
       </View>
 
