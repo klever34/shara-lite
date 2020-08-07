@@ -11,7 +11,7 @@ type Props = {
   visible: boolean;
   customer?: ICustomer;
   onClose: () => void;
-  onOpenContactList: () => void;
+  onOpenCustomerList: () => void;
   onSelectCustomer: (customer: ICustomer) => void;
 };
 
@@ -20,7 +20,7 @@ export const CustomerDetailsModal = (props: Props) => {
     visible,
     onClose,
     onSelectCustomer,
-    onOpenContactList,
+    onOpenCustomerList,
     customer: customerProps,
   } = props;
 
@@ -66,7 +66,7 @@ export const CustomerDetailsModal = (props: Props) => {
       onRequestClose={onClose}>
       <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
         <View style={applyStyles({marginBottom: 48})}>
-          <Button style={applyStyles('mb-lg')} onPress={onOpenContactList}>
+          <Button style={applyStyles('mb-lg')} onPress={onOpenCustomerList}>
             <View
               style={applyStyles('flex-row', 'items-center', 'justify-center')}>
               <Icon

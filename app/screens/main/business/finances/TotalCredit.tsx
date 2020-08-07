@@ -119,9 +119,9 @@ export const TotalCredit = ({
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
-        data={credits}
         renderItem={renderCreditItem}
         keyExtractor={(item) => `${item.id}`}
+        data={credits.filter((item) => item.amount_left)}
         ListEmptyComponent={
           <EmptyState
             heading="No credit"

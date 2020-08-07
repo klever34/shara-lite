@@ -38,6 +38,7 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
 import {Payment} from '../../../../../types/app';
+import {ContactsListModal} from '../../../../components/ContactsListModal';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -215,6 +216,7 @@ const ReceiptSummary = (props: Props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const creditAmount = payments.length ? totalAmount - amountPaid : totalAmount;
 
@@ -279,18 +281,28 @@ const ReceiptSummary = (props: Props) => {
     setIsPaymentModalOpen(false);
   }, []);
 
-  const handleOpenContactList = useCallback(() => {
+  const handleOpenCustomerList = useCallback(() => {
+    setIsCustomerListModalOpen(true);
+  }, []);
+
+  const handleCloseCustomerList = useCallback(() => {
+    setIsCustomerListModalOpen(false);
+  }, []);
+
+  const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
 
-  const handleCloseContactList = useCallback(() => {
+  const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
-  }, []);
+    handleCloseCustomerModal();
+    handleCloseCustomerList();
+  }, [handleCloseCustomerModal, handleCloseCustomerList]);
 
   const handleDueDateChange = useCallback((value: string) => {
-    const d = getDueDateValue(value);
+    const date = getDueDateValue(value);
     setDueDateString(value);
-    setDueDate(d);
+    setDueDate(date);
   }, []);
 
   const handleSmsShare = useCallback(async () => {
@@ -867,7 +879,7 @@ const ReceiptSummary = (props: Props) => {
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
         onSelectCustomer={handleSetCustomer}
-        onOpenContactList={handleOpenContactList}
+        onOpenCustomerList={handleOpenCustomerList}
       />
       <ShareReceiptModal
         tax={tax}
@@ -880,12 +892,23 @@ const ReceiptSummary = (props: Props) => {
         onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
-      <Modal visible={isContactListModalOpen}>
+      <Modal visible={isCustomerListModalOpen}>
         <CustomersList
-          onModalClose={handleCloseContactList}
+          onModalClose={handleCloseCustomerList}
           onCustomerSelect={handleCustomerSelect}
+          onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
+      <ContactsListModal
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onContactSelect={({givenName, familyName, phoneNumbers}) =>
+          handleSetCustomer({
+            name: `${givenName} ${familyName}`,
+            mobile: phoneNumbers[0].number,
+          })
+        }
+      />
       <PaymentMethodModal
         type={paymentType}
         visible={isPaymentModalOpen}

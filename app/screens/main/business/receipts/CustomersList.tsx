@@ -21,7 +21,7 @@ type CustomerItemProps = {
 };
 
 export const CustomersList = (props: any) => {
-  const {onCustomerSelect, onModalClose} = props;
+  const {onCustomerSelect, onModalClose, onOpenContactList} = props;
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
 
@@ -109,6 +109,27 @@ export const CustomersList = (props: any) => {
           />
         </View>
       </View>
+      <Touchable onPress={onOpenContactList}>
+        <View
+          style={applyStyles('flex-row px-lg py-lg items-center', {
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
+          <Icon
+            size={24}
+            name="user-plus"
+            type="feathericons"
+            color={colors.primary}
+          />
+          <Text
+            style={applyStyles('text-400 pl-md', {
+              fontSize: 16,
+              color: colors['gray-300'],
+            })}>
+            Add From Phonebook
+          </Text>
+        </View>
+      </Touchable>
       <FlatList
         data={myCustomers}
         renderItem={renderCustomerListItem}

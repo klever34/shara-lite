@@ -102,7 +102,7 @@ export const RecordCreditPayment = () => {
           <Text
             style={applyStyles('pl-md text-400', {
               fontSize: 18,
-              color: colors['gray-50'],
+              color: colors['gray-100'],
             })}>
             {customer.name ? 'Change customer' : 'Select customer'}
           </Text>
