@@ -838,7 +838,7 @@ const ReceiptSummary = (props: Props) => {
             <View style={applyStyles({width: '48%'})}>
               <FloatingLabelInput
                 value={dueDateString}
-                label="Balance due in (days)"
+                label="Balance due in days"
                 keyboardType="number-pad"
                 onChangeText={(text) => handleDueDateChange(text)}
               />
