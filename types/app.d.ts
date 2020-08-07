@@ -1,6 +1,7 @@
 import {IProduct} from '../app/models/Product';
 import {ISupplier} from '../app/models/Supplier';
 import {DeliveryAgent} from '../app/models/DeliveryAgent';
+import {ObjectId} from 'bson';
 
 type Falsy = undefined | null | false;
 
@@ -89,7 +90,7 @@ type InventoryStockItem = {
 };
 
 type Customer = {
-  _id: string;
+  _id: ObjectId;
   mobile: string;
   name: string;
 };
@@ -97,6 +98,7 @@ type ApiResponse<T extends any = any> = {
   data: any;
   message: string;
 };
+
 type CreditDetails = {
   id: string;
   amount: number;
