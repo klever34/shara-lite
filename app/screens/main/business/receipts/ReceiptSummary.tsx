@@ -11,34 +11,34 @@ import {
   View,
 } from 'react-native';
 import Share from 'react-native-share';
+import {Payment} from '../../../../../types/app';
 import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
 } from '../../../../components';
+import {ContactsListModal} from '../../../../components/ContactsListModal';
+import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {
-  applyStyles,
   amountWithCurrency,
-  numberWithCommas,
+  applyStyles,
   getDueDateValue,
+  numberWithCommas,
 } from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
+import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
 import {saveReceipt} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
+import {CustomersList} from './CustomersList';
 import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
-import {CustomersList} from './CustomersList';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import HeaderRight from '../../../../components/HeaderRight';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService} from '../../../../services';
-import {Payment} from '../../../../../types/app';
-import {ContactsListModal} from '../../../../components/ContactsListModal';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -838,7 +838,8 @@ const ReceiptSummary = (props: Props) => {
             <View style={applyStyles({width: '48%'})}>
               <FloatingLabelInput
                 value={dueDateString}
-                label="Balance due in"
+                label="Balance due in (days)"
+                keyboardType="number-pad"
                 onChangeText={(text) => handleDueDateChange(text)}
               />
             </View>
