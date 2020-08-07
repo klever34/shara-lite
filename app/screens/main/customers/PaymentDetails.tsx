@@ -30,7 +30,7 @@ const PaymentDetails = ({route}: any) => {
             </Text>
           </View>
           <View style={applyStyles('pb-md', {width: '48%'})}>
-            <Text style={styles.itemTitle}>Payment Method</Text>
+            <Text style={styles.itemTitle}>Payment Type</Text>
             <Text
               style={applyStyles(
                 'text-400 text-capitalize',
