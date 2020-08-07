@@ -385,6 +385,7 @@ export function ReceiptDetailsModal(props: Props) {
 
       <Modal animationType="slide" visible={isCustomerListModalOpen}>
         <CustomersList
+          showAddFromPhone={false}
           onCustomerSelect={handleCustomerSelect}
           onModalClose={handleCloseCustomerListModal}
         />
