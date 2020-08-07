@@ -250,6 +250,7 @@ export const ReceiptStatusModal = (props: Props) => {
           </Button>
           <Button
             variantColor="red"
+            disabled={isSaving}
             isLoading={isSaving}
             title="Create new receipt"
             onPress={onNewReceiptClick}

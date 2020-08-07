@@ -861,6 +861,7 @@ const ReceiptSummary = (props: Props) => {
           title="Done"
           variantColor="red"
           onPress={handleFinish}
+          disabled={isCompleting}
           isLoading={isCompleting}
           style={styles.actionButton}
         />

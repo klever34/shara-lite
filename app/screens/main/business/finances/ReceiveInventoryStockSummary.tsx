@@ -206,6 +206,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         <Button
           title="Finish"
           variantColor="red"
+          disabled={isSaving}
           isLoading={isSaving}
           onPress={handleFinish}
           style={styles.actionButton}
