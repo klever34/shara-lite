@@ -20,7 +20,7 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
   const {visible, inventory, onClose} = props;
 
   const renderSummaryItem = useCallback(({item}: {item: IInventoryStock}) => {
-    const price = item. ? item.price : 0;
+    const price = item.price ? item.price : 0;
     const quantity = item.quantity ? item.quantity : 0;
     const subtotal = price * quantity;
     return (
@@ -69,7 +69,7 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
             </Text>
           </View>
           <FlatList
-            data={inventory.}
+            data={inventory}
             nestedScrollEnabled
             renderItem={renderSummaryItem}
             keyExtractor={(item) => `${item.id}`}
