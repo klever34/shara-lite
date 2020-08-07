@@ -101,13 +101,13 @@ export const NewReceipt = () => {
     if (price && quantity) {
       const product = {
         ...selectedProduct,
+        id: selectedProduct?.id,
         price: parseFloat(price),
         product: selectedProduct,
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
       if (receipt.map((item) => item.id).includes(product?.id)) {
-        console.log('here');
         setReceipt(
           receipt.map((item) => {
             if (item.id === product.id) {
@@ -154,15 +154,16 @@ export const NewReceipt = () => {
     if (selectedProduct && quantity && price) {
       const product = {
         ...selectedProduct,
+        id: selectedProduct.id,
         price: parseFloat(price),
         product: selectedProduct,
+        name: selectedProduct.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
 
       handleAddItem();
 
       if (receipt.map((item) => item.id).includes(product?.id)) {
-        console.log('here');
         items = receipt.map((item) => {
           if (item.id === product.id) {
             return {
