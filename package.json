@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.21-bugfix.receipt-flow+build.1145",
+  "version": "0.1.21-bugfix.receipt-flow+build.1149",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
