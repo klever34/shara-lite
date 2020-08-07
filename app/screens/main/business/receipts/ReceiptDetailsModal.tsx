@@ -22,7 +22,10 @@ import {
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import {updateReceipt} from '../../../../services/ReceiptService';
+import {
+  updateReceipt,
+  getAllPayments,
+} from '../../../../services/ReceiptService';
 import {useRealm} from '../../../../services/realm';
 import {Customer} from '../../../../../types/app';
 
@@ -50,6 +53,7 @@ export function ReceiptDetailsModal(props: Props) {
     (acc, item) => acc + item.amount_left,
     0,
   );
+  const allPayments = receipt ? getAllPayments({receipt}) : [];
 
   const PAYMENT_METHOD_TEXT = {
     cash: 'Cash',
@@ -299,23 +303,32 @@ export function ReceiptDetailsModal(props: Props) {
                 'justify-space-between',
               )}>
               <View style={applyStyles({width: '48%'})}>
-                {receipt?.payments?.map((item) => (
-                  <View style={applyStyles('pb-lg')}>
-                    <Text
-                      style={applyStyles('pb-xs', 'text-400', {
-                        color: colors['gray-200'],
-                      })}>
-                      Paid By {PAYMENT_METHOD_TEXT[item.method]}
-                    </Text>
-                    <Text
-                      style={applyStyles('text-400', {
-                        fontSize: 16,
-                        color: colors['gray-300'],
-                      })}>
-                      {amountWithCurrency(item.amount_paid)}
-                    </Text>
-                  </View>
-                ))}
+                {allPayments.length ? (
+                  allPayments?.map((item) => (
+                    <View style={applyStyles('pb-lg')}>
+                      <Text
+                        style={applyStyles('pb-xs', 'text-400', {
+                          color: colors['gray-200'],
+                        })}>
+                        Paid By {PAYMENT_METHOD_TEXT[item.method]}
+                      </Text>
+                      <Text
+                        style={applyStyles('text-400', {
+                          fontSize: 16,
+                          color: colors['gray-300'],
+                        })}>
+                        {amountWithCurrency(item.amount_paid)}
+                      </Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text
+                    style={applyStyles('text-400', {
+                      color: colors['gray-50'],
+                    })}>
+                    - No payments
+                  </Text>
+                )}
               </View>
               {!!creditAmountLeft && (
                 <View style={applyStyles({width: '48%'})}>
