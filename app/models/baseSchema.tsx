@@ -1,10 +1,9 @@
 import {ObjectId} from 'bson';
-import {getAuthService} from '../services';
-
-const authService = getAuthService();
+import {getRealmPartitionKey} from '../services/realm';
 
 export interface BaseModelInterface {
   _id?: ObjectId;
+  _partition?: string;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -18,11 +17,10 @@ export const baseModelSchema = {
 
 export class BaseModel {
   public _id: ObjectId;
-  protected _partition: string | undefined;
+  public _partition: string;
 
-  constructor({id = new ObjectId()}) {
-    const user = authService.getUser();
-    this._partition = user?.id.toString();
+  constructor({id = new ObjectId()} = {}) {
+    this._partition = getRealmPartitionKey();
     this._id = id;
   }
 }

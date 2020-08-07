@@ -1,11 +1,7 @@
-import {ObjectId} from 'bson';
 import {IProduct} from './Product';
 import {ISupplier} from './Supplier';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {DeliveryAgent} from './DeliveryAgent';
-import {getAuthService} from '../services';
-
-const authService = getAuthService();
 
 export interface IInventoryStock extends BaseModelInterface {
   supplier_name: string;

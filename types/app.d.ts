@@ -89,7 +89,7 @@ type InventoryStockItem = {
 };
 
 type Customer = {
-  id: string;
+  _id: string;
   mobile: string;
   name: string;
 };

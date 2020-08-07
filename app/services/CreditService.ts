@@ -1,6 +1,6 @@
 import Realm, {UpdateMode} from 'realm';
 import {ICustomer} from '../models';
-import {ICredit, modelName} from '../models/Credit';
+import {Credit, ICredit, modelName} from '../models/Credit';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
 import {Customer} from '../../types/app';
@@ -26,6 +26,7 @@ export const saveCredit = ({
     amount_left: creditAmount,
     amount_paid: 0,
     ...getBaseModelValues(),
+    ...new Credit(),
   };
 
   if (customer && customer.name) {
@@ -33,7 +34,7 @@ export const saveCredit = ({
     credit.customer_mobile = customer?.mobile;
   }
 
-  if (customer && customer.id) {
+  if (customer && customer._id) {
     credit.customer = customer as ICustomer;
   }
 
@@ -52,7 +53,7 @@ export const updateCredit = ({
   updates: object;
 }) => {
   const updatedCredit = {
-    id: credit.id,
+    id: credit._id,
     ...updates,
   };
 

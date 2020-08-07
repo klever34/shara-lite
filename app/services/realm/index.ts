@@ -34,7 +34,7 @@ const schema = [
 
 const authService = getAuthService();
 
-export const useRealm = () => {
+export const useRealm = (): Realm => {
   // @ts-ignore
   const {realm} = useContext(RealmContext);
   const [, rerender] = useState(false);
@@ -45,7 +45,7 @@ export const useRealm = () => {
       realm?.removeListener('change', listener);
     };
   }, [realm]);
-  return realm;
+  return <Realm>realm;
 };
 
 export const createRealm = async ({
@@ -106,9 +106,9 @@ export const loginToRealm = async (): Promise<Realm> => {
   }
 };
 
-export const getRealmPartitionKey = () => {
+export const getRealmPartitionKey = (): string => {
   const user = authService.getUser();
-  return user?.id;
+  return user ? user.id.toString() : '';
 };
 
 export * from './service';

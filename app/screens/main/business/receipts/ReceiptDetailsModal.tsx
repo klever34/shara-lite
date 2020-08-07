@@ -204,7 +204,7 @@ export function ReceiptDetailsModal(props: Props) {
                 renderItem={renderProductItem}
                 ListHeaderComponent={SummaryTableHeader}
                 keyExtractor={(item, index) =>
-                  item ? `${item.id}-${index.toString()}` : index.toString()
+                  item ? `${item._id}-${index.toString()}` : index.toString()
                 }
               />
               <View style={styles.totalSectionContainer}>

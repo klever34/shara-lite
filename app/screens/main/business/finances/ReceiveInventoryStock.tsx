@@ -178,7 +178,7 @@ export const ReceiveInventoryStock = ({
         style={styles.recentProductsList}
         renderItem={renderRecentProducts}
         ListHeaderComponent={renderRecentProductsHeader}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item, index) => `${item._id}-${index}`}
         ListEmptyComponent={
           <View
             style={applyStyles('px-lg flex-1 items-center justify-center', {

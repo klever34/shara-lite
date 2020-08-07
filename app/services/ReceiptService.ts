@@ -1,6 +1,6 @@
 import Realm, {UpdateMode} from 'realm';
 import {ICustomer} from '../models';
-import {IReceipt, modelName} from '../models/Receipt';
+import {IReceipt, modelName, Receipt} from '../models/Receipt';
 import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment, updatePayment} from './PaymentService';
 import {getBaseModelValues} from '../helpers/models';
@@ -37,6 +37,7 @@ export const saveReceipt = ({
     total_amount: totalAmount,
     credit_amount: creditAmount,
     ...getBaseModelValues(),
+    ...new Receipt(),
   };
 
   if (customer.name) {
@@ -44,7 +45,7 @@ export const saveReceipt = ({
     receipt.customer_mobile = customer.mobile;
   }
 
-  if (customer.id) {
+  if (customer._id) {
     receipt.customer = customer as ICustomer;
   }
 

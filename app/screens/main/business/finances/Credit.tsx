@@ -188,7 +188,7 @@ export const MyCredit = () => {
             <FlatList
               data={creditsPayments}
               renderItem={renderCreditItem}
-              keyExtractor={(item) => `${item.id}`}
+              keyExtractor={(item) => `${item._id}`}
             />
           </View>
         )}

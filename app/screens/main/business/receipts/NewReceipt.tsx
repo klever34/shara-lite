@@ -117,7 +117,7 @@ export const NewReceipt = () => {
     (item: IReceiptItem) => {
       setReceipt(
         receipt.map((receiptItem) => {
-          if (receiptItem.id === item.id) {
+          if (receiptItem._id === item._id) {
             return item;
           }
           return receiptItem;
@@ -129,7 +129,7 @@ export const NewReceipt = () => {
 
   const handleRemoveProductItem = useCallback(
     (item: IReceiptItem) => {
-      setReceipt(receipt.filter((receiptItem) => receiptItem.id !== item.id));
+      setReceipt(receipt.filter((receiptItem) => receiptItem._id !== item._id));
     },
     [receipt],
   );
@@ -207,7 +207,7 @@ export const NewReceipt = () => {
         style={styles.recentProductsList}
         renderItem={renderRecentProducts}
         ListHeaderComponent={renderRecentProductsHeader}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item, index) => `${item._id}-${index}`}
         ListEmptyComponent={
           <View
             style={applyStyles('px-lg flex-1 items-center justify-center', {

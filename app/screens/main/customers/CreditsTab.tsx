@@ -184,7 +184,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
           <FlatList
             data={creditPayments}
             renderItem={renderCreditItem}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item) => `${item._id}`}
           />
         </View>
       )}

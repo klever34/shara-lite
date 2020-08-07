@@ -1,5 +1,12 @@
 import Realm from 'realm';
-import {IContact, IConversation, IMessage} from '../../models';
+import {
+  Contact,
+  Conversation,
+  IContact,
+  IConversation,
+  IMessage,
+  Message,
+} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
 import {decrypt, generateUniqueId} from '../../helpers/utils';
@@ -7,7 +14,7 @@ import {IApiService} from '../api';
 import {IAuthService} from '../auth';
 import compact from 'lodash/compact';
 import {ChannelCustom} from '../../../types/app';
-import {createRealm} from './index';
+import {createRealm, getRealmPartitionKey} from './index';
 import {getRealmService} from '../index';
 import {Alert, BackHandler, Platform} from 'react-native';
 
@@ -70,11 +77,15 @@ export class RealmService implements IRealmService {
   ): Promise<IContact> {
     const realm = this.realm as Realm;
     return new Promise<IContact>((resolve, reject) => {
+      const newContact = {
+        ...contact,
+        ...new Contact(),
+      };
       try {
         realm.write(() => {
           const createdContact = realm.create<IContact>(
             'Contact',
-            contact,
+            newContact,
             updateMode,
           );
           resolve(createdContact);
@@ -94,7 +105,11 @@ export class RealmService implements IRealmService {
       try {
         realm.write(() => {
           const createdContacts = contacts.map((contact) => {
-            return realm.create<IContact>('Contact', contact, updateMode);
+            const newContact = {
+              ...contact,
+              ...new Contact(),
+            };
+            return realm.create<IContact>('Contact', newContact, updateMode);
           });
           resolve(createdContacts);
         });
@@ -174,7 +189,13 @@ export class RealmService implements IRealmService {
               }
               message = this.realm.create<IMessage>(
                 'Message',
-                {...message, timetoken, delivered_timetoken, read_timetoken},
+                {
+                  ...message,
+                  timetoken,
+                  delivered_timetoken,
+                  read_timetoken,
+                  ...new Message(),
+                },
                 Realm.UpdateMode.Modified,
               );
               if (j === messagePayload.length - 1 && retrieved === undefined) {
@@ -246,7 +267,7 @@ export class RealmService implements IRealmService {
           const channel = channels[i];
           const conversation = this.realm.create<IConversation>(
             'Conversation',
-            conversations[channel],
+            {...conversations[channel], _partition: getRealmPartitionKey()},
             Realm.UpdateMode.Modified,
           );
           if (conversation.type === 'group') {

@@ -124,7 +124,7 @@ const CustomersTab = () => {
           <FlatList
             data={myCustomers}
             renderItem={renderCustomerListItem}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item) => `${item._id}`}
             ListHeaderComponent={renderCustomerListHeader}
           />
         </>

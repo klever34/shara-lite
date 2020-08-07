@@ -119,7 +119,7 @@ export const CustomerOverdueCredit = ({
       <FlatList
         data={credits}
         renderItem={renderCreditItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No credit"

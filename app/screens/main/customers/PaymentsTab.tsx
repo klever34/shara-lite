@@ -65,7 +65,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
         <FlatList
           data={payments}
           renderItem={renderPaymentItem}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item) => `${item._id}`}
         />
       ) : (
         <EmptyState

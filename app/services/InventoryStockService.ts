@@ -31,7 +31,7 @@ export const addNewStocks = ({
 
   realm.write(() => {
     if (delivery_agent) {
-      savedDeliveryAgent = delivery_agent.id
+      savedDeliveryAgent = delivery_agent._id
         ? saveDeliveryAgent({realm, delivery_agent})
         : delivery_agent;
     }

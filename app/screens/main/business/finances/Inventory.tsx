@@ -97,7 +97,7 @@ export function MyInventory() {
 
   const handleProductItemClick = useCallback(
     (product) => {
-      navigation.navigate('ViewProductDetails', {product: product.id});
+      navigation.navigate('ViewProductDetails', {product: product._id});
     },
     [navigation],
   );
@@ -158,7 +158,7 @@ export function MyInventory() {
       <FlatList
         data={products}
         renderItem={renderReceiptItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No products"

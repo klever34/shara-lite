@@ -113,7 +113,7 @@ export const CustomersList = (props: any) => {
         data={myCustomers}
         renderItem={renderCustomerListItem}
         ListHeaderComponent={renderCustomerListHeader}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item, index) => `${item._id}-${index}`}
         ListEmptyComponent={
           <View
             style={applyStyles('flex-1', 'items-center', 'justify-center', {

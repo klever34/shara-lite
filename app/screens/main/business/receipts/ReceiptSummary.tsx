@@ -523,7 +523,7 @@ const ReceiptSummary = (props: Props) => {
               data={products}
               nestedScrollEnabled
               renderItem={renderSummaryItem}
-              keyExtractor={(item) => `${item.id}`}
+              keyExtractor={(item) => `${item._id}`}
               ListHeaderComponent={SummaryTableHeader}
             />
             <View style={styles.totalSectionContainer}>

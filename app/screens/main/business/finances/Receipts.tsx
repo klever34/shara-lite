@@ -198,7 +198,7 @@ export function MyReceipts() {
       <FlatList
         data={receipts}
         renderItem={renderReceiptItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No receipts created"
