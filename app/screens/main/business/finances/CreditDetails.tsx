@@ -13,6 +13,8 @@ import Touchable from '../../../../components/Touchable';
 import Icon from '../../../../components/Icon';
 import {ICustomer} from '../../../../models';
 import {CustomersList} from '../receipts';
+import {updateReceipt} from '../../../../services/ReceiptService';
+import {IReceipt} from '../../../../models/Receipt';
 
 export const CreditDetails = ({route}: any) => {
   const realm = useRealm();
@@ -52,7 +54,15 @@ export const CreditDetails = ({route}: any) => {
       if (creditDetails) {
         setIsLoading(true);
         setTimeout(() => {
+          console.log(customer);
           setIsLoading(false);
+          if (!creditDetails.customer) {
+            updateReceipt({
+              realm,
+              customer,
+              receipt: creditDetails.receipt as IReceipt,
+            });
+          }
           saveCreditPayment({
             realm,
             ...payload,

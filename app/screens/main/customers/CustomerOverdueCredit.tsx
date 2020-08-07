@@ -119,7 +119,7 @@ export const CustomerOverdueCredit = ({
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
-        data={credits}
+        data={credits.filter((item) => item.amount_left)}
         renderItem={renderCreditItem}
         keyExtractor={(item) => `${item.id}`}
         ListEmptyComponent={

@@ -443,7 +443,11 @@ const ReceiptSummary = (props: Props) => {
   }, []);
 
   const handleFinish = () => {
-    handleOpenSuccessModal();
+    if (products.length) {
+      handleOpenSuccessModal();
+    } else {
+      Alert.alert('Error', 'Please select at least one product item');
+    }
   };
 
   const handleSaveReceipt = useCallback(

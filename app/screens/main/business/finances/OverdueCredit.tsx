@@ -65,7 +65,7 @@ export const OverdueCredit = ({
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Customer</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {creditDetails.customer_name}
+                {creditDetails.customer?.name}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
@@ -119,7 +119,7 @@ export const OverdueCredit = ({
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
-        data={credits}
+        data={credits.filter((item) => item.amount_left)}
         renderItem={renderCreditItem}
         keyExtractor={(item) => `${item.id}`}
         ListEmptyComponent={
