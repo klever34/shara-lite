@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.20-chore.analytics-integration+build.1097",
+  "version": "0.1.20-chore.analytics-integration+build.1115",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
