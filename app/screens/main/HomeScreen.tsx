@@ -1,24 +1,24 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {colors} from '../../styles';
-import ChatListScreen from './chat/ChatListScreen';
-import {getAuthService, getRealmService} from '../../services';
 import {useNavigation} from '@react-navigation/native';
+import {MessageEvent} from 'pubnub';
+import {usePubNub} from 'pubnub-react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
+import {Alert, Platform, SafeAreaView} from 'react-native';
+import PushNotification from 'react-native-push-notification';
+import Realm from 'realm';
+import {PushNotificationToken} from '../../../types/app';
+import {MessageActionEvent} from '../../../types/pubnub';
+import HeaderRight from '../../components/HeaderRight';
+import {ModalWrapperFields, withModal} from '../../helpers/hocs';
 import {applyStyles, retryPromise} from '../../helpers/utils';
 import {IContact, IConversation, IMessage} from '../../models';
-import {usePubNub} from 'pubnub-react';
+import {getAuthService, getRealmService} from '../../services';
 import {useRealm} from '../../services/realm';
-import {MessageEvent} from 'pubnub';
-import Realm from 'realm';
-import CustomersTab from './customers';
+import {colors} from '../../styles';
 import {BusinessTab} from './business';
-import PushNotification from 'react-native-push-notification';
-import {ModalWrapperFields, withModal} from '../../helpers/hocs';
-import {MessageActionEvent} from '../../../types/pubnub';
-import {useErrorHandler} from 'react-error-boundary';
-import HeaderRight from '../../components/HeaderRight';
-import {PushNotificationToken} from '../../../types/app';
+import ChatListScreen from './chat/ChatListScreen';
+import CustomersTab from './customers';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -29,11 +29,12 @@ type HomeTabParamList = {
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
 const HomeScreen = ({openModal}: ModalWrapperFields) => {
-  const navigation = useNavigation();
-  const pubNub = usePubNub();
   const realm = useRealm();
+  const pubNub = usePubNub();
+  const navigation = useNavigation();
   const handleError = useErrorHandler();
   const [notificationToken, setNotificationToken] = useState('');
+
   const handleLogout = useCallback(async () => {
     try {
       const authService = getAuthService();
