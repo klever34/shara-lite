@@ -62,7 +62,7 @@ export const updatePayment = ({
   updates: object;
 }) => {
   const updatedPayment = {
-    id: payment._id,
+    _id: payment._id,
     ...updates,
   };
 

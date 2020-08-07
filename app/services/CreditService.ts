@@ -53,7 +53,7 @@ export const updateCredit = ({
   updates: object;
 }) => {
   const updatedCredit = {
-    id: credit._id,
+    _id: credit._id,
     ...updates,
   };
 

@@ -56,7 +56,7 @@ export const saveCreditPayment = ({
 
     const amountLeftFromDeduction = amountLeft - credit.amount_left;
     const creditUpdates: any = {
-      id: credit._id,
+      _id: credit._id,
     };
 
     if (amountLeftFromDeduction >= 0) {
