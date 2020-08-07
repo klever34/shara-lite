@@ -7,6 +7,7 @@ import {getBaseModelValues} from '../helpers/models'
 import {saveCredit, updateCredit} from './CreditService'
 import {Customer, Payment} from '../../types/app'
 import {IReceiptItem} from '../models/ReceiptItem'
+import {getPaymentsFromCredit} from './CreditPaymentService'
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[]
@@ -24,7 +25,7 @@ export const saveReceipt = ({
   receiptItems,
 }: {
   realm: Realm
-  dueDate: Date
+  dueDate?: Date
   customer: ICustomer | Customer
   amountPaid: number
   totalAmount: number
@@ -109,13 +110,8 @@ export const updateReceipt = ({
 }
 
 export const getAllPayments = ({receipt}: {receipt: IReceipt}) => {
-  return [...(receipt.payments || []), ...getCreditPayments({receipt})]
-}
-
-export const getCreditPayments = ({receipt}: {receipt: IReceipt}) => {
-  if (!receipt.credits || !receipt.credits.length) {
-    return []
-  }
-  const creditPayments = receipt.credits[0].payments || []
-  return creditPayments.map(({payment}) => payment)
+  return [
+    ...(receipt.payments || []),
+    ...getPaymentsFromCredit({credits: receipt.credits}),
+  ]
 }

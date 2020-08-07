@@ -202,11 +202,11 @@ const ReceiptSummary = (props: Props) => {
   const [paymentType, setPaymentType] = useState<
     'cash' | 'transfer' | 'mobile'
   >('cash');
-  const [dueDate, setDueDate] = useState<Date>(new Date());
   const [dueDateString, setDueDateString] = useState('');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [dueDate, setDueDate] = useState<Date | undefined>();
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,

@@ -89,22 +89,24 @@ export const CustomerOverdueCredit = ({
                   : ''}
               </Text>
             </View>
-            <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Due on</Text>
-              <Text
-                style={applyStyles(styles.itemDataMedium, 'text-400', {
-                  color: colors.primary,
-                })}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
-                  : ''}
-              </Text>
-              <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'hh:mm:a')
-                  : ''}
-              </Text>
-            </View>
+            {creditDetails.due_date && (
+              <View style={applyStyles('pb-sm', {width: '48%'})}>
+                <Text style={styles.itemTitle}>Due on</Text>
+                <Text
+                  style={applyStyles(styles.itemDataMedium, 'text-400', {
+                    color: colors.primary,
+                  })}>
+                  {creditDetails.due_date
+                    ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+                    : ''}
+                </Text>
+                <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
+                  {creditDetails.due_date
+                    ? format(new Date(creditDetails.due_date), 'hh:mm:a')
+                    : ''}
+                </Text>
+              </View>
+            )}
           </View>
         </ActionCard>
       </View>

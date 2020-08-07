@@ -28,6 +28,7 @@ import {
 } from '../../../../services/ReceiptService';
 import {useRealm} from '../../../../services/realm';
 import {Customer} from '../../../../../types/app';
+import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
 
 type Props = {
   visible: boolean;
@@ -54,12 +55,6 @@ export function ReceiptDetailsModal(props: Props) {
     0,
   );
   const allPayments = receipt ? getAllPayments({receipt}) : [];
-
-  const PAYMENT_METHOD_TEXT = {
-    cash: 'Cash',
-    transfer: 'Bank Transfer',
-    mobile: 'Mobile Money',
-  } as {[key: string]: string};
 
   const handleOpenCustomerModal = useCallback(() => {
     setIsCustomerModalOpen(true);
@@ -310,7 +305,7 @@ export function ReceiptDetailsModal(props: Props) {
                         style={applyStyles('pb-xs', 'text-400', {
                           color: colors['gray-200'],
                         })}>
-                        Paid By {PAYMENT_METHOD_TEXT[item.method]}
+                        Paid By {PAYMENT_METHOD_LABEL[item.method]}
                       </Text>
                       <Text
                         style={applyStyles('text-400', {
