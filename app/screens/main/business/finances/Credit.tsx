@@ -21,6 +21,7 @@ import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
 import {ICustomer} from '../../../../models';
+import {orderBy} from 'lodash';
 
 type CreditItemProps = {
   item: ICreditPayment;
@@ -34,6 +35,7 @@ export const MyCredit = () => {
   const creditsPayments = getCreditPayments({realm});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
   const creditCustomers = credits
+    .filter((item) => !item.fulfilled)
     .filter((item) => item.customer)
     .map((item) => item.customer) as ICustomer[];
 
@@ -205,9 +207,9 @@ export const MyCredit = () => {
               Payment History
             </Text>
             <FlatList
-              data={creditsPayments}
               renderItem={renderCreditItem}
               keyExtractor={(item) => `${item.id}`}
+              data={orderBy(creditsPayments, 'created_at', 'desc')}
             />
           </View>
         )}

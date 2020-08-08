@@ -126,23 +126,8 @@ export const CustomerTotalCredit = ({
           <EmptyState
             heading="No credit"
             style={applyStyles({marginTop: 32})}
-            source={require('../../../assets/images/coming-soon.png')}>
-            <Touchable
-              onPress={() => navigation.navigate('RecordCreditPayment')}>
-              <View
-                style={applyStyles(
-                  'p-lg w-full flex-row items-center justify-center',
-                )}>
-                <Text
-                  style={applyStyles('text-400 text-center text-uppercase', {
-                    fontSize: 16,
-                    color: colors.primary,
-                  })}>
-                  Record credit payment
-                </Text>
-              </View>
-            </Touchable>
-          </EmptyState>
+            source={require('../../../assets/images/coming-soon.png')}
+          />
         }
       />
     </SafeAreaView>

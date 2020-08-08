@@ -23,7 +23,7 @@ export const RecordCreditPayment = () => {
   const credits = getCredits({realm});
   const creditCustomers = credits
     .filter((item) => !item.fulfilled)
-    .filter((item) => !!item.customer)
+    .filter((item) => item.customer)
     .map((item) => item.customer) as ICustomer[];
 
   const handleOpenCustomersList = useCallback(() => {
