@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Modal, ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -43,13 +43,17 @@ export const RecordCreditPayment = () => {
 
   const handleSubmit = useCallback(
     (payload, callback) => {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        saveCreditPayment({realm, customer, ...payload});
-        callback();
-        navigation.goBack();
-      }, 300);
+      if (customer.name) {
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          saveCreditPayment({realm, customer, ...payload});
+          callback();
+          navigation.goBack();
+        }, 300);
+      } else {
+        Alert.alert('Info', 'Please select a customer');
+      }
     },
     [realm, customer, navigation],
   );

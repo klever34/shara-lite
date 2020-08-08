@@ -3,6 +3,7 @@ import {StyleSheet, TouchableOpacity, View} from 'react-native';
 import Icon from '../components/Icon';
 import {colors} from '../styles';
 import {FloatingLabelInput} from './FloatingLabelInput';
+import {applyStyles} from '../helpers/utils';
 
 type Props = {
   value: string;
@@ -34,12 +35,14 @@ export const PasswordField = (props: Props) => {
       </View>
       <View style={styles.toggleButtonContainer}>
         <TouchableOpacity style={styles.toggleButton} onPress={toggleSecure}>
-          <Icon
-            type="octicons"
-            size={16}
-            color="#a8a8a8"
-            name={secure ? 'eye' : 'eye-closed'}
-          />
+          <View style={applyStyles('px-md items-center justify-center')}>
+            <Icon
+              size={24}
+              type="octicons"
+              color="#a8a8a8"
+              name={secure ? 'eye' : 'eye-closed'}
+            />
+          </View>
         </TouchableOpacity>
       </View>
     </View>

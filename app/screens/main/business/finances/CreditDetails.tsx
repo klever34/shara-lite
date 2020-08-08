@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, Modal} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, Modal, Alert} from 'react-native';
 import {CreditPaymentForm, ContactsListModal} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
@@ -68,26 +68,28 @@ export const CreditDetails = ({route}: any) => {
 
   const handleSubmit = useCallback(
     (payload, callback) => {
-      if (creditDetails) {
+      if (creditDetails.customer?.name || customer.name) {
         setIsLoading(true);
         setTimeout(() => {
           setIsLoading(false);
-          if (!creditDetails.customer) {
-            const newCustomer = saveCustomer({realm, customer});
-            updateReceipt({
-              realm,
-              customer: newCustomer,
-              receipt: creditDetails.receipt as IReceipt,
-            });
-          }
+          const newCustomer = creditDetails.customer?.name
+            ? creditDetails.customer
+            : saveCustomer({realm, customer});
+          updateReceipt({
+            realm,
+            customer: newCustomer,
+            receipt: creditDetails.receipt as IReceipt,
+          });
           saveCreditPayment({
             realm,
             ...payload,
-            customer: creditDetails.customer || customer,
+            customer: newCustomer,
           });
           callback();
           navigation.navigate('Finances', {screen: 'Credit'});
         }, 300);
+      } else {
+        Alert.alert('Info', 'Please select a customer');
       }
     },
     [realm, customer, navigation, creditDetails],
