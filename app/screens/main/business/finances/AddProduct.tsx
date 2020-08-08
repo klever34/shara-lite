@@ -42,13 +42,15 @@ export const AddProduct = () => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      saveProduct({realm, product});
-      setIsLoading(false);
-      clearForm();
-      navigation.goBack();
-    }, 300);
+    if (Object.values(product).length === 3) {
+      setIsLoading(true);
+      setTimeout(() => {
+        saveProduct({realm, product});
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+      }, 300);
+    }
   }, [realm, clearForm, product, navigation]);
 
   return (

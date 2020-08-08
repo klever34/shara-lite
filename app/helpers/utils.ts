@@ -65,3 +65,14 @@ export const amountWithCurrency = (amount?: number) => {
 export const getDueDateValue = (value: number) => {
   return addDays(new Date(), value);
 };
+
+export const castObjectValuesToString = (object: {
+  [key: string]: any;
+}): {[key: string]: string} => {
+  return Object.keys(object).reduce((acc, key) => {
+    return {
+      ...acc,
+      [key]: String(key),
+    };
+  }, {});
+};

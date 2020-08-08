@@ -30,7 +30,7 @@ import {
 import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
-import {getAuthService} from '../../../services';
+import {getAnalyticsService, getAuthService} from '../../../services';
 import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
 import {IMessage} from '../../../models';
@@ -38,7 +38,6 @@ import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
-import analytics, {JsonMap} from '@segment/analytics-react-native';
 
 type MessageItemProps = {
   item: IMessage;
@@ -213,12 +212,14 @@ const ChatScreen = ({
           }
         });
       });
-    }).then((response) => {
-      realm.write(() => {
-        message.timetoken = String(response.timetoken);
-      });
-      analytics.track('Message Sent', (message as unknown) as JsonMap);
-    });
+    })
+      .then((response) => {
+        realm.write(() => {
+          message.timetoken = String(response.timetoken);
+        });
+        return getAnalyticsService().logEvent('messageSent');
+      })
+      .catch(handleError);
   }, [
     channel,
     conversation.lastMessage,

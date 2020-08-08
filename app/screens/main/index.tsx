@@ -15,6 +15,7 @@ import {ICreditPayment} from '../../models/CreditPayment';
 import {IPayment} from '../../models/Payment';
 import {IProduct} from '../../models/Product';
 import {
+  getAnalyticsService,
   getAuthService,
   getContactsService,
   getPubNubService,
@@ -56,10 +57,6 @@ import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
-import analytics, {JsonMap} from '@segment/analytics-react-native';
-// @ts-ignore
-import RNUxcam from 'react-native-ux-cam';
-import {isNumber, isString} from 'lodash';
 import {Expenses} from './business/finances/Expenses';
 
 export type MainStackParamList = {
@@ -122,14 +119,7 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     if (user) {
-      analytics.identify(String(user.id), user as JsonMap).catch(handleError);
-      RNUxcam.setUserIdentity(String(user.id));
-      Object.keys(user).forEach((prop) => {
-        const value = user[prop as keyof typeof user];
-        if (isNumber(value) || isString(value)) {
-          RNUxcam.setUserProperty(prop, String(value));
-        }
-      });
+      getAnalyticsService().setUser(user).catch(handleError);
     }
   }, [handleError, user]);
 
