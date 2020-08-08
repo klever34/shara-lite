@@ -2,7 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View, Modal} from 'react-native';
-import {CreditPaymentForm} from '../../../../components';
+import {CreditPaymentForm, ContactsListModal} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
@@ -15,12 +15,13 @@ import {ICustomer} from '../../../../models';
 import {CustomersList} from '../receipts';
 import {updateReceipt} from '../../../../services/ReceiptService';
 import {IReceipt} from '../../../../models/Receipt';
-import {getCustomers} from '../../../../services/CustomerService';
+import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
 
 export const CreditDetails = ({route}: any) => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isCustomersListModalOpen, setIsCustomersListModalOpen] = useState(
     false,
   );
@@ -35,6 +36,19 @@ export const CreditDetails = ({route}: any) => {
 
   const handleCloseCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(false);
+  }, []);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+    handleCloseCustomersList();
+  }, [handleCloseCustomersList]);
+
+  const handleSetCustomer = useCallback((value: ICustomer) => {
+    setCustomer(value);
   }, []);
 
   const handleCustomerSelect = useCallback(
@@ -59,9 +73,10 @@ export const CreditDetails = ({route}: any) => {
         setTimeout(() => {
           setIsLoading(false);
           if (!creditDetails.customer) {
+            const newCustomer = saveCustomer({realm, customer});
             updateReceipt({
               realm,
-              customer,
+              customer: newCustomer,
               receipt: creditDetails.receipt as IReceipt,
             });
           }
@@ -150,7 +165,7 @@ export const CreditDetails = ({route}: any) => {
                   borderBottomColor: colors['gray-300'],
                 })}>
                 <Icon
-                  size={24}
+                  size={25}
                   name="users"
                   type="feathericons"
                   color={colors['gray-50']}
@@ -173,8 +188,19 @@ export const CreditDetails = ({route}: any) => {
           customers={customers}
           onModalClose={handleCloseCustomersList}
           onCustomerSelect={handleCustomerSelect}
+          onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
+      <ContactsListModal
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onContactSelect={({givenName, familyName, phoneNumbers}) =>
+          handleSetCustomer({
+            name: `${givenName} ${familyName}`,
+            mobile: phoneNumbers[0].number,
+          })
+        }
+      />
     </ScrollView>
   );
 };

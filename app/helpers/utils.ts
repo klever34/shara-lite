@@ -62,6 +62,6 @@ export const amountWithCurrency = (amount?: number) => {
     : `${currency}${numberWithCommas(0)}`;
 };
 
-export const getDueDateValue = (value: string) => {
-  return addDays(new Date(), parseFloat(value));
+export const getDueDateValue = (value: number) => {
+  return addDays(new Date(), value);
 };

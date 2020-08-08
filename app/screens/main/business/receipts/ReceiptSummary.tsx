@@ -303,9 +303,12 @@ const ReceiptSummary = (props: Props) => {
   }, [handleCloseCustomerModal, handleCloseCustomerList]);
 
   const handleDueDateChange = useCallback((value: string) => {
-    const date = getDueDateValue(value);
-    setDueDateString(value);
-    setDueDate(date);
+    const number = parseInt(value, 10);
+    if (!isNaN(number)) {
+      const date = getDueDateValue(number);
+      setDueDateString(number.toString());
+      setDueDate(date);
+    }
   }, []);
 
   const handleSmsShare = useCallback(async () => {
@@ -845,7 +848,7 @@ const ReceiptSummary = (props: Props) => {
             <View style={applyStyles({width: '48%'})}>
               <FloatingLabelInput
                 value={dueDateString}
-                label="Balance due in days"
+                label="Balance due (days)"
                 keyboardType="number-pad"
                 onChangeText={(text) => handleDueDateChange(text)}
               />
