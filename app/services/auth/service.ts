@@ -84,10 +84,11 @@ export class AuthService implements IAuthService {
 
   public getUserCurrency(): string {
     const user = this.user;
-    const currency = getCurrency(user?.currency_code).symbolFormat.replace(
-      '{#}',
-      '',
-    );
+    const countryCurrency =
+      user?.currency_code && getCurrency(user?.currency_code);
+    const currency = countryCurrency
+      ? countryCurrency.symbolFormat.replace('{#}', '')
+      : '$';
     return currency;
   }
 }

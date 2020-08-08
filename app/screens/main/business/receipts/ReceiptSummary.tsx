@@ -22,6 +22,7 @@ import {
   applyStyles,
   amountWithCurrency,
   numberWithCommas,
+  getDueDateValue,
 } from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {useRealm} from '../../../../services/realm';
@@ -151,37 +152,41 @@ export const SummaryTableItem = ({
             {amountWithCurrency(subtotal)}
           </Text>
         </View>
-        <View
-          style={applyStyles('flex-row', 'w-full', {
-            justifyContent: 'flex-end',
-          })}>
+        {onPress && (
           <View
-            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-            <Icon
-              size={14}
-              name="edit"
-              type="feathericons"
-              color={colors.primary}
-            />
-            <Text
-              style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
-                fontSize: 12,
-                color: colors.primary,
-              })}>
-              Tap to edit
-            </Text>
+            style={applyStyles('flex-row', 'w-full', {
+              justifyContent: 'flex-end',
+            })}>
+            <View
+              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+              <Icon
+                size={14}
+                name="edit"
+                type="feathericons"
+                color={colors.primary}
+              />
+              <Text
+                style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
+                  fontSize: 12,
+                  color: colors.primary,
+                })}>
+                Tap to edit
+              </Text>
+            </View>
           </View>
-        </View>
+        )}
       </View>
     </Touchable>
   );
 };
 
 const ReceiptSummary = (props: Props) => {
-  const navigation = useNavigation();
   const realm = useRealm();
+  const navigation = useNavigation();
   const authService = getAuthService();
+  const user = authService.getUser();
   const currency = authService.getUserCurrency();
+  const businessInfo = user?.businesses[0];
 
   const {
     products,
@@ -197,9 +202,11 @@ const ReceiptSummary = (props: Props) => {
   const [paymentType, setPaymentType] = useState<
     'cash' | 'transfer' | 'mobile'
   >('cash');
+  const [dueDateString, setDueDateString] = useState('');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [dueDate, setDueDate] = useState<Date | undefined>();
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
@@ -280,6 +287,12 @@ const ReceiptSummary = (props: Props) => {
     setIsContactListModalOpen(false);
   }, []);
 
+  const handleDueDateChange = useCallback((value: string) => {
+    const d = getDueDateValue(value);
+    setDueDateString(value);
+    setDueDate(d);
+  }, []);
+
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
@@ -306,13 +319,16 @@ const ReceiptSummary = (props: Props) => {
   }, [customer.mobile, customer.name]);
 
   const handleEmailShare = useCallback(
-    async (email: string, callback: () => void) => {
+    async (
+      {email, receiptImage}: {email: string; receiptImage: string},
+      callback: () => void,
+    ) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
         email,
         title: 'Share receipt',
-        url: 'https://shara.co/',
-        message: 'Here is your receipt',
+        url: `data:image/png;base64,${receiptImage}`,
+        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
@@ -323,37 +339,39 @@ const ReceiptSummary = (props: Props) => {
         Alert.alert('Error', e.error);
       }
     },
-    [customer.name],
+    [customer.name, businessInfo],
   );
 
-  const handleWhatsappShare = useCallback(async () => {
-    // TODO: use better copy for shara invite
-    const shareOptions = {
-      url: 'https://shara.co/',
-      social: Share.Social.WHATSAPP,
-      message: 'Here is your receipt',
-      title: `Share receipt with ${customer.name}`,
-      whatsAppNumber: `+234${customer.mobile}`, // country code + phone number
-      // filename:  `data:image/png;base64,<base64_data>`,
-    };
-    const errorMessages = {
-      filename: 'Invalid file attached',
-      whatsAppNumber: 'Please check the phone number supplied',
-    } as {[key: string]: any};
+  const handleWhatsappShare = useCallback(
+    async (receiptImage: string) => {
+      // TODO: use better copy for shara invite
+      const shareOptions = {
+        social: Share.Social.WHATSAPP,
+        title: `Share receipt with ${customer.name}`,
+        url: `data:image/png;base64,${receiptImage}`,
+        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
+        whatsAppNumber: `${customer.mobile}`, // country code + phone number
+      };
+      const errorMessages = {
+        filename: 'Invalid file attached',
+        whatsAppNumber: 'Please check the phone number supplied',
+      } as {[key: string]: any};
 
-    if (!customer.mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', errorMessages[e.error]);
+      if (!customer.mobile) {
+        Alert.alert(
+          'Info',
+          'Please select a customer to share receipt with via Whatsapp',
+        );
+      } else {
+        try {
+          await Share.shareSingle(shareOptions);
+        } catch (e) {
+          Alert.alert('Error', errorMessages[e.error]);
+        }
       }
-    }
-  }, [customer.mobile, customer.name]);
+    },
+    [customer.mobile, customer.name, businessInfo],
+  );
 
   const handlePrintReceipt = useCallback(() => {
     Alert.alert(
@@ -428,6 +446,7 @@ const ReceiptSummary = (props: Props) => {
           amountPaid,
           totalAmount,
           creditAmount,
+          dueDate,
           receiptItems: products,
         });
         onClearReceipt();
@@ -435,6 +454,7 @@ const ReceiptSummary = (props: Props) => {
       }, 500);
     },
     [
+      dueDate,
       amountPaid,
       creditAmount,
       customer,
@@ -777,24 +797,39 @@ const ReceiptSummary = (props: Props) => {
           )}
         </View>
         {!!creditAmount && (
-          <View style={applyStyles({marginBottom: 80})}>
-            <FloatingLabelInput
-              editable={false}
-              label="Remaining Balance"
-              keyboardType="number-pad"
-              inputStyle={applyStyles({color: colors.primary, paddingLeft: 32})}
-              value={numberWithCommas(creditAmount)}
-              leftIcon={
-                <Text
-                  style={applyStyles(
-                    styles.textInputIconText,
-                    {color: colors.primary},
-                    'text-400',
-                  )}>
-                  {currency}
-                </Text>
-              }
-            />
+          <View
+            style={applyStyles('w-full flex-row justify-space-between', {
+              marginBottom: 80,
+            })}>
+            <View style={applyStyles({width: '48%'})}>
+              <FloatingLabelInput
+                editable={false}
+                label="Remaining Balance"
+                keyboardType="number-pad"
+                inputStyle={applyStyles({
+                  color: colors.primary,
+                  paddingLeft: 32,
+                })}
+                value={numberWithCommas(creditAmount)}
+                leftIcon={
+                  <Text
+                    style={applyStyles(
+                      styles.textInputIconText,
+                      {color: colors.primary},
+                      'text-400',
+                    )}>
+                    {currency}
+                  </Text>
+                }
+              />
+            </View>
+            <View style={applyStyles({width: '48%'})}>
+              <FloatingLabelInput
+                value={dueDateString}
+                label="Balance due in"
+                onChangeText={(text) => handleDueDateChange(text)}
+              />
+            </View>
           </View>
         )}
       </ScrollView>
@@ -835,6 +870,10 @@ const ReceiptSummary = (props: Props) => {
         onOpenContactList={handleOpenContactList}
       />
       <ShareReceiptModal
+        tax={tax}
+        products={products}
+        customer={customer}
+        totalAmount={totalAmount}
         visible={isShareModalOpen}
         onSmsShare={handleSmsShare}
         onEmailShare={handleEmailShare}

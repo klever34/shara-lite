@@ -5,15 +5,17 @@ import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
+import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
+import {getPaymentsFromCredit} from '../../../services/CreditPaymentService';
 import {colors} from '../../../styles';
+import {PAYMENT_METHOD_LABEL} from '../../../helpers/constants';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
   const credits = customer.credits || [];
-  const creditPayments = customer.payments || [];
+  const creditPayments = getPaymentsFromCredit({credits: customer.credits});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
   const totalCreditsAmount = credits.reduce(
     (total, {amount_left}) => total + amount_left,
@@ -84,7 +86,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {credit.type}
+                {PAYMENT_METHOD_LABEL[credit.method]}
               </Text>
             </View>
           </View>

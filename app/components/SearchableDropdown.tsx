@@ -11,6 +11,7 @@ import {Button} from './Button';
 const SearchableDropdown = (props: any) => {
   const {
     items,
+    onBlur,
     setSort,
     onFocus,
     itemStyle,
@@ -48,6 +49,12 @@ const SearchableDropdown = (props: any) => {
     setFocus(true);
     setListItems(items);
   }, [onFocus, items]);
+
+  const handleInputBlur = useCallback(() => {
+    onBlur && onBlur();
+    setFocus(false);
+    setListItems(items);
+  }, [onBlur, items]);
 
   const searchedItems = (searchedText: string) => {
     let sort = setSort;
@@ -146,6 +153,7 @@ const SearchableDropdown = (props: any) => {
             color={colors.primary}
           />
           <TextInput
+            onBlur={handleInputBlur}
             onFocus={handleInputFocus}
             value={value[searchTerm]}
             onChangeText={searchedItems}

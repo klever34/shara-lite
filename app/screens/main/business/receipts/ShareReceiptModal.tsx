@@ -1,16 +1,27 @@
 import React, {useCallback, useState} from 'react';
-import {Modal, View, Text} from 'react-native';
-import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
+import {Modal, Text, View} from 'react-native';
 import {Button, FloatingLabelInput} from '../../../../components';
 import Icon from '../../../../components/Icon';
+import {applyStyles} from '../../../../helpers/utils';
+import {ICustomer} from '../../../../models';
+import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService} from '../../../../services';
+import {colors} from '../../../../styles';
+import {ReceiptImage} from './ReceiptImage';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   onSmsShare?: () => void;
-  onEmailShare?: (email: string, callback: () => void) => void;
-  onWhatsappShare?: () => void;
+  onEmailShare?: (
+    {email, receiptImage}: {email: string; receiptImage: string},
+    callback: () => void,
+  ) => void;
+  onWhatsappShare?: (receiptImage: string) => void;
+  tax?: number;
+  customer?: ICustomer;
+  totalAmount?: number;
+  products?: IReceiptItem[];
 };
 
 export const ShareReceiptModal = ({
@@ -18,9 +29,16 @@ export const ShareReceiptModal = ({
   onClose,
   onSmsShare,
   onEmailShare,
+  tax,
+  customer,
+  products,
+  totalAmount,
   onWhatsappShare,
 }: Props) => {
+  const authService = getAuthService();
+  const user = authService.getUser();
   const [email, setEmail] = useState('');
+  const [receiptImage, setReceiptImage] = useState('');
   const [showEmailField, setShowEmailField] = useState(false);
 
   const handleClearEmailField = useCallback(() => {
@@ -33,12 +51,12 @@ export const ShareReceiptModal = ({
   }, [onSmsShare]);
 
   const handleEmailShare = useCallback(() => {
-    onEmailShare && onEmailShare(email, handleClearEmailField);
-  }, [email, onEmailShare, handleClearEmailField]);
+    onEmailShare && onEmailShare({email, receiptImage}, handleClearEmailField);
+  }, [email, receiptImage, onEmailShare, handleClearEmailField]);
 
   const handleWhatsappShare = useCallback(() => {
-    onWhatsappShare && onWhatsappShare();
-  }, [onWhatsappShare]);
+    onWhatsappShare && onWhatsappShare(receiptImage);
+  }, [onWhatsappShare, receiptImage]);
 
   const handleEmailChange = useCallback((text) => {
     setEmail(text);
@@ -183,6 +201,16 @@ export const ShareReceiptModal = ({
             Cancel
           </Text>
         </Button>
+      </View>
+      <View style={applyStyles({opacity: 0, height: 0})}>
+        <ReceiptImage
+          tax={tax}
+          user={user}
+          products={products}
+          customer={customer}
+          totalAmount={totalAmount}
+          getImageUri={(data) => setReceiptImage(data)}
+        />
       </View>
     </Modal>
   );

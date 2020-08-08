@@ -5,7 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
 import {useRealm} from '../../../../services/realm';
 import {ICustomer} from '../../../../models';
-import {CustomersList} from '../receipts';
+import {CustomersList, CustomerDetailsModal} from '../receipts';
 import Touchable from '../../../../components/Touchable';
 import Icon from '../../../../components/Icon';
 import {applyStyles} from '../../../../helpers/utils';
@@ -15,6 +15,7 @@ export const RecordCreditPayment = () => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isCustomersListModalOpen, setIsCustomersListModalOpen] = useState(
     false,
   );
@@ -28,12 +29,24 @@ export const RecordCreditPayment = () => {
     setIsCustomersListModalOpen(false);
   }, []);
 
+  const handleOpenCustomerModal = useCallback(() => {
+    setIsCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseCustomerModal = useCallback(() => {
+    setIsCustomerModalOpen(false);
+  }, []);
+
   const handleCustomerSelect = useCallback(
     ({customer: customerData}) => {
       setCustomer(customerData);
     },
     [setCustomer],
   );
+
+  const handleSetCustomer = useCallback((value: ICustomer) => {
+    setCustomer(value);
+  }, []);
 
   const handleSubmit = useCallback(
     (payload, callback) => {
@@ -74,7 +87,7 @@ export const RecordCreditPayment = () => {
           </Text>
         </View>
       )}
-      <Touchable onPress={handleOpenCustomersList}>
+      <Touchable onPress={handleOpenCustomerModal}>
         <View
           style={applyStyles('mb-lg flex-row py-lg items-center', {
             borderBottomWidth: 1,
@@ -102,6 +115,13 @@ export const RecordCreditPayment = () => {
           onCustomerSelect={handleCustomerSelect}
         />
       </Modal>
+      <CustomerDetailsModal
+        customer={customer}
+        visible={isCustomerModalOpen}
+        onClose={handleCloseCustomerModal}
+        onSelectCustomer={handleSetCustomer}
+        onOpenContactList={handleOpenCustomersList}
+      />
     </ScrollView>
   );
 };

@@ -20,6 +20,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'items-center': {
     alignItems: 'center',
   },
+  'items-end': {
+    alignItems: 'flex-end',
+  },
   'flex-wrap': {
     flexWrap: 'wrap',
   },
@@ -53,6 +56,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'text-center': {
     textAlign: 'center',
+  },
+  'text-left': {
+    textAlign: 'left',
+  },
+  'text-right': {
+    textAlign: 'right',
   },
   'text-uppercase': {
     textTransform: 'uppercase',

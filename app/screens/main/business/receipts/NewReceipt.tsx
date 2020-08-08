@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {
@@ -57,23 +58,6 @@ export const NewReceipt = () => {
       headerRight: () => <HeaderRight menuOptions={[]} />,
     });
   }, [navigation]);
-
-  const handleAddItem = useCallback(() => {
-    if (price && quantity) {
-      const product = {
-        ...selectedProduct,
-        price: parseFloat(price),
-        product: selectedProduct,
-        name: selectedProduct?.name,
-        quantity: parseFloat(quantity),
-      } as IReceiptItem;
-      setReceipt([product, ...receipt]);
-      setSelectedProduct(null);
-      setPrice('');
-      setQuantity('');
-    }
-  }, [price, quantity, receipt, selectedProduct]);
-
   const handlePriceChange = useCallback((item) => {
     setPrice(item);
   }, []);
@@ -113,6 +97,37 @@ export const NewReceipt = () => {
     handleCloseSummaryModal();
   }, [handleCloseSummaryModal]);
 
+  const handleAddItem = useCallback(() => {
+    if (price && quantity) {
+      const product = {
+        ...selectedProduct,
+        price: parseFloat(price),
+        product: selectedProduct,
+        name: selectedProduct?.name,
+        quantity: parseFloat(quantity),
+      } as IReceiptItem;
+      if (receipt.map((item) => item.id).includes(product?.id)) {
+        console.log('here');
+        setReceipt(
+          receipt.map((item) => {
+            if (item.id === product.id) {
+              return {
+                ...item,
+                quantity: item.quantity + parseFloat(quantity),
+              };
+            }
+            return item;
+          }),
+        );
+      } else {
+        setReceipt([product, ...receipt]);
+      }
+      setSelectedProduct(null);
+      setPrice('');
+      setQuantity('');
+    }
+  }, [price, quantity, receipt, selectedProduct]);
+
   const handleUpdateProductItem = useCallback(
     (item: IReceiptItem) => {
       setReceipt(
@@ -145,11 +160,29 @@ export const NewReceipt = () => {
       } as IReceiptItem;
 
       handleAddItem();
-      items = [product, ...receipt];
+
+      if (receipt.map((item) => item.id).includes(product?.id)) {
+        console.log('here');
+        items = receipt.map((item) => {
+          if (item.id === product.id) {
+            return {
+              ...item,
+              quantity: item.quantity + parseFloat(quantity),
+            };
+          }
+          return item;
+        });
+      } else {
+        items = [product, ...receipt];
+      }
     }
-    setReceipt(items);
-    setSelectedProduct(null);
-    handleOpenSummaryModal();
+    if ((selectedProduct && quantity && price) || items.length) {
+      setReceipt(items);
+      setSelectedProduct(null);
+      handleOpenSummaryModal();
+    } else {
+      Alert.alert('Error', 'Please select at least one product item');
+    }
   }, [
     price,
     receipt,
@@ -194,13 +227,15 @@ export const NewReceipt = () => {
   return (
     <SafeAreaView style={styles.container}>
       <SearchableDropdown
-        items={products}
-        searchTerm="name"
+        items={products.map((item) => ({
+          ...item,
+          search: `${item.sku} - ${item.name}`,
+        }))}
+        searchTerm="search"
         onItemSelect={handleSelectProduct}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
         noResultsAction={() => navigation.navigate('AddProduct')}
-        emptyStateText="We don't have this item in our database, you can help us update our system by adding it as a new item."
       />
       <FlatList
         data={products}
@@ -230,6 +265,7 @@ export const NewReceipt = () => {
       />
       <Modal
         isVisible={!!selectedProduct}
+        onBackdropPress={handleCloseProductModal}
         onSwipeComplete={handleCloseProductModal}
         onBackButtonPress={handleCloseProductModal}
         style={applyStyles({

@@ -2,6 +2,7 @@ import {IProduct} from './Product';
 import {ISupplier} from './Supplier';
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IReceivedInventory} from './ReceivedInventory';
+import {DeliveryAgent} from './DeliveryAgent';
 
 export interface IStockItem extends BaseModelInterface {
   supplier_name: string;
@@ -12,11 +13,12 @@ export interface IStockItem extends BaseModelInterface {
   quantity: number;
   cost_price?: number;
   total_cost_price?: number;
-  agent_full_name?: string;
-  agent_mobile?: string;
+  delivery_agent_full_name?: string;
+  delivery_agent_mobile?: string;
   supplier: ISupplier;
   product: IProduct;
   receivedInventory: IReceivedInventory;
+  delivery_agent?: DeliveryAgent;
 }
 
 export const modelName = 'StockItem';
@@ -35,9 +37,12 @@ export class StockItem implements Partial<StockItem> {
       cost_price: 'double?',
       total_cost_price: 'double?',
       weight: 'string?',
+      delivery_agent_full_name: 'string?',
+      delivery_agent_mobile: 'string?',
       supplier: 'Supplier?',
       product: 'Product?',
       receivedInventory: 'ReceivedInventory?',
+      delivery_agent: 'DeliveryAgent?',
     },
   };
 }
