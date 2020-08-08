@@ -39,6 +39,8 @@ import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
 import analytics, {JsonMap} from '@segment/analytics-react-native';
+// @ts-ignore
+import RNUxcam from 'react-native-ux-cam';
 
 type MessageItemProps = {
   item: IMessage;
@@ -218,6 +220,7 @@ const ChatScreen = ({
         message.timetoken = String(response.timetoken);
       });
       analytics.track('Message Sent', (message as unknown) as JsonMap);
+      RNUxcam.logEvent('Message Sent', message);
     });
   }, [
     channel,
