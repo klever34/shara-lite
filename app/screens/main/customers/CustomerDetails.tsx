@@ -46,7 +46,7 @@ const CustomerDetails = ({route}: {route: any}) => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <CustomerDetailsTab.Navigator
-        initialRouteName="Details"
+        initialRouteName="CreditsTab"
         tabBarOptions={{
           indicatorContainerStyle: {backgroundColor: colors.primary},
           indicatorStyle: {backgroundColor: colors.white},
@@ -55,25 +55,25 @@ const CustomerDetails = ({route}: {route: any}) => {
           inactiveTintColor: 'rgba(255,255,255, 0.75)',
         }}>
         <CustomerDetailsTab.Screen
-          name="Details"
-          options={{title: 'Details'}}
-          component={DetailsTab}
-        />
-        <CustomerDetailsTab.Screen
-          name="Orders"
-          options={{title: 'Orders'}}
-          component={OrdersTab}
-        />
+          name="CreditsTab"
+          options={{title: 'Credit'}}>
+          {addCustomerToComponent(CreditsTab)}
+        </CustomerDetailsTab.Screen>
         <CustomerDetailsTab.Screen
           name="Payments"
           options={{title: 'Payments'}}>
           {addCustomerToComponent(PaymentsTab)}
         </CustomerDetailsTab.Screen>
         <CustomerDetailsTab.Screen
-          name="CreditsTab"
-          options={{title: 'Credit'}}>
-          {addCustomerToComponent(CreditsTab)}
-        </CustomerDetailsTab.Screen>
+          name="Orders"
+          options={{title: 'Orders'}}
+          component={OrdersTab}
+        />
+        <CustomerDetailsTab.Screen
+          name="Details"
+          options={{title: 'Details'}}
+          component={DetailsTab}
+        />
       </CustomerDetailsTab.Navigator>
     </SafeAreaView>
   );

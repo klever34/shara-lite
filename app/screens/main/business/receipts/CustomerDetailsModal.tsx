@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Modal, ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
 import {Button, FloatingLabelInput} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import {applyStyles, generateUniqueId} from '../../../../helpers/utils';
@@ -11,7 +11,7 @@ type Props = {
   visible: boolean;
   customer?: ICustomer;
   onClose: () => void;
-  onOpenContactList: () => void;
+  onOpenCustomerList: () => void;
   onSelectCustomer: (customer: ICustomer) => void;
 };
 
@@ -20,7 +20,7 @@ export const CustomerDetailsModal = (props: Props) => {
     visible,
     onClose,
     onSelectCustomer,
-    onOpenContactList,
+    onOpenCustomerList,
     customer: customerProps,
   } = props;
 
@@ -32,7 +32,7 @@ export const CustomerDetailsModal = (props: Props) => {
   }, [customerProps]);
 
   const handleDone = () => {
-    if (customer) {
+    if (customer?.name && customer?.mobile) {
       if (isNewCustomer) {
         const data = {
           ...customer,
@@ -46,6 +46,8 @@ export const CustomerDetailsModal = (props: Props) => {
         onSelectCustomer(customer);
       }
       onClose();
+    } else {
+      Alert.alert('Info', 'Please select a customer.');
     }
   };
 
@@ -66,7 +68,7 @@ export const CustomerDetailsModal = (props: Props) => {
       onRequestClose={onClose}>
       <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
         <View style={applyStyles({marginBottom: 48})}>
-          <Button style={applyStyles('mb-lg')} onPress={onOpenContactList}>
+          <Button style={applyStyles('mb-lg')} onPress={onOpenCustomerList}>
             <View
               style={applyStyles('flex-row', 'items-center', 'justify-center')}>
               <Icon
