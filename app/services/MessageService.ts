@@ -1,5 +1,6 @@
 import Realm from 'realm';
 import {IMessage} from '../models';
+import {omit} from 'lodash';
 
 const modelName = 'Message';
 
@@ -13,7 +14,7 @@ export const getMessageByPubnubId = ({
   const foundMessages = realm
     .objects<IMessage>(modelName)
     .filtered(`id = "${messageId}" LIMIT(1)`);
-  return foundMessages.length ? (foundMessages[0] as IMessage) : null;
+  return foundMessages.length ? (omit(foundMessages[0]) as IMessage) : null;
 };
 
 export const getMessage = ({

@@ -38,6 +38,7 @@ import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
+import {getBaseModelValues} from '../../../helpers/models';
 
 type MessageItemProps = {
   item: IMessage;
@@ -192,7 +193,11 @@ const ChatScreen = ({
     };
     try {
       realm.write(() => {
-        message = realm.create<IMessage>('Message', message, UpdateMode.Never);
+        message = realm.create<IMessage>(
+          'Message',
+          {...message, ...getBaseModelValues()},
+          UpdateMode.Never,
+        );
         conversation.lastMessage = message;
       });
     } catch (e) {

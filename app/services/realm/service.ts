@@ -12,7 +12,7 @@ import PubNub from 'pubnub';
 import {decrypt, generateUniqueId} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import {compact, pick} from 'lodash';
+import {compact, omit} from 'lodash';
 import {ChannelCustom} from '../../../types/app';
 import {getBaseModelValues} from '../../helpers/models';
 import {getMessageByPubnubId} from '../MessageService';
@@ -279,7 +279,10 @@ export class RealmService implements IRealmService {
             realm: this.realm,
             channel,
           });
-          const updatePayload = existingChannel || getBaseModelValues();
+          const updatePayload = omit(
+            existingChannel || getBaseModelValues(),
+            [],
+          );
 
           const conversation = this.realm.create<IConversation>(
             'Conversation',

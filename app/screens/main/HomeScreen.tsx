@@ -19,6 +19,7 @@ import {MessageActionEvent} from '../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderRight from '../../components/HeaderRight';
 import {PushNotificationToken} from '../../../types/app';
+import {getBaseModelValues} from '../../helpers/models';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -165,8 +166,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 'Message',
                 {
                   ...message,
-                  created_at: new Date(message.created_at),
                   timetoken: String(timetoken),
+                  ...getBaseModelValues(),
                 },
                 Realm.UpdateMode.Modified,
               );
@@ -198,6 +199,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     ...conversation,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );
@@ -209,6 +211,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     channel,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );

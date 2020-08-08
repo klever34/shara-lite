@@ -1,5 +1,6 @@
 import Realm from 'realm';
 import {IConversation} from '../models';
+import {omit} from 'lodash';
 
 const modelName = 'Conversation';
 
@@ -13,7 +14,9 @@ export const getConversationByChannel = ({
   const foundConversations = realm
     .objects<IConversation>(modelName)
     .filtered(`channel = "${channel}" LIMIT(1)`);
-  return foundConversations.length ? (foundConversations[0] as IConversation) : null;
+  return foundConversations.length
+    ? (omit(foundConversations[0]) as IConversation)
+    : null;
 };
 
 export const getConversation = ({
