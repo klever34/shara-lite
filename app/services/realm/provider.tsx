@@ -165,14 +165,18 @@ const syncLocalData = ({
   syncRealm?.write(() => {
     schema.forEach((model) => {
       localRealm?.objects(model.schema.name).forEach((record: any) => {
-        syncRealm.create(model.schema.name, record, UpdateMode.Modified);
+        if (record) {
+          syncRealm.create(model.schema.name, record, UpdateMode.Modified);
+        }
       });
     });
   });
   localRealm?.write(() => {
     schema.forEach((model) => {
       syncRealm?.objects(model.schema.name).forEach((record: any) => {
-        localRealm?.create(model.schema.name, record, UpdateMode.Modified);
+        if (record) {
+          localRealm?.create(model.schema.name, record, UpdateMode.Modified);
+        }
       });
     });
   });
