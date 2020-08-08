@@ -60,6 +60,7 @@ import analytics, {JsonMap} from '@segment/analytics-react-native';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import {isNumber, isString} from 'lodash';
+import {Expenses} from './business/finances/Expenses';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -562,6 +563,21 @@ const MainScreens = ({navigation}: any) => {
           component={AddSupplier}
           options={{
             title: 'Add Supplier',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
+        <MainStack.Screen
+          name="Expenses"
+          component={Expenses}
+          options={{
+            title: 'Record Expenses',
             headerStyle: {
               backgroundColor: colors.primary,
             },

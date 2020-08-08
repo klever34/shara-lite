@@ -11,6 +11,7 @@ import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {CustomersList} from '../receipts';
 import {getCredits} from '../../../../services/CreditService';
+import {uniqBy} from 'lodash';
 
 export const RecordCreditPayment = () => {
   const realm = useRealm();
@@ -21,10 +22,11 @@ export const RecordCreditPayment = () => {
   );
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const credits = getCredits({realm});
-  const creditCustomers = credits
+  const customers = credits
     .filter((item) => !item.fulfilled)
     .filter((item) => item.customer)
     .map((item) => item.customer) as ICustomer[];
+  const creditCustomers = uniqBy(customers, 'id');
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
