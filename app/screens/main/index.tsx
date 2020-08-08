@@ -1,7 +1,7 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
@@ -18,6 +18,7 @@ import {
   getAuthService,
   getContactsService,
   getPubNubService,
+  getRealmService,
 } from '../../services';
 import {colors} from '../../styles';
 import {BusinessSetup} from '../BusinessSetup';
@@ -56,6 +57,8 @@ import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
+import {RealmContext} from '../../services/realm/provider';
+import {loginToRealm} from '../../services/realm';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -114,6 +117,8 @@ const MainScreens = ({navigation}: any) => {
   const user = authService.getUser();
   const initialRouteName =
     user?.businesses && user?.businesses.length ? 'Home' : 'BusinessSetup';
+  // @ts-ignore
+  const {realm, updateSyncRealm} = useContext(RealmContext);
 
   useEffect(() => {
     if (user) {
@@ -134,6 +139,19 @@ const MainScreens = ({navigation}: any) => {
       handleError(error);
     });
   }, [navigation, handleError]);
+
+  useEffect(() => {
+    updateRealm();
+  });
+
+  const updateRealm = async () => {
+    const authService = getAuthService();
+    const {jwt} = authService.getRealmCredentials();
+    const createdRealm = await loginToRealm({jwt});
+    updateSyncRealm && updateSyncRealm(createdRealm);
+    const realmService = getRealmService();
+    realmService.setInstance(realm as Realm);
+  };
 
   if (!pubNubClient) {
     return (

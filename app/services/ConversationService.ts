@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import {IConversation} from '../models';
+import {IConversation} from '../models/Conversation';
 import {omit} from 'lodash';
 
 const modelName = 'Conversation';

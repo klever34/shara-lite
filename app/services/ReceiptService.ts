@@ -1,5 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models';
+import {ICustomer} from '../models/Customer';
 import {IReceipt, modelName, Receipt} from '../models/Receipt';
 import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment, updatePayment} from './PaymentService';

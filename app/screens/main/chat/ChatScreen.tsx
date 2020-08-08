@@ -33,7 +33,7 @@ import {MainStackParamList} from '../index';
 import {getAuthService} from '../../../services';
 import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
-import {IMessage} from '../../../models';
+import {IMessage} from '../../../models/Message';
 import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';

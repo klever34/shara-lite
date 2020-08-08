@@ -4,7 +4,7 @@ import {CreditPaymentForm} from '../../../../components';
 import {useNavigation} from '@react-navigation/native';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
 import {useRealm} from '../../../../services/realm';
-import {ICustomer} from '../../../../models';
+import {ICustomer} from '../../../../models/Customer';
 import {CustomersList} from '../receipts';
 import Touchable from '../../../../components/Touchable';
 import Icon from '../../../../components/Icon';

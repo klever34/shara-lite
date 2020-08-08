@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import {IMessage} from '../models';
+import {IMessage} from '../models/Message';
 import {omit} from 'lodash';
 
 const modelName = 'Message';

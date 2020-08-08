@@ -1,6 +1,9 @@
 import {useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
-import {Contact, Message, Conversation, Customer} from '../../models';
+import {Contact} from '../../models/Contact';
+import {Customer} from '../../models/Customer';
+import {Message} from '../../models/Message';
+import {Conversation} from '../../models/Conversation';
 import {Payment} from '../../models/Payment';
 import {Credit} from '../../models/Credit';
 import {CreditPayment} from '../../models/CreditPayment';
@@ -11,13 +14,10 @@ import {Supplier} from '../../models/Supplier';
 import {InventoryStock} from '../../models/InventoryStock';
 import {DeliveryAgent} from '../../models/DeliveryAgent';
 import {RealmContext} from './provider';
-import {getRealmService} from '../index';
 import {Alert, BackHandler, Platform} from 'react-native';
 import {StorageService} from '../storage';
 
-const defaultRealmPath = 'default.realm';
-
-const schema = [
+export const schema = [
   Contact,
   Conversation,
   Customer,

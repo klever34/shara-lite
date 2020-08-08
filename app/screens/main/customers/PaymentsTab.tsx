@@ -4,7 +4,7 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View, FlatList} from 'react-native';
 import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import {ICustomer} from '../../../models';
+import {ICustomer} from '../../../models/Customer';
 import {IPayment} from '../../../models/Payment';
 import EmptyState from '../../../components/EmptyState';
 import {ActionCard} from '../../../components';

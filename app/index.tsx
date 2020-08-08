@@ -32,19 +32,6 @@ export type RootStackParamList = {
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
-  const [realm, setRealm] = useState<Realm | null>(null);
-  const [error, setError] = useState(false);
-  if (error) {
-    return null;
-  }
-  if (false) {
-    return (
-      <View style={applyStyles('flex-1 center')}>
-        <ActivityIndicator color={colors.primary} size={40} />
-      </View>
-    );
-  }
-
   return (
     <RealmProvider>
       <NavigationContainer>

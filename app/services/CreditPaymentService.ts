@@ -1,5 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models';
+import {ICustomer} from '../models/Customer';
 import {ICredit} from '../models/Credit';
 import {
   CreditPayment,

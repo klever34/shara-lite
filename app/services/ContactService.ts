@@ -1,6 +1,6 @@
 import Realm from 'realm';
 import {omit} from 'lodash';
-import {IContact} from '../models';
+import {IContact} from '../models/Contact';
 
 const modelName = 'Contact';
 

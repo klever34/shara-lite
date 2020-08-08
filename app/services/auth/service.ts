@@ -16,7 +16,7 @@ export interface IAuthService {
 
   setToken(token: string): void;
 
-  getRealmCredentials(): string | null;
+  getRealmCredentials(): any | null;
 
   setRealmCredentials(realmCredentials: any): void;
 
@@ -69,7 +69,7 @@ export class AuthService implements IAuthService {
     this.realmCredentials = realmCredentials;
   }
 
-  public getRealmCredentials(): string | null {
+  public getRealmCredentials(): any | null {
     return this.realmCredentials;
   }
 

@@ -6,7 +6,7 @@ import {FlatList} from 'react-native-gesture-handler';
 import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
 import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
-import {ICustomer} from '../../../models';
+import {ICustomer} from '../../../models/Customer';
 import {IPayment} from '../../../models/Payment';
 import {colors} from '../../../styles';
 

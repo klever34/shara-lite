@@ -1,4 +1,7 @@
 import React, {createContext, useEffect, useRef, useState} from 'react';
+import {schema} from './index';
+import {IReceipt, modelName} from '../../models/Receipt';
+import {UpdateMode} from 'realm';
 
 type RealmObject = {
   realm?: Realm;
@@ -63,6 +66,10 @@ const RealmProvider = (props: any) => {
   const updateSyncRealm = (realm: Realm) => {
     // @ts-ignore
     syncRealm.current = realm;
+    syncLocalData({
+      syncRealm: syncRealm.current,
+      localRealm: localRealm.current,
+    });
   };
 
   const updateLocalRealm = (realm: Realm) => {
@@ -132,6 +139,23 @@ const realmRemoveListener = ({realm, args}) => {
   if (realm) {
     return realm.removeListener(...args);
   }
+};
+
+const syncLocalData = ({syncRealm, localRealm}) => {
+  syncRealm.write(() => {
+    schema.forEach((model) => {
+      localRealm.objects(model.schema.name).forEach((record) => {
+        syncRealm.create(model.schema.name, record, UpdateMode.Modified);
+      });
+    });
+  });
+  localRealm.write(() => {
+    schema.forEach((model) => {
+      syncRealm.objects(model.schema.name).forEach((record) => {
+        localRealm.create(model.schema.name, record, UpdateMode.Modified);
+      });
+    });
+  });
 };
 
 export default RealmProvider;
