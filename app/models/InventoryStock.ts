@@ -1,7 +1,7 @@
 import {IProduct} from './Product';
 import {ISupplier} from './Supplier';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {DeliveryAgent} from './DeliveryAgent';
+import {IDeliveryAgent} from './DeliveryAgent';
 
 export interface IInventoryStock extends BaseModelInterface {
   supplier_name: string;
@@ -16,7 +16,7 @@ export interface IInventoryStock extends BaseModelInterface {
   delivery_agent_mobile?: string;
   supplier: ISupplier;
   product: IProduct;
-  delivery_agent?: DeliveryAgent;
+  delivery_agent?: IDeliveryAgent;
 }
 
 export const modelName = 'InventoryStock';

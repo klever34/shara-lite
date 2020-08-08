@@ -16,7 +16,7 @@ import {
 } from '../services';
 import {useNavigation} from '@react-navigation/native';
 import {RealmContext} from '../services/realm/provider';
-import {initRealm} from '../services/realm';
+import {initLocalRealm} from '../services/realm';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
@@ -30,7 +30,7 @@ const SplashScreen = () => {
     const authService = getAuthService();
     await authService.initialize();
     try {
-      const createdRealm = await initRealm();
+      const createdRealm = await initLocalRealm();
       updateLocalRealm && updateLocalRealm(createdRealm);
       const realmService = getRealmService();
       realmService.setInstance(realm as Realm);
@@ -64,7 +64,7 @@ const SplashScreen = () => {
         routes: [{name: 'Auth'}],
       });
     }
-  }, [navigation]);
+  }, [navigation, realm, updateLocalRealm]);
 
   useEffect(() => {
     setTimeout(handleRedirect, 750);

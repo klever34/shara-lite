@@ -1,5 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
-import {ISupplier, modelName, Supplier} from '../models/Supplier';
+import {ISupplier, modelName} from '../models/Supplier';
 import {getBaseModelValues} from '../helpers/models';
 
 export const getSuppliers = ({realm}: {realm: Realm}): ISupplier[] => {

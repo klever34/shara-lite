@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -8,18 +8,6 @@ import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
-import Realm from 'realm';
-import {createRealm} from './services/realm';
-import {getRealmService} from './services';
-import {
-  ActivityIndicator,
-  Alert,
-  View,
-  BackHandler,
-  Platform,
-} from 'react-native';
-import {colors} from './styles';
-import {applyStyles} from './helpers/utils';
 import FallbackComponent from './components/FallbackComponent';
 import RealmProvider from './services/realm/provider';
 

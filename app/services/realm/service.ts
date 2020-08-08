@@ -1,12 +1,5 @@
-import Realm from 'realm';
-import {
-  Contact,
-  Conversation,
-  IContact,
-  IConversation,
-  IMessage,
-  Message,
-} from '../../models';
+import Realm, {UpdateMode} from 'realm';
+import {IContact, IConversation, IMessage} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
 import {decrypt, generateUniqueId} from '../../helpers/utils';
@@ -24,14 +17,11 @@ export interface IRealmService {
 
   setInstance(realm: Realm): void;
 
-  createContact(
-    contact: IContact,
-    updateMode: Realm.UpdateMode,
-  ): Promise<IContact>;
+  createContact(contact: IContact, updateMode: UpdateMode): Promise<IContact>;
 
   createMultipleContacts(
     contact: IContact[],
-    updateMode: Realm.UpdateMode,
+    updateMode: UpdateMode,
   ): Promise<IContact[]>;
 
   updateContact(contact: Partial<IContact>): Promise<IContact>;
@@ -74,7 +64,7 @@ export class RealmService implements IRealmService {
 
   createContact(
     contact: IContact,
-    updateMode: Realm.UpdateMode = Realm.UpdateMode.Never,
+    updateMode: UpdateMode = UpdateMode.Never,
   ): Promise<IContact> {
     const realm = this.realm as Realm;
     return new Promise<IContact>((resolve, reject) => {
@@ -100,7 +90,7 @@ export class RealmService implements IRealmService {
 
   createMultipleContacts(
     contacts: IContact[],
-    updateMode: Realm.UpdateMode = Realm.UpdateMode.Never,
+    updateMode: UpdateMode = UpdateMode.Never,
   ): Promise<IContact[]> {
     const realm = this.realm as Realm;
     return new Promise<IContact[]>((resolve, reject) => {
@@ -122,13 +112,13 @@ export class RealmService implements IRealmService {
   }
 
   updateContact(contact: Partial<IContact>): Promise<IContact> {
-    return this.createContact(contact as IContact, Realm.UpdateMode.Modified);
+    return this.createContact(contact as IContact, UpdateMode.Modified);
   }
 
   updateMultipleContacts(contacts: Partial<IContact[]>): Promise<IContact[]> {
     return this.createMultipleContacts(
       contacts as IContact[],
-      Realm.UpdateMode.Modified,
+      UpdateMode.Modified,
     );
   }
 
@@ -205,7 +195,7 @@ export class RealmService implements IRealmService {
                   delivered_timetoken,
                   read_timetoken,
                 },
-                Realm.UpdateMode.Modified,
+                UpdateMode.Modified,
               );
               if (j === messagePayload.length - 1 && retrieved === undefined) {
                 const conversation = this.realm
@@ -287,7 +277,7 @@ export class RealmService implements IRealmService {
           const conversation = this.realm.create<IConversation>(
             'Conversation',
             {...conversations[channel], ...updatePayload},
-            Realm.UpdateMode.Modified,
+            UpdateMode.Modified,
           );
           if (conversation.type === 'group') {
             const members = conversation.members;

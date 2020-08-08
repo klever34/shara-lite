@@ -6,13 +6,14 @@ import {
   Text,
   View,
 } from 'react-native';
+import Realm from 'realm';
 import {FAButton} from '../../../components';
 import {useNavigation} from '@react-navigation/native';
 import {applyStyles} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
-import {IConversation} from '../../../models/Conversation';
-import {IMessage} from '../../../models/Message';
+import {IConversation} from '../../../models';
+import {IMessage} from '../../../models';
 import {useRealm} from '../../../services/realm';
 import {useTyping} from '../../../services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';

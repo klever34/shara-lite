@@ -1,6 +1,6 @@
 import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models/Customer';
-import {IPayment, modelName, Payment} from '../models/Payment';
+import {ICustomer} from '../models';
+import {IPayment, modelName} from '../models/Payment';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
 import {Customer} from '../../types/app';

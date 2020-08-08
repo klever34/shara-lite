@@ -1,5 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
-import {IProduct, modelName, Product} from '../models/Product';
+import {IProduct, modelName} from '../models/Product';
 import {getBaseModelValues} from '../helpers/models';
 
 export const getProducts = ({realm}: {realm: Realm}): IProduct[] => {

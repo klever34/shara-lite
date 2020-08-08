@@ -1,4 +1,4 @@
-import {Customer, ICustomer, modelName} from '../models/Customer';
+import {Customer, ICustomer, modelName} from '../models';
 import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '../helpers/models';
 

@@ -13,7 +13,7 @@ import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
 import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
-import {initRealm, loginToRealm} from '../../services/realm';
+import {loginToRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
 import {setPartitionKey} from '../../helpers/models';
 

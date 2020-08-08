@@ -63,7 +63,7 @@ export const createRealm = async (options?: any): Promise<Realm> => {
     };
   }
 
-  return Realm.open(config);
+  return Realm.open(config as Realm.Configuration);
 };
 
 export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
@@ -75,10 +75,10 @@ export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
       id: appId,
     };
 
+    // @ts-ignore
     const app = new Realm.App(appConfig);
     const realmUser = await app.logIn(credentials);
-    const realm = await createRealm({realmUser});
-    return realm;
+    return await createRealm({realmUser});
   } catch (e) {
     console.error('Failed to log in', e);
     Alert.alert(
@@ -101,11 +101,9 @@ export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
   }
 };
 
-export const initRealm = async (): Promise<Realm> => {
+export const initLocalRealm = async (): Promise<Realm> => {
   try {
-    // @ts-ignore
-    const realm = await createRealm();
-    return realm;
+    return await createRealm();
   } catch (e) {
     console.error('Failed to log in', e);
     throw e;

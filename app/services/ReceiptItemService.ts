@@ -1,9 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
-import {
-  IReceiptItem,
-  ReceiptItem as ReceiptItemModel,
-  modelName,
-} from '../models/ReceiptItem';
+import {IReceiptItem, modelName} from '../models/ReceiptItem';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
 import {ReceiptItem} from '../../types/app';

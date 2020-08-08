@@ -1,11 +1,7 @@
 import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models/Customer';
+import {ICustomer} from '../models';
 import {ICredit} from '../models/Credit';
-import {
-  CreditPayment,
-  ICreditPayment,
-  modelName,
-} from '../models/CreditPayment';
+import {ICreditPayment, modelName} from '../models/CreditPayment';
 import {savePayment} from './PaymentService';
 import {getBaseModelValues} from '../helpers/models';
 import {updateCredit} from './CreditService';

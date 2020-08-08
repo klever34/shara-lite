@@ -1,7 +1,6 @@
-import React, {createContext, useEffect, useRef, useState} from 'react';
+import React, {createContext, useRef} from 'react';
 import {schema} from './index';
-import {IReceipt, modelName} from '../../models/Receipt';
-import {UpdateMode} from 'realm';
+import Realm, {UpdateMode} from 'realm';
 
 type RealmObject = {
   realm?: Realm;
@@ -9,12 +8,19 @@ type RealmObject = {
   updateSyncRealm?: (realm: Realm) => void;
 };
 
+type RealmCloneParams = {
+  realm?: Realm;
+  args: Array<any>;
+};
+
+Realm.defaultPath;
+
 export const RealmContext = createContext<RealmObject>({});
 
 const RealmProvider = (props: any) => {
-  const realm = useRef<Realm>(null);
-  const syncRealm = useRef<Realm>(null);
-  const localRealm = useRef<Realm>(null);
+  const realm = useRef<Realm>();
+  const syncRealm = useRef<Realm>();
+  const localRealm = useRef<Realm>();
 
   const getRealmClone = (): Realm =>
     (({
@@ -63,18 +69,18 @@ const RealmProvider = (props: any) => {
 
   realm.current = getRealmClone();
 
-  const updateSyncRealm = (realm: Realm) => {
+  const updateSyncRealm = (newRealm: Realm) => {
     // @ts-ignore
-    syncRealm.current = realm;
+    syncRealm.current = newRealm;
     syncLocalData({
       syncRealm: syncRealm.current,
       localRealm: localRealm.current,
     });
   };
 
-  const updateLocalRealm = (realm: Realm) => {
+  const updateLocalRealm = (newRealm: Realm) => {
     // @ts-ignore
-    localRealm.current = realm;
+    localRealm.current = newRealm;
   };
 
   return (
@@ -85,15 +91,17 @@ const RealmProvider = (props: any) => {
   );
 };
 
-const realmWrite = ({realm, args}) => {
+const realmWrite = ({realm, args}: RealmCloneParams) => {
   if (realm) {
+    // @ts-ignore
     return realm.write(...args);
   }
 };
 
-const realmCreate = ({realm, args}) => {
+const realmCreate = ({realm, args}: RealmCloneParams) => {
   if (realm) {
     const createRecord = () => {
+      // @ts-ignore
       return realm.create(...args);
     };
 
@@ -105,54 +113,66 @@ const realmCreate = ({realm, args}) => {
   }
 };
 
-const realmObjects = ({realm, args}) => {
+const realmObjects = ({realm, args}: RealmCloneParams) => {
   if (realm) {
+    // @ts-ignore
     return realm.objects(...args);
   }
 };
 
-const realmObjectForPrimaryKey = ({realm, args}) => {
+const realmObjectForPrimaryKey = ({realm, args}: RealmCloneParams) => {
   if (realm) {
+    // @ts-ignore
     return realm.objectForPrimaryKey(...args);
   }
 };
 
-const realmDelete = ({realm, args}) => {
+const realmDelete = ({realm, args}: RealmCloneParams) => {
   if (realm) {
+    // @ts-ignore
     return realm.delete(...args);
   }
 };
 
-const realmDeleteAll = ({realm, args}) => {
+const realmDeleteAll = ({realm, args}: RealmCloneParams) => {
   if (realm) {
+    // @ts-ignore
     return realm.deleteAll(...args);
   }
 };
 
-const realmAddListener = ({realm, args}) => {
+const realmAddListener = ({realm, args}: RealmCloneParams) => {
   if (realm) {
+    // @ts-ignore
     return realm.addListener(...args);
   }
 };
 
-const realmRemoveListener = ({realm, args}) => {
+const realmRemoveListener = ({realm, args}: RealmCloneParams) => {
   if (realm) {
+    // @ts-ignore
     return realm.removeListener(...args);
   }
 };
 
-const syncLocalData = ({syncRealm, localRealm}) => {
-  syncRealm.write(() => {
+const syncLocalData = ({
+  syncRealm,
+  localRealm,
+}: {
+  syncRealm?: Realm;
+  localRealm?: Realm;
+}) => {
+  syncRealm?.write(() => {
     schema.forEach((model) => {
-      localRealm.objects(model.schema.name).forEach((record) => {
+      localRealm?.objects(model.schema.name).forEach((record: any) => {
         syncRealm.create(model.schema.name, record, UpdateMode.Modified);
       });
     });
   });
-  localRealm.write(() => {
+  localRealm?.write(() => {
     schema.forEach((model) => {
-      syncRealm.objects(model.schema.name).forEach((record) => {
-        localRealm.create(model.schema.name, record, UpdateMode.Modified);
+      syncRealm?.objects(model.schema.name).forEach((record: any) => {
+        localRealm?.create(model.schema.name, record, UpdateMode.Modified);
       });
     });
   });
