@@ -30,7 +30,7 @@ import {
 import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
-import {getAuthService} from '../../../services';
+import {getAnalyticsService, getAuthService} from '../../../services';
 import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
 import {IMessage} from '../../../models';
@@ -38,9 +38,6 @@ import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
-import analytics, {JsonMap} from '@segment/analytics-react-native';
-// @ts-ignore
-import RNUxcam from 'react-native-ux-cam';
 
 type MessageItemProps = {
   item: IMessage;
@@ -215,13 +212,14 @@ const ChatScreen = ({
           }
         });
       });
-    }).then((response) => {
-      realm.write(() => {
-        message.timetoken = String(response.timetoken);
-      });
-      analytics.track('Message Sent', (message as unknown) as JsonMap);
-      RNUxcam.logEvent('Message Sent', message);
-    });
+    })
+      .then((response) => {
+        realm.write(() => {
+          message.timetoken = String(response.timetoken);
+        });
+        return getAnalyticsService().logEvent('Message Sent', message);
+      })
+      .catch(handleError);
   }, [
     channel,
     conversation.lastMessage,

@@ -60,3 +60,14 @@ export const amountWithCurrency = (amount?: number) => {
     ? `${currency}${numberWithCommas(amount)}`
     : `${currency}${numberWithCommas(0)}`;
 };
+
+export const castObjectValuesToString = (object: {
+  [key: string]: any;
+}): {[key: string]: string} => {
+  return Object.keys(object).reduce((acc, key) => {
+    return {
+      ...acc,
+      [key]: String(key),
+    };
+  }, {});
+};

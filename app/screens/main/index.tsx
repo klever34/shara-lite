@@ -15,6 +15,7 @@ import {ICreditPayment} from '../../models/CreditPayment';
 import {IPayment} from '../../models/Payment';
 import {IProduct} from '../../models/Product';
 import {
+  getAnalyticsService,
   getAuthService,
   getContactsService,
   getPubNubService,
@@ -56,10 +57,6 @@ import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
-import analytics from '@segment/analytics-react-native';
-// @ts-ignore
-import RNUxcam from 'react-native-ux-cam';
-import {User} from '../../../types/app';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -120,32 +117,7 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     if (user) {
-      const userFields: (keyof User)[] = [
-        'firstname',
-        'id',
-        'country_code',
-        'currency_code',
-      ];
-      const userData: {[key: string]: string} = userFields.reduce(
-        (acc, prop) => {
-          return {
-            ...acc,
-            [prop]: String(user[prop]),
-          };
-        },
-        {},
-      );
-      userData.environment = Config.ENVIRONMENT;
-      const alias = `${user.firstname}`;
-
-      RNUxcam.setUserIdentity(alias);
-      for (let prop in userData) {
-        RNUxcam.setUserProperty(prop, userData[prop]);
-      }
-      RNUxcam.setUserProperty('alias', alias);
-
-      analytics.identify(String(user.id), userData).catch(handleError);
-      analytics.alias(alias).catch(handleError);
+      getAnalyticsService().setUser(user).catch(handleError);
     }
   }, [handleError, user]);
 

@@ -10,7 +10,7 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import Realm from 'realm';
 import {createRealm, RealmProvider} from './services/realm';
-import {getRealmService} from './services';
+import {getAnalyticsService, getRealmService} from './services';
 import {
   ActivityIndicator,
   Alert,
@@ -18,13 +18,9 @@ import {
   BackHandler,
   Platform,
 } from 'react-native';
-import analytics from '@segment/analytics-react-native';
-import Config from 'react-native-config';
 import {colors} from './styles';
 import {applyStyles} from './helpers/utils';
 import FallbackComponent from './components/FallbackComponent';
-// @ts-ignore
-import RNUxcam from 'react-native-ux-cam';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -40,16 +36,7 @@ const App = () => {
   const handleError = useErrorHandler();
 
   useEffect(() => {
-    if (process.env.NODE_ENV === 'production') {
-      analytics
-        .setup(Config.SEGMENT_KEY, {
-          recordScreenViews: true,
-          trackAppLifecycleEvents: true,
-        })
-        .catch(handleError);
-      RNUxcam.optIntoSchematicRecordings();
-      RNUxcam.startWithKey(Config.UXCAM_KEY);
-    }
+    getAnalyticsService().initialize().catch(handleError);
   }, [handleError]);
 
   useEffect(() => {
