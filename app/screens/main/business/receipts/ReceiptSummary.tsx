@@ -308,6 +308,8 @@ const ReceiptSummary = (props: Props) => {
       const date = getDueDateValue(number);
       setDueDateString(number.toString());
       setDueDate(date);
+    } else {
+      setDueDateString('');
     }
   }, []);
 
