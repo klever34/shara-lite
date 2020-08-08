@@ -1,9 +1,6 @@
 import {useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
-import {Contact} from '../../models/Contact';
-import {Customer} from '../../models/Customer';
-import {Message} from '../../models/Message';
-import {Conversation} from '../../models/Conversation';
+import {Contact, Message, Conversation, Customer} from '../../models';
 import {Payment} from '../../models/Payment';
 import {Credit} from '../../models/Credit';
 import {CreditPayment} from '../../models/CreditPayment';

@@ -1,8 +1,6 @@
 import {IMessage} from './Message';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
-export const modelName = 'Conversation';
-
 export interface IConversation extends BaseModelInterface {
   channel: string;
   type: '1-1' | 'group';

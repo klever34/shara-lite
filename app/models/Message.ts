@@ -1,7 +1,5 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
-export const modelName = 'Message';
-
 export interface IMessage extends BaseModelInterface {
   id: string;
   channel: string;

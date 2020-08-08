@@ -2,8 +2,6 @@ import capitalize from 'lodash/capitalize';
 import {User} from '../../types/app';
 import {BaseModel, baseModelSchema} from './baseSchema';
 
-export const modelName = 'IContact';
-
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
   fullName: string;
