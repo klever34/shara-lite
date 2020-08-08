@@ -12,23 +12,28 @@ import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
-import {getCustomers} from '../../../../services/CustomerService';
-import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 
 type CustomerItemProps = {
   item: ICustomer;
 };
 
-export const CustomersList = (props: any) => {
+type Props = {
+  customers: ICustomer[];
+  onModalClose: () => void;
+  showAddFromPhone?: boolean;
+  onOpenContactList?: () => void;
+  onCustomerSelect: ({customer}: {customer?: ICustomer}) => void;
+};
+
+export const CustomersList = (props: Props) => {
   const {
-    onCustomerSelect,
+    customers,
     onModalClose,
+    onCustomerSelect,
     onOpenContactList,
     showAddFromPhone = true,
   } = props;
-  const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);

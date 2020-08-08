@@ -30,6 +30,7 @@ import {
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
+import {getCustomers} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {saveReceipt} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
@@ -216,8 +217,10 @@ const ReceiptSummary = (props: Props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
-  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
+
+  const customers = getCustomers({realm});
   const creditAmount = payments.length ? totalAmount - amountPaid : totalAmount;
 
   //@ts-ignore
@@ -900,6 +903,7 @@ const ReceiptSummary = (props: Props) => {
       />
       <Modal visible={isCustomerListModalOpen}>
         <CustomersList
+          customers={customers}
           onModalClose={handleCloseCustomerList}
           onCustomerSelect={handleCustomerSelect}
           onOpenContactList={handleOpenContactListModal}

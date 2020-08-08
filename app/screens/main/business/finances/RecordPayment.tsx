@@ -1,27 +1,29 @@
-import React, {useState, useCallback} from 'react';
-import {ScrollView, StyleSheet, Modal, View, Text} from 'react-native';
-import {CreditPaymentForm} from '../../../../components';
 import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useState} from 'react';
+import {Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {CreditPaymentForm} from '../../../../components';
+import Icon from '../../../../components/Icon';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles} from '../../../../helpers/utils';
+import {ICustomer} from '../../../../models';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
 import {useRealm} from '../../../../services/realm';
-import {ICustomer} from '../../../../models';
-import {CustomersList, CustomerDetailsModal} from '../receipts';
-import Touchable from '../../../../components/Touchable';
-import Icon from '../../../../components/Icon';
-import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
-import {ContactsListModal} from '../../../../components/ContactsListModal';
+import {CustomersList} from '../receipts';
+import {getCredits} from '../../../../services/CreditService';
 
 export const RecordCreditPayment = () => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isCustomersListModalOpen, setIsCustomersListModalOpen] = useState(
     false,
   );
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
+  const credits = getCredits({realm});
+  const customers = credits
+    .filter((item) => !item.fulfilled)
+    .map((item) => item.customer) as ICustomer[];
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
@@ -31,34 +33,12 @@ export const RecordCreditPayment = () => {
     setIsCustomersListModalOpen(false);
   }, []);
 
-  const handleOpenCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(false);
-  }, []);
-
   const handleCustomerSelect = useCallback(
     ({customer: customerData}) => {
       setCustomer(customerData);
     },
     [setCustomer],
   );
-
-  const handleSetCustomer = useCallback((value: ICustomer) => {
-    setCustomer(value);
-  }, []);
-
-  const handleOpenContactListModal = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
-  const handleCloseContactListModal = useCallback(() => {
-    setIsContactListModalOpen(false);
-    handleCloseCustomerModal();
-    handleCloseCustomersList();
-  }, [handleCloseCustomerModal, handleCloseCustomersList]);
 
   const handleSubmit = useCallback(
     (payload, callback) => {
@@ -99,7 +79,7 @@ export const RecordCreditPayment = () => {
           </Text>
         </View>
       )}
-      <Touchable onPress={handleOpenCustomerModal}>
+      <Touchable onPress={handleOpenCustomersList}>
         <View
           style={applyStyles('mb-lg flex-row py-lg items-center', {
             borderBottomWidth: 1,
@@ -123,28 +103,12 @@ export const RecordCreditPayment = () => {
       <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
       <Modal animationType="slide" visible={isCustomersListModalOpen}>
         <CustomersList
+          customers={customers}
+          showAddFromPhone={false}
           onModalClose={handleCloseCustomersList}
           onCustomerSelect={handleCustomerSelect}
-          onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
-      <CustomerDetailsModal
-        customer={customer}
-        visible={isCustomerModalOpen}
-        onClose={handleCloseCustomerModal}
-        onSelectCustomer={handleSetCustomer}
-        onOpenCustomerList={handleOpenCustomersList}
-      />
-      <ContactsListModal
-        visible={isContactListModalOpen}
-        onClose={handleCloseContactListModal}
-        onContactSelect={({givenName, familyName, phoneNumbers}) =>
-          handleSetCustomer({
-            name: `${givenName} ${familyName}`,
-            mobile: phoneNumbers[0].number,
-          })
-        }
-      />
     </ScrollView>
   );
 };

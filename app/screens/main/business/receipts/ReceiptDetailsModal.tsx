@@ -29,6 +29,7 @@ import {
 import {useRealm} from '../../../../services/realm';
 import {Customer} from '../../../../../types/app';
 import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
+import {getCustomers} from '../../../../services/CustomerService';
 
 type Props = {
   visible: boolean;
@@ -54,6 +55,7 @@ export function ReceiptDetailsModal(props: Props) {
     (acc, item) => acc + item.amount_left,
     0,
   );
+  const customers = getCustomers({realm});
   const allPayments = receipt ? getAllPayments({receipt}) : [];
 
   const handleOpenCustomerModal = useCallback(() => {
@@ -385,6 +387,7 @@ export function ReceiptDetailsModal(props: Props) {
 
       <Modal animationType="slide" visible={isCustomerListModalOpen}>
         <CustomersList
+          customers={customers}
           showAddFromPhone={false}
           onCustomerSelect={handleCustomerSelect}
           onModalClose={handleCloseCustomerListModal}

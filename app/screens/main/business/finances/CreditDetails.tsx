@@ -15,6 +15,7 @@ import {ICustomer} from '../../../../models';
 import {CustomersList} from '../receipts';
 import {updateReceipt} from '../../../../services/ReceiptService';
 import {IReceipt} from '../../../../models/Receipt';
+import {getCustomers} from '../../../../services/CustomerService';
 
 export const CreditDetails = ({route}: any) => {
   const realm = useRealm();
@@ -25,6 +26,8 @@ export const CreditDetails = ({route}: any) => {
   );
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const {creditDetails}: {creditDetails: ICredit} = route.params;
+
+  const customers = getCustomers({realm});
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
@@ -167,6 +170,7 @@ export const CreditDetails = ({route}: any) => {
       </View>
       <Modal animationType="slide" visible={isCustomersListModalOpen}>
         <CustomersList
+          customers={customers}
           onModalClose={handleCloseCustomersList}
           onCustomerSelect={handleCustomerSelect}
         />
