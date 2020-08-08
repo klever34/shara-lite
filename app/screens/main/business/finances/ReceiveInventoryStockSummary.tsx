@@ -9,12 +9,17 @@ import {
   View,
 } from 'react-native';
 import {InventoryStockItem} from '../../../../../types/app';
-import {Button, FloatingLabelInput} from '../../../../components';
+import {
+  Button,
+  FloatingLabelInput,
+  ContactsListModal,
+} from '../../../../components';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {addNewStocks} from '../../../../services/InventoryStockService';
 import {useRealm} from '../../../../services/realm';
+import {Contact} from 'react-native-contacts';
 
 type Payload = {
   agent_full_name?: string | undefined;
@@ -120,6 +125,15 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
 
   const [isSaving, setIsSaving] = useState(false);
   const [agent, setAgent] = useState<Payload>({} as Payload);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
 
   const handleCancel = useCallback(() => {
     onCloseSummaryModal();
@@ -144,6 +158,13 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     },
     [agent],
   );
+
+  const handleSelectContact = useCallback((contact: Contact) => {
+    const {givenName, familyName, phoneNumbers} = contact;
+    const contactName = `${givenName} ${familyName}`;
+    const contactMobile = phoneNumbers[0].number;
+    setAgent({agent_full_name: contactName, agent_mobile: contactMobile});
+  }, []);
 
   const clearForm = useCallback(() => {
     setAgent({} as Payload);
@@ -179,7 +200,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           Delivery Agent Details
         </Text>
         <View style={applyStyles({marginBottom: 48})}>
-          <View style={applyStyles('mb-xl flex-row', 'items-center')}>
+          <View style={applyStyles('mb-md flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Phone Number"
               keyboardType="phone-pad"
@@ -187,6 +208,13 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
               onChangeText={(text) => handleChange(text, 'agent_mobile')}
             />
           </View>
+          <Touchable onPress={handleOpenContactListModal}>
+            <View style={applyStyles('w-full flex-row justify-end')}>
+              <Text style={applyStyles('text-500', {color: colors.primary})}>
+                Add from contacts
+              </Text>
+            </View>
+          </Touchable>
           <View style={applyStyles('flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Full Name"
@@ -212,6 +240,11 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           style={styles.actionButton}
         />
       </View>
+      <ContactsListModal
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onContactSelect={(contact) => handleSelectContact(contact)}
+      />
     </KeyboardAvoidingView>
   );
 };

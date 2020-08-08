@@ -101,6 +101,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
       <View style={applyStyles('p-xl')}>
         <Button
           title="record credit payment"
+          disabled={!overdueCredit.length}
           style={applyStyles('mb-lg', {width: '100%'})}
           onPress={() =>
             handleNavigation('CustomerRecordCreditPayment', {customer})

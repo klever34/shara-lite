@@ -1,7 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
 import React, {useCallback} from 'react';
-import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  FlatList,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Alert,
+} from 'react-native';
 import {Button, FAButton} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -13,6 +20,7 @@ import {getSummary, IFinanceSummary} from '../../../../services/FinanceService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
+import {ICustomer} from '../../../../models';
 
 type CreditItemProps = {
   item: ICreditPayment;
@@ -25,6 +33,9 @@ export const MyCredit = () => {
   const credits = getCredits({realm});
   const creditsPayments = getCreditPayments({realm});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
+  const creditCustomers = credits
+    .filter((item) => item.customer)
+    .map((item) => item.customer) as ICustomer[];
 
   const handleNavigation = useCallback(
     (route: string, options?: object) => {
@@ -32,6 +43,17 @@ export const MyCredit = () => {
     },
     [navigation],
   );
+
+  const handleGoToRecordPayment = useCallback(() => {
+    if (creditCustomers.length) {
+      handleNavigation('RecordCreditPayment');
+    } else {
+      Alert.alert(
+        'Info',
+        'Please add a customer to the receipt you want to record credit for.',
+      );
+    }
+  }, [creditCustomers, handleNavigation]);
 
   const handleCreditItemClick = useCallback(
     (creditPaymentDetails) => {
@@ -101,8 +123,9 @@ export const MyCredit = () => {
         <View style={applyStyles('p-xl')}>
           <Button
             title="record credit payment"
+            disabled={!overdueCredit.length}
+            onPress={handleGoToRecordPayment}
             style={applyStyles('mb-lg', {width: '100%'})}
-            onPress={() => handleNavigation('RecordCreditPayment')}
           />
           <Touchable
             onPress={() =>

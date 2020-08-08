@@ -21,8 +21,9 @@ export const RecordCreditPayment = () => {
   );
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const credits = getCredits({realm});
-  const customers = credits
+  const creditCustomers = credits
     .filter((item) => !item.fulfilled)
+    .filter((item) => !!item.customer)
     .map((item) => item.customer) as ICustomer[];
 
   const handleOpenCustomersList = useCallback(() => {
@@ -103,8 +104,8 @@ export const RecordCreditPayment = () => {
       <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
       <Modal animationType="slide" visible={isCustomersListModalOpen}>
         <CustomersList
-          customers={customers}
           showAddFromPhone={false}
+          customers={creditCustomers}
           onModalClose={handleCloseCustomersList}
           onCustomerSelect={handleCustomerSelect}
         />
