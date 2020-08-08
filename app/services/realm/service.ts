@@ -12,12 +12,12 @@ import PubNub from 'pubnub';
 import {decrypt, generateUniqueId} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import compact from 'lodash/compact';
+import {compact, pick} from 'lodash';
 import {ChannelCustom} from '../../../types/app';
-import {createRealm} from './index';
-import {getRealmService} from '../index';
-import {Alert, BackHandler, Platform} from 'react-native';
-import {ObjectId} from 'bson';
+import {getBaseModelValues} from '../../helpers/models';
+import {getMessageByPubnubId} from '../MessageService';
+import {getConversationByChannel} from '../ConversationService';
+import {getContactByMobile} from '../ContactService';
 
 export interface IRealmService {
   getInstance(): Realm | null;
@@ -78,15 +78,16 @@ export class RealmService implements IRealmService {
   ): Promise<IContact> {
     const realm = this.realm as Realm;
     return new Promise<IContact>((resolve, reject) => {
-      const newContact = {
-        ...contact,
-        ...new Contact(),
-      };
+      const existingMobile = getContactByMobile({
+        realm,
+        mobile: contact.mobile,
+      });
+      const updatePayload = existingMobile || getBaseModelValues();
       try {
         realm.write(() => {
           const createdContact = realm.create<IContact>(
             'Contact',
-            newContact,
+            {...contact, ...updatePayload},
             updateMode,
           );
           resolve(createdContact);
@@ -108,7 +109,7 @@ export class RealmService implements IRealmService {
           const createdContacts = contacts.map((contact) => {
             const newContact = {
               ...contact,
-              ...new Contact(),
+              ...getBaseModelValues(),
             };
             return realm.create<IContact>('Contact', newContact, updateMode);
           });
@@ -188,14 +189,21 @@ export class RealmService implements IRealmService {
                   read_timetoken = message_read[0].actionTimetoken;
                 }
               }
+
+              const existingMessage = getMessageByPubnubId({
+                realm: this.realm,
+                messageId: message.id,
+              });
+              const updatePayload = existingMessage || getBaseModelValues();
+
               message = this.realm.create<IMessage>(
                 'Message',
                 {
                   ...message,
+                  ...updatePayload,
                   timetoken,
                   delivered_timetoken,
                   read_timetoken,
-                  ...new Message(),
                 },
                 Realm.UpdateMode.Modified,
               );
@@ -267,15 +275,15 @@ export class RealmService implements IRealmService {
 
         for (let i = 0; i < channels.length; i += 1) {
           const channel = channels[i];
-          const newConvo = new Conversation();
-          const updates = {
-            _partition: newConvo._partition,
-            _id: newConvo._id,
-          };
+          const existingChannel = getConversationByChannel({
+            realm: this.realm,
+            channel,
+          });
+          const updatePayload = existingChannel || getBaseModelValues();
 
           const conversation = this.realm.create<IConversation>(
             'Conversation',
-            {...conversations[channel], ...updates},
+            {...conversations[channel], ...updatePayload},
             Realm.UpdateMode.Modified,
           );
           if (conversation.type === 'group') {

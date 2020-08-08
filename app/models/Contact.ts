@@ -13,7 +13,7 @@ export interface IContact
 export class Contact extends BaseModel implements Partial<IContact> {
   public static schema: Realm.ObjectSchema = {
     name: 'Contact',
-    primaryKey: 'mobile',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       id: {type: 'int', indexed: true},

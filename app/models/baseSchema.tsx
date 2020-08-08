@@ -11,7 +11,7 @@ export interface BaseModelInterface {
 }
 
 export const baseModelSchema = {
-  _id: {type: 'string', indexed: true},
+  _id: {type: 'objectId', indexed: true},
   _partition: 'string',
   created_at: 'date?',
   updated_at: 'date?',

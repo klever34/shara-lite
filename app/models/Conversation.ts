@@ -17,13 +17,13 @@ export interface IConversation extends BaseModelInterface {
 export class Conversation extends BaseModel implements Partial<IConversation> {
   public static schema: Realm.ObjectSchema = {
     name: 'Conversation',
-    primaryKey: 'channel',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       channel: 'string',
       type: 'string',
       lastMessage: 'Message?',
-      admins: 'string?[]',
+      admins: 'string[]',
       members: 'string[]',
       name: 'string',
       description: 'string?',

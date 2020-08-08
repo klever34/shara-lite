@@ -26,7 +26,6 @@ export const saveCredit = ({
     amount_left: creditAmount,
     amount_paid: 0,
     ...getBaseModelValues(),
-    ...new Credit(),
   };
 
   if (customer && customer.name) {

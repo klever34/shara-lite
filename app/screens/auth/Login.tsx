@@ -15,6 +15,7 @@ import {getApiService} from '../../services';
 import {colors} from '../../styles';
 import {loginToRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
+import {setPartitionKey} from '../../helpers/models';
 
 type Fields = {
   mobile: string;
@@ -56,15 +57,18 @@ export const Login = ({navigation}: any) => {
       const {
         data: {
           realmCredentials: {jwt},
+          user,
         },
       } = loginResponse;
       const realm = await loginToRealm({jwt});
+      updateRealm && updateRealm(realm);
+      await setPartitionKey({key: user.id.toString()});
+
       setLoading(false);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
       });
-      updateRealm && updateRealm(realm);
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);

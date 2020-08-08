@@ -33,7 +33,6 @@ export const savePayment = ({
     receipt,
     amount_paid: amount,
     ...getBaseModelValues(),
-    ...new Payment(),
   };
 
   if (customer.name) {

@@ -37,7 +37,6 @@ export const saveReceipt = ({
     total_amount: totalAmount,
     credit_amount: creditAmount,
     ...getBaseModelValues(),
-    ...new Receipt(),
   };
 
   if (customer.name) {

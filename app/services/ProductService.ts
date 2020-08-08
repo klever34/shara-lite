@@ -16,7 +16,6 @@ export const saveProduct = ({
   const productToCreate: IProduct = {
     ...product,
     ...getBaseModelValues(),
-    ...new Product(),
   };
 
   realm.write(() => {

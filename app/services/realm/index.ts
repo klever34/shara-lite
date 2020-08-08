@@ -59,12 +59,10 @@ export const createRealm = async ({
 
   const config = {
     schema,
-    /*
     sync: {
       user: realmUser,
       partitionValue,
     },
-     */
   };
   return Realm.open(config);
 };

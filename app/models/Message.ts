@@ -14,7 +14,7 @@ export interface IMessage extends BaseModelInterface {
 export class Message extends BaseModel implements Partial<IMessage> {
   public static schema: Realm.ObjectSchema = {
     name: 'Message',
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       id: 'string',

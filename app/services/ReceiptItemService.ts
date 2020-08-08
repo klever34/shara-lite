@@ -30,7 +30,6 @@ export const saveReceiptItem = ({
       total_price: parseFloat(quantity) * parseFloat(price),
       product: receiptItem.product,
       ...getBaseModelValues(),
-      ...new ReceiptItemModel(),
     };
 
     realm.create<IReceiptItem>(

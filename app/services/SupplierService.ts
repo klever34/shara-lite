@@ -16,7 +16,6 @@ export const saveSupplier = ({
   const supplierDetails: ISupplier = {
     ...supplier,
     ...getBaseModelValues(),
-    ...new Supplier(),
   };
 
   realm.write(() => {

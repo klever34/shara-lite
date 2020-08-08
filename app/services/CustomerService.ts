@@ -16,7 +16,6 @@ export const saveCustomer = ({
   const customerDetails: ICustomer = {
     ...customer,
     ...getBaseModelValues(),
-    ...new Customer(),
   };
 
   realm.write(() => {
