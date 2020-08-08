@@ -2,9 +2,16 @@ import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '../helpers/models';
 import {InventoryStockItem} from '../../types/app';
 import {IStockItem} from '../models/StockItem';
-import {IReceivedInventory, modelName} from '../models/ReceivedInventory';
+import {
+  IReceivedInventory,
+  modelName,
+  ReceivedInventory,
+} from '../models/ReceivedInventory';
 import {generateUniqueId} from '../helpers/utils';
-import {restockProduct} from './ProductService';
+import {ISupplier} from '../models/Supplier';
+import {saveDeliveryAgent} from './DeliveryAgentService';
+import {IDeliveryAgent} from '../models/DeliveryAgent';
+import {addNewStockItem} from './StockItemService';
 
 export const getReceivedInventories = ({
   realm,
@@ -18,44 +25,57 @@ export const getReceivedInventories = ({
 
 export const addNewInventory = ({
   realm,
+  delivery_agent,
+  supplier,
   stockItems,
-  agent_full_name,
-  agent_mobile,
 }: {
   realm: Realm;
+  delivery_agent?: IDeliveryAgent;
+  supplier: ISupplier;
   stockItems: InventoryStockItem[];
-  agent_full_name?: string;
-  agent_mobile?: string;
 }): void => {
   const batch_id = generateUniqueId();
+  const receivedInventory: IReceivedInventory = {
+    batch_id,
+    supplier_name: supplier.name,
+    supplier: supplier,
+    ...getBaseModelValues(),
+  };
 
-  realm.write(() => {
-    stockItems.forEach((stockItem) => {
-      const newStockItem: IReceivedInventory = {
-        batch_id,
-        agent_full_name: agent_full_name,
-        agent_mobile: agent_mobile,
-        supplier_name: stockItem.supplier.name,
-        name: stockItem.product.name,
-        sku: stockItem.product.sku,
-        weight: stockItem.product.weight,
-        quantity: parseInt(stockItem.quantity, 10),
-        product: stockItem.product,
-        supplier: stockItem.supplier,
-        ...getBaseModelValues(),
-      };
+  let savedDeliveryAgent: IDeliveryAgent;
+  if (delivery_agent) {
+    savedDeliveryAgent = delivery_agent.id
+      ? saveDeliveryAgent({realm, delivery_agent})
+      : delivery_agent;
+  }
 
-      realm.create<InventoryStockItem>(
-        modelName,
-        newStockItem,
-        UpdateMode.Modified,
-      );
+  // @ts-ignore
+  if (savedDeliveryAgent) {
+    receivedInventory.delivery_agent = savedDeliveryAgent;
+    receivedInventory.delivery_agent_full_name = savedDeliveryAgent.full_name;
+    receivedInventory.delivery_agent_mobile = savedDeliveryAgent.mobile;
+  }
 
-      restockProduct({
-        realm,
-        product: newStockItem.product,
-        quantity: newStockItem.quantity,
-      });
-    });
+  realm.create<ReceivedInventory>(
+    modelName,
+    receivedInventory,
+    UpdateMode.Modified,
+  );
+
+  stockItems.forEach((stockItem) => {
+    const newStockItem: IStockItem = {
+      batch_id,
+      supplier_name: supplier.name,
+      name: stockItem.product.name,
+      sku: stockItem.product.sku,
+      weight: stockItem.product.weight,
+      quantity: parseInt(stockItem.quantity, 10),
+      product: stockItem.product,
+      supplier,
+      receivedInventory,
+      ...getBaseModelValues(),
+    };
+
+    addNewStockItem({realm, stockItem: newStockItem});
   });
 };
