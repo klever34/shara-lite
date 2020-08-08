@@ -1,7 +1,7 @@
 import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '../helpers/models';
 import {InventoryStockItem} from '../../types/app';
-import {IInventoryStock, modelName} from '../models/InventoryStock';
+import {IInventoryStock, modelName} from '../models/StockItem';
 import {generateUniqueId} from '../helpers/utils';
 import {restockProduct} from './ProductService';
 

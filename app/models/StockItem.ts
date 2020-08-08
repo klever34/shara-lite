@@ -1,8 +1,9 @@
 import {IProduct} from './Product';
 import {ISupplier} from './Supplier';
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {IReceivedInventory} from './ReceivedInventory';
 
-export interface IInventoryStock extends BaseModelInterface {
+export interface IStockItem extends BaseModelInterface {
   supplier_name: string;
   batch_id: string;
   name: string;
@@ -15,17 +16,19 @@ export interface IInventoryStock extends BaseModelInterface {
   agent_mobile?: string;
   supplier: ISupplier;
   product: IProduct;
+  receivedInventory: IReceivedInventory;
 }
 
-export const modelName = 'InventoryStock';
+export const modelName = 'StockItem';
 
-export class InventoryStock implements Partial<InventoryStock> {
+export class StockItem implements Partial<StockItem> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
     primaryKey: 'id',
     properties: {
       ...baseModelSchema,
       batch_id: 'string',
+      supplier_name: 'string',
       name: 'string',
       sku: 'string',
       quantity: 'int',
@@ -34,6 +37,7 @@ export class InventoryStock implements Partial<InventoryStock> {
       weight: 'string?',
       supplier: 'Supplier?',
       product: 'Product?',
+      receivedInventory: 'ReceivedInventory?',
     },
   };
 }

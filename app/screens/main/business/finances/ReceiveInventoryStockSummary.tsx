@@ -13,7 +13,7 @@ import {Button, FloatingLabelInput} from '../../../../components';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
-import {addNewStocks} from '../../../../services/InventoryStockService';
+import {addNewStocks} from '../../../../services/StockItemService';
 import {useRealm} from '../../../../services/realm';
 
 type Payload = {
