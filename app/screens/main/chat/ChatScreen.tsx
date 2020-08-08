@@ -217,7 +217,7 @@ const ChatScreen = ({
         realm.write(() => {
           message.timetoken = String(response.timetoken);
         });
-        return getAnalyticsService().logEvent('Message Sent', message);
+        return getAnalyticsService().logEvent('messageSent');
       })
       .catch(handleError);
   }, [

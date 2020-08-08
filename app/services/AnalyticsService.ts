@@ -8,7 +8,7 @@ import {castObjectValuesToString} from '../helpers/utils';
 export interface IAnalyticsService {
   initialize(): Promise<void>;
   setUser(user: User): Promise<void>;
-  logEvent(eventName: string, eventData: {[key: string]: any}): Promise<void>;
+  logEvent(eventName: string, eventData?: {[key: string]: any}): Promise<void>;
 }
 
 export class AnalyticsService implements IAnalyticsService {
@@ -62,12 +62,14 @@ export class AnalyticsService implements IAnalyticsService {
 
   async logEvent(
     eventName: string,
-    eventData: {[p: string]: any},
+    eventData?: {[p: string]: any},
   ): Promise<void> {
-    eventData = castObjectValuesToString(eventData);
+    if (eventData) {
+      eventData = castObjectValuesToString(eventData);
+    }
     try {
       await analytics.track(eventName, eventData);
-      RNUxcam.logEvent(eventName, eventData);
+      // RNUxcam.logEvent(eventName, eventData);
     } catch (e) {
       throw e;
     }
