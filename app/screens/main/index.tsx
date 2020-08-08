@@ -138,7 +138,7 @@ const MainScreens = ({navigation}: any) => {
       userData.environment = Config.ENVIRONMENT;
       const alias = `${user.firstname}`;
 
-      RNUxcam.setUserIdentity(String(user.id));
+      RNUxcam.setUserIdentity(alias);
       for (let prop in userData) {
         RNUxcam.setUserProperty(prop, userData[prop]);
       }
