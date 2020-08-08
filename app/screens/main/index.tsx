@@ -59,7 +59,7 @@ import {ISupplier} from 'app/models/Supplier';
 import analytics, {JsonMap} from '@segment/analytics-react-native';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
-import {isNumber, isString} from 'lodash';
+import {User} from '../../../types/app';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -120,14 +120,22 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     if (user) {
-      analytics.identify(String(user.id), user as JsonMap).catch(handleError);
       RNUxcam.setUserIdentity(String(user.id));
-      Object.keys(user).forEach((prop) => {
-        const value = user[prop as keyof typeof user];
-        if (isNumber(value) || isString(value)) {
-          RNUxcam.setUserProperty(prop, String(value));
-        }
+      RNUxcam.setUserProperty('alias', `${user.firstname}`);
+      const userFields: (keyof User)[] = [
+        'firstname',
+        'id',
+        'country_code',
+        'currency_code',
+      ];
+      const userData = userFields.map((prop) => {
+        const value = user[prop];
+        RNUxcam.setUserProperty(prop, String(value));
+        return value;
       });
+      analytics
+        .identify(String(user.id), (userData as unknown) as JsonMap)
+        .catch(handleError);
     }
   }, [handleError, user]);
 
