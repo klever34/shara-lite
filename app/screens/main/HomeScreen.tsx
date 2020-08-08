@@ -161,17 +161,15 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
         try {
           if (publisher !== pubNub.getUUID()) {
             let lastMessage: IMessage;
-            realm.write(() => {
-              lastMessage = realm.create<IMessage>(
-                'Message',
-                {
-                  ...message,
-                  timetoken: String(timetoken),
-                  ...getBaseModelValues(),
-                },
-                Realm.UpdateMode.Modified,
-              );
-            });
+            lastMessage = realm.create<IMessage>(
+              'Message',
+              {
+                ...message,
+                timetoken: String(timetoken),
+                ...getBaseModelValues(),
+              },
+              Realm.UpdateMode.Modified,
+            );
             let conversation: IConversation = realm
               .objects<IConversation>('Conversation')
               .filtered(`channel = "${channel}"`)[0];
@@ -184,38 +182,34 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
               conversation = await realmService.getConversationFromChannelMetadata(
                 response.data,
               );
-              realm.write(() => {
-                if (conversation.type === '1-1') {
-                  const contact = realm
-                    .objects<IContact>('Contact')
-                    .filtered(`mobile = "${conversation.name}"`)[0];
-                  if (contact) {
-                    conversation.name = contact.fullName;
-                    contact.channel = conversation.channel;
-                  }
+              if (conversation.type === '1-1') {
+                const contact = realm
+                  .objects<IContact>('Contact')
+                  .filtered(`mobile = "${conversation.name}"`)[0];
+                if (contact) {
+                  conversation.name = contact.fullName;
+                  contact.channel = conversation.channel;
                 }
-                realm.create<IConversation>(
-                  'Conversation',
-                  {
-                    ...conversation,
-                    lastMessage,
-                    ...getBaseModelValues(),
-                  },
-                  Realm.UpdateMode.Modified,
-                );
-              });
+              }
+              realm.create<IConversation>(
+                'Conversation',
+                {
+                  ...conversation,
+                  lastMessage,
+                  ...getBaseModelValues(),
+                },
+                Realm.UpdateMode.Modified,
+              );
             } else {
-              realm.write(() => {
-                realm.create<IConversation>(
-                  'Conversation',
-                  {
-                    channel,
-                    lastMessage,
-                    ...getBaseModelValues(),
-                  },
-                  Realm.UpdateMode.Modified,
-                );
-              });
+              realm.create<IConversation>(
+                'Conversation',
+                {
+                  channel,
+                  lastMessage,
+                  ...getBaseModelValues(),
+                },
+                Realm.UpdateMode.Modified,
+              );
             }
             retryPromise(() => {
               return new Promise<any>((resolve, reject) => {

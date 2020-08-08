@@ -11,9 +11,9 @@ import {Button, PasswordField, PhoneNumberField} from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
-import {getApiService} from '../../services';
+import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
-import {loginToRealm} from '../../services/realm';
+import {initRealm, loginToRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
 import {setPartitionKey} from '../../helpers/models';
 
@@ -25,7 +25,7 @@ type Fields = {
 
 export const Login = ({navigation}: any) => {
   // @ts-ignore
-  const {updateRealm} = useContext(RealmContext);
+  const {realm, updateSyncRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -60,8 +60,10 @@ export const Login = ({navigation}: any) => {
           user,
         },
       } = loginResponse;
-      const realm = await loginToRealm({jwt});
-      updateRealm && updateRealm(realm);
+      const createdRealm = await loginToRealm({jwt});
+      updateSyncRealm && updateSyncRealm(createdRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(realm as Realm);
       await setPartitionKey({key: user.id.toString()});
 
       setLoading(false);

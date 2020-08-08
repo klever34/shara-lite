@@ -1,6 +1,5 @@
 import {useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
-import {omit} from 'lodash';
 import {Contact, Message, Conversation, Customer} from '../../models';
 import {Payment} from '../../models/Payment';
 import {Credit} from '../../models/Credit';
@@ -60,17 +59,11 @@ export const createRealm = async (options?: any): Promise<Realm> => {
   } = {schema};
 
   if (options && options.realmUser) {
-    // const realmService = getRealmService();
-    // realmService.getInstance()?.close();
-
     // @ts-ignore
     config.sync = {
       user: options.realmUser,
       partitionValue,
     };
-
-    // @ts-ignore
-    // config.path = defaultRealmPath;
   }
 
   return Realm.open(config);
@@ -87,22 +80,7 @@ export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
 
     const app = new Realm.App(appConfig);
     const realmUser = await app.logIn(credentials);
-    /*
-    const realm = await createRealm({
-      realmUser: JSON.parse(JSON.stringify(realmUser)),
-    });
-     */
-    const realm = await createRealm({
-      realmUser: JSON.parse(JSON.stringify(realmUser)),
-    });
-    console.log(
-      'Realm user -->',
-      app.currentUser,
-      realm.Sync?.User,
-      omit(realm, []),
-    );
-    const realmService = getRealmService();
-    realmService.setInstance(realm);
+    const realm = await createRealm({realmUser});
     return realm;
   } catch (e) {
     console.error('Failed to log in', e);
@@ -130,8 +108,6 @@ export const initRealm = async (): Promise<Realm> => {
   try {
     // @ts-ignore
     const realm = await createRealm();
-    const realmService = getRealmService();
-    realmService.setInstance(realm);
     return realm;
   } catch (e) {
     console.error('Failed to log in', e);
