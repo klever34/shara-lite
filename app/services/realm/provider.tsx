@@ -13,8 +13,6 @@ type RealmCloneParams = {
   args: Array<any>;
 };
 
-Realm.defaultPath;
-
 export const RealmContext = createContext<RealmObject>({});
 
 const RealmProvider = (props: any) => {
