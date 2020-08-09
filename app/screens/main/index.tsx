@@ -81,7 +81,6 @@ export type MainStackParamList = {
   CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
   CustomerOverdueCredit: {credits: ICredit[]};
   CustomerCreditDetails: {creditDetails: ICredit};
-  BusinessSetup: undefined;
   SelectGroupMembers: {
     participants?: Results<IContact>;
     title: string;
@@ -116,8 +115,9 @@ const MainScreens = ({navigation}: any) => {
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const user = authService.getUser();
-  const initialRouteName =
-    user?.businesses && user?.businesses.length ? 'Home' : 'BusinessSetup';
+  const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
+    !(user?.businesses && user?.businesses.length) || false,
+  );
 
   useEffect(() => {
     if (user) {
@@ -150,7 +150,7 @@ const MainScreens = ({navigation}: any) => {
   return (
     <PubNubProvider client={pubNubClient}>
       <MainStack.Navigator
-        initialRouteName={initialRouteName}
+        initialRouteName="Home"
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.primary,
@@ -380,13 +380,6 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="BusinessSetup"
-          options={{
-            headerShown: false,
-          }}
-          component={BusinessSetup}
-        />
-        <MainStack.Screen
           name="TotalCredit"
           component={TotalCredit}
           options={{
@@ -594,6 +587,10 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
       </MainStack.Navigator>
+      <BusinessSetup
+        visible={isBusinessSetupModalOpen}
+        onClose={() => setIsBusinessSetupModalOpen(false)}
+      />
     </PubNubProvider>
   );
 };

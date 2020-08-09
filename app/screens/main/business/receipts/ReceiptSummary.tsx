@@ -22,6 +22,7 @@ import {
   applyStyles,
   amountWithCurrency,
   numberWithCommas,
+  getDueDateValue,
 } from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {useRealm} from '../../../../services/realm';
@@ -201,9 +202,11 @@ const ReceiptSummary = (props: Props) => {
   const [paymentType, setPaymentType] = useState<
     'cash' | 'transfer' | 'mobile'
   >('cash');
+  const [dueDateString, setDueDateString] = useState('');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
   const [payments, setPayments] = useState<Payment[]>([]);
+  const [dueDate, setDueDate] = useState<Date | undefined>();
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
@@ -284,6 +287,12 @@ const ReceiptSummary = (props: Props) => {
     setIsContactListModalOpen(false);
   }, []);
 
+  const handleDueDateChange = useCallback((value: string) => {
+    const d = getDueDateValue(value);
+    setDueDateString(value);
+    setDueDate(d);
+  }, []);
+
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
@@ -319,7 +328,7 @@ const ReceiptSummary = (props: Props) => {
         email,
         title: 'Share receipt',
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Here is your receipt from ${businessInfo?.name}`,
+        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
@@ -340,7 +349,7 @@ const ReceiptSummary = (props: Props) => {
         social: Share.Social.WHATSAPP,
         title: `Share receipt with ${customer.name}`,
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Here is your receipt from ${businessInfo?.name}`,
+        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
         whatsAppNumber: `${customer.mobile}`, // country code + phone number
       };
       const errorMessages = {
@@ -437,6 +446,7 @@ const ReceiptSummary = (props: Props) => {
           amountPaid,
           totalAmount,
           creditAmount,
+          dueDate,
           receiptItems: products,
         });
         onClearReceipt();
@@ -444,6 +454,7 @@ const ReceiptSummary = (props: Props) => {
       }, 500);
     },
     [
+      dueDate,
       amountPaid,
       creditAmount,
       customer,
@@ -786,24 +797,39 @@ const ReceiptSummary = (props: Props) => {
           )}
         </View>
         {!!creditAmount && (
-          <View style={applyStyles({marginBottom: 80})}>
-            <FloatingLabelInput
-              editable={false}
-              label="Remaining Balance"
-              keyboardType="number-pad"
-              inputStyle={applyStyles({color: colors.primary, paddingLeft: 32})}
-              value={numberWithCommas(creditAmount)}
-              leftIcon={
-                <Text
-                  style={applyStyles(
-                    styles.textInputIconText,
-                    {color: colors.primary},
-                    'text-400',
-                  )}>
-                  {currency}
-                </Text>
-              }
-            />
+          <View
+            style={applyStyles('w-full flex-row justify-space-between', {
+              marginBottom: 80,
+            })}>
+            <View style={applyStyles({width: '48%'})}>
+              <FloatingLabelInput
+                editable={false}
+                label="Remaining Balance"
+                keyboardType="number-pad"
+                inputStyle={applyStyles({
+                  color: colors.primary,
+                  paddingLeft: 32,
+                })}
+                value={numberWithCommas(creditAmount)}
+                leftIcon={
+                  <Text
+                    style={applyStyles(
+                      styles.textInputIconText,
+                      {color: colors.primary},
+                      'text-400',
+                    )}>
+                    {currency}
+                  </Text>
+                }
+              />
+            </View>
+            <View style={applyStyles({width: '48%'})}>
+              <FloatingLabelInput
+                value={dueDateString}
+                label="Balance due in"
+                onChangeText={(text) => handleDueDateChange(text)}
+              />
+            </View>
           </View>
         )}
       </ScrollView>

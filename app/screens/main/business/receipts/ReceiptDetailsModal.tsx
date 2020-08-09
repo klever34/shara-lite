@@ -22,9 +22,13 @@ import {
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import {updateReceipt} from '../../../../services/ReceiptService';
+import {
+  updateReceipt,
+  getAllPayments,
+} from '../../../../services/ReceiptService';
 import {useRealm} from '../../../../services/realm';
 import {Customer} from '../../../../../types/app';
+import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
 
 type Props = {
   visible: boolean;
@@ -46,12 +50,11 @@ export function ReceiptDetailsModal(props: Props) {
   );
   const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
   const realm = useRealm();
-
-  const PAYMENT_METHOD_TEXT = {
-    cash: 'Cash',
-    transfer: 'Bank Transfer',
-    mobile: 'Mobile Money',
-  } as {[key: string]: string};
+  const creditAmountLeft = receipt?.credits?.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
+  const allPayments = receipt ? getAllPayments({receipt}) : [];
 
   const handleOpenCustomerModal = useCallback(() => {
     setIsCustomerModalOpen(true);
@@ -295,25 +298,34 @@ export function ReceiptDetailsModal(props: Props) {
                 'justify-space-between',
               )}>
               <View style={applyStyles({width: '48%'})}>
-                {receipt?.payments?.map((item) => (
-                  <View style={applyStyles('pb-lg')}>
-                    <Text
-                      style={applyStyles('pb-xs', 'text-400', {
-                        color: colors['gray-200'],
-                      })}>
-                      Paid By {PAYMENT_METHOD_TEXT[item.method]}
-                    </Text>
-                    <Text
-                      style={applyStyles('text-400', {
-                        fontSize: 16,
-                        color: colors['gray-300'],
-                      })}>
-                      {amountWithCurrency(item.amount_paid)}
-                    </Text>
-                  </View>
-                ))}
+                {allPayments.length ? (
+                  allPayments?.map((item) => (
+                    <View style={applyStyles('pb-lg')}>
+                      <Text
+                        style={applyStyles('pb-xs', 'text-400', {
+                          color: colors['gray-200'],
+                        })}>
+                        Paid By {PAYMENT_METHOD_LABEL[item.method]}
+                      </Text>
+                      <Text
+                        style={applyStyles('text-400', {
+                          fontSize: 16,
+                          color: colors['gray-300'],
+                        })}>
+                        {amountWithCurrency(item.amount_paid)}
+                      </Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text
+                    style={applyStyles('text-400', {
+                      color: colors['gray-50'],
+                    })}>
+                    - No payments
+                  </Text>
+                )}
               </View>
-              {!!receipt?.credit_amount && (
+              {!!creditAmountLeft && (
                 <View style={applyStyles({width: '48%'})}>
                   <Text
                     style={applyStyles('pb-xs', 'text-400', {
@@ -326,7 +338,7 @@ export function ReceiptDetailsModal(props: Props) {
                       fontSize: 16,
                       color: colors.primary,
                     })}>
-                    {amountWithCurrency(receipt?.credit_amount)}
+                    {amountWithCurrency(creditAmountLeft)}
                   </Text>
                 </View>
               )}

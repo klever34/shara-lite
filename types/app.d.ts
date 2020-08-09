@@ -83,9 +83,7 @@ type ReceiptItem = {
 type InventoryStockItem = {
   quantity: string;
   cost_price?: string;
-  supplier: ISupplier;
   product: IProduct;
-  delivery_agent: DeliveryAgent;
 };
 
 type Customer = {

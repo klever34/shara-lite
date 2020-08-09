@@ -1,10 +1,10 @@
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IInventoryStock} from './InventoryStock';
+import {IReceivedInventory} from './ReceivedInventory';
 
 export interface IDeliveryAgent extends BaseModelInterface {
   full_name: string;
   mobile: string;
-  suppliedInventories?: IInventoryStock[];
+  suppliedInventories?: IReceivedInventory[];
 }
 
 export const modelName = 'DeliveryAgent';
@@ -19,7 +19,7 @@ export class DeliveryAgent implements Partial<IDeliveryAgent> {
       mobile: 'string',
       suppliedInventories: {
         type: 'linkingObjects',
-        objectType: 'InventoryStock',
+        objectType: 'ReceivedInventory',
         property: 'delivery_agent',
       },
     },

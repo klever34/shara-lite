@@ -1,5 +1,5 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {useRealm} from '../../../services/realm';
@@ -9,6 +9,7 @@ import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {Button, ActionCard} from '../../../components';
 import Touchable from '../../../components/Touchable';
 import {getAuthService} from '../../../services';
+import {BusinessSetup} from '../../../screens/BusinessSetup';
 
 export const BusinessTab = () => {
   const realm = useRealm();
@@ -16,6 +17,10 @@ export const BusinessTab = () => {
   const authService = getAuthService();
   const user = authService.getUser();
   const financeSummary: IFinanceSummary = getSummary({realm});
+
+  const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
+    false,
+  );
 
   const actions = [
     {
@@ -127,7 +132,7 @@ export const BusinessTab = () => {
   return (
     <View style={styles.container}>
       {!(user?.businesses && user?.businesses.length) && (
-        <Touchable onPress={() => navigation.navigate('BusinessSetup')}>
+        <Touchable onPress={() => setIsBusinessSetupModalOpen(true)}>
           <View
             style={applyStyles('mb-xl px-xs py-sm', {
               fontSize: 14,
@@ -234,6 +239,10 @@ export const BusinessTab = () => {
         actionsPaddingTopBottom={4}
         onPressItem={handleActionItemClick}
         overlayColor="rgba(255,255,255,0.95)"
+      />
+      <BusinessSetup
+        visible={isBusinessSetupModalOpen}
+        onClose={() => setIsBusinessSetupModalOpen(false)}
       />
     </View>
   );

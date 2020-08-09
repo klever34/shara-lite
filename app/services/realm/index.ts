@@ -8,8 +8,9 @@ import {Receipt} from '../../models/Receipt';
 import {ReceiptItem} from '../../models/ReceiptItem';
 import {Product} from '../../models/Product';
 import {Supplier} from '../../models/Supplier';
-import {InventoryStock} from '../../models/InventoryStock';
+import {StockItem} from '../../models/StockItem';
 import {DeliveryAgent} from '../../models/DeliveryAgent';
+import {ReceivedInventory} from '../../models/ReceivedInventory';
 
 const RealmContext = createContext<Realm | null>(null);
 export const RealmProvider = RealmContext.Provider;
@@ -38,7 +39,8 @@ export const createRealm = async () => {
       Credit,
       CreditPayment,
       DeliveryAgent,
-      InventoryStock,
+      StockItem,
+      ReceivedInventory,
       Message,
       Payment,
       Product,

@@ -12,6 +12,7 @@ import {getCredits} from '../../../../services/CreditService';
 import {getSummary, IFinanceSummary} from '../../../../services/FinanceService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
+import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
 
 type CreditItemProps = {
   item: ICreditPayment;
@@ -24,11 +25,6 @@ export const MyCredit = () => {
   const credits = getCredits({realm});
   const creditsPayments = getCreditPayments({realm});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
-  const paymentMethodLabel = {
-    cash: 'Cash',
-    transfer: 'Bank Transfer',
-    mobile: 'Mobile Money',
-  } as {[key: string]: string};
 
   const handleNavigation = useCallback(
     (route: string, options?: object) => {
@@ -88,14 +84,14 @@ export const MyCredit = () => {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {paymentMethodLabel[item.payment.method]}
+                {PAYMENT_METHOD_LABEL[item.payment.method]}
               </Text>
             </View>
           </View>
         </Touchable>
       );
     },
-    [handleCreditItemClick, paymentMethodLabel],
+    [handleCreditItemClick],
   );
 
   return (

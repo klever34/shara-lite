@@ -13,7 +13,7 @@ import {Button, FloatingLabelInput} from '../../../../components';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
-import {addNewStocks} from '../../../../services/InventoryStockService';
+import {addNewInventory} from '../../../../services/ReceivedInventoryService';
 import {useRealm} from '../../../../services/realm';
 import {IDeliveryAgent} from 'app/models/DeliveryAgent';
 
@@ -126,7 +126,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleFinish = () => {
     setIsSaving(true);
     setTimeout(() => {
-      addNewStocks({realm, stockItems: products, ...agent});
+      addNewInventory({realm, stockItems: products, ...agent});
       setIsSaving(false);
       clearForm();
       navigation.navigate('Finances', {screen: 'Inventory'});

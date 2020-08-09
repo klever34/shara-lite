@@ -1,11 +1,13 @@
 import {BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IInventoryStock} from './InventoryStock';
+import {IStockItem} from './StockItem';
+import {IReceivedInventory} from './ReceivedInventory';
 
 export interface ISupplier extends BaseModelInterface {
   name: string;
   mobile: string;
   address?: string;
-  suppliedInventories?: IInventoryStock[];
+  suppliedInventories?: IReceivedInventory[];
+  suppliedStockItems?: IStockItem[];
 }
 
 export const modelName = 'Supplier';
@@ -17,11 +19,16 @@ export class Supplier implements Partial<ISupplier> {
     properties: {
       ...baseModelSchema,
       name: 'string',
-      mobile: 'string?',
-      address: 'string',
+      mobile: 'string',
+      address: 'string?',
       suppliedInventories: {
         type: 'linkingObjects',
-        objectType: 'InventoryStock',
+        objectType: 'StockItem',
+        property: 'supplier',
+      },
+      suppliedStockItems: {
+        type: 'linkingObjects',
+        objectType: 'StockItem',
         property: 'supplier',
       },
     },
