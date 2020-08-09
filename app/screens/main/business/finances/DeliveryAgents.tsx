@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState, useLayoutEffect} from 'react';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import EmptyState from '../../../../components/EmptyState';
@@ -10,6 +10,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useRealm} from '../../../../services/realm';
 import {getDeliveryAgents} from '../../../../services/DeliveryAgentService';
 import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
+import HeaderRight from '../../../../components/HeaderRight';
 
 type DeliveryAgentItemProps = {
   item: IDeliveryAgent;
@@ -25,6 +26,14 @@ export const DeliveryAgents = () => {
     deliveryAgents,
   );
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+      ),
+    });
+  }, [navigation]);
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
       const deliveryAgentsData = getDeliveryAgents({realm});
@@ -32,15 +41,6 @@ export const DeliveryAgents = () => {
     });
     return unsubscribe;
   }, [navigation, realm]);
-
-  const handleSelectDeliveryAgent = useCallback(
-    (item?: IDeliveryAgent) => {
-      navigation.navigate('ReceiveInventoryStock', {deliveryAgent: item});
-      setSearchInputValue('');
-      setMyDeliveryAgents(deliveryAgents);
-    },
-    [navigation, deliveryAgents],
-  );
 
   const handleDeliveryAgentSearch = useCallback(
     (searchedText: string) => {
@@ -67,7 +67,7 @@ export const DeliveryAgents = () => {
   const renderDeliveryAgentListItem = useCallback(
     ({item: deliveryAgent}: DeliveryAgentItemProps) => {
       return (
-        <Touchable onPress={() => handleSelectDeliveryAgent(deliveryAgent)}>
+        <Touchable>
           <View style={styles.deliveryAgentListItem}>
             <Text style={styles.deliveryAgentListItemText}>
               {deliveryAgent.full_name}
@@ -76,7 +76,7 @@ export const DeliveryAgents = () => {
         </Touchable>
       );
     },
-    [handleSelectDeliveryAgent],
+    [],
   );
 
   const renderDeliveryAgentListHeader = useCallback(
@@ -188,10 +188,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 16,
     borderBottomWidth: 1,
+    fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-20'],
   },
   deliveryAgentListItemText: {
     fontSize: 16,
+    fontFamily: 'Rubik-Regular',
     color: colors['gray-300'],
   },
 });

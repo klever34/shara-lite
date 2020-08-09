@@ -13,7 +13,6 @@ import {useRealm} from '../../../../services/realm';
 import {getReceivedInventories} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
 import {ReceivedInventoryDetailsModal} from './ReceivedInventoryDetailsModal';
-import {omit} from 'lodash';
 
 type InventoryItemProps = {
   item: IReceivedInventory;
@@ -31,9 +30,9 @@ export function ReceivedInventoryList() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row flex-1 items-center')}>
+        <View style={applyStyles('flex-row  items-center')}>
           <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
+            <View style={applyStyles('px-xs')}>
               <Icon
                 size={24}
                 name="sliders"
@@ -43,7 +42,7 @@ export function ReceivedInventoryList() {
             </View>
           </Touchable>
           <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
+            <View style={applyStyles('px-xs')}>
               <Icon
                 size={24}
                 name="search"
@@ -52,7 +51,9 @@ export function ReceivedInventoryList() {
               />
             </View>
           </Touchable>
-          <HeaderRight menuOptions={[]} />
+          <View style={applyStyles({width: '33%'})}>
+            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+          </View>
         </View>
       ),
     });
@@ -117,13 +118,6 @@ export function ReceivedInventoryList() {
     [handleInventoryItemClick],
   );
 
-  console.log(
-    omit(
-      inventories.map((item) => item.suppliedStockItems),
-      [],
-    ),
-  );
-
   return (
     <View style={styles.container}>
       <FlatList
@@ -164,7 +158,7 @@ const styles = StyleSheet.create({
     height: 48,
     width: 'auto',
     borderRadius: 16,
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
   },

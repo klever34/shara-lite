@@ -5,7 +5,7 @@ import {IReceivedInventory} from './ReceivedInventory';
 
 export interface IStockItem extends BaseModelInterface {
   supplier_name: string;
-  batch_id: string;
+  batch_id?: string;
   name: string;
   sku: string;
   weight?: string;
@@ -14,7 +14,7 @@ export interface IStockItem extends BaseModelInterface {
   total_cost_price?: number;
   supplier: ISupplier;
   product: IProduct;
-  receivedInventory: IReceivedInventory;
+  receivedInventory?: IReceivedInventory;
 }
 
 export const modelName = 'StockItem';
@@ -25,7 +25,7 @@ export class StockItem implements Partial<StockItem> {
     primaryKey: 'id',
     properties: {
       ...baseModelSchema,
-      batch_id: 'string',
+      batch_id: 'string?',
       supplier_name: 'string',
       name: 'string',
       sku: 'string',

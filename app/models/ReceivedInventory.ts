@@ -1,20 +1,20 @@
-import {ISupplier} from './Supplier'
-import {BaseModelInterface, baseModelSchema} from './baseSchema'
-import {IStockItem} from './StockItem'
-import {IDeliveryAgent} from './DeliveryAgent'
+import {ISupplier} from './Supplier';
+import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {IStockItem} from './StockItem';
+import {IDeliveryAgent} from './DeliveryAgent';
 
 export interface IReceivedInventory extends BaseModelInterface {
-  supplier_name: string
-  batch_id: string
-  total_amount: number
-  delivery_agent_full_name?: string
-  delivery_agent_mobile?: string
-  supplier: ISupplier
-  suppliedStockItems?: IStockItem[]
-  delivery_agent?: IDeliveryAgent
+  supplier_name: string;
+  batch_id: string;
+  total_amount: number;
+  delivery_agent_full_name?: string;
+  delivery_agent_mobile?: string;
+  supplier: ISupplier;
+  suppliedStockItems?: IStockItem[];
+  delivery_agent?: IDeliveryAgent;
 }
 
-export const modelName = 'ReceivedInventory'
+export const modelName = 'ReceivedInventory';
 
 export class ReceivedInventory implements Partial<ReceivedInventory> {
   public static schema: Realm.ObjectSchema = {
@@ -35,5 +35,5 @@ export class ReceivedInventory implements Partial<ReceivedInventory> {
         property: 'receivedInventory',
       },
     },
-  }
+  };
 }

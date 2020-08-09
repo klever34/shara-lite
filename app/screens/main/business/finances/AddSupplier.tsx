@@ -1,13 +1,20 @@
-import React, {useState, useCallback, useLayoutEffect} from 'react';
-import {ScrollView, Text, View} from 'react-native';
-import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import {FloatingLabelInput, Button} from '../../../../components';
-import {useRealm} from '../../../../services/realm';
 import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
+import {Contact} from 'react-native-contacts';
+import {
+  Button,
+  ContactsListModal,
+  FloatingLabelInput,
+} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
+import Icon from '../../../../components/Icon';
+import Touchable from '../../../../components/Touchable';
+import {applyStyles} from '../../../../helpers/utils';
 import {ISupplier} from '../../../../models/Supplier';
+import {useRealm} from '../../../../services/realm';
 import {saveSupplier} from '../../../../services/SupplierService';
+import {colors} from '../../../../styles';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 
@@ -16,12 +23,33 @@ export const AddSupplier = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [supplier, setSupplier] = useState<Payload>({} as Payload);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerRight: () => <HeaderRight menuOptions={[]} />,
+      headerRight: () => (
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+      ),
     });
   }, [navigation]);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
+
+  const handleSelectContact = useCallback(
+    (contact: Contact) => {
+      const {givenName, familyName, phoneNumbers} = contact;
+      const contactName = `${givenName} ${familyName}`;
+      const contactMobile = phoneNumbers[0].number;
+      setSupplier({...supplier, name: contactName, mobile: contactMobile});
+    },
+    [supplier],
+  );
 
   const handleChange = useCallback(
     (value: string | number, key: keyof Payload) => {
@@ -50,46 +78,73 @@ export const AddSupplier = () => {
   }, [realm, clearForm, supplier, navigation]);
 
   return (
-    <ScrollView
-      style={applyStyles('px-lg', {
-        paddingTop: 40,
+    <View
+      style={applyStyles('flex-1', {
         backgroundColor: colors.white,
       })}>
-      <Text
-        style={applyStyles('text-400', {
-          fontSize: 18,
-          color: colors.primary,
-        })}>
-        Supplier Details
-      </Text>
-      <View style={applyStyles('flex-row', 'items-center')}>
-        <FloatingLabelInput
-          label="Name"
-          value={supplier.name}
-          onChangeText={(text) => handleChange(text, 'name')}
+      <Touchable onPress={handleOpenContactListModal}>
+        <View
+          style={applyStyles('flex-row px-lg py-lg items-center mb-xl', {
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
+          <Icon
+            size={24}
+            name="user-plus"
+            type="feathericons"
+            color={colors.primary}
+          />
+          <Text
+            style={applyStyles('text-400 pl-md', {
+              fontSize: 16,
+              color: colors['gray-300'],
+            })}>
+            Add From Phonebook
+          </Text>
+        </View>
+      </Touchable>
+      <ScrollView style={applyStyles('px-lg')}>
+        <Text
+          style={applyStyles('text-400', {
+            fontSize: 18,
+            color: colors.primary,
+          })}>
+          Supplier Details
+        </Text>
+        <View style={applyStyles('flex-row', 'items-center')}>
+          <FloatingLabelInput
+            label="Name"
+            value={supplier.name}
+            onChangeText={(text) => handleChange(text, 'name')}
+          />
+        </View>
+        <View style={applyStyles('flex-row', 'items-center')}>
+          <FloatingLabelInput
+            label="Address"
+            value={supplier.address}
+            onChangeText={(text) => handleChange(text, 'address')}
+          />
+        </View>
+        <View style={applyStyles('flex-row', 'items-center')}>
+          <FloatingLabelInput
+            label="Phone number"
+            value={supplier.mobile}
+            keyboardType="phone-pad"
+            onChangeText={(text) => handleChange(text, 'mobile')}
+          />
+        </View>
+        <Button
+          title="Add supplier"
+          isLoading={isLoading}
+          onPress={handleSubmit}
+          style={applyStyles({marginVertical: 48})}
         />
-      </View>
-      <View style={applyStyles('flex-row', 'items-center')}>
-        <FloatingLabelInput
-          label="Address"
-          value={supplier.address}
-          onChangeText={(text) => handleChange(text, 'address')}
+        <ContactsListModal
+          visible={isContactListModalOpen}
+          onClose={handleCloseContactListModal}
+          onContactSelect={(contact) => handleSelectContact(contact)}
         />
-      </View>
-      <View style={applyStyles('flex-row', 'items-center')}>
-        <FloatingLabelInput
-          label="Phone number"
-          value={supplier.mobile}
-          keyboardType="phone-pad"
-          onChangeText={(text) => handleChange(text, 'mobile')}
-        />
-      </View>
-      <Button
-        title="Add supplier"
-        isLoading={isLoading}
-        onPress={handleSubmit}
-        style={applyStyles({marginVertical: 48})}
-      />
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 };

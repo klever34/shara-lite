@@ -1,19 +1,19 @@
 import React, {useCallback} from 'react';
-import {Modal, Text, View, FlatList} from 'react-native';
-import {applyStyles} from '../../../../helpers/utils';
+import {FlatList, Modal, Text, View} from 'react-native';
 import {Button} from '../../../../components';
+import {applyStyles} from '../../../../helpers/utils';
+import {IStockItem} from '../../../../models/StockItem';
 import {colors} from '../../../../styles';
 import {
-  SummaryTableItemProps,
-  SummaryTableItem,
   SummaryTableHeader,
+  SummaryTableItem,
+  SummaryTableItemProps,
 } from './ReceiveInventoryStockSummary';
-import {InventoryStockItem} from '../../../../../types/app';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  products: InventoryStockItem[];
+  products: IStockItem[];
 };
 
 export const ReceiveInventoryStockPreview = (props: Props) => {
