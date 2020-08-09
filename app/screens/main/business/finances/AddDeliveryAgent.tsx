@@ -76,9 +76,9 @@ export const AddDeliveryAgent = () => {
         />
       </View>
       <Button
-        title="Add delivery agent"
         isLoading={isLoading}
         onPress={handleSubmit}
+        title="Add delivery agent"
         style={applyStyles({marginVertical: 48})}
       />
     </ScrollView>

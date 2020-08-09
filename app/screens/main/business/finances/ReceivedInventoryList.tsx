@@ -1,28 +1,61 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {FAButton} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
+import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
-import {IReceipt} from '../../../../models/Receipt';
-import {getReceivedStocks} from '../../../../services/InventoryStockService';
+import {IReceivedInventory} from '../../../../models/ReceivedInventory';
 import {useRealm} from '../../../../services/realm';
+import {getReceivedInventories} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
-import {IInventoryStock} from '../../../../models/InventoryStock';
 import {ReceivedInventoryDetailsModal} from './ReceivedInventoryDetailsModal';
 
 type InventoryItemProps = {
-  item: IInventoryStock;
+  item: IReceivedInventory;
 };
 
 export function ReceivedInventoryList() {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const inventories = getReceivedStocks({realm});
-  const [activeInventory, setActiveInventory] = useState<IReceipt | null>(null);
+  const inventories = getReceivedInventories({realm});
+  const [
+    activeInventory,
+    setActiveInventory,
+  ] = useState<IReceivedInventory | null>(null);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={applyStyles('flex-row flex-1 items-center')}>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="sliders"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="search"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <HeaderRight menuOptions={[]} />
+        </View>
+      ),
+    });
+  }, [navigation]);
 
   const handleInventoryItemClick = useCallback((receipt) => {
     setActiveInventory(receipt);
@@ -34,6 +67,10 @@ export function ReceivedInventoryList() {
 
   const renderInventoryItem = useCallback(
     ({item: inventory}: InventoryItemProps) => {
+      const inventoryCost = inventory.stockItems?.reduce(
+        (acc, item) => acc + (item?.cost_price || 0),
+        0,
+      );
       return (
         <Touchable onPress={() => handleInventoryItemClick(inventory)}>
           <View
@@ -74,7 +111,7 @@ export function ReceivedInventoryList() {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                {amountWithCurrency(inventory.total_cost_price)}
+                {amountWithCurrency(inventoryCost)}
               </Text>
             </View>
           </View>
@@ -107,7 +144,7 @@ export function ReceivedInventoryList() {
         </View>
       </FAButton>
       <ReceivedInventoryDetailsModal
-        inventory={[]}
+        inventory={activeInventory}
         visible={!!activeInventory}
         onClose={handleCloseInventoryDetailsModal}
       />

@@ -103,7 +103,7 @@ export const Login = ({navigation}: any) => {
           variantColor="red"
           onPress={onSubmit}
           isLoading={loading}
-          disabled={isButtonDisabled() || loading}
+          disabled={isButtonDisabled()}
         />
       </View>
       <View>

@@ -86,7 +86,6 @@ export const AddSupplier = () => {
       </View>
       <Button
         title="Add supplier"
-        disabled={isLoading}
         isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}

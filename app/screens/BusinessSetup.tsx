@@ -356,7 +356,6 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
           <Button
             title="Done"
             variantColor="red"
-            disabled={loading}
             isLoading={loading}
             style={styles.actionButton}
             onPress={signature ? saveSign : onSaveWithoutSignature}

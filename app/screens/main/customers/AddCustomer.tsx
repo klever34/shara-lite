@@ -90,7 +90,6 @@ const AddCustomer = () => {
         <Button
           variantColor="red"
           title="Add customer"
-          disabled={isLoading}
           isLoading={isLoading}
           style={styles.button}
           onPress={handleSubmit}

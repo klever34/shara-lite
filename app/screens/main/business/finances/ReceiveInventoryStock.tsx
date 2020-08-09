@@ -318,6 +318,7 @@ export const ReceiveInventoryStock = ({
 
       <ReactNativeModal visible={isSummaryModalOpen}>
         <ReceiveInventoryStockSummary
+          supplier={supplier}
           products={inventoryStock}
           onClearReceipt={handleClearReceipt}
           onCloseSummaryModal={handleCloseSummaryModal}

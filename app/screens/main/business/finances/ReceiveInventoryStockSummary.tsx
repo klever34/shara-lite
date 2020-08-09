@@ -8,19 +8,20 @@ import {
   Text,
   View,
 } from 'react-native';
+import {Contact} from 'react-native-contacts';
 import {InventoryStockItem} from '../../../../../types/app';
 import {
   Button,
-  FloatingLabelInput,
   ContactsListModal,
+  FloatingLabelInput,
 } from '../../../../components';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import {addNewInventory} from '../../../../services/ReceivedInventoryService';
-import {useRealm} from '../../../../services/realm';
 import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
-import {Contact} from 'react-native-contacts';
+import {ISupplier} from '../../../../models/Supplier';
+import {useRealm} from '../../../../services/realm';
+import {addNewInventory} from '../../../../services/ReceivedInventoryService';
+import {colors} from '../../../../styles';
 
 type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
 
@@ -29,6 +30,7 @@ export type SummaryTableItemProps = {
 };
 
 type Props = {
+  supplier: ISupplier;
   onClearReceipt: () => void;
   products: InventoryStockItem[];
   onCloseSummaryModal: () => void;
@@ -84,7 +86,7 @@ export const SummaryTableHeader = () => {
         style={applyStyles({
           alignItems: 'flex-end',
         })}>
-        <Text style={summaryTableHeaderStyles.text}>QTY</Text>
+        <Text style={summaryTableHeaderStyles.text}>Quantity</Text>
       </View>
     </View>
   );
@@ -119,7 +121,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const realm = useRealm();
   const navigation = useNavigation();
 
-  const {products, onCloseSummaryModal} = props;
+  const {products, supplier, onCloseSummaryModal} = props;
 
   const [isSaving, setIsSaving] = useState(false);
   const [agent, setAgent] = useState<Payload>({} as Payload);
@@ -140,10 +142,15 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleFinish = () => {
     setIsSaving(true);
     setTimeout(() => {
-      addNewInventory({realm, stockItems: products, ...agent});
+      addNewInventory({
+        realm,
+        supplier,
+        stockItems: products,
+        delivery_agent: agent,
+      });
       setIsSaving(false);
       clearForm();
-      navigation.navigate('Finances', {screen: 'Inventory'});
+      navigation.navigate('ReceivedInventoryList');
     }, 300);
   };
 
@@ -161,7 +168,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     const {givenName, familyName, phoneNumbers} = contact;
     const contactName = `${givenName} ${familyName}`;
     const contactMobile = phoneNumbers[0].number;
-    setAgent({agent_full_name: contactName, agent_mobile: contactMobile});
+    setAgent({full_name: contactName, mobile: contactMobile});
   }, []);
 
   const clearForm = useCallback(() => {
@@ -177,7 +184,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     <KeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.scrollView} nestedScrollEnabled>
         <View>
-          <Text style={applyStyles('pb-xs', styles.sectionTitle)}>
+          <Text style={applyStyles('pb-xl', styles.sectionTitle)}>
             Products
           </Text>
           <View>
@@ -232,7 +239,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         <Button
           title="Finish"
           variantColor="red"
-          disabled={isSaving}
           isLoading={isSaving}
           onPress={handleFinish}
           style={styles.actionButton}
