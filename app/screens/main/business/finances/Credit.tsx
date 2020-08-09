@@ -133,7 +133,7 @@ export const MyCredit = () => {
                   fontSize: 24,
                   color: colors['gray-300'],
                 })}>
-                {amountWithCurrency(financeSummary.overdueCredit)}
+                {amountWithCurrency(financeSummary.totalCredit)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-uppercase', {

@@ -1,12 +1,12 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
 import {
   Button,
   ContactsListModal,
   FloatingLabelInput,
 } from '../../../components';
-import {saveCustomer} from '../../../services/CustomerService';
+import {saveCustomer, getCustomers} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
@@ -16,6 +16,7 @@ import {Contact} from 'react-native-contacts';
 const AddCustomer = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
+  const customers = getCustomers({realm});
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -47,18 +48,25 @@ const AddCustomer = () => {
 
   const handleSubmit = useCallback(() => {
     if (name && mobile) {
-      const customer = {
-        name,
-        mobile,
-      };
-      saveCustomer({realm, customer});
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        navigation.navigate('CustomerDetails', {customer});
-      }, 750);
+      if (customers.map((item) => item.mobile).includes(mobile)) {
+        Alert.alert(
+          'Error',
+          'Customer with the same phone number has been created.',
+        );
+      } else {
+        const customer = {
+          name,
+          mobile,
+        };
+        saveCustomer({realm, customer});
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          navigation.navigate('CustomerDetails', {customer});
+        }, 750);
+      }
     }
-  }, [navigation, name, mobile, realm]);
+  }, [navigation, name, mobile, realm, customers]);
 
   return (
     <ScrollView style={styles.container}>
