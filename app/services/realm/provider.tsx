@@ -160,24 +160,30 @@ const syncLocalData = ({
   syncRealm?: Realm;
   localRealm?: Realm;
 }) => {
-  syncRealm?.write(() => {
-    schema.forEach((model) => {
-      localRealm?.objects(model.schema.name).forEach((record: any) => {
-        if (record) {
-          syncRealm.create(model.schema.name, record, UpdateMode.Modified);
-        }
+  if (!syncRealm || !localRealm) {
+    return;
+  }
+
+  syncRealm &&
+    syncRealm.write(() => {
+      schema.forEach((model) => {
+        localRealm.objects(model.schema.name).forEach((record: any) => {
+          if (record) {
+            syncRealm.create(model.schema.name, record, UpdateMode.Modified);
+          }
+        });
       });
     });
-  });
-  localRealm?.write(() => {
-    schema.forEach((model) => {
-      syncRealm?.objects(model.schema.name).forEach((record: any) => {
-        if (record) {
-          localRealm?.create(model.schema.name, record, UpdateMode.Modified);
-        }
+  localRealm &&
+    localRealm.write(() => {
+      schema.forEach((model) => {
+        syncRealm.objects(model.schema.name).forEach((record: any) => {
+          if (record) {
+            localRealm?.create(model.schema.name, record, UpdateMode.Modified);
+          }
+        });
       });
     });
-  });
 };
 
 export default RealmProvider;
