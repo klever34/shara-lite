@@ -15,13 +15,7 @@ const EmptyState = (props: Props) => {
   const {style, children, heading, source, text} = props;
   return (
     <View
-      style={applyStyles(
-        'flex-1',
-        'justify-center',
-        'items-center',
-        styles.container,
-        style,
-      )}>
+      style={applyStyles('flex-1', 'justify-center', 'items-center', style)}>
       {source && (
         <Image style={applyStyles('pb-xl', styles.image)} source={source} />
       )}
@@ -39,9 +33,6 @@ const EmptyState = (props: Props) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: colors.white,
-  },
   heading: {
     fontSize: 24,
     color: colors['gray-300'],

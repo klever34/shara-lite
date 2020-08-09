@@ -204,9 +204,9 @@ const ReceiptSummary = (props: Props) => {
   const [paymentType, setPaymentType] = useState<
     'cash' | 'transfer' | 'mobile'
   >('cash');
-  const [dueDateString, setDueDateString] = useState('');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [dueDateString, setDueDateString] = useState('');
   const [payments, setPayments] = useState<Payment[]>([]);
   const [dueDate, setDueDate] = useState<Date | undefined>();
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
