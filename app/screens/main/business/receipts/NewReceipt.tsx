@@ -101,13 +101,13 @@ export const NewReceipt = () => {
     if (price && quantity) {
       const product = {
         ...selectedProduct,
+        id: selectedProduct?.id,
         price: parseFloat(price),
         product: selectedProduct,
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
       if (receipt.map((item) => item.id).includes(product?.id)) {
-        console.log('here');
         setReceipt(
           receipt.map((item) => {
             if (item.id === product.id) {
@@ -154,15 +154,16 @@ export const NewReceipt = () => {
     if (selectedProduct && quantity && price) {
       const product = {
         ...selectedProduct,
+        id: selectedProduct.id,
         price: parseFloat(price),
         product: selectedProduct,
+        name: selectedProduct.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
 
       handleAddItem();
 
       if (receipt.map((item) => item.id).includes(product?.id)) {
-        console.log('here');
         items = receipt.map((item) => {
           if (item.id === product.id) {
             return {
@@ -237,6 +238,27 @@ export const NewReceipt = () => {
         textInputProps={{placeholder: 'Search Products'}}
         noResultsAction={() => navigation.navigate('AddProduct')}
       />
+      <Touchable onPress={() => navigation.navigate('AddProduct')}>
+        <View
+          style={applyStyles('flex-row px-lg py-lg items-center', {
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
+          <Icon
+            size={24}
+            name="plus"
+            type="feathericons"
+            color={colors.primary}
+          />
+          <Text
+            style={applyStyles('text-400 pl-md', {
+              fontSize: 16,
+              color: colors['gray-300'],
+            })}>
+            Add Product
+          </Text>
+        </View>
+      </Touchable>
       <FlatList
         data={products}
         style={styles.recentProductsList}

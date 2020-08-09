@@ -176,9 +176,9 @@ export const ContactsListModal = ({
           style={applyStyles({width: '100%', marginBottom: 24})}>
           <Text
             style={applyStyles('text-400', 'text-uppercase', {
-              color: colors['gray-200'],
+              color: colors.primary,
             })}>
-            Cancel
+            Close
           </Text>
         </Button>
       </View>

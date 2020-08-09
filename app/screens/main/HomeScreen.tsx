@@ -4,7 +4,7 @@ import {MessageEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {Alert, Platform, SafeAreaView} from 'react-native';
+import {Alert, Platform, SafeAreaView, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import Realm from 'realm';
 import {PushNotificationToken} from '../../../types/app';
@@ -19,6 +19,8 @@ import {colors} from '../../styles';
 import {BusinessTab} from './business';
 import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
+import Touchable from '../../components/Touchable';
+import Icon from '../../components/Icon';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -62,38 +64,60 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <HeaderRight
-          menuOptions={[
-            {
-              text: 'Restore Messages',
-              onSelect: () => {
-                Alert.alert('Backup Restore', 'Restore all your messages?', [
-                  {
-                    text: 'CANCEL',
-                  },
-                  {
-                    text: 'OK',
-                    onPress: restoreAllMessages,
-                  },
-                ]);
+        <View style={applyStyles('flex-row flex-1 items-center')}>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="sliders"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="search"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <HeaderRight
+            menuOptions={[
+              {
+                text: 'Restore Messages',
+                onSelect: () => {
+                  Alert.alert('Backup Restore', 'Restore all your messages?', [
+                    {
+                      text: 'CANCEL',
+                    },
+                    {
+                      text: 'OK',
+                      onPress: restoreAllMessages,
+                    },
+                  ]);
+                },
               },
-            },
-            {
-              text: 'Log out',
-              onSelect: () => {
-                Alert.alert('Log Out', 'Are you sure you want to log out?', [
-                  {
-                    text: 'CANCEL',
-                  },
-                  {
-                    text: 'OK',
-                    onPress: handleLogout,
-                  },
-                ]);
+              {
+                text: 'Log out',
+                onSelect: () => {
+                  Alert.alert('Log Out', 'Are you sure you want to log out?', [
+                    {
+                      text: 'CANCEL',
+                    },
+                    {
+                      text: 'OK',
+                      onPress: handleLogout,
+                    },
+                  ]);
+                },
               },
-            },
-          ]}
-        />
+            ]}
+          />
+        </View>
       ),
     });
   }, [handleLogout, navigation, restoreAllMessages]);

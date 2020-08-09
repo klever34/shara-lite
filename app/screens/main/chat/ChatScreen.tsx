@@ -30,7 +30,7 @@ import {
 import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
-import {getAuthService} from '../../../services';
+import {getAnalyticsService, getAuthService} from '../../../services';
 import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
 import {IMessage} from '../../../models';
@@ -212,11 +212,14 @@ const ChatScreen = ({
           }
         });
       });
-    }).then((response) => {
-      realm.write(() => {
-        message.timetoken = String(response.timetoken);
-      });
-    });
+    })
+      .then((response) => {
+        realm.write(() => {
+          message.timetoken = String(response.timetoken);
+        });
+        return getAnalyticsService().logEvent('messageSent');
+      })
+      .catch(handleError);
   }, [
     channel,
     conversation.lastMessage,

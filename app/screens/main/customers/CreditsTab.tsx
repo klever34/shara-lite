@@ -11,6 +11,7 @@ import {IPayment} from '../../../models/Payment';
 import {getPaymentsFromCredit} from '../../../services/CreditPaymentService';
 import {colors} from '../../../styles';
 import {PAYMENT_METHOD_LABEL} from '../../../helpers/constants';
+import {orderBy} from 'lodash';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
@@ -101,6 +102,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
       <View style={applyStyles('p-xl')}>
         <Button
           title="record credit payment"
+          disabled={!overdueCredit.length}
           style={applyStyles('mb-lg', {width: '100%'})}
           onPress={() =>
             handleNavigation('CustomerRecordCreditPayment', {customer})
@@ -184,9 +186,9 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
             Payment History
           </Text>
           <FlatList
-            data={creditPayments}
             renderItem={renderCreditItem}
             keyExtractor={(item) => `${item.id}`}
+            data={orderBy(creditPayments, 'created_at', 'desc')}
           />
         </View>
       )}

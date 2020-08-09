@@ -3,14 +3,14 @@ import React, {useEffect, useState} from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {withErrorBoundary} from 'react-error-boundary';
+import {useErrorHandler, withErrorBoundary} from 'react-error-boundary';
 import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import Realm from 'realm';
 import {createRealm, RealmProvider} from './services/realm';
-import {getRealmService} from './services';
+import {getAnalyticsService, getRealmService} from './services';
 import {
   ActivityIndicator,
   Alert,
@@ -33,6 +33,12 @@ const RootStack = createStackNavigator<RootStackParamList>();
 const App = () => {
   const [realm, setRealm] = useState<Realm | null>(null);
   const [error, setError] = useState(false);
+  const handleError = useErrorHandler();
+
+  useEffect(() => {
+    getAnalyticsService().initialize().catch(handleError);
+  }, [handleError]);
+
   useEffect(() => {
     createRealm()
       .then((nextRealm) => {

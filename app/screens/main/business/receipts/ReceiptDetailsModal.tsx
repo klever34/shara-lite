@@ -8,7 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Button} from '../../../../components';
+import {Button, ContactsListModal} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
@@ -29,6 +29,7 @@ import {
 import {useRealm} from '../../../../services/realm';
 import {Customer} from '../../../../../types/app';
 import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
+import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
 
 type Props = {
   visible: boolean;
@@ -45,6 +46,7 @@ type ProductItemProps = {
 export function ReceiptDetailsModal(props: Props) {
   const {receipt, visible, onClose, onPrintReceipt, onOpenShareModal} = props;
   const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [customer, setCustomer] = useState<Customer | ICustomer | undefined>(
     receipt ? receipt.customer : ({} as Customer),
   );
@@ -54,6 +56,7 @@ export function ReceiptDetailsModal(props: Props) {
     (acc, item) => acc + item.amount_left,
     0,
   );
+  const customers = getCustomers({realm});
   const allPayments = receipt ? getAllPayments({receipt}) : [];
 
   const handleOpenCustomerModal = useCallback(() => {
@@ -72,10 +75,27 @@ export function ReceiptDetailsModal(props: Props) {
     setIsCustomerListModalOpen(false);
   }, []);
 
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+    handleCloseCustomerListModal();
+  }, [handleCloseCustomerListModal]);
+
+  const handleSetCustomer = useCallback((value: ICustomer) => {
+    setCustomer(value);
+  }, []);
+
   const handleSaveCustomer = useCallback(
     (value: ICustomer) => {
       setCustomer(value);
-      receipt && updateReceipt({realm, customer: value, receipt});
+      const newCustomer = value.id
+        ? value
+        : saveCustomer({realm, customer: value});
+
+      receipt && updateReceipt({realm, customer: newCustomer, receipt});
     },
     [realm, receipt],
   );
@@ -380,15 +400,27 @@ export function ReceiptDetailsModal(props: Props) {
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
         onSelectCustomer={handleSaveCustomer}
-        onOpenContactList={handleOpenCustomerListModal}
+        onOpenCustomerList={handleOpenCustomerListModal}
       />
 
       <Modal animationType="slide" visible={isCustomerListModalOpen}>
         <CustomersList
-          onModalClose={handleCloseCustomerListModal}
+          customers={customers}
           onCustomerSelect={handleCustomerSelect}
+          onModalClose={handleCloseCustomerListModal}
+          onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
+      <ContactsListModal
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onContactSelect={({givenName, familyName, phoneNumbers}) =>
+          handleSetCustomer({
+            name: `${givenName} ${familyName}`,
+            mobile: phoneNumbers[0].number,
+          })
+        }
+      />
     </Modal>
   );
 }

@@ -1,13 +1,12 @@
-import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useRef, useState} from 'react';
 import {
   Alert,
   Image,
+  Modal,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  Modal,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {ImagePickerOptions} from 'react-native-image-picker/src/internal/types';
@@ -18,7 +17,7 @@ import {Button, FloatingLabelInput} from '../components';
 import Icon from '../components/Icon';
 import Touchable from '../components/Touchable';
 import {applyStyles} from '../helpers/utils';
-import {getApiService, getAuthService} from '../services';
+import {getApiService} from '../services';
 import {colors} from '../styles';
 
 type Fields = {
@@ -38,11 +37,8 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   const [profileImage, setProfileImage] = useState<any | undefined>();
   const [fields, setFields] = useState<Fields>({} as Fields);
   const [isSignatureCaptureShown, setIsSignatureCaptureShown] = useState(false);
-  const navigation = useNavigation();
 
   const apiService = getApiService();
-  const authService = getAuthService();
-  const user = authService.getUser();
 
   const clearForm = useCallback(() => {
     setFields({} as Fields);

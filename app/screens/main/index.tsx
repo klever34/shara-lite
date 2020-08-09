@@ -15,6 +15,7 @@ import {ICreditPayment} from '../../models/CreditPayment';
 import {IPayment} from '../../models/Payment';
 import {IProduct} from '../../models/Product';
 import {
+  getAnalyticsService,
   getAuthService,
   getContactsService,
   getPubNubService,
@@ -58,6 +59,7 @@ import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
 import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
+import {Expenses} from './business/finances/Expenses';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -121,6 +123,12 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     if (user) {
+      getAnalyticsService().setUser(user).catch(handleError);
+    }
+  }, [handleError, user]);
+
+  useEffect(() => {
+    if (user) {
       const pubNub = new PubNub({
         subscribeKey: Config.PUBNUB_SUB_KEY,
         publishKey: Config.PUBNUB_PUB_KEY,
@@ -146,6 +154,14 @@ const MainScreens = ({navigation}: any) => {
       </View>
     );
   }
+
+  const stackOptions = {
+    headerTitleStyle: {
+      fontSize: 16,
+      fontFamily: 'CocogoosePro-SemiLight',
+    },
+    headerTintColor: '#fff',
+  };
 
   return (
     <PubNubProvider client={pubNubClient}>
@@ -176,67 +192,35 @@ const MainScreens = ({navigation}: any) => {
           component={ContactsScreen}
           options={{
             title: 'Select Contact',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
           name="Chat"
           component={ChatScreen}
-          options={{
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
+          options={stackOptions}
         />
         <MainStack.Screen
           name="ChatDetails"
           component={ChatDetailsScreen}
-          options={{
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
+          options={stackOptions}
         />
         <MainStack.Screen
           name="SelectGroupMembers"
           component={SelectGroupMembersScreen}
-          options={{
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
+          options={stackOptions}
         />
         <MainStack.Screen
           name="SetGroupDetails"
           component={SetGroupDetailsScreen}
-          options={{
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
-          }}
+          options={stackOptions}
         />
         <MainStack.Screen
           name="NewReceipt"
           component={NewReceipt}
           options={{
             title: 'New Receipt',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -249,11 +233,7 @@ const MainScreens = ({navigation}: any) => {
           component={Finances}
           options={{
             title: 'My Finances',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -261,11 +241,7 @@ const MainScreens = ({navigation}: any) => {
           component={AddCustomer}
           options={{
             title: 'Add Customer',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -273,11 +249,7 @@ const MainScreens = ({navigation}: any) => {
           component={CustomerDetails}
           options={({route}) => ({
             title: route.params.customer.name,
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           })}
         />
         <MainStack.Screen
@@ -285,11 +257,7 @@ const MainScreens = ({navigation}: any) => {
           component={RecordPayment}
           options={{
             title: 'Record Payment',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -297,11 +265,7 @@ const MainScreens = ({navigation}: any) => {
           component={CreditPayment}
           options={{
             title: 'Credit Payment',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -309,11 +273,7 @@ const MainScreens = ({navigation}: any) => {
           component={PaymentDetails}
           options={{
             title: 'Payment Details',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -321,11 +281,7 @@ const MainScreens = ({navigation}: any) => {
           component={OrderDetails}
           options={{
             title: 'Order Details',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -333,11 +289,7 @@ const MainScreens = ({navigation}: any) => {
           component={CustomerTotalCredit}
           options={{
             title: 'Total Credit',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -345,11 +297,7 @@ const MainScreens = ({navigation}: any) => {
           component={CustomerOverdueCredit}
           options={{
             title: 'Overdue Credit',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -360,11 +308,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -372,11 +316,7 @@ const MainScreens = ({navigation}: any) => {
           component={CustomerCreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -384,11 +324,7 @@ const MainScreens = ({navigation}: any) => {
           component={TotalCredit}
           options={{
             title: 'Total Credit',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -396,11 +332,7 @@ const MainScreens = ({navigation}: any) => {
           component={OverdueCredit}
           options={{
             title: 'Overdue Credit',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -408,11 +340,7 @@ const MainScreens = ({navigation}: any) => {
           component={RecordCreditPayment}
           options={{
             title: 'Record Credit Payment',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -420,11 +348,7 @@ const MainScreens = ({navigation}: any) => {
           component={CreditDetails}
           options={{
             title: 'Credit Details',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -432,11 +356,7 @@ const MainScreens = ({navigation}: any) => {
           component={CreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -447,11 +367,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -462,11 +378,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -477,11 +389,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -492,11 +400,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -507,11 +411,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -522,11 +422,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -537,11 +433,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -552,11 +444,7 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -564,11 +452,7 @@ const MainScreens = ({navigation}: any) => {
           component={AddDeliveryAgent}
           options={{
             title: 'Add Delivery Agent',
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -579,11 +463,18 @@ const MainScreens = ({navigation}: any) => {
             headerStyle: {
               backgroundColor: colors.primary,
             },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
+            ...stackOptions,
+          }}
+        />
+        <MainStack.Screen
+          name="Expenses"
+          component={Expenses}
+          options={{
+            title: 'Record Expenses',
+            headerStyle: {
+              backgroundColor: colors.primary,
             },
-            headerTintColor: '#fff',
+            ...stackOptions,
           }}
         />
       </MainStack.Navigator>

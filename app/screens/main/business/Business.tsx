@@ -93,7 +93,7 @@ export const BusinessTab = () => {
         return (
           <View style={styles.listItem}>
             <Text style={applyStyles(styles.listItemText, 'text-500')}>
-              Give Credit
+              View credit
             </Text>
             <Image
               style={styles.listItemIcon}

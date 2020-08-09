@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
+import orderBy from 'lodash/orderBy';
 import React, {useCallback, useState} from 'react';
 import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
 import Share from 'react-native-share';
@@ -196,7 +197,7 @@ export function MyReceipts() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={receipts}
+        data={orderBy(receipts, 'created_at', 'desc')}
         renderItem={renderReceiptItem}
         keyExtractor={(item) => `${item.id}`}
         ListEmptyComponent={

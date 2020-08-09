@@ -1,10 +1,12 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
+import {orderBy} from 'lodash';
 import React, {useCallback} from 'react';
 import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, FAButton} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
+import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICreditPayment} from '../../../../models/CreditPayment';
 import {getCreditPayments} from '../../../../services/CreditPaymentService';
@@ -12,7 +14,6 @@ import {getCredits} from '../../../../services/CreditService';
 import {getSummary, IFinanceSummary} from '../../../../services/FinanceService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
-import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
 
 type CreditItemProps = {
   item: ICreditPayment;
@@ -32,6 +33,10 @@ export const MyCredit = () => {
     },
     [navigation],
   );
+
+  const handleGoToRecordPayment = useCallback(() => {
+    handleNavigation('RecordCreditPayment');
+  }, [handleNavigation]);
 
   const handleCreditItemClick = useCallback(
     (creditPaymentDetails) => {
@@ -101,8 +106,9 @@ export const MyCredit = () => {
         <View style={applyStyles('p-xl')}>
           <Button
             title="record credit payment"
+            disabled={!overdueCredit.length}
+            onPress={handleGoToRecordPayment}
             style={applyStyles('mb-lg', {width: '100%'})}
-            onPress={() => handleNavigation('RecordCreditPayment')}
           />
           <Touchable
             onPress={() =>
@@ -182,9 +188,9 @@ export const MyCredit = () => {
               Payment History
             </Text>
             <FlatList
-              data={creditsPayments}
               renderItem={renderCreditItem}
               keyExtractor={(item) => `${item.id}`}
+              data={orderBy(creditsPayments, 'created_at', 'desc')}
             />
           </View>
         )}
