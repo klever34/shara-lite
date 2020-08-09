@@ -31,9 +31,8 @@ export const getTotalSales = ({receipts}: any) => {
 
 export const getOverdueCredit = ({credits}: any) => {
   const today = getToday();
-  const dueDateFilter = `due_date < ${today}`;
   return credits
-    .filtered(`fulfilled = false AND ${dueDateFilter}`)
+    .filtered(`fulfilled = false AND due_date < $0`, today)
     .sum('amount_left');
 };
 

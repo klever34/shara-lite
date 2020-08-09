@@ -13,6 +13,7 @@ import {useRealm} from '../../../../services/realm';
 import {getReceivedInventories} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
 import {ReceivedInventoryDetailsModal} from './ReceivedInventoryDetailsModal';
+import {omit} from 'lodash';
 
 type InventoryItemProps = {
   item: IReceivedInventory;
@@ -67,10 +68,6 @@ export function ReceivedInventoryList() {
 
   const renderInventoryItem = useCallback(
     ({item: inventory}: InventoryItemProps) => {
-      const inventoryCost = inventory.stockItems?.reduce(
-        (acc, item) => acc + (item?.cost_price || 0),
-        0,
-      );
       return (
         <Touchable onPress={() => handleInventoryItemClick(inventory)}>
           <View
@@ -94,7 +91,6 @@ export function ReceivedInventoryList() {
               </Text>
               <Text
                 style={applyStyles('text-400', {
-                  fontSize: 12,
                   color: colors['gray-200'],
                 })}>
                 {inventory.created_at
@@ -111,7 +107,7 @@ export function ReceivedInventoryList() {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                {amountWithCurrency(inventoryCost)}
+                {amountWithCurrency(inventory.total_amount)}
               </Text>
             </View>
           </View>
@@ -119,6 +115,13 @@ export function ReceivedInventoryList() {
       );
     },
     [handleInventoryItemClick],
+  );
+
+  console.log(
+    omit(
+      inventories.map((item) => item.suppliedStockItems),
+      [],
+    ),
   );
 
   return (

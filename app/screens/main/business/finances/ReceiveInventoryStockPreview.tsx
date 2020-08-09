@@ -51,7 +51,10 @@ export const ReceiveInventoryStockPreview = (props: Props) => {
       </View>
       <Button
         variantColor="clear"
-        style={applyStyles({width: '100%', marginBottom: 24})}
+        style={applyStyles('w-full mb-xl', {
+          borderTopColor: colors['gray-20'],
+          borderTopWidth: 1,
+        })}
         onPress={onClose}>
         <Text
           style={applyStyles('text-400', 'text-uppercase', {

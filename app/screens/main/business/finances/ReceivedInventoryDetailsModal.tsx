@@ -21,15 +21,6 @@ type Props = {
 export const ReceivedInventoryDetailsModal = (props: Props) => {
   const {visible, inventory, onClose} = props;
   const tax = 0;
-  const totalAmount = inventory?.stockItems
-    ? inventory?.stockItems
-        .map(({quantity, cost_price}) => {
-          const itemPrice = cost_price ? cost_price : 0;
-          const itemQuantity = quantity ? quantity : 0;
-          return itemPrice * itemQuantity;
-        })
-        .reduce((acc, curr) => acc + curr, 0)
-    : 0;
 
   const renderSummaryItem = useCallback(({item}: {item: IStockItem}) => {
     const price = item.cost_price ? item.cost_price : 0;
@@ -81,7 +72,10 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
               Here is a list of products being purchased
             </Text>
           </View>
-          <View style={applyStyles('flex-row w-full justify-space-between')}>
+          <View
+            style={applyStyles('flex-row w-full justify-space-between', {
+              marginBottom: 48,
+            })}>
             <View>
               <Text
                 style={applyStyles('pb-xs text-400 text-uppercase', {
@@ -126,8 +120,8 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
           </View>
           <FlatList
             nestedScrollEnabled
-            data={inventory?.stockItems}
             renderItem={renderSummaryItem}
+            data={inventory?.suppliedStockItems}
             keyExtractor={(item) => `${item.id}`}
             ListHeaderComponent={SummaryTableHeader}
           />
@@ -173,7 +167,7 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
                     fontSize: 18,
                     color: colors['gray-300'],
                   })}>
-                  {amountWithCurrency(totalAmount)}
+                  {amountWithCurrency(inventory?.total_amount)}
                 </Text>
               </View>
             </View>
@@ -182,7 +176,10 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
       </ScrollView>
       <Button
         variantColor="clear"
-        style={applyStyles('w-full mb-xl')}
+        style={applyStyles('w-full mb-xl', {
+          borderTopColor: colors['gray-20'],
+          borderTopWidth: 1,
+        })}
         onPress={onClose}>
         <Text
           style={applyStyles('text-400', 'text-uppercase', {

@@ -150,7 +150,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       });
       setIsSaving(false);
       clearForm();
-      navigation.navigate('ReceivedInventoryList');
+      navigation.navigate('Finances', {screen: 'ReceivedInventoryList'});
     }, 300);
   };
 
