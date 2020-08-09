@@ -62,11 +62,13 @@ export const addNewInventory = ({
     receivedInventory.delivery_agent_mobile = savedDeliveryAgent.mobile;
   }
 
-  realm.create<ReceivedInventory>(
-    modelName,
-    receivedInventory,
-    UpdateMode.Modified,
-  );
+  realm.write(() => {
+    realm.create<ReceivedInventory>(
+      modelName,
+      receivedInventory,
+      UpdateMode.Modified,
+    );
+  });
 
   stockItems.forEach((stockItem) => {
     const quantity = parseInt(stockItem.quantity, 10);
