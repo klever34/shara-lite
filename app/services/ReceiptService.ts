@@ -7,6 +7,8 @@ import {getBaseModelValues} from '../helpers/models';
 import {saveCredit, updateCredit} from './CreditService';
 import {Customer, Payment} from '../../types/app';
 import {IReceiptItem} from '../models/ReceiptItem';
+import {getPaymentsFromCredit} from './CreditPaymentService';
+import {saveCustomer} from './CustomerService';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -17,12 +19,14 @@ export const saveReceipt = ({
   customer,
   amountPaid,
   tax,
+  dueDate,
   totalAmount,
   creditAmount,
   payments,
   receiptItems,
 }: {
   realm: Realm;
+  dueDate?: Date;
   customer: ICustomer | Customer;
   amountPaid: number;
   totalAmount: number;
@@ -39,14 +43,22 @@ export const saveReceipt = ({
     ...getBaseModelValues(),
   };
 
+  let receiptCustomer: ICustomer | Customer;
+
   if (customer.name) {
     receipt.customer_name = customer.name;
     receipt.customer_mobile = customer.mobile;
   }
 
-  if (customer._id) {
-    receipt.customer = customer as ICustomer;
+  if (!customer._id && customer.name && customer.mobile) {
+    receiptCustomer = saveCustomer({realm, customer});
   }
+  if (customer._id) {
+    receiptCustomer = customer;
+  }
+
+  //@ts-ignore
+  receipt.customer = receiptCustomer as ICustomer;
 
   realm.write(() => {
     realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
@@ -55,7 +67,7 @@ export const saveReceipt = ({
   payments.forEach((payment) => {
     savePayment({
       realm,
-      customer,
+      customer: receiptCustomer,
       receipt,
       type: 'receipt',
       ...payment,
@@ -72,8 +84,10 @@ export const saveReceipt = ({
 
   if (creditAmount > 0) {
     saveCredit({
+      dueDate,
       creditAmount,
-      customer,
+      //@ts-ignore
+      customer: receiptCustomer,
       receipt,
       realm,
     });
@@ -94,7 +108,6 @@ export const updateReceipt = ({
     (receipt.payments || []).forEach((payment) => {
       updatePayment({realm, payment, updates: {customer}});
     });
-
     if (
       receipt.credit_amount > 0 &&
       receipt.credits &&
@@ -103,4 +116,11 @@ export const updateReceipt = ({
       updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
   });
+};
+
+export const getAllPayments = ({receipt}: {receipt: IReceipt}) => {
+  return [
+    ...(receipt.payments || []),
+    ...getPaymentsFromCredit({credits: receipt.credits}),
+  ];
 };

@@ -63,9 +63,9 @@ export const CreditPaymentForm = (props: Props) => {
           itemStyle={styles.pickerItem}
           selectedValue={payload.method}
           onValueChange={(itemValue) => handleChange(itemValue, 'method')}>
-          <Picker.Item label="Cash" value="Cash" />
-          <Picker.Item label="Bank Transfer" value="Bank Transfer" />
-          <Picker.Item label="Mobile Money" value="Mobile Money" />
+          <Picker.Item label="Cash" value="cash" />
+          <Picker.Item label="Bank Transfer" value="transfer" />
+          <Picker.Item label="Mobile Money" value="mobile" />
         </Picker>
       </View>
 
@@ -73,6 +73,7 @@ export const CreditPaymentForm = (props: Props) => {
         isLoading={isLoading}
         onPress={handleSubmit}
         title="Confirm payment"
+        disabled={isLoading || !payload.amount}
         style={applyStyles({marginBottom: 40})}
       />
     </View>

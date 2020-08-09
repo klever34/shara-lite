@@ -1,5 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
+import orderBy from 'lodash/orderBy';
 import React, {useCallback, useState} from 'react';
 import {Alert, FlatList, StyleSheet, Text, View} from 'react-native';
 import Share from 'react-native-share';
@@ -87,9 +88,9 @@ export function MyReceipts() {
       const shareOptions = {
         email,
         title: 'Share receipt',
-        message: `Here is your receipt from ${businessInfo?.name}`,
-        subject: activeReceipt?.customer_name
-          ? `${activeReceipt?.customer_name}'s Receipt`
+        message: `Hi ${activeReceipt?.customer?.name}, here is your receipt from ${businessInfo?.name}`,
+        subject: activeReceipt?.customer?.name
+          ? `${activeReceipt?.customer.name}'s Receipt`
           : 'Your Receipt',
         url: `data:image/png;base64,${receiptImage}`,
       };
@@ -110,9 +111,9 @@ export function MyReceipts() {
       const shareOptions = {
         social: Share.Social.WHATSAPP,
         url: `data:image/png;base64,${receiptImage}`,
-        whatsAppNumber: `${activeReceipt?.customer_mobile}`,
-        message: `Here is your receipt from ${businessInfo?.name}`,
-        title: `Share receipt with ${activeReceipt?.customer_name}`,
+        whatsAppNumber: `${activeReceipt?.customer?.mobile}`,
+        message: `Hi ${activeReceipt?.customer?.name}, Here is your receipt from ${businessInfo?.name}`,
+        title: `Share receipt with ${activeReceipt?.customer?.name}`,
       };
       const errorMessages = {
         filename: 'Invalid file attached',
@@ -196,7 +197,7 @@ export function MyReceipts() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={receipts}
+        data={orderBy(receipts, 'created_at', 'desc')}
         renderItem={renderReceiptItem}
         keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={

@@ -5,15 +5,18 @@ import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
-import {ICustomer} from '../../../models/Customer';
+import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
+import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
+import {getPaymentsFromCredit} from '../../../services/CreditPaymentService';
 import {colors} from '../../../styles';
+import {PAYMENT_METHOD_LABEL} from '../../../helpers/constants';
+import {orderBy} from 'lodash';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
   const credits = customer.credits || [];
-  const creditPayments = customer.payments || [];
+  const creditPayments = getPaymentsFromCredit({credits: customer.credits});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
   const totalCreditsAmount = credits.reduce(
     (total, {amount_left}) => total + amount_left,
@@ -84,7 +87,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {credit.type}
+                {PAYMENT_METHOD_LABEL[credit.method]}
               </Text>
             </View>
           </View>
@@ -99,6 +102,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
       <View style={applyStyles('p-xl')}>
         <Button
           title="record credit payment"
+          disabled={!overdueCredit.length}
           style={applyStyles('mb-lg', {width: '100%'})}
           onPress={() =>
             handleNavigation('CustomerRecordCreditPayment', {customer})
@@ -182,9 +186,9 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
             Payment History
           </Text>
           <FlatList
-            data={creditPayments}
             renderItem={renderCreditItem}
             keyExtractor={(item) => `${item._id}`}
+            data={orderBy(creditPayments, 'created_at', 'desc')}
           />
         </View>
       )}

@@ -35,12 +35,12 @@ export const savePayment = ({
     ...getBaseModelValues(),
   };
 
-  if (customer.name) {
+  if (customer && customer.name) {
     payment.customer_name = customer.name;
     payment.customer_mobile = customer.mobile;
   }
 
-  if (customer._id) {
+  if (customer && customer._id) {
     payment.customer = customer as ICustomer;
   }
 

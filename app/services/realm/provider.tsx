@@ -1,6 +1,6 @@
+import Realm, {UpdateMode} from 'realm';
 import React, {createContext, useRef} from 'react';
 import {schema} from './index';
-import Realm, {UpdateMode} from 'realm';
 
 type RealmObject = {
   realm?: Realm;

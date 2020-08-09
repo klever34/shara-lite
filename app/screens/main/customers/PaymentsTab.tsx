@@ -44,7 +44,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Payment Method</Text>
+              <Text style={styles.itemTitle}>Payment Type</Text>
               <Text
                 style={applyStyles(
                   'text-400 text-capitalize',

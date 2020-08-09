@@ -17,8 +17,8 @@ export class Supplier extends BaseModel implements Partial<ISupplier> {
     properties: {
       ...baseModelSchema,
       name: 'string',
-      mobile: 'string?',
-      address: 'string',
+      mobile: 'string',
+      address: 'string?',
       suppliedInventories: {
         type: 'linkingObjects',
         objectType: 'InventoryStock',

@@ -38,13 +38,15 @@ export const AddSupplier = () => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      saveSupplier({realm, supplier});
-      setIsLoading(false);
-      clearForm();
-      navigation.goBack();
-    }, 300);
+    if (supplier.name && supplier.mobile) {
+      setIsLoading(true);
+      setTimeout(() => {
+        saveSupplier({realm, supplier});
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+      }, 300);
+    }
   }, [realm, clearForm, supplier, navigation]);
 
   return (
@@ -84,6 +86,7 @@ export const AddSupplier = () => {
       </View>
       <Button
         title="Add supplier"
+        disabled={isLoading}
         isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}

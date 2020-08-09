@@ -1,6 +1,7 @@
 import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
 import promiseRetry from 'promise-retry';
+import addDays from 'date-fns/addDays';
 import {globalStyles} from '../styles';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
@@ -59,4 +60,19 @@ export const amountWithCurrency = (amount?: number) => {
   return amount
     ? `${currency}${numberWithCommas(amount)}`
     : `${currency}${numberWithCommas(0)}`;
+};
+
+export const getDueDateValue = (value: number) => {
+  return addDays(new Date(), value);
+};
+
+export const castObjectValuesToString = (object: {
+  [key: string]: any;
+}): {[key: string]: string} => {
+  return Object.keys(object).reduce((acc, key) => {
+    return {
+      ...acc,
+      [key]: String(key),
+    };
+  }, {});
 };

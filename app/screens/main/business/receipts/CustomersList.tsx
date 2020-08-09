@@ -1,4 +1,4 @@
-import React, {useState, useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   FlatList,
   SafeAreaView,
@@ -7,23 +7,33 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {Button} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
 import {applyStyles} from '../../../../helpers/utils';
-import {Button} from '../../../../components';
-import {getCustomers} from '../../../../services/CustomerService';
 import {ICustomer} from '../../../../models';
+import {colors} from '../../../../styles';
 
 type CustomerItemProps = {
   item: ICustomer;
 };
 
-export const CustomersList = (props: any) => {
-  const {onCustomerSelect, onModalClose} = props;
-  const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
+type Props = {
+  customers: ICustomer[];
+  onModalClose: () => void;
+  showAddFromPhone?: boolean;
+  onOpenContactList?: () => void;
+  onCustomerSelect: ({customer}: {customer?: ICustomer}) => void;
+};
+
+export const CustomersList = (props: Props) => {
+  const {
+    customers,
+    onModalClose,
+    onCustomerSelect,
+    onOpenContactList,
+    showAddFromPhone = true,
+  } = props;
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState(customers);
@@ -109,6 +119,29 @@ export const CustomersList = (props: any) => {
           />
         </View>
       </View>
+      {showAddFromPhone && (
+        <Touchable onPress={onOpenContactList}>
+          <View
+            style={applyStyles('flex-row px-lg py-lg items-center', {
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-20'],
+            })}>
+            <Icon
+              size={24}
+              name="user-plus"
+              type="feathericons"
+              color={colors.primary}
+            />
+            <Text
+              style={applyStyles('text-400 pl-md', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              Add From Phonebook
+            </Text>
+          </View>
+        </Touchable>
+      )}
       <FlatList
         data={myCustomers}
         renderItem={renderCustomerListItem}

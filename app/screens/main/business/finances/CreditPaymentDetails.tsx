@@ -32,7 +32,7 @@ export const CreditPaymentDetails = ({route}: any) => {
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Customer</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditPaymentDetails.credit.customer_name}
+              {creditPaymentDetails.credit.customer?.name}
             </Text>
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
