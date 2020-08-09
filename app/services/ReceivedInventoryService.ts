@@ -35,8 +35,14 @@ export const addNewInventory = ({
   stockItems: InventoryStockItem[];
 }): void => {
   const batch_id = generateUniqueId();
+  const total_amount = stockItems.reduce(
+    (total, stockItem) =>
+      total + (stockItem.cost_price || 0) * parseInt(stockItem.quantity, 10),
+    0,
+  );
   const receivedInventory: IReceivedInventory = {
     batch_id,
+    total_amount,
     supplier_name: supplier.name,
     supplier: supplier,
     ...getBaseModelValues(),
@@ -56,20 +62,28 @@ export const addNewInventory = ({
     receivedInventory.delivery_agent_mobile = savedDeliveryAgent.mobile;
   }
 
-  realm.create<ReceivedInventory>(
-    modelName,
-    receivedInventory,
-    UpdateMode.Modified,
-  );
+  realm.write(() => {
+    realm.create<ReceivedInventory>(
+      modelName,
+      receivedInventory,
+      UpdateMode.Modified,
+    );
+  });
 
   stockItems.forEach((stockItem) => {
+    const quantity = parseInt(stockItem.quantity, 10);
+    const cost_price = stockItem.cost_price || 0;
+    const total_cost_price = quantity * cost_price;
+
     const newStockItem: IStockItem = {
       batch_id,
       supplier_name: supplier.name,
+      cost_price,
+      quantity,
+      total_cost_price,
       name: stockItem.product.name,
       sku: stockItem.product.sku,
       weight: stockItem.product.weight,
-      quantity: parseInt(stockItem.quantity, 10),
       product: stockItem.product,
       supplier,
       receivedInventory,
