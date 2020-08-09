@@ -81,7 +81,6 @@ export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
     const realmUser = await app.logIn(credentials);
     return await createRealm({realmUser});
   } catch (e) {
-    console.error('Failed to log in', e);
     Alert.alert(
       'Oops! Something went wrong.',
       'Try clearing app data from application settings',
@@ -106,7 +105,6 @@ export const initLocalRealm = async (): Promise<Realm> => {
   try {
     return await createRealm();
   } catch (e) {
-    console.error('Failed to log in', e);
     throw e;
   }
 };
