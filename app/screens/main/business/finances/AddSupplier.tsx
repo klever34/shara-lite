@@ -71,7 +71,7 @@ export const AddSupplier = () => {
       if (suppliers.map((item) => item.mobile).includes(supplier.mobile)) {
         Alert.alert(
           'Error',
-          'Customer with the same phone number has been created.',
+          'Supplier with the same phone number has been created.',
         );
       } else {
         setIsLoading(true);

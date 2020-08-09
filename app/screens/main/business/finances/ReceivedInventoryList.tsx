@@ -13,6 +13,7 @@ import {useRealm} from '../../../../services/realm';
 import {getReceivedInventories} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
 import {ReceivedInventoryDetailsModal} from './ReceivedInventoryDetailsModal';
+import {HeaderBackButton} from '@react-navigation/stack';
 
 type InventoryItemProps = {
   item: IReceivedInventory;
@@ -29,6 +30,12 @@ export function ReceivedInventoryList() {
 
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerLeft: () => (
+        <HeaderBackButton
+          tintColor={colors.white}
+          onPress={() => navigation.navigate('Finances', {screen: 'Inventory'})}
+        />
+      ),
       headerRight: () => (
         <View style={applyStyles('flex-row  items-center')}>
           <Touchable onPress={() => {}}>

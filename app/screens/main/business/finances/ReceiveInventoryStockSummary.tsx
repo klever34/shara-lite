@@ -126,7 +126,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const {products, supplier, onCloseSummaryModal} = props;
 
   const [isSaving, setIsSaving] = useState(false);
-  const [agent, setAgent] = useState<Payload>({} as Payload);
+  const [agent, setAgent] = useState<Payload | undefined>();
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isDeliveryAgentsModalOpen, setIsDeliveryAgentsModalOpen] = useState(
     false,
@@ -173,7 +173,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       setAgent({
         ...agent,
         [key]: value,
-      });
+      } as Payload);
     },
     [agent],
   );
@@ -256,7 +256,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
             <FloatingLabelInput
               label="Phone Number"
               keyboardType="phone-pad"
-              value={agent.mobile}
+              value={agent?.mobile}
               onChangeText={(text) => handleChange(text, 'mobile')}
             />
           </View>
@@ -270,7 +270,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           <View style={applyStyles('flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Full Name"
-              value={agent.full_name}
+              value={agent?.full_name}
               onChangeText={(text) => handleChange(text, 'full_name')}
             />
           </View>

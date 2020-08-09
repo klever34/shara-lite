@@ -181,10 +181,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     padding: 16,
     borderBottomWidth: 1,
+    fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-20'],
   },
   supplierListItemText: {
     fontSize: 16,
+    fontFamily: 'Rubik-Regular',
     color: colors['gray-300'],
   },
 });

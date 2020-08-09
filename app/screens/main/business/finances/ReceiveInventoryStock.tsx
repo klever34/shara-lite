@@ -61,7 +61,7 @@ export const ReceiveInventoryStock = ({
     if (quantity && price) {
       const itemPrice = parseInt(price, 10);
       const itemQuantity = parseInt(quantity, 10);
-      const product = {
+      const stock = {
         supplier,
         cost_price: itemPrice,
         quantity: itemQuantity,
@@ -73,22 +73,26 @@ export const ReceiveInventoryStock = ({
         total_cost_price: itemPrice * itemQuantity,
       } as IStockItem;
 
-      if (inventoryStock.map((item) => item.id).includes(product?.id)) {
+      if (
+        inventoryStock
+          .map((item) => item.product.id)
+          .includes(stock?.product.id)
+      ) {
+        console.log('here');
         setInventoryStock(
           inventoryStock.map((item) => {
-            if (item.id === product.id) {
+            if (item.product.id === stock.product.id) {
               return {
                 ...item,
-                quantity: item.quantity + parseFloat(quantity),
+                quantity: parseFloat(quantity),
               };
             }
             return item;
           }),
         );
       } else {
-        setInventoryStock([product, ...inventoryStock]);
+        setInventoryStock([stock, ...inventoryStock]);
       }
-      setInventoryStock([product, ...inventoryStock]);
       setSelectedProduct(null);
       setPrice('');
       setQuantity('');
@@ -103,9 +107,22 @@ export const ReceiveInventoryStock = ({
     setQuantity(item);
   }, []);
 
-  const handleSelectProduct = useCallback((item: IProduct) => {
-    setSelectedProduct(item);
-  }, []);
+  const handleSelectProduct = useCallback(
+    (product: IProduct) => {
+      const stock = inventoryStock.find(
+        (item) => item.product.id === product.id,
+      );
+
+      if (stock) {
+        setQuantity(stock.quantity.toString());
+        setPrice(stock?.cost_price?.toString());
+        setSelectedProduct(product);
+      } else {
+        setSelectedProduct(product);
+      }
+    },
+    [inventoryStock],
+  );
 
   const handleOpenSummaryModal = useCallback(() => {
     setIsSummaryModalOpen(true);
@@ -138,7 +155,7 @@ export const ReceiveInventoryStock = ({
     if (selectedProduct && quantity && price) {
       const itemPrice = parseInt(price, 10);
       const itemQuantity = parseInt(quantity, 10);
-      const product = {
+      const stock = {
         supplier,
         cost_price: itemPrice,
         quantity: itemQuantity,
@@ -152,18 +169,22 @@ export const ReceiveInventoryStock = ({
 
       handleAddItem();
 
-      if (inventoryStock.map((item) => item.id).includes(product?.id)) {
+      if (
+        inventoryStock
+          .map((item) => item.product.id)
+          .includes(stock?.product.id)
+      ) {
         items = inventoryStock.map((item) => {
-          if (item.id === product.id) {
+          if (item.product.id === stock.product.id) {
             return {
               ...item,
-              quantity: item.quantity + parseFloat(quantity),
+              quantity: parseFloat(quantity),
             };
           }
           return item;
         });
       } else {
-        items = [product, ...inventoryStock];
+        items = [stock, ...inventoryStock];
       }
     }
     if ((selectedProduct && quantity && price) || items.length) {
@@ -247,6 +268,7 @@ export const ReceiveInventoryStock = ({
       />
       <Modal
         isVisible={!!selectedProduct}
+        onBackdropPress={handleCloseProductModal}
         onSwipeComplete={handleCloseProductModal}
         onBackButtonPress={handleCloseProductModal}
         style={applyStyles({

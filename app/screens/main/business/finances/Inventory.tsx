@@ -183,17 +183,15 @@ export function MyInventory() {
                 {product.name}
               </Text>
             </View>
-            {!!product.quantity && (
-              <View>
-                <Text
-                  style={applyStyles('text-400', {
-                    fontSize: 16,
-                    color: colors.primary,
-                  })}>
-                  {product.quantity}
-                </Text>
-              </View>
-            )}
+            <View>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors.primary,
+                })}>
+                {product.quantity || 0}
+              </Text>
+            </View>
           </View>
         </Touchable>
       );
