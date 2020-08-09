@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, View, Alert} from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {
   Button,
@@ -13,7 +13,7 @@ import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {ISupplier} from '../../../../models/Supplier';
 import {useRealm} from '../../../../services/realm';
-import {saveSupplier} from '../../../../services/SupplierService';
+import {saveSupplier, getSuppliers} from '../../../../services/SupplierService';
 import {colors} from '../../../../styles';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
@@ -21,6 +21,7 @@ type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 export const AddSupplier = () => {
   const realm = useRealm();
   const navigation = useNavigation();
+  const suppliers = getSuppliers({realm});
   const [isLoading, setIsLoading] = useState(false);
   const [supplier, setSupplier] = useState<Payload>({} as Payload);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
@@ -67,15 +68,22 @@ export const AddSupplier = () => {
 
   const handleSubmit = useCallback(() => {
     if (supplier.name && supplier.mobile) {
-      setIsLoading(true);
-      setTimeout(() => {
-        saveSupplier({realm, supplier});
-        setIsLoading(false);
-        clearForm();
-        navigation.goBack();
-      }, 300);
+      if (suppliers.map((item) => item.mobile).includes(supplier.mobile)) {
+        Alert.alert(
+          'Error',
+          'Customer with the same phone number has been created.',
+        );
+      } else {
+        setIsLoading(true);
+        setTimeout(() => {
+          saveSupplier({realm, supplier});
+          setIsLoading(false);
+          clearForm();
+          navigation.goBack();
+        }, 300);
+      }
     }
-  }, [realm, clearForm, supplier, navigation]);
+  }, [realm, clearForm, supplier, suppliers, navigation]);
 
   return (
     <View

@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, View, Alert} from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {
   Button,
@@ -12,7 +12,10 @@ import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
-import {saveDeliveryAgent} from '../../../../services/DeliveryAgentService';
+import {
+  saveDeliveryAgent,
+  getDeliveryAgents,
+} from '../../../../services/DeliveryAgentService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 
@@ -21,6 +24,7 @@ type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
 export const AddDeliveryAgent = () => {
   const realm = useRealm();
   const navigation = useNavigation();
+  const deliveryAgents = getDeliveryAgents({realm});
   const [isLoading, setIsLoading] = useState(false);
   const [deliveryAgent, setDeliveryAgent] = useState<Payload>({} as Payload);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
@@ -63,14 +67,23 @@ export const AddDeliveryAgent = () => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    setIsLoading(true);
-    setTimeout(() => {
-      saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
-      setIsLoading(false);
-      clearForm();
-      navigation.goBack();
-    }, 300);
-  }, [realm, clearForm, deliveryAgent, navigation]);
+    if (
+      deliveryAgents.map((item) => item.mobile).includes(deliveryAgent.mobile)
+    ) {
+      Alert.alert(
+        'Error',
+        'Delivery Agent with the same phone number has been created.',
+      );
+    } else {
+      setIsLoading(true);
+      setTimeout(() => {
+        saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+      }, 300);
+    }
+  }, [realm, clearForm, deliveryAgent, deliveryAgents, navigation]);
 
   return (
     <View
