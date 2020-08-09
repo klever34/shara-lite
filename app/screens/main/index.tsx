@@ -150,10 +150,12 @@ const MainScreens = ({navigation}: any) => {
 
   const updateRealm = useCallback(async () => {
     const {jwt} = authService.getRealmCredentials();
-    const createdRealm = await loginToRealm({jwt});
-    updateSyncRealm && updateSyncRealm(createdRealm);
-    const realmService = getRealmService();
-    realmService.setInstance(createdRealm);
+    try {
+      const createdRealm = await loginToRealm({jwt, hideError: false});
+      updateSyncRealm && updateSyncRealm(createdRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(createdRealm);
+    } catch (e) {}
   }, [authService, updateSyncRealm]);
 
   useEffect(() => {

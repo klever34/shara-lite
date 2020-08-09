@@ -67,7 +67,13 @@ export const createRealm = async (options?: any): Promise<Realm> => {
   return Realm.open(config as Realm.Configuration);
 };
 
-export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
+export const loginToRealm = async ({
+  jwt,
+  hideError,
+}: {
+  jwt: 'string';
+  hideError?: boolean;
+}): Promise<Realm> => {
   try {
     // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
@@ -81,22 +87,24 @@ export const loginToRealm = async ({jwt}: {jwt: 'string'}): Promise<Realm> => {
     const realmUser = await app.logIn(credentials);
     return await createRealm({realmUser});
   } catch (e) {
-    Alert.alert(
-      'Oops! Something went wrong.',
-      'Try clearing app data from application settings',
-      [
-        {
-          text: 'OK',
-          onPress: () => {
-            if (process.env.NODE_ENV === 'production') {
-              if (Platform.OS === 'android') {
-                BackHandler.exitApp();
+    if (!hideError) {
+      Alert.alert(
+        'Oops! Something went wrong.',
+        'Try clearing app data from application settings',
+        [
+          {
+            text: 'OK',
+            onPress: () => {
+              if (process.env.NODE_ENV === 'production') {
+                if (Platform.OS === 'android') {
+                  BackHandler.exitApp();
+                }
               }
-            }
+            },
           },
-        },
-      ],
-    );
+        ],
+      );
+    }
     throw e;
   }
 };
