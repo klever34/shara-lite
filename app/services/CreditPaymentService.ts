@@ -1,4 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
+import {ObjectId} from 'bson';
 import {ICustomer} from '../models';
 import {ICredit} from '../models/Credit';
 import {ICreditPayment, modelName} from '../models/CreditPayment';
@@ -33,7 +34,7 @@ export const saveCreditPayment = ({
 }): void => {
   const updatedCustomer = getCustomer({
     realm,
-    customerId: customer.id as string,
+    customerId: customer._id as ObjectId,
   });
   const credits = updatedCustomer.credits;
   let amountLeft = amount;

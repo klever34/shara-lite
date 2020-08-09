@@ -74,7 +74,7 @@ export const CreditDetails = ({route}: any) => {
           setIsLoading(false);
           const newCustomer = creditDetails.customer?.name
             ? creditDetails.customer
-            : customer.id
+            : customer._id
             ? customer
             : saveCustomer({realm, customer});
           updateReceipt({

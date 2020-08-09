@@ -101,16 +101,16 @@ export const NewReceipt = () => {
     if (price && quantity) {
       const product = {
         ...selectedProduct,
-        id: selectedProduct?.id,
+        _id: selectedProduct?._id,
         price: parseFloat(price),
         product: selectedProduct,
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
-      if (receipt.map((item) => item.id).includes(product?.id)) {
+      if (receipt.map((item) => item._id).includes(product?._id)) {
         setReceipt(
           receipt.map((item) => {
-            if (item.id === product.id) {
+            if (item._id === product._id) {
               return {
                 ...item,
                 quantity: item.quantity + parseFloat(quantity),
@@ -154,7 +154,7 @@ export const NewReceipt = () => {
     if (selectedProduct && quantity && price) {
       const product = {
         ...selectedProduct,
-        id: selectedProduct.id,
+        _id: selectedProduct._id,
         price: parseFloat(price),
         product: selectedProduct,
         name: selectedProduct.name,
@@ -163,9 +163,9 @@ export const NewReceipt = () => {
 
       handleAddItem();
 
-      if (receipt.map((item) => item.id).includes(product?.id)) {
+      if (receipt.map((item) => item._id).includes(product?._id)) {
         items = receipt.map((item) => {
-          if (item.id === product.id) {
+          if (item._id === product._id) {
             return {
               ...item,
               quantity: item.quantity + parseFloat(quantity),

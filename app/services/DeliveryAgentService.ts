@@ -51,7 +51,7 @@ export const updateDeliveryAgent = ({
   updates: Partial<IDeliveryAgent>;
 }) => {
   const updatedDeliveryAgent = {
-    id: deliveryAgent._id,
+    _id: deliveryAgent._id,
     ...updates,
   };
 

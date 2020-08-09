@@ -142,6 +142,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleFinish = () => {
     setIsSaving(true);
     setTimeout(() => {
+      // @ts-ignore
       addNewInventory({realm, stockItems: products, ...agent});
       setIsSaving(false);
       clearForm();

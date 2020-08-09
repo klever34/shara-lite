@@ -2,6 +2,7 @@ import {Customer, ICustomer, modelName} from '../models';
 import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '../helpers/models';
 import {omit} from 'lodash';
+import {ObjectId} from 'bson';
 
 export const getCustomers = ({realm}: {realm: Realm}): ICustomer[] => {
   return (realm.objects<ICustomer>(modelName) as unknown) as ICustomer[];
@@ -41,8 +42,9 @@ export const getCustomer = ({
   customerId,
 }: {
   realm: Realm;
-  customerId: string;
+  customerId: ObjectId;
 }) => {
+  // @ts-ignore
   return realm.objectForPrimaryKey(modelName, customerId) as ICustomer;
 };
 

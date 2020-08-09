@@ -116,8 +116,6 @@ const MainScreens = ({navigation}: any) => {
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const user = authService.getUser();
-  const initialRouteName =
-    user?.businesses && user?.businesses.length ? 'Home' : 'BusinessSetup';
   // @ts-ignore
   const {updateSyncRealm} = useContext(RealmContext);
   const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(

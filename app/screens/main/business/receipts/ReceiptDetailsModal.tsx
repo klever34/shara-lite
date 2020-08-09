@@ -91,7 +91,7 @@ export function ReceiptDetailsModal(props: Props) {
   const handleSaveCustomer = useCallback(
     (value: ICustomer) => {
       setCustomer(value);
-      const newCustomer = value.id
+      const newCustomer = value._id
         ? value
         : saveCustomer({realm, customer: value});
 
