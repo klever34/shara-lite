@@ -1,51 +1,51 @@
-import Realm, {UpdateMode} from 'realm'
-import {omit} from 'lodash'
-import {IDeliveryAgent, modelName} from '../models/DeliveryAgent'
-import {getBaseModelValues} from '../helpers/models'
+import Realm, {UpdateMode} from 'realm';
+import {omit} from 'lodash';
+import {IDeliveryAgent, modelName} from '../models/DeliveryAgent';
+import {getBaseModelValues} from '../helpers/models';
 
 export const getDeliveryAgents = ({
   realm,
 }: {
-  realm: Realm
+  realm: Realm;
 }): IDeliveryAgent[] => {
   return (realm.objects<IDeliveryAgent>(
     modelName,
-  ) as unknown) as IDeliveryAgent[]
-}
+  ) as unknown) as IDeliveryAgent[];
+};
 
 export const getDeliveryAgentByMobile = ({
   realm,
   mobile,
 }: {
-  realm: Realm
-  mobile: string
+  realm: Realm;
+  mobile: string;
 }): IDeliveryAgent | null => {
   const foundDeliveryAgents = realm
     .objects<IDeliveryAgent>(modelName)
-    .filtered(`mobile = "${mobile}" LIMIT(1)`)
+    .filtered(`mobile = "${mobile}" LIMIT(1)`);
   return foundDeliveryAgents.length
     ? (omit(foundDeliveryAgents[0]) as IDeliveryAgent)
-    : null
-}
+    : null;
+};
 
 export const saveDeliveryAgent = ({
   realm,
   delivery_agent,
 }: {
-  realm: Realm
-  delivery_agent: IDeliveryAgent
+  realm: Realm;
+  delivery_agent: IDeliveryAgent;
 }): IDeliveryAgent => {
   const deliveryAgentToCreate: IDeliveryAgent = {
     ...delivery_agent,
     ...getBaseModelValues(),
-  }
+  };
   const existingDeliveryAgent = getDeliveryAgentByMobile({
     realm,
     mobile: delivery_agent.mobile,
-  })
+  });
 
   if (existingDeliveryAgent) {
-    return existingDeliveryAgent
+    return existingDeliveryAgent;
   }
 
   const saveDeliveryAgentInDb = () => {
@@ -53,65 +53,68 @@ export const saveDeliveryAgent = ({
       modelName,
       deliveryAgentToCreate,
       UpdateMode.Modified,
-    )
-  }
+    );
+  };
 
   if (realm.isInTransaction) {
-    saveDeliveryAgentInDb()
+    saveDeliveryAgentInDb();
   } else {
-    realm.write(saveDeliveryAgentInDb)
+    realm.write(saveDeliveryAgentInDb);
   }
 
-  return deliveryAgentToCreate
-}
+  return deliveryAgentToCreate;
+};
 
 export const updateDeliveryAgent = ({
   realm,
   deliveryAgent,
   updates,
 }: {
-  realm: Realm
-  deliveryAgent: IDeliveryAgent
-  updates: Partial<IDeliveryAgent>
+  realm: Realm;
+  deliveryAgent: IDeliveryAgent;
+  updates: Partial<IDeliveryAgent>;
 }) => {
   const updatedDeliveryAgent = {
     id: deliveryAgent.id,
     ...updates,
-  }
+  };
 
   const updateDeliveryAgentInDb = () => {
     realm.create<IDeliveryAgent>(
       modelName,
       updatedDeliveryAgent,
       UpdateMode.Modified,
-    )
-  }
+    );
+  };
 
   if (realm.isInTransaction) {
-    updateDeliveryAgentInDb()
+    updateDeliveryAgentInDb();
   } else {
-    realm.write(updateDeliveryAgentInDb)
+    realm.write(updateDeliveryAgentInDb);
   }
-}
+};
 
 export const getDeliveryAgent = ({
   realm,
   deliveryAgentId,
 }: {
-  realm: Realm
-  deliveryAgentId: string
+  realm: Realm;
+  deliveryAgentId: string;
 }) => {
-  return realm.objectForPrimaryKey(modelName, deliveryAgentId) as IDeliveryAgent
-}
+  return realm.objectForPrimaryKey(
+    modelName,
+    deliveryAgentId,
+  ) as IDeliveryAgent;
+};
 
 export const deleteDeliveryAgent = ({
   realm,
   deliveryAgent,
 }: {
-  realm: Realm
-  deliveryAgent: IDeliveryAgent
+  realm: Realm;
+  deliveryAgent: IDeliveryAgent;
 }) => {
   realm.write(() => {
-    realm.delete(deliveryAgent)
-  })
-}
+    realm.delete(deliveryAgent);
+  });
+};
