@@ -17,7 +17,7 @@ import {
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
-import {addNewStocks} from '../../../../services/InventoryStockService';
+import {addNewInventory} from '../../../../services/ReceivedInventoryService';
 import {useRealm} from '../../../../services/realm';
 import {Contact} from 'react-native-contacts';
 
@@ -142,7 +142,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleFinish = () => {
     setIsSaving(true);
     setTimeout(() => {
-      addNewStocks({realm, stockItems: products, ...agent});
+      addNewInventory({realm, stockItems: products, ...agent});
       setIsSaving(false);
       clearForm();
       navigation.navigate('Finances', {screen: 'Inventory'});

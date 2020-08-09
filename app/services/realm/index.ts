@@ -8,11 +8,12 @@ import {Receipt} from '../../models/Receipt';
 import {ReceiptItem} from '../../models/ReceiptItem';
 import {Product} from '../../models/Product';
 import {Supplier} from '../../models/Supplier';
-import {InventoryStock} from '../../models/InventoryStock';
+import {StockItem} from '../../models/StockItem';
 import {DeliveryAgent} from '../../models/DeliveryAgent';
 import {RealmContext} from './provider';
 import {Alert, BackHandler, Platform} from 'react-native';
 import {StorageService} from '../storage';
+import {ReceivedInventory} from '../../models/ReceivedInventory';
 
 export const schema = [
   Contact,
@@ -21,7 +22,8 @@ export const schema = [
   Credit,
   CreditPayment,
   DeliveryAgent,
-  InventoryStock,
+  StockItem,
+  ReceivedInventory,
   Message,
   Payment,
   Product,
@@ -48,7 +50,6 @@ export const createRealm = async (options?: any): Promise<Realm> => {
   if (process.env.NODE_ENV === 'development') {
     // Realm.deleteFile({});
   }
-
   const partitionValue = await getRealmPartitionKey();
 
   const config: {

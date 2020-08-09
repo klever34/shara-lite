@@ -1,9 +1,9 @@
 import {IProduct} from './Product';
 import {ISupplier} from './Supplier';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IDeliveryAgent} from './DeliveryAgent';
+import {IReceivedInventory} from './ReceivedInventory';
 
-export interface IInventoryStock extends BaseModelInterface {
+export interface IStockItem extends BaseModelInterface {
   supplier_name: string;
   batch_id: string;
   name: string;
@@ -12,34 +12,30 @@ export interface IInventoryStock extends BaseModelInterface {
   quantity: number;
   cost_price?: number;
   total_cost_price?: number;
-  delivery_agent_full_name?: string;
-  delivery_agent_mobile?: string;
   supplier: ISupplier;
   product: IProduct;
-  delivery_agent?: IDeliveryAgent;
+  receivedInventory: IReceivedInventory;
 }
 
-export const modelName = 'InventoryStock';
+export const modelName = 'StockItem';
 
-export class InventoryStock extends BaseModel
-  implements Partial<InventoryStock> {
+export class StockItem extends BaseModel implements Partial<StockItem> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       batch_id: 'string',
+      supplier_name: 'string',
       name: 'string',
       sku: 'string',
       quantity: 'int',
       cost_price: 'double?',
       total_cost_price: 'double?',
       weight: 'string?',
-      delivery_agent_full_name: 'string?',
-      delivery_agent_mobile: 'string?',
       supplier: 'Supplier?',
       product: 'Product?',
-      delivery_agent: 'DeliveryAgent?',
+      receivedInventory: 'ReceivedInventory?',
     },
   };
 }
