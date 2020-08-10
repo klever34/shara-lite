@@ -29,7 +29,6 @@ import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
 import {ReceiveInventoryStockPreview} from './ReceiveInventoryStockPreview';
 import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
-import {omit} from 'lodash';
 
 type RecentProductItemProps = {
   item: IProduct;

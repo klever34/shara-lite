@@ -1,17 +1,16 @@
 import React, {useCallback, useState} from 'react';
-import {View, StyleSheet, TextInput, Text, Keyboard} from 'react-native';
-import Icon from './Icon';
-import {colors} from '../styles';
-import Touchable from './Touchable';
-import {applyStyles} from '../helpers/utils';
+import {Keyboard, StyleSheet, Text, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
+import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
 import {Button} from './Button';
+import Icon from './Icon';
+import Touchable from './Touchable';
 
 //TODO: Type component props
 const SearchableDropdown = (props: any) => {
   const {
     items,
-    onBlur,
     setSort,
     onFocus,
     itemStyle,
@@ -49,12 +48,6 @@ const SearchableDropdown = (props: any) => {
     setFocus(true);
     setListItems(items);
   }, [onFocus, items]);
-
-  const handleInputBlur = useCallback(() => {
-    onBlur && onBlur();
-    setFocus(false);
-    setListItems(items);
-  }, [onBlur, items]);
 
   const searchedItems = (searchedText: string) => {
     let sort = setSort;
@@ -153,7 +146,6 @@ const SearchableDropdown = (props: any) => {
             color={colors.primary}
           />
           <TextInput
-            onBlur={handleInputBlur}
             onFocus={handleInputFocus}
             value={value[searchTerm]}
             onChangeText={searchedItems}

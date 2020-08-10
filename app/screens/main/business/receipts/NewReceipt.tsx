@@ -240,11 +240,8 @@ export const NewReceipt = () => {
   return (
     <SafeAreaView style={styles.container}>
       <SearchableDropdown
-        items={products.map((item) => ({
-          ...item,
-          search: `${item.sku} - ${item.name}`,
-        }))}
-        searchTerm="search"
+        items={products}
+        searchTerm="name"
         onItemSelect={handleSelectProduct}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
