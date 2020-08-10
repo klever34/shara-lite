@@ -156,7 +156,7 @@ jobs:
             - run:
                 name: No Versioning. Just use release version
                 command: |
-                  NEW_VERSION=$(jq ".version" -r api/package.json)
+                  NEW_VERSION=$(jq ".version" -r package.json)
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
                   echo "NEW_VERSION=${NEW_VERSION}"
       - when:
