@@ -29,6 +29,7 @@ import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
 import {ReceiveInventoryStockPreview} from './ReceiveInventoryStockPreview';
 import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
+import {omit} from 'lodash';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -78,10 +79,11 @@ export const ReceiveInventoryStock = ({
           .map((item) => item.product._id)
           .includes(stock?.product._id)
       ) {
-        console.log('here');
         setInventoryStock(
           inventoryStock.map((item) => {
-            if (item.product._id === stock.product._id) {
+            if (
+              item.product._id?.toString() === stock.product._id?.toHexString()
+            ) {
               return {
                 ...item,
                 quantity: parseFloat(quantity),
@@ -109,9 +111,9 @@ export const ReceiveInventoryStock = ({
 
   const handleSelectProduct = useCallback(
     (product: IProduct) => {
-      const stock = inventoryStock.find(
-        (item) => item.product._id === product._id,
-      );
+      const stock = inventoryStock.find((item) => {
+        return item.product._id?.toString() === product._id?.toString();
+      });
 
       if (stock) {
         setQuantity(stock.quantity.toString());
@@ -171,11 +173,13 @@ export const ReceiveInventoryStock = ({
 
       if (
         inventoryStock
-          .map((item) => item.product._id)
-          .includes(stock?.product._id)
+          .map((item) => item.product._id?.toString())
+          .includes(stock?.product._id?.toHexString())
       ) {
         items = inventoryStock.map((item) => {
-          if (item.product._id === stock.product._id) {
+          if (
+            item.product._id?.toString() === stock.product._id?.toHexString()
+          ) {
             return {
               ...item,
               quantity: parseFloat(quantity),
@@ -337,7 +341,7 @@ export const ReceiveInventoryStock = ({
                   styles.calculatorSectionHelperText,
                   'text-500',
                 )}>
-                Adding this product to receipt
+                Adding this product to inventory
               </Text>
               <Text style={applyStyles(styles.selectedProductName, 'text-700')}>
                 {selectedProduct?.name}{' '}

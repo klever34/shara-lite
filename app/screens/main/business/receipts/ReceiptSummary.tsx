@@ -321,7 +321,9 @@ const ReceiptSummary = (props: Props) => {
       social: Share.Social.SMS,
       message: `Hi ${customer.name}, thank you for your recent purchase of ${
         products.length
-      } items from ${user?.businesses[0].name}.  You paid ${amountWithCurrency(
+      } item(s) from ${
+        user?.businesses[0].name
+      }.  You paid ${amountWithCurrency(
         amountPaid,
       )} and owe ${amountWithCurrency(creditAmount)} ${
         dueDate

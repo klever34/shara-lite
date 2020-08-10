@@ -57,14 +57,15 @@ export function MyReceipts() {
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      url: 'https://shara.co/',
       // @ts-ignore
       social: Share.Social.SMS,
       message: `Hi ${
         activeReceipt?.customer?.name
       }, thank you for your recent purchase of ${
         activeReceipt?.items?.length
-      } items from ${user?.businesses[0].name}.  You paid ${amountWithCurrency(
+      } item(s) from ${
+        user?.businesses[0].name
+      }.  You paid ${amountWithCurrency(
         activeReceipt?.amount_paid,
       )} and owe ${amountWithCurrency(activeReceipt?.credit_amount)} ${
         activeReceipt?.credits && activeReceipt?.credits[0]?.due_date

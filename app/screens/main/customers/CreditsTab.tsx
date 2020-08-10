@@ -102,10 +102,6 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
     [handleViewDetails],
   );
 
-  console.log(overdueCredit.length);
-  console.log(remainingCredit.length);
-  console.log(overdueCreditAmount);
-
   return (
     <ScrollView style={styles.container}>
       <View style={applyStyles('p-xl')}>
