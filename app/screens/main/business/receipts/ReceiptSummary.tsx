@@ -823,7 +823,7 @@ const ReceiptSummary = (props: Props) => {
         {!!creditAmount && (
           <View
             style={applyStyles('w-full flex-row justify-space-between', {
-              marginBottom: 80,
+              marginBottom: 200,
             })}>
             <View style={applyStyles({width: '48%'})}>
               <FloatingLabelInput
