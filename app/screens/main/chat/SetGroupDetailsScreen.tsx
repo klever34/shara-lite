@@ -34,7 +34,9 @@ const SetGroupDetailsScreen = ({
       <View style={applyStyles('flex-row flex-wrap')}>
         {participants.map((member) => {
           return (
-            <View style={applyStyles('items-center mr-md')} key={member.id}>
+            <View
+              style={applyStyles('items-center mx-sm mb-xl')}
+              key={member.id}>
               <PlaceholderImage
                 text={member.fullName}
                 style={applyStyles('mb-sm')}
