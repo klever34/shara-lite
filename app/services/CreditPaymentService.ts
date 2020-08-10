@@ -76,13 +76,13 @@ export const saveCreditPayment = ({
       ...paymentData,
     });
 
+    const creditPayment: ICreditPayment = {
+      payment,
+      credit,
+      amount_paid: amount,
+      ...getBaseModelValues(),
+    };
     realm.write(() => {
-      const creditPayment: ICreditPayment = {
-        payment,
-        credit,
-        amount_paid: amount,
-        ...getBaseModelValues(),
-      };
       realm.create<ICredit>(modelName, creditPayment, UpdateMode.Modified);
     });
 
