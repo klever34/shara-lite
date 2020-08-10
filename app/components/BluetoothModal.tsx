@@ -1,21 +1,23 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import Modal from 'react-native-modal';
-import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
-import {applyStyles} from '../helpers/utils';
-import {colors} from '../styles';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
-  View,
-  Text,
-  FlatList,
-  Alert,
   ActivityIndicator,
+  Alert,
   DeviceEventEmitter,
   NativeEventEmitter,
   Platform,
+  SectionList,
+  Text,
   ToastAndroid,
+  View,
+  ScrollView,
 } from 'react-native';
-import Icon from './Icon';
+// @ts-ignore
+import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
+import Modal from 'react-native-modal';
+import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
 import {Button} from './Button';
+import Icon from './Icon';
 import Touchable from './Touchable';
 
 type BluetoothDevice = {address: string; name?: string};
@@ -39,11 +41,22 @@ export const BluetoothModal = ({
   const [visible, setVisible] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isPrinting, setIsPrinting] = useState(print || false);
-  const [devices, setDevices] = useState<BluetoothDevice[]>([]);
+  const [foundDevices, setFoundDevices] = useState<BluetoothDevice[]>([]);
+  const [pairedDevices, setPairedDevices] = useState<BluetoothDevice[]>([]);
   const [isPrintError, setIsPrintError] = useState(error || false);
   const [isPrintSuccess, setIsPrintSuccess] = useState(success || false);
 
   const _listeners: any[] = [];
+  const devices = [
+    {
+      data: pairedDevices,
+      title: 'Paired devices',
+    },
+    {
+      data: foundDevices,
+      title: 'Available devices',
+    },
+  ];
 
   const handleClose = useCallback(() => {
     setVisible(false);
@@ -58,7 +71,8 @@ export const BluetoothModal = ({
     BluetoothManager.scanDevices().then(
       (s: any) => {
         var ss = JSON.parse(s);
-        setDevices([...devices, ...ss.paired, ...ss.found]);
+        setPairedDevices(ss.paired);
+        setFoundDevices(ss.found);
         setIsScanning(false);
       },
       (error: any) => {
@@ -66,7 +80,7 @@ export const BluetoothModal = ({
         Alert.alert('Error', JSON.stringify(error));
       },
     );
-  }, [devices]);
+  }, []);
 
   const handleEnableBluetooth = useCallback(() => {
     BluetoothManager.enableBluetooth().then(
@@ -76,7 +90,7 @@ export const BluetoothModal = ({
           for (var i = 0; i < r.length; i++) {
             try {
               paired.push(JSON.parse(r[i]));
-              setDevices([...paired, ...devices]);
+              setPairedDevices(paired);
               setSection(1);
             } catch (e) {
               //ignore
@@ -90,7 +104,7 @@ export const BluetoothModal = ({
         Alert.alert('Error', JSON.stringify(error));
       },
     );
-  }, [devices, handleBluetoothScan]);
+  }, [handleBluetoothScan]);
 
   const handleConnect = useCallback((rowData) => {
     BluetoothManager.connect(rowData.address).then(
@@ -119,9 +133,9 @@ export const BluetoothModal = ({
         } catch (e) {}
       }
       if (ds && ds.length) {
-        let paired = devices;
+        let paired = pairedDevices;
         paired = paired.concat(ds || []);
-        setDevices(paired);
+        setPairedDevices(paired);
 
         // get default printer and connect automatically
         const defaultPrinter = paired.find(
@@ -134,7 +148,7 @@ export const BluetoothModal = ({
         }
       }
     },
-    [devices, handleConnect],
+    [pairedDevices, handleConnect],
   );
 
   const deviceFoundEvent = useCallback(
@@ -150,7 +164,7 @@ export const BluetoothModal = ({
         Alert.alert('Error', e.message);
       }
       if (r) {
-        let found = devices || [];
+        let found = foundDevices || [];
         if (found.findIndex) {
           let duplicated = found.findIndex(function (x: BluetoothDevice) {
             return x.address === r.address;
@@ -158,11 +172,11 @@ export const BluetoothModal = ({
           //CHECK DEPLICATED HERE...
           if (duplicated === -1) {
             found.push(r);
-            setDevices(found);
+            setFoundDevices(found);
 
             // get default printer and connect automatically
             const defaultPrinter = found.find(
-              (item) => item.address === '10:8E:E0:AA:85:39',
+              (item) => item.address === 'DC:0D:30:91:67:90',
             );
             if (defaultPrinter) {
               handleConnect(defaultPrinter);
@@ -173,7 +187,7 @@ export const BluetoothModal = ({
         }
       }
     },
-    [devices, handleConnect],
+    [foundDevices, handleConnect],
   );
 
   const renderBluetoothDevice = useCallback(
@@ -236,7 +250,7 @@ export const BluetoothModal = ({
 
   const renderDeviceList = useCallback(() => {
     return (
-      <View style={applyStyles('pb-xl')}>
+      <ScrollView style={applyStyles('pb-xl')}>
         <View
           style={applyStyles('p-sm', {
             borderBottomWidth: 1,
@@ -249,10 +263,18 @@ export const BluetoothModal = ({
             Bluetooth device list
           </Text>
         </View>
-        <FlatList
-          data={devices}
+        <SectionList
+          sections={devices}
           renderItem={renderBluetoothDevice}
           keyExtractor={(item, index) => `${item.address}-${index}`}
+          renderSectionHeader={({section: {title}}) => (
+            <Text
+              style={applyStyles('px-lg py-sm text-500 text-uppercase', {
+                fontSize: 12,
+              })}>
+              {title}
+            </Text>
+          )}
           ListEmptyComponent={
             <View style={applyStyles('items-center justify-center py-xl')}>
               <Text
@@ -273,7 +295,7 @@ export const BluetoothModal = ({
         <View style={applyStyles('py-md px-lg')}>
           <Button title="Scan" onPress={handleBluetoothScan} />
         </View>
-      </View>
+      </ScrollView>
     );
   }, [devices, handleBluetoothScan, renderBluetoothDevice]);
 
@@ -486,7 +508,7 @@ export const BluetoothModal = ({
               color={colors.primary}
               style={applyStyles('mb-md')}
             />
-            <Text style={applyStyles('text-center text-400', {fontSize: 18})}>
+            <Text style={applyStyles('text-center text-500', {fontSize: 18})}>
               Scanning...
             </Text>
           </View>
