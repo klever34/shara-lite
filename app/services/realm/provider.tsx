@@ -68,12 +68,12 @@ const RealmProvider = (props: any) => {
   realm.current = getRealmClone();
 
   const updateSyncRealm = (newRealm: Realm) => {
-    // @ts-ignore
-    syncRealm.current = newRealm;
     syncLocalData({
-      syncRealm: syncRealm.current,
+      syncRealm: newRealm,
       localRealm: localRealm.current,
     });
+    // @ts-ignore
+    syncRealm.current = newRealm;
   };
 
   const updateLocalRealm = (newRealm: Realm) => {
@@ -92,7 +92,7 @@ const RealmProvider = (props: any) => {
 const realmWrite = ({realm, args}: RealmCloneParams) => {
   if (realm) {
     // @ts-ignore
-    return realm.write(...args);
+    return realm.isInTransaction ? args[0] : realm.write(...args);
   }
 };
 
