@@ -8,7 +8,7 @@ const ErrorFallback = ({resetErrorBoundary}: FallbackProps) => {
       Alert.alert(
         'Oops! Something went wrong',
         'Try restarting the app or contact support for further assistance',
-        [{text: 'TRY AGAIN', onPress: resetErrorBoundary}],
+        [{text: 'Reload', onPress: resetErrorBoundary}],
       );
     }
   }, [resetErrorBoundary]);
