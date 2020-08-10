@@ -1,7 +1,7 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
@@ -19,7 +19,6 @@ import {
   getAuthService,
   getContactsService,
   getPubNubService,
-  getRealmService,
 } from '../../services';
 import {colors} from '../../styles';
 import {BusinessSetup} from '../BusinessSetup';
@@ -58,9 +57,8 @@ import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
-import {RealmContext} from '../../services/realm/provider';
-import {loginToRealm} from '../../services/realm';
 import {Expenses} from './business/finances/Expenses';
+import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -116,8 +114,8 @@ const MainScreens = ({navigation}: any) => {
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const user = authService.getUser();
+  useRealmSyncLoader();
   // @ts-ignore
-  const {updateSyncRealm} = useContext(RealmContext);
   const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
     !(user?.businesses && user?.businesses.length) || false,
   );
@@ -147,20 +145,6 @@ const MainScreens = ({navigation}: any) => {
       handleError(error);
     });
   }, [navigation, handleError]);
-
-  const updateRealm = useCallback(async () => {
-    const {jwt} = authService.getRealmCredentials();
-    try {
-      const createdRealm = await loginToRealm({jwt, hideError: false});
-      updateSyncRealm && updateSyncRealm(createdRealm);
-      const realmService = getRealmService();
-      realmService.setInstance(createdRealm);
-    } catch (e) {}
-  }, [authService, updateSyncRealm]);
-
-  useEffect(() => {
-    updateRealm();
-  }, [updateRealm]);
 
   if (!pubNubClient) {
     return (
