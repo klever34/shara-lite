@@ -35,7 +35,7 @@ export const updateProduct = ({
   updates: Partial<IProduct>;
 }) => {
   const updatedProduct = {
-    id: product.id,
+    _id: product._id,
     ...updates,
   };
 

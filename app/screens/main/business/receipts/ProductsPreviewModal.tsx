@@ -44,7 +44,7 @@ export const ProductsPreviewModal = (props: Props) => {
             data={products}
             nestedScrollEnabled
             renderItem={renderSummaryItem}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item) => `${item._id}`}
             ListHeaderComponent={SummaryTableHeader}
           />
         </View>

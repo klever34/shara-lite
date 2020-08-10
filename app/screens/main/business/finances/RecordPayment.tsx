@@ -1,17 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
+import {uniqBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
-import {Modal, ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
+import {Alert, Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
+import {getCredits} from '../../../../services/CreditService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {CustomersList} from '../receipts';
-import {getCredits} from '../../../../services/CreditService';
-import {uniqBy} from 'lodash';
 import {useScreenRecord} from '../../../../services/analytics';
 
 export const RecordCreditPayment = () => {
@@ -28,7 +28,7 @@ export const RecordCreditPayment = () => {
     .filter((item) => !item.fulfilled)
     .filter((item) => item.customer)
     .map((item) => item.customer) as ICustomer[];
-  const creditCustomers = uniqBy(customers, 'id');
+  const creditCustomers = uniqBy(customers, '_id');
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);

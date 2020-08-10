@@ -175,7 +175,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   }, []);
 
   return (
-    <Modal visible={visible}>
+    <Modal visible={visible} animationType="slide" onDismiss={handleSkip}>
       <View
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
@@ -356,7 +356,6 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
           <Button
             title="Done"
             variantColor="red"
-            disabled={loading}
             isLoading={loading}
             style={styles.actionButton}
             onPress={signature ? saveSign : onSaveWithoutSignature}

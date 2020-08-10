@@ -1,6 +1,7 @@
 import {IMessage} from './Message';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
-export interface IConversation {
+export interface IConversation extends BaseModelInterface {
   channel: string;
   type: '1-1' | 'group';
   lastMessage?: IMessage;
@@ -13,15 +14,16 @@ export interface IConversation {
   creatorMobile?: string;
 }
 
-export class Conversation implements Partial<IConversation> {
+export class Conversation extends BaseModel implements Partial<IConversation> {
   public static schema: Realm.ObjectSchema = {
     name: 'Conversation',
-    primaryKey: 'channel',
+    primaryKey: '_id',
     properties: {
+      ...baseModelSchema,
       channel: 'string',
       type: 'string',
       lastMessage: 'Message?',
-      admins: 'string?[]',
+      admins: 'string[]',
       members: 'string[]',
       name: 'string',
       description: 'string?',

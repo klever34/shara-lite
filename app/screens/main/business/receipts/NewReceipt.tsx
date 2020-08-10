@@ -1,13 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Modal as ReactNativeModal,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
-  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {
@@ -15,19 +15,19 @@ import {
   CurrencyInput,
   FloatingLabelInput,
 } from '../../../../components';
+import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import HeaderRight from '../../../../components/HeaderRight';
-import {ProductsPreviewModal} from './ProductsPreviewModal';
-import ReceiptSummary from './ReceiptSummary';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
 import {IProduct} from '../../../../models/Product';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
+import {getProducts} from '../../../../services/ProductService';
+import {useRealm} from '../../../../services/realm';
+import {colors} from '../../../../styles';
+import {ProductsPreviewModal} from './ProductsPreviewModal';
+import ReceiptSummary from './ReceiptSummary';
 import {useScreenRecord} from '../../../../services/analytics';
 
 type RecentProductItemProps = {
@@ -103,16 +103,20 @@ export const NewReceipt = () => {
     if (price && quantity) {
       const product = {
         ...selectedProduct,
-        id: selectedProduct?.id,
+        _id: selectedProduct?._id,
         price: parseFloat(price),
         product: selectedProduct,
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
-      if (receipt.map((item) => item.id).includes(product?.id)) {
+      if (
+        receipt
+          .map((item) => item._id?.toString())
+          .includes(product?._id?.toString())
+      ) {
         setReceipt(
           receipt.map((item) => {
-            if (item.id === product.id) {
+            if (item._id?.toString() === product._id?.toString()) {
               return {
                 ...item,
                 quantity: item.quantity + parseFloat(quantity),
@@ -134,7 +138,7 @@ export const NewReceipt = () => {
     (item: IReceiptItem) => {
       setReceipt(
         receipt.map((receiptItem) => {
-          if (receiptItem.id === item.id) {
+          if (receiptItem._id?.toString() === item._id?.toString()) {
             return item;
           }
           return receiptItem;
@@ -146,7 +150,11 @@ export const NewReceipt = () => {
 
   const handleRemoveProductItem = useCallback(
     (item: IReceiptItem) => {
-      setReceipt(receipt.filter((receiptItem) => receiptItem.id !== item.id));
+      setReceipt(
+        receipt.filter(
+          (receiptItem) => receiptItem._id?.toString() !== item._id?.toString(),
+        ),
+      );
     },
     [receipt],
   );
@@ -156,7 +164,7 @@ export const NewReceipt = () => {
     if (selectedProduct && quantity && price) {
       const product = {
         ...selectedProduct,
-        id: selectedProduct.id,
+        _id: selectedProduct._id,
         price: parseFloat(price),
         product: selectedProduct,
         name: selectedProduct.name,
@@ -165,9 +173,13 @@ export const NewReceipt = () => {
 
       handleAddItem();
 
-      if (receipt.map((item) => item.id).includes(product?.id)) {
+      if (
+        receipt
+          .map((item) => item._id?.toString())
+          .includes(product?._id?.toString())
+      ) {
         items = receipt.map((item) => {
-          if (item.id === product.id) {
+          if (item._id?.toString() === product._id?.toString()) {
             return {
               ...item,
               quantity: item.quantity + parseFloat(quantity),
@@ -230,11 +242,8 @@ export const NewReceipt = () => {
   return (
     <SafeAreaView style={styles.container}>
       <SearchableDropdown
-        items={products.map((item) => ({
-          ...item,
-          search: `${item.sku} - ${item.name}`,
-        }))}
-        searchTerm="search"
+        items={products}
+        searchTerm="name"
         onItemSelect={handleSelectProduct}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
@@ -266,7 +275,7 @@ export const NewReceipt = () => {
         style={styles.recentProductsList}
         renderItem={renderRecentProducts}
         ListHeaderComponent={renderRecentProductsHeader}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item, index) => `${item._id}-${index}`}
         ListEmptyComponent={
           <View
             style={applyStyles('px-lg flex-1 items-center justify-center', {

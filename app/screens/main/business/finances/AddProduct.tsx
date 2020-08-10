@@ -99,7 +99,6 @@ export const AddProduct = () => {
       <Button
         title="Add product"
         isLoading={isLoading}
-        disabled={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}
       />

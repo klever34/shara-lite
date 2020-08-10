@@ -1,14 +1,16 @@
 import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
-import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, StyleSheet, Text, View, Image} from 'react-native';
 import EmptyState from '../../../../components/EmptyState';
+import HeaderRight from '../../../../components/HeaderRight';
+import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
+import {applyStyles} from '../../../../helpers/utils';
+import {IProduct} from '../../../../models/Product';
+import {getProducts} from '../../../../services/ProductService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
-import {getProducts} from '../../../../services/ProductService';
-import {IProduct} from '../../../../models/Product';
-import {applyStyles} from '../../../../helpers/utils';
 
 type ProductItemProps = {
   item: IProduct;
@@ -27,6 +29,36 @@ export function MyInventory() {
     });
     return unsubscribe;
   }, [navigation, realm]);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <View style={applyStyles('flex-row flex-1 items-center')}>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="sliders"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="search"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <HeaderRight menuOptions={[]} />
+        </View>
+      ),
+    });
+  }, [navigation]);
 
   const actions = [
     {
@@ -78,6 +110,22 @@ export function MyInventory() {
       },
     },
     {
+      name: 'ReceivedInventoryList',
+      render: () => {
+        return (
+          <View style={styles.listItem}>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              View Received Inventory
+            </Text>
+            <Image
+              style={styles.listItemIcon}
+              source={require('../../../../assets/icons/business/box.png')}
+            />
+          </View>
+        );
+      },
+    },
+    {
       name: 'AddProduct',
       render: () => {
         return (
@@ -97,7 +145,7 @@ export function MyInventory() {
 
   const handleProductItemClick = useCallback(
     (product) => {
-      navigation.navigate('ViewProductDetails', {product: product.id});
+      navigation.navigate('ViewProductDetails', {product: product._id});
     },
     [navigation],
   );
@@ -135,17 +183,15 @@ export function MyInventory() {
                 {product.name}
               </Text>
             </View>
-            {!!product.quantity && (
-              <View>
-                <Text
-                  style={applyStyles('text-400', {
-                    fontSize: 16,
-                    color: colors.primary,
-                  })}>
-                  {product.quantity}
-                </Text>
-              </View>
-            )}
+            <View>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors.primary,
+                })}>
+                {product.quantity || 0}
+              </Text>
+            </View>
           </View>
         </Touchable>
       );
@@ -158,7 +204,7 @@ export function MyInventory() {
       <FlatList
         data={products}
         renderItem={renderReceiptItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No products"

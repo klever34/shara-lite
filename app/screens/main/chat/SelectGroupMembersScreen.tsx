@@ -1,7 +1,7 @@
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, View} from 'react-native';
 import ContactsList from '../../../components/ContactsList';
-import {IContact} from '../../../models';
+import {IContact} from '../../../models/Contact';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import {applyStyles} from '../../../helpers/utils';
 import Touchable from '../../../components/Touchable';

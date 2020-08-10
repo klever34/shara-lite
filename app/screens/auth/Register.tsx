@@ -140,7 +140,7 @@ export const Register = ({
           style={applyStyles({
             marginBottom: 24,
           })}
-          disabled={isButtonDisabled() || loading}
+          disabled={isButtonDisabled()}
         />
         <TouchableOpacity
           style={styles.helpSection}

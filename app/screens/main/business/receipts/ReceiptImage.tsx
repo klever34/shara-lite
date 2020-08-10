@@ -123,7 +123,7 @@ export const ReceiptImage = (props: Props) => {
               data={products}
               style={applyStyles('mt-lg')}
               renderItem={renderSummaryItem}
-              keyExtractor={(item) => `${item.id}`}
+              keyExtractor={(item) => `${item._id}`}
               ListHeaderComponent={SummaryTableHeader}
             />
             <View style={applyStyles('my-md items-end')}>

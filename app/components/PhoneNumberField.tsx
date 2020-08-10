@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   },
   inputField: {
     flex: 1,
-    fontSize: 18,
+    fontSize: 16,
     width: '100%',
     borderBottomWidth: 1,
     fontFamily: 'Rubik-Regular',

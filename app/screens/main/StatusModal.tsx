@@ -13,7 +13,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import {MainStackParamList} from '.';
-import {Button} from '../../components/Button';
+import {Button} from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
