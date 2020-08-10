@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.19-feature.atlas-realm-integration+build.1343",
+  "version": "0.1.19-feature.atlas-realm-integration+build.1374",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
