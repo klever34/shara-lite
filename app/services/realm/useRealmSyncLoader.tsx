@@ -23,6 +23,7 @@ const useRealmSyncLoader = () => {
       // @ts-ignore
       unsubscribeFromRealmCheck.current && unsubscribeFromRealmCheck.current();
       unsubscribeFromRealmCheck.current = undefined;
+      return;
     }
 
     const {jwt} = authService.getRealmCredentials();
