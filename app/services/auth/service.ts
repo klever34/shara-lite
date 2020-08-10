@@ -90,6 +90,7 @@ export class AuthService implements IAuthService {
       if (this.isLoggedIn()) {
         this.user = null;
         this.token = null;
+        this.realmCredentials = null;
         await this.storageService.clear();
         this.pubNubService.getInstance()?.unsubscribeAll();
         this.navigationService.goToAuth();
