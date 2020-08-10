@@ -86,6 +86,7 @@ workflows:
           context: shara-qa
           merged: true
           commit: false
+          skip_versioning: true
           filters:
             branches:
               only:
@@ -109,6 +110,7 @@ workflows:
           context: shara-production
           merged: true
           commit: true
+          skip_versioning: true
           filters:
             branches:
               only:
@@ -137,56 +139,68 @@ jobs:
       commit:
         type: boolean
         default: false
+      skip_versioning:
+        type: boolean
+        default: false
     steps:
       - checkout
       - run:
           name: Yarn Install Dependencies
           command: yarn install
       - when:
-          condition: <<parameters.merged>>
+          condition: <<paramters.skip_versioning>>
           steps:
-            - run:
-                name: Auto-versioning >>  When Master, Discovery or Develop bump patch
-                command: |
-                  CURRENT_VERSION=$(jq ".version" -r package.json)
-                  NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
-                  BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
-                  NEW_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${NEW_VERSION});
-                  jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
-                  echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
-      - unless:
-          condition: <<parameters.merged>>
-          steps:
-            - run:
-                name: Auto-versioning >> When unmerged i.e. feature branches, bump build
-                command: |
-                  CURRENT_VERSION=$(jq ".version" -r package.json)
-                  BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
-                  BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
-                  NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
-                  jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
-                  echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
-      - when:
-          condition: <<parameters.commit>>
-          steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "90:6e:55:bd:ec:dd:c7:3b:72:d9:11:1c:74:e6:13:98"
-            - run:
-                name: Commit and Push version update
-                command: |
-                  git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
-                  git add package.json
-                  git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
-                  git push --set-upstream origin ${CIRCLE_BRANCH}
             - when:
                 condition: <<parameters.merged>>
                 steps:
                   - run:
-                      name: Create Tag and Push
+                      name: Auto-versioning >>  When Master, Discovery or Develop bump patch
                       command: |
-                        git tag ${NEW_VERSION}
-                        git push --set-upstream origin ${NEW_VERSION}
+                        CURRENT_VERSION=$(jq ".version" -r package.json)
+                        NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
+                        BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
+                        NEW_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${NEW_VERSION});
+                        jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
+                        echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+                        echo "BRANCH_NAME=${BRANCH_NAME}"
+                        echo "CURRENT_VERSION=${CURRENT_VERSION}"
+                        echo "NEW_VERSION=${NEW_VERSION}"
+            - unless:
+                condition: <<parameters.merged>>
+                steps:
+                  - run:
+                      name: Auto-versioning >> When unmerged i.e. feature branches, bump build
+                      command: |
+                        CURRENT_VERSION=$(jq ".version" -r package.json)
+                        BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
+                        BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
+                        NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
+                        jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
+                        echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+                        echo "BRANCH_NAME=${BRANCH_NAME}"
+                        echo "CURRENT_VERSION=${CURRENT_VERSION}"
+                        echo "NEW_VERSION=${NEW_VERSION}"
+            - when:
+                condition: <<parameters.commit>>
+                steps:
+                  - add_ssh_keys:
+                      fingerprints:
+                        - "90:6e:55:bd:ec:dd:c7:3b:72:d9:11:1c:74:e6:13:98"
+                  - run:
+                      name: Commit and Push version update
+                      command: |
+                        git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
+                        git add package.json
+                        git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
+                        git push --set-upstream origin ${CIRCLE_BRANCH}
+                  - when:
+                      condition: <<parameters.merged>>
+                      steps:
+                        - run:
+                            name: Create Tag and Push
+                            command: |
+                              git tag ${NEW_VERSION}
+                              git push --set-upstream origin ${NEW_VERSION}
       - run:
           name: Setup Credentials
           command: |
