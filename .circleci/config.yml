@@ -269,7 +269,7 @@ jobs:
             bundle exec fastlane <<parameters.lane>>
           environment:
             GOOGLE_PLAY_TRACK: <<parameters.track>>
-            SHARA_VERSION_NAME: ${NEW_VERSION}
+            SHARA_VERSION_NAME: NEW_VERSION
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
