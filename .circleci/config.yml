@@ -6,6 +6,7 @@ workflows:
           context: shara-test
           merged: false
           commit: true
+          versioning: true
           filters:
             branches:
               ignore:
@@ -42,6 +43,7 @@ workflows:
           context: shara-discovery
           merged: true
           commit: true
+          versioning: true
           filters:
             branches:
               only:
@@ -64,6 +66,7 @@ workflows:
           context: shara-dev
           merged: true
           commit: true
+          versioning: true
           filters:
             branches:
               only:
