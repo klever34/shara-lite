@@ -60,7 +60,20 @@ export function MyReceipts() {
       url: 'https://shara.co/',
       // @ts-ignore
       social: Share.Social.SMS,
-      message: 'Here is your receipt',
+      message: `Hi ${
+        activeReceipt?.customer?.name
+      }, thank you for your recent purchase of ${
+        activeReceipt?.items?.length
+      } items from ${user?.businesses[0].name}.  You paid ${amountWithCurrency(
+        activeReceipt?.amount_paid,
+      )} and owe ${amountWithCurrency(activeReceipt?.credit_amount)} ${
+        activeReceipt?.credits && activeReceipt?.credits[0]?.due_date
+          ? `(which is due on ${format(
+              new Date(activeReceipt?.credits[0]?.due_date),
+              'MMM dd, yyyy',
+            )})`
+          : ''
+      }. Thank you.`,
       recipient: `${activeReceipt?.customer_mobile}`,
       title: `Share receipt with ${activeReceipt?.customer_name}`,
     };
@@ -77,7 +90,7 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     }
-  }, [activeReceipt]);
+  }, [activeReceipt, user]);
 
   const handleEmailShare = useCallback(
     async (
