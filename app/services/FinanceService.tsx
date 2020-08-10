@@ -42,7 +42,7 @@ export const getTotalCredit = ({credits}: any) => {
 
 export const getToday = () => {
   const startDate = new Date();
-  startDate.setHours(0, 0, 0, 0);
+  // startDate.setHours(0, 0, 0, 0);
 
   return startDate;
 };
