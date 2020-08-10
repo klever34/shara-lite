@@ -86,7 +86,7 @@ workflows:
           context: shara-qa
           merged: true
           commit: false
-          skip_versioning: true
+          versioning: false
           filters:
             branches:
               only:
@@ -110,7 +110,7 @@ workflows:
           context: shara-production
           merged: true
           commit: true
-          skip_versioning: true
+          versioning: false
           filters:
             branches:
               only:
@@ -139,16 +139,16 @@ jobs:
       commit:
         type: boolean
         default: false
-      skip_versioning:
+      versioning:
         type: boolean
-        default: false
+        default: true
     steps:
       - checkout
       - run:
           name: Yarn Install Dependencies
           command: yarn install
       - when:
-          condition: <<paramters.skip_versioning>>
+          condition: <<paramters.versioning>>
           steps:
             - when:
                 condition: <<parameters.merged>>
