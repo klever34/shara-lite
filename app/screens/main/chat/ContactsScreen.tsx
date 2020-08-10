@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, Platform, Text, View} from 'react-native';
 import {
+  getAnalyticsService,
   getApiService,
   getAuthService,
   getContactsService,
@@ -155,6 +156,9 @@ const ContactsScreen = ({
           conversation = realm
             .objects<IConversation>('Conversation')
             .filtered(`channel = "${channelName}"`)[0];
+          getAnalyticsService()
+            .logEvent('oneOnOneChatInitiated')
+            .catch(handleError);
           navigateToChat(conversation);
         }
       } catch (error) {
@@ -218,6 +222,9 @@ const ContactsScreen = ({
                                     },
                                     UpdateMode.Modified,
                                   );
+                                  getAnalyticsService()
+                                    .logEvent('groupChatCreated')
+                                    .catch(handleError);
                                   navigation.dispatch(
                                     CommonActions.reset({
                                       routes: [

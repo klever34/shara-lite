@@ -12,6 +12,8 @@ import {colors} from '../../../styles';
 import Touchable from '../../../components/Touchable';
 import {applyStyles} from '../../../helpers/utils';
 import {Contact} from 'react-native-contacts';
+import {getAnalyticsService} from '../../../services';
+import {useErrorHandler} from 'react-error-boundary';
 
 const AddCustomer = () => {
   const navigation = useNavigation();
@@ -44,7 +46,7 @@ const AddCustomer = () => {
     setName(contactName);
     setMobile(contactMobile);
   }, []);
-
+  const handleError = useErrorHandler();
   const handleSubmit = useCallback(() => {
     if (name && mobile) {
       const customer = {
@@ -55,10 +57,11 @@ const AddCustomer = () => {
       setIsLoading(true);
       setTimeout(() => {
         setIsLoading(false);
+        getAnalyticsService().logEvent('customerAdded').catch(handleError);
         navigation.navigate('CustomerDetails', {customer});
       }, 750);
     }
-  }, [navigation, name, mobile, realm]);
+  }, [name, mobile, realm, handleError, navigation]);
 
   return (
     <ScrollView style={styles.container}>
