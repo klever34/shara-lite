@@ -1,16 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
 import format from 'date-fns/format';
+import orderBy from 'lodash/orderBy';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {ActionCard} from '../../../components';
 import EmptyState from '../../../components/EmptyState';
-import Icon from '../../../components/Icon';
 import HeaderRight from '../../../components/HeaderRight';
+import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
+import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
 import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
-import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import {useScreenRecord} from '../../../services/analytics';
 
@@ -121,9 +122,9 @@ export const CustomerTotalCredit = ({
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
-        data={credits.filter((item) => item.amount_left)}
+        data={orderBy(credits, 'created_at', 'desc')}
         renderItem={renderCreditItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No credit"

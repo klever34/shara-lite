@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
   Alert,
   ScrollView,
@@ -11,8 +11,11 @@ import {Button, PasswordField, PhoneNumberField} from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
-import {getApiService} from '../../services';
+import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
+import {loginToRealm} from '../../services/realm';
+import {RealmContext} from '../../services/realm/provider';
+import {setPartitionKey} from '../../helpers/models';
 
 type Fields = {
   mobile: string;
@@ -21,8 +24,16 @@ type Fields = {
 };
 
 export const Login = ({navigation}: any) => {
+  // @ts-ignore
+  const {realm, updateSyncRealm, logoutFromRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
+
+  useEffect(() => {
+    setTimeout(() => {
+      logoutFromRealm && logoutFromRealm();
+    }, 3000);
+  }, [logoutFromRealm]);
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -48,7 +59,19 @@ export const Login = ({navigation}: any) => {
     const apiService = getApiService();
     try {
       setLoading(true);
-      await apiService.logIn(payload);
+      const loginResponse = await apiService.logIn(payload);
+      const {
+        data: {
+          realmCredentials: {jwt},
+          user,
+        },
+      } = loginResponse;
+      const createdRealm = await loginToRealm({jwt});
+      updateSyncRealm && updateSyncRealm(createdRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(realm as Realm);
+      await setPartitionKey({key: user.id.toString()});
+
       setLoading(false);
       navigation.reset({
         index: 0,
@@ -103,7 +126,7 @@ export const Login = ({navigation}: any) => {
           variantColor="red"
           onPress={onSubmit}
           isLoading={loading}
-          disabled={isButtonDisabled() || loading}
+          disabled={isButtonDisabled()}
         />
       </View>
       <View>

@@ -57,10 +57,24 @@ export function MyReceipts() {
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      url: 'https://shara.co/',
       // @ts-ignore
       social: Share.Social.SMS,
-      message: 'Here is your receipt',
+      message: `Hi ${
+        activeReceipt?.customer?.name
+      }, thank you for your recent purchase of ${
+        activeReceipt?.items?.length
+      } item(s) from ${
+        user?.businesses[0].name
+      }.  You paid ${amountWithCurrency(
+        activeReceipt?.amount_paid,
+      )} and owe ${amountWithCurrency(activeReceipt?.credit_amount)} ${
+        activeReceipt?.credits && activeReceipt?.credits[0]?.due_date
+          ? `(which is due on ${format(
+              new Date(activeReceipt?.credits[0]?.due_date),
+              'MMM dd, yyyy',
+            )})`
+          : ''
+      }. Thank you.`,
       recipient: `${activeReceipt?.customer_mobile}`,
       title: `Share receipt with ${activeReceipt?.customer_name}`,
     };
@@ -77,7 +91,7 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     }
-  }, [activeReceipt]);
+  }, [activeReceipt, user]);
 
   const handleEmailShare = useCallback(
     async (
@@ -199,7 +213,7 @@ export function MyReceipts() {
       <FlatList
         data={orderBy(receipts, 'created_at', 'desc')}
         renderItem={renderReceiptItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No receipts created"

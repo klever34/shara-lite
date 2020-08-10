@@ -2,25 +2,33 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {useNavigation} from '@react-navigation/native';
 import {MessageEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
 import {Alert, Platform, SafeAreaView, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import Realm from 'realm';
-import {PushNotificationToken} from 'types/app';
 import {MessageActionEvent} from 'types/pubnub';
-import HeaderRight from '@/components/HeaderRight';
+import HeaderRight from '../../components/HeaderRight';
+import {PushNotificationToken} from 'types/app';
+import {getBaseModelValues} from '@/helpers/models';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles, retryPromise} from '@/helpers/utils';
-import {IContact, IConversation, IMessage} from '@/models';
-import {getAuthService, getRealmService} from '@/services';
+import {IContact, IConversation, IMessage} from '../../models';
+import {getAuthService, getRealmService} from '../../services';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {BusinessTab} from './business';
 import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
-import Touchable from '@/components/Touchable';
-import Icon from '@/components/Icon';
+import Touchable from '../../components/Touchable';
+import Icon from '../../components/Icon';
+import {RealmContext} from '@/services/realm/provider';
 import {useScreenRecord} from '@/services/analytics';
 
 type HomeTabParamList = {
@@ -37,12 +45,14 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   const pubNub = usePubNub();
   const navigation = useNavigation();
   const handleError = useErrorHandler();
+  const {logoutFromRealm} = useContext(RealmContext);
   const [notificationToken, setNotificationToken] = useState('');
 
   const handleLogout = useCallback(async () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
+      logoutFromRealm && logoutFromRealm();
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],
@@ -50,7 +60,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     } catch (e) {
       handleError(e);
     }
-  }, [handleError, navigation]);
+  }, [handleError, navigation, logoutFromRealm]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Restoring messages...'});
@@ -192,8 +202,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 'Message',
                 {
                   ...message,
-                  created_at: new Date(message.created_at),
                   timetoken: String(timetoken),
+                  ...getBaseModelValues(),
                 },
                 Realm.UpdateMode.Modified,
               );
@@ -225,6 +235,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     ...conversation,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );
@@ -236,6 +247,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     channel,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );

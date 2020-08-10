@@ -8,22 +8,25 @@ import {
   VirtualizedList,
 } from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '@/screens/main';
-import HeaderTitle from '@/components/HeaderTitle';
-import Icon from '@/components/Icon';
-import Touchable from '@/components/Touchable';
+import {MainStackParamList} from '..';
+import HeaderTitle from '../../../components/HeaderTitle';
+import Icon from '../../../components/Icon';
+import Touchable from '../../../components/Touchable';
 import {applyStyles} from '@/helpers/utils';
-import ContactsList from '@/components/ContactsList';
+import ContactsList from '../../../components/ContactsList';
 import {useRealm} from '@/services/realm';
-import {IContact, IConversation} from '@/models';
+import {IContact} from '@/models';
+import {IConversation} from '@/models';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import TextInput from '../../../components/TextInput';
 import {getApiService, getAuthService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import HeaderRight, {HeaderRightOption} from '@/components/HeaderRight';
 import {UpdateMode} from 'realm';
-
 import {ModalPropsList} from 'types/modal';
+import {getConversationByChannel} from '@/services/ConversationService';
+import {getBaseModelValues} from '@/helpers/models';
+import {getContactByMobile} from '@/services/ContactService';
 import {useScreenRecord} from '@/services/analytics';
 
 const DATA: never[] = [];
@@ -113,9 +116,15 @@ const ChatDetailsScreen = ({
           [property]: value,
         });
         realm.write(() => {
+          const existingChannel = getConversationByChannel({
+            realm,
+            channel: conversation.channel,
+          });
+          const updatePayload = existingChannel || getBaseModelValues();
           realm.create<IConversation>(
             'Conversation',
             {
+              ...updatePayload,
               channel: conversation.channel,
               [property]: groupChat[property],
             },
@@ -190,10 +199,17 @@ const ChatDetailsScreen = ({
                               i += 1
                             ) {
                               const contact = selectedContacts[i];
+                              const existingMobile = getContactByMobile({
+                                realm,
+                                mobile: contact.mobile,
+                              });
+                              const updatePayload =
+                                existingMobile || getBaseModelValues();
                               realm.create<IContact>(
                                 'Contact',
                                 {
                                   mobile: contact.mobile,
+                                  ...updatePayload,
                                   groups:
                                     contact.groups + ',' + conversation.channel,
                                 },
@@ -248,10 +264,16 @@ const ChatDetailsScreen = ({
         conversation.members = conversation.members.filter(
           (member) => member !== contact.mobile,
         );
+        const existingMobile = getContactByMobile({
+          realm,
+          mobile: contact.mobile,
+        });
+        const updatePayload = existingMobile || getBaseModelValues();
         realm.create<IContact>(
           'Contact',
           {
             mobile: contact.mobile,
+            ...updatePayload,
             groups: contact.groups
               .split(',')
               .filter((channel) => channel !== conversation.channel)

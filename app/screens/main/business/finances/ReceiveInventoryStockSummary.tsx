@@ -8,33 +8,35 @@ import {
   Text,
   View,
 } from 'react-native';
-import {InventoryStockItem} from '../../../../../types/app';
+import {Contact} from 'react-native-contacts';
 import {
   Button,
-  FloatingLabelInput,
   ContactsListModal,
+  FloatingLabelInput,
 } from '../../../../components';
+import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import {addNewStocks} from '../../../../services/InventoryStockService';
+import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
+import {IStockItem} from '../../../../models/StockItem';
+import {ISupplier} from '../../../../models/Supplier';
 import {useRealm} from '../../../../services/realm';
-import {Contact} from 'react-native-contacts';
+import {addNewInventory} from '../../../../services/ReceivedInventoryService';
+import {colors} from '../../../../styles';
+import {DeliveryAgentsModal} from './DeliveryAgentsModal';
 import {getAnalyticsService} from '../../../../services';
 import {useErrorHandler} from 'react-error-boundary';
 
-type Payload = {
-  agent_full_name?: string | undefined;
-  agent_mobile?: string | undefined;
-};
+type Payload = IDeliveryAgent;
 
 export type SummaryTableItemProps = {
-  item: InventoryStockItem;
+  item: IStockItem;
 };
 
 type Props = {
+  supplier: ISupplier;
   onClearReceipt: () => void;
-  products: InventoryStockItem[];
+  products: IStockItem[];
   onCloseSummaryModal: () => void;
 };
 
@@ -88,7 +90,7 @@ export const SummaryTableHeader = () => {
         style={applyStyles({
           alignItems: 'flex-end',
         })}>
-        <Text style={summaryTableHeaderStyles.text}>QTY</Text>
+        <Text style={summaryTableHeaderStyles.text}>Quantity</Text>
       </View>
     </View>
   );
@@ -97,7 +99,7 @@ export const SummaryTableHeader = () => {
 export const SummaryTableItem = ({
   item,
   onPress,
-}: SummaryTableItemProps & {onPress?: (item: InventoryStockItem) => void}) => {
+}: SummaryTableItemProps & {onPress?: (item: IStockItem) => void}) => {
   return (
     <Touchable onPress={onPress ? () => onPress(item) : () => {}}>
       <View
@@ -123,11 +125,14 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const realm = useRealm();
   const navigation = useNavigation();
 
-  const {products, onCloseSummaryModal} = props;
+  const {products, supplier, onCloseSummaryModal} = props;
 
   const [isSaving, setIsSaving] = useState(false);
-  const [agent, setAgent] = useState<Payload>({} as Payload);
+  const [agent, setAgent] = useState<Payload | undefined>();
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+  const [isDeliveryAgentsModalOpen, setIsDeliveryAgentsModalOpen] = useState(
+    false,
+  );
 
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
@@ -135,6 +140,14 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
+  }, []);
+
+  const handleOpenDeliveryAgentsModal = useCallback(() => {
+    setIsDeliveryAgentsModalOpen(true);
+  }, []);
+
+  const handleCloseDeliveryAgentsModal = useCallback(() => {
+    setIsDeliveryAgentsModalOpen(false);
   }, []);
 
   const handleCancel = useCallback(() => {
@@ -145,11 +158,17 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleFinish = () => {
     setIsSaving(true);
     setTimeout(() => {
-      addNewStocks({realm, stockItems: products, ...agent});
+      addNewInventory({
+        realm,
+        supplier,
+        stockItems: products,
+        delivery_agent: agent,
+      });
       getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
       setIsSaving(false);
       clearForm();
-      navigation.navigate('Finances', {screen: 'Inventory'});
+      handleCancel();
+      navigation.navigate('ReceivedInventoryList');
     }, 300);
   };
 
@@ -158,7 +177,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       setAgent({
         ...agent,
         [key]: value,
-      });
+      } as Payload);
     },
     [agent],
   );
@@ -167,8 +186,15 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     const {givenName, familyName, phoneNumbers} = contact;
     const contactName = `${givenName} ${familyName}`;
     const contactMobile = phoneNumbers[0].number;
-    setAgent({agent_full_name: contactName, agent_mobile: contactMobile});
+    setAgent({full_name: contactName, mobile: contactMobile});
   }, []);
+
+  const handleDeliveryAgentSelect = useCallback(
+    (deliveryAgent: IDeliveryAgent) => {
+      setAgent(deliveryAgent);
+    },
+    [],
+  );
 
   const clearForm = useCallback(() => {
     setAgent({} as Payload);
@@ -183,7 +209,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     <KeyboardAvoidingView style={styles.container}>
       <ScrollView style={styles.scrollView} nestedScrollEnabled>
         <View>
-          <Text style={applyStyles('pb-xs', styles.sectionTitle)}>
+          <Text style={applyStyles('pb-xl', styles.sectionTitle)}>
             Products
           </Text>
           <View>
@@ -196,6 +222,25 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
             />
           </View>
         </View>
+        <Button
+          variantColor="white"
+          onPress={handleCancel}
+          style={applyStyles('mt-lg mb-xl')}>
+          <View style={applyStyles('items-center flex-row justify-center')}>
+            <Icon
+              size={24}
+              name="plus"
+              type="feathericons"
+              color={colors.primary}
+            />
+            <Text
+              style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                color: colors['gray-200'],
+              })}>
+              Add product
+            </Text>
+          </View>
+        </Button>
         <Text
           style={applyStyles('mt-xl mb-lg text-400', {
             fontSize: 18,
@@ -203,13 +248,39 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           })}>
           Delivery Agent Details
         </Text>
+        <Button
+          style={applyStyles('mb-lg')}
+          onPress={handleOpenDeliveryAgentsModal}>
+          <View
+            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+            <Icon
+              size={24}
+              name="user"
+              type="feathericons"
+              color={colors.white}
+            />
+            <Text
+              style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                color: colors.white,
+              })}>
+              Select delivery agent
+            </Text>
+          </View>
+        </Button>
+
+        <Text
+          style={applyStyles('mb-lg', 'text-center', 'text-400', {
+            color: colors['gray-100'],
+          })}>
+          Or enter delivery agent details below
+        </Text>
         <View style={applyStyles({marginBottom: 48})}>
           <View style={applyStyles('mb-md flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Phone Number"
               keyboardType="phone-pad"
-              value={agent.agent_mobile}
-              onChangeText={(text) => handleChange(text, 'agent_mobile')}
+              value={agent?.mobile}
+              onChangeText={(text) => handleChange(text, 'mobile')}
             />
           </View>
           <Touchable onPress={handleOpenContactListModal}>
@@ -222,8 +293,8 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           <View style={applyStyles('flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Full Name"
-              value={agent.agent_full_name}
-              onChangeText={(text) => handleChange(text, 'agent_full_name')}
+              value={agent?.full_name}
+              onChangeText={(text) => handleChange(text, 'full_name')}
             />
           </View>
         </View>
@@ -238,7 +309,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         <Button
           title="Finish"
           variantColor="red"
-          disabled={isSaving}
           isLoading={isSaving}
           onPress={handleFinish}
           style={styles.actionButton}
@@ -248,6 +318,11 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={(contact) => handleSelectContact(contact)}
+      />
+      <DeliveryAgentsModal
+        visible={isDeliveryAgentsModalOpen}
+        onClose={handleCloseDeliveryAgentsModal}
+        onSelectDeliveryAgent={handleDeliveryAgentSelect}
       />
     </KeyboardAvoidingView>
   );

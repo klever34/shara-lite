@@ -1,6 +1,6 @@
 import {ICustomer} from './Customer';
 import {IReceipt} from './Receipt';
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IPayment extends BaseModelInterface {
   amount_paid: number;
@@ -15,10 +15,10 @@ export interface IPayment extends BaseModelInterface {
 
 export const modelName = 'Payment';
 
-export class Payment implements Partial<IPayment> {
+export class Payment extends BaseModel implements Partial<IPayment> {
   public static schema: Realm.ObjectSchema = {
     name: 'Payment',
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       amount_paid: 'double',

@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useState, useEffect, useCallback, useLayoutEffect} from 'react';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {StyleSheet, View, Text, FlatList} from 'react-native';
@@ -10,6 +10,7 @@ import Touchable from '../../../../components/Touchable';
 import EmptyState from '../../../../components/EmptyState';
 import {getSuppliers} from '../../../../services/SupplierService';
 import {ISupplier} from '../../../../models/Supplier';
+import HeaderRight from '../../../../components/HeaderRight';
 import {useScreenRecord} from '../../../../services/analytics';
 
 type SupplierItemProps = {
@@ -24,6 +25,14 @@ export const Suppliers = () => {
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [mySuppliers, setMySuppliers] = useState<ISupplier[]>(suppliers);
+
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+      ),
+    });
+  }, [navigation]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -83,7 +92,7 @@ export const Suppliers = () => {
   );
 
   return (
-    <View style={applyStyles({backgroundColor: colors.white})}>
+    <View style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon
@@ -126,7 +135,7 @@ export const Suppliers = () => {
       <FlatList
         data={mySuppliers}
         renderItem={renderSupplierListItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListHeaderComponent={renderSupplierListHeader}
         ListEmptyComponent={
           <EmptyState

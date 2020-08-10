@@ -40,6 +40,7 @@ import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import {format} from 'date-fns/esm';
 import {useErrorHandler} from 'react-error-boundary';
 
 export type SummaryTableItemProps = {
@@ -205,9 +206,9 @@ const ReceiptSummary = (props: Props) => {
   const [paymentType, setPaymentType] = useState<
     'cash' | 'transfer' | 'mobile'
   >('cash');
-  const [dueDateString, setDueDateString] = useState('');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
+  const [dueDateString, setDueDateString] = useState('');
   const [payments, setPayments] = useState<Payment[]>([]);
   const [dueDate, setDueDate] = useState<Date | undefined>();
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
@@ -317,10 +318,19 @@ const ReceiptSummary = (props: Props) => {
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      url: 'https://shara.co/',
       // @ts-ignore
       social: Share.Social.SMS,
-      message: 'Here is your receipt',
+      message: `Hi ${customer.name}, thank you for your recent purchase of ${
+        products.length
+      } item(s) from ${
+        user?.businesses[0].name
+      }.  You paid ${amountWithCurrency(
+        amountPaid,
+      )} and owe ${amountWithCurrency(creditAmount)} ${
+        dueDate
+          ? `(which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')})`
+          : ''
+      }. Thank you.`,
       recipient: `${customer.mobile}`,
       title: `Share receipt with ${customer.name}`,
     };
@@ -337,7 +347,15 @@ const ReceiptSummary = (props: Props) => {
         Alert.alert('Error', e.error);
       }
     }
-  }, [customer.mobile, customer.name]);
+  }, [
+    amountPaid,
+    creditAmount,
+    customer.mobile,
+    customer.name,
+    dueDate,
+    products.length,
+    user,
+  ]);
 
   const handleEmailShare = useCallback(
     async (
@@ -393,13 +411,6 @@ const ReceiptSummary = (props: Props) => {
     },
     [customer.mobile, customer.name, businessInfo],
   );
-
-  const handlePrintReceipt = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt printing is coming in the next release',
-    );
-  }, []);
 
   const handleRemovePayment = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
@@ -562,7 +573,7 @@ const ReceiptSummary = (props: Props) => {
               data={products}
               nestedScrollEnabled
               renderItem={renderSummaryItem}
-              keyExtractor={(item) => `${item.id}`}
+              keyExtractor={(item) => `${item._id}`}
               ListHeaderComponent={SummaryTableHeader}
             />
             <View style={styles.totalSectionContainer}>
@@ -827,7 +838,7 @@ const ReceiptSummary = (props: Props) => {
         {!!creditAmount && (
           <View
             style={applyStyles('w-full flex-row justify-space-between', {
-              marginBottom: 80,
+              marginBottom: 200,
             })}>
             <View style={applyStyles({width: '48%'})}>
               <FloatingLabelInput
@@ -881,13 +892,14 @@ const ReceiptSummary = (props: Props) => {
       <ReceiptStatusModal
         customer={customer}
         isSaving={isSaving}
+        products={products}
         timeTaken={timeTaken}
         amountPaid={amountPaid}
+        totalAmount={totalAmount}
         creditAmount={creditAmount}
         onComplete={handleComplete}
         isCompleting={isCompleting}
         visible={isSuccessModalOpen}
-        onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onNewReceiptClick={handleNewReceiptClick}
         onOpenCustomerModal={handleOpenCustomerModal}

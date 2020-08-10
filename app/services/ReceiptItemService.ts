@@ -14,20 +14,19 @@ export const saveReceiptItem = ({
   receiptItem: ReceiptItem;
 }): void => {
   const {quantity, price} = receiptItem;
+  const receiptItemToSave: IReceiptItem = {
+    receipt,
+    name: receiptItem.product.name,
+    sku: receiptItem.product.sku,
+    weight: receiptItem.product.weight,
+    quantity: parseInt(quantity, 10),
+    price: parseFloat(price),
+    total_price: parseFloat(quantity) * parseFloat(price),
+    product: receiptItem.product,
+    ...getBaseModelValues(),
+  };
 
   realm.write(() => {
-    const receiptItemToSave: IReceiptItem = {
-      receipt,
-      name: receiptItem.product.name,
-      sku: receiptItem.product.sku,
-      weight: receiptItem.product.weight,
-      quantity: parseInt(quantity, 10),
-      price: parseFloat(price),
-      total_price: parseFloat(quantity) * parseFloat(price),
-      product: receiptItem.product,
-      ...getBaseModelValues(),
-    };
-
     realm.create<IReceiptItem>(
       modelName,
       receiptItemToSave,

@@ -36,7 +36,7 @@ export const saveCredit = ({
     credit.customer_mobile = customer?.mobile;
   }
 
-  if (customer && customer.id) {
+  if (customer && customer._id) {
     credit.customer = customer as ICustomer;
   }
 
@@ -55,7 +55,7 @@ export const updateCredit = ({
   updates: object;
 }) => {
   const updatedCredit = {
-    id: credit.id,
+    _id: credit._id,
     ...updates,
   };
 

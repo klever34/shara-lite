@@ -6,12 +6,14 @@ import {
   Text,
   View,
 } from 'react-native';
+import Realm from 'realm';
 import {FAButton} from '@/components';
 import {useNavigation} from '@react-navigation/native';
 import {applyStyles} from '@/helpers/utils';
 import {colors} from '@/styles';
 import Touchable from '../../../components/Touchable';
-import {IConversation, IMessage} from '../../../models';
+import {IConversation} from '@/models';
+import {IMessage} from '@/models';
 import {useRealm} from '@/services/realm';
 import {useTyping} from '@/services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
@@ -126,10 +128,13 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const conversations = realm
-    .objects<IConversation>('Conversation')
-    .filtered('lastMessage != null OR type = "group"')
-    .sorted('lastMessage.created_at', true);
+  const fetchedConversations = realm.objects<IConversation>('Conversation');
+  const conversations = fetchedConversations.length
+    ? realm
+        .objects<IConversation>('Conversation')
+        .filtered('lastMessage != null OR type = "group"')
+        .sorted('lastMessage.created_at', true)
+    : [];
   const renderChatListItem = useCallback(
     ({item}: ListRenderItemInfo<IConversation>) => {
       return <ChatListItem conversation={item} />;

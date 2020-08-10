@@ -13,7 +13,8 @@ import Share from 'react-native-share';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
-import {IContact, IConversation} from '../../../models';
+import {IConversation} from '../../../models/Conversation';
+import {IContact} from '../../../models/Contact';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -21,6 +22,7 @@ import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import {getBaseModelValues} from '../../../helpers/models';
 import {useScreenRecord} from '../../../services/analytics';
 
 const ContactsScreen = ({
@@ -148,6 +150,7 @@ const ContactsScreen = ({
                 channel: channelName,
                 type: '1-1',
                 members: [me.mobile, item.mobile],
+                ...getBaseModelValues(),
               },
               UpdateMode.Modified,
             );
@@ -222,6 +225,7 @@ const ContactsScreen = ({
                                           (member) => member.mobile,
                                         ),
                                       ],
+                                      ...getBaseModelValues(),
                                     },
                                     UpdateMode.Modified,
                                   );
