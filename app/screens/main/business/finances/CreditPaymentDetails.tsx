@@ -6,8 +6,10 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICreditPayment} from '../../../../models/CreditPayment';
 import {colors} from '../../../../styles';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const CreditPaymentDetails = ({route}: any) => {
+  useScreenRecord();
   const navigation = useNavigation();
   const {
     creditPaymentDetails,

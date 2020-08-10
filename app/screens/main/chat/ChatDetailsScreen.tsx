@@ -23,6 +23,7 @@ import {useErrorHandler} from 'react-error-boundary';
 import HeaderRight, {HeaderRightOption} from '../../../components/HeaderRight';
 import {UpdateMode} from 'realm';
 import {ModalPropsList} from '../../../../types/modal';
+import {useScreenRecord} from '../../../services/analytics';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';
@@ -84,6 +85,7 @@ const ChatDetailsScreen = ({
   openModal,
 }: StackScreenProps<MainStackParamList, 'ChatDetails'> &
   ModalWrapperFields) => {
+  useScreenRecord();
   const realm = useRealm();
   const conversation = route.params;
   const participants = realm

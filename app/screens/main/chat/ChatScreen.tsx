@@ -38,6 +38,7 @@ import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
 import {useErrorHandler} from 'react-error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
+import {useScreenRecord} from '../../../services/analytics';
 
 type MessageItemProps = {
   item: IMessage;
@@ -49,6 +50,7 @@ const ChatScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
+  useScreenRecord();
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
   const conversation = route.params;

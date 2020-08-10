@@ -29,7 +29,7 @@ import {
 } from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService} from '../../../../services';
+import {getAnalyticsService, getAuthService} from '../../../../services';
 import {getCustomers} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {saveReceipt} from '../../../../services/ReceiptService';
@@ -40,6 +40,7 @@ import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import {useErrorHandler} from 'react-error-boundary';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -457,6 +458,7 @@ const ReceiptSummary = (props: Props) => {
       Alert.alert('Error', 'Please select at least one product item');
     }
   };
+  const handleError = useErrorHandler();
 
   const handleSaveReceipt = useCallback(
     (callback: () => void, onSuccess?: () => void) => {
@@ -472,21 +474,23 @@ const ReceiptSummary = (props: Props) => {
           creditAmount,
           dueDate,
           receiptItems: products,
-        });
+        }).catch(handleError);
         onClearReceipt();
+        getAnalyticsService().logEvent('receiptCreated').catch(handleError);
         onSuccess && onSuccess();
       }, 500);
     },
     [
-      dueDate,
-      amountPaid,
-      creditAmount,
-      customer,
-      onClearReceipt,
-      payments,
-      products,
       realm,
+      payments,
+      customer,
+      amountPaid,
       totalAmount,
+      creditAmount,
+      dueDate,
+      products,
+      onClearReceipt,
+      handleError,
     ],
   );
 

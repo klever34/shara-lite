@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, Platform, Text, View} from 'react-native';
 import {
+  getAnalyticsService,
   getApiService,
   getAuthService,
   getContactsService,
@@ -20,11 +21,13 @@ import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import {useScreenRecord} from '../../../services/analytics';
 
 const ContactsScreen = ({
   navigation,
   openModal,
 }: StackScreenProps<MainStackParamList, 'Contacts'> & ModalWrapperFields) => {
+  useScreenRecord();
   const realm = useRealm() as Realm;
   const me = getAuthService().getUser();
   const contacts = realm.objects<IContact>('Contact').sorted('firstname');
@@ -155,6 +158,9 @@ const ContactsScreen = ({
           conversation = realm
             .objects<IConversation>('Conversation')
             .filtered(`channel = "${channelName}"`)[0];
+          getAnalyticsService()
+            .logEvent('oneOnOneChatInitiated')
+            .catch(handleError);
           navigateToChat(conversation);
         }
       } catch (error) {
@@ -218,6 +224,9 @@ const ContactsScreen = ({
                                     },
                                     UpdateMode.Modified,
                                   );
+                                  getAnalyticsService()
+                                    .logEvent('groupChatCreated')
+                                    .catch(handleError);
                                   navigation.dispatch(
                                     CommonActions.reset({
                                       routes: [
