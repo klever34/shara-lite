@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.23-bugfix.group-chat+build.1392",
+  "version": "0.1.23-bugfix.group-chat+build.1414",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
