@@ -5,15 +5,18 @@ import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
+import {getPaymentsFromCredit} from '../../../services/CreditPaymentService';
 import {colors} from '../../../styles';
+import {PAYMENT_METHOD_LABEL} from '../../../helpers/constants';
+import {orderBy} from 'lodash';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
   const navigation = useNavigation();
   const credits = customer.credits || [];
-  const creditPayments = customer.payments || [];
+  const creditPayments = getPaymentsFromCredit({credits: customer.credits});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
   const totalCreditsAmount = credits.reduce(
     (total, {amount_left}) => total + amount_left,
@@ -77,14 +80,14 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(credit.amount_paid)}
+                {amountWithCurrency(credit.amount_paid)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-capitalize', {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {credit.type}
+                {PAYMENT_METHOD_LABEL[credit.method]}
               </Text>
             </View>
           </View>
@@ -99,8 +102,11 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
       <View style={applyStyles('p-xl')}>
         <Button
           title="record credit payment"
+          disabled={!overdueCredit.length}
           style={applyStyles('mb-lg', {width: '100%'})}
-          onPress={() => handleNavigation('CustomerRecordCreditPayment')}
+          onPress={() =>
+            handleNavigation('CustomerRecordCreditPayment', {customer})
+          }
         />
         <Touchable
           onPress={() =>
@@ -125,7 +131,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors['gray-300'],
               })}>
-              &#8358;{numberWithCommas(totalCreditsAmount)}
+              {amountWithCurrency(totalCreditsAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -158,7 +164,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors.primary,
               })}>
-              &#8358;{numberWithCommas(overdueCreditsAmount)}
+              {amountWithCurrency(overdueCreditsAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -180,9 +186,9 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
             Payment History
           </Text>
           <FlatList
-            data={creditPayments}
             renderItem={renderCreditItem}
             keyExtractor={(item) => `${item.id}`}
+            data={orderBy(creditPayments, 'created_at', 'desc')}
           />
         </View>
       )}

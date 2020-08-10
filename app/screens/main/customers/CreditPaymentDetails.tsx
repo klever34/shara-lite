@@ -2,7 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {IPayment} from '../../../models/Payment';
 import HeaderRight from '../../../components/HeaderRight';
@@ -30,13 +30,14 @@ export const CustomerCreditPaymentDetails = ({route}: any) => {
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Customer</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditPaymentDetails?.customer?.name}
+              {creditPaymentDetails?.customer?.name ||
+                creditPaymentDetails.customer_name}
             </Text>
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(creditPaymentDetails.amount_paid)}
+              {amountWithCurrency(creditPaymentDetails.amount_paid)}
             </Text>
           </View>
         </View>

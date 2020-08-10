@@ -465,6 +465,7 @@ export const BluetoothModal = ({
   return (
     <Modal
       isVisible={visible}
+      onBackdropPress={handleClose}
       onSwipeComplete={handleClose}
       onBackButtonPress={handleClose}
       style={applyStyles({

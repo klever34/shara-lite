@@ -1,6 +1,6 @@
 version: 2.1
 workflows:
-  internal:
+  internal-workflow:
     jobs:
       - checkout_code:
           context: shara-test
@@ -33,7 +33,29 @@ workflows:
                 - master
                 - develop
                 - discovery
-  discovery:
+  discovery-workflow:
+    jobs:
+      - checkout_code:
+          context: shara-discovery
+          merged: true
+          commit: true
+          filters:
+            branches:
+              only:
+                - discovery
+      - test:
+          requires:
+            - checkout_code
+      - fastlane:
+          context: shara-discovery
+          lane: internal
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+  delivery-workflow:
     jobs:
       - checkout_code:
           context: shara-dev
@@ -43,8 +65,6 @@ workflows:
             branches:
               only:
                 - develop
-                - discovery
-                - master
       - test:
           requires:
             - checkout_code
@@ -57,8 +77,21 @@ workflows:
             branches:
               only:
                 - discovery
+  release-workflow:
+    jobs:
+      - checkout_code:
+          context: shara-qa
+          merged: false
+          commit: false
+          filters:
+            branches:
+              only:
+                - /^release.*/
+      - test:
+          requires:
+            - checkout_code
       - fastlane:
-          context: shara-dev
+          context: shara-qa
           lane: play
           track: internal
           requires:
@@ -66,7 +99,30 @@ workflows:
           filters:
             branches:
               only:
-                - discovery
+                - /^release.*/
+  beta-workflow:
+    jobs:
+      - checkout_code:
+          context: shara-production
+          merged: true
+          commit: true
+          filters:
+            branches:
+              only:
+                - master
+      - test:
+          requires:
+            - checkout_code
+      - fastlane:
+          context: shara-production
+          lane: play
+          track: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
 jobs:
   checkout_code:
     docker:
@@ -93,6 +149,8 @@ jobs:
                 command: |
                   CURRENT_VERSION=$(jq ".version" -r package.json)
                   NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
+                  BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
+                  NEW_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${NEW_VERSION});
                   jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
       - unless:

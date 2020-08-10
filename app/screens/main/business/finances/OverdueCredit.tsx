@@ -8,17 +8,14 @@ import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
 import {colors} from '../../../../styles';
 import HeaderRight from '../../../../components/HeaderRight';
 
 export const OverdueCredit = ({
   route,
-}: StackScreenProps<
-  MainStackParamList,
-  'OverdueCredit' | 'CustomerOverdueCredit'
->) => {
+}: StackScreenProps<MainStackParamList, 'OverdueCredit'>) => {
   const navigation = useNavigation();
   const credits = route.params.credits;
 
@@ -68,13 +65,13 @@ export const OverdueCredit = ({
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Customer</Text>
               <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {creditDetails.customer_name}
+                {creditDetails.customer?.name || 'No Customer'}
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Amount</Text>
               <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-                &#8358;{numberWithCommas(creditDetails.amount_left)}
+                {amountWithCurrency(creditDetails.amount_left)}
               </Text>
             </View>
           </View>
@@ -92,22 +89,24 @@ export const OverdueCredit = ({
                   : ''}
               </Text>
             </View>
-            <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Due on</Text>
-              <Text
-                style={applyStyles(styles.itemDataMedium, 'text-400', {
-                  color: colors.primary,
-                })}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
-                  : ''}
-              </Text>
-              <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'hh:mm:a')
-                  : ''}
-              </Text>
-            </View>
+            {creditDetails.due_date && (
+              <View style={applyStyles('pb-sm', {width: '48%'})}>
+                <Text style={styles.itemTitle}>Due on</Text>
+                <Text
+                  style={applyStyles(styles.itemDataMedium, 'text-400', {
+                    color: colors.primary,
+                  })}>
+                  {creditDetails.due_date
+                    ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+                    : ''}
+                </Text>
+                <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
+                  {creditDetails.due_date
+                    ? format(new Date(creditDetails.due_date), 'hh:mm:a')
+                    : ''}
+                </Text>
+              </View>
+            )}
           </View>
         </ActionCard>
       </View>
@@ -120,30 +119,15 @@ export const OverdueCredit = ({
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
-        data={credits}
+        data={credits.filter((item) => item.amount_left)}
         renderItem={renderCreditItem}
         keyExtractor={(item) => `${item.id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No credit"
             style={applyStyles({marginTop: 32})}
-            source={require('../../../../assets/images/coming-soon.png')}>
-            <Touchable
-              onPress={() => navigation.navigate('RecordCreditPayment')}>
-              <View
-                style={applyStyles(
-                  'p-lg w-full flex-row items-center justify-center',
-                )}>
-                <Text
-                  style={applyStyles('text-400 text-center text-uppercase', {
-                    fontSize: 16,
-                    color: colors.primary,
-                  })}>
-                  Record credit payment
-                </Text>
-              </View>
-            </Touchable>
-          </EmptyState>
+            source={require('../../../../assets/images/coming-soon.png')}
+          />
         }
       />
     </SafeAreaView>

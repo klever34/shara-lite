@@ -5,11 +5,13 @@ import {colors} from '../styles';
 import Touchable from './Touchable';
 import {applyStyles} from '../helpers/utils';
 import {FlatList} from 'react-native-gesture-handler';
+import {Button} from './Button';
 
 //TODO: Type component props
 const SearchableDropdown = (props: any) => {
   const {
     items,
+    onBlur,
     setSort,
     onFocus,
     itemStyle,
@@ -19,6 +21,8 @@ const SearchableDropdown = (props: any) => {
     itemTextStyle,
     textInputProps,
     emptyStateText,
+    noResultsAction,
+    noResultsActionButtonText,
     itemsContainerStyle,
   } = props;
   const [focus, setFocus] = useState(false);
@@ -45,6 +49,12 @@ const SearchableDropdown = (props: any) => {
     setFocus(true);
     setListItems(items);
   }, [onFocus, items]);
+
+  const handleInputBlur = useCallback(() => {
+    onBlur && onBlur();
+    setFocus(false);
+    setListItems(items);
+  }, [onBlur, items]);
 
   const searchedItems = (searchedText: string) => {
     let sort = setSort;
@@ -73,6 +83,27 @@ const SearchableDropdown = (props: any) => {
           renderItem={renderItems}
           style={applyStyles(itemsContainerStyle)}
           keyExtractor={(item, index) => index.toString()}
+          ListEmptyComponent={
+            <View
+              style={applyStyles('px-lg flex-1 items-center justify-center', {
+                paddingVertical: 100,
+              })}>
+              <Text
+                style={applyStyles('mb-xs heading-700', 'text-center', {
+                  color: colors['gray-300'],
+                })}>
+                No results found
+              </Text>
+              {noResultsAction && (
+                <Button
+                  variantColor="clear"
+                  onPress={noResultsAction}
+                  style={applyStyles('w-full')}
+                  title={noResultsActionButtonText}
+                />
+              )}
+            </View>
+          }
         />
       ) : (
         <View style={styles.emptyState}>
@@ -122,6 +153,7 @@ const SearchableDropdown = (props: any) => {
             color={colors.primary}
           />
           <TextInput
+            onBlur={handleInputBlur}
             onFocus={handleInputFocus}
             value={value[searchTerm]}
             onChangeText={searchedItems}

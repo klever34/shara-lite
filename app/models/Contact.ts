@@ -1,10 +1,11 @@
 import capitalize from 'lodash/capitalize';
+import {User} from '../../types/app';
 
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
   fullName: string;
   channel?: string;
-  groups?: string;
+  groups: string;
   isMe: boolean;
 }
 
@@ -13,10 +14,10 @@ export class Contact implements Partial<IContact> {
     name: 'Contact',
     primaryKey: 'mobile',
     properties: {
-      id: 'int',
+      id: {type: 'int', indexed: true},
       mobile: 'string',
       channel: 'string?',
-      groups: 'string?',
+      groups: 'string',
       isMe: 'bool',
       firstname: 'string',
       lastname: 'string',

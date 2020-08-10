@@ -6,6 +6,6 @@ export interface BaseModelInterface {
 
 export const baseModelSchema = {
   id: 'string',
-  created_at: 'date',
-  updated_at: 'date',
+  created_at: 'date?',
+  updated_at: 'date?',
 };

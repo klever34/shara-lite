@@ -14,7 +14,7 @@ import {
 import {Button} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {ICustomer} from '../../../../models';
 
@@ -23,7 +23,7 @@ type Props = {
   timeTaken: number;
   isSaving: boolean;
   amountPaid: number;
-  customer: Customer | ICustomer;
+  customer: ICustomer;
   creditAmount: number;
   isCompleting: boolean;
   onComplete: () => void;
@@ -120,11 +120,11 @@ export const ReceiptStatusModal = (props: Props) => {
             )}>
             You have successfully issued a receipt for{' '}
             <Text style={applyStyles('text-700')}>
-              N{numberWithCommas(amountPaid)}
+              {amountWithCurrency(amountPaid)}
             </Text>{' '}
             in Cash and{' '}
             <Text style={applyStyles('text-700', {color: colors.primary})}>
-              N{numberWithCommas(creditAmount)}
+              {amountWithCurrency(creditAmount)}
             </Text>{' '}
             in Credit
           </Text>
@@ -250,6 +250,7 @@ export const ReceiptStatusModal = (props: Props) => {
           </Button>
           <Button
             variantColor="red"
+            disabled={isSaving}
             isLoading={isSaving}
             title="Create new receipt"
             onPress={onNewReceiptClick}
@@ -282,6 +283,7 @@ export const ReceiptStatusModal = (props: Props) => {
           title="Finish"
           variantColor="red"
           onPress={onComplete}
+          disabled={isCompleting}
           isLoading={isCompleting}
           style={styles.actionButton}
         />

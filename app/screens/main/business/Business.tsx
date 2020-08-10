@@ -1,17 +1,26 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback} from 'react';
+import React, {useState, useCallback} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
 import {useRealm} from '../../../services/realm';
 import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
 import {colors} from '../../../styles';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {Button, ActionCard} from '../../../components';
+import Touchable from '../../../components/Touchable';
+import {getAuthService} from '../../../services';
+import {BusinessSetup} from '../../../screens/BusinessSetup';
 
 export const BusinessTab = () => {
   const realm = useRealm();
   const navigation = useNavigation();
+  const authService = getAuthService();
+  const user = authService.getUser();
   const financeSummary: IFinanceSummary = getSummary({realm});
+
+  const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
+    false,
+  );
 
   const actions = [
     {
@@ -36,11 +45,27 @@ export const BusinessTab = () => {
         return (
           <View style={styles.listItem}>
             <Text style={applyStyles(styles.listItemText, 'text-500')}>
-              Record inventory
+              View inventory
             </Text>
             <Image
               style={styles.listItemIcon}
               source={require('../../../assets/icons/business/inventory.png')}
+            />
+          </View>
+        );
+      },
+    },
+    {
+      name: 'AddProduct',
+      render: () => {
+        return (
+          <View style={styles.listItem}>
+            <Text style={applyStyles(styles.listItemText, 'text-500')}>
+              Add new product
+            </Text>
+            <Image
+              style={styles.listItemIcon}
+              source={require('../../../assets/icons/business/add.png')}
             />
           </View>
         );
@@ -68,7 +93,7 @@ export const BusinessTab = () => {
         return (
           <View style={styles.listItem}>
             <Text style={applyStyles(styles.listItemText, 'text-500')}>
-              Give Credit
+              View credit
             </Text>
             <Image
               style={styles.listItemIcon}
@@ -106,6 +131,23 @@ export const BusinessTab = () => {
 
   return (
     <View style={styles.container}>
+      {!(user?.businesses && user?.businesses.length) && (
+        <Touchable onPress={() => setIsBusinessSetupModalOpen(true)}>
+          <View
+            style={applyStyles('mb-xl px-xs py-sm', {
+              fontSize: 14,
+              borderRadius: 8,
+              backgroundColor: colors['red-50'],
+            })}>
+            <Text
+              style={applyStyles('text-500 text-center', {
+                color: colors['red-200'],
+              })}>
+              Tap here to complete your Business Setup
+            </Text>
+          </View>
+        </Touchable>
+      )}
       <View style={applyStyles('mb-lg')}>
         <ActionCard
           style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
@@ -114,7 +156,7 @@ export const BusinessTab = () => {
             My sales
           </Text>
           <Text style={applyStyles(styles.cardContent, {color: colors.white})}>
-            &#8358;{numberWithCommas(financeSummary.totalSales)}
+            {amountWithCurrency(financeSummary.totalSales)}
           </Text>
         </ActionCard>
       </View>
@@ -132,7 +174,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(0)}
+            {amountWithCurrency(0)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -148,7 +190,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors.primary,
             })}>
-            &#8358;{numberWithCommas(0)}
+            {amountWithCurrency(0)}
           </Text>
         </ActionCard>
       </View>
@@ -166,7 +208,7 @@ export const BusinessTab = () => {
             style={applyStyles(styles.cardContent, {
               color: colors['gray-300'],
             })}>
-            &#8358;{numberWithCommas(financeSummary.totalCredit)}
+            {amountWithCurrency(financeSummary.totalCredit)}
           </Text>
         </ActionCard>
         <ActionCard
@@ -180,7 +222,7 @@ export const BusinessTab = () => {
           </Text>
           <Text
             style={applyStyles(styles.cardContent, {color: colors.primary})}>
-            &#8358;{numberWithCommas(financeSummary.overdueCredit)}
+            {amountWithCurrency(financeSummary.overdueCredit)}
           </Text>
         </ActionCard>
       </View>
@@ -197,6 +239,10 @@ export const BusinessTab = () => {
         actionsPaddingTopBottom={4}
         onPressItem={handleActionItemClick}
         overlayColor="rgba(255,255,255,0.95)"
+      />
+      <BusinessSetup
+        visible={isBusinessSetupModalOpen}
+        onClose={() => setIsBusinessSetupModalOpen(false)}
       />
     </View>
   );

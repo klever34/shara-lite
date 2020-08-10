@@ -25,15 +25,15 @@ export const getSummary = ({realm}: {realm: Realm}): IFinanceSummary => {
   return summary;
 };
 
-export const getTotalSales = ({receipts}) => {
+export const getTotalSales = ({receipts}: any) => {
   return receipts.sum('total_amount');
 };
 
-export const getOverdueCredit = ({credits}) => {
+export const getOverdueCredit = ({credits}: any) => {
   return credits.filtered('fulfilled = false').sum('amount_left');
 };
 
-export const getTotalCredit = ({credits}) => {
+export const getTotalCredit = ({credits}: any) => {
   return credits.sum('total_amount');
 };
 

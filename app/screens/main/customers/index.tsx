@@ -11,6 +11,10 @@ import {getCustomers} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
 
+type CustomerItemProps = {
+  item: ICustomer;
+};
+
 const CustomersTab = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
@@ -21,8 +25,8 @@ const CustomersTab = () => {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      const customers = getCustomers({realm});
-      setMyCustomers(customers);
+      const customersData = getCustomers({realm});
+      setMyCustomers(customersData);
     });
     return unsubscribe;
   }, [navigation, realm]);
@@ -179,6 +183,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-20'],
   },
   customerListItem: {
@@ -190,6 +195,7 @@ const styles = StyleSheet.create({
   customerListItemText: {
     fontSize: 16,
     color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
   },
   fabButton: {
     height: 48,

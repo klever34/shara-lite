@@ -12,13 +12,27 @@ export const saveCustomer = ({
 }: {
   realm: Realm;
   customer: ICustomer;
-}): void => {
+}): ICustomer => {
   const customerDetails: ICustomer = {
     ...customer,
+    name: customer.name,
+    mobile: customer.mobile,
     ...getBaseModelValues(),
   };
 
   realm.write(() => {
     realm.create<ICustomer>(modelName, customerDetails, UpdateMode.Modified);
   });
+
+  return customerDetails;
+};
+
+export const getCustomer = ({
+  realm,
+  customerId,
+}: {
+  realm: Realm;
+  customerId: string;
+}) => {
+  return realm.objectForPrimaryKey(modelName, customerId) as ICustomer;
 };

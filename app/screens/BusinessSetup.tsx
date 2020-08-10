@@ -1,33 +1,50 @@
-import {StackScreenProps} from '@react-navigation/stack';
-import React, {useRef, useState, useCallback} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import React, {useCallback, useRef, useState} from 'react';
+import {
+  Alert,
+  Image,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import ImagePicker from 'react-native-image-picker';
+import {ImagePickerOptions} from 'react-native-image-picker/src/internal/types';
+//@ts-ignore
 import SignatureCapture from 'react-native-signature-capture';
-import {Alert, ScrollView, StyleSheet, Text, View, Image} from 'react-native';
+import RNFetchBlob from 'rn-fetch-blob';
 import {Button, FloatingLabelInput} from '../components';
 import Icon from '../components/Icon';
 import Touchable from '../components/Touchable';
 import {applyStyles} from '../helpers/utils';
-import {RootStackParamList} from '../index';
+import {getApiService} from '../services';
 import {colors} from '../styles';
 
 type Fields = {
   address: string;
-  signature: string;
   business_name: string;
 };
 
-export const BusinessSetup = ({
-  navigation,
-}: StackScreenProps<RootStackParamList>) => {
+type Props = {
+  visible: boolean;
+  onClose: () => void;
+};
+
+export const BusinessSetup = ({visible, onClose}: Props) => {
   const ref = useRef<any>(null);
   const [loading, setLoading] = useState(false);
   const [signature, setSignature] = useState(false);
-  const [profileImage, setProfileImage] = useState('');
+  const [profileImage, setProfileImage] = useState<any | undefined>();
   const [fields, setFields] = useState<Fields>({} as Fields);
   const [isSignatureCaptureShown, setIsSignatureCaptureShown] = useState(false);
 
-  const handleError = useErrorHandler();
+  const apiService = getApiService();
+
+  const clearForm = useCallback(() => {
+    setFields({} as Fields);
+    setProfileImage(undefined);
+    setSignature(false);
+  }, []);
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -36,31 +53,12 @@ export const BusinessSetup = ({
     });
   };
 
-  const saveSign = useCallback(() => {
-    ref.current.saveImage();
-  }, []);
-
-  const resetSign = useCallback(() => {
-    ref.current.resetImage();
-    setSignature(false);
-  }, []);
-
-  const onSaveEvent = useCallback((result: any) => {
-    //result.encoded - for the base64 encoded png
-    //result.pathName - for the file path name
-    console.log(result);
-  }, []);
-
-  const onDragEvent = useCallback(() => {
-    setSignature(true);
-  }, []);
-
-  const isButtonDisabled = () => {
+  const isButtonDisabled = useCallback(() => {
     if (Object.keys(fields).length < 2) {
       return true;
     }
     return false;
-  };
+  }, [fields]);
 
   const handleShowSignatureCapture = useCallback(() => {
     setIsSignatureCaptureShown(true);
@@ -71,7 +69,7 @@ export const BusinessSetup = ({
   }, []);
 
   const handleAddPicture = useCallback(() => {
-    const options = {
+    const options: ImagePickerOptions = {
       maxWidth: 256,
       maxHeight: 256,
       noData: true,
@@ -81,228 +79,291 @@ export const BusinessSetup = ({
       takePhotoButtonTitle: 'Take a Photo',
     };
     ImagePicker.showImagePicker(options, (response) => {
-      console.log('Response = ', response);
       if (response.didCancel) {
         // do nothing
       } else if (response.error) {
         Alert.alert('Error', response.error);
       } else {
-        const {uri} = response;
-        setProfileImage(uri);
+        const {uri, type, fileName} = response;
         const extensionIndex = uri.lastIndexOf('.');
         const extension = uri.slice(extensionIndex + 1);
         const allowedExtensions = ['jpg', 'jpeg', 'png'];
-        //TODO: make API call to save image and get image url
         if (!allowedExtensions.includes(extension)) {
           return Alert.alert('Error', 'That file type is not allowed.');
         }
+        const image = {
+          uri,
+          type,
+          name: fileName,
+        };
+        setProfileImage(image);
       }
     });
   }, []);
 
   const handleSkip = useCallback(() => {
-    navigation.goBack();
-  }, [navigation]);
+    onClose();
+    clearForm();
+  }, [onClose, clearForm]);
 
-  const handleSubmit = async () => {
-    // const apiService = getApiService();
-    if (!isButtonDisabled()) {
-      try {
-        setLoading(true);
-        saveSign();
-        // await apiService.register(fields);
-        setLoading(false);
-        handleHideSignatureCapture();
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Main'}],
-        });
-      } catch (error) {
-        handleError(error);
-        Alert.alert('Error', error.message);
-      }
+  const saveSign = useCallback(() => {
+    if (ref.current) {
+      ref.current.saveImage();
     }
-  };
+  }, []);
+
+  const resetSign = useCallback(() => {
+    if (ref.current) {
+      ref.current.resetImage();
+      setSignature(false);
+    }
+  }, []);
+
+  const handleSubmit = useCallback(
+    async (signatureFile?: any) => {
+      const payload = new FormData();
+      payload.append('name', fields.business_name);
+      payload.append('address', fields.address);
+      profileImage && payload.append('profileImageFile', profileImage);
+      signatureFile && payload.append('signatureImageFile', signatureFile);
+
+      if (!isButtonDisabled()) {
+        try {
+          setLoading(true);
+          await apiService.businessSetup(payload);
+          setLoading(false);
+          handleHideSignatureCapture();
+          handleSkip();
+        } catch (error) {
+          setLoading(false);
+          Alert.alert('Error', error.message);
+        }
+      }
+    },
+    [
+      fields.business_name,
+      fields.address,
+      profileImage,
+      isButtonDisabled,
+      apiService,
+      handleHideSignatureCapture,
+      handleSkip,
+    ],
+  );
+
+  const onSaveWithSignature = useCallback(
+    async (result: {encoded: string; pathName: string}) => {
+      const dirs = RNFetchBlob.fs.dirs;
+      const path = dirs.DCIMDir + '/signature.png';
+      RNFetchBlob.fs.writeFile(path, result.encoded, 'base64').then(() => {
+        handleSubmit({
+          uri: `file://${path}`,
+          name: 'signature.png',
+          type: 'image/png',
+        });
+      });
+    },
+    [handleSubmit],
+  );
+
+  const onSaveWithoutSignature = useCallback(async () => {
+    handleSubmit();
+  }, [handleSubmit]);
+
+  const onDragEvent = useCallback(() => {
+    setSignature(true);
+  }, []);
 
   return (
-    <View
-      style={applyStyles('flex-1', {
-        backgroundColor: colors.white,
-      })}>
-      <ScrollView style={styles.container}>
-        <View style={applyStyles('mb-lg')}>
-          <Touchable onPress={() => navigation.goBack()}>
-            <View style={applyStyles({height: 40, width: 40})}>
-              <Icon size={24} type="feathericons" name="arrow-left" />
-            </View>
-          </Touchable>
-        </View>
-        <View style={applyStyles({marginBottom: 16})}>
-          <Text style={styles.heading}>Business Setup</Text>
-          <Text style={styles.description}>
-            Create an account to do business faster and better.
-          </Text>
-        </View>
-        <View>
-          <View style={applyStyles({marginBottom: 32})}>
-            <Touchable onPress={handleAddPicture}>
-              <View style={applyStyles('mb-xl items-center justify-center')}>
-                {profileImage ? (
-                  <Image
-                    style={applyStyles('mb-lg items-center justify-center', {
-                      width: 100,
-                      height: 100,
-                      borderRadius: 16,
-                      backgroundColor: colors['gray-20'],
-                    })}
-                    source={{uri: profileImage}}
-                  />
-                ) : (
-                  <View
-                    style={applyStyles('mb-lg items-center justify-center', {
-                      width: 100,
-                      height: 100,
-                      borderRadius: 16,
-                      backgroundColor: colors['gray-20'],
-                    })}>
-                    <Icon
-                      size={48}
-                      name="user"
-                      type="feathericons"
-                      color={colors['gray-50']}
-                    />
-                  </View>
-                )}
-                <View
-                  style={applyStyles(
-                    'flex-row',
-                    'items-center',
-                    'justify-center',
-                  )}>
-                  <Icon
-                    size={24}
-                    name="camera"
-                    type="feathericons"
-                    color={colors.primary}
-                  />
-                  <Text
-                    style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                      fontSize: 16,
-                      color: colors.primary,
-                    })}>
-                    {profileImage ? 'Edit' : 'Add profile image'}
-                  </Text>
-                </View>
+    <Modal visible={visible}>
+      <View
+        style={applyStyles('flex-1', {
+          backgroundColor: colors.white,
+        })}>
+        <ScrollView style={styles.container}>
+          <View style={applyStyles('mb-lg')}>
+            <Touchable onPress={handleSkip}>
+              <View
+                style={applyStyles('items-center justify-center', {
+                  height: 40,
+                  width: 40,
+                })}>
+                <Icon size={24} type="feathericons" name="arrow-left" />
               </View>
             </Touchable>
-            <View style={styles.inputFieldSpacer}>
-              <FloatingLabelInput
-                label="Business Name"
-                value={fields.business_name}
-                inputStyle={styles.inputField}
-                onChangeText={(text) => onChangeText(text, 'business_name')}
-              />
-            </View>
-            <View style={styles.inputFieldSpacer}>
-              <FloatingLabelInput
-                label="Address"
-                value={fields.address}
-                inputStyle={styles.inputField}
-                onChangeText={(text) => onChangeText(text, 'address')}
-              />
-            </View>
-            {isSignatureCaptureShown ? (
-              <View
-                style={applyStyles({
-                  paddingBottom: 100,
-                })}>
-                <View style={styles.signatureContainer}>
-                  <SignatureCapture
-                    ref={ref}
-                    showBorder={false}
-                    viewMode={'portrait'}
-                    showTitleLabel={false}
-                    onSaveEvent={onSaveEvent}
-                    onDragEvent={onDragEvent}
-                    showNativeButtons={false}
-                    saveImageFileInExtStorage={false}
-                    style={applyStyles('flex-1 w-full h-full')}
-                  />
-                </View>
-                <Text
-                  style={applyStyles('text-400 text-center', {
-                    fontSize: 12,
-                    color: colors['gray-300'],
-                  })}>
-                  Your Signature
-                </Text>
-                <View
-                  style={applyStyles(
-                    'flex-1',
-                    'flex-row',
-                    'justify-center',
-                    'item-center',
-                  )}>
-                  {!!signature && (
-                    <Touchable
-                      onPress={() => {
-                        resetSign();
-                      }}>
-                      <Text
-                        style={applyStyles('py-md text-center text-400', {
-                          fontSize: 16,
-                        })}>
-                        Clear
-                      </Text>
-                    </Touchable>
+          </View>
+          <View style={applyStyles({marginBottom: 16})}>
+            <Text style={styles.heading}>Business Setup</Text>
+            <Text style={styles.description}>
+              Create an account to do business faster and better.
+            </Text>
+          </View>
+          <View>
+            <View style={applyStyles({marginBottom: 32})}>
+              <Touchable onPress={handleAddPicture}>
+                <View style={applyStyles('mb-xl items-center justify-center')}>
+                  {profileImage ? (
+                    <Image
+                      style={applyStyles('mb-lg items-center justify-center', {
+                        width: 100,
+                        height: 100,
+                        borderRadius: 16,
+                        backgroundColor: colors['gray-20'],
+                      })}
+                      source={{uri: profileImage.uri}}
+                    />
+                  ) : (
+                    <View
+                      style={applyStyles('mb-lg items-center justify-center', {
+                        width: 100,
+                        height: 100,
+                        borderRadius: 16,
+                        backgroundColor: colors['gray-20'],
+                      })}>
+                      <Icon
+                        size={48}
+                        name="user"
+                        type="feathericons"
+                        color={colors['gray-50']}
+                      />
+                    </View>
                   )}
-                </View>
-              </View>
-            ) : (
-              <Touchable onPress={handleShowSignatureCapture}>
-                <View
-                  style={applyStyles({
-                    paddingBottom: 100,
-                  })}>
                   <View
                     style={applyStyles(
-                      'items-center justify-center',
-                      styles.signatureContainer,
+                      'flex-row',
+                      'items-center',
+                      'justify-center',
                     )}>
+                    <Icon
+                      size={24}
+                      name="camera"
+                      type="feathericons"
+                      color={colors.primary}
+                    />
                     <Text
                       style={applyStyles(
+                        'pl-sm',
                         'text-400',
-                        'text-center',
                         'text-uppercase',
-                        {color: colors['gray-50']},
+                        {
+                          fontSize: 16,
+                          color: colors.primary,
+                        },
                       )}>
-                      Touch here to sign
+                      {profileImage ? 'Edit' : 'Add profile image'}
                     </Text>
                   </View>
                 </View>
               </Touchable>
-            )}
+              <View style={styles.inputFieldSpacer}>
+                <FloatingLabelInput
+                  label="Business Name"
+                  value={fields.business_name}
+                  inputStyle={styles.inputField}
+                  onChangeText={(text) => onChangeText(text, 'business_name')}
+                />
+              </View>
+              <View style={styles.inputFieldSpacer}>
+                <FloatingLabelInput
+                  label="Address"
+                  value={fields.address}
+                  inputStyle={styles.inputField}
+                  onChangeText={(text) => onChangeText(text, 'address')}
+                />
+              </View>
+              {isSignatureCaptureShown ? (
+                <View
+                  style={applyStyles({
+                    paddingBottom: 100,
+                  })}>
+                  <View style={styles.signatureContainer}>
+                    <SignatureCapture
+                      ref={ref}
+                      showBorder={false}
+                      viewMode={'portrait'}
+                      showTitleLabel={false}
+                      onDragEvent={onDragEvent}
+                      showNativeButtons={false}
+                      saveImageFileInExtStorage={false}
+                      onSaveEvent={onSaveWithSignature}
+                      style={applyStyles('flex-1 w-full h-full')}
+                    />
+                  </View>
+                  <Text
+                    style={applyStyles('text-400 text-center', {
+                      fontSize: 12,
+                      color: colors['gray-300'],
+                    })}>
+                    Your Signature
+                  </Text>
+                  <View
+                    style={applyStyles(
+                      'flex-1',
+                      'flex-row',
+                      'justify-center',
+                      'item-center',
+                    )}>
+                    {!!signature && (
+                      <Touchable
+                        onPress={() => {
+                          resetSign();
+                        }}>
+                        <Text
+                          style={applyStyles('py-md text-center text-400', {
+                            fontSize: 16,
+                          })}>
+                          Clear
+                        </Text>
+                      </Touchable>
+                    )}
+                  </View>
+                </View>
+              ) : (
+                <Touchable onPress={handleShowSignatureCapture}>
+                  <View
+                    style={applyStyles({
+                      paddingBottom: 100,
+                    })}>
+                    <View
+                      style={applyStyles(
+                        'items-center justify-center',
+                        styles.signatureContainer,
+                      )}>
+                      <Text
+                        style={applyStyles(
+                          'text-400',
+                          'text-center',
+                          'text-uppercase',
+                          {color: colors['gray-50']},
+                        )}>
+                        Touch here to sign
+                      </Text>
+                    </View>
+                  </View>
+                </Touchable>
+              )}
+            </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
 
-      <View style={styles.actionButtons}>
-        <Button
-          title="Skip"
-          variantColor="clear"
-          onPress={handleSkip}
-          style={styles.actionButton}
-        />
-        <Button
-          title="Done"
-          variantColor="red"
-          disabled={loading}
-          isLoading={loading}
-          onPress={handleSubmit}
-          style={styles.actionButton}
-        />
+        <View style={styles.actionButtons}>
+          <Button
+            title="Skip"
+            variantColor="clear"
+            onPress={handleSkip}
+            style={styles.actionButton}
+          />
+          <Button
+            title="Done"
+            variantColor="red"
+            disabled={loading}
+            isLoading={loading}
+            style={styles.actionButton}
+            onPress={signature ? saveSign : onSaveWithoutSignature}
+          />
+        </View>
       </View>
-    </View>
+    </Modal>
   );
 };
 

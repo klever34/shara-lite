@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors['gray-300'],
   },
   inputIcon: {
-    top: 34,
+    top: 33,
     position: 'absolute',
   },
 });

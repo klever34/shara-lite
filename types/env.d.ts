@@ -5,6 +5,15 @@ declare module 'react-native-config' {
 
   export const SENTRY_DSN: string;
 
-  export const ENVIRONMENT: string;
+  export const SEGMENT_KEY: string;
+
+  export const UXCAM_KEY: string;
+
+  export const ENVIRONMENT:
+    | 'dev'
+    | 'test'
+    | 'discovery'
+    | 'production'
+    | 'local';
   export const API_BASE_URL: string;
 }

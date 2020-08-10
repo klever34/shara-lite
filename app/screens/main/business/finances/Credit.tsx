@@ -1,17 +1,19 @@
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
+import {orderBy} from 'lodash';
 import React, {useCallback} from 'react';
 import {FlatList, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {Button, FAButton} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICreditPayment} from '../../../../models/CreditPayment';
 import {getCreditPayments} from '../../../../services/CreditPaymentService';
+import {getCredits} from '../../../../services/CreditService';
 import {getSummary, IFinanceSummary} from '../../../../services/FinanceService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
-import {getCredits} from '../../../../services/CreditService';
 
 type CreditItemProps = {
   item: ICreditPayment;
@@ -24,11 +26,6 @@ export const MyCredit = () => {
   const credits = getCredits({realm});
   const creditsPayments = getCreditPayments({realm});
   const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
-  const paymentMethodLabel = {
-    cash: 'Cash',
-    transfer: 'Bank Transfer',
-    mobile: 'Mobile Money',
-  } as {[key: string]: string};
 
   const handleNavigation = useCallback(
     (route: string, options?: object) => {
@@ -36,6 +33,10 @@ export const MyCredit = () => {
     },
     [navigation],
   );
+
+  const handleGoToRecordPayment = useCallback(() => {
+    handleNavigation('RecordCreditPayment');
+  }, [handleNavigation]);
 
   const handleCreditItemClick = useCallback(
     (creditPaymentDetails) => {
@@ -81,21 +82,21 @@ export const MyCredit = () => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(item.amount_paid)}
+                {amountWithCurrency(item.amount_paid)}
               </Text>
               <Text
                 style={applyStyles('text-400', {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {paymentMethodLabel[item.payment.method]}
+                {PAYMENT_METHOD_LABEL[item.payment.method]}
               </Text>
             </View>
           </View>
         </Touchable>
       );
     },
-    [handleCreditItemClick, paymentMethodLabel],
+    [handleCreditItemClick],
   );
 
   return (
@@ -105,8 +106,9 @@ export const MyCredit = () => {
         <View style={applyStyles('p-xl')}>
           <Button
             title="record credit payment"
+            disabled={!overdueCredit.length}
+            onPress={handleGoToRecordPayment}
             style={applyStyles('mb-lg', {width: '100%'})}
-            onPress={() => handleNavigation('RecordCreditPayment')}
           />
           <Touchable
             onPress={() =>
@@ -131,7 +133,7 @@ export const MyCredit = () => {
                   fontSize: 24,
                   color: colors['gray-300'],
                 })}>
-                &#8358;{numberWithCommas(financeSummary.overdueCredit)}
+                {amountWithCurrency(financeSummary.overdueCredit)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-uppercase', {
@@ -164,7 +166,7 @@ export const MyCredit = () => {
                   fontSize: 24,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(financeSummary.overdueCredit)}
+                {amountWithCurrency(financeSummary.overdueCredit)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-uppercase', {
@@ -186,9 +188,9 @@ export const MyCredit = () => {
               Payment History
             </Text>
             <FlatList
-              data={creditsPayments}
               renderItem={renderCreditItem}
               keyExtractor={(item) => `${item.id}`}
+              data={orderBy(creditsPayments, 'created_at', 'desc')}
             />
           </View>
         )}

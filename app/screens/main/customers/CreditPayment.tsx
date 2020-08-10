@@ -3,7 +3,7 @@ import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {CreditPaymentForm} from '../../../components';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
@@ -52,13 +52,13 @@ const CreditPayment = ({route}: any) => {
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Customer</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditDetails.customer_name}
+              {creditDetails.customer?.name}
             </Text>
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(creditDetails.amount_left)}
+              {amountWithCurrency(creditDetails.amount_left)}
             </Text>
           </View>
         </View>
@@ -76,22 +76,24 @@ const CreditPayment = ({route}: any) => {
                 : ''}
             </Text>
           </View>
-          <View style={applyStyles('pb-sm', {width: '48%'})}>
-            <Text style={styles.itemTitle}>Due on</Text>
-            <Text
-              style={applyStyles(styles.itemDataMedium, 'text-400', {
-                color: colors.primary,
-              })}>
-              {creditDetails.created_at
-                ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
-                : ''}
-            </Text>
-            <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-              {creditDetails.created_at
-                ? format(new Date(creditDetails.created_at), 'hh:mm:a')
-                : ''}
-            </Text>
-          </View>
+          {creditDetails.due_date && (
+            <View style={applyStyles('pb-sm', {width: '48%'})}>
+              <Text style={styles.itemTitle}>Due on</Text>
+              <Text
+                style={applyStyles(styles.itemDataMedium, 'text-400', {
+                  color: colors.primary,
+                })}>
+                {creditDetails.due_date
+                  ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+                  : ''}
+              </Text>
+              <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
+                {creditDetails.due_date
+                  ? format(new Date(creditDetails.due_date), 'hh:mm:a')
+                  : ''}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
       <View>
