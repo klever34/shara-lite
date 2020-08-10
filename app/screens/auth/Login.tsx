@@ -30,7 +30,9 @@ export const Login = ({navigation}: any) => {
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
   useEffect(() => {
-    logoutFromRealm && logoutFromRealm();
+    setTimeout(() => {
+      logoutFromRealm && logoutFromRealm();
+    }, 3000);
   }, [logoutFromRealm]);
 
   const onChangeText = (value: string, field: keyof Fields) => {

@@ -9,6 +9,7 @@ import {Customer, Payment} from '../../types/app';
 import {IReceiptItem} from '../models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './CustomerService';
+import {IPayment} from '../models/Payment';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -61,7 +62,7 @@ export const saveReceipt = ({
   receipt.customer = receiptCustomer as ICustomer;
 
   realm.write(() => {
-    realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
+    realm.create<IPayment>(modelName, receipt, UpdateMode.Modified);
   });
 
   payments.forEach((payment) => {
@@ -104,7 +105,11 @@ export const updateReceipt = ({
   receipt: IReceipt;
 }): void => {
   realm.write(() => {
-    receipt.customer = customer;
+    const updates = {
+      customer,
+      _id: receipt._id,
+    };
+    realm.create<Payment>(modelName, updates, UpdateMode.Modified);
     (receipt.payments || []).forEach((payment) => {
       updatePayment({realm, payment, updates: {customer}});
     });
