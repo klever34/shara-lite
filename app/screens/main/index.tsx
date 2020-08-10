@@ -57,7 +57,7 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {ISupplier} from 'app/models/Supplier';
+import {ISupplier} from '../../models/Supplier';
 import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
 import {Expenses} from './business/finances/Expenses';
 

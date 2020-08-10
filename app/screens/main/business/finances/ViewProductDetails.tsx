@@ -9,7 +9,7 @@ import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
 import {getProduct, deleteProduct} from '../../../../services/ProductService';
 import {useRealm} from '../../../../services/realm';
-import {IProduct} from 'app/models/Product';
+import {IProduct} from '../../../../models/Product';
 
 export const ViewProductDetails = ({
   route,

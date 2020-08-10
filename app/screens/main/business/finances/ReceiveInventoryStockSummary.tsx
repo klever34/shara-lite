@@ -218,6 +218,25 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
             />
           </View>
         </View>
+        <Button
+          variantColor="white"
+          onPress={handleCancel}
+          style={applyStyles('mt-lg mb-xl')}>
+          <View style={applyStyles('items-center flex-row justify-center')}>
+            <Icon
+              size={24}
+              name="plus"
+              type="feathericons"
+              color={colors.primary}
+            />
+            <Text
+              style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                color: colors['gray-200'],
+              })}>
+              Add product
+            </Text>
+          </View>
+        </Button>
         <Text
           style={applyStyles('mt-xl mb-lg text-400', {
             fontSize: 18,
