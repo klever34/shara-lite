@@ -73,9 +73,7 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
             </Text>
           </View>
           <View
-            style={applyStyles('flex-row w-full justify-space-between', {
-              marginBottom: 48,
-            })}>
+            style={applyStyles('mb-md flex-row w-full justify-space-between')}>
             <View>
               <Text
                 style={applyStyles('pb-xs text-400 text-uppercase', {
@@ -118,6 +116,29 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
               </Text>
             </View>
           </View>
+          <View
+            style={applyStyles('flex-row w-full justify-space-between', {
+              marginBottom: 48,
+            })}>
+            <View>
+              <Text
+                style={applyStyles('pb-xs text-400 text-uppercase', {
+                  color: colors['gray-100'],
+                })}>
+                Delivery Agent
+              </Text>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                {inventory?.delivery_agent
+                  ? inventory?.delivery_agent?.full_name
+                  : 'No Delivery Agent'}
+              </Text>
+            </View>
+          </View>
+
           <FlatList
             nestedScrollEnabled
             renderItem={renderSummaryItem}

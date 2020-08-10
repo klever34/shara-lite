@@ -110,7 +110,6 @@ export const CustomersList = (props: Props) => {
             color={colors.primary}
           />
           <TextInput
-            autoFocus
             value={searchInputValue}
             style={applyStyles(styles.searchInput, 'text-400')}
             placeholder="Search Customer"
