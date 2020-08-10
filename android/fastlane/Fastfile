@@ -1,0 +1,64 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :internal do
+    gradle(task: "clean assembleRelease")
+    firebase_app_distribution(
+      app: ENV['FIREBASE_APP_ID_ANDROID'],
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      groups: "shara-product"
+    )
+  end
+
+  desc "Deploy a new version to the Google Play Internal Test Release"
+  lane :playinternalappsharing do
+    gradle(task: "clean bundleRelease")
+    upload_to_play_store_internal_app_sharing
+  end
+
+  desc "Deploy a new version to the Google Play lane"
+  lane :play do
+    gradle(task: "clean bundleRelease")
+    upload_to_play_store(
+      track: ENV['GOOGLE_PLAY_TRACK']
+    )
+  end
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+    slack(
+      message: "Successfully deployed new Shara version " + ENV['SHARA_VERSION_NAME'],
+      slack_url: ENV['SLACK_WEBHOOK'],
+      channel: ENV['SLACK_CHANNEL']
+    )
+  end
+
+  error do |lane, exception|
+    slack(
+      message: exception.message + ENV['SHARA_VERSION_NAME'],
+      slack_url: ENV['SLACK_WEBHOOK'],
+      success: false
+    )
+  end
+end
