@@ -19,15 +19,17 @@ import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
+import {getStorageService} from '../services';
 
 type BluetoothDevice = {address: string; name?: string};
 type BluetoothDeviceItem = {item: BluetoothDevice};
 type Props = {
   print?: boolean;
   error?: boolean;
+  visible?: boolean;
   success?: boolean;
   onClose?: () => void;
-  onPrintReceipt?: () => void;
+  onPrintReceipt?: (address?: string) => void;
 };
 
 export const BluetoothModal = ({
@@ -35,16 +37,18 @@ export const BluetoothModal = ({
   print,
   success,
   onClose,
+  visible,
   onPrintReceipt,
 }: Props) => {
   const [section, setSection] = useState(0);
-  const [visible, setVisible] = useState(false);
   const [isScanning, setIsScanning] = useState(false);
   const [isPrinting, setIsPrinting] = useState(print || false);
   const [foundDevices, setFoundDevices] = useState<BluetoothDevice[]>([]);
   const [pairedDevices, setPairedDevices] = useState<BluetoothDevice[]>([]);
   const [isPrintError, setIsPrintError] = useState(error || false);
   const [isPrintSuccess, setIsPrintSuccess] = useState(success || false);
+
+  const storageService = getStorageService();
 
   const _listeners: any[] = [];
   const devices = [
@@ -59,7 +63,6 @@ export const BluetoothModal = ({
   ];
 
   const handleClose = useCallback(() => {
-    setVisible(false);
     setIsPrinting(false);
     setIsPrintError(false);
     setIsPrintSuccess(false);
@@ -75,9 +78,9 @@ export const BluetoothModal = ({
         setFoundDevices(ss.found);
         setIsScanning(false);
       },
-      (error: any) => {
+      (errorData: any) => {
         setIsScanning(false);
-        Alert.alert('Error', JSON.stringify(error));
+        Alert.alert('Error', JSON.stringify(errorData));
       },
     );
   }, []);
@@ -100,27 +103,43 @@ export const BluetoothModal = ({
           handleBluetoothScan();
         }
       },
-      (error: any) => {
-        Alert.alert('Error', JSON.stringify(error));
+      (errorInfo: any) => {
+        Alert.alert('Error', JSON.stringify(errorInfo));
       },
     );
   }, [handleBluetoothScan]);
 
-  const handleConnect = useCallback((rowData) => {
-    BluetoothManager.connect(rowData.address).then(
-      (s: any) => {
-        console.log(s);
-        setVisible(false);
-      },
-      (error: any) => {
-        Alert.alert('Error', error.message);
-      },
-    );
-  }, []);
+  const handlePrintReceipt = useCallback(
+    async (address?: string) => {
+      const savedPrinter = (await storageService.getItem('printer')) as {
+        address: string;
+      };
+      if (savedPrinter) {
+        onPrintReceipt && onPrintReceipt(savedPrinter.address);
+      } else {
+        onPrintReceipt && onPrintReceipt(address);
+      }
+    },
+    [onPrintReceipt, storageService],
+  );
 
-  const handlePrintReceipt = useCallback(() => {
-    onPrintReceipt && onPrintReceipt();
-  }, [onPrintReceipt]);
+  const handleConnect = useCallback(
+    (rowData) => {
+      BluetoothManager.connect(rowData.address).then(
+        async () => {
+          await storageService.setItem('printer', {
+            address: rowData.address,
+          });
+          handleClose();
+          handlePrintReceipt(rowData.address);
+        },
+        (e: any) => {
+          Alert.alert('Error', e.message);
+        },
+      );
+    },
+    [handleClose, handlePrintReceipt, storageService],
+  );
 
   const deviceAlreadyPaired = useCallback(
     (rsp: {devices: BluetoothDevice[]} | {devices: string}) => {
@@ -143,8 +162,6 @@ export const BluetoothModal = ({
         );
         if (defaultPrinter) {
           handleConnect(defaultPrinter);
-        } else {
-          setVisible(true);
         }
       }
     },
@@ -180,8 +197,6 @@ export const BluetoothModal = ({
             );
             if (defaultPrinter) {
               handleConnect(defaultPrinter);
-            } else {
-              setVisible(true);
             }
           }
         }
@@ -447,7 +462,7 @@ export const BluetoothModal = ({
           }
         } else {
           setSection(0);
-          setVisible(true);
+          // setVisible(true);
         }
       },
       (err: any) => {
@@ -464,7 +479,6 @@ export const BluetoothModal = ({
 
   useEffect(() => {
     if (print) {
-      setVisible(true);
       setIsPrinting(true);
       setSection(2);
     }

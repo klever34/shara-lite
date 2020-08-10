@@ -47,7 +47,6 @@ export type SummaryTableItemProps = {
 
 type Props = {
   products: IReceiptItem[];
-  onPrintReceipt: () => void;
   onClearReceipt: () => void;
   onCloseSummaryModal: () => void;
   onRemoveProductItem: (item: IReceiptItem) => void;
@@ -194,7 +193,6 @@ const ReceiptSummary = (props: Props) => {
   const {
     products,
     onClearReceipt,
-    onPrintReceipt,
     onRemoveProductItem,
     onUpdateProductItem,
     onCloseSummaryModal,
@@ -872,13 +870,14 @@ const ReceiptSummary = (props: Props) => {
       <ReceiptStatusModal
         customer={customer}
         isSaving={isSaving}
+        products={products}
         timeTaken={timeTaken}
         amountPaid={amountPaid}
+        totalAmount={totalAmount}
         creditAmount={creditAmount}
         onComplete={handleComplete}
         isCompleting={isCompleting}
         visible={isSuccessModalOpen}
-        onPrintReceipt={onPrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onNewReceiptClick={handleNewReceiptClick}
         onOpenCustomerModal={handleOpenCustomerModal}

@@ -21,6 +21,8 @@ export interface IAuthService {
   logOut(): void;
 
   getUserCurrency(): string;
+
+  getUserCurrencyCode(): string;
 }
 
 export class AuthService implements IAuthService {
@@ -90,5 +92,11 @@ export class AuthService implements IAuthService {
       ? countryCurrency.symbolFormat.replace('{#}', '')
       : '$';
     return currency;
+  }
+
+  public getUserCurrencyCode(): string {
+    const user = this.user;
+    const currencyCode = user?.currency_code ? user.currency_code : '';
+    return currencyCode;
   }
 }

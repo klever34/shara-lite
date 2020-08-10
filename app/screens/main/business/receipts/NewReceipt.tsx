@@ -1,38 +1,33 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
-  BluetoothEscposPrinter,
-  BluetoothManager,
-} from 'react-native-bluetooth-escpos-printer';
-import {
+  Alert,
   FlatList,
   Modal as ReactNativeModal,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
-  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
-  BluetoothModal,
 } from '../../../../components';
+import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import HeaderRight from '../../../../components/HeaderRight';
-import {ProductsPreviewModal} from './ProductsPreviewModal';
-import ReceiptSummary from './ReceiptSummary';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
 import {IProduct} from '../../../../models/Product';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
+import {getProducts} from '../../../../services/ProductService';
+import {useRealm} from '../../../../services/realm';
+import {colors} from '../../../../styles';
+import {ProductsPreviewModal} from './ProductsPreviewModal';
+import ReceiptSummary from './ReceiptSummary';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -55,9 +50,6 @@ export const NewReceipt = () => {
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
     false,
   );
-  const [isPrinting, setIsPrinting] = useState(false);
-  const [isPrintError, setIsPrintError] = useState(false);
-  const [isPrintSuccess, setIsPrintSuccess] = useState(false);
   const authService = getAuthService();
   const currency = authService.getUserCurrency();
 
@@ -200,68 +192,6 @@ export const NewReceipt = () => {
     selectedProduct,
     handleOpenSummaryModal,
   ]);
-
-  const handleClosePrinterModal = useCallback(() => {
-    setIsPrinting(false);
-    setIsPrintError(false);
-    setIsPrintSuccess(false);
-  }, []);
-
-  const handlePrintReceipt = useCallback(async () => {
-    setIsPrinting(true);
-    try {
-      // TODO Connect to Bluetooth Printer
-      const printer = 'DC:0D:30:91:67:90'; // the device address scanned.
-      await BluetoothManager.connect(printer);
-      const receiptStyles = {
-        header: {
-          widthtimes: 2,
-          heigthtimes: 2,
-          fonttype: 1,
-        },
-        subheader: {
-          widthtimes: 1,
-          heigthtimes: 1,
-          fonttype: 1,
-        },
-        product: {
-          widthtimes: 0,
-          heigthtimes: 0,
-          fonttype: 1,
-        },
-      };
-      // TODO Print Receipt
-      await BluetoothEscposPrinter.printerAlign(
-        BluetoothEscposPrinter.ALIGN.LEFT,
-      );
-      await BluetoothEscposPrinter.printText(
-        '--------------------------------\n\r',
-        {},
-      );
-      await BluetoothEscposPrinter.printText(
-        'Receipt\n\r',
-        receiptStyles.header,
-      );
-      await BluetoothEscposPrinter.printText(
-        'Products\n\r',
-        receiptStyles.subheader,
-      );
-      for (const product of receipt) {
-        const p = product.price;
-        const q = product.quantity;
-        const total = Math.imul(q, p).toString();
-        await BluetoothEscposPrinter.printText(
-          `${product.quantity} X ${product.name} @ N${product.price}/pcs = N${total} \n\r`,
-          receiptStyles.product,
-        );
-      }
-      setIsPrintSuccess(true);
-      // TODO Print Payments
-    } catch (err) {
-      Alert.alert('Bluetooth Status', err.toString());
-      setIsPrintError(true);
-    }
-  }, [receipt]);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -468,7 +398,6 @@ export const NewReceipt = () => {
         <ReceiptSummary
           products={receipt}
           onClearReceipt={handleClearReceipt}
-          onPrintReceipt={handlePrintReceipt}
           onRemoveProductItem={handleRemoveProductItem}
           onUpdateProductItem={handleUpdateProductItem}
           onCloseSummaryModal={handleCloseSummaryModal}
@@ -496,13 +425,6 @@ export const NewReceipt = () => {
         products={receipt}
         visible={isProductsPreviewModalOpen}
         onClose={handleCloseProductsPreviewModal}
-      />
-      <BluetoothModal
-        print={isPrinting}
-        error={isPrintError}
-        success={isPrintSuccess}
-        onClose={handleClosePrinterModal}
-        onPrintReceipt={handlePrintReceipt}
       />
     </SafeAreaView>
   );
