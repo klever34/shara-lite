@@ -6,17 +6,17 @@ import {
   Text,
   View,
 } from 'react-native';
-import {FAButton} from '../../../components';
+import {FAButton} from '@/components';
 import {useNavigation} from '@react-navigation/native';
-import {applyStyles} from '../../../helpers/utils';
-import {colors} from '../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import Touchable from '../../../components/Touchable';
 import {IConversation, IMessage} from '../../../models';
-import {useRealm} from '../../../services/realm';
-import {useTyping} from '../../../services/pubnub';
+import {useRealm} from '@/services/realm';
+import {useTyping} from '@/services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import MessageStatusIcon from '../../../components/MessageStatusIcon';
-import {getAuthService} from '../../../services';
+import {getAuthService} from '@/services';
 
 type ChatListItemProps = {
   conversation: IConversation;

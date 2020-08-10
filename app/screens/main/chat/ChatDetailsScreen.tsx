@@ -8,21 +8,21 @@ import {
   VirtualizedList,
 } from 'react-native';
 import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '..';
-import HeaderTitle from '../../../components/HeaderTitle';
-import Icon from '../../../components/Icon';
-import Touchable from '../../../components/Touchable';
-import {applyStyles} from '../../../helpers/utils';
-import ContactsList from '../../../components/ContactsList';
-import {useRealm} from '../../../services/realm';
-import {IContact, IConversation} from '../../../models';
-import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import {MainStackParamList} from '@/screens/main';
+import HeaderTitle from '@/components/HeaderTitle';
+import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {applyStyles} from '@/helpers/utils';
+import ContactsList from '@/components/ContactsList';
+import {useRealm} from '@/services/realm';
+import {IContact, IConversation} from '@/models';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import TextInput from '../../../components/TextInput';
-import {getApiService, getAuthService} from '../../../services';
-import {useErrorHandler} from 'react-error-boundary';
-import HeaderRight, {HeaderRightOption} from '../../../components/HeaderRight';
+import {getApiService, getAuthService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
+import HeaderRight, {HeaderRightOption} from '@/components/HeaderRight';
 import {UpdateMode} from 'realm';
-import {ModalPropsList} from '../../../../types/modal';
+import {ModalPropsList} from 'types/modal';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';

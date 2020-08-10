@@ -2,7 +2,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import {Results} from 'realm';

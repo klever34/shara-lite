@@ -1,9 +1,9 @@
 import 'react-native-gesture-handler';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {useErrorHandler, withErrorBoundary} from 'react-error-boundary';
+import {ErrorBoundary, useErrorHandler} from 'react-error-boundary';
 import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
@@ -20,7 +20,7 @@ import {
 } from 'react-native';
 import {colors} from './styles';
 import {applyStyles} from './helpers/utils';
-import FallbackComponent from './components/FallbackComponent';
+import ErrorFallback from './components/ErrorFallback';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -103,9 +103,8 @@ const App = () => {
   );
 };
 
-export default withErrorBoundary(App, {
-  FallbackComponent,
-  onError(error, componentStack) {
+const AppWithErrorBoundary = () => {
+  const onError = useCallback((error: Error, componentStack: string) => {
     if (process.env.NODE_ENV === 'production') {
       Sentry.captureException(error, (scope) => {
         if (componentStack) {
@@ -121,5 +120,13 @@ export default withErrorBoundary(App, {
       console.log('Error: ', error);
       console.log('Stack: ', componentStack);
     }
-  },
-});
+  }, []);
+
+  return (
+    <ErrorBoundary fallbackRender={ErrorFallback} onError={onError}>
+      <App />
+    </ErrorBoundary>
+  );
+};
+
+export default AppWithErrorBoundary;

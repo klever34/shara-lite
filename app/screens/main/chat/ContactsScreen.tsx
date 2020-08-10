@@ -15,7 +15,7 @@ import {useRealm} from '../../../services/realm';
 import {IContact, IConversation} from '../../../models';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
