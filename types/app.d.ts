@@ -83,7 +83,7 @@ type ReceiptItem = {
 
 type InventoryStockItem = {
   quantity: string;
-  cost_price?: string;
+  cost_price?: number;
   product: IProduct;
 };
 

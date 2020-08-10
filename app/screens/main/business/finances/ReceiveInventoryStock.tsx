@@ -2,6 +2,7 @@ import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Modal as ReactNativeModal,
   SafeAreaView,
@@ -10,7 +11,6 @@ import {
   View,
 } from 'react-native';
 import Modal from 'react-native-modal';
-import {InventoryStockItem} from '../../../../../types/app';
 import {
   Button,
   CurrencyInput,
@@ -22,12 +22,13 @@ import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {IProduct} from '../../../../models/Product';
+import {IStockItem} from '../../../../models/StockItem';
 import {getProducts} from '../../../../services/ProductService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
-import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
 import {ReceiveInventoryStockPreview} from './ReceiveInventoryStockPreview';
+import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -43,9 +44,7 @@ export const ReceiveInventoryStock = ({
 
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [price, setPrice] = useState<string | undefined>('');
-  const [inventoryStock, setInventoryStock] = useState<InventoryStockItem[]>(
-    [],
-  );
+  const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
   const [quantity, setQuantity] = useState<string | undefined>('');
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
@@ -59,14 +58,41 @@ export const ReceiveInventoryStock = ({
   }, [navigation]);
 
   const handleAddItem = useCallback(() => {
-    if (quantity) {
-      const product = {
+    if (quantity && price) {
+      const itemPrice = parseInt(price, 10);
+      const itemQuantity = parseInt(quantity, 10);
+      const stock = {
         supplier,
-        quantity,
-        cost_price: price,
+        cost_price: itemPrice,
+        quantity: itemQuantity,
         product: selectedProduct,
-      } as InventoryStockItem;
-      setInventoryStock([product, ...inventoryStock]);
+        sku: selectedProduct?.sku,
+        name: selectedProduct?.name,
+        supplier_name: supplier.name,
+        weight: selectedProduct?.sku,
+        total_cost_price: itemPrice * itemQuantity,
+      } as IStockItem;
+
+      if (
+        inventoryStock
+          .map((item) => item.product._id)
+          .includes(stock?.product._id)
+      ) {
+        console.log('here');
+        setInventoryStock(
+          inventoryStock.map((item) => {
+            if (item.product._id === stock.product._id) {
+              return {
+                ...item,
+                quantity: parseFloat(quantity),
+              };
+            }
+            return item;
+          }),
+        );
+      } else {
+        setInventoryStock([stock, ...inventoryStock]);
+      }
       setSelectedProduct(null);
       setPrice('');
       setQuantity('');
@@ -81,9 +107,22 @@ export const ReceiveInventoryStock = ({
     setQuantity(item);
   }, []);
 
-  const handleSelectProduct = useCallback((item: IProduct) => {
-    setSelectedProduct(item);
-  }, []);
+  const handleSelectProduct = useCallback(
+    (product: IProduct) => {
+      const stock = inventoryStock.find(
+        (item) => item.product._id === product._id,
+      );
+
+      if (stock) {
+        setQuantity(stock.quantity.toString());
+        setPrice(stock?.cost_price?.toString());
+        setSelectedProduct(product);
+      } else {
+        setSelectedProduct(product);
+      }
+    },
+    [inventoryStock],
+  );
 
   const handleOpenSummaryModal = useCallback(() => {
     setIsSummaryModalOpen(true);
@@ -113,20 +152,48 @@ export const ReceiveInventoryStock = ({
 
   const handleDone = useCallback(() => {
     let items = inventoryStock;
-    if (selectedProduct && quantity) {
-      const product = {
-        quantity,
+    if (selectedProduct && quantity && price) {
+      const itemPrice = parseInt(price, 10);
+      const itemQuantity = parseInt(quantity, 10);
+      const stock = {
         supplier,
-        cost_price: price,
+        cost_price: itemPrice,
+        quantity: itemQuantity,
         product: selectedProduct,
-      } as InventoryStockItem;
+        sku: selectedProduct?.sku,
+        name: selectedProduct?.name,
+        supplier_name: supplier.name,
+        weight: selectedProduct?.sku,
+        total_cost_price: itemPrice * itemQuantity,
+      } as IStockItem;
 
       handleAddItem();
-      items = [product, ...inventoryStock];
+
+      if (
+        inventoryStock
+          .map((item) => item.product._id)
+          .includes(stock?.product._id)
+      ) {
+        items = inventoryStock.map((item) => {
+          if (item.product._id === stock.product._id) {
+            return {
+              ...item,
+              quantity: parseFloat(quantity),
+            };
+          }
+          return item;
+        });
+      } else {
+        items = [stock, ...inventoryStock];
+      }
     }
-    setInventoryStock(items);
-    setSelectedProduct(null);
-    handleOpenSummaryModal();
+    if ((selectedProduct && quantity && price) || items.length) {
+      setInventoryStock(items);
+      setSelectedProduct(null);
+      handleOpenSummaryModal();
+    } else {
+      Alert.alert('Error', 'Please select at least one product item');
+    }
   }, [
     inventoryStock,
     selectedProduct,
@@ -201,6 +268,7 @@ export const ReceiveInventoryStock = ({
       />
       <Modal
         isVisible={!!selectedProduct}
+        onBackdropPress={handleCloseProductModal}
         onSwipeComplete={handleCloseProductModal}
         onBackButtonPress={handleCloseProductModal}
         style={applyStyles({
@@ -318,6 +386,7 @@ export const ReceiveInventoryStock = ({
 
       <ReactNativeModal visible={isSummaryModalOpen}>
         <ReceiveInventoryStockSummary
+          supplier={supplier}
           products={inventoryStock}
           onClearReceipt={handleClearReceipt}
           onCloseSummaryModal={handleCloseSummaryModal}

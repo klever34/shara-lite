@@ -45,6 +45,7 @@ export const CustomerDetailsModal = (props: Props) => {
       } else {
         onSelectCustomer(customer);
       }
+      setCustomer(undefined);
       onClose();
     } else {
       Alert.alert('Info', 'Please select a customer.');

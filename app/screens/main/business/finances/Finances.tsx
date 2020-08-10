@@ -44,7 +44,7 @@ export const Finances = () => {
               />
             </View>
           </Touchable>
-          <View style={applyStyles('px-xs', {width: '33%'})}>
+          <View style={applyStyles({width: '33%'})}>
             <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
           </View>
         </View>

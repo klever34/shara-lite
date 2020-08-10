@@ -30,16 +30,19 @@ export const getTotalSales = ({receipts}: any) => {
 };
 
 export const getOverdueCredit = ({credits}: any) => {
-  return credits.filtered('fulfilled = false').sum('amount_left');
+  const today = getToday();
+  return credits
+    .filtered('fulfilled = false AND due_date < $0', today)
+    .sum('amount_left');
 };
 
 export const getTotalCredit = ({credits}: any) => {
   return credits.sum('total_amount');
 };
 
-export const getTodayFilter = () => {
+export const getToday = () => {
   const startDate = new Date();
   startDate.setHours(0, 0, 0, 0);
 
-  return `created_at >= ${startDate}`;
+  return startDate;
 };

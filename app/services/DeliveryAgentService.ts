@@ -1,4 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
+import {omit} from 'lodash';
 import {IDeliveryAgent, modelName} from '../models/DeliveryAgent';
 import {getBaseModelValues} from '../helpers/models';
 
@@ -12,6 +13,21 @@ export const getDeliveryAgents = ({
   ) as unknown) as IDeliveryAgent[];
 };
 
+export const getDeliveryAgentByMobile = ({
+  realm,
+  mobile,
+}: {
+  realm: Realm;
+  mobile: string;
+}): IDeliveryAgent | null => {
+  const foundDeliveryAgents = realm
+    .objects<IDeliveryAgent>(modelName)
+    .filtered(`mobile = "${mobile}" LIMIT(1)`);
+  return foundDeliveryAgents.length
+    ? (omit(foundDeliveryAgents[0]) as IDeliveryAgent)
+    : null;
+};
+
 export const saveDeliveryAgent = ({
   realm,
   delivery_agent,
@@ -23,6 +39,14 @@ export const saveDeliveryAgent = ({
     ...delivery_agent,
     ...getBaseModelValues(),
   };
+  const existingDeliveryAgent = getDeliveryAgentByMobile({
+    realm,
+    mobile: delivery_agent.mobile,
+  });
+
+  if (existingDeliveryAgent) {
+    return existingDeliveryAgent;
+  }
 
   const saveDeliveryAgentInDb = () => {
     realm.create<IDeliveryAgent>(

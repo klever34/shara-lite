@@ -1,29 +1,34 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
+import orderBy from 'lodash/orderBy';
 import React, {useCallback} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
+import {PAYMENT_METHOD_LABEL} from '../../../helpers/constants';
 import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
 import {getPaymentsFromCredit} from '../../../services/CreditPaymentService';
 import {colors} from '../../../styles';
-import {PAYMENT_METHOD_LABEL} from '../../../helpers/constants';
-import {orderBy} from 'lodash';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
+  const today = new Date();
   const navigation = useNavigation();
   const credits = customer.credits || [];
   const creditPayments = getPaymentsFromCredit({credits: customer.credits});
-  const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
-  const totalCreditsAmount = credits.reduce(
+  const overdueCredit = credits.filter(
+    ({fulfilled, due_date}) =>
+      !fulfilled && due_date && due_date.getTime() < today.getTime(),
+  );
+  const overdueCreditAmount = overdueCredit.reduce(
     (total, {amount_left}) => total + amount_left,
     0,
   );
-  const overdueCreditsAmount = credits.reduce(
-    (total, {amount_left}) => total + amount_left,
+  const remainingCredit = credits.filter((item) => item.amount_left > 0);
+  const remainingCreditAmount = remainingCredit.reduce(
+    (acc, item) => acc + item.amount_left,
     0,
   );
 
@@ -97,13 +102,17 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
     [handleViewDetails],
   );
 
+  console.log(overdueCredit.length);
+  console.log(remainingCredit.length);
+  console.log(overdueCreditAmount);
+
   return (
     <ScrollView style={styles.container}>
       <View style={applyStyles('p-xl')}>
         <Button
           title="record credit payment"
-          disabled={!overdueCredit.length}
           style={applyStyles('mb-lg', {width: '100%'})}
+          disabled={!overdueCredit.length && !remainingCredit.length}
           onPress={() =>
             handleNavigation('CustomerRecordCreditPayment', {customer})
           }
@@ -111,7 +120,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
         <Touchable
           onPress={() =>
             handleNavigation('CustomerTotalCredit', {
-              credits,
+              credits: remainingCredit,
             })
           }>
           <View
@@ -131,7 +140,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors['gray-300'],
               })}>
-              {amountWithCurrency(totalCreditsAmount)}
+              {amountWithCurrency(remainingCreditAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -164,7 +173,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors.primary,
               })}>
-              {amountWithCurrency(overdueCreditsAmount)}
+              {amountWithCurrency(overdueCreditAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {

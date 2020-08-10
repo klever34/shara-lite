@@ -21,11 +21,20 @@ type CreditItemProps = {
 
 export const MyCredit = () => {
   const realm = useRealm();
+  const today = new Date();
   const navigation = useNavigation();
   const financeSummary: IFinanceSummary = getSummary({realm});
   const credits = getCredits({realm});
   const creditsPayments = getCreditPayments({realm});
-  const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
+  const remainingCredit = credits.filter((item) => item.amount_left > 0);
+  const remainingCreditAmount = remainingCredit.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
+  const overdueCredit = credits.filter(
+    ({fulfilled, due_date}) =>
+      !fulfilled && due_date && due_date.getTime() < today.getTime(),
+  );
 
   const handleNavigation = useCallback(
     (route: string, options?: object) => {
@@ -106,14 +115,14 @@ export const MyCredit = () => {
         <View style={applyStyles('p-xl')}>
           <Button
             title="record credit payment"
-            disabled={!overdueCredit.length}
             onPress={handleGoToRecordPayment}
             style={applyStyles('mb-lg', {width: '100%'})}
+            disabled={!overdueCredit.length && !remainingCredit.length}
           />
           <Touchable
             onPress={() =>
               handleNavigation('TotalCredit', {
-                credits,
+                credits: remainingCredit,
               })
             }>
             <View
@@ -133,7 +142,7 @@ export const MyCredit = () => {
                   fontSize: 24,
                   color: colors['gray-300'],
                 })}>
-                {amountWithCurrency(financeSummary.overdueCredit)}
+                {amountWithCurrency(remainingCreditAmount)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-uppercase', {

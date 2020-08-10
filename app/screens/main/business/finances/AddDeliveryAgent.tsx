@@ -11,19 +11,22 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
-import {ISupplier} from '../../../../models/Supplier';
+import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
+import {
+  saveDeliveryAgent,
+  getDeliveryAgents,
+} from '../../../../services/DeliveryAgentService';
 import {useRealm} from '../../../../services/realm';
-import {saveSupplier, getSuppliers} from '../../../../services/SupplierService';
 import {colors} from '../../../../styles';
 
-type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
+type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
 
-export const AddSupplier = () => {
+export const AddDeliveryAgent = () => {
   const realm = useRealm();
   const navigation = useNavigation();
-  const suppliers = getSuppliers({realm});
+  const deliveryAgents = getDeliveryAgents({realm});
   const [isLoading, setIsLoading] = useState(false);
-  const [supplier, setSupplier] = useState<Payload>({} as Payload);
+  const [deliveryAgent, setDeliveryAgent] = useState<Payload>({} as Payload);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useLayoutEffect(() => {
@@ -34,6 +37,23 @@ export const AddSupplier = () => {
     });
   }, [navigation]);
 
+  const handleChange = useCallback(
+    (value: string | number, key: keyof Payload) => {
+      setDeliveryAgent({
+        ...deliveryAgent,
+        [key]: value,
+      });
+    },
+    [deliveryAgent],
+  );
+
+  const handleSelectContact = useCallback((contact: Contact) => {
+    const {givenName, familyName, phoneNumbers} = contact;
+    const contactName = `${givenName} ${familyName}`;
+    const contactMobile = phoneNumbers[0].number;
+    setDeliveryAgent({full_name: contactName, mobile: contactMobile});
+  }, []);
+
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
@@ -42,48 +62,28 @@ export const AddSupplier = () => {
     setIsContactListModalOpen(false);
   }, []);
 
-  const handleSelectContact = useCallback(
-    (contact: Contact) => {
-      const {givenName, familyName, phoneNumbers} = contact;
-      const contactName = `${givenName} ${familyName}`;
-      const contactMobile = phoneNumbers[0].number;
-      setSupplier({...supplier, name: contactName, mobile: contactMobile});
-    },
-    [supplier],
-  );
-
-  const handleChange = useCallback(
-    (value: string | number, key: keyof Payload) => {
-      setSupplier({
-        ...supplier,
-        [key]: value,
-      });
-    },
-    [supplier],
-  );
-
   const clearForm = useCallback(() => {
-    setSupplier({} as Payload);
+    setDeliveryAgent({} as Payload);
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (supplier.name && supplier.mobile) {
-      if (suppliers.map((item) => item.mobile).includes(supplier.mobile)) {
-        Alert.alert(
-          'Error',
-          'Supplier with the same phone number has been created.',
-        );
-      } else {
-        setIsLoading(true);
-        setTimeout(() => {
-          saveSupplier({realm, supplier});
-          setIsLoading(false);
-          clearForm();
-          navigation.goBack();
-        }, 300);
-      }
+    if (
+      deliveryAgents.map((item) => item.mobile).includes(deliveryAgent.mobile)
+    ) {
+      Alert.alert(
+        'Error',
+        'Delivery Agent with the same phone number has been created.',
+      );
+    } else {
+      setIsLoading(true);
+      setTimeout(() => {
+        saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+      }, 300);
     }
-  }, [realm, clearForm, supplier, suppliers, navigation]);
+  }, [realm, clearForm, deliveryAgent, deliveryAgents, navigation]);
 
   return (
     <View
@@ -113,38 +113,31 @@ export const AddSupplier = () => {
       </Touchable>
       <ScrollView style={applyStyles('px-lg')}>
         <Text
-          style={applyStyles('text-400', {
+          style={applyStyles('text-400 pb-lg', {
             fontSize: 18,
             color: colors.primary,
           })}>
-          Supplier Details
+          Delivery Agent Details
         </Text>
-        <View style={applyStyles('flex-row', 'items-center')}>
+        <View style={applyStyles('flex-row pb-xl items-center')}>
           <FloatingLabelInput
             label="Name"
-            value={supplier.name}
-            onChangeText={(text) => handleChange(text, 'name')}
+            value={deliveryAgent.full_name}
+            onChangeText={(text) => handleChange(text, 'full_name')}
           />
         </View>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <FloatingLabelInput
-            label="Address"
-            value={supplier.address}
-            onChangeText={(text) => handleChange(text, 'address')}
-          />
-        </View>
-        <View style={applyStyles('flex-row', 'items-center')}>
+        <View style={applyStyles('flex-row pb-xl items-center')}>
           <FloatingLabelInput
             label="Phone number"
-            value={supplier.mobile}
+            value={deliveryAgent.mobile}
             keyboardType="phone-pad"
             onChangeText={(text) => handleChange(text, 'mobile')}
           />
         </View>
         <Button
-          title="Add supplier"
           isLoading={isLoading}
           onPress={handleSubmit}
+          title="Add delivery agent"
           style={applyStyles({marginVertical: 48})}
         />
         <ContactsListModal
