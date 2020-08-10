@@ -10,12 +10,14 @@ import {useRealm} from '../../../../services/realm';
 import Touchable from '../../../../components/Touchable';
 import {ISupplier} from '../../../../models/Supplier';
 import {getSuppliers} from '../../../../services/SupplierService';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type SupplierItemProps = {
   item: ISupplier;
 };
 
 export const ReceiveInventory = () => {
+  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const suppliers = getSuppliers({realm});

@@ -19,12 +19,14 @@ import {useTyping} from '../../../services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import MessageStatusIcon from '../../../components/MessageStatusIcon';
 import {getAuthService} from '../../../services';
+import {useScreenRecord} from '../../../services/analytics';
 
 type ChatListItemProps = {
   conversation: IConversation;
 };
 
 const ChatListItem = ({conversation}: ChatListItemProps) => {
+  useScreenRecord();
   const typingMessage = useTyping(conversation.channel);
   const navigation = useNavigation();
   const lastMessage = conversation.lastMessage;

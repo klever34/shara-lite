@@ -24,6 +24,8 @@ import {useRealm} from '../../../../services/realm';
 import {addNewInventory} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
 import {DeliveryAgentsModal} from './DeliveryAgentsModal';
+import {getAnalyticsService} from '../../../../services';
+import {useErrorHandler} from 'react-error-boundary';
 
 type Payload = IDeliveryAgent;
 
@@ -151,6 +153,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleCancel = useCallback(() => {
     onCloseSummaryModal();
   }, [onCloseSummaryModal]);
+  const handleError = useErrorHandler();
 
   const handleFinish = () => {
     setIsSaving(true);
@@ -161,6 +164,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         stockItems: products,
         delivery_agent: agent,
       });
+      getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
       setIsSaving(false);
       clearForm();
       handleCancel();

@@ -27,6 +27,7 @@ import {ModalPropsList} from '../../../../types/modal';
 import {getConversationByChannel} from '../../../services/ConversationService';
 import {getBaseModelValues} from '../../../helpers/models';
 import {getContactByMobile} from '../../../services/ContactService';
+import {useScreenRecord} from '../../../services/analytics';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';
@@ -88,6 +89,7 @@ const ChatDetailsScreen = ({
   openModal,
 }: StackScreenProps<MainStackParamList, 'ChatDetails'> &
   ModalWrapperFields) => {
+  useScreenRecord();
   const realm = useRealm();
   const conversation = route.params;
   const participants = realm

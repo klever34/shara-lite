@@ -12,8 +12,10 @@ import {getCredits} from '../../../../services/CreditService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {CustomersList} from '../receipts';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const RecordCreditPayment = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);

@@ -8,6 +8,7 @@ import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {MyCredit, MyInventory, MyReceipts} from './index';
 import HeaderRight from '../../../../components/HeaderRight';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type TabStackParamList = {
   Credit: undefined;
@@ -18,6 +19,7 @@ type TabStackParamList = {
 const TabStack = createMaterialTopTabNavigator<TabStackParamList>();
 
 export const Finances = () => {
+  useScreenRecord();
   const navigation = useNavigation();
 
   useLayoutEffect(() => {

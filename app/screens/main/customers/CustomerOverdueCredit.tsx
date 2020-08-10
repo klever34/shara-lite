@@ -13,10 +13,12 @@ import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
 import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
 import {MainStackParamList} from '../index';
+import {useScreenRecord} from '../../../services/analytics';
 
 export const CustomerOverdueCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerOverdueCredit'>) => {
+  useScreenRecord();
   const navigation = useNavigation();
   const credits = route.params.credits;
 

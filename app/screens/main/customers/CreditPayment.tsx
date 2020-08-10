@@ -9,8 +9,10 @@ import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
 import {saveCreditPayment} from '../../../services/CreditPaymentService';
 import HeaderRight from '../../../components/HeaderRight';
+import {useScreenRecord} from '../../../services/analytics';
 
 const CreditPayment = ({route}: any) => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);

@@ -15,10 +15,14 @@ import {ISupplier} from '../../../../models/Supplier';
 import {useRealm} from '../../../../services/realm';
 import {saveSupplier, getSuppliers} from '../../../../services/SupplierService';
 import {colors} from '../../../../styles';
+import {getAnalyticsService} from '../../../../services';
+import {useErrorHandler} from 'react-error-boundary';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 
 export const AddSupplier = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const suppliers = getSuppliers({realm});
@@ -65,6 +69,7 @@ export const AddSupplier = () => {
   const clearForm = useCallback(() => {
     setSupplier({} as Payload);
   }, []);
+  const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
     if (supplier.name && supplier.mobile) {
@@ -77,13 +82,14 @@ export const AddSupplier = () => {
         setIsLoading(true);
         setTimeout(() => {
           saveSupplier({realm, supplier});
+          getAnalyticsService().logEvent('supplierAdded').catch(handleError);
           setIsLoading(false);
           clearForm();
           navigation.goBack();
         }, 300);
       }
     }
-  }, [realm, clearForm, supplier, suppliers, navigation]);
+  }, [realm, clearForm, supplier, suppliers, navigation, handleError]);
 
   return (
     <View

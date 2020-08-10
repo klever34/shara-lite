@@ -11,12 +11,14 @@ import {useRealm} from '../../../../services/realm';
 import {getDeliveryAgents} from '../../../../services/DeliveryAgentService';
 import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
 import HeaderRight from '../../../../components/HeaderRight';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type DeliveryAgentItemProps = {
   item: IDeliveryAgent;
 };
 
 export const DeliveryAgents = () => {
+  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const deliveryAgents = getDeliveryAgents({realm});

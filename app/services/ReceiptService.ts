@@ -10,12 +10,13 @@ import {IReceiptItem} from '../models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './CustomerService';
 import {IPayment} from '../models/Payment';
+import {getAnalyticsService} from './index';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
 };
 
-export const saveReceipt = ({
+export const saveReceipt = async ({
   realm,
   customer,
   amountPaid,
@@ -35,7 +36,7 @@ export const saveReceipt = ({
   tax: number;
   payments: Payment[];
   receiptItems: IReceiptItem[];
-}): void => {
+}): Promise<void> => {
   const receipt: IReceipt = {
     tax,
     amount_paid: amountPaid,
@@ -92,6 +93,7 @@ export const saveReceipt = ({
       receipt,
       realm,
     });
+    await getAnalyticsService().logEvent('creditAdded');
   }
 };
 

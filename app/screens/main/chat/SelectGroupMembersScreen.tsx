@@ -9,11 +9,13 @@ import {FAButton} from '../../../components';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import HeaderTitle from '../../../components/HeaderTitle';
+import {useScreenRecord} from '../../../services/analytics';
 
 const SelectGroupMembersScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'SelectGroupMembers'>) => {
+  useScreenRecord();
   const {participants, title, next} = route.params;
   const [selectedContacts, setSelectedContacts] = useState<IContact[]>([]);
   useLayoutEffect(() => {

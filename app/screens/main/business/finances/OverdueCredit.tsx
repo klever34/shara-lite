@@ -13,10 +13,12 @@ import Touchable from '../../../../components/Touchable';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
 import {colors} from '../../../../styles';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const OverdueCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'OverdueCredit'>) => {
+  useScreenRecord();
   const navigation = useNavigation();
   const credits = route.params.credits;
 
