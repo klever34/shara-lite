@@ -1,4 +1,4 @@
-platform :ios, '9.0'
+platform :ios, '10.0'
 require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
 def add_flipper_pods!(versions = {})
@@ -90,6 +90,8 @@ target 'SharaRN' do
   pod 'RNFS', :path => '../node_modules/react-native-fs'
 
   pod 'rn-fetch-blob', :path => '../node_modules/rn-fetch-blob'
+
+  pod 'react-native-view-shot', :path => '../node_modules/react-native-view-shot'
 
   target 'SharaRNTests' do
     inherit! :complete

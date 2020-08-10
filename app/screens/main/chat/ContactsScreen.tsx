@@ -1,6 +1,7 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, Platform, Text, View} from 'react-native';
 import {
+  getAnalyticsService,
   getApiService,
   getAuthService,
   getContactsService,
@@ -12,19 +13,23 @@ import Share from 'react-native-share';
 import Icon from '../../../components/Icon';
 import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
-import {IContact, IConversation} from '../../../models';
+import {IConversation} from '../../../models/Conversation';
+import {IContact} from '../../../models/Contact';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import {getBaseModelValues} from '../../../helpers/models';
+import {useScreenRecord} from '../../../services/analytics';
 
 const ContactsScreen = ({
   navigation,
   openModal,
 }: StackScreenProps<MainStackParamList, 'Contacts'> & ModalWrapperFields) => {
+  useScreenRecord();
   const realm = useRealm() as Realm;
   const me = getAuthService().getUser();
   const contacts = realm.objects<IContact>('Contact').sorted('firstname');
@@ -145,6 +150,7 @@ const ContactsScreen = ({
                 channel: channelName,
                 type: '1-1',
                 members: [me.mobile, item.mobile],
+                ...getBaseModelValues(),
               },
               UpdateMode.Modified,
             );
@@ -155,6 +161,9 @@ const ContactsScreen = ({
           conversation = realm
             .objects<IConversation>('Conversation')
             .filtered(`channel = "${channelName}"`)[0];
+          getAnalyticsService()
+            .logEvent('oneOnOneChatInitiated')
+            .catch(handleError);
           navigateToChat(conversation);
         }
       } catch (error) {
@@ -208,6 +217,7 @@ const ContactsScreen = ({
                                       name: groupChat.name,
                                       type: 'group',
                                       channel: groupChat.uuid,
+                                      creator: me?.mobile,
                                       admins: [me?.mobile],
                                       members: [
                                         me?.mobile,
@@ -215,9 +225,13 @@ const ContactsScreen = ({
                                           (member) => member.mobile,
                                         ),
                                       ],
+                                      ...getBaseModelValues(),
                                     },
                                     UpdateMode.Modified,
                                   );
+                                  getAnalyticsService()
+                                    .logEvent('groupChatCreated')
+                                    .catch(handleError);
                                   navigation.dispatch(
                                     CommonActions.reset({
                                       routes: [

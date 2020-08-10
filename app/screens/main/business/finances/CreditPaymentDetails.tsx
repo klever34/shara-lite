@@ -2,12 +2,14 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
+import HeaderRight from '../../../../components/HeaderRight';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICreditPayment} from '../../../../models/CreditPayment';
 import {colors} from '../../../../styles';
-import HeaderRight from '../../../../components/HeaderRight';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const CreditPaymentDetails = ({route}: any) => {
+  useScreenRecord();
   const navigation = useNavigation();
   const {
     creditPaymentDetails,
@@ -32,13 +34,13 @@ export const CreditPaymentDetails = ({route}: any) => {
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Customer</Text>
             <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-              {creditPaymentDetails.credit.customer_name}
+              {creditPaymentDetails.credit.customer?.name}
             </Text>
           </View>
           <View style={applyStyles('pb-sm', {width: '48%'})}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(creditPaymentDetails.amount_paid)}
+              {amountWithCurrency(creditPaymentDetails.amount_paid)}
             </Text>
           </View>
         </View>

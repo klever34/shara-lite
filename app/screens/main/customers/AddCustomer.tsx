@@ -1,18 +1,38 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {Button} from '../../../components/Button';
-import {FloatingLabelInput} from '../../../components/FloatingLabelInput';
-import {saveCustomer} from '../../../services/CustomerService';
+import {ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
+import {
+  Button,
+  ContactsListModal,
+  FloatingLabelInput,
+} from '../../../components';
+import {saveCustomer, getCustomers} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
+import Touchable from '../../../components/Touchable';
+import {applyStyles} from '../../../helpers/utils';
+import {Contact} from 'react-native-contacts';
+import {getAnalyticsService} from '../../../services';
+import {useErrorHandler} from 'react-error-boundary';
+import {useScreenRecord} from '../../../services/analytics';
 
 const AddCustomer = () => {
+  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
+  const customers = getCustomers({realm});
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
 
   const handleNameChange = useCallback((text: string) => {
     setName(text);
@@ -22,20 +42,36 @@ const AddCustomer = () => {
     setMobile(text);
   }, []);
 
+  const handleSelectCustomer = useCallback((contact: Contact) => {
+    const {givenName, familyName, phoneNumbers} = contact;
+    const contactName = `${givenName} ${familyName}`;
+    const contactMobile = phoneNumbers[0].number;
+    setName(contactName);
+    setMobile(contactMobile);
+  }, []);
+  const handleError = useErrorHandler();
   const handleSubmit = useCallback(() => {
     if (name && mobile) {
-      const customer = {
-        name,
-        mobile,
-      };
-      saveCustomer({realm, customer});
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        navigation.navigate('CustomerDetails', {customer});
-      }, 750);
+      if (customers.map((item) => item.mobile).includes(mobile)) {
+        Alert.alert(
+          'Error',
+          'Customer with the same phone number has been created.',
+        );
+      } else {
+        const customer = {
+          name,
+          mobile,
+        };
+        saveCustomer({realm, customer});
+        setIsLoading(true);
+        setTimeout(() => {
+          setIsLoading(false);
+          getAnalyticsService().logEvent('customerAdded').catch(handleError);
+          navigation.navigate('CustomerDetails', {customer});
+        }, 750);
+      }
     }
-  }, [navigation, name, mobile, realm]);
+  }, [navigation, name, mobile, realm, customers, handleError]);
 
   return (
     <ScrollView style={styles.container}>
@@ -45,9 +81,16 @@ const AddCustomer = () => {
           <FloatingLabelInput
             value={name}
             label="Name"
-            containerStyle={styles.input}
             onChangeText={handleNameChange}
+            containerStyle={applyStyles('mb-sm')}
           />
+          <Touchable onPress={handleOpenContactListModal}>
+            <View style={applyStyles('w-full flex-row justify-end')}>
+              <Text style={applyStyles('text-500', {color: colors.primary})}>
+                Add from contacts
+              </Text>
+            </View>
+          </Touchable>
           <FloatingLabelInput
             value={mobile}
             label="Phone Number"
@@ -65,6 +108,11 @@ const AddCustomer = () => {
           onPress={handleSubmit}
         />
       </View>
+      <ContactsListModal
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onContactSelect={(contact) => handleSelectCustomer(contact)}
+      />
     </ScrollView>
   );
 };

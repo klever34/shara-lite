@@ -1,23 +1,35 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, Platform, SafeAreaView} from 'react-native';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {colors} from '../../styles';
-import ChatListScreen from './chat/ChatListScreen';
-import {getAuthService, getRealmService} from '../../services';
 import {useNavigation} from '@react-navigation/native';
-import {applyStyles, retryPromise} from '../../helpers/utils';
-import {IContact, IConversation, IMessage} from '../../models';
-import {usePubNub} from 'pubnub-react';
-import {useRealm} from '../../services/realm';
 import {MessageEvent} from 'pubnub';
-import Realm from 'realm';
-import CustomersTab from './customers';
-import {BusinessTab} from './business';
-import PushNotification from 'react-native-push-notification';
-import {ModalWrapperFields, withModal} from '../../helpers/hocs';
-import {MessageActionEvent} from '../../../types/pubnub';
+import {usePubNub} from 'pubnub-react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
+import {Alert, Platform, SafeAreaView, View} from 'react-native';
+import PushNotification from 'react-native-push-notification';
+import Realm from 'realm';
+import {MessageActionEvent} from 'types/pubnub';
 import HeaderRight from '../../components/HeaderRight';
+import {PushNotificationToken} from 'types/app';
+import {getBaseModelValues} from '@/helpers/models';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {applyStyles, retryPromise} from '@/helpers/utils';
+import {IContact, IConversation, IMessage} from '../../models';
+import {getAuthService, getRealmService} from '../../services';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
+import {BusinessTab} from './business';
+import ChatListScreen from './chat/ChatListScreen';
+import CustomersTab from './customers';
+import Touchable from '../../components/Touchable';
+import Icon from '../../components/Icon';
+import {RealmContext} from '@/services/realm/provider';
+import {useScreenRecord} from '@/services/analytics';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -28,15 +40,19 @@ type HomeTabParamList = {
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
 const HomeScreen = ({openModal}: ModalWrapperFields) => {
-  const navigation = useNavigation();
-  const pubNub = usePubNub();
+  useScreenRecord();
   const realm = useRealm();
+  const pubNub = usePubNub();
+  const navigation = useNavigation();
   const handleError = useErrorHandler();
+  const {logoutFromRealm} = useContext(RealmContext);
   const [notificationToken, setNotificationToken] = useState('');
+
   const handleLogout = useCallback(async () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
+      logoutFromRealm && logoutFromRealm();
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],
@@ -44,7 +60,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     } catch (e) {
       handleError(e);
     }
-  }, [handleError, navigation]);
+  }, [handleError, navigation, logoutFromRealm]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Restoring messages...'});
@@ -60,38 +76,60 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <HeaderRight
-          menuOptions={[
-            {
-              text: 'Restore Messages',
-              onSelect: () => {
-                Alert.alert('Backup Restore', 'Restore all your messages?', [
-                  {
-                    text: 'CANCEL',
-                  },
-                  {
-                    text: 'OK',
-                    onPress: restoreAllMessages,
-                  },
-                ]);
+        <View style={applyStyles('flex-row flex-1 items-center')}>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="sliders"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <Touchable onPress={() => {}}>
+            <View style={applyStyles('px-xs', {width: '33%'})}>
+              <Icon
+                size={24}
+                name="search"
+                type="feathericons"
+                color={colors.white}
+              />
+            </View>
+          </Touchable>
+          <HeaderRight
+            menuOptions={[
+              {
+                text: 'Restore Messages',
+                onSelect: () => {
+                  Alert.alert('Backup Restore', 'Restore all your messages?', [
+                    {
+                      text: 'CANCEL',
+                    },
+                    {
+                      text: 'OK',
+                      onPress: restoreAllMessages,
+                    },
+                  ]);
+                },
               },
-            },
-            {
-              text: 'Log out',
-              onSelect: () => {
-                Alert.alert('Log Out', 'Are you sure you want to log out?', [
-                  {
-                    text: 'CANCEL',
-                  },
-                  {
-                    text: 'OK',
-                    onPress: handleLogout,
-                  },
-                ]);
+              {
+                text: 'Log out',
+                onSelect: () => {
+                  Alert.alert('Log Out', 'Are you sure you want to log out?', [
+                    {
+                      text: 'CANCEL',
+                    },
+                    {
+                      text: 'OK',
+                      onPress: handleLogout,
+                    },
+                  ]);
+                },
               },
-            },
-          ]}
-        />
+            ]}
+          />
+        </View>
       ),
     });
   }, [handleLogout, navigation, restoreAllMessages]);
@@ -164,8 +202,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 'Message',
                 {
                   ...message,
-                  created_at: new Date(message.created_at),
                   timetoken: String(timetoken),
+                  ...getBaseModelValues(),
                 },
                 Realm.UpdateMode.Modified,
               );
@@ -197,6 +235,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     ...conversation,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );
@@ -208,6 +247,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     channel,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );

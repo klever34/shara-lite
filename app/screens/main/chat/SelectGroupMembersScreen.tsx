@@ -1,7 +1,7 @@
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, View} from 'react-native';
 import ContactsList from '../../../components/ContactsList';
-import {IContact} from '../../../models';
+import {IContact} from '../../../models/Contact';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import {applyStyles} from '../../../helpers/utils';
 import Touchable from '../../../components/Touchable';
@@ -9,11 +9,13 @@ import {FAButton} from '../../../components';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import HeaderTitle from '../../../components/HeaderTitle';
+import {useScreenRecord} from '../../../services/analytics';
 
 const SelectGroupMembersScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'SelectGroupMembers'>) => {
+  useScreenRecord();
   const {participants, title, next} = route.params;
   const [selectedContacts, setSelectedContacts] = useState<IContact[]>([]);
   useLayoutEffect(() => {
@@ -77,7 +79,7 @@ const SelectGroupMembersScreen = ({
                         text={contact.fullName}
                         style={applyStyles('m-sm')}
                         indicator={{
-                          style: applyStyles('bg-gray-300'),
+                          style: applyStyles('bg-gray-200'),
                           icon: {
                             type: 'material-icons',
                             name: 'close',

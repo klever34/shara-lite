@@ -1,5 +1,5 @@
 import {ICustomer} from './Customer';
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IPayment} from './Payment';
 import {IReceiptItem} from './ReceiptItem';
 import {ICredit} from './Credit';
@@ -14,15 +14,15 @@ export interface IReceipt extends BaseModelInterface {
   customer?: ICustomer;
   payments?: IPayment[];
   items?: IReceiptItem[];
-  credit?: ICredit;
+  credits?: ICredit[];
 }
 
 export const modelName = 'Receipt';
 
-export class Receipt implements Partial<IReceipt> {
+export class Receipt extends BaseModel implements Partial<IReceipt> {
   public static schema: Realm.ObjectSchema = {
     name: 'Receipt',
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       amount_paid: 'double',
@@ -42,7 +42,7 @@ export class Receipt implements Partial<IReceipt> {
         objectType: 'Payment',
         property: 'receipt',
       },
-      credit: {
+      credits: {
         type: 'linkingObjects',
         objectType: 'Credit',
         property: 'receipt',

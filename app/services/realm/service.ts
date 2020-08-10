@@ -1,25 +1,27 @@
-import Realm from 'realm';
+import Realm, {UpdateMode} from 'realm';
 import {IContact, IConversation, IMessage} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
 import {decrypt, generateUniqueId} from '../../helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import compact from 'lodash/compact';
+import {compact, omit} from 'lodash';
+import {ChannelCustom} from '../../../types/app';
+import {getBaseModelValues} from '../../helpers/models';
+import {getMessageByPubnubId} from '../MessageService';
+import {getConversationByChannel} from '../ConversationService';
+import {getContactByMobile} from '../ContactService';
 
 export interface IRealmService {
   getInstance(): Realm | null;
 
   setInstance(realm: Realm): void;
 
-  createContact(
-    contact: IContact,
-    updateMode: Realm.UpdateMode,
-  ): Promise<IContact>;
+  createContact(contact: IContact, updateMode: UpdateMode): Promise<IContact>;
 
   createMultipleContacts(
     contact: IContact[],
-    updateMode: Realm.UpdateMode,
+    updateMode: UpdateMode,
   ): Promise<IContact[]>;
 
   updateContact(contact: Partial<IContact>): Promise<IContact>;
@@ -62,15 +64,20 @@ export class RealmService implements IRealmService {
 
   createContact(
     contact: IContact,
-    updateMode: Realm.UpdateMode = Realm.UpdateMode.Never,
+    updateMode: UpdateMode = UpdateMode.Never,
   ): Promise<IContact> {
     const realm = this.realm as Realm;
     return new Promise<IContact>((resolve, reject) => {
+      const existingMobile = getContactByMobile({
+        realm,
+        mobile: contact.mobile,
+      });
+      const updatePayload = existingMobile || getBaseModelValues();
       try {
         realm.write(() => {
           const createdContact = realm.create<IContact>(
             'Contact',
-            contact,
+            {...contact, ...updatePayload},
             updateMode,
           );
           resolve(createdContact);
@@ -83,14 +90,18 @@ export class RealmService implements IRealmService {
 
   createMultipleContacts(
     contacts: IContact[],
-    updateMode: Realm.UpdateMode = Realm.UpdateMode.Never,
+    updateMode: UpdateMode = UpdateMode.Never,
   ): Promise<IContact[]> {
     const realm = this.realm as Realm;
     return new Promise<IContact[]>((resolve, reject) => {
       try {
         realm.write(() => {
           const createdContacts = contacts.map((contact) => {
-            return realm.create<IContact>('Contact', contact, updateMode);
+            const newContact = {
+              ...contact,
+              ...getBaseModelValues(),
+            };
+            return realm.create<IContact>('Contact', newContact, updateMode);
           });
           resolve(createdContacts);
         });
@@ -101,21 +112,23 @@ export class RealmService implements IRealmService {
   }
 
   updateContact(contact: Partial<IContact>): Promise<IContact> {
-    return this.createContact(contact as IContact, Realm.UpdateMode.Modified);
+    return this.createContact(contact as IContact, UpdateMode.Modified);
   }
 
   updateMultipleContacts(contacts: Partial<IContact[]>): Promise<IContact[]> {
     return this.createMultipleContacts(
       contacts as IContact[],
-      Realm.UpdateMode.Modified,
+      UpdateMode.Modified,
     );
   }
 
   clearRealm() {
     const realm = this.realm as Realm;
-    realm.write(() => {
-      realm.deleteAll();
-    });
+    if (realm) {
+      realm.write(() => {
+        realm.deleteAll();
+      });
+    }
   }
 
   // createMessage(message: IMessage): Promise<IMessage> {
@@ -166,10 +179,23 @@ export class RealmService implements IRealmService {
                   read_timetoken = message_read[0].actionTimetoken;
                 }
               }
+
+              const existingMessage = getMessageByPubnubId({
+                realm: this.realm,
+                messageId: message.id,
+              });
+              const updatePayload = existingMessage || getBaseModelValues();
+
               message = this.realm.create<IMessage>(
                 'Message',
-                {...message, timetoken, delivered_timetoken, read_timetoken},
-                Realm.UpdateMode.Modified,
+                {
+                  ...message,
+                  ...updatePayload,
+                  timetoken,
+                  delivered_timetoken,
+                  read_timetoken,
+                },
+                UpdateMode.Modified,
               );
               if (j === messagePayload.length - 1 && retrieved === undefined) {
                 const conversation = this.realm
@@ -236,12 +262,22 @@ export class RealmService implements IRealmService {
         if (!this.realm) {
           return;
         }
+
         for (let i = 0; i < channels.length; i += 1) {
           const channel = channels[i];
+          const existingChannel = getConversationByChannel({
+            realm: this.realm,
+            channel,
+          });
+          const updatePayload = omit(
+            existingChannel || getBaseModelValues(),
+            [],
+          );
+
           const conversation = this.realm.create<IConversation>(
             'Conversation',
-            conversations[channel],
-            Realm.UpdateMode.Modified,
+            {...conversations[channel], ...updatePayload},
+            UpdateMode.Modified,
           );
           if (conversation.type === 'group') {
             const members = conversation.members;
@@ -250,9 +286,11 @@ export class RealmService implements IRealmService {
                 .objects<IContact>('Contact')
                 .filtered(`mobile = "${members[j]}"`)[0];
               if (contact) {
-                contact.groups = contact.groups
-                  ? `${contact.groups},${channel}`
-                  : channel;
+                this.realm.write(() => {
+                  contact.groups = contact.groups
+                    ? `${contact.groups},${channel}`
+                    : channel;
+                });
               }
             }
           } else {
@@ -260,8 +298,10 @@ export class RealmService implements IRealmService {
               .objects<IContact>('Contact')
               .filtered(`mobile = "${conversation.name}"`)[0];
             if (contact) {
-              conversation.name = contact.fullName;
-              contact.channel = conversation.channel;
+              this.realm.write(() => {
+                conversation.name = contact.fullName;
+                contact.channel = conversation.channel;
+              });
             }
           }
         }
@@ -292,10 +332,10 @@ export class RealmService implements IRealmService {
         members = compact(
           groupChatMembers.map((member) => member.user?.mobile),
         );
+        const creator = decrypt(custom.creatorMobile);
         return {
           id: String(custom.id),
-          creatorId: String(custom.creatorId),
-          creatorMobile: decrypt(custom.creatorMobile),
+          creator,
           name: channelMetadata.name ?? '',
           type: 'group',
           admins,
@@ -307,7 +347,8 @@ export class RealmService implements IRealmService {
           .split(',')
           .map((encryptedMember) => decrypt(encryptedMember));
         const user = this.authService.getUser();
-        const sender = members.find((member) => member !== user?.mobile) ?? '';
+        const sender =
+          members.find((member: any) => member !== user?.mobile) ?? '';
         return {
           id: generateUniqueId(),
           name: sender,

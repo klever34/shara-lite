@@ -3,6 +3,7 @@ import {ICustomer} from '../models';
 import {IPayment, modelName} from '../models/Payment';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
+import {Customer} from '../../types/app';
 
 export const getPayments = ({realm}: {realm: Realm}): IPayment[] => {
   return (realm.objects<IPayment>(modelName) as unknown) as IPayment[];
@@ -34,12 +35,12 @@ export const savePayment = ({
     ...getBaseModelValues(),
   };
 
-  if (customer.name) {
+  if (customer && customer.name) {
     payment.customer_name = customer.name;
     payment.customer_mobile = customer.mobile;
   }
 
-  if (customer.id) {
+  if (customer && customer._id) {
     payment.customer = customer as ICustomer;
   }
 
@@ -60,7 +61,7 @@ export const updatePayment = ({
   updates: object;
 }) => {
   const updatedPayment = {
-    id: payment.id,
+    _id: payment._id,
     ...updates,
   };
 

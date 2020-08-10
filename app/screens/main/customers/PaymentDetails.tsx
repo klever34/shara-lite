@@ -1,11 +1,13 @@
 import {format} from 'date-fns';
 import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {IPayment} from '../../../models/Payment';
+import {useScreenRecord} from '../../../services/analytics';
 
 const PaymentDetails = ({route}: any) => {
+  useScreenRecord();
   const {payment}: {payment: IPayment} = route.params;
 
   return (
@@ -14,7 +16,7 @@ const PaymentDetails = ({route}: any) => {
         <View style={applyStyles('pb-md')}>
           <Text style={styles.itemTitle}>Amount</Text>
           <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-            &#8358;{numberWithCommas(payment.amount_paid)}
+            {amountWithCurrency(payment.amount_paid)}
           </Text>
         </View>
         <View style={applyStyles('flex-row', 'justify-space-between')}>
@@ -30,7 +32,7 @@ const PaymentDetails = ({route}: any) => {
             </Text>
           </View>
           <View style={applyStyles('pb-md', {width: '48%'})}>
-            <Text style={styles.itemTitle}>Payment Method</Text>
+            <Text style={styles.itemTitle}>Payment Type</Text>
             <Text
               style={applyStyles(
                 'text-400 text-capitalize',

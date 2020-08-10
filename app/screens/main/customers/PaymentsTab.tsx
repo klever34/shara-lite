@@ -2,9 +2,9 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
 import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View, FlatList} from 'react-native';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
-import {ICustomer} from '../../../models';
+import {ICustomer} from '../../../models/Customer';
 import {IPayment} from '../../../models/Payment';
 import EmptyState from '../../../components/EmptyState';
 import {ActionCard} from '../../../components';
@@ -26,7 +26,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
           <View style={applyStyles('pb-sm')}>
             <Text style={styles.itemTitle}>Amount</Text>
             <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-              &#8358;{numberWithCommas(payment.amount_paid)}
+              {amountWithCurrency(payment.amount_paid)}
             </Text>
           </View>
           <View style={applyStyles('flex-row', 'justify-space-between')}>
@@ -44,7 +44,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
               </Text>
             </View>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Payment Method</Text>
+              <Text style={styles.itemTitle}>Payment Type</Text>
               <Text
                 style={applyStyles(
                   'text-400 text-capitalize',
@@ -65,7 +65,7 @@ const PaymentsTab = ({customer}: {customer: ICustomer}) => {
         <FlatList
           data={payments}
           renderItem={renderPaymentItem}
-          keyExtractor={(item) => `${item.id}`}
+          keyExtractor={(item) => `${item._id}`}
         />
       ) : (
         <EmptyState

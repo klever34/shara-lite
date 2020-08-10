@@ -4,6 +4,13 @@ import Config from 'react-native-config';
 import queryString from 'query-string';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
+import {
+  ApiResponse,
+  User,
+  GroupChatMember,
+  GroupChat,
+  Business,
+} from '../../../types/app';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -175,13 +182,16 @@ export class ApiService implements IApiService {
       const {
         data: {
           credentials: {token},
+          realmCredentials,
           user,
         },
       } = fetchResponse;
       await this.storageService.setItem('token', token);
       await this.storageService.setItem('user', user);
+      await this.storageService.setItem('realmCredentials', realmCredentials);
       this.authService.setToken(token);
       this.authService.setUser(user);
+      this.authService.setRealmCredentials(realmCredentials);
       return fetchResponse;
     } catch (error) {
       throw error;

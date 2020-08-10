@@ -8,12 +8,14 @@ import PlaceholderImage from '../../../components/PlaceholderImage';
 import {FAButton} from '../../../components';
 import {ModalWrapperFields} from '../../../helpers/hocs';
 import HeaderTitle from '../../../components/HeaderTitle';
+import {useScreenRecord} from '../../../services/analytics';
 
 const SetGroupDetailsScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'SetGroupDetails'> &
   ModalWrapperFields) => {
+  useScreenRecord();
   const {participants, title, next} = route.params;
   const [groupName, setGroupName] = useState('');
   useLayoutEffect(() => {
@@ -34,7 +36,9 @@ const SetGroupDetailsScreen = ({
       <View style={applyStyles('flex-row flex-wrap')}>
         {participants.map((member) => {
           return (
-            <View style={applyStyles('items-center mr-md')} key={member.id}>
+            <View
+              style={applyStyles('items-center mx-sm mb-xl')}
+              key={member.id}>
               <PlaceholderImage
                 text={member.fullName}
                 style={applyStyles('mb-sm')}

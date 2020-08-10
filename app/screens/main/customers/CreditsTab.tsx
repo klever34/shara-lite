@@ -1,26 +1,34 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
+import orderBy from 'lodash/orderBy';
 import React, {useCallback} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {Button} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../helpers/utils';
+import {PAYMENT_METHOD_LABEL} from '../../../helpers/constants';
+import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
 import {ICustomer} from '../../../models';
 import {IPayment} from '../../../models/Payment';
+import {getPaymentsFromCredit} from '../../../services/CreditPaymentService';
 import {colors} from '../../../styles';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
+  const today = new Date();
   const navigation = useNavigation();
   const credits = customer.credits || [];
-  const creditPayments = customer.payments || [];
-  const overdueCredit = credits.filter(({amount_left}) => amount_left > 0);
-  const totalCreditsAmount = credits.reduce(
+  const creditPayments = getPaymentsFromCredit({credits: customer.credits});
+  const overdueCredit = credits.filter(
+    ({fulfilled, due_date}) =>
+      !fulfilled && due_date && due_date.getTime() < today.getTime(),
+  );
+  const overdueCreditAmount = overdueCredit.reduce(
     (total, {amount_left}) => total + amount_left,
     0,
   );
-  const overdueCreditsAmount = credits.reduce(
-    (total, {amount_left}) => total + amount_left,
+  const remainingCredit = credits.filter((item) => item.amount_left > 0);
+  const remainingCreditAmount = remainingCredit.reduce(
+    (acc, item) => acc + item.amount_left,
     0,
   );
 
@@ -77,14 +85,14 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                &#8358;{numberWithCommas(credit.amount_paid)}
+                {amountWithCurrency(credit.amount_paid)}
               </Text>
               <Text
                 style={applyStyles('text-400 text-capitalize', {
                   fontSize: 14,
                   color: colors['gray-200'],
                 })}>
-                {credit.type}
+                {PAYMENT_METHOD_LABEL[credit.method]}
               </Text>
             </View>
           </View>
@@ -100,12 +108,15 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
         <Button
           title="record credit payment"
           style={applyStyles('mb-lg', {width: '100%'})}
-          onPress={() => handleNavigation('CustomerRecordCreditPayment')}
+          disabled={!overdueCredit.length && !remainingCredit.length}
+          onPress={() =>
+            handleNavigation('CustomerRecordCreditPayment', {customer})
+          }
         />
         <Touchable
           onPress={() =>
             handleNavigation('CustomerTotalCredit', {
-              credits,
+              credits: remainingCredit,
             })
           }>
           <View
@@ -125,7 +136,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors['gray-300'],
               })}>
-              &#8358;{numberWithCommas(totalCreditsAmount)}
+              {amountWithCurrency(remainingCreditAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -158,7 +169,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors.primary,
               })}>
-              &#8358;{numberWithCommas(overdueCreditsAmount)}
+              {amountWithCurrency(overdueCreditAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -180,9 +191,9 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
             Payment History
           </Text>
           <FlatList
-            data={creditPayments}
             renderItem={renderCreditItem}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item) => `${item._id}`}
+            data={orderBy(creditPayments, 'created_at', 'desc')}
           />
         </View>
       )}

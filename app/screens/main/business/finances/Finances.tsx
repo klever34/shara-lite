@@ -8,6 +8,7 @@ import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import {MyCredit, MyInventory, MyReceipts} from './index';
 import HeaderRight from '../../../../components/HeaderRight';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type TabStackParamList = {
   Credit: undefined;
@@ -18,6 +19,7 @@ type TabStackParamList = {
 const TabStack = createMaterialTopTabNavigator<TabStackParamList>();
 
 export const Finances = () => {
+  useScreenRecord();
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
@@ -44,7 +46,7 @@ export const Finances = () => {
               />
             </View>
           </Touchable>
-          <View style={applyStyles('px-xs', {width: '33%'})}>
+          <View style={applyStyles({width: '33%'})}>
             <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
           </View>
         </View>

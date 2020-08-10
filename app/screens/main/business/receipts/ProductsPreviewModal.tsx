@@ -8,11 +8,12 @@ import {
   SummaryTableItem,
   SummaryTableHeader,
 } from './ReceiptSummary';
+import {IReceiptItem} from '../../../../models/ReceiptItem';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  products: ReceiptItem[];
+  products: IReceiptItem[];
 };
 
 export const ProductsPreviewModal = (props: Props) => {
@@ -43,7 +44,7 @@ export const ProductsPreviewModal = (props: Props) => {
             data={products}
             nestedScrollEnabled
             renderItem={renderSummaryItem}
-            keyExtractor={(item) => item.id}
+            keyExtractor={(item) => `${item._id}`}
             ListHeaderComponent={SummaryTableHeader}
           />
         </View>

@@ -5,30 +5,38 @@ import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment, updatePayment} from './PaymentService';
 import {getBaseModelValues} from '../helpers/models';
 import {saveCredit, updateCredit} from './CreditService';
+import {Customer, Payment} from '../../types/app';
+import {IReceiptItem} from '../models/ReceiptItem';
+import {getPaymentsFromCredit} from './CreditPaymentService';
+import {saveCustomer} from './CustomerService';
+import {IPayment} from '../models/Payment';
+import {getAnalyticsService} from './index';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
 };
 
-export const saveReceipt = ({
+export const saveReceipt = async ({
   realm,
   customer,
   amountPaid,
   tax,
+  dueDate,
   totalAmount,
   creditAmount,
   payments,
-  products,
+  receiptItems,
 }: {
   realm: Realm;
+  dueDate?: Date;
   customer: ICustomer | Customer;
   amountPaid: number;
   totalAmount: number;
   creditAmount: number;
   tax: number;
   payments: Payment[];
-  products: ReceiptItem[];
-}): void => {
+  receiptItems: IReceiptItem[];
+}): Promise<void> => {
   const receipt: IReceipt = {
     tax,
     amount_paid: amountPaid,
@@ -37,44 +45,55 @@ export const saveReceipt = ({
     ...getBaseModelValues(),
   };
 
+  let receiptCustomer: ICustomer | Customer;
+
   if (customer.name) {
     receipt.customer_name = customer.name;
     receipt.customer_mobile = customer.mobile;
   }
 
-  if (customer.id) {
-    receipt.customer = customer as ICustomer;
+  if (!customer._id && customer.name && customer.mobile) {
+    receiptCustomer = saveCustomer({realm, customer});
+  }
+  if (customer._id) {
+    receiptCustomer = customer;
   }
 
+  //@ts-ignore
+  receipt.customer = receiptCustomer as ICustomer;
+
   realm.write(() => {
-    realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
+    realm.create<IPayment>(modelName, receipt, UpdateMode.Modified);
   });
 
   payments.forEach((payment) => {
     savePayment({
       realm,
-      customer,
+      customer: receiptCustomer,
       receipt,
       type: 'receipt',
       ...payment,
     });
   });
 
-  products.forEach((product) => {
+  receiptItems.forEach((receiptItem: any) => {
     saveReceiptItem({
       realm,
       receipt,
-      ...product,
+      receiptItem,
     });
   });
 
   if (creditAmount > 0) {
     saveCredit({
+      dueDate,
       creditAmount,
-      customer,
+      //@ts-ignore
+      customer: receiptCustomer,
       receipt,
       realm,
     });
+    await getAnalyticsService().logEvent('creditAdded');
   }
 };
 
@@ -88,14 +107,28 @@ export const updateReceipt = ({
   receipt: IReceipt;
 }): void => {
   realm.write(() => {
-    receipt.customer = customer;
+    const updates = {
+      customer,
+      _id: receipt._id,
+    };
+    realm.create<Payment>(modelName, updates, UpdateMode.Modified);
     (receipt.payments || []).forEach((payment) => {
       updatePayment({realm, payment, updates: {customer}});
     });
 
-    if (receipt.credit_amount > 0 && receipt.credit) {
-      receipt.credit.customer = customer;
-      updateCredit({realm, credit: receipt.credit, updates: {customer}});
+    if (
+      receipt.credit_amount > 0 &&
+      receipt.credits &&
+      receipt.credits.length
+    ) {
+      updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
   });
+};
+
+export const getAllPayments = ({receipt}: {receipt: IReceipt}) => {
+  return [
+    ...(receipt.payments || []),
+    ...getPaymentsFromCredit({credits: receipt.credits}),
+  ];
 };

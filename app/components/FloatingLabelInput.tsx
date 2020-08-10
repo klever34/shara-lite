@@ -52,7 +52,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
     }),
     fontSize: animatedIsFocused.interpolate({
       inputRange: [0, 1],
-      outputRange: [18, 14],
+      outputRange: [16, 14],
     }),
     color: animatedIsFocused.interpolate({
       inputRange: [0, 1],
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors['gray-300'],
   },
   inputIcon: {
-    top: 34,
+    top: 33,
     position: 'absolute',
   },
 });

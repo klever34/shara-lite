@@ -149,7 +149,9 @@ jobs:
       - checkout
       - run:
           name: Yarn Install Dependencies
-          command: yarn install
+          command: |
+            yarn install
+            yarn jetify
       - unless:
           condition: <<parameters.versioning>>
           steps:

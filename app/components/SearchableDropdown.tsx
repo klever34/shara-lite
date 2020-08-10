@@ -1,10 +1,11 @@
 import React, {useCallback, useState} from 'react';
-import {View, StyleSheet, TextInput, Text, Keyboard} from 'react-native';
-import Icon from './Icon';
-import {colors} from '../styles';
-import Touchable from './Touchable';
-import {applyStyles} from '../helpers/utils';
+import {Keyboard, StyleSheet, Text, TextInput, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
+import {applyStyles} from '../helpers/utils';
+import {colors} from '../styles';
+import {Button} from './Button';
+import Icon from './Icon';
+import Touchable from './Touchable';
 
 //TODO: Type component props
 const SearchableDropdown = (props: any) => {
@@ -19,6 +20,8 @@ const SearchableDropdown = (props: any) => {
     itemTextStyle,
     textInputProps,
     emptyStateText,
+    noResultsAction,
+    noResultsActionButtonText,
     itemsContainerStyle,
   } = props;
   const [focus, setFocus] = useState(false);
@@ -73,6 +76,27 @@ const SearchableDropdown = (props: any) => {
           renderItem={renderItems}
           style={applyStyles(itemsContainerStyle)}
           keyExtractor={(item, index) => index.toString()}
+          ListEmptyComponent={
+            <View
+              style={applyStyles('px-lg flex-1 items-center justify-center', {
+                paddingVertical: 100,
+              })}>
+              <Text
+                style={applyStyles('mb-xs heading-700', 'text-center', {
+                  color: colors['gray-300'],
+                })}>
+                No results found
+              </Text>
+              {noResultsAction && (
+                <Button
+                  variantColor="clear"
+                  onPress={noResultsAction}
+                  style={applyStyles('w-full')}
+                  title={noResultsActionButtonText}
+                />
+              )}
+            </View>
+          }
         />
       ) : (
         <View style={styles.emptyState}>

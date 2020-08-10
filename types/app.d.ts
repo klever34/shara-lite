@@ -1,3 +1,6 @@
+import {IProduct} from '../app/models/Product';
+import {ObjectId} from 'bson';
+
 type Falsy = undefined | null | false;
 
 type User = {
@@ -8,6 +11,7 @@ type User = {
   country_code: string;
   created_at: string;
   updated_at: string;
+  currency_code: string;
   businesses: Business[];
 };
 
@@ -69,17 +73,23 @@ type Product = {
   price: string;
 };
 
-type ReceiptItem = Product & {quantity: string};
+type ReceiptItem = {
+  quantity: string;
+  price: string;
+  product: IProduct;
+};
 
 type Customer = {
-  id: string;
+  _id: ObjectId;
   mobile: string;
   name: string;
 };
+
 type ApiResponse<T extends any = any> = {
   data: any;
   message: string;
 };
+
 type CreditDetails = {
   id: string;
   amount: number;
@@ -87,6 +97,7 @@ type CreditDetails = {
   dueOn: string;
   givenBy: string;
 };
+
 type Order = {
   id: string;
   amount: number;
@@ -105,5 +116,8 @@ type Payment = {
 };
 
 // @ts-ignore
+declare module 'country-currency-map';
+// @ts-ignore
 declare module 'react-native-signature-capture';
+// @ts-ignore
 declare module 'react-native-bluetooth-escpos-printer';

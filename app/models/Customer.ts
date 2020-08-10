@@ -1,7 +1,7 @@
 import {IPayment} from './Payment';
 import {IReceipt} from './Receipt';
 import {ICredit} from './Credit';
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface ICustomer extends BaseModelInterface {
   name: string;
@@ -13,10 +13,10 @@ export interface ICustomer extends BaseModelInterface {
 
 export const modelName = 'Customer';
 
-export class Customer implements Partial<ICustomer> {
+export class Customer extends BaseModel implements Partial<ICustomer> {
   public static schema: Realm.ObjectSchema = {
     name: modelName,
-    primaryKey: 'id',
+    primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       name: 'string',
