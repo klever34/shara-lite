@@ -26,7 +26,7 @@ export const MyCredit = () => {
   const financeSummary: IFinanceSummary = getSummary({realm});
   const credits = getCredits({realm});
   const creditsPayments = getCreditPayments({realm});
-  const remainingCredit = credits.filter((item) => item.amount_left > 0);
+  const remainingCredit = credits.filter((item) => !item.fulfilled);
   const remainingCreditAmount = remainingCredit.reduce(
     (acc, item) => acc + item.amount_left,
     0,

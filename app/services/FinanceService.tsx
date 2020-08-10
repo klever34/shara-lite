@@ -37,7 +37,7 @@ export const getOverdueCredit = ({credits}: any) => {
 };
 
 export const getTotalCredit = ({credits}: any) => {
-  return credits.filtered('fulfilled = false').sum('total_amount');
+  return credits.filtered('fulfilled = false').sum('amount_left');
 };
 
 export const getToday = () => {
