@@ -14,14 +14,14 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
-      // if (process.env.NODE_ENV === 'production') {
-      await analytics.setup(Config.SEGMENT_KEY, {
-        recordScreenViews: true,
-        trackAppLifecycleEvents: true,
-      });
-      RNUxcam.optIntoSchematicRecordings();
-      RNUxcam.startWithKey(Config.UXCAM_KEY);
-      // }
+      if (process.env.NODE_ENV === 'production') {
+        await analytics.setup(Config.SEGMENT_KEY, {
+          recordScreenViews: true,
+          trackAppLifecycleEvents: true,
+        });
+        RNUxcam.optIntoSchematicRecordings();
+        RNUxcam.startWithKey(Config.UXCAM_KEY);
+      }
     } catch (e) {
       throw e;
     }
@@ -51,6 +51,7 @@ export class AnalyticsService implements IAnalyticsService {
       for (let prop in userData) {
         RNUxcam.setUserProperty(prop, userData[prop]);
       }
+      RNUxcam.setUserProperty('alias', alias);
 
       await analytics.identify(String(user.id), userData);
       await analytics.alias(alias);
