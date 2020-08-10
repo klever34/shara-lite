@@ -26,13 +26,20 @@ const useRealmSyncLoader = () => {
       return;
     }
 
-    const {jwt} = authService.getRealmCredentials();
+    const realmCredentials = authService.getRealmCredentials();
+    if (!realmCredentials) {
+      return;
+    }
+
     try {
       setIsLoading(true);
+      const {jwt} = realmCredentials;
       const createdRealm = await loginToRealm({jwt, hideError: true});
+
       updateSyncRealm && updateSyncRealm(createdRealm);
       const realmService = getRealmService();
       realmService.setInstance(createdRealm);
+
       setIsLoading(false);
       setHasLoadedRealm(true);
     } catch (e) {
