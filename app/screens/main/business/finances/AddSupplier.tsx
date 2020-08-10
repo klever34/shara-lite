@@ -8,10 +8,14 @@ import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {ISupplier} from '../../../../models/Supplier';
 import {saveSupplier} from '../../../../services/SupplierService';
+import {getAnalyticsService} from '../../../../services';
+import {useErrorHandler} from 'react-error-boundary';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 
 export const AddSupplier = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,18 +40,20 @@ export const AddSupplier = () => {
   const clearForm = useCallback(() => {
     setSupplier({} as Payload);
   }, []);
+  const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
     if (supplier.name && supplier.mobile) {
       setIsLoading(true);
       setTimeout(() => {
         saveSupplier({realm, supplier});
+        getAnalyticsService().logEvent('supplierAdded').catch(handleError);
         setIsLoading(false);
         clearForm();
         navigation.goBack();
       }, 300);
     }
-  }, [realm, clearForm, supplier, navigation]);
+  }, [supplier, realm, handleError, clearForm, navigation]);
 
   return (
     <ScrollView

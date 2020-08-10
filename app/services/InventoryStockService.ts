@@ -6,6 +6,7 @@ import {generateUniqueId} from '../helpers/utils';
 import {restockProduct} from './ProductService';
 import {IDeliveryAgent} from '../models/DeliveryAgent';
 import {saveDeliveryAgent} from './DeliveryAgentService';
+import {getAnalyticsService} from './index';
 
 export const getReceivedStocks = ({
   realm,
@@ -34,6 +35,7 @@ export const addNewStocks = ({
       savedDeliveryAgent = delivery_agent.id
         ? saveDeliveryAgent({realm, delivery_agent})
         : delivery_agent;
+      getAnalyticsService().logEvent('deliveryAgentAdded').then();
     }
 
     stockItems.forEach((stockItem) => {

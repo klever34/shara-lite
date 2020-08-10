@@ -4,8 +4,10 @@ import {SafeAreaView, StyleSheet} from 'react-native';
 import {CreditPaymentForm} from '../../../components';
 import {saveCreditPayment} from '../../../services/CreditPaymentService';
 import {useRealm} from '../../../services/realm';
+import {useScreenRecord} from '../../../services/analytics';
 
 const RecordPayment = ({route}: any) => {
+  useScreenRecord();
   const realm = useRealm();
   const {customer} = route.params;
   const navigation = useNavigation();

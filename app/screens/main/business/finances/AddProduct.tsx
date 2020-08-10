@@ -12,10 +12,14 @@ import {useRealm} from '../../../../services/realm';
 import {saveProduct} from '../../../../services/ProductService';
 import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
+import {getAnalyticsService} from '../../../../services';
+import {useErrorHandler} from 'react-error-boundary';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
 export const AddProduct = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -40,18 +44,20 @@ export const AddProduct = () => {
   const clearForm = useCallback(() => {
     setProduct({} as Payload);
   }, []);
+  const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
     if (Object.values(product).length === 3) {
       setIsLoading(true);
       setTimeout(() => {
         saveProduct({realm, product});
+        getAnalyticsService().logEvent('productAdded').catch(handleError);
         setIsLoading(false);
         clearForm();
         navigation.goBack();
       }, 300);
     }
-  }, [realm, clearForm, product, navigation]);
+  }, [product, realm, handleError, clearForm, navigation]);
 
   return (
     <ScrollView

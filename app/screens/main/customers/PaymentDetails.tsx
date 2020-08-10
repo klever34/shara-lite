@@ -4,8 +4,10 @@ import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {IPayment} from '../../../models/Payment';
+import {useScreenRecord} from '../../../services/analytics';
 
 const PaymentDetails = ({route}: any) => {
+  useScreenRecord();
   const {payment}: {payment: IPayment} = route.params;
 
   return (

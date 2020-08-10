@@ -11,10 +11,12 @@ import {saveCreditPayment} from '../../../services/CreditPaymentService';
 import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '..';
+import {useScreenRecord} from '../../../services/analytics';
 
 export const CustomerCreditDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerCreditDetails'>) => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);

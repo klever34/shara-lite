@@ -5,7 +5,7 @@ import {RealmService, IRealmService} from './realm';
 import {ApiService, IApiService} from './api';
 import {IPubNubService, PubNubService} from './pubnub';
 import {INavigationService, NavigationService} from './navigation';
-import {AnalyticsService, IAnalyticsService} from './AnalyticsService';
+import {AnalyticsService, IAnalyticsService} from './analytics';
 
 let realmService: IRealmService | null = null;
 let analyticsService: IAnalyticsService | null = null;

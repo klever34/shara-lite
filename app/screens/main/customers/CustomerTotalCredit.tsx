@@ -12,10 +12,12 @@ import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
+import {useScreenRecord} from '../../../services/analytics';
 
 export const CustomerTotalCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerTotalCredit'>) => {
+  useScreenRecord();
   const navigation = useNavigation();
 
   const credits = route.params.credits;

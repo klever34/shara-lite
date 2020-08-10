@@ -28,12 +28,14 @@ import {useRealm} from '../../../../services/realm';
 import {IProduct} from '../../../../models/Product';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type RecentProductItemProps = {
   item: IProduct;
 };
 
 export const NewReceipt = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   //@ts-ignore

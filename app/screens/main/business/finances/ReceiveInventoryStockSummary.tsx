@@ -20,6 +20,8 @@ import {colors} from '../../../../styles';
 import {addNewStocks} from '../../../../services/InventoryStockService';
 import {useRealm} from '../../../../services/realm';
 import {Contact} from 'react-native-contacts';
+import {getAnalyticsService} from '../../../../services';
+import {useErrorHandler} from 'react-error-boundary';
 
 type Payload = {
   agent_full_name?: string | undefined;
@@ -138,11 +140,13 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleCancel = useCallback(() => {
     onCloseSummaryModal();
   }, [onCloseSummaryModal]);
+  const handleError = useErrorHandler();
 
   const handleFinish = () => {
     setIsSaving(true);
     setTimeout(() => {
       addNewStocks({realm, stockItems: products, ...agent});
+      getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
       setIsSaving(false);
       clearForm();
       navigation.navigate('Finances', {screen: 'Inventory'});
