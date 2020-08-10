@@ -10,10 +10,12 @@ import {ISupplier} from '../../../../models/Supplier';
 import {saveSupplier} from '../../../../services/SupplierService';
 import {getAnalyticsService} from '../../../../services';
 import {useErrorHandler} from 'react-error-boundary';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 
 export const AddSupplier = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);

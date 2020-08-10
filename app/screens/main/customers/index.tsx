@@ -10,12 +10,14 @@ import {ICustomer} from '../../../models';
 import {getCustomers} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
+import {useScreenRecord} from '../../../services/analytics';
 
 type CustomerItemProps = {
   item: ICustomer;
 };
 
 const CustomersTab = () => {
+  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});

@@ -14,8 +14,10 @@ import {applyStyles} from '../../../helpers/utils';
 import {Contact} from 'react-native-contacts';
 import {getAnalyticsService} from '../../../services';
 import {useErrorHandler} from 'react-error-boundary';
+import {useScreenRecord} from '../../../services/analytics';
 
 const AddCustomer = () => {
+  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const [name, setName] = useState('');

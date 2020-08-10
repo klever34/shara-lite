@@ -10,12 +10,14 @@ import Touchable from '../../../../components/Touchable';
 import EmptyState from '../../../../components/EmptyState';
 import {getSuppliers} from '../../../../services/SupplierService';
 import {ISupplier} from '../../../../models/Supplier';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type SupplierItemProps = {
   item: ISupplier;
 };
 
 export const Suppliers = () => {
+  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const suppliers = getSuppliers({realm});

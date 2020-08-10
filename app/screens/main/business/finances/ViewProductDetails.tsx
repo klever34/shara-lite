@@ -10,10 +10,12 @@ import {MainStackParamList} from '../../index';
 import {getProduct, deleteProduct} from '../../../../services/ProductService';
 import {useRealm} from '../../../../services/realm';
 import {IProduct} from 'app/models/Product';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const ViewProductDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ViewProductDetails'>) => {
+  useScreenRecord();
   const {product: productId} = route.params;
   const realm = useRealm();
   const navigation = useNavigation();

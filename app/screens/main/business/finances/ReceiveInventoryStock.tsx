@@ -28,6 +28,7 @@ import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
 import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
 import {ReceiveInventoryStockPreview} from './ReceiveInventoryStockPreview';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -36,6 +37,7 @@ type RecentProductItemProps = {
 export const ReceiveInventoryStock = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ReceiveInventoryStock'>) => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const products = getProducts({realm});

@@ -14,10 +14,12 @@ import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {getAnalyticsService} from '../../../../services';
 import {useErrorHandler} from 'react-error-boundary';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
 export const AddProduct = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);

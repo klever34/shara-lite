@@ -21,6 +21,7 @@ import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
 import Touchable from '../../components/Touchable';
 import Icon from '../../components/Icon';
+import {useScreenRecord} from '../../services/analytics';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -31,6 +32,7 @@ type HomeTabParamList = {
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
 const HomeScreen = ({openModal}: ModalWrapperFields) => {
+  useScreenRecord();
   const realm = useRealm();
   const pubNub = usePubNub();
   const navigation = useNavigation();

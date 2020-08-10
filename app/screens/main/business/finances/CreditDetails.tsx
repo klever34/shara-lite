@@ -16,8 +16,10 @@ import {CustomersList} from '../receipts';
 import {updateReceipt} from '../../../../services/ReceiptService';
 import {IReceipt} from '../../../../models/Receipt';
 import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const CreditDetails = ({route}: any) => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
