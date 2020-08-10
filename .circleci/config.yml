@@ -151,7 +151,7 @@ jobs:
           name: Yarn Install Dependencies
           command: yarn install
       - when:
-          condition: <<paramters.versioning>>
+          condition: <<parameters.versioning>>
           steps:
             - when:
                 condition: <<parameters.merged>>
