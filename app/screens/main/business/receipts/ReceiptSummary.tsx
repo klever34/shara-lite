@@ -40,6 +40,7 @@ import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import {format} from 'date-fns/esm';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -316,10 +317,17 @@ const ReceiptSummary = (props: Props) => {
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      url: 'https://shara.co/',
       // @ts-ignore
       social: Share.Social.SMS,
-      message: 'Here is your receipt',
+      message: `Hi ${customer.name}, thank you for your recent purchase of ${
+        products.length
+      } items from ${user?.businesses[0].name}.  You paid ${amountWithCurrency(
+        amountPaid,
+      )} and owe ${amountWithCurrency(creditAmount)} ${
+        dueDate
+          ? `(which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')})`
+          : ''
+      }. Thank you.`,
       recipient: `${customer.mobile}`,
       title: `Share receipt with ${customer.name}`,
     };
@@ -336,7 +344,15 @@ const ReceiptSummary = (props: Props) => {
         Alert.alert('Error', e.error);
       }
     }
-  }, [customer.mobile, customer.name]);
+  }, [
+    amountPaid,
+    creditAmount,
+    customer.mobile,
+    customer.name,
+    dueDate,
+    products.length,
+    user,
+  ]);
 
   const handleEmailShare = useCallback(
     async (
