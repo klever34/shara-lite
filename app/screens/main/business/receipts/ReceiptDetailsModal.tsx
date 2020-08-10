@@ -1,4 +1,4 @@
-import {IReceipt} from '../../../../models/Receipt';
+import format from 'date-fns/format';
 import React, {useCallback, useState} from 'react';
 import {
   FlatList,
@@ -8,12 +8,21 @@ import {
   Text,
   View,
 } from 'react-native';
+import {Customer} from '../../../../../types/app';
 import {Button, ContactsListModal} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
+import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
+import {IReceipt} from '../../../../models/Receipt';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
+import {useRealm} from '../../../../services/realm';
+import {
+  getAllPayments,
+  updateReceipt,
+} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
 import {CustomersList} from './CustomersList';
@@ -22,14 +31,6 @@ import {
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import {
-  updateReceipt,
-  getAllPayments,
-} from '../../../../services/ReceiptService';
-import {useRealm} from '../../../../services/realm';
-import {Customer} from '../../../../../types/app';
-import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
-import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
 
 type Props = {
   visible: boolean;
@@ -58,6 +59,7 @@ export function ReceiptDetailsModal(props: Props) {
   );
   const customers = getCustomers({realm});
   const allPayments = receipt ? getAllPayments({receipt}) : [];
+  const creditDueDate = receipt?.credits?.length && receipt.credits[0].due_date;
 
   const handleOpenCustomerModal = useCallback(() => {
     setIsCustomerModalOpen(true);
@@ -347,19 +349,30 @@ export function ReceiptDetailsModal(props: Props) {
               </View>
               {!!creditAmountLeft && (
                 <View style={applyStyles({width: '48%'})}>
-                  <Text
-                    style={applyStyles('pb-xs', 'text-400', {
-                      color: colors['gray-200'],
-                    })}>
-                    You are owed
-                  </Text>
-                  <Text
-                    style={applyStyles('text-400', {
-                      fontSize: 16,
-                      color: colors.primary,
-                    })}>
-                    {amountWithCurrency(creditAmountLeft)}
-                  </Text>
+                  <View>
+                    <Text
+                      style={applyStyles('pb-xs', 'text-400', {
+                        color: colors['gray-200'],
+                      })}>
+                      You are owed
+                    </Text>
+                    <Text
+                      style={applyStyles('text-400', {
+                        fontSize: 16,
+                        color: colors.primary,
+                      })}>
+                      {amountWithCurrency(creditAmountLeft)}
+                    </Text>
+                  </View>
+                  {creditDueDate && (
+                    <Text
+                      style={applyStyles('pb-xs', 'text-400', {
+                        fontSize: 12,
+                        color: colors['gray-100'],
+                      })}>
+                      Due on {format(new Date(creditDueDate), 'MMM dd, yyyy')}
+                    </Text>
+                  )}
                 </View>
               )}
             </View>
