@@ -12,7 +12,7 @@ const useRealmSyncLoader = () => {
   const {updateSyncRealm} = useContext(RealmContext);
 
   const updateRealm = useCallback(async () => {
-    if (isLoading) {
+    if (isLoading || hasLoadedRealm) {
       return;
     }
     if (
@@ -56,6 +56,10 @@ const useRealmSyncLoader = () => {
   */
 
   useEffect(() => {
+    if (unsubscribeFromRealmCheck.current) {
+      return;
+    }
+
     // @ts-ignore
     unsubscribeFromRealmCheck.current = setInterval(() => {
       updateRealm();

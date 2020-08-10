@@ -25,7 +25,7 @@ export class StockItem extends BaseModel implements Partial<StockItem> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      batch_id: 'string?',
+      batch_id: 'string',
       supplier_name: 'string',
       name: 'string',
       sku: 'string',

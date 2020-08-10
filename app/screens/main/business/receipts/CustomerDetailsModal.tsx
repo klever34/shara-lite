@@ -36,9 +36,6 @@ export const CustomerDetailsModal = (props: Props) => {
       if (isNewCustomer) {
         const data = {
           ...customer,
-          id: generateUniqueId(),
-          updated_at: new Date(),
-          created_at: new Date(),
         };
         setIsNewCustomer(false);
         onSelectCustomer(data);
