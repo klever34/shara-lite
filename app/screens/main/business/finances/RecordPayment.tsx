@@ -1,17 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
+import {uniqBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
-import {Modal, ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
+import {Alert, Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
+import {getCredits} from '../../../../services/CreditService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {CustomersList} from '../receipts';
-import {getCredits} from '../../../../services/CreditService';
-import {uniqBy, omit} from 'lodash';
 
 export const RecordCreditPayment = () => {
   const realm = useRealm();
