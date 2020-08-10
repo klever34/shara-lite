@@ -6,12 +6,14 @@ workflows:
           context: shara-test
           merged: false
           commit: true
+          versioning: true
           filters:
             branches:
               ignore:
                 - master
                 - develop
                 - discovery
+                - /^release.*/
       - test:
           requires:
             - checkout_code
@@ -21,6 +23,7 @@ workflows:
                 - master
                 - develop
                 - discovery
+                - /^release.*/
       - fastlane:
           context: shara-test
           lane: internal
@@ -33,12 +36,14 @@ workflows:
                 - master
                 - develop
                 - discovery
+                - /^release.*/
   discovery-workflow:
     jobs:
       - checkout_code:
           context: shara-discovery
           merged: true
           commit: true
+          versioning: true
           filters:
             branches:
               only:
@@ -61,6 +66,7 @@ workflows:
           context: shara-dev
           merged: true
           commit: true
+          versioning: true
           filters:
             branches:
               only:
@@ -81,8 +87,9 @@ workflows:
     jobs:
       - checkout_code:
           context: shara-qa
-          merged: false
+          merged: true
           commit: false
+          versioning: false
           filters:
             branches:
               only:
@@ -106,6 +113,7 @@ workflows:
           context: shara-production
           merged: true
           commit: true
+          versioning: false
           filters:
             branches:
               only:
@@ -134,6 +142,9 @@ jobs:
       commit:
         type: boolean
         default: false
+      versioning:
+        type: boolean
+        default: true
     steps:
       - checkout
       - run:
@@ -141,51 +152,72 @@ jobs:
           command: |
             yarn install
             yarn jetify
-      - when:
-          condition: <<parameters.merged>>
-          steps:
-            - run:
-                name: Auto-versioning >>  When Master, Discovery or Develop bump patch
-                command: |
-                  CURRENT_VERSION=$(jq ".version" -r package.json)
-                  NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
-                  BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
-                  NEW_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${NEW_VERSION});
-                  jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
-                  echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
       - unless:
-          condition: <<parameters.merged>>
+          condition: <<parameters.versioning>>
           steps:
             - run:
-                name: Auto-versioning >> When unmerged i.e. feature branches, bump build
+                name: No Versioning. Just use release version
                 command: |
-                  CURRENT_VERSION=$(jq ".version" -r package.json)
+                  NEW_VERSION=$(jq ".version" -r package.json)
                   BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
-                  BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
-                  NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
-                  jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+                  echo "export BRANCH_NAME=${BRANCH_NAME}" >> $BASH_ENV
+                  echo "NEW_VERSION=${NEW_VERSION}"
+                  echo "BRANCH_NAME=${BRANCH_NAME}"
       - when:
-          condition: <<parameters.commit>>
+          condition: <<parameters.versioning>>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "90:6e:55:bd:ec:dd:c7:3b:72:d9:11:1c:74:e6:13:98"
-            - run:
-                name: Commit and Push version update
-                command: |
-                  git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
-                  git add package.json
-                  git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
-                  git push --set-upstream origin ${CIRCLE_BRANCH}
             - when:
                 condition: <<parameters.merged>>
                 steps:
                   - run:
-                      name: Create Tag and Push
+                      name: Auto-versioning >>  When Master, Discovery or Develop bump patch
                       command: |
-                        git tag ${NEW_VERSION}
-                        git push --set-upstream origin ${NEW_VERSION}
+                        CURRENT_VERSION=$(jq ".version" -r package.json)
+                        NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
+                        BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
+                        NEW_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${NEW_VERSION});
+                        jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
+                        echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+                        echo "BRANCH_NAME=${BRANCH_NAME}"
+                        echo "CURRENT_VERSION=${CURRENT_VERSION}"
+                        echo "NEW_VERSION=${NEW_VERSION}"
+            - unless:
+                condition: <<parameters.merged>>
+                steps:
+                  - run:
+                      name: Auto-versioning >> When unmerged i.e. feature branches, bump build
+                      command: |
+                        CURRENT_VERSION=$(jq ".version" -r package.json)
+                        BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
+                        BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
+                        NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
+                        jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
+                        echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+                        echo "BRANCH_NAME=${BRANCH_NAME}"
+                        echo "CURRENT_VERSION=${CURRENT_VERSION}"
+                        echo "NEW_VERSION=${NEW_VERSION}"
+            - when:
+                condition: <<parameters.commit>>
+                steps:
+                  - add_ssh_keys:
+                      fingerprints:
+                        - "90:6e:55:bd:ec:dd:c7:3b:72:d9:11:1c:74:e6:13:98"
+                  - run:
+                      name: Commit and Push version update
+                      command: |
+                        git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
+                        git add package.json
+                        git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
+                        git push --set-upstream origin ${CIRCLE_BRANCH}
+                  - when:
+                      condition: <<parameters.merged>>
+                      steps:
+                        - run:
+                            name: Create Tag and Push
+                            command: |
+                              git tag ${NEW_VERSION}
+                              git push --set-upstream origin ${NEW_VERSION}
       - run:
           name: Setup Credentials
           command: |
@@ -222,18 +254,24 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: Set Version
+          command: |
+            NEW_VERSION=$(jq ".version" -r package.json)
+            echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+      - run:
           name: Install Fastlane & Firebase tools
           command: |
             cd android
             bundle install
             curl -sL https://firebase.tools | bash
       - run:
-          name: Fastlane <<parameters.lane>>
+          name: Fastlane <<parameters.lane>> <<parameters.track>>
           command: |
             cd android
             bundle exec fastlane <<parameters.lane>>
           environment:
             GOOGLE_PLAY_TRACK: <<parameters.track>>
+            SHARA_VERSION_NAME: NEW_VERSION
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
