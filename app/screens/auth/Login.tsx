@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {
   Alert,
   ScrollView,
@@ -25,9 +25,13 @@ type Fields = {
 
 export const Login = ({navigation}: any) => {
   // @ts-ignore
-  const {realm, updateSyncRealm} = useContext(RealmContext);
+  const {realm, updateSyncRealm, logoutFromRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
+
+  useEffect(() => {
+    logoutFromRealm && logoutFromRealm();
+  }, [logoutFromRealm]);
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({

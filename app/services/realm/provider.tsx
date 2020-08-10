@@ -6,6 +6,7 @@ type RealmObject = {
   realm?: Realm;
   updateLocalRealm?: (realm: Realm) => void;
   updateSyncRealm?: (realm: Realm) => void;
+  logoutFromRealm?: () => void;
 };
 
 type RealmCloneParams = {
@@ -81,9 +82,26 @@ const RealmProvider = (props: any) => {
     localRealm.current = newRealm;
   };
 
+  const logoutFromRealm = () => {
+    if (syncRealm.current) {
+      syncRealm.current = undefined;
+    }
+
+    if (localRealm.current) {
+      localRealm.current.write(() => {
+        localRealm.current?.deleteAll();
+      });
+    }
+  };
+
   return (
     <RealmContext.Provider
-      value={{realm: realm.current, updateLocalRealm, updateSyncRealm}}>
+      value={{
+        realm: realm.current,
+        logoutFromRealm,
+        updateLocalRealm,
+        updateSyncRealm,
+      }}>
       {props.children}
     </RealmContext.Provider>
   );
