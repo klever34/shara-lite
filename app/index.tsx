@@ -3,7 +3,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {ErrorBoundary, useErrorHandler} from 'react-error-boundary';
+import {ErrorBoundary} from 'react-error-boundary';
 import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
@@ -21,6 +21,7 @@ import {
 import {colors} from './styles';
 import {applyStyles} from './helpers/utils';
 import ErrorFallback from './components/ErrorFallback';
+import {useErrorHandler} from '@/services/error-boundary';
 
 export type RootStackParamList = {
   Splash: undefined;
