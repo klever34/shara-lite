@@ -252,18 +252,24 @@ jobs:
       - attach_workspace:
           at: .
       - run:
+          name: Set Version
+          command: |
+            NEW_VERSION=$(jq ".version" -r package.json)
+            echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+      - run:
           name: Install Fastlane & Firebase tools
           command: |
             cd android
             bundle install
             curl -sL https://firebase.tools | bash
       - run:
-          name: Fastlane <<parameters.lane>>
+          name: Fastlane <<parameters.lane>> <<parameters.track>>
           command: |
             cd android
             bundle exec fastlane <<parameters.lane>>
           environment:
             GOOGLE_PLAY_TRACK: <<parameters.track>>
+            SHARA_VERSION_NAME: ${NEW_VERSION}
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
