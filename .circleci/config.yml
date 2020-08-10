@@ -150,6 +150,15 @@ jobs:
       - run:
           name: Yarn Install Dependencies
           command: yarn install
+      - unless:
+          condition: <<parameters.versioning>>
+          steps:
+            - run:
+                name: No Versioning. Just use release version
+                command: |
+                  NEW_VERSION=$(jq ".version" -r api/package.json)
+                  echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+                  echo "NEW_VERSION=${NEW_VERSION}"
       - when:
           condition: <<parameters.versioning>>
           steps:
