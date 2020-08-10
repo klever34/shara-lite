@@ -90,22 +90,24 @@ export const CustomerTotalCredit = ({
                   : ''}
               </Text>
             </View>
-            <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Due on</Text>
-              <Text
-                style={applyStyles(styles.itemDataMedium, 'text-400', {
-                  color: colors.primary,
-                })}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
-                  : ''}
-              </Text>
-              <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'hh:mm:a')
-                  : ''}
-              </Text>
-            </View>
+            {creditDetails.due_date && (
+              <View style={applyStyles('pb-sm', {width: '48%'})}>
+                <Text style={styles.itemTitle}>Due on</Text>
+                <Text
+                  style={applyStyles(styles.itemDataMedium, 'text-400', {
+                    color: colors.primary,
+                  })}>
+                  {creditDetails.due_date
+                    ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+                    : ''}
+                </Text>
+                <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
+                  {creditDetails.due_date
+                    ? format(new Date(creditDetails.due_date), 'hh:mm:a')
+                    : ''}
+                </Text>
+              </View>
+            )}
           </View>
         </ActionCard>
       </View>
@@ -117,30 +119,15 @@ export const CustomerTotalCredit = ({
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
-        data={credits}
+        data={credits.filter((item) => item.amount_left)}
         renderItem={renderCreditItem}
         keyExtractor={(item) => `${item.id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No credit"
             style={applyStyles({marginTop: 32})}
-            source={require('../../../assets/images/coming-soon.png')}>
-            <Touchable
-              onPress={() => navigation.navigate('RecordCreditPayment')}>
-              <View
-                style={applyStyles(
-                  'p-lg w-full flex-row items-center justify-center',
-                )}>
-                <Text
-                  style={applyStyles('text-400 text-center text-uppercase', {
-                    fontSize: 16,
-                    color: colors.primary,
-                  })}>
-                  Record credit payment
-                </Text>
-              </View>
-            </Touchable>
-          </EmptyState>
+            source={require('../../../assets/images/coming-soon.png')}
+          />
         }
       />
     </SafeAreaView>

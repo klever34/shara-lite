@@ -1,8 +1,8 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, Modal} from 'react-native';
-import {CreditPaymentForm} from '../../../../components';
+import {ScrollView, StyleSheet, Text, View, Modal, Alert} from 'react-native';
+import {CreditPaymentForm, ContactsListModal} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
@@ -13,16 +13,22 @@ import Touchable from '../../../../components/Touchable';
 import Icon from '../../../../components/Icon';
 import {ICustomer} from '../../../../models';
 import {CustomersList} from '../receipts';
+import {updateReceipt} from '../../../../services/ReceiptService';
+import {IReceipt} from '../../../../models/Receipt';
+import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
 
 export const CreditDetails = ({route}: any) => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isCustomersListModalOpen, setIsCustomersListModalOpen] = useState(
     false,
   );
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const {creditDetails}: {creditDetails: ICredit} = route.params;
+
+  const customers = getCustomers({realm});
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
@@ -30,6 +36,19 @@ export const CreditDetails = ({route}: any) => {
 
   const handleCloseCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(false);
+  }, []);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+    handleCloseCustomersList();
+  }, [handleCloseCustomersList]);
+
+  const handleSetCustomer = useCallback((value: ICustomer) => {
+    setCustomer(value);
   }, []);
 
   const handleCustomerSelect = useCallback(
@@ -49,18 +68,30 @@ export const CreditDetails = ({route}: any) => {
 
   const handleSubmit = useCallback(
     (payload, callback) => {
-      if (creditDetails) {
+      if (creditDetails.customer?.name || customer.name) {
         setIsLoading(true);
         setTimeout(() => {
           setIsLoading(false);
+          const newCustomer = creditDetails.customer?.name
+            ? creditDetails.customer
+            : customer.id
+            ? customer
+            : saveCustomer({realm, customer});
+          updateReceipt({
+            realm,
+            customer: newCustomer,
+            receipt: creditDetails.receipt as IReceipt,
+          });
           saveCreditPayment({
             realm,
             ...payload,
-            customer: creditDetails.customer || customer,
+            customer: newCustomer,
           });
           callback();
           navigation.navigate('Finances', {screen: 'Credit'});
         }, 300);
+      } else {
+        Alert.alert('Info', 'Please select a customer');
       }
     },
     [realm, customer, navigation, creditDetails],
@@ -101,22 +132,24 @@ export const CreditDetails = ({route}: any) => {
                 : ''}
             </Text>
           </View>
-          <View style={applyStyles('pb-sm', {width: '48%'})}>
-            <Text style={styles.itemTitle}>Due on</Text>
-            <Text
-              style={applyStyles(styles.itemDataMedium, 'text-400', {
-                color: colors.primary,
-              })}>
-              {creditDetails.created_at
-                ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
-                : ''}
-            </Text>
-            <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-              {creditDetails.created_at
-                ? format(new Date(creditDetails.created_at), 'hh:mm:a')
-                : ''}
-            </Text>
-          </View>
+          {creditDetails.due_date && (
+            <View style={applyStyles('pb-sm', {width: '48%'})}>
+              <Text style={styles.itemTitle}>Due on</Text>
+              <Text
+                style={applyStyles(styles.itemDataMedium, 'text-400', {
+                  color: colors.primary,
+                })}>
+                {creditDetails.due_date
+                  ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+                  : ''}
+              </Text>
+              <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
+                {creditDetails.due_date
+                  ? format(new Date(creditDetails.due_date), 'hh:mm:a')
+                  : ''}
+              </Text>
+            </View>
+          )}
         </View>
       </View>
       <View>
@@ -136,7 +169,7 @@ export const CreditDetails = ({route}: any) => {
                   borderBottomColor: colors['gray-300'],
                 })}>
                 <Icon
-                  size={24}
+                  size={25}
                   name="users"
                   type="feathericons"
                   color={colors['gray-50']}
@@ -156,10 +189,22 @@ export const CreditDetails = ({route}: any) => {
       </View>
       <Modal animationType="slide" visible={isCustomersListModalOpen}>
         <CustomersList
+          customers={customers}
           onModalClose={handleCloseCustomersList}
           onCustomerSelect={handleCustomerSelect}
+          onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
+      <ContactsListModal
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onContactSelect={({givenName, familyName, phoneNumbers}) =>
+          handleSetCustomer({
+            name: `${givenName} ${familyName}`,
+            mobile: phoneNumbers[0].number,
+          })
+        }
+      />
     </ScrollView>
   );
 };

@@ -83,6 +83,7 @@ export const EditProductModal = (props: Props) => {
     <Modal
       isVisible={visible}
       onSwipeComplete={handleClose}
+      onBackdropPress={handleClose}
       onBackButtonPress={handleClose}
       style={applyStyles({
         margin: 0,

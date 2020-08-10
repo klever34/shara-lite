@@ -13,15 +13,18 @@ export const saveCredit = ({
   realm,
   customer,
   receipt,
+  dueDate,
   creditAmount,
 }: {
   realm: Realm;
+  dueDate?: Date;
   customer?: ICustomer | Customer;
   receipt?: IReceipt;
   creditAmount: number;
 }): void => {
   const credit: ICredit = {
     receipt,
+    due_date: dueDate,
     total_amount: creditAmount,
     amount_left: creditAmount,
     amount_paid: 0,

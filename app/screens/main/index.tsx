@@ -15,6 +15,7 @@ import {ICreditPayment} from '../../models/CreditPayment';
 import {IPayment} from '../../models/Payment';
 import {IProduct} from '../../models/Product';
 import {
+  getAnalyticsService,
   getAuthService,
   getContactsService,
   getPubNubService,
@@ -56,6 +57,7 @@ import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
 import {ISupplier} from 'app/models/Supplier';
+import {Expenses} from './business/finances/Expenses';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -79,7 +81,6 @@ export type MainStackParamList = {
   CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
   CustomerOverdueCredit: {credits: ICredit[]};
   CustomerCreditDetails: {creditDetails: ICredit};
-  BusinessSetup: undefined;
   SelectGroupMembers: {
     participants?: Results<IContact>;
     title: string;
@@ -112,8 +113,15 @@ const MainScreens = ({navigation}: any) => {
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const user = authService.getUser();
-  const initialRouteName =
-    user?.businesses && user?.businesses.length ? 'Home' : 'BusinessSetup';
+  const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
+    !(user?.businesses && user?.businesses.length) || false,
+  );
+
+  useEffect(() => {
+    if (user) {
+      getAnalyticsService().setUser(user).catch(handleError);
+    }
+  }, [handleError, user]);
 
   useEffect(() => {
     if (user) {
@@ -146,7 +154,7 @@ const MainScreens = ({navigation}: any) => {
   return (
     <PubNubProvider client={pubNubClient}>
       <MainStack.Navigator
-        initialRouteName={initialRouteName}
+        initialRouteName="Home"
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.primary,
@@ -376,13 +384,6 @@ const MainScreens = ({navigation}: any) => {
           }}
         />
         <MainStack.Screen
-          name="BusinessSetup"
-          options={{
-            headerShown: false,
-          }}
-          component={BusinessSetup}
-        />
-        <MainStack.Screen
           name="TotalCredit"
           component={TotalCredit}
           options={{
@@ -562,7 +563,26 @@ const MainScreens = ({navigation}: any) => {
             headerTintColor: '#fff',
           }}
         />
+        <MainStack.Screen
+          name="Expenses"
+          component={Expenses}
+          options={{
+            title: 'Record Expenses',
+            headerStyle: {
+              backgroundColor: colors.primary,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'CocogoosePro-SemiLight',
+            },
+            headerTintColor: '#fff',
+          }}
+        />
       </MainStack.Navigator>
+      <BusinessSetup
+        visible={isBusinessSetupModalOpen}
+        onClose={() => setIsBusinessSetupModalOpen(false)}
+      />
     </PubNubProvider>
   );
 };
