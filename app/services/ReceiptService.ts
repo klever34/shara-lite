@@ -113,6 +113,7 @@ export const updateReceipt = ({
     (receipt.payments || []).forEach((payment) => {
       updatePayment({realm, payment, updates: {customer}});
     });
+
     if (
       receipt.credit_amount > 0 &&
       receipt.credits &&

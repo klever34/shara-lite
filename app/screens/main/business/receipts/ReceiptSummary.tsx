@@ -393,13 +393,6 @@ const ReceiptSummary = (props: Props) => {
     [customer.mobile, customer.name, businessInfo],
   );
 
-  const handlePrintReceipt = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt printing is coming in the next release',
-    );
-  }, []);
-
   const handleRemovePayment = useCallback(
     (type: 'cash' | 'transfer' | 'mobile') => {
       const result = payments.filter((item) => item.method !== type);
@@ -877,13 +870,14 @@ const ReceiptSummary = (props: Props) => {
       <ReceiptStatusModal
         customer={customer}
         isSaving={isSaving}
+        products={products}
         timeTaken={timeTaken}
         amountPaid={amountPaid}
+        totalAmount={totalAmount}
         creditAmount={creditAmount}
         onComplete={handleComplete}
         isCompleting={isCompleting}
         visible={isSuccessModalOpen}
-        onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onNewReceiptClick={handleNewReceiptClick}
         onOpenCustomerModal={handleOpenCustomerModal}

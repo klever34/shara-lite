@@ -1,13 +1,13 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Modal as ReactNativeModal,
   SafeAreaView,
   StyleSheet,
   Text,
   View,
-  Alert,
 } from 'react-native';
 import Modal from 'react-native-modal';
 import {
@@ -15,19 +15,19 @@ import {
   CurrencyInput,
   FloatingLabelInput,
 } from '../../../../components';
+import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import HeaderRight from '../../../../components/HeaderRight';
-import {ProductsPreviewModal} from './ProductsPreviewModal';
-import ReceiptSummary from './ReceiptSummary';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
 import {IProduct} from '../../../../models/Product';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService} from '../../../../services';
+import {getProducts} from '../../../../services/ProductService';
+import {useRealm} from '../../../../services/realm';
+import {colors} from '../../../../styles';
+import {ProductsPreviewModal} from './ProductsPreviewModal';
+import ReceiptSummary from './ReceiptSummary';
 
 type RecentProductItemProps = {
   item: IProduct;

@@ -6,7 +6,7 @@ import {ICreditPayment, modelName} from '../models/CreditPayment';
 import {savePayment} from './PaymentService';
 import {getBaseModelValues} from '../helpers/models';
 import {updateCredit} from './CreditService';
-import {IPayment} from 'app/models/Payment';
+import {IPayment} from '../models/Payment';
 import {getCustomer} from './CustomerService';
 
 export const getCreditPayments = ({
