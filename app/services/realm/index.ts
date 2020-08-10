@@ -1,5 +1,6 @@
 import {useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
+import Config from 'react-native-config';
 import {Contact, Message, Conversation, Customer} from '../../models';
 import {Payment} from '../../models/Payment';
 import {Credit} from '../../models/Credit';
@@ -77,9 +78,8 @@ export const loginToRealm = async ({
   try {
     // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
-    const appId = 'shara-discovery-fhacl';
     const appConfig = {
-      id: appId,
+      id: Config.ATLAS_REALM_APP_ID,
     };
 
     // @ts-ignore
