@@ -36,7 +36,7 @@ import {UpdateMode} from 'realm';
 import {IMessage} from '../../../models/Message';
 import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
 import {getBaseModelValues} from '../../../helpers/models';
 import {useScreenRecord} from '../../../services/analytics';

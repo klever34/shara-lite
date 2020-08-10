@@ -8,7 +8,7 @@ import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
-import FallbackComponent from './components/FallbackComponent';
+import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
 
 export type RootStackParamList = {
@@ -48,8 +48,8 @@ const App = () => {
 };
 
 export default withErrorBoundary(App, {
-  FallbackComponent,
-  onError(error, componentStack) {
+  FallbackComponent: ErrorFallback,
+  onError: (error: Error, componentStack: string) => {
     if (process.env.NODE_ENV === 'production') {
       Sentry.captureException(error, (scope) => {
         if (componentStack) {

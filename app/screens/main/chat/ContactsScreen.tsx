@@ -17,7 +17,7 @@ import {IConversation} from '../../../models/Conversation';
 import {IContact} from '../../../models/Contact';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
@@ -217,6 +217,7 @@ const ContactsScreen = ({
                                       name: groupChat.name,
                                       type: 'group',
                                       channel: groupChat.uuid,
+                                      creator: me?.mobile,
                                       admins: [me?.mobile],
                                       members: [
                                         me?.mobile,

@@ -84,6 +84,7 @@ type Customer = {
   mobile: string;
   name: string;
 };
+
 type ApiResponse<T extends any = any> = {
   data: any;
   message: string;

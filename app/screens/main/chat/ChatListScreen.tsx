@@ -7,19 +7,19 @@ import {
   View,
 } from 'react-native';
 import Realm from 'realm';
-import {FAButton} from '../../../components';
+import {FAButton} from '@/components';
 import {useNavigation} from '@react-navigation/native';
-import {applyStyles} from '../../../helpers/utils';
-import {colors} from '../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import Touchable from '../../../components/Touchable';
-import {IConversation} from '../../../models';
-import {IMessage} from '../../../models';
-import {useRealm} from '../../../services/realm';
-import {useTyping} from '../../../services/pubnub';
+import {IConversation} from '@/models';
+import {IMessage} from '@/models';
+import {useRealm} from '@/services/realm';
+import {useTyping} from '@/services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import MessageStatusIcon from '../../../components/MessageStatusIcon';
-import {getAuthService} from '../../../services';
-import {useScreenRecord} from '../../../services/analytics';
+import {getAuthService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
 
 type ChatListItemProps = {
   conversation: IConversation;

@@ -12,22 +12,22 @@ import {MainStackParamList} from '..';
 import HeaderTitle from '../../../components/HeaderTitle';
 import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import ContactsList from '../../../components/ContactsList';
-import {useRealm} from '../../../services/realm';
-import {IContact} from '../../../models/Contact';
-import {IConversation} from '../../../models/Conversation';
-import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
+import {useRealm} from '@/services/realm';
+import {IContact} from '@/models';
+import {IConversation} from '@/models';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import TextInput from '../../../components/TextInput';
-import {getApiService, getAuthService} from '../../../services';
-import {useErrorHandler} from 'react-error-boundary';
-import HeaderRight, {HeaderRightOption} from '../../../components/HeaderRight';
+import {getApiService, getAuthService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
+import HeaderRight, {HeaderRightOption} from '@/components/HeaderRight';
 import {UpdateMode} from 'realm';
-import {ModalPropsList} from '../../../../types/modal';
-import {getConversationByChannel} from '../../../services/ConversationService';
-import {getBaseModelValues} from '../../../helpers/models';
-import {getContactByMobile} from '../../../services/ContactService';
-import {useScreenRecord} from '../../../services/analytics';
+import {ModalPropsList} from 'types/modal';
+import {getConversationByChannel} from '@/services/ConversationService';
+import {getBaseModelValues} from '@/helpers/models';
+import {getContactByMobile} from '@/services/ContactService';
+import {useScreenRecord} from '@/services/analytics';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';
@@ -102,8 +102,8 @@ const ChatDetailsScreen = ({
   const handleError = useErrorHandler();
   const isCreator = useMemo(() => {
     const me = getAuthService().getUser();
-    return conversation.creatorId === String(me?.id);
-  }, [conversation.creatorId]);
+    return conversation.creator === String(me?.mobile);
+  }, [conversation.creator]);
 
   const editTextProperty = useCallback(
     async (property: 'name' | 'description', value: string) => {
