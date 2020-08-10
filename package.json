@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.1.23-feature.view-delivery-agents+build.1280",
+  "version": "0.1.23-feature.view-delivery-agents+build.1318",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
