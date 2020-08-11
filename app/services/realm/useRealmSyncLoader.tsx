@@ -35,13 +35,13 @@ const useRealmSyncLoader = () => {
       setIsLoading(true);
       const {jwt} = realmCredentials;
       const createdRealm = await loginToRealm({jwt, hideError: true});
-
-      updateSyncRealm && updateSyncRealm(createdRealm);
-      const realmService = getRealmService();
-      realmService.setInstance(createdRealm);
-
+      if (createdRealm) {
+        updateSyncRealm && updateSyncRealm(createdRealm);
+        const realmService = getRealmService();
+        realmService.setInstance(createdRealm);
+        setHasLoadedRealm(true);
+      }
       setIsLoading(false);
-      setHasLoadedRealm(true);
     } catch (e) {
       setIsLoading(false);
     }

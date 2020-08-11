@@ -12,7 +12,7 @@ import {Supplier} from '../../models/Supplier';
 import {StockItem} from '../../models/StockItem';
 import {DeliveryAgent} from '../../models/DeliveryAgent';
 import {RealmContext} from './provider';
-import {Alert, BackHandler, Platform} from 'react-native';
+import {Alert} from 'react-native';
 import {StorageService} from '../storage';
 import {ReceivedInventory} from '../../models/ReceivedInventory';
 
@@ -74,7 +74,7 @@ export const loginToRealm = async ({
 }: {
   jwt: 'string';
   hideError?: boolean;
-}): Promise<Realm> => {
+}): Promise<Realm | null> => {
   try {
     // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
@@ -88,30 +88,17 @@ export const loginToRealm = async ({
     return await createRealm({realmUser});
   } catch (e) {
     if (!hideError) {
-      Alert.alert(
-        'Oops! Something went wrong.',
-        'Try clearing app data from application settings',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              if (process.env.NODE_ENV === 'production') {
-                if (Platform.OS === 'android') {
-                  BackHandler.exitApp();
-                }
-              }
-            },
-          },
-        ],
-      );
+      Alert.alert('Error', e.message);
     }
-    throw e;
+
+    return null;
   }
 };
 
 export const initLocalRealm = async (): Promise<Realm> => {
   try {
-    return await createRealm();
+    const realm = await createRealm();
+    return realm;
   } catch (e) {
     throw e;
   }

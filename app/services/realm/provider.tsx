@@ -1,5 +1,6 @@
 import Realm, {UpdateMode} from 'realm';
 import React, {createContext, useRef} from 'react';
+import {pick} from 'lodash';
 import {schema} from './index';
 
 type RealmObject = {
@@ -182,26 +183,32 @@ const syncLocalData = ({
     return;
   }
 
-  syncRealm &&
-    syncRealm.write(() => {
-      schema.forEach((model) => {
-        localRealm.objects(model.schema.name).forEach((record: any) => {
-          if (record) {
-            syncRealm.create(model.schema.name, record, UpdateMode.Modified);
-          }
-        });
+  syncRealm.write(() => {
+    schema.forEach((model) => {
+      localRealm.objects(model.schema.name).forEach((record: any) => {
+        if (record) {
+          syncRealm.create(model.schema.name, record, UpdateMode.Modified);
+        }
       });
     });
-  localRealm &&
-    localRealm.write(() => {
-      schema.forEach((model) => {
-        syncRealm.objects(model.schema.name).forEach((record: any) => {
-          if (record) {
-            localRealm?.create(model.schema.name, record, UpdateMode.Modified);
-          }
-        });
+  });
+
+  localRealm.write(() => {
+    schema.forEach((model) => {
+      const localRealmProperties = Object.keys(model.schema.properties);
+      syncRealm.objects(model.schema.name).forEach((record: any) => {
+        if (record) {
+          const recordToCreate = pick(record, localRealmProperties);
+          console.log('====>', recordToCreate);
+          localRealm?.create(
+            model.schema.name,
+            recordToCreate,
+            UpdateMode.Modified,
+          );
+        }
       });
     });
+  });
 };
 
 export default RealmProvider;
