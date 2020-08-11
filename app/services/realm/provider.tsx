@@ -199,7 +199,6 @@ const syncLocalData = ({
       syncRealm.objects(model.schema.name).forEach((record: any) => {
         if (record) {
           const recordToCreate = pick(record, localRealmProperties);
-          console.log('====>', recordToCreate);
           localRealm?.create(
             model.schema.name,
             recordToCreate,
