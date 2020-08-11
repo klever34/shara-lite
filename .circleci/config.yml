@@ -107,6 +107,15 @@ workflows:
             branches:
               only:
                 - /^release.*/
+      - fastlane:
+          context: shara-qa
+          lane: internal
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^release.*/
   beta-workflow:
     jobs:
       - checkout_code:
@@ -125,6 +134,15 @@ workflows:
           context: shara-production
           lane: play
           track: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - fastlane:
+          context: shara-production
+          lane: internal
           requires:
             - test
           filters:
@@ -258,6 +276,7 @@ jobs:
           command: |
             NEW_VERSION=$(jq ".version" -r package.json)
             echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+            echo "NEW_VERSION=${NEW_VERSION}"
       - run:
           name: Install Fastlane & Firebase tools
           command: |
@@ -271,7 +290,7 @@ jobs:
             bundle exec fastlane <<parameters.lane>>
           environment:
             GOOGLE_PLAY_TRACK: <<parameters.track>>
-            SHARA_VERSION_NAME: NEW_VERSION
+            SHARA_VERSION_NAME: $NEW_VERSION
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
