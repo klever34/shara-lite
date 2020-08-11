@@ -2,13 +2,7 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {useNavigation} from '@react-navigation/native';
 import {MessageEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert, Platform, SafeAreaView, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
@@ -28,7 +22,6 @@ import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
 import Touchable from '../../components/Touchable';
 import Icon from '../../components/Icon';
-import {RealmContext} from '@/services/realm/provider';
 import {useScreenRecord} from '@/services/analytics';
 
 type HomeTabParamList = {
@@ -45,14 +38,12 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   const pubNub = usePubNub();
   const navigation = useNavigation();
   const handleError = useErrorHandler();
-  const {logoutFromRealm} = useContext(RealmContext);
   const [notificationToken, setNotificationToken] = useState('');
 
   const handleLogout = useCallback(async () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
-      logoutFromRealm && logoutFromRealm();
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],
@@ -60,7 +51,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     } catch (e) {
       handleError(e);
     }
-  }, [handleError, navigation, logoutFromRealm]);
+  }, [handleError, navigation]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Restoring messages...'});
@@ -161,7 +152,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           );
         }).then();
       } catch (e) {
-        handleError(e);
+        //@TODO Handle gracefully
+        console.log(e);
+        // handleError(e);
       }
     }
 
@@ -308,7 +301,11 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
 
   useEffect(() => {
     const realmService = getRealmService();
-    realmService.restoreAllConversations().catch(handleError);
+    realmService.restoreAllConversations().catch((e) => {
+      console.log(e);
+      //@TODO Handle gracefully
+      // handleError(e);r
+    });
   }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (

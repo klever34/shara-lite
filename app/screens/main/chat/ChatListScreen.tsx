@@ -33,12 +33,14 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
   const realm = useRealm();
   const user = getAuthService().getUser();
   const messages = realm
-    .objects<IMessage>('Message')
-    .filtered(
-      `channel = "${conversation.channel}" AND author != "${
-        user?.mobile ?? ''
-      }" AND delivered_timetoken != null AND read_timetoken = null`,
-    );
+    ? realm
+        .objects<IMessage>('Message')
+        .filtered(
+          `channel = "${conversation.channel}" AND author != "${
+            user?.mobile ?? ''
+          }" AND delivered_timetoken != null AND read_timetoken = null`,
+        )
+    : [];
   const dateText = useMemo(() => {
     if (!lastMessage) {
       return '';
@@ -128,7 +130,9 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const fetchedConversations = realm.objects<IConversation>('Conversation');
+  const fetchedConversations = realm
+    ? realm.objects<IConversation>('Conversation')
+    : [];
   const conversations = fetchedConversations.length
     ? realm
         .objects<IConversation>('Conversation')

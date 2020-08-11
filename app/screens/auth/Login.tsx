@@ -66,12 +66,15 @@ export const Login = ({navigation}: any) => {
           user,
         },
       } = loginResponse;
-      const createdRealm = await loginToRealm({jwt});
-      updateSyncRealm && updateSyncRealm(createdRealm);
-      const realmService = getRealmService();
-      realmService.setInstance(realm as Realm);
-      await setPartitionKey({key: user.id.toString()});
 
+      const createdRealm = await loginToRealm({jwt});
+      if (createdRealm) {
+        updateSyncRealm && updateSyncRealm(createdRealm);
+        const realmService = getRealmService();
+        realmService.setInstance(realm as Realm);
+      }
+
+      await setPartitionKey({key: user.id.toString()});
       setLoading(false);
       navigation.reset({
         index: 0,
