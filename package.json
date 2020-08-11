@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.0",
+  "version": "0.2.0-bugfix.crash-guards+build.1466",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
