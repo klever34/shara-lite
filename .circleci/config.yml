@@ -131,7 +131,7 @@ workflows:
           requires:
             - checkout_code
       - fastlane:
-          context: shara-production
+          context: shara-beta
           lane: play
           track: beta
           requires:
@@ -141,7 +141,7 @@ workflows:
               only:
                 - master
       - fastlane:
-          context: shara-production
+          context: shara-beta
           lane: internal
           requires:
             - test
