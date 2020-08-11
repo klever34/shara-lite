@@ -141,17 +141,19 @@ const ContactsScreen = ({
           if (!me) {
             return;
           }
+
+          const conversationData = {
+            id: generateUniqueId(),
+            name: item.fullName,
+            channel: channelName,
+            type: '1-1',
+            members: [me.mobile, item.mobile],
+            ...getBaseModelValues(),
+          };
           realm.write(() => {
             conversation = realm.create<IConversation>(
               'Conversation',
-              {
-                id: generateUniqueId(),
-                name: item.fullName,
-                channel: channelName,
-                type: '1-1',
-                members: [me.mobile, item.mobile],
-                ...getBaseModelValues(),
-              },
+              conversationData,
               UpdateMode.Modified,
             );
             contact.channel = channelName;
@@ -207,26 +209,27 @@ const ContactsScreen = ({
                             .createGroupChat(groupName, participants)
                             .then((groupChat) => {
                               try {
+                                const groupChatData = {
+                                  id: String(groupChat.id),
+                                  name: groupChat.name,
+                                  type: 'group',
+                                  channel: groupChat.uuid,
+                                  creator: me?.mobile,
+                                  admins: [me?.mobile],
+                                  members: [
+                                    me?.mobile,
+                                    ...participants.map(
+                                      (member) => member.mobile,
+                                    ),
+                                  ],
+                                  ...getBaseModelValues(),
+                                };
                                 realm.write(() => {
                                   const conversation = realm.create<
                                     IConversation
                                   >(
                                     'Conversation',
-                                    {
-                                      id: String(groupChat.id),
-                                      name: groupChat.name,
-                                      type: 'group',
-                                      channel: groupChat.uuid,
-                                      creator: me?.mobile,
-                                      admins: [me?.mobile],
-                                      members: [
-                                        me?.mobile,
-                                        ...participants.map(
-                                          (member) => member.mobile,
-                                        ),
-                                      ],
-                                      ...getBaseModelValues(),
-                                    },
+                                    groupChatData,
                                     UpdateMode.Modified,
                                   );
                                   getAnalyticsService()

@@ -95,13 +95,19 @@ export class RealmService implements IRealmService {
     const realm = this.realm as Realm;
     return new Promise<IContact[]>((resolve, reject) => {
       try {
+        const existingContacts = realm.objects<IContact>('Contact');
+        const contactsWithBaseValues = contacts
+          .map((contact) => ({
+            ...contact,
+            ...getBaseModelValues(),
+          }))
+          .filter(
+            (contact) =>
+              !existingContacts.find(({mobile}) => contact.mobile === mobile),
+          );
         realm.write(() => {
-          const createdContacts = contacts.map((contact) => {
-            const newContact = {
-              ...contact,
-              ...getBaseModelValues(),
-            };
-            return realm.create<IContact>('Contact', newContact, updateMode);
+          const createdContacts = contactsWithBaseValues.map((contact) => {
+            return realm.create<IContact>('Contact', contact, updateMode);
           });
           resolve(createdContacts);
         });
@@ -201,7 +207,11 @@ export class RealmService implements IRealmService {
                 const conversation = this.realm
                   .objects<IConversation>('Conversation')
                   .filtered(`channel="${channel}"`)[0];
-                conversation.lastMessage = message;
+                this.realm.create<IMessage>(
+                  'Message',
+                  {_id: message._id, lastMessage: conversation.lastMessage},
+                  UpdateMode.Modified,
+                );
               }
             }
           });
