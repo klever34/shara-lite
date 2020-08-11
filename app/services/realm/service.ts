@@ -201,7 +201,11 @@ export class RealmService implements IRealmService {
                 const conversation = this.realm
                   .objects<IConversation>('Conversation')
                   .filtered(`channel="${channel}"`)[0];
-                conversation.lastMessage = message;
+                this.realm.create<IMessage>(
+                  'Message',
+                  {_id: message._id, lastMessage: conversation.lastMessage},
+                  UpdateMode.Modified,
+                );
               }
             }
           });

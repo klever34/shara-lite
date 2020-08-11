@@ -130,14 +130,15 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const fetchedConversations = realm.objects<IConversation>('Conversation');
-  const conversations =
-    fetchedConversations && fetchedConversations.length
-      ? realm
-          .objects<IConversation>('Conversation')
-          .filtered('lastMessage != null OR type = "group"')
-          .sorted('lastMessage.created_at', true)
-      : [];
+  const fetchedConversations = realm
+    ? realm.objects<IConversation>('Conversation')
+    : [];
+  const conversations = fetchedConversations.length
+    ? realm
+        .objects<IConversation>('Conversation')
+        .filtered('lastMessage != null OR type = "group"')
+        .sorted('lastMessage.created_at', true)
+    : [];
   const renderChatListItem = useCallback(
     ({item}: ListRenderItemInfo<IConversation>) => {
       return <ChatListItem conversation={item} />;
