@@ -95,13 +95,13 @@ export class RealmService implements IRealmService {
     const realm = this.realm as Realm;
     return new Promise<IContact[]>((resolve, reject) => {
       try {
+        const contactsWithBaseValues = contacts.map((contact) => ({
+          ...contact,
+          ...getBaseModelValues(),
+        }));
         realm.write(() => {
-          const createdContacts = contacts.map((contact) => {
-            const newContact = {
-              ...contact,
-              ...getBaseModelValues(),
-            };
-            return realm.create<IContact>('Contact', newContact, updateMode);
+          const createdContacts = contactsWithBaseValues.map((contact) => {
+            return realm.create<IContact>('Contact', contact, updateMode);
           });
           resolve(createdContacts);
         });
