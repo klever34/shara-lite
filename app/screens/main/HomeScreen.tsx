@@ -152,7 +152,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           );
         }).then();
       } catch (e) {
-        handleError(e);
+        //@TODO Handle gracefully
+        console.log(e);
+        // handleError(e);
       }
     }
 
@@ -299,7 +301,11 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
 
   useEffect(() => {
     const realmService = getRealmService();
-    realmService.restoreAllConversations().catch(handleError);
+    realmService.restoreAllConversations().catch((e) => {
+      console.log(e);
+      //@TODO Handle gracefully
+      // handleError(e);r
+    });
   }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (
