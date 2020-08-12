@@ -15,11 +15,11 @@ export const addNewStockItem = ({
 }): void => {
   realm.write(() => {
     realm.create<StockItem>(modelName, stockItem, UpdateMode.Modified);
+  });
 
-    restockProduct({
-      realm,
-      product: stockItem.product,
-      quantity: stockItem.quantity,
-    });
+  restockProduct({
+    realm,
+    product: stockItem.product,
+    quantity: stockItem.quantity,
   });
 };
