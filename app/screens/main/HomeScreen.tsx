@@ -301,11 +301,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
 
   useEffect(() => {
     const realmService = getRealmService();
-    realmService.restoreAllConversations().catch((e) => {
-      console.log(e);
-      //@TODO Handle gracefully
-      // handleError(e);r
-    });
+    realmService.restoreAllConversations().catch(handleError);
   }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (
