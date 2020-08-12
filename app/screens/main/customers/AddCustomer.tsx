@@ -1,20 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
-import {
-  Button,
-  ContactsListModal,
-  FloatingLabelInput,
-} from '../../../components';
-import {saveCustomer, getCustomers} from '../../../services/CustomerService';
+import {useErrorHandler} from 'react-error-boundary';
+import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {Button, FloatingLabelInput} from '../../../components';
+import {applyStyles} from '../../../helpers/utils';
+import {getAnalyticsService} from '../../../services';
+import {useScreenRecord} from '../../../services/analytics';
+import {getCustomers, saveCustomer} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
-import Touchable from '../../../components/Touchable';
-import {applyStyles} from '../../../helpers/utils';
-import {Contact} from 'react-native-contacts';
-import {getAnalyticsService} from '../../../services';
-import {useErrorHandler} from 'react-error-boundary';
-import {useScreenRecord} from '../../../services/analytics';
 
 const AddCustomer = () => {
   useScreenRecord();
@@ -24,15 +18,6 @@ const AddCustomer = () => {
   const [name, setName] = useState('');
   const [mobile, setMobile] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-
-  const handleOpenContactListModal = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
-  const handleCloseContactListModal = useCallback(() => {
-    setIsContactListModalOpen(false);
-  }, []);
 
   const handleNameChange = useCallback((text: string) => {
     setName(text);
@@ -42,14 +27,8 @@ const AddCustomer = () => {
     setMobile(text);
   }, []);
 
-  const handleSelectCustomer = useCallback((contact: Contact) => {
-    const {givenName, familyName, phoneNumbers} = contact;
-    const contactName = `${givenName} ${familyName}`;
-    const contactMobile = phoneNumbers[0].number;
-    setName(contactName);
-    setMobile(contactMobile);
-  }, []);
   const handleError = useErrorHandler();
+
   const handleSubmit = useCallback(() => {
     if (name && mobile) {
       if (customers.map((item) => item.mobile).includes(mobile)) {
@@ -82,15 +61,8 @@ const AddCustomer = () => {
             value={name}
             label="Name"
             onChangeText={handleNameChange}
-            containerStyle={applyStyles('mb-sm')}
+            containerStyle={applyStyles('mb-xl')}
           />
-          <Touchable onPress={handleOpenContactListModal}>
-            <View style={applyStyles('w-full flex-row justify-end')}>
-              <Text style={applyStyles('text-500', {color: colors.primary})}>
-                Add from contacts
-              </Text>
-            </View>
-          </Touchable>
           <FloatingLabelInput
             value={mobile}
             label="Phone Number"
@@ -108,11 +80,6 @@ const AddCustomer = () => {
           onPress={handleSubmit}
         />
       </View>
-      <ContactsListModal
-        visible={isContactListModalOpen}
-        onClose={handleCloseContactListModal}
-        onContactSelect={(contact) => handleSelectCustomer(contact)}
-      />
     </ScrollView>
   );
 };

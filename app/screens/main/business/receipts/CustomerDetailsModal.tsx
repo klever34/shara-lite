@@ -63,7 +63,7 @@ export const CustomerDetailsModal = (props: Props) => {
       visible={visible}
       transparent={false}
       animationType="slide"
-      onRequestClose={onClose}>
+      onDismiss={onClose}>
       <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
         <View style={applyStyles({marginBottom: 48})}>
           <Button style={applyStyles('mb-lg')} onPress={onOpenCustomerList}>

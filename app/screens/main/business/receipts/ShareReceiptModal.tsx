@@ -67,7 +67,7 @@ export const ShareReceiptModal = ({
       visible={visible}
       transparent={false}
       animationType="slide"
-      onRequestClose={onClose}>
+      onDismiss={onClose}>
       <View
         style={applyStyles(
           'px-lg',

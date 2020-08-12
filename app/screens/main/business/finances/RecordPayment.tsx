@@ -110,7 +110,10 @@ export const RecordCreditPayment = () => {
         </View>
       </Touchable>
       <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
-      <Modal animationType="slide" visible={isCustomersListModalOpen}>
+      <Modal
+        animationType="slide"
+        visible={isCustomersListModalOpen}
+        onDismiss={handleCloseCustomersList}>
         <CustomersList
           showAddFromPhone={false}
           customers={creditCustomers}

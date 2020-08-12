@@ -57,7 +57,7 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
   }, []);
 
   return (
-    <Modal animationType="slide" visible={visible}>
+    <Modal animationType="slide" visible={visible} onDismiss={onClose}>
       <ScrollView style={applyStyles('flex-1', 'px-md')}>
         <View style={applyStyles('flex-1')}>
           <View style={applyStyles({marginVertical: 32})}>

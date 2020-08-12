@@ -922,7 +922,9 @@ const ReceiptSummary = (props: Props) => {
         onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
-      <Modal visible={isCustomerListModalOpen}>
+      <Modal
+        visible={isCustomerListModalOpen}
+        onDismiss={handleCloseCustomerList}>
         <CustomersList
           customers={customers}
           onModalClose={handleCloseCustomerList}

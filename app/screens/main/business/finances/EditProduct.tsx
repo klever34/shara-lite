@@ -91,7 +91,7 @@ export const EditProduct = ({
         </View>
       </View>
       <Button
-        title="Edit product"
+        title="Save"
         isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}

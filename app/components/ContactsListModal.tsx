@@ -20,13 +20,17 @@ import Touchable from './Touchable';
 
 type Props = {
   visible: boolean;
+  entity?: string;
   onClose: () => void;
+  onAddNew?: () => void;
   onContactSelect?: (contact: Contact) => void;
 };
 
 export const ContactsListModal = ({
   visible,
   onClose,
+  entity,
+  onAddNew,
   onContactSelect,
 }: Props) => {
   const navigation = useNavigation();
@@ -101,6 +105,11 @@ export const ContactsListModal = ({
     [onClose, onContactSelect],
   );
 
+  const handleAddNew = useCallback(() => {
+    onClose();
+    onAddNew && onAddNew();
+  }, [onAddNew, onClose]);
+
   const renderContactItem = useCallback(
     ({item: contact}: ListRenderItemInfo<Contact>) => {
       return (
@@ -130,7 +139,7 @@ export const ContactsListModal = ({
   );
 
   return (
-    <Modal animationType="slide" visible={visible}>
+    <Modal animationType="slide" visible={visible} onDismiss={onClose}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon
@@ -149,6 +158,29 @@ export const ContactsListModal = ({
           />
         </View>
       </View>
+      {onAddNew && (
+        <Touchable onPress={handleAddNew}>
+          <View
+            style={applyStyles('flex-row px-lg py-lg items-center', {
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-20'],
+            })}>
+            <Icon
+              size={24}
+              name="user-plus"
+              type="feathericons"
+              color={colors.primary}
+            />
+            <Text
+              style={applyStyles('text-400 pl-md', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              Add New {entity}
+            </Text>
+          </View>
+        </Touchable>
+      )}
 
       <FlatList
         data={contacts}
@@ -169,11 +201,16 @@ export const ContactsListModal = ({
           </View>
         }
       />
-      <View style={applyStyles('px-lg')}>
+      <View>
         <Button
           onPress={onClose}
           variantColor="clear"
-          style={applyStyles({width: '100%', marginBottom: 24})}>
+          style={applyStyles({
+            width: '100%',
+            marginBottom: 24,
+            borderTopWidth: 1,
+            borderTopColor: colors['gray-20'],
+          })}>
           <Text
             style={applyStyles('text-400', 'text-uppercase', {
               color: colors.primary,

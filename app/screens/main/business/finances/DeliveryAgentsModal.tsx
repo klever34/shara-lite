@@ -85,7 +85,7 @@ export const DeliveryAgentsModal = (props: Props) => {
   );
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
+    <Modal visible={visible} animationType="slide" onDismiss={handleClose}>
       <View style={applyStyles('flex-1', {backgroundColor: colors.white})}>
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>

@@ -189,7 +189,10 @@ export const CreditDetails = ({route}: any) => {
           <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
         </View>
       </View>
-      <Modal animationType="slide" visible={isCustomersListModalOpen}>
+      <Modal
+        animationType="slide"
+        visible={isCustomersListModalOpen}
+        onDismiss={handleCloseCustomersList}>
         <CustomersList
           customers={customers}
           onModalClose={handleCloseCustomersList}
