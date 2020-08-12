@@ -113,7 +113,8 @@ export const RecordCreditPayment = () => {
       <Modal
         animationType="slide"
         visible={isCustomersListModalOpen}
-        onDismiss={handleCloseCustomersList}>
+        onDismiss={handleCloseCustomersList}
+        onRequestClose={handleCloseCustomersList}>
         <CustomersList
           showAddFromPhone={false}
           customers={creditCustomers}

@@ -139,7 +139,11 @@ export const ContactsListModal = ({
   );
 
   return (
-    <Modal animationType="slide" visible={visible} onDismiss={onClose}>
+    <Modal
+      animationType="slide"
+      visible={visible}
+      onDismiss={onClose}
+      onRequestClose={onClose}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon

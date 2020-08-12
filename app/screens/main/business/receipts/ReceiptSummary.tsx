@@ -923,8 +923,10 @@ const ReceiptSummary = (props: Props) => {
         onWhatsappShare={handleWhatsappShare}
       />
       <Modal
+        animationType="slide"
         visible={isCustomerListModalOpen}
-        onDismiss={handleCloseCustomerList}>
+        onDismiss={handleCloseCustomerList}
+        onRequestClose={handleCloseCustomerList}>
         <CustomersList
           customers={customers}
           onModalClose={handleCloseCustomerList}

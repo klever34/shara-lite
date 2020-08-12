@@ -355,7 +355,11 @@ export function ReceiptDetailsModal(props: Props) {
   );
 
   return (
-    <Modal visible={visible} animationType="slide" onDismiss={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onDismiss={onClose}
+      onRequestClose={onClose}>
       <ScrollView style={applyStyles('px-lg py-xl')}>
         <View
           style={applyStyles(
@@ -636,7 +640,8 @@ export function ReceiptDetailsModal(props: Props) {
       <Modal
         animationType="slide"
         visible={isCustomerListModalOpen}
-        onDismiss={handleCloseCustomerListModal}>
+        onDismiss={handleCloseCustomerListModal}
+        onRequestClose={handleCloseCustomerListModal}>
         <CustomersList
           customers={customers}
           onCustomerSelect={handleCustomerSelect}

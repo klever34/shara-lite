@@ -192,7 +192,8 @@ export const CreditDetails = ({route}: any) => {
       <Modal
         animationType="slide"
         visible={isCustomersListModalOpen}
-        onDismiss={handleCloseCustomersList}>
+        onDismiss={handleCloseCustomersList}
+        onRequestClose={handleCloseCustomersList}>
         <CustomersList
           customers={customers}
           onModalClose={handleCloseCustomersList}

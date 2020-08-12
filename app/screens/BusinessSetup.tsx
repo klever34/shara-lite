@@ -175,7 +175,11 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   }, []);
 
   return (
-    <Modal visible={visible} animationType="slide" onDismiss={handleSkip}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onDismiss={handleSkip}
+      onRequestClose={handleSkip}>
       <View
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
