@@ -1,9 +1,9 @@
 import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useErrorHandler} from '@/services/error-boundary';
-import {ActivityIndicator, View} from 'react-native';
+import {ActivityIndicator, View, BackHandler, ToastAndroid} from 'react-native';
 import Config from 'react-native-config';
 import {Results} from 'realm';
 import getUuidByString from 'uuid-by-string';
@@ -61,6 +61,7 @@ import {ISupplier} from '../../models/Supplier';
 import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
 import {Expenses} from './business/finances/Expenses';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
+import {useNavigationState} from '@react-navigation/native';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -113,7 +114,49 @@ export type MainStackParamList = {
 
 const MainStack = createStackNavigator<MainStackParamList>();
 
+const useRepeatBackToExit = () => {
+  const [backClickCount, setBackClickCount] = useState<0 | 1>(0);
+  const navigationState = useNavigationState((state) => state);
+  const spring = useCallback(() => {
+    const duration = 1500;
+    setBackClickCount(1);
+    ToastAndroid.show('Press BACK again to exit', duration);
+    setTimeout(() => {
+      setBackClickCount(0);
+    }, duration);
+  }, []);
+  const handleBackButton = useCallback(() => {
+    const mainRoute = navigationState.routes[0];
+    if (mainRoute.state) {
+      if (mainRoute.state.routes.length !== 1) {
+        return false;
+      }
+      if (mainRoute.state.routes[0].name === 'Home') {
+        const homeRoute = mainRoute.state.routes[0];
+        if (homeRoute.state) {
+          if (homeRoute.state.index !== 0) {
+            return false;
+          }
+        }
+      }
+    }
+    if (backClickCount === 1) {
+      BackHandler.exitApp();
+    } else {
+      spring();
+    }
+    return true;
+  }, [backClickCount, navigationState.routes, spring]);
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButton);
+    return () => {
+      BackHandler.removeEventListener('hardwareBackPress', handleBackButton);
+    };
+  }, [handleBackButton]);
+};
+
 const MainScreens = ({navigation}: any) => {
+  useRepeatBackToExit();
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
   const authService = getAuthService();
@@ -145,9 +188,7 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     const contactsService = getContactsService();
-    contactsService.loadContacts().catch((error) => {
-      handleError(error);
-    });
+    contactsService.loadContacts().catch(handleError);
   }, [navigation, handleError]);
 
   if (!pubNubClient) {
