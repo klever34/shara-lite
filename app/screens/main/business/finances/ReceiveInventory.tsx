@@ -2,15 +2,26 @@ import React, {useState, useEffect, useCallback} from 'react';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import EmptyState from '../../../../components/EmptyState';
-import {StyleSheet, View, Text, FlatList} from 'react-native';
+import {
+  StyleSheet,
+  View,
+  Text,
+  FlatList,
+  Alert,
+  ToastAndroid,
+} from 'react-native';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import {useNavigation} from '@react-navigation/native';
 import {useRealm} from '../../../../services/realm';
 import Touchable from '../../../../components/Touchable';
 import {ISupplier} from '../../../../models/Supplier';
-import {getSuppliers} from '../../../../services/SupplierService';
+import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
 import {useScreenRecord} from '../../../../services/analytics';
+import {ContactsListModal} from '@/components';
+import {Contact} from 'react-native-contacts';
+import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from 'react-error-boundary';
 
 type SupplierItemProps = {
   item: ISupplier;
@@ -24,6 +35,7 @@ export const ReceiveInventory = () => {
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [mySuppliers, setMySuppliers] = useState<ISupplier[]>(suppliers);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -32,6 +44,14 @@ export const ReceiveInventory = () => {
     });
     return unsubscribe;
   }, [navigation, realm]);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
 
   const handleSelectSupplier = useCallback(
     (item?: ISupplier) => {
@@ -77,6 +97,30 @@ export const ReceiveInventory = () => {
     [handleSelectSupplier],
   );
 
+  const handleError = useErrorHandler();
+
+  const handleCreateSupplier = useCallback(
+    (contact: Contact) => {
+      const mobile = contact.phoneNumbers[0].number;
+      const name = `${contact.givenName} ${contact.familyName}`;
+
+      if (name) {
+        if (suppliers.map((item) => item.mobile).includes(mobile)) {
+          Alert.alert(
+            'Error',
+            'Supplier with the same phone number has been created.',
+          );
+        } else {
+          const supplier = {name, mobile};
+          saveSupplier({realm, supplier});
+          getAnalyticsService().logEvent('supplierAdded').catch(handleError);
+          ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
+        }
+      }
+    },
+    [realm, suppliers, handleError],
+  );
+
   const renderSupplierListHeader = useCallback(
     () => <Text style={styles.supplierListHeader}>Select a supplier</Text>,
     [],
@@ -102,7 +146,7 @@ export const ReceiveInventory = () => {
           />
         </View>
       </View>
-      <Touchable onPress={handleAddSupplier}>
+      <Touchable onPress={handleOpenContactListModal}>
         <View
           style={applyStyles('flex-row px-lg py-lg items-center', {
             borderBottomWidth: 1,
@@ -137,6 +181,13 @@ export const ReceiveInventory = () => {
             text="Click on the add supplier button above to create a supplier"
           />
         }
+      />
+      <ContactsListModal
+        entity="Supplier"
+        onAddNew={handleAddSupplier}
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onContactSelect={(contact) => handleCreateSupplier(contact)}
       />
     </View>
   );
