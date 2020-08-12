@@ -2,16 +2,21 @@ import React, {useCallback, useEffect, useState, useLayoutEffect} from 'react';
 import {applyStyles} from '../../../../helpers/utils';
 import {colors} from '../../../../styles';
 import EmptyState from '../../../../components/EmptyState';
-import {FlatList, StyleSheet, Text, View} from 'react-native';
+import {FlatList, StyleSheet, Text, View, Alert} from 'react-native';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
 import {useNavigation} from '@react-navigation/native';
 import {useRealm} from '../../../../services/realm';
-import {getDeliveryAgents} from '../../../../services/DeliveryAgentService';
+import {
+  getDeliveryAgents,
+  saveDeliveryAgent,
+} from '../../../../services/DeliveryAgentService';
 import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
 import HeaderRight from '../../../../components/HeaderRight';
 import {useScreenRecord} from '../../../../services/analytics';
+import {ContactsListModal} from '@/components';
+import {Contact} from 'react-native-contacts';
 
 type DeliveryAgentItemProps = {
   item: IDeliveryAgent;
@@ -27,6 +32,7 @@ export const DeliveryAgents = () => {
   const [myDeliveryAgents, setMyDeliveryAgents] = useState<IDeliveryAgent[]>(
     deliveryAgents,
   );
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -43,6 +49,14 @@ export const DeliveryAgents = () => {
     });
     return unsubscribe;
   }, [navigation, realm]);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
 
   const handleDeliveryAgentSearch = useCallback(
     (searchedText: string) => {
@@ -65,6 +79,24 @@ export const DeliveryAgents = () => {
   const handleAddDeliveryAgent = useCallback(() => {
     navigation.navigate('AddDeliveryAgent');
   }, [navigation]);
+
+  const handleCreateDeliveryAgent = useCallback(
+    (contact: Contact) => {
+      const mobile = contact.phoneNumbers[0].number;
+      const name = `${contact.givenName} ${contact.familyName}`;
+
+      if (deliveryAgents.map((item) => item.mobile).includes(mobile)) {
+        Alert.alert(
+          'Error',
+          'Delivery Agent with the same phone number has been created.',
+        );
+      } else {
+        const deliveryAgent = {full_name: name, mobile};
+        saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+      }
+    },
+    [deliveryAgents, realm],
+  );
 
   const renderDeliveryAgentListItem = useCallback(
     ({item: deliveryAgent}: DeliveryAgentItemProps) => {
@@ -89,7 +121,7 @@ export const DeliveryAgents = () => {
   );
 
   return (
-    <View style={applyStyles({backgroundColor: colors.white})}>
+    <View style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon
@@ -108,7 +140,7 @@ export const DeliveryAgents = () => {
           />
         </View>
       </View>
-      <Touchable onPress={handleAddDeliveryAgent}>
+      <Touchable onPress={handleOpenContactListModal}>
         <View
           style={applyStyles('flex-row px-lg py-lg items-center', {
             borderBottomWidth: 1,
@@ -140,10 +172,18 @@ export const DeliveryAgents = () => {
             heading={
               !deliveryAgents.length ? 'No Agents Added' : 'No results found'
             }
+            style={applyStyles({marginTop: 100})}
             source={require('../../../../assets/images/coming-soon.png')}
             text="Click on the add delivery agent button above to create a delivery agent"
           />
         }
+      />
+      <ContactsListModal
+        entity="Deliver Agent"
+        visible={isContactListModalOpen}
+        onAddNew={handleAddDeliveryAgent}
+        onClose={handleCloseContactListModal}
+        onContactSelect={(contact) => handleCreateDeliveryAgent(contact)}
       />
     </View>
   );

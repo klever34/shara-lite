@@ -83,7 +83,6 @@ export const Suppliers = () => {
     (contact: Contact) => {
       const mobile = contact.phoneNumbers[0].number;
       const name = `${contact.givenName} ${contact.familyName}`;
-      const supplier = {name, mobile};
 
       if (name) {
         if (suppliers.map((item) => item.mobile).includes(mobile)) {
@@ -92,6 +91,7 @@ export const Suppliers = () => {
             'Supplier with the same phone number has been created.',
           );
         } else {
+          const supplier = {name, mobile};
           saveSupplier({realm, supplier});
           getAnalyticsService().logEvent('supplierAdded').catch(handleError);
         }
