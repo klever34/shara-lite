@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {Alert, ScrollView, Text, View} from 'react-native';
+import {Alert, ScrollView, Text, View, ToastAndroid} from 'react-native';
 import {Button, FloatingLabelInput} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 import {applyStyles} from '../../../../helpers/utils';
@@ -58,6 +58,7 @@ export const AddDeliveryAgent = () => {
         setIsLoading(false);
         clearForm();
         navigation.goBack();
+        ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }, 300);
     }
   }, [realm, clearForm, deliveryAgent, deliveryAgents, navigation]);

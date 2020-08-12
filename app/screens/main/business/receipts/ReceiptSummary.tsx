@@ -9,6 +9,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ToastAndroid,
 } from 'react-native';
 import Share from 'react-native-share';
 import {Payment} from '../../../../../types/app';
@@ -489,6 +490,7 @@ const ReceiptSummary = (props: Props) => {
         onClearReceipt();
         getAnalyticsService().logEvent('receiptCreated').catch(handleError);
         onSuccess && onSuccess();
+        ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       }, 500);
     },
     [

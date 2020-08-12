@@ -8,6 +8,7 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
@@ -119,14 +120,34 @@ export const ContactsListModal = ({
               borderBottomWidth: 1,
               borderBottomColor: colors['gray-20'],
             })}>
-            <View
-              style={applyStyles('mr-md', {
-                height: 48,
-                width: 48,
-                borderRadius: 24,
-                backgroundColor: '#FFE2E2',
-              })}
-            />
+            {contact.hasThumbnail ? (
+              <Image
+                style={applyStyles('mr-md', {
+                  height: 48,
+                  width: 48,
+                  borderRadius: 24,
+                  backgroundColor: '#FFE2E2',
+                })}
+                source={{uri: contact.thumbnailPath}}
+              />
+            ) : (
+              <View
+                style={applyStyles('mr-md items-center justify-center', {
+                  height: 48,
+                  width: 48,
+                  borderRadius: 24,
+                  backgroundColor: '#FFE2E2',
+                })}>
+                <Text
+                  style={applyStyles('text-center text-500', {
+                    color: colors.primary,
+                    fontSize: 12,
+                  })}>
+                  {contact.givenName[0]}
+                  {contact.familyName[0]}
+                </Text>
+              </View>
+            )}
 
             <Text style={applyStyles('text-400', 'text-lg')}>
               {contact.givenName} {contact.familyName}
@@ -136,6 +157,15 @@ export const ContactsListModal = ({
       );
     },
     [handleContactSelect],
+  );
+
+  const renderContactListHeader = useCallback(
+    () => (
+      <Text style={applyStyles(styles.customerListHeader, 'text-500')}>
+        Select a contact
+      </Text>
+    ),
+    [],
   );
 
   return (
@@ -190,6 +220,7 @@ export const ContactsListModal = ({
         data={contacts}
         style={applyStyles('flex-1')}
         renderItem={renderContactItem}
+        ListHeaderComponent={renderContactListHeader}
         keyExtractor={(item: Contact) => item.recordID}
         ListEmptyComponent={
           <View
@@ -211,7 +242,6 @@ export const ContactsListModal = ({
           variantColor="clear"
           style={applyStyles({
             width: '100%',
-            marginBottom: 24,
             borderTopWidth: 1,
             borderTopColor: colors['gray-20'],
           })}>
@@ -249,5 +279,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingLeft: 36,
     backgroundColor: colors.white,
+  },
+  customerListHeader: {
+    fontSize: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    textTransform: 'uppercase',
+    color: colors['gray-300'],
+    borderBottomColor: colors['gray-20'],
   },
 });

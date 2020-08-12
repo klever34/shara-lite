@@ -7,6 +7,7 @@ import {
   Text,
   View,
   Alert,
+  ToastAndroid,
 } from 'react-native';
 import {
   BluetoothEscposPrinter,
@@ -135,6 +136,7 @@ export function ReceiptDetailsModal(props: Props) {
         : saveCustomer({realm, customer: value});
 
       receipt && updateReceipt({realm, customer: newCustomer, receipt});
+      ToastAndroid.show('Receipt edited with customer', ToastAndroid.SHORT);
     },
     [realm, receipt],
   );

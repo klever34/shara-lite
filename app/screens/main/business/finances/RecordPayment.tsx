@@ -1,7 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
 import {uniqBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
-import {Alert, Modal, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ToastAndroid,
+} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -54,6 +62,7 @@ export const RecordCreditPayment = () => {
           saveCreditPayment({realm, customer, ...payload});
           callback();
           navigation.goBack();
+          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
         }, 300);
       } else {
         Alert.alert('Info', 'Please select a customer');

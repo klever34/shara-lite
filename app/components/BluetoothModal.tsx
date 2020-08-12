@@ -453,7 +453,7 @@ export const BluetoothModal = ({
                 BluetoothManager.EVENT_BLUETOOTH_NOT_SUPPORT,
                 () => {
                   ToastAndroid.show(
-                    'Device Not Support Bluetooth !',
+                    'Device does not support bluetooth!',
                     ToastAndroid.LONG,
                   );
                 },

@@ -1,7 +1,14 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {Alert, ScrollView, StyleSheet, Text, View} from 'react-native';
+import {
+  Alert,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ToastAndroid,
+} from 'react-native';
 import {Button, FloatingLabelInput} from '../../../components';
 import {applyStyles} from '../../../helpers/utils';
 import {getAnalyticsService} from '../../../services';
@@ -47,6 +54,7 @@ const AddCustomer = () => {
           setIsLoading(false);
           getAnalyticsService().logEvent('customerAdded').catch(handleError);
           navigation.navigate('CustomerDetails', {customer});
+          ToastAndroid.show('Customer added', ToastAndroid.SHORT);
         }, 750);
       }
     }

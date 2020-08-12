@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ToastAndroid,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {
@@ -134,14 +135,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     false,
   );
 
-  const handleOpenContactListModal = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
-  const handleCloseContactListModal = useCallback(() => {
-    setIsContactListModalOpen(false);
-  }, []);
-
   const handleOpenDeliveryAgentsModal = useCallback(() => {
     setIsDeliveryAgentsModalOpen(true);
   }, []);
@@ -149,6 +142,15 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleCloseDeliveryAgentsModal = useCallback(() => {
     setIsDeliveryAgentsModalOpen(false);
   }, []);
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+    handleCloseDeliveryAgentsModal();
+  }, [handleCloseDeliveryAgentsModal]);
 
   const handleCancel = useCallback(() => {
     onCloseSummaryModal();
@@ -169,6 +171,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       clearForm();
       handleCancel();
       navigation.navigate('ReceivedInventoryList');
+      ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
     }, 300);
   };
 
@@ -283,13 +286,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
               onChangeText={(text) => handleChange(text, 'mobile')}
             />
           </View>
-          <Touchable onPress={handleOpenContactListModal}>
-            <View style={applyStyles('w-full flex-row justify-end')}>
-              <Text style={applyStyles('text-500', {color: colors.primary})}>
-                Add from contacts
-              </Text>
-            </View>
-          </Touchable>
           <View style={applyStyles('flex-row', 'items-center')}>
             <FloatingLabelInput
               label="Full Name"
@@ -322,6 +318,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       <DeliveryAgentsModal
         visible={isDeliveryAgentsModalOpen}
         onClose={handleCloseDeliveryAgentsModal}
+        onOpenContactList={handleOpenContactListModal}
         onSelectDeliveryAgent={handleDeliveryAgentSelect}
       />
     </KeyboardAvoidingView>
