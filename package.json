@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.6-discovery",
+  "version": "0.2.6-feature.double-back-exit+build.1532",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
