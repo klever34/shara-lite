@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.6-feature.phone-book-flow-update+build.1528",
+  "version": "0.2.6-feature.phone-book-flow-update+build.1536",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
