@@ -1,5 +1,5 @@
 import 'react-native-gesture-handler';
-import React from 'react';
+import React, {useEffect} from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -10,6 +10,8 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
+import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -20,6 +22,10 @@ export type RootStackParamList = {
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
+  const handleError = useErrorHandler();
+  useEffect(() => {
+    getAnalyticsService().initialize().catch(handleError);
+  }, [handleError]);
   return (
     <RealmProvider>
       <NavigationContainer>
