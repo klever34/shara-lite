@@ -1,21 +1,29 @@
-import React, {useState, useEffect, useCallback, useLayoutEffect} from 'react';
-import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import {StyleSheet, View, Text, FlatList, Alert} from 'react-native';
+import {ContactsListModal} from '@/components';
+import {getAnalyticsService} from '@/services';
+import {useNavigation} from '@react-navigation/native';
+import orderBy from 'lodash/orderBy';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
+import {Contact} from 'react-native-contacts';
+import EmptyState from '../../../../components/EmptyState';
+import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
-import {useNavigation} from '@react-navigation/native';
-import {useRealm} from '../../../../services/realm';
 import Touchable from '../../../../components/Touchable';
-import EmptyState from '../../../../components/EmptyState';
-import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
+import {applyStyles} from '../../../../helpers/utils';
 import {ISupplier} from '../../../../models/Supplier';
-import HeaderRight from '../../../../components/HeaderRight';
 import {useScreenRecord} from '../../../../services/analytics';
-import {ContactsListModal} from '@/components';
-import {Contact} from 'react-native-contacts';
-import {getAnalyticsService} from '@/services';
-import {useErrorHandler} from 'react-error-boundary';
+import {useRealm} from '../../../../services/realm';
+import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
+import {colors} from '../../../../styles';
 
 type SupplierItemProps = {
   item: ISupplier;
@@ -94,6 +102,7 @@ export const Suppliers = () => {
           const supplier = {name, mobile};
           saveSupplier({realm, supplier});
           getAnalyticsService().logEvent('supplierAdded').catch(handleError);
+          ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
         }
       }
     },
@@ -160,9 +169,9 @@ export const Suppliers = () => {
         </View>
       </Touchable>
       <FlatList
-        data={mySuppliers}
         renderItem={renderSupplierListItem}
         keyExtractor={(item) => `${item._id}`}
+        data={orderBy(mySuppliers, 'created_at', 'desc')}
         ListHeaderComponent={renderSupplierListHeader}
         ListEmptyComponent={
           <EmptyState

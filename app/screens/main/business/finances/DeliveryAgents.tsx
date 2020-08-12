@@ -1,22 +1,30 @@
-import React, {useCallback, useEffect, useState, useLayoutEffect} from 'react';
-import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
+import {ContactsListModal} from '@/components';
+import {useNavigation} from '@react-navigation/native';
+import orderBy from 'lodash/orderBy';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
+import {Contact} from 'react-native-contacts';
 import EmptyState from '../../../../components/EmptyState';
-import {FlatList, StyleSheet, Text, View, Alert} from 'react-native';
+import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
-import {useNavigation} from '@react-navigation/native';
-import {useRealm} from '../../../../services/realm';
+import {applyStyles} from '../../../../helpers/utils';
+import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
+import {useScreenRecord} from '../../../../services/analytics';
 import {
   getDeliveryAgents,
   saveDeliveryAgent,
 } from '../../../../services/DeliveryAgentService';
-import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
-import HeaderRight from '../../../../components/HeaderRight';
-import {useScreenRecord} from '../../../../services/analytics';
-import {ContactsListModal} from '@/components';
-import {Contact} from 'react-native-contacts';
+import {useRealm} from '../../../../services/realm';
+import {colors} from '../../../../styles';
 
 type DeliveryAgentItemProps = {
   item: IDeliveryAgent;
@@ -93,6 +101,7 @@ export const DeliveryAgents = () => {
       } else {
         const deliveryAgent = {full_name: name, mobile};
         saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+        ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
     },
     [deliveryAgents, realm],
@@ -162,9 +171,9 @@ export const DeliveryAgents = () => {
         </View>
       </Touchable>
       <FlatList
-        data={myDeliveryAgents}
         renderItem={renderDeliveryAgentListItem}
         keyExtractor={(item) => `${item._id}`}
+        data={orderBy(myDeliveryAgents, 'created_at', 'desc')}
         style={applyStyles({backgroundColor: colors.white})}
         ListHeaderComponent={renderDeliveryAgentListHeader}
         ListEmptyComponent={
@@ -179,7 +188,7 @@ export const DeliveryAgents = () => {
         }
       />
       <ContactsListModal
-        entity="Deliver Agent"
+        entity="Delivery Agent"
         visible={isContactListModalOpen}
         onAddNew={handleAddDeliveryAgent}
         onClose={handleCloseContactListModal}

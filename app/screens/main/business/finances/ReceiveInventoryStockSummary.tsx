@@ -280,16 +280,16 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         <View style={applyStyles({marginBottom: 48})}>
           <View style={applyStyles('mb-md flex-row', 'items-center')}>
             <FloatingLabelInput
-              label="Phone Number"
-              keyboardType="phone-pad"
               value={agent?.mobile}
+              keyboardType="phone-pad"
+              label="Phone Number (optional)"
               onChangeText={(text) => handleChange(text, 'mobile')}
             />
           </View>
           <View style={applyStyles('flex-row', 'items-center')}>
             <FloatingLabelInput
-              label="Full Name"
               value={agent?.full_name}
+              label="Full Name (optional)"
               onChangeText={(text) => handleChange(text, 'full_name')}
             />
           </View>

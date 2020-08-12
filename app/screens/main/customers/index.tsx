@@ -1,18 +1,27 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState, useEffect} from 'react';
-import {FlatList, StyleSheet, Text, TextInput, View, Alert} from 'react-native';
-import {FAButton, ContactsListModal} from '@/components';
+import {ContactsListModal, FAButton} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {getAnalyticsService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
 import {getCustomers, saveCustomer} from '@/services/CustomerService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
-import {useScreenRecord} from '@/services/analytics';
+import {useNavigation} from '@react-navigation/native';
+import orderBy from 'lodash/orderBy';
+import React, {useCallback, useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {getAnalyticsService} from '@/services';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {Contact} from 'react-native-contacts';
 
 type CustomerItemProps = {
@@ -73,6 +82,7 @@ const CustomersTab = () => {
         };
         saveCustomer({realm, customer});
         getAnalyticsService().logEvent('customerAdded').catch(handleError);
+        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
       }
     },
     [customers, handleError, realm],
@@ -166,10 +176,10 @@ const CustomersTab = () => {
       {myCustomers.length ? (
         <>
           <FlatList
-            data={myCustomers}
             renderItem={renderCustomerListItem}
             keyExtractor={(item) => `${item._id}`}
             ListHeaderComponent={renderCustomerListHeader}
+            data={orderBy(myCustomers, 'created_at', 'desc')}
           />
         </>
       ) : (

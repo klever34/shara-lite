@@ -9,6 +9,7 @@ import {
   Text,
   View,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
@@ -35,15 +36,18 @@ export const ContactsListModal = ({
   onContactSelect,
 }: Props) => {
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<{contacts: Contact[]}>({contacts: []});
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
+    setIsLoading(true);
     const contactsService = getContactsService();
     contactsService
       .getAll()
       .then((nextContacts) => {
+        setIsLoading(false);
         const data = nextContacts.filter((contact) => {
           if (contact.phoneNumbers.length) {
             return {
@@ -58,6 +62,7 @@ export const ContactsListModal = ({
         setContacts(data);
       })
       .catch((error) => {
+        setIsLoading(false);
         Alert.alert(
           'Error',
           error.message,
@@ -216,26 +221,32 @@ export const ContactsListModal = ({
         </Touchable>
       )}
 
-      <FlatList
-        data={contacts}
-        style={applyStyles('flex-1')}
-        renderItem={renderContactItem}
-        ListHeaderComponent={renderContactListHeader}
-        keyExtractor={(item: Contact) => item.recordID}
-        ListEmptyComponent={
-          <View
-            style={applyStyles('flex-1', 'items-center', 'justify-center', {
-              paddingVertical: 40,
-            })}>
-            <Text
-              style={applyStyles('heading-700', 'text-center', {
-                color: colors['gray-300'],
+      {isLoading ? (
+        <View style={applyStyles('flex-1 items-center justify-center')}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={contacts}
+          style={applyStyles('flex-1')}
+          renderItem={renderContactItem}
+          ListHeaderComponent={renderContactListHeader}
+          keyExtractor={(item: Contact) => item.recordID}
+          ListEmptyComponent={
+            <View
+              style={applyStyles('flex-1', 'items-center', 'justify-center', {
+                paddingVertical: 40,
               })}>
-              No results found
-            </Text>
-          </View>
-        }
-      />
+              <Text
+                style={applyStyles('heading-700', 'text-center', {
+                  color: colors['gray-300'],
+                })}>
+                No results found
+              </Text>
+            </View>
+          }
+        />
+      )}
       <View>
         <Button
           onPress={onClose}

@@ -53,7 +53,7 @@ const AddCustomer = () => {
         setTimeout(() => {
           setIsLoading(false);
           getAnalyticsService().logEvent('customerAdded').catch(handleError);
-          navigation.navigate('CustomerDetails', {customer});
+          navigation.goBack();
           ToastAndroid.show('Customer added', ToastAndroid.SHORT);
         }, 750);
       }
