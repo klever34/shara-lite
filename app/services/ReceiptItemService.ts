@@ -2,7 +2,6 @@ import Realm, {UpdateMode} from 'realm';
 import {IReceiptItem, modelName} from '../models/ReceiptItem';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
-import {ReceiptItem} from '../../types/app';
 
 export const saveReceiptItem = ({
   realm,
@@ -11,7 +10,7 @@ export const saveReceiptItem = ({
 }: {
   realm: Realm;
   receipt: IReceipt;
-  receiptItem: ReceiptItem;
+  receiptItem: IReceiptItem;
 }): void => {
   const {quantity, price} = receiptItem;
   const receiptItemToSave: IReceiptItem = {
@@ -19,9 +18,9 @@ export const saveReceiptItem = ({
     name: receiptItem.product.name,
     sku: receiptItem.product.sku,
     weight: receiptItem.product.weight,
-    quantity: parseInt(quantity, 10),
-    price: parseFloat(price),
-    total_price: parseFloat(quantity) * parseFloat(price),
+    quantity: quantity,
+    price: price,
+    total_price: quantity * price,
     product: receiptItem.product,
     ...getBaseModelValues(),
   };

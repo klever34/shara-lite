@@ -11,6 +11,7 @@ import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './CustomerService';
 import {IPayment} from '../models/Payment';
 import {getAnalyticsService} from './index';
+import {restockProduct} from '@/services/ProductService';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -76,11 +77,17 @@ export const saveReceipt = async ({
     });
   });
 
-  receiptItems.forEach((receiptItem: any) => {
+  receiptItems.forEach((receiptItem: IReceiptItem) => {
     saveReceiptItem({
       realm,
       receipt,
       receiptItem,
+    });
+
+    restockProduct({
+      realm,
+      product: receiptItem.product,
+      quantity: receiptItem.quantity * -1,
     });
   });
 
