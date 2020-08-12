@@ -46,7 +46,7 @@ export const AddSupplier = () => {
   const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
-    if (supplier.name) {
+    if (supplier.name && supplier.mobile) {
       if (suppliers.map((item) => item.mobile).includes(supplier.mobile)) {
         Alert.alert(
           'Error',
@@ -63,6 +63,8 @@ export const AddSupplier = () => {
           ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
         }, 300);
       }
+    } else {
+      Alert.alert('Info', "Please provider supplier's name and phone number");
     }
   }, [realm, clearForm, supplier, suppliers, navigation, handleError]);
 
