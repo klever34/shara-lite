@@ -1,23 +1,16 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, Text, View, Alert} from 'react-native';
-import {Contact} from 'react-native-contacts';
-import {
-  Button,
-  ContactsListModal,
-  FloatingLabelInput,
-} from '../../../../components';
+import {useErrorHandler} from 'react-error-boundary';
+import {Alert, ScrollView, Text, View} from 'react-native';
+import {Button, FloatingLabelInput} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
-import Icon from '../../../../components/Icon';
-import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {ISupplier} from '../../../../models/Supplier';
-import {useRealm} from '../../../../services/realm';
-import {saveSupplier, getSuppliers} from '../../../../services/SupplierService';
-import {colors} from '../../../../styles';
 import {getAnalyticsService} from '../../../../services';
-import {useErrorHandler} from 'react-error-boundary';
 import {useScreenRecord} from '../../../../services/analytics';
+import {useRealm} from '../../../../services/realm';
+import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
+import {colors} from '../../../../styles';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 
@@ -28,7 +21,6 @@ export const AddSupplier = () => {
   const suppliers = getSuppliers({realm});
   const [isLoading, setIsLoading] = useState(false);
   const [supplier, setSupplier] = useState<Payload>({} as Payload);
-  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -37,24 +29,6 @@ export const AddSupplier = () => {
       ),
     });
   }, [navigation]);
-
-  const handleOpenContactListModal = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
-  const handleCloseContactListModal = useCallback(() => {
-    setIsContactListModalOpen(false);
-  }, []);
-
-  const handleSelectContact = useCallback(
-    (contact: Contact) => {
-      const {givenName, familyName, phoneNumbers} = contact;
-      const contactName = `${givenName} ${familyName}`;
-      const contactMobile = phoneNumbers[0].number;
-      setSupplier({...supplier, name: contactName, mobile: contactMobile});
-    },
-    [supplier],
-  );
 
   const handleChange = useCallback(
     (value: string | number, key: keyof Payload) => {
@@ -72,7 +46,7 @@ export const AddSupplier = () => {
   const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
-    if (supplier.name && supplier.mobile) {
+    if (supplier.name) {
       if (suppliers.map((item) => item.mobile).includes(supplier.mobile)) {
         Alert.alert(
           'Error',
@@ -96,28 +70,7 @@ export const AddSupplier = () => {
       style={applyStyles('flex-1', {
         backgroundColor: colors.white,
       })}>
-      <Touchable onPress={handleOpenContactListModal}>
-        <View
-          style={applyStyles('flex-row px-lg py-lg items-center mb-xl', {
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-20'],
-          })}>
-          <Icon
-            size={24}
-            name="user-plus"
-            type="feathericons"
-            color={colors.primary}
-          />
-          <Text
-            style={applyStyles('text-400 pl-md', {
-              fontSize: 16,
-              color: colors['gray-300'],
-            })}>
-            Add From Phonebook
-          </Text>
-        </View>
-      </Touchable>
-      <ScrollView style={applyStyles('px-lg')}>
+      <ScrollView style={applyStyles('px-lg', {paddingTop: 48})}>
         <Text
           style={applyStyles('text-400', {
             fontSize: 18,
@@ -134,7 +87,7 @@ export const AddSupplier = () => {
         </View>
         <View style={applyStyles('flex-row', 'items-center')}>
           <FloatingLabelInput
-            label="Address"
+            label="Address (optional)"
             value={supplier.address}
             onChangeText={(text) => handleChange(text, 'address')}
           />
@@ -152,11 +105,6 @@ export const AddSupplier = () => {
           isLoading={isLoading}
           onPress={handleSubmit}
           style={applyStyles({marginVertical: 48})}
-        />
-        <ContactsListModal
-          visible={isContactListModalOpen}
-          onClose={handleCloseContactListModal}
-          onContactSelect={(contact) => handleSelectContact(contact)}
         />
       </ScrollView>
     </View>
