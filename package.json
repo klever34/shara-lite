@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.5-discovery",
+  "version": "0.2.5-feature.receipt-inventory-update+build.1514",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
