@@ -1,5 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
+import {HeaderBackButton} from '@react-navigation/stack';
 import format from 'date-fns/format';
+import orderBy from 'lodash/orderBy';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {FlatList, StyleSheet, Text, View} from 'react-native';
 import {FAButton} from '../../../../components';
@@ -13,7 +15,6 @@ import {useRealm} from '../../../../services/realm';
 import {getReceivedInventories} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
 import {ReceivedInventoryDetailsModal} from './ReceivedInventoryDetailsModal';
-import {HeaderBackButton} from '@react-navigation/stack';
 
 type InventoryItemProps = {
   item: IReceivedInventory;
@@ -128,9 +129,9 @@ export function ReceivedInventoryList() {
   return (
     <View style={styles.container}>
       <FlatList
-        data={inventories}
         renderItem={renderInventoryItem}
         keyExtractor={(item) => `${item._id}`}
+        data={orderBy(inventories, 'created_at', 'desc')}
         ListEmptyComponent={
           <EmptyState
             heading="No inventory received"

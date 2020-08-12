@@ -177,6 +177,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-20'],
   },
   supplierListItem: {
