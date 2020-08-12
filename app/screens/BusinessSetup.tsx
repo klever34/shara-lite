@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ToastAndroid,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {ImagePickerOptions} from 'react-native-image-picker/src/internal/types';
@@ -134,6 +135,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
           setLoading(false);
           handleHideSignatureCapture();
           handleSkip();
+          ToastAndroid.show('Business setup successful', ToastAndroid.SHORT);
         } catch (error) {
           setLoading(false);
           Alert.alert('Error', error.message);
@@ -175,7 +177,11 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   }, []);
 
   return (
-    <Modal visible={visible} animationType="slide" onDismiss={handleSkip}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onDismiss={handleSkip}
+      onRequestClose={handleSkip}>
       <View
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,

@@ -18,13 +18,14 @@ type DeliveryAgentItemProps = {
 type Props = {
   visible: boolean;
   onClose: () => void;
+  onOpenContactList?: () => void;
   onSelectDeliveryAgent: (deliveryAgent: IDeliveryAgent) => void;
 };
 
 export const DeliveryAgentsModal = (props: Props) => {
   const realm = useRealm() as Realm;
   const deliveryAgents = getDeliveryAgents({realm});
-  const {visible, onClose, onSelectDeliveryAgent} = props;
+  const {visible, onClose, onOpenContactList, onSelectDeliveryAgent} = props;
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myDeliveryAgents, setMyDeliveryAgents] = useState<IDeliveryAgent[]>(
@@ -85,7 +86,11 @@ export const DeliveryAgentsModal = (props: Props) => {
   );
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={handleClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onDismiss={handleClose}
+      onRequestClose={handleClose}>
       <View style={applyStyles('flex-1', {backgroundColor: colors.white})}>
         <View style={styles.searchContainer}>
           <View style={styles.searchInputContainer}>
@@ -105,6 +110,27 @@ export const DeliveryAgentsModal = (props: Props) => {
             />
           </View>
         </View>
+        <Touchable onPress={onOpenContactList}>
+          <View
+            style={applyStyles('flex-row px-lg py-lg items-center', {
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-20'],
+            })}>
+            <Icon
+              size={24}
+              name="user-plus"
+              type="feathericons"
+              color={colors.primary}
+            />
+            <Text
+              style={applyStyles('text-400 pl-md', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              Add Delivery Agent
+            </Text>
+          </View>
+        </Touchable>
         <FlatList
           data={myDeliveryAgents}
           keyExtractor={(item) => `${item._id}`}
@@ -175,6 +201,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-20'],
   },
   deliveryAgentListItem: {

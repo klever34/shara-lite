@@ -14,24 +14,26 @@ type Props = {
 export const ActionCard = (props: Props) => {
   const {children, onClick, style, buttonText} = props;
   return (
-    <View style={applyStyles(styles.container, {...style})}>
-      {children}
-      {onClick && (
-        <Touchable onPress={onClick}>
-          <View
-            style={applyStyles(
-              'flex-row',
-              'items-center',
-              'justify-center',
-              styles.button,
-            )}>
-            <Text style={applyStyles('text-400', styles.buttonText)}>
-              {buttonText}
-            </Text>
-          </View>
-        </Touchable>
-      )}
-    </View>
+    <Touchable onPress={onClick}>
+      <View style={applyStyles(styles.container, {...style})}>
+        {children}
+        {onClick && (
+          <Touchable onPress={onClick}>
+            <View
+              style={applyStyles(
+                'flex-row',
+                'items-center',
+                'justify-center',
+                styles.button,
+              )}>
+              <Text style={applyStyles('text-400', styles.buttonText)}>
+                {buttonText}
+              </Text>
+            </View>
+          </Touchable>
+        )}
+      </View>
+    </Touchable>
   );
 };
 

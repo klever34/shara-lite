@@ -8,6 +8,8 @@ import {
   StyleSheet,
   Text,
   View,
+  Image,
+  ActivityIndicator,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
@@ -20,25 +22,32 @@ import Touchable from './Touchable';
 
 type Props = {
   visible: boolean;
+  entity?: string;
   onClose: () => void;
+  onAddNew?: () => void;
   onContactSelect?: (contact: Contact) => void;
 };
 
 export const ContactsListModal = ({
   visible,
   onClose,
+  entity,
+  onAddNew,
   onContactSelect,
 }: Props) => {
   const navigation = useNavigation();
+  const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<{contacts: Contact[]}>({contacts: []});
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
+    setIsLoading(true);
     const contactsService = getContactsService();
     contactsService
       .getAll()
       .then((nextContacts) => {
+        setIsLoading(false);
         const data = nextContacts.filter((contact) => {
           if (contact.phoneNumbers.length) {
             return {
@@ -53,6 +62,7 @@ export const ContactsListModal = ({
         setContacts(data);
       })
       .catch((error) => {
+        setIsLoading(false);
         Alert.alert(
           'Error',
           error.message,
@@ -101,6 +111,11 @@ export const ContactsListModal = ({
     [onClose, onContactSelect],
   );
 
+  const handleAddNew = useCallback(() => {
+    onClose();
+    onAddNew && onAddNew();
+  }, [onAddNew, onClose]);
+
   const renderContactItem = useCallback(
     ({item: contact}: ListRenderItemInfo<Contact>) => {
       return (
@@ -110,14 +125,34 @@ export const ContactsListModal = ({
               borderBottomWidth: 1,
               borderBottomColor: colors['gray-20'],
             })}>
-            <View
-              style={applyStyles('mr-md', {
-                height: 48,
-                width: 48,
-                borderRadius: 24,
-                backgroundColor: '#FFE2E2',
-              })}
-            />
+            {contact.hasThumbnail ? (
+              <Image
+                style={applyStyles('mr-md', {
+                  height: 48,
+                  width: 48,
+                  borderRadius: 24,
+                  backgroundColor: '#FFE2E2',
+                })}
+                source={{uri: contact.thumbnailPath}}
+              />
+            ) : (
+              <View
+                style={applyStyles('mr-md items-center justify-center', {
+                  height: 48,
+                  width: 48,
+                  borderRadius: 24,
+                  backgroundColor: '#FFE2E2',
+                })}>
+                <Text
+                  style={applyStyles('text-center text-500', {
+                    color: colors.primary,
+                    fontSize: 12,
+                  })}>
+                  {contact.givenName[0]}
+                  {contact.familyName[0]}
+                </Text>
+              </View>
+            )}
 
             <Text style={applyStyles('text-400', 'text-lg')}>
               {contact.givenName} {contact.familyName}
@@ -129,8 +164,21 @@ export const ContactsListModal = ({
     [handleContactSelect],
   );
 
+  const renderContactListHeader = useCallback(
+    () => (
+      <Text style={applyStyles(styles.customerListHeader, 'text-500')}>
+        Select a contact
+      </Text>
+    ),
+    [],
+  );
+
   return (
-    <Modal animationType="slide" visible={visible}>
+    <Modal
+      animationType="slide"
+      visible={visible}
+      onDismiss={onClose}
+      onRequestClose={onClose}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon
@@ -149,31 +197,65 @@ export const ContactsListModal = ({
           />
         </View>
       </View>
-
-      <FlatList
-        data={contacts}
-        style={applyStyles('flex-1')}
-        renderItem={renderContactItem}
-        keyExtractor={(item: Contact) => item.recordID}
-        ListEmptyComponent={
+      {onAddNew && (
+        <Touchable onPress={handleAddNew}>
           <View
-            style={applyStyles('flex-1', 'items-center', 'justify-center', {
-              paddingVertical: 40,
+            style={applyStyles('flex-row px-lg py-lg items-center', {
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-20'],
             })}>
+            <Icon
+              size={24}
+              name="user-plus"
+              type="feathericons"
+              color={colors.primary}
+            />
             <Text
-              style={applyStyles('heading-700', 'text-center', {
+              style={applyStyles('text-400 pl-md', {
+                fontSize: 16,
                 color: colors['gray-300'],
               })}>
-              No results found
+              Add New {entity}
             </Text>
           </View>
-        }
-      />
-      <View style={applyStyles('px-lg')}>
+        </Touchable>
+      )}
+
+      {isLoading ? (
+        <View style={applyStyles('flex-1 items-center justify-center')}>
+          <ActivityIndicator color={colors.primary} />
+        </View>
+      ) : (
+        <FlatList
+          data={contacts}
+          style={applyStyles('flex-1')}
+          renderItem={renderContactItem}
+          ListHeaderComponent={renderContactListHeader}
+          keyExtractor={(item: Contact) => item.recordID}
+          ListEmptyComponent={
+            <View
+              style={applyStyles('flex-1', 'items-center', 'justify-center', {
+                paddingVertical: 40,
+              })}>
+              <Text
+                style={applyStyles('heading-700', 'text-center', {
+                  color: colors['gray-300'],
+                })}>
+                No results found
+              </Text>
+            </View>
+          }
+        />
+      )}
+      <View>
         <Button
           onPress={onClose}
           variantColor="clear"
-          style={applyStyles({width: '100%', marginBottom: 24})}>
+          style={applyStyles({
+            width: '100%',
+            borderTopWidth: 1,
+            borderTopColor: colors['gray-20'],
+          })}>
           <Text
             style={applyStyles('text-400', 'text-uppercase', {
               color: colors.primary,
@@ -208,5 +290,14 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingLeft: 36,
     backgroundColor: colors.white,
+  },
+  customerListHeader: {
+    fontSize: 12,
+    paddingVertical: 4,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    textTransform: 'uppercase',
+    color: colors['gray-300'],
+    borderBottomColor: colors['gray-20'],
   },
 });

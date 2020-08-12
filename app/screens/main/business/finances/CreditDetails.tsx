@@ -1,7 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, Modal, Alert} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  Alert,
+  ToastAndroid,
+} from 'react-native';
 import {CreditPaymentForm, ContactsListModal} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
@@ -91,6 +99,7 @@ export const CreditDetails = ({route}: any) => {
           });
           callback();
           navigation.navigate('Finances', {screen: 'Credit'});
+          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
         }, 300);
       } else {
         Alert.alert('Info', 'Please select a customer');
@@ -189,7 +198,11 @@ export const CreditDetails = ({route}: any) => {
           <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
         </View>
       </View>
-      <Modal animationType="slide" visible={isCustomersListModalOpen}>
+      <Modal
+        animationType="slide"
+        visible={isCustomersListModalOpen}
+        onDismiss={handleCloseCustomersList}
+        onRequestClose={handleCloseCustomersList}>
         <CustomersList
           customers={customers}
           onModalClose={handleCloseCustomersList}

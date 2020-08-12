@@ -7,6 +7,7 @@ import {
   Text,
   View,
   Alert,
+  ToastAndroid,
 } from 'react-native';
 import {
   BluetoothEscposPrinter,
@@ -135,6 +136,7 @@ export function ReceiptDetailsModal(props: Props) {
         : saveCustomer({realm, customer: value});
 
       receipt && updateReceipt({realm, customer: newCustomer, receipt});
+      ToastAndroid.show('Receipt edited with customer', ToastAndroid.SHORT);
     },
     [realm, receipt],
   );
@@ -355,7 +357,11 @@ export function ReceiptDetailsModal(props: Props) {
   );
 
   return (
-    <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onDismiss={onClose}
+      onRequestClose={onClose}>
       <ScrollView style={applyStyles('px-lg py-xl')}>
         <View
           style={applyStyles(
@@ -633,7 +639,11 @@ export function ReceiptDetailsModal(props: Props) {
         onOpenCustomerList={handleOpenCustomerListModal}
       />
 
-      <Modal animationType="slide" visible={isCustomerListModalOpen}>
+      <Modal
+        animationType="slide"
+        visible={isCustomerListModalOpen}
+        onDismiss={handleCloseCustomerListModal}
+        onRequestClose={handleCloseCustomerListModal}>
         <CustomersList
           customers={customers}
           onCustomerSelect={handleCustomerSelect}

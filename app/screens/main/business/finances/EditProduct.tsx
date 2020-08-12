@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useLayoutEffect} from 'react';
-import {ScrollView, Text, View, StyleSheet} from 'react-native';
+import {ScrollView, Text, View, StyleSheet, ToastAndroid} from 'react-native';
 import {applyStyles} from '../../../../helpers/utils';
 import {
   CurrencyInput,
@@ -56,6 +56,7 @@ export const EditProduct = ({
       setIsLoading(false);
       clearForm();
       navigation.goBack();
+      ToastAndroid.show('Product edited', ToastAndroid.SHORT);
     }, 300);
   }, [realm, clearForm, productProps, product, navigation]);
 
@@ -91,7 +92,7 @@ export const EditProduct = ({
         </View>
       </View>
       <Button
-        title="Edit product"
+        title="Save"
         isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}
