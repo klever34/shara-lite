@@ -44,22 +44,26 @@ export const AddDeliveryAgent = () => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (
-      deliveryAgents.map((item) => item.mobile).includes(deliveryAgent.mobile)
-    ) {
-      Alert.alert(
-        'Error',
-        'Delivery Agent with the same phone number has been created.',
-      );
+    if (Object.keys(deliveryAgent).length === 2) {
+      if (
+        deliveryAgents.map((item) => item.mobile).includes(deliveryAgent.mobile)
+      ) {
+        Alert.alert(
+          'Error',
+          'Delivery Agent with the same phone number has been created.',
+        );
+      } else {
+        setIsLoading(true);
+        setTimeout(() => {
+          saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+          setIsLoading(false);
+          clearForm();
+          navigation.goBack();
+          ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
+        }, 300);
+      }
     } else {
-      setIsLoading(true);
-      setTimeout(() => {
-        saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
-        setIsLoading(false);
-        clearForm();
-        navigation.goBack();
-        ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
-      }, 300);
+      Alert.alert('Error', 'Please add delivery agent information.');
     }
   }, [realm, clearForm, deliveryAgent, deliveryAgents, navigation]);
 
