@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.9-discovery",
+  "version": "0.2.10",
   "private": true,
   "scripts": {
     "android": "react-native run-android",
