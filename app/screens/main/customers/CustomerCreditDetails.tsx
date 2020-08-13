@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useState, useLayoutEffect} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import {ScrollView, StyleSheet, Text, View, ToastAndroid} from 'react-native';
 import {CreditPaymentForm} from '../../../components';
 import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {ICredit} from '../../../models/Credit';
@@ -43,6 +43,7 @@ export const CustomerCreditDetails = ({
           });
           callback();
           navigation.navigate('CustomerDetails', {screen: 'CreditsTab'});
+          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
         }, 300);
       }
     },

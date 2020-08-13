@@ -1,11 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
+import isEmpty from 'lodash/isEmpty';
 import React, {useCallback, useState} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
 import {
+  Alert,
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
   StyleSheet,
   Text,
+  ToastAndroid,
   View,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
@@ -20,12 +24,11 @@ import {applyStyles} from '../../../../helpers/utils';
 import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
 import {IStockItem} from '../../../../models/StockItem';
 import {ISupplier} from '../../../../models/Supplier';
+import {getAnalyticsService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
 import {addNewInventory} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
 import {DeliveryAgentsModal} from './DeliveryAgentsModal';
-import {getAnalyticsService} from '../../../../services';
-import {useErrorHandler} from 'react-error-boundary';
 
 type Payload = IDeliveryAgent;
 
@@ -134,14 +137,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     false,
   );
 
-  const handleOpenContactListModal = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
-  const handleCloseContactListModal = useCallback(() => {
-    setIsContactListModalOpen(false);
-  }, []);
-
   const handleOpenDeliveryAgentsModal = useCallback(() => {
     setIsDeliveryAgentsModalOpen(true);
   }, []);
@@ -150,12 +145,29 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     setIsDeliveryAgentsModalOpen(false);
   }, []);
 
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+    handleCloseDeliveryAgentsModal();
+  }, [handleCloseDeliveryAgentsModal]);
+
   const handleCancel = useCallback(() => {
     onCloseSummaryModal();
   }, [onCloseSummaryModal]);
   const handleError = useErrorHandler();
 
   const handleFinish = () => {
+    if (!isEmpty(agent) && !agent?.mobile) {
+      Alert.alert('Info', 'Please add delivery agent phone number');
+      return;
+    }
+    if (!isEmpty(agent) && !agent?.full_name) {
+      Alert.alert('Info', 'Please add delivery agent name');
+      return;
+    }
     setIsSaving(true);
     setTimeout(() => {
       addNewInventory({
@@ -169,6 +181,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       clearForm();
       handleCancel();
       navigation.navigate('ReceivedInventoryList');
+      ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
     }, 300);
   };
 
@@ -277,23 +290,16 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         <View style={applyStyles({marginBottom: 48})}>
           <View style={applyStyles('mb-md flex-row', 'items-center')}>
             <FloatingLabelInput
-              label="Phone Number"
-              keyboardType="phone-pad"
               value={agent?.mobile}
+              keyboardType="phone-pad"
+              label="Phone Number (optional)"
               onChangeText={(text) => handleChange(text, 'mobile')}
             />
           </View>
-          <Touchable onPress={handleOpenContactListModal}>
-            <View style={applyStyles('w-full flex-row justify-end')}>
-              <Text style={applyStyles('text-500', {color: colors.primary})}>
-                Add from contacts
-              </Text>
-            </View>
-          </Touchable>
           <View style={applyStyles('flex-row', 'items-center')}>
             <FloatingLabelInput
-              label="Full Name"
               value={agent?.full_name}
+              label="Full Name (optional)"
               onChangeText={(text) => handleChange(text, 'full_name')}
             />
           </View>
@@ -322,6 +328,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       <DeliveryAgentsModal
         visible={isDeliveryAgentsModalOpen}
         onClose={handleCloseDeliveryAgentsModal}
+        onOpenContactList={handleOpenContactListModal}
         onSelectDeliveryAgent={handleDeliveryAgentSelect}
       />
     </KeyboardAvoidingView>

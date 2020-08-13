@@ -61,6 +61,7 @@ export const PaymentMethodModal = (props: Props) => {
   return (
     <Modal
       isVisible={visible}
+      onBackButtonPress={handleClose}
       onBackdropPress={handleClose}
       onSwipeComplete={handleClose}
       style={applyStyles({

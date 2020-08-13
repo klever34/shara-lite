@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useLayoutEffect} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, View, ToastAndroid} from 'react-native';
 import {applyStyles} from '../../../../helpers/utils';
 import {
   CurrencyInput,
@@ -55,6 +55,7 @@ export const AddProduct = () => {
         setIsLoading(false);
         clearForm();
         navigation.goBack();
+        ToastAndroid.show('Product added', ToastAndroid.SHORT);
       }, 300);
     }
   }, [product, realm, handleError, clearForm, navigation]);

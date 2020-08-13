@@ -92,7 +92,7 @@ export const CustomersList = (props: Props) => {
   const renderCustomerListHeader = useCallback(
     () => (
       <Text style={applyStyles(styles.customerListHeader, 'text-500')}>
-        Select a customer
+        Your customers
       </Text>
     ),
     [],

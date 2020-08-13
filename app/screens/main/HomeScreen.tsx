@@ -301,17 +301,13 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
 
   useEffect(() => {
     const realmService = getRealmService();
-    realmService.restoreAllConversations().catch((e) => {
-      console.log(e);
-      //@TODO Handle gracefully
-      // handleError(e);r
-    });
+    realmService.restoreAllConversations().catch(handleError);
   }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <HomeTab.Navigator
-        initialRouteName="ChatList"
+        initialRouteName="Business"
         tabBarOptions={{
           indicatorContainerStyle: {backgroundColor: colors.primary},
           indicatorStyle: {backgroundColor: colors.white},
@@ -320,9 +316,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           inactiveTintColor: 'rgba(255,255,255, 0.75)',
         }}>
         <HomeTab.Screen
-          name="ChatList"
-          options={{title: 'Chat'}}
-          component={ChatListScreen}
+          name="Business"
+          component={BusinessTab}
+          options={{title: 'My Business'}}
         />
         <HomeTab.Screen
           name="Customers"
@@ -330,9 +326,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           options={{title: 'My Customers'}}
         />
         <HomeTab.Screen
-          name="Business"
-          component={BusinessTab}
-          options={{title: 'My Business'}}
+          name="ChatList"
+          options={{title: 'Chat'}}
+          component={ChatListScreen}
         />
       </HomeTab.Navigator>
     </SafeAreaView>
