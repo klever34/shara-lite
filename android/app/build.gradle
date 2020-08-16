@@ -119,6 +119,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
+def appVersionCode = Integer.valueOf(System.getenv("SHARA_VERSION_CODE") ?: 10000)
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -132,7 +133,7 @@ android {
         applicationId "co.shara.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode SHARA_VERSION_CODE
+        versionCode appVersionCode
         versionName "SHARA_VERSION_NAME"
         multiDexEnabled true
     }
@@ -160,9 +161,21 @@ android {
             }
         }
     }
+    flavorDimensions "standard"
+    productFlavors {
+        discovery {
+            applicationId "co.shara.discovery"
+            dimension "standard"
+        }
+        production {
+            applicationId "co.shara.app"
+            dimension "standard"
+        }
+    }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            debuggable true
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
