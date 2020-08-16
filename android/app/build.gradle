@@ -119,8 +119,15 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
-def appVersionCode = Integer.valueOf(System.getenv("SHARA_VERSION_CODE") ?: 10000)
-def appVersionName = System.getenv("SHARA_VERSION_NAME") ?: "0.1.0-default"
+def env = System.getenv()
+def appVersionCode = Integer.valueOf(env["SHARA_VERSION_CODE"] ?: 10000)
+def appVersionName = env["SHARA_VERSION_NAME"] ?: "0.1.0-default"
+
+def sharaKeyAlias = env['SHARA_UPLOAD_KEY_ALIAS'] ?: "keyAlias"
+def sharaKeyPassword = env['SHARA_UPLOAD_KEY_PASSWORD'] ?: "keyPassword"
+def sharaStoreFile = env['SHARA_UPLOAD_STORE_FILE'] ?: "storeFile"
+def sharaStorePassword = env['SHARA_UPLOAD_STORE_PASSWORD'] ?: "storePassword"
+
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -137,6 +144,7 @@ android {
         versionCode appVersionCode
         versionName appVersionName
         multiDexEnabled true
+        resValue "string", "build_config_package", "co.shara.app"
     }
     splits {
         abi {
@@ -154,16 +162,18 @@ android {
             keyPassword 'android'
         }
         release {
-            if (project.hasProperty('SHARA_UPLOAD_STORE_FILE')) {
-                storeFile file(SHARA_UPLOAD_STORE_FILE)
-                storePassword SHARA_UPLOAD_STORE_PASSWORD
-                keyAlias SHARA_UPLOAD_KEY_ALIAS
-                keyPassword SHARA_UPLOAD_KEY_PASSWORD
-            }
+            storeFile file(sharaStoreFile)
+            storePassword sharaStorePassword
+            keyAlias sharaKeyAlias
+            keyPassword sharaKeyPassword
         }
     }
     flavorDimensions "standard"
     productFlavors {
+        local {
+            applicationIdSuffix ".local"
+            dimension "standard"
+        }
         dev {
             applicationIdSuffix ".dev"
             dimension "standard"
@@ -196,6 +206,7 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled enableProguardInReleaseBuilds
             proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
+            debuggable true
         }
     }
 
