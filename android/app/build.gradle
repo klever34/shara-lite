@@ -174,8 +174,9 @@ android {
             applicationIdSuffix ".local"
             dimension "standard"
         }
+//      Flavor below should test but productFlavor cannot start with test
         dev {
-            applicationIdSuffix ".dev"
+            applicationIdSuffix ".test"
             dimension "standard"
         }
         discovery {

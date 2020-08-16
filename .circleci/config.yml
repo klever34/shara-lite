@@ -79,6 +79,7 @@ workflows:
       - fastlane:
           context: shara-dev
           lane: internal
+          gradleTask: assembleDeliveryRelease
           requires:
             - test
           filters:
@@ -112,6 +113,7 @@ workflows:
       - fastlane:
           context: shara-qa
           lane: internal
+          gradleTask: assembleQaRelease
           requires:
             - test
           filters:
@@ -145,6 +147,7 @@ workflows:
       - fastlane:
           context: shara-beta
           lane: internal
+          gradleTask: assembleProductionRelease
           requires:
             - test
           filters:
