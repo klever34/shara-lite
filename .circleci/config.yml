@@ -27,7 +27,7 @@ workflows:
       - fastlane:
           context: shara-test
           lane: internal
-          gradleTask: assembleDevDebug
+          gradleTask: assembleDevRelease
           requires:
             - checkout_code
             - test
