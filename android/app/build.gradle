@@ -120,6 +120,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 def appVersionCode = Integer.valueOf(System.getenv("SHARA_VERSION_CODE") ?: 10000)
+def appVersionName = System.getenv("SHARA_VERSION_NAME") ?: "0.1.0-default"
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -134,7 +135,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode appVersionCode
-        versionName "SHARA_VERSION_NAME"
+        versionName appVersionName
         multiDexEnabled true
     }
     splits {
@@ -163,8 +164,20 @@ android {
     }
     flavorDimensions "standard"
     productFlavors {
+        dev {
+            applicationIdSuffix ".dev"
+            dimension "standard"
+        }
         discovery {
-            applicationId "co.shara.discovery"
+            applicationIdSuffix ".discovery"
+            dimension "standard"
+        }
+        delivery {
+            applicationIdSuffix ".delivery"
+            dimension "standard"
+        }
+        qa {
+            applicationIdSuffix ".qa"
             dimension "standard"
         }
         production {
