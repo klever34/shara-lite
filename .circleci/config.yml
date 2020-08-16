@@ -300,6 +300,10 @@ jobs:
       - run:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           command: |
+            NEW_VERSION=$(jq ".version" -r package.json)
+            echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+            echo "export SHARA_VERSION_NAME=${NEW_VERSION}" >> $BASH_ENV
+            echo "export SHARA_VERSION_CODE=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
             cd android
             bundle exec fastlane <<parameters.lane>>
           environment:
