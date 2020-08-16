@@ -120,17 +120,17 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 def env = System.getenv()
-def appVersionCode = Integer.valueOf(env['SHARA_VERSION_CODE'] ?: 10000)
-def appVersionName = env['SHARA_VERSION_NAME'] ?: "0.1.0-default"
+def appVersionCode = Integer.valueOf(System.getenv('SHARA_VERSION_CODE') ?: 10000)
+def appVersionName = System.getenv('SHARA_VERSION_NAME') ?: "0.1.0-default"
 
 println ">>> Printing out env ... "
 println "SHARA_VERSION_NAME: " + appVersionName
 println "SHARA_VERSION_CODE: " + appVersionCode
 
-def sharaKeyAlias = env['SHARA_UPLOAD_KEY_ALIAS'] ?: "keyAlias"
-def sharaKeyPassword = env['SHARA_UPLOAD_KEY_PASSWORD'] ?: "keyPassword"
-def sharaStoreFile = env['SHARA_UPLOAD_STORE_FILE'] ?: "storeFile"
-def sharaStorePassword = env['SHARA_UPLOAD_STORE_PASSWORD'] ?: "storePassword"
+def sharaKeyAlias = System.getenv('SHARA_UPLOAD_KEY_ALIAS') ?: "keyAlias"
+def sharaKeyPassword = System.getenv('SHARA_UPLOAD_KEY_PASSWORD') ?: "keyPassword"
+def sharaStoreFile = System.getenv('SHARA_UPLOAD_STORE_FILE') ?: "storeFile"
+def sharaStorePassword = System.getenv('SHARA_UPLOAD_STORE_PASSWORD') ?: "storePassword"
 
 
 android {
