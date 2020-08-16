@@ -301,7 +301,7 @@ jobs:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           command: |
             NEW_VERSION=$(jq ".version" -r package.json)
-            export NEW_VERSION=${NEW_VERSION}"
+            export NEW_VERSION=${NEW_VERSION}
             export SHARA_VERSION_NAME=${NEW_VERSION}
             export SHARA_VERSION_CODE=${CIRCLE_BUILD_NUM}
             cd android
