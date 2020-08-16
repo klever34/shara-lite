@@ -279,7 +279,7 @@ jobs:
         default: shara-product
     docker:
       - image: circleci/android:api-27-node
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: .
