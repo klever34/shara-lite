@@ -119,9 +119,28 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
-def appVersionCode = Integer.valueOf(System.getenv('SHARA_VERSION_CODE') ?: 10000)
-def appVersionName = System.getenv('SHARA_VERSION_NAME') ?: "0.1.0-default"
 
+
+/**
+ * Versioning from environment variables
+ *
+ * This is used by CircleCI to set the build num as version code and to get the
+ * version from package.json and set it as the version name
+ *
+ * Temporary walkaround due to different behavior in pipeline and on mac
+ */
+def verCode = (int) (((new Date().getTime() / 1000) - 1401606400) / 10)
+def appVersionCode = "SHARA_VERSION_CODE" ?: 10000
+if (appVersionCode.equals('SHARA_VERSION_CODE')) appVersionCode = verCode
+assert appVersionCode instanceof Integer
+
+def appVersionName = "SHARA_VERSION_NAME" ?: "0.1.0-default"
+if (appVersionName.equals('SHARA_VERSION_NAME')) appVersionName = "0.1.0-default"
+assert appVersionName instanceof String
+
+/**
+ * Keystore credentials from environment variables
+ */
 def sharaKeyAlias = System.getenv('SHARA_UPLOAD_KEY_ALIAS') ?: "keyAlias"
 def sharaKeyPassword = System.getenv('SHARA_UPLOAD_KEY_PASSWORD') ?: "keyPassword"
 def sharaStoreFile = System.getenv('SHARA_UPLOAD_STORE_FILE') ?: "storeFile"
@@ -256,7 +275,7 @@ dependencies {
     }
 
     if (enableHermes) {
-        def hermesPath = "../../node_modules/hermes-engine/android/"
+        def hermesPath = "../../node_modules/hermes-engine/android/";
         debugImplementation files(hermesPath + "hermes-debug.aar")
         releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
