@@ -1,9 +1,9 @@
 {
   "name": "shara",
-  "version": "0.2.11-discovery",
+  "version": "0.2.11-feature.product-flavours+build.1642",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android": "react-native run-android --variant localDebug --appIdSuffix local",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
