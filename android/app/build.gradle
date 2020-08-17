@@ -128,19 +128,7 @@ def enableHermes = project.ext.react.get("enableHermes", false);
  * version from package.json and set it as the version name
  */
 def appVersionCode = "SHARA_VERSION_CODE" ?: 10000
-println "App Version Code 1st: " + appVersionCode
-// Temporary walkaround due to different behavior in circleci pipeline and on mac local builds
-def verCode = (int) (((new Date().getTime() / 1000) - 1401606400) / 10)
-if (appVersionCode.equals('SHARA_VERSION_CODE')) appVersionCode = verCode
-println "App Version Code 2nd: " + appVersionCode
-assert appVersionCode instanceof Integer
-
-
 def appVersionName = "SHARA_VERSION_NAME" ?: "0.1.0-default"
-println "App Version Name 1st: " + appVersionName
-if (appVersionName.equals('SHARA_VERSION_NAME')) appVersionName = "0.1.0-default"
-println "App Version Name 2nd: " + appVersionName
-assert appVersionName instanceof String
 
 /**
  * Keystore credentials from environment variables
