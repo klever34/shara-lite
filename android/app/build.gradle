@@ -127,8 +127,8 @@ def enableHermes = project.ext.react.get("enableHermes", false);
  * This is used by CircleCI to set the build num as version code and to get the
  * version from package.json and set it as the version name
  */
-def appVersionCode = "SHARA_VERSION_CODE" ?: 10000
-def appVersionName = "SHARA_VERSION_NAME" ?: "0.1.0-default"
+def appVersionCode = System.getenv('SHARA_VERSION_CODE') ?: 10000
+def appVersionName = System.getenv('SHARA_VERSION_NAME') ?: "0.1.0-default"
 
 /**
  * Keystore credentials from environment variables
