@@ -24,6 +24,8 @@ Shara Mobile App built with React Native
     ```
 4. Create a Pull Request using template provided
 
+WARNING: Do NOT run finish eg. `git flow feature finish`
+  
 # App & Package Names
 - Run `yarn android` locally and app with name `Shara Local` and package name `co.shara.app.local` should be deployed to emulator or connected device. You also should not need to change variable `SHARA_VERSION_CODE` before building locally
 - After merge, new feature/bugfix branch, app should be deployed to `Shara Test` in Firebase, app name should be `Shara Test` and package name should be `co.shara.app.test`
