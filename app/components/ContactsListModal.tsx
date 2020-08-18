@@ -1,15 +1,16 @@
 import {useNavigation} from '@react-navigation/native';
+import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
+  Image,
   ListRenderItemInfo,
   Modal,
   StyleSheet,
   Text,
   View,
-  Image,
-  ActivityIndicator,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
@@ -227,9 +228,9 @@ export const ContactsListModal = ({
         </View>
       ) : (
         <FlatList
-          data={contacts}
           style={applyStyles('flex-1')}
           renderItem={renderContactItem}
+          data={orderBy(contacts, 'givenName', 'asc')}
           ListHeaderComponent={renderContactListHeader}
           keyExtractor={(item: Contact) => item.recordID}
           ListEmptyComponent={

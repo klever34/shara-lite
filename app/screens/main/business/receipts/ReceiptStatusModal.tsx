@@ -399,7 +399,9 @@ export const ReceiptStatusModal = (props: Props) => {
                     type="feathericons"
                     color={colors.primary}
                   />
-                  <Text style={styles.addProductButtonText}>Edit details</Text>
+                  <Text style={styles.addProductButtonText}>
+                    Change customer
+                  </Text>
                 </View>
               </Touchable>
             </>

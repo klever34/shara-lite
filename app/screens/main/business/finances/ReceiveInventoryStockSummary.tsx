@@ -28,7 +28,6 @@ import {getAnalyticsService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
 import {addNewInventory} from '../../../../services/ReceivedInventoryService';
 import {colors} from '../../../../styles';
-import {DeliveryAgentsModal} from './DeliveryAgentsModal';
 
 type Payload = IDeliveryAgent;
 
@@ -133,17 +132,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const [isSaving, setIsSaving] = useState(false);
   const [agent, setAgent] = useState<Payload | undefined>();
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const [isDeliveryAgentsModalOpen, setIsDeliveryAgentsModalOpen] = useState(
-    false,
-  );
-
-  const handleOpenDeliveryAgentsModal = useCallback(() => {
-    setIsDeliveryAgentsModalOpen(true);
-  }, []);
-
-  const handleCloseDeliveryAgentsModal = useCallback(() => {
-    setIsDeliveryAgentsModalOpen(false);
-  }, []);
 
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
@@ -151,8 +139,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
-    handleCloseDeliveryAgentsModal();
-  }, [handleCloseDeliveryAgentsModal]);
+  }, []);
 
   const handleCancel = useCallback(() => {
     onCloseSummaryModal();
@@ -201,13 +188,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     const contactMobile = phoneNumbers[0].number;
     setAgent({full_name: contactName, mobile: contactMobile});
   }, []);
-
-  const handleDeliveryAgentSelect = useCallback(
-    (deliveryAgent: IDeliveryAgent) => {
-      setAgent(deliveryAgent);
-    },
-    [],
-  );
 
   const clearForm = useCallback(() => {
     setAgent({} as Payload);
@@ -259,11 +239,11 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
             fontSize: 18,
             color: colors.primary,
           })}>
-          Delivery Agent Details
+          Delivery Agent Details (optional)
         </Text>
         <Button
           style={applyStyles('mb-lg')}
-          onPress={handleOpenDeliveryAgentsModal}>
+          onPress={handleOpenContactListModal}>
           <View
             style={applyStyles('flex-row', 'items-center', 'justify-center')}>
             <Icon
@@ -324,12 +304,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={(contact) => handleSelectContact(contact)}
-      />
-      <DeliveryAgentsModal
-        visible={isDeliveryAgentsModalOpen}
-        onClose={handleCloseDeliveryAgentsModal}
-        onOpenContactList={handleOpenContactListModal}
-        onSelectDeliveryAgent={handleDeliveryAgentSelect}
       />
     </KeyboardAvoidingView>
   );

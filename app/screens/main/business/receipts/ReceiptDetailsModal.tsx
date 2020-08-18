@@ -1,13 +1,14 @@
+import {format} from 'date-fns';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Modal,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  Alert,
   ToastAndroid,
+  View,
 } from 'react-native';
 import {
   BluetoothEscposPrinter,
@@ -31,7 +32,7 @@ import {ICustomer} from '../../../../models';
 import {IReceipt} from '../../../../models/Receipt';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService, getStorageService} from '../../../../services';
-import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
+import {saveCustomer} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {
   getAllPayments,
@@ -39,13 +40,11 @@ import {
 } from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
-import {CustomersList} from './CustomersList';
 import {
   SummaryTableHeader,
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import {format} from 'date-fns';
 
 type Props = {
   visible: boolean;
@@ -67,7 +66,6 @@ export function ReceiptDetailsModal(props: Props) {
   const [customer, setCustomer] = useState<Customer | ICustomer | undefined>(
     receipt ? receipt.customer : ({} as Customer),
   );
-  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const [isPrintError, setIsPrintError] = useState(false);
   const [isPrintSuccess, setIsPrintSuccess] = useState(false);
@@ -85,7 +83,6 @@ export function ReceiptDetailsModal(props: Props) {
     (acc, item) => acc + item.amount_left,
     0,
   );
-  const customers = getCustomers({realm});
   const allPayments = receipt ? getAllPayments({receipt}) : [];
   const creditDueDate = receipt?.credits?.length && receipt.credits[0].due_date;
 
@@ -107,22 +104,13 @@ export function ReceiptDetailsModal(props: Props) {
     setIsCustomerModalOpen(false);
   }, []);
 
-  const handleOpenCustomerListModal = useCallback(() => {
-    setIsCustomerListModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerListModal = useCallback(() => {
-    setIsCustomerListModalOpen(false);
-  }, []);
-
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
-    handleCloseCustomerListModal();
-  }, [handleCloseCustomerListModal]);
+  }, []);
 
   const handleSetCustomer = useCallback((value: ICustomer) => {
     setCustomer(value);
@@ -140,10 +128,6 @@ export function ReceiptDetailsModal(props: Props) {
     },
     [realm, receipt],
   );
-
-  const handleCustomerSelect = useCallback(({customer: customerData}) => {
-    setCustomer(customerData);
-  }, []);
 
   const handleOpenPrinterModal = useCallback(() => {
     setIsPrintingModalOpen(true);
@@ -636,21 +620,8 @@ export function ReceiptDetailsModal(props: Props) {
         visible={isCustomerModalOpen}
         onClose={handleCloseCustomerModal}
         onSelectCustomer={handleSaveCustomer}
-        onOpenCustomerList={handleOpenCustomerListModal}
+        onOpenCustomerList={handleOpenContactListModal}
       />
-
-      <Modal
-        animationType="slide"
-        visible={isCustomerListModalOpen}
-        onDismiss={handleCloseCustomerListModal}
-        onRequestClose={handleCloseCustomerListModal}>
-        <CustomersList
-          customers={customers}
-          onCustomerSelect={handleCustomerSelect}
-          onModalClose={handleCloseCustomerListModal}
-          onOpenContactList={handleOpenContactListModal}
-        />
-      </Modal>
       <ContactsListModal
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
