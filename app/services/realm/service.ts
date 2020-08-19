@@ -2,12 +2,12 @@ import Realm, {UpdateMode} from 'realm';
 import {IContact, IConversation, IMessage} from '../../models';
 import {IPubNubService} from '../pubnub';
 import PubNub from 'pubnub';
-import {decrypt, generateUniqueId} from '../../helpers/utils';
+import {decrypt, generateUniqueId} from '@/helpers/utils';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
 import {compact, omit} from 'lodash';
-import {ChannelCustom} from '../../../types/app';
-import {getBaseModelValues} from '../../helpers/models';
+import {ChannelCustom} from 'types/app';
+import {getBaseModelValues} from '@/helpers/models';
 import {getMessageByPubnubId} from '../MessageService';
 import {getConversationByChannel} from '../ConversationService';
 import {getContactByMobile} from '../ContactService';
@@ -326,6 +326,7 @@ export class RealmService implements IRealmService {
   ): Promise<IConversation> {
     const custom = channelMetadata.custom as ChannelCustom;
     const channel = channelMetadata.id;
+    let conversation: IConversation;
     try {
       let members: string[];
       if (custom.type === 'group') {
@@ -343,10 +344,11 @@ export class RealmService implements IRealmService {
           groupChatMembers.map((member) => member.user?.mobile),
         );
         const creator = decrypt(custom.creatorMobile);
-        return {
+        conversation = {
           id: String(custom.id),
           creator,
           name: channelMetadata.name ?? '',
+          description: channelMetadata.description ?? '',
           type: 'group',
           admins,
           members,
@@ -359,7 +361,7 @@ export class RealmService implements IRealmService {
         const user = this.authService.getUser();
         const sender =
           members.find((member: any) => member !== user?.mobile) ?? '';
-        return {
+        conversation = {
           id: generateUniqueId(),
           name: sender,
           type: custom.type ?? '1-1',
@@ -367,6 +369,7 @@ export class RealmService implements IRealmService {
           channel,
         };
       }
+      return conversation;
     } catch (e) {
       throw e;
     }
