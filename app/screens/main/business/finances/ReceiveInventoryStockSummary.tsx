@@ -1,3 +1,4 @@
+import {getDeliveryAgents} from '@/services/DeliveryAgentService';
 import {useNavigation} from '@react-navigation/native';
 import isEmpty from 'lodash/isEmpty';
 import React, {useCallback, useState} from 'react';
@@ -126,6 +127,7 @@ export const SummaryTableItem = ({
 export const ReceiveInventoryStockSummary = (props: Props) => {
   const realm = useRealm();
   const navigation = useNavigation();
+  const deliveryAgents = getDeliveryAgents({realm});
 
   const {products, supplier, onCloseSummaryModal} = props;
 
@@ -300,7 +302,8 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           style={styles.actionButton}
         />
       </View>
-      <ContactsListModal
+      <ContactsListModal<IDeliveryAgent>
+        createdData={deliveryAgents}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={(contact) => handleSelectContact(contact)}

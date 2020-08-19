@@ -39,6 +39,7 @@ import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
+import {getCustomers} from '@/services/CustomerService';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -186,6 +187,7 @@ const ReceiptSummary = (props: Props) => {
   const navigation = useNavigation();
   const authService = getAuthService();
   const user = authService.getUser();
+  const customers = getCustomers({realm});
   const currency = authService.getUserCurrency();
   const businessInfo = user?.businesses[0];
 
@@ -886,7 +888,8 @@ const ReceiptSummary = (props: Props) => {
         onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>

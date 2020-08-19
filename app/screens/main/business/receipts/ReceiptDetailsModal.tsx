@@ -32,7 +32,7 @@ import {ICustomer} from '../../../../models';
 import {IReceipt} from '../../../../models/Receipt';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService, getStorageService} from '../../../../services';
-import {saveCustomer} from '../../../../services/CustomerService';
+import {saveCustomer, getCustomers} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {
   getAllPayments,
@@ -76,13 +76,14 @@ export function ReceiptDetailsModal(props: Props) {
 
   const realm = useRealm();
   const authService = getAuthService();
-  const storageService = getStorageService();
   const user = authService.getUser();
+  const storageService = getStorageService();
   const currencyCode = authService.getUserCurrencyCode();
   const creditAmountLeft = receipt?.credits?.reduce(
     (acc, item) => acc + item.amount_left,
     0,
   );
+  const customers = getCustomers({realm});
   const allPayments = receipt ? getAllPayments({receipt}) : [];
   const creditDueDate = receipt?.credits?.length && receipt.credits[0].due_date;
 
@@ -622,7 +623,8 @@ export function ReceiptDetailsModal(props: Props) {
         onSelectCustomer={handleSaveCustomer}
         onOpenCustomerList={handleOpenContactListModal}
       />
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>

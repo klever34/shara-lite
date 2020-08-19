@@ -210,7 +210,8 @@ export const CreditDetails = ({route}: any) => {
           onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>

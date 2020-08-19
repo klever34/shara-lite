@@ -166,8 +166,9 @@ export const DeliveryAgents = () => {
           />
         }
       />
-      <ContactsListModal
+      <ContactsListModal<IDeliveryAgent>
         entity="Delivery Agent"
+        createdData={deliveryAgents}
         visible={isContactListModalOpen}
         onAddNew={handleAddDeliveryAgent}
         onClose={handleCloseContactListModal}

@@ -141,8 +141,9 @@ const CustomersTab = () => {
           </View>
         </FAButton>
 
-        <ContactsListModal
+        <ContactsListModal<ICustomer>
           entity="Customer"
+          createdData={customers}
           visible={isContactListModalOpen}
           onClose={handleCloseContactListModal}
           onAddNew={() => navigation.navigate('AddCustomer')}
@@ -197,8 +198,9 @@ const CustomersTab = () => {
         </View>
       </FAButton>
 
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
         entity="Customer"
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={() => navigation.navigate('AddCustomer')}

@@ -21,21 +21,23 @@ import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
 
-type Props = {
+type Props<T> = {
   visible: boolean;
   entity?: string;
   onClose: () => void;
+  createdData?: T[];
   onAddNew?: () => void;
   onContactSelect?: (contact: Contact) => void;
 };
 
-export const ContactsListModal = ({
+export function ContactsListModal<T>({
   visible,
   onClose,
   entity,
   onAddNew,
+  createdData,
   onContactSelect,
-}: Props) => {
+}: Props<T>) {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<{contacts: Contact[]}>({contacts: []});
@@ -119,50 +121,73 @@ export const ContactsListModal = ({
 
   const renderContactItem = useCallback(
     ({item: contact}: ListRenderItemInfo<Contact>) => {
+      const contactMobile =
+        contact.phoneNumbers && contact.phoneNumbers[0]
+          ? contact.phoneNumbers[0].number
+          : '';
+      const isAdded =
+        createdData &&
+        createdData.map((item: any) => item.mobile).includes(contactMobile);
       return (
         <Touchable onPress={() => handleContactSelect(contact)}>
           <View
-            style={applyStyles('flex-row items-center p-md', 'mx-lg', {
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
-            })}>
-            {contact.hasThumbnail ? (
-              <Image
-                style={applyStyles('mr-md', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                  backgroundColor: '#FFE2E2',
-                })}
-                source={{uri: contact.thumbnailPath}}
-              />
-            ) : (
-              <View
-                style={applyStyles('mr-md items-center justify-center', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                  backgroundColor: '#FFE2E2',
-                })}>
-                <Text
-                  style={applyStyles('text-center text-500', {
-                    color: colors.primary,
-                    fontSize: 12,
+            style={applyStyles(
+              'mx-lg flex-row items-center p-md justify-space-between',
+              {
+                borderBottomWidth: 1,
+                borderBottomColor: colors['gray-20'],
+              },
+            )}>
+            <View style={applyStyles('flex-row items-center')}>
+              {contact.hasThumbnail ? (
+                <Image
+                  style={applyStyles('mr-md', {
+                    height: 48,
+                    width: 48,
+                    borderRadius: 24,
+                    backgroundColor: '#FFE2E2',
+                  })}
+                  source={{uri: contact.thumbnailPath}}
+                />
+              ) : (
+                <View
+                  style={applyStyles('mr-md items-center justify-center', {
+                    height: 48,
+                    width: 48,
+                    borderRadius: 24,
+                    backgroundColor: '#FFE2E2',
                   })}>
-                  {contact.givenName[0]}
-                  {contact.familyName[0]}
+                  <Text
+                    style={applyStyles('text-center text-500', {
+                      color: colors.primary,
+                      fontSize: 12,
+                    })}>
+                    {contact.givenName[0]}
+                    {contact.familyName[0]}
+                  </Text>
+                </View>
+              )}
+
+              <Text style={applyStyles('text-400', 'text-lg')}>
+                {contact.givenName} {contact.familyName}
+              </Text>
+            </View>
+            {isAdded && (
+              <View>
+                <Text
+                  style={applyStyles('text-400', {
+                    fontSize: 12,
+                    color: colors['gray-50'],
+                  })}>
+                  Already Added
                 </Text>
               </View>
             )}
-
-            <Text style={applyStyles('text-400', 'text-lg')}>
-              {contact.givenName} {contact.familyName}
-            </Text>
           </View>
         </Touchable>
       );
     },
-    [handleContactSelect],
+    [createdData, handleContactSelect],
   );
 
   const renderContactListHeader = useCallback(
@@ -267,7 +292,7 @@ export const ContactsListModal = ({
       </View>
     </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
   searchContainer: {

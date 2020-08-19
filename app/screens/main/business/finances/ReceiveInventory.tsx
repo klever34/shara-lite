@@ -182,8 +182,9 @@ export const ReceiveInventory = () => {
           />
         }
       />
-      <ContactsListModal
+      <ContactsListModal<ISupplier>
         entity="Supplier"
+        createdData={suppliers}
         onAddNew={handleAddSupplier}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
