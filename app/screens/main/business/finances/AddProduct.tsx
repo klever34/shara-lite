@@ -65,7 +65,8 @@ export const AddProduct = () => {
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
-      })}>
+      })}
+      keyboardShouldPersistTaps="always">
       <Text
         style={applyStyles('text-400', {
           fontSize: 18,
@@ -98,7 +99,7 @@ export const AddProduct = () => {
         </View>
       </View>
       <Button
-        title="Add product"
+        title="Save"
         isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}

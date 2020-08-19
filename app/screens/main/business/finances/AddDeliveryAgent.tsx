@@ -73,7 +73,9 @@ export const AddDeliveryAgent = () => {
         paddingTop: 48,
         backgroundColor: colors.white,
       })}>
-      <ScrollView style={applyStyles('px-lg')}>
+      <ScrollView
+        style={applyStyles('px-lg')}
+        keyboardShouldPersistTaps="always">
         <Text
           style={applyStyles('text-400 pb-lg', {
             fontSize: 18,
@@ -97,9 +99,9 @@ export const AddDeliveryAgent = () => {
           />
         </View>
         <Button
+          title="Save"
           isLoading={isLoading}
           onPress={handleSubmit}
-          title="Add delivery agent"
           style={applyStyles({marginVertical: 48})}
         />
       </ScrollView>

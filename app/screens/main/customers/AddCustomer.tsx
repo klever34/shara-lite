@@ -61,7 +61,7 @@ const AddCustomer = () => {
   }, [navigation, name, mobile, realm, customers, handleError]);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Customer Details</Text>
       <View>
         <View style={styles.formInputs}>

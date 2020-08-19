@@ -65,7 +65,8 @@ export const EditProduct = ({
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
-      })}>
+      })}
+      keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Product Details</Text>
       <View style={applyStyles('flex-row', 'items-center')}>
         <FloatingLabelInput
