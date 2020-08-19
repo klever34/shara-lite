@@ -6,24 +6,23 @@ import {
   getAuthService,
   getContactsService,
 } from '../../../services';
-import {applyStyles, generateUniqueId} from '../../../helpers/utils';
+import {applyStyles, generateUniqueId} from '@/helpers/utils';
 import Touchable from '../../../components/Touchable';
 import {CommonActions} from '@react-navigation/native';
 import Share from 'react-native-share';
 import Icon from '../../../components/Icon';
-import {colors} from '../../../styles';
-import {useRealm} from '../../../services/realm';
-import {IConversation} from '../../../models/Conversation';
-import {IContact} from '../../../models/Contact';
+import {colors} from '@/styles';
+import {useRealm} from '@/services/realm';
+import {IConversation, IContact} from '@/models';
 import {UpdateMode} from 'realm';
 import ContactsList from '../../../components/ContactsList';
 import {useErrorHandler} from '@/services/error-boundary';
 import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
-import {ModalWrapperFields, withModal} from '../../../helpers/hocs';
-import {getBaseModelValues} from '../../../helpers/models';
-import {useScreenRecord} from '../../../services/analytics';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {getBaseModelValues} from '@/helpers/models';
+import {useScreenRecord} from '@/services/analytics';
 
 const ContactsScreen = ({
   navigation,
