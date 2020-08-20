@@ -289,13 +289,52 @@ export const ReceiptStatusModal = (props: Props) => {
           `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n\r`,
           receiptStyles.subheader,
         );
+        await BluetoothEscposPrinter.printText(
+          `Paid: ${currencyCode} ${numberWithCommas(amountPaid)}\n\r`,
+          receiptStyles.subheader,
+        );
+        creditAmount &&
+          (await BluetoothEscposPrinter.printText(
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmount)}\n\r`,
+            receiptStyles.subheader,
+          ));
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n\r',
+          {},
+        );
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.CENTER,
+        );
+        await BluetoothEscposPrinter.printText(
+          'Powered by Shara. www.shara.co\n\r',
+          receiptStyles.product,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n\r',
+          {},
+        );
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText('\n\r', {});
+        await BluetoothEscposPrinter.printText('\n\r', {});
+        await BluetoothEscposPrinter.printText('\n\r', {});
         setIsPrintSuccess(true);
       } catch (err) {
         Alert.alert('Bluetooth Error', err.toString());
         setIsPrintError(true);
       }
     },
-    [currencyCode, customer, printer, products, totalAmount, user],
+    [
+      currencyCode,
+      customer,
+      printer,
+      products,
+      totalAmount,
+      amountPaid,
+      creditAmount,
+      user,
+    ],
   );
 
   const handlePrintClick = useCallback(() => {
