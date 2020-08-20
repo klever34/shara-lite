@@ -19,6 +19,7 @@ import {
   BluetoothModal,
   Button,
   ContactsListModal,
+  PageModal,
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -39,12 +40,12 @@ import {
   updateReceipt,
 } from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
-import {CustomerDetailsModal} from './CustomerDetailsModal';
 import {
   SummaryTableHeader,
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
+import AddCustomer from '../../customers/AddCustomer';
 
 type Props = {
   visible: boolean;
@@ -61,7 +62,7 @@ type ProductItemProps = {
 export function ReceiptDetailsModal(props: Props) {
   const {receipt, visible, onClose, onOpenShareModal} = props;
 
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [customer, setCustomer] = useState<Customer | ICustomer | undefined>(
     receipt ? receipt.customer : ({} as Customer),
@@ -97,14 +98,6 @@ export function ReceiptDetailsModal(props: Props) {
     fetchPrinter();
   }, [storageService]);
 
-  const handleOpenCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(false);
-  }, []);
-
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
@@ -113,8 +106,12 @@ export function ReceiptDetailsModal(props: Props) {
     setIsContactListModalOpen(false);
   }, []);
 
-  const handleSetCustomer = useCallback((value: ICustomer) => {
-    setCustomer(value);
+  const handleOpenAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(false);
   }, []);
 
   const handleSaveCustomer = useCallback(
@@ -128,6 +125,14 @@ export function ReceiptDetailsModal(props: Props) {
       ToastAndroid.show('Receipt edited with customer', ToastAndroid.SHORT);
     },
     [realm, receipt],
+  );
+
+  const handleAddNewCustomer = useCallback(
+    (newCustomer) => {
+      handleSaveCustomer(newCustomer);
+      handleCloseAddCustomerModal();
+    },
+    [handleSaveCustomer, handleCloseAddCustomerModal],
   );
 
   const handleOpenPrinterModal = useCallback(() => {
@@ -401,7 +406,7 @@ export function ReceiptDetailsModal(props: Props) {
         </View>
         {!receipt?.customer?.name && (
           <View>
-            <Touchable onPress={handleOpenCustomerModal}>
+            <Touchable onPress={handleOpenContactListModal}>
               <View
                 style={applyStyles(
                   'py-lg mb-xl flex-row items-center justify-center',
@@ -616,24 +621,20 @@ export function ReceiptDetailsModal(props: Props) {
         />
       </View>
 
-      <CustomerDetailsModal
-        customer={customer}
-        visible={isCustomerModalOpen}
-        onClose={handleCloseCustomerModal}
-        onSelectCustomer={handleSaveCustomer}
-        onOpenCustomerList={handleOpenContactListModal}
-      />
       <ContactsListModal<ICustomer>
+        entity="Customer"
         createdData={customers}
         visible={isContactListModalOpen}
+        onAddNew={handleOpenAddCustomerModal}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>
-          handleSetCustomer({
+          handleSaveCustomer({
             name: `${givenName} ${familyName}`,
             mobile: phoneNumbers[0].number,
           })
         }
       />
+
       <BluetoothModal
         print={isPrinting}
         error={isPrintError}
@@ -642,6 +643,13 @@ export function ReceiptDetailsModal(props: Props) {
         onClose={handleClosePrinterModal}
         onPrintReceipt={handlePrintReceipt}
       />
+
+      <PageModal
+        title="Add Customer"
+        visible={isAddCustomerModalOpen}
+        onClose={handleCloseAddCustomerModal}>
+        <AddCustomer onSubmit={handleAddNewCustomer} />
+      </PageModal>
     </Modal>
   );
 }

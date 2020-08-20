@@ -16,9 +16,15 @@ import {useScreenRecord} from '../../../services/analytics';
 import {getCustomers, saveCustomer} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
+import {ICustomer} from '@/models';
 
-const AddCustomer = () => {
+type Props = {
+  onSubmit?: (customer: ICustomer) => void;
+};
+
+const AddCustomer = (props: Props) => {
   useScreenRecord();
+  const {onSubmit} = props;
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
@@ -53,12 +59,12 @@ const AddCustomer = () => {
         setTimeout(() => {
           setIsLoading(false);
           getAnalyticsService().logEvent('customerAdded').catch(handleError);
-          navigation.goBack();
+          onSubmit ? onSubmit(customer) : navigation.goBack();
           ToastAndroid.show('Customer added', ToastAndroid.SHORT);
         }, 750);
       }
     }
-  }, [navigation, name, mobile, realm, customers, handleError]);
+  }, [navigation, name, mobile, realm, onSubmit, customers, handleError]);
 
   return (
     <ScrollView style={styles.container} keyboardShouldPersistTaps="always">
@@ -81,8 +87,8 @@ const AddCustomer = () => {
           />
         </View>
         <Button
+          title="Save"
           variantColor="red"
-          title="Add customer"
           isLoading={isLoading}
           style={styles.button}
           onPress={handleSubmit}

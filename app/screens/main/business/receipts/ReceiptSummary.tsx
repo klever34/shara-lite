@@ -18,6 +18,7 @@ import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
+  PageModal,
 } from '../../../../components';
 import {ContactsListModal} from '../../../../components/ContactsListModal';
 import HeaderRight from '../../../../components/HeaderRight';
@@ -40,6 +41,7 @@ import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 import {getCustomers} from '@/services/CustomerService';
+import AddCustomer from '../../customers/AddCustomer';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -218,6 +220,7 @@ const ReceiptSummary = (props: Props) => {
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+  const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
   const creditAmount = payments.length ? totalAmount - amountPaid : totalAmount;
 
@@ -280,6 +283,14 @@ const ReceiptSummary = (props: Props) => {
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
+  }, []);
+
+  const handleOpenAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(false);
   }, []);
 
   const handleDueDateChange = useCallback((value: string) => {
@@ -889,9 +900,11 @@ const ReceiptSummary = (props: Props) => {
         onWhatsappShare={handleWhatsappShare}
       />
       <ContactsListModal<ICustomer>
+        entity="Customer"
         createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
+        onAddNew={handleOpenAddCustomerModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>
           handleSetCustomer({
             name: `${givenName} ${familyName}`,
@@ -915,6 +928,18 @@ const ReceiptSummary = (props: Props) => {
         onRemoveProductItem={onRemoveProductItem}
         onUpdateProductItem={onUpdateProductItem}
       />
+
+      <PageModal
+        title="Add Customer"
+        visible={isAddCustomerModalOpen}
+        onClose={handleCloseAddCustomerModal}>
+        <AddCustomer
+          onSubmit={(newCustomer) => {
+            handleSetCustomer(newCustomer);
+            handleCloseAddCustomerModal();
+          }}
+        />
+      </PageModal>
     </KeyboardAvoidingView>
   );
 };
