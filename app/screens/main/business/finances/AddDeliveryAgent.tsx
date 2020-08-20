@@ -77,6 +77,7 @@ export const AddDeliveryAgent = (props: Props) => {
         backgroundColor: colors.white,
       })}>
       <ScrollView
+        persistentScrollbar={true}
         style={applyStyles('px-lg')}
         keyboardShouldPersistTaps="always">
         <Text

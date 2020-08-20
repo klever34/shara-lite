@@ -74,6 +74,7 @@ export const AddSupplier = () => {
         backgroundColor: colors.white,
       })}>
       <ScrollView
+        persistentScrollbar={true}
         style={applyStyles('px-lg', {paddingTop: 48})}
         keyboardShouldPersistTaps="always">
         <Text

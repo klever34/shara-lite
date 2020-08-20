@@ -209,7 +209,10 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
 
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <ScrollView style={styles.scrollView} nestedScrollEnabled>
+      <ScrollView
+        persistentScrollbar={true}
+        style={styles.scrollView}
+        nestedScrollEnabled>
         <View>
           <Text style={applyStyles('pb-xl', styles.sectionTitle)}>
             Products

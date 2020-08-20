@@ -67,7 +67,10 @@ const AddCustomer = (props: Props) => {
   }, [navigation, name, mobile, realm, onSubmit, customers, handleError]);
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="always">
+    <ScrollView
+      persistentScrollbar={true}
+      style={styles.container}
+      keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Customer Details</Text>
       <View>
         <View style={styles.formInputs}>

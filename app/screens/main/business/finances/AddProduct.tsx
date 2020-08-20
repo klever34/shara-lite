@@ -66,6 +66,7 @@ export const AddProduct = () => {
         paddingTop: 40,
         backgroundColor: colors.white,
       })}
+      persistentScrollbar={true}
       keyboardShouldPersistTaps="always">
       <Text
         style={applyStyles('text-400', {

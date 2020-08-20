@@ -22,7 +22,7 @@ export const CustomerCreditPaymentDetails = ({route}: any) => {
   }, [navigation]);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView persistentScrollbar={true} style={styles.container}>
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],

@@ -62,6 +62,7 @@ export const EditProduct = ({
 
   return (
     <ScrollView
+      persistentScrollbar={true}
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,

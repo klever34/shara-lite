@@ -352,7 +352,7 @@ export function ReceiptDetailsModal(props: Props) {
       animationType="slide"
       onDismiss={onClose}
       onRequestClose={onClose}>
-      <ScrollView style={applyStyles('px-lg py-xl')}>
+      <ScrollView style={applyStyles('px-lg py-xl')} persistentScrollbar={true}>
         <View
           style={applyStyles(
             'pb-md mb-lg w-full flex-row justify-space-between',

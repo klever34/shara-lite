@@ -538,7 +538,10 @@ const ReceiptSummary = (props: Props) => {
 
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <ScrollView style={styles.scrollView} nestedScrollEnabled>
+      <ScrollView
+        style={styles.scrollView}
+        nestedScrollEnabled
+        persistentScrollbar={true}>
         <View>
           <Text style={applyStyles('pb-xs', styles.sectionTitle)}>
             Products

@@ -265,7 +265,7 @@ export const BluetoothModal = ({
 
   const renderDeviceList = useCallback(() => {
     return (
-      <ScrollView style={applyStyles('pb-xl')}>
+      <ScrollView style={applyStyles('pb-xl')} persistentScrollbar={true}>
         <View
           style={applyStyles('p-sm', {
             borderBottomWidth: 1,

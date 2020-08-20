@@ -72,7 +72,10 @@ export const RecordCreditPayment = () => {
   );
 
   return (
-    <ScrollView style={styles.container} keyboardShouldPersistTaps="always">
+    <ScrollView
+      style={styles.container}
+      persistentScrollbar={true}
+      keyboardShouldPersistTaps="always">
       {!!customer.name && (
         <View style={applyStyles('mb-lg')}>
           <Text

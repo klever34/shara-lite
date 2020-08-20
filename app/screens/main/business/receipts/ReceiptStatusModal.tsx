@@ -308,7 +308,7 @@ export const ReceiptStatusModal = (props: Props) => {
 
   return (
     <Modal transparent={false} animationType="slide" visible={visible}>
-      <ScrollView>
+      <ScrollView persistentScrollbar={true}>
         <View style={styles.statusModalContent}>
           <Image
             source={statusProps.success.icon}
