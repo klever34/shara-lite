@@ -53,19 +53,24 @@ export const createRealm = async (options?: any): Promise<Realm> => {
   }
   const partitionValue = await getRealmPartitionKey();
 
-  const config: {
-    schema: Array<object>;
-  } = {schema};
+  const config: Realm.Configuration = {
+    schema,
+    schemaVersion: 1,
+    migration: (oldRealm) => {
+      if (oldRealm.schemaVersion < 1) {
+        // Do migration to schema version one here
+      }
+    },
+  };
 
-  if (options && options.realmUser) {
-    // @ts-ignore
+  if (options?.realmUser) {
     config.sync = {
       user: options.realmUser,
       partitionValue,
     };
   }
 
-  return Realm.open(config as Realm.Configuration);
+  return Realm.open(config);
 };
 
 export const loginToRealm = async ({
