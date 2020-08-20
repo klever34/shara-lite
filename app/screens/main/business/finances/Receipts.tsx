@@ -47,13 +47,6 @@ export function MyReceipts() {
     setIsShareModalOpen(false);
   }, []);
 
-  const handlePrintReceipt = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt printing is coming in the next release',
-    );
-  }, []);
-
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
@@ -251,7 +244,6 @@ export function MyReceipts() {
       <ReceiptDetailsModal
         receipt={activeReceipt}
         visible={!!activeReceipt}
-        onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onClose={handleCloseReceiptDetailsModal}
       />

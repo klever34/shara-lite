@@ -211,7 +211,7 @@ export const ReceiptImage = (props: Props) => {
                     {amountWithCurrency(amountPaid)}
                   </Text>
                 </View>
-                {creditAmount && (
+                {!!creditAmount && (
                   <View
                     style={applyStyles(
                       'flex-row',
