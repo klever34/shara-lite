@@ -19,14 +19,13 @@ import {IContact} from '@/models';
 import {IConversation} from '@/models';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import TextInput from '../../../components/TextInput';
-import {getApiService, getAuthService} from '@/services';
+import {getApiService, getAuthService, getContactService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import HeaderRight, {HeaderRightOption} from '@/components/HeaderRight';
 import {UpdateMode} from 'realm';
 import {ModalPropsList} from 'types/modal';
 import {getConversationByChannel} from '@/services/ConversationService';
 import {getBaseModelValues} from '@/helpers/models';
-import {getContactByMobile} from '@/services/ContactService';
 import {useScreenRecord} from '@/services/analytics';
 
 const DATA: never[] = [];
@@ -199,10 +198,9 @@ const ChatDetailsScreen = ({
                               i += 1
                             ) {
                               const contact = selectedContacts[i];
-                              const existingMobile = getContactByMobile({
-                                realm,
-                                mobile: contact.mobile,
-                              });
+                              const existingMobile = getContactService().getContactByMobile(
+                                contact.mobile,
+                              );
                               const updatePayload =
                                 existingMobile || getBaseModelValues();
                               realm.create<IContact>(
@@ -264,10 +262,9 @@ const ChatDetailsScreen = ({
         conversation.members = conversation.members.filter(
           (member) => member !== contact.mobile,
         );
-        const existingMobile = getContactByMobile({
-          realm,
-          mobile: contact.mobile,
-        });
+        const existingMobile = getContactService().getContactByMobile(
+          contact.mobile,
+        );
         const updatePayload = existingMobile || getBaseModelValues();
         realm.create<IContact>(
           'Contact',

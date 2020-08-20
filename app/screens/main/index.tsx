@@ -17,7 +17,7 @@ import {IProduct} from '../../models/Product';
 import {
   getAnalyticsService,
   getAuthService,
-  getContactsService,
+  getContactService,
   getPubNubService,
 } from '../../services';
 import {colors} from '../../styles';
@@ -187,7 +187,7 @@ const MainScreens = ({navigation}: any) => {
   }, [user]);
 
   useEffect(() => {
-    const contactsService = getContactsService();
+    const contactsService = getContactService();
     contactsService.loadContacts().catch(handleError);
   }, [navigation, handleError]);
 

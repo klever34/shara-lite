@@ -4,7 +4,7 @@ import {
   getAnalyticsService,
   getApiService,
   getAuthService,
-  getContactsService,
+  getContactService,
 } from '../../../services';
 import {applyStyles, generateUniqueId} from '@/helpers/utils';
 import Touchable from '../../../components/Touchable';
@@ -38,7 +38,7 @@ const ContactsScreen = ({
   const handleError = useErrorHandler();
   const loadContacts = useCallback(
     (showLoader = false) => {
-      const contactsService = getContactsService();
+      const contactsService = getContactService();
       if (!contacts.length || showLoader) {
         setLoadingContacts(true);
       }

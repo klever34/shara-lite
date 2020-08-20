@@ -14,7 +14,7 @@ import {
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
 import {applyStyles} from '../helpers/utils';
-import {getContactsService} from '../services';
+import {getContactService} from '../services';
 import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
@@ -43,7 +43,7 @@ export const ContactsListModal = ({
 
   useEffect(() => {
     setIsLoading(true);
-    const contactsService = getContactsService();
+    const contactsService = getContactService();
     contactsService
       .getAll()
       .then((nextContacts) => {

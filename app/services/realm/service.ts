@@ -10,23 +10,11 @@ import {ChannelCustom} from 'types/app';
 import {getBaseModelValues} from '@/helpers/models';
 import {getMessageByPubnubId} from '../MessageService';
 import {getConversationByChannel} from '../ConversationService';
-import {getContactByMobile} from '../ContactService';
 
 export interface IRealmService {
   getInstance(): Realm | null;
 
   setInstance(realm: Realm): void;
-
-  createContact(contact: IContact, updateMode: UpdateMode): Promise<IContact>;
-
-  createMultipleContacts(
-    contact: IContact[],
-    updateMode: UpdateMode,
-  ): Promise<IContact[]>;
-
-  updateContact(contact: Partial<IContact>): Promise<IContact>;
-
-  updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
 
   // createMessage(message: IMessage): Promise<IMessage>;
   // updateMessage(message: IMessage): Promise<IMessage>;
@@ -60,72 +48,6 @@ export class RealmService implements IRealmService {
     if (!this.realm) {
       this.realm = realm;
     }
-  }
-
-  createContact(
-    contact: IContact,
-    updateMode: UpdateMode = UpdateMode.Never,
-  ): Promise<IContact> {
-    const realm = this.realm as Realm;
-    return new Promise<IContact>((resolve, reject) => {
-      const existingMobile = getContactByMobile({
-        realm,
-        mobile: contact.mobile,
-      });
-      const updatePayload = existingMobile || getBaseModelValues();
-      try {
-        realm.write(() => {
-          const createdContact = realm.create<IContact>(
-            'Contact',
-            {...contact, ...updatePayload},
-            updateMode,
-          );
-          resolve(createdContact);
-        });
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  createMultipleContacts(
-    contacts: IContact[],
-    updateMode: UpdateMode = UpdateMode.Never,
-  ): Promise<IContact[]> {
-    const realm = this.realm as Realm;
-    return new Promise<IContact[]>((resolve, reject) => {
-      try {
-        const existingContacts = realm.objects<IContact>('Contact');
-        const contactsWithBaseValues = contacts
-          .map((contact) => ({
-            ...contact,
-            ...getBaseModelValues(),
-          }))
-          .filter(
-            (contact) =>
-              !existingContacts.find(({mobile}) => contact.mobile === mobile),
-          );
-        realm.write(() => {
-          const createdContacts = contactsWithBaseValues.map((contact) => {
-            return realm.create<IContact>('Contact', contact, updateMode);
-          });
-          resolve(createdContacts);
-        });
-      } catch (e) {
-        reject(e);
-      }
-    });
-  }
-
-  updateContact(contact: Partial<IContact>): Promise<IContact> {
-    return this.createContact(contact as IContact, UpdateMode.Modified);
-  }
-
-  updateMultipleContacts(contacts: Partial<IContact[]>): Promise<IContact[]> {
-    return this.createMultipleContacts(
-      contacts as IContact[],
-      UpdateMode.Modified,
-    );
   }
 
   clearRealm() {
