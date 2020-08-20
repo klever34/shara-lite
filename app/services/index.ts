@@ -1,20 +1,27 @@
-import {StorageService, IStorageService} from './storage';
+import {IStorageService, StorageService} from './storage';
 import {ContactService, IContactService} from './contact';
 import {AuthService, IAuthService} from './auth';
-import {RealmService, IRealmService} from './realm';
+import {IRealmService, RealmService} from './realm';
 import {ApiService, IApiService} from './api';
 import {IPubNubService, PubNubService} from './pubnub';
 import {INavigationService, NavigationService} from './navigation';
 import {AnalyticsService, IAnalyticsService} from './analytics';
+import {IMessageService, MessageService} from '@/services/MessageService';
+import {
+  ConversationService,
+  IConversationService,
+} from '@/services/ConversationService';
 
-let realmService: IRealmService | null = null;
+let navigationService: INavigationService | null = null;
 let analyticsService: IAnalyticsService | null = null;
 let pubNubService: IPubNubService | null = null;
-let navigationService: INavigationService | null = null;
-let apiService: IApiService | null = null;
+let realmService: IRealmService | null = null;
 let storageService: IStorageService | null = null;
-let contactService: IContactService | null = null;
 let authService: IAuthService | null = null;
+let apiService: IApiService | null = null;
+let contactService: IContactService | null = null;
+let messageService: IMessageService | null = null;
+let conversationService: IConversationService | null = null;
 
 export const getNavigationService = () => {
   if (!navigationService) {
@@ -35,6 +42,13 @@ export const getPubNubService = () => {
     pubNubService = new PubNubService();
   }
   return pubNubService;
+};
+
+export const getRealmService = () => {
+  if (!realmService) {
+    realmService = new RealmService();
+  }
+  return realmService;
 };
 
 export const getStorageService = () => {
@@ -62,17 +76,6 @@ export const getApiService = () => {
   return apiService;
 };
 
-export const getRealmService = () => {
-  if (!realmService) {
-    realmService = new RealmService(
-      getApiService(),
-      getAuthService(),
-      getPubNubService(),
-    );
-  }
-  return realmService;
-};
-
 export const getContactService = () => {
   if (!contactService) {
     contactService = new ContactService(
@@ -82,4 +85,23 @@ export const getContactService = () => {
     );
   }
   return contactService;
+};
+
+export const getMessageService = () => {
+  if (!messageService) {
+    messageService = new MessageService(getRealmService(), getPubNubService());
+  }
+  return messageService;
+};
+
+export const getConversationService = () => {
+  if (!conversationService) {
+    conversationService = new ConversationService(
+      getRealmService(),
+      getPubNubService(),
+      getAuthService(),
+      getApiService(),
+    );
+  }
+  return conversationService;
 };

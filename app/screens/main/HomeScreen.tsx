@@ -14,7 +14,11 @@ import {getBaseModelValues} from '@/helpers/models';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles, retryPromise} from '@/helpers/utils';
 import {IContact, IConversation, IMessage} from '../../models';
-import {getAuthService, getRealmService} from '../../services';
+import {
+  getAuthService,
+  getConversationService,
+  getMessageService,
+} from '../../services';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {BusinessTab} from './business';
@@ -56,8 +60,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Restoring messages...'});
     try {
-      const realmService = getRealmService();
-      await realmService.restoreAllMessages();
+      await getMessageService().restoreAllMessages();
     } catch (e) {
       handleError(e);
     }
@@ -209,8 +212,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 channel,
                 include: {customFields: true},
               });
-              const realmService = getRealmService();
-              conversation = await realmService.getConversationFromChannelMetadata(
+              conversation = await getConversationService().getConversationFromChannelMetadata(
                 response.data,
               );
               realm.write(() => {
@@ -300,8 +302,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   }, [handleError, pubNub, realm]);
 
   useEffect(() => {
-    const realmService = getRealmService();
-    realmService.restoreAllConversations().catch(handleError);
+    getConversationService().restoreAllConversations().catch(handleError);
   }, [handleError, openModal, pubNub, realm, restoreAllMessages]);
 
   return (

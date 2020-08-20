@@ -127,7 +127,7 @@ export class ContactService implements IContactService {
 
   getContact(id: string): IContact | null {
     const realm = this.realmService.getInstance();
-    return realm?.objectForPrimaryKey('Contact', id) || null;
+    return realm?.objectForPrimaryKey<IContact>('Contact', id) || null;
   }
 
   createContact(

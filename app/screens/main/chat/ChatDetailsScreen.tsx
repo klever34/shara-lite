@@ -19,12 +19,16 @@ import {IContact} from '@/models';
 import {IConversation} from '@/models';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import TextInput from '../../../components/TextInput';
-import {getApiService, getAuthService, getContactService} from '@/services';
+import {
+  getApiService,
+  getAuthService,
+  getContactService,
+  getConversationService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import HeaderRight, {HeaderRightOption} from '@/components/HeaderRight';
 import {UpdateMode} from 'realm';
 import {ModalPropsList} from 'types/modal';
-import {getConversationByChannel} from '@/services/ConversationService';
 import {getBaseModelValues} from '@/helpers/models';
 import {useScreenRecord} from '@/services/analytics';
 
@@ -115,10 +119,9 @@ const ChatDetailsScreen = ({
           [property]: value,
         });
         realm.write(() => {
-          const existingChannel = getConversationByChannel({
-            realm,
-            channel: conversation.channel,
-          });
+          const existingChannel = getConversationService().getConversationByChannel(
+            conversation.channel,
+          );
           const updatePayload = existingChannel || getBaseModelValues();
           realm.create<IConversation>(
             'Conversation',
