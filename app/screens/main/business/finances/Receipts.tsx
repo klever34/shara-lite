@@ -134,7 +134,7 @@ export function MyReceipts() {
         whatsAppNumber: 'Please check the phone number supplied',
       } as {[key: string]: any};
 
-      if (!activeReceipt?.customer_mobile) {
+      if (!activeReceipt?.customer?.mobile) {
         Alert.alert(
           'Info',
           'Please select a customer to share receipt with via Whatsapp',
@@ -243,7 +243,9 @@ export function MyReceipts() {
         onClose={handleCloseShareModal}
         customer={activeReceipt?.customer}
         onWhatsappShare={handleWhatsappShare}
+        amountPaid={activeReceipt?.amount_paid}
         totalAmount={activeReceipt?.total_amount}
+        creditAmount={activeReceipt?.credit_amount}
       />
 
       <ReceiptDetailsModal

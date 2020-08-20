@@ -1,13 +1,14 @@
+import {format} from 'date-fns';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Modal,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  Alert,
   ToastAndroid,
+  View,
 } from 'react-native';
 import {
   BluetoothEscposPrinter,
@@ -45,7 +46,6 @@ import {
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import {format} from 'date-fns';
 
 type Props = {
   visible: boolean;

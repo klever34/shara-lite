@@ -17,8 +17,10 @@ import {
 type Props = {
   tax?: number;
   user: User | null;
+  amountPaid?: number;
   customer?: ICustomer;
   totalAmount?: number;
+  creditAmount?: number;
   products?: IReceiptItem[];
   getImageUri: (base64: string) => void;
 };
@@ -28,7 +30,16 @@ type State = {
 };
 
 export const ReceiptImage = (props: Props) => {
-  const {tax, user, customer, products, getImageUri, totalAmount} = props;
+  const {
+    tax,
+    user,
+    customer,
+    products,
+    amountPaid,
+    totalAmount,
+    getImageUri,
+    creditAmount,
+  } = props;
   const businessInfo = user?.businesses[0];
 
   const onCapture = useCallback(
@@ -177,6 +188,54 @@ export const ReceiptImage = (props: Props) => {
                     {amountWithCurrency(totalAmount)}
                   </Text>
                 </View>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-space-between',
+                  )}>
+                  <Text
+                    style={applyStyles(
+                      {
+                        color: colors['gray-300'],
+                      },
+                      'text-400',
+                    )}>
+                    Amount Paid:
+                  </Text>
+                  <Text
+                    style={applyStyles('text-500', {
+                      fontSize: 18,
+                      color: colors['gray-300'],
+                    })}>
+                    {amountWithCurrency(amountPaid)}
+                  </Text>
+                </View>
+                {creditAmount && (
+                  <View
+                    style={applyStyles(
+                      'flex-row',
+                      'items-center',
+                      'justify-space-between',
+                    )}>
+                    <Text
+                      style={applyStyles(
+                        {
+                          color: colors['gray-300'],
+                        },
+                        'text-400',
+                      )}>
+                      Balance:
+                    </Text>
+                    <Text
+                      style={applyStyles('text-500', {
+                        fontSize: 18,
+                        color: colors.primary,
+                      })}>
+                      {amountWithCurrency(creditAmount)}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
           </View>
