@@ -1,7 +1,6 @@
 import React from 'react';
-import {StyleProp, StyleSheet, Text, View, ViewStyle} from 'react-native';
-import {applyStyles} from '../helpers/utils';
-import {colors} from '../styles';
+import {StyleProp, Text, View, ViewStyle} from 'react-native';
+import {applyStyles} from '@/helpers/utils';
 import capitalize from 'lodash/capitalize';
 import Icon, {IconProps} from './Icon';
 
@@ -26,8 +25,14 @@ const PlaceholderImage = ({
     displayLetter = '#';
   }
   return (
-    <View style={applyStyles(styles.container, style)}>
-      <Text style={styles.text}>{displayLetter}</Text>
+    <View
+      style={applyStyles(
+        applyStyles('center w-48 h-48 rounded-12 bg-red-30'),
+        style,
+      )}>
+      <Text style={applyStyles('text-xl font-bold text-primary text-700')}>
+        {displayLetter}
+      </Text>
       {indicator && (
         <View
           style={applyStyles(
@@ -40,15 +45,5 @@ const PlaceholderImage = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: applyStyles('center', {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: colors.primary,
-  }),
-  text: applyStyles('text-xl font-bold', {color: colors.white}),
-});
 
 export default PlaceholderImage;
