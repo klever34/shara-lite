@@ -21,25 +21,22 @@ import {
 import EmojiSelector, {Categories} from 'react-native-emoji-selector';
 import Icon from '../../../components/Icon';
 import {BaseButton, baseButtonStyles} from '../../../components';
-import {ChatBubble} from '../../../components/ChatBubble';
-import {
-  applyStyles,
-  generateUniqueId,
-  retryPromise,
-} from '../../../helpers/utils';
-import {colors} from '../../../styles';
+import {ChatBubble} from '@/components/ChatBubble';
+import {applyStyles, generateUniqueId, retryPromise} from '@/helpers/utils';
+import {colors} from '@/styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import {getAnalyticsService, getAuthService} from '../../../services';
-import {useRealm} from '../../../services/realm';
+import {useRealm} from '@/services/realm';
 import {UpdateMode} from 'realm';
-import {IMessage} from '../../../models/Message';
-import {useTyping} from '../../../services/pubnub';
-import {MessageActionEvent} from '../../../../types/pubnub';
+import {IMessage} from '@/models';
+import {useTyping} from '@/services/pubnub';
+import {MessageActionEvent} from 'types/pubnub';
 import {useErrorHandler} from '@/services/error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
-import {getBaseModelValues} from '../../../helpers/models';
-import {useScreenRecord} from '../../../services/analytics';
+import {getBaseModelValues} from '@/helpers/models';
+import {useScreenRecord} from '@/services/analytics';
+import HeaderRight, {HeaderRightMenuOption} from '@/components/HeaderRight';
 
 type MessageItemProps = {
   item: IMessage;
@@ -157,18 +154,26 @@ const ChatScreen = ({
   }, [conversation.type, typingMessage]);
 
   useLayoutEffect(() => {
+    const menuOptions: HeaderRightMenuOption[] = [];
+    const navigateToDetailsPage = () => {
+      navigation.navigate('ChatDetails', conversation);
+    };
+    if (conversation.type === 'group') {
+      menuOptions.push({text: 'Group Info', onSelect: navigateToDetailsPage});
+    } else {
+      menuOptions.push({text: 'View Contact', onSelect: navigateToDetailsPage});
+    }
     navigation.setOptions({
       headerTitle: () => {
         return (
           <HeaderTitle
             title={name}
             description={headerDescription}
-            onPress={() => {
-              navigation.navigate('ChatDetails', conversation);
-            }}
+            onPress={navigateToDetailsPage}
           />
         );
       },
+      headerRight: () => <HeaderRight menuOptions={menuOptions} />,
     });
   }, [conversation, headerDescription, name, navigation]);
   const handleSubmit = useCallback(() => {
