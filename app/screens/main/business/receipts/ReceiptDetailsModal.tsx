@@ -1,13 +1,14 @@
+import {format} from 'date-fns';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
+  Alert,
   FlatList,
   Modal,
   ScrollView,
   StyleSheet,
   Text,
-  View,
-  Alert,
   ToastAndroid,
+  View,
 } from 'react-native';
 import {
   BluetoothEscposPrinter,
@@ -45,13 +46,11 @@ import {
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import {format} from 'date-fns';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
   receipt: IReceipt | null;
-  onPrintReceipt: () => void;
   onOpenShareModal: () => void;
 };
 
@@ -308,6 +307,39 @@ export function ReceiptDetailsModal(props: Props) {
           )}\n\r`,
           receiptStyles.subheader,
         );
+        await BluetoothEscposPrinter.printText(
+          `Paid: ${currencyCode} ${numberWithCommas(receipt?.amount_paid)}\n\r`,
+          receiptStyles.subheader,
+        );
+        receipt?.credit_amount &&
+          (await BluetoothEscposPrinter.printText(
+            `Balance: ${currencyCode} ${numberWithCommas(
+              receipt?.credit_amount,
+            )}\n\r`,
+            receiptStyles.subheader,
+          ));
+
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n\r',
+          {},
+        );
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.CENTER,
+        );
+        await BluetoothEscposPrinter.printText(
+          'Powered by Shara. www.shara.co\n\r',
+          receiptStyles.product,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n\r',
+          {},
+        );
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText('\n\r', {});
+        await BluetoothEscposPrinter.printText('\n\r', {});
+        await BluetoothEscposPrinter.printText('\n\r', {});
         setIsPrintSuccess(true);
       } catch (err) {
         Alert.alert('Bluetooth Error', err.toString());

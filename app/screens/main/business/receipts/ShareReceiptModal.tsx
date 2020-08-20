@@ -13,26 +13,30 @@ type Props = {
   visible: boolean;
   onClose: () => void;
   onSmsShare?: () => void;
+  tax?: number;
+  amountPaid?: number;
+  customer?: ICustomer;
+  totalAmount?: number;
+  creditAmount?: number;
+  products?: IReceiptItem[];
+  onWhatsappShare?: (receiptImage: string) => void;
   onEmailShare?: (
     {email, receiptImage}: {email: string; receiptImage: string},
     callback: () => void,
   ) => void;
-  onWhatsappShare?: (receiptImage: string) => void;
-  tax?: number;
-  customer?: ICustomer;
-  totalAmount?: number;
-  products?: IReceiptItem[];
 };
 
 export const ShareReceiptModal = ({
+  tax,
   visible,
   onClose,
-  onSmsShare,
-  onEmailShare,
-  tax,
   customer,
   products,
+  amountPaid,
+  onSmsShare,
   totalAmount,
+  creditAmount,
+  onEmailShare,
   onWhatsappShare,
 }: Props) => {
   const authService = getAuthService();
@@ -193,7 +197,7 @@ export const ShareReceiptModal = ({
       <View style={applyStyles('px-lg')}>
         <Button
           variantColor="clear"
-          style={applyStyles({width: '100%', marginBottom: 24})}
+          style={applyStyles({width: '100%'})}
           onPress={onClose}>
           <Text
             style={applyStyles('text-400', 'text-uppercase', {
@@ -209,7 +213,9 @@ export const ShareReceiptModal = ({
           user={user}
           products={products}
           customer={customer}
+          amountPaid={amountPaid}
           totalAmount={totalAmount}
+          creditAmount={creditAmount}
           getImageUri={(data) => setReceiptImage(data)}
         />
       </View>
