@@ -179,8 +179,8 @@ const CustomersTab = () => {
           <FlatList
             renderItem={renderCustomerListItem}
             keyExtractor={(item) => `${item._id}`}
+            data={orderBy(myCustomers, 'name', 'asc')}
             ListHeaderComponent={renderCustomerListHeader}
-            data={orderBy(myCustomers, 'created_at', 'desc')}
           />
         </>
       ) : (

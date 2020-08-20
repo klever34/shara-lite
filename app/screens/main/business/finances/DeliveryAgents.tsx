@@ -152,7 +152,7 @@ export const DeliveryAgents = () => {
       <FlatList
         renderItem={renderDeliveryAgentListItem}
         keyExtractor={(item) => `${item._id}`}
-        data={orderBy(myDeliveryAgents, 'created_at', 'desc')}
+        data={orderBy(myDeliveryAgents, 'full_name', 'asc')}
         style={applyStyles({backgroundColor: colors.white})}
         ListHeaderComponent={renderDeliveryAgentListHeader}
         ListEmptyComponent={

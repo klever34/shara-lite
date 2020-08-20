@@ -12,9 +12,12 @@ import {
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 
+type Props = {onSubmit?: (deliveryAgent: IDeliveryAgent) => void};
 type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
 
-export const AddDeliveryAgent = () => {
+export const AddDeliveryAgent = (props: Props) => {
+  const {onSubmit} = props;
+
   const realm = useRealm();
   const navigation = useNavigation();
   const deliveryAgents = getDeliveryAgents({realm});
@@ -58,14 +61,14 @@ export const AddDeliveryAgent = () => {
           saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
           setIsLoading(false);
           clearForm();
-          navigation.goBack();
+          onSubmit ? onSubmit(deliveryAgent) : navigation.goBack();
           ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
         }, 300);
       }
     } else {
       Alert.alert('Error', 'Please add delivery agent information.');
     }
-  }, [realm, clearForm, deliveryAgent, deliveryAgents, navigation]);
+  }, [realm, clearForm, onSubmit, deliveryAgent, deliveryAgents, navigation]);
 
   return (
     <View

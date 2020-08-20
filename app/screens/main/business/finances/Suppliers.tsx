@@ -150,7 +150,7 @@ export const Suppliers = () => {
       <FlatList
         renderItem={renderSupplierListItem}
         keyExtractor={(item) => `${item._id}`}
-        data={orderBy(mySuppliers, 'created_at', 'desc')}
+        data={orderBy(mySuppliers, 'name', 'asc')}
         ListHeaderComponent={renderSupplierListHeader}
         ListEmptyComponent={
           <EmptyState
