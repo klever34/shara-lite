@@ -43,7 +43,7 @@ const ContactsScreen = ({
         setLoadingContacts(true);
       }
       contactsService
-        .loadContacts()
+        .syncPhoneContacts()
         .then(() => {
           setLoadingContacts(false);
         })

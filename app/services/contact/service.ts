@@ -1,5 +1,5 @@
 import {Alert, PermissionsAndroid} from 'react-native';
-import Contacts, {Contact} from 'react-native-contacts';
+import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
@@ -8,16 +8,21 @@ import {IRealmService} from '../realm';
 import omit from 'lodash/omit';
 import {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
+import {User} from 'types/app';
 
 export interface IContactService {
-  getAll(): Promise<Contact[]>;
-  loadContacts(): Promise<void>;
+  getPhoneContacts(): Promise<RNContacts.Contact[]>;
+  syncPhoneContacts(): Promise<void>;
+  syncMobiles(
+    mobiles: string[],
+    setFields?: (user: User, index: number) => Partial<IContact>,
+  ): Promise<void>;
   getContactByMobile(mobile: string): IContact | null;
   getContact(id: string): IContact | null;
-  createContact(contact: IContact, updateMode: UpdateMode): Promise<IContact>;
+  createContact(contact: IContact, updateMode?: UpdateMode): Promise<IContact>;
   createMultipleContacts(
     contact: IContact[],
-    updateMode: UpdateMode,
+    updateMode?: UpdateMode,
   ): Promise<IContact[]>;
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
@@ -32,7 +37,7 @@ export class ContactService implements IContactService {
 
   private async checkPermission() {
     return new Promise((resolve) => {
-      Contacts.checkPermission((error, result) => {
+      RNContacts.checkPermission((error, result) => {
         if (result === 'authorized') {
           resolve(true);
         } else {
@@ -68,12 +73,12 @@ export class ContactService implements IContactService {
     });
   }
 
-  public async getAll() {
-    return new Promise<Contact[]>((resolve, reject) => {
+  public async getPhoneContacts() {
+    return new Promise<RNContacts.Contact[]>((resolve, reject) => {
       this.checkPermission().then((hasPermission) => {
         const error = new Error('We are unable to access your contacts');
         if (hasPermission) {
-          Contacts.getAll((err, contacts) => {
+          RNContacts.getAll((err, contacts) => {
             if (err) {
               reject(err);
             }
@@ -90,10 +95,9 @@ export class ContactService implements IContactService {
     });
   }
 
-  public async loadContacts() {
+  public async syncPhoneContacts() {
     try {
-      const contacts = await this.getAll();
-      const me = this.authService.getUser();
+      const contacts = await this.getPhoneContacts();
       const numbers = flatten(
         contacts.map((contact) =>
           contact.phoneNumbers.map((phoneNumber) =>
@@ -101,17 +105,32 @@ export class ContactService implements IContactService {
           ),
         ),
       );
-      const users = await this.apiService.getUserDetails(numbers);
-      const nextContacts = users.map((user) => {
+      await this.syncMobiles(numbers, (_, index) => ({
+        recordId: contacts[index].recordID,
+      }));
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async syncMobiles(
+    mobiles: string[],
+    setFields?: (user: User, index: number) => Partial<IContact>,
+  ) {
+    mobiles = flatten(mobiles.map((mobile) => mobile.replace(' ', '')));
+    try {
+      const users = await this.apiService.getUserDetails(mobiles);
+      const me = this.authService.getUser();
+      const nextContacts = users.map((user, index) => {
         return {
           ...user,
           isMe: user.id === me?.id,
           groups: '',
+          fullName: '',
+          ...setFields?.(user, index),
         };
       });
-      await this.updateMultipleContacts(
-        (nextContacts as unknown) as IContact[],
-      );
+      await this.updateMultipleContacts(nextContacts);
     } catch (error) {
       throw error;
     }

@@ -42,7 +42,11 @@ const ContactsList = ({
     contacts ??
     realm
       .objects<IContact>('Contact')
-      .filtered(`mobile != "${getAuthService().getUser()?.mobile ?? ''}"`)
+      .filtered(
+        `mobile != "${
+          getAuthService().getUser()?.mobile ?? ''
+        }"  && recordId != null`,
+      )
       .sorted('firstname');
   const renderContactItem = useCallback(
     ({item}: ListRenderItemInfo<IContact>) => {

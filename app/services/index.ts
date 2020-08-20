@@ -101,6 +101,7 @@ export const getConversationService = () => {
       getPubNubService(),
       getAuthService(),
       getApiService(),
+      getContactService(),
     );
   }
   return conversationService;

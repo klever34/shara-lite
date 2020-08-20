@@ -22,7 +22,7 @@ export class RealmService implements IRealmService {
   }
 
   clearRealm() {
-    const realm = this.realm as Realm;
+    const realm = this.realm;
     if (realm) {
       realm.write(() => {
         realm.deleteAll();

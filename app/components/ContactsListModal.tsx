@@ -45,7 +45,7 @@ export const ContactsListModal = ({
     setIsLoading(true);
     const contactsService = getContactService();
     contactsService
-      .getAll()
+      .getPhoneContacts()
       .then((nextContacts) => {
         setIsLoading(false);
         const data = nextContacts.filter((contact) => {

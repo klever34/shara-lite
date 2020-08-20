@@ -188,7 +188,7 @@ const MainScreens = ({navigation}: any) => {
 
   useEffect(() => {
     const contactsService = getContactService();
-    contactsService.loadContacts().catch(handleError);
+    contactsService.syncPhoneContacts().catch(handleError);
   }, [navigation, handleError]);
 
   if (!pubNubClient) {

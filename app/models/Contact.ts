@@ -1,28 +1,31 @@
 import capitalize from 'lodash/capitalize';
-import {User} from '../../types/app';
+import {User} from 'types/app';
 import {BaseModel, baseModelSchema} from './baseSchema';
 
 export interface IContact
   extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
-  fullName: string;
   channel?: string;
   groups: string;
   isMe: boolean;
+  recordId?: string;
+
+  readonly fullName: string;
 }
 
 export class Contact extends BaseModel implements Partial<IContact> {
   public static schema: Realm.ObjectSchema = {
-    name: 'Contact',
+    name: Contact.name,
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
       id: {type: 'int', indexed: true},
-      mobile: 'string',
+      mobile: {type: 'string', indexed: true},
+      firstname: 'string',
+      lastname: 'string',
       channel: 'string?',
       groups: 'string',
       isMe: 'bool',
-      firstname: 'string',
-      lastname: 'string',
+      recordId: 'string?',
     },
   };
   public firstname: string | undefined;

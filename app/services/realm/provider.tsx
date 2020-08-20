@@ -12,7 +12,7 @@ type RealmObject = {
 
 type RealmCloneParams = {
   realm?: Realm;
-  args: Array<any>;
+  args?: Array<any>;
 };
 
 export const RealmContext = createContext<RealmObject>({});
@@ -64,6 +64,18 @@ const RealmProvider = (props: any) => {
       removeListener(...args: any[]) {
         realmRemoveListener({realm: syncRealm.current, args});
         realmRemoveListener({realm: localRealm.current, args});
+      },
+      beginTransaction() {
+        realmBeginTransaction({realm: syncRealm.current});
+        realmBeginTransaction({realm: localRealm.current});
+      },
+      commitTransaction() {
+        realmCommitTransaction({realm: syncRealm.current});
+        realmCommitTransaction({realm: localRealm.current});
+      },
+      cancelTransaction() {
+        realmCancelTransaction({realm: syncRealm.current});
+        realmCancelTransaction({realm: localRealm.current});
       },
     } as unknown) as Realm);
 
@@ -169,6 +181,24 @@ const realmRemoveListener = ({realm, args}: RealmCloneParams) => {
   if (realm) {
     // @ts-ignore
     return realm.removeListener(...args);
+  }
+};
+
+const realmBeginTransaction = ({realm}: RealmCloneParams) => {
+  if (realm) {
+    return realm.beginTransaction();
+  }
+};
+
+const realmCommitTransaction = ({realm}: RealmCloneParams) => {
+  if (realm) {
+    return realm.commitTransaction();
+  }
+};
+
+const realmCancelTransaction = ({realm}: RealmCloneParams) => {
+  if (realm) {
+    return realm.cancelTransaction();
   }
 };
 

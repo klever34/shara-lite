@@ -17,7 +17,7 @@ export interface IConversation extends BaseModelInterface {
 
 export class Conversation extends BaseModel implements Partial<IConversation> {
   public static schema: Realm.ObjectSchema = {
-    name: 'Conversation',
+    name: Conversation.name,
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,

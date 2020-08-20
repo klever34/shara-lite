@@ -11,6 +11,7 @@ import {IRealmService} from '@/services/realm';
 import {IPubNubService} from '@/services/pubnub';
 import {IAuthService} from '@/services/auth';
 import {IApiService} from '@/services/api';
+import {IContactService} from '@/services/contact';
 
 export interface IConversationService {
   getConversationByChannel(channel: string): IConversation | null;
@@ -32,6 +33,7 @@ export class ConversationService implements IConversationService {
     private pubNubService: IPubNubService,
     private authService: IAuthService,
     private apiService: IApiService,
+    private contactService: IContactService,
   ) {}
 
   getConversationByChannel(channel: string): IConversation | null {
@@ -94,52 +96,47 @@ export class ConversationService implements IConversationService {
           conversations[channel] = conversation;
         } catch (e) {}
       }
-      realm.write(() => {
-        if (!realm) {
-          return;
-        }
-
-        for (let i = 0; i < channels.length; i += 1) {
-          const channel = channels[i];
-          const existingChannel = this.getConversationByChannel(channel);
-          const updatePayload = omit(
-            existingChannel || getBaseModelValues(),
-            [],
-          );
-
-          const conversation = realm.create<IConversation>(
-            'Conversation',
-            {...conversations[channel], ...updatePayload},
-            UpdateMode.Modified,
-          );
-          if (conversation.type === 'group') {
-            const members = conversation.members;
-            for (let j = 0; j < members.length; j += 1) {
-              const contact = realm
-                .objects<IContact>('Contact')
-                .filtered(`mobile = "${members[j]}"`)[0];
-              if (contact) {
-                realm.write(() => {
-                  contact.groups = contact.groups
-                    ? `${contact.groups},${channel}`
-                    : channel;
-                });
-              }
-            }
-          } else {
-            const contact = realm
+      realm.beginTransaction();
+      for (let i = 0; i < channels.length; i += 1) {
+        const channel = channels[i];
+        const existingChannel = this.getConversationByChannel(channel);
+        const updatePayload = omit(existingChannel || getBaseModelValues(), []);
+        const conversation = realm.create<IConversation>(
+          'Conversation',
+          {...conversations[channel], ...updatePayload},
+          UpdateMode.Modified,
+        );
+        if (conversation.type === 'group') {
+          const members = conversation.members;
+          for (let j = 0; j < members.length; j += 1) {
+            const memberMobile = members[j];
+            let contact: IContact = realm
               .objects<IContact>('Contact')
-              .filtered(`mobile = "${conversation.name}"`)[0];
-            if (contact) {
-              realm.write(() => {
-                conversation.name = contact.fullName;
-                contact.channel = conversation.channel;
-              });
+              .filtered(`mobile = "${memberMobile}"`)[0];
+            if (!contact) {
+              await this.contactService.syncMobiles([memberMobile], () => ({
+                groups: channel,
+              }));
+            } else {
+              contact.groups = contact.groups
+                ? `${contact.groups},${channel}`
+                : channel;
             }
           }
+        } else {
+          const contact = realm
+            .objects<IContact>('Contact')
+            .filtered(`mobile = "${conversation.name}"`)[0];
+          if (contact) {
+            conversation.name = contact.fullName;
+            contact.channel = conversation.channel;
+          }
         }
-      });
+      }
+      console.log(realm.schemaVersion, 'schemaVersion');
+      realm.commitTransaction();
     } catch (e) {
+      realm.cancelTransaction();
       throw e;
     }
   }
