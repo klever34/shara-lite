@@ -311,30 +311,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
             </Touchable>
           </View>
         )}
-
-        {/* <Text
-          style={applyStyles('mb-lg', 'text-center', 'text-400', {
-            color: colors['gray-100'],
-          })}>
-          Or enter delivery agent details below
-        </Text>
-        <View style={applyStyles({marginBottom: 48})}>
-          <View style={applyStyles('mb-md flex-row', 'items-center')}>
-            <FloatingLabelInput
-              value={agent?.mobile}
-              keyboardType="phone-pad"
-              label="Phone Number"
-              onChangeText={(text) => handleChange(text, 'mobile')}
-            />
-          </View>
-          <View style={applyStyles('flex-row', 'items-center')}>
-            <FloatingLabelInput
-              value={agent?.full_name}
-              label="Full Name"
-              onChangeText={(text) => handleChange(text, 'full_name')}
-            />
-          </View>
-        </View> */}
       </ScrollView>
       <View style={styles.actionButtons}>
         <Button
