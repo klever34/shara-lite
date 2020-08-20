@@ -168,20 +168,18 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       return;
     }
     setIsSaving(true);
-    setTimeout(() => {
-      addNewInventory({
-        realm,
-        supplier,
-        stockItems: products,
-        delivery_agent: agent,
-      });
-      getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
-      setIsSaving(false);
-      clearForm();
-      handleCancel();
-      navigation.navigate('ReceivedInventoryList');
-      ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
-    }, 300);
+    addNewInventory({
+      realm,
+      supplier,
+      stockItems: products,
+      delivery_agent: agent,
+    });
+    getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
+    setIsSaving(false);
+    clearForm();
+    handleCancel();
+    navigation.navigate('ReceivedInventoryList');
+    ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
   };
 
   const handleSetDeliveryAgent = useCallback(
@@ -247,7 +245,7 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           </View>
         </Button>
         <Text
-          style={applyStyles('mt-xl mb-lg text-400', {
+          style={applyStyles('mt-xl mb-lg text-center text-400', {
             fontSize: 18,
             color: colors.primary,
           })}>

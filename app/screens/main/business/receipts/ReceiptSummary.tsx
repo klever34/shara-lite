@@ -456,24 +456,22 @@ const ReceiptSummary = (props: Props) => {
 
   const handleSaveReceipt = useCallback(
     (callback: () => void, onSuccess?: () => void) => {
-      setTimeout(() => {
-        callback();
-        saveReceipt({
-          tax,
-          realm,
-          payments,
-          customer,
-          amountPaid,
-          totalAmount,
-          creditAmount,
-          dueDate,
-          receiptItems: products,
-        }).catch(handleError);
-        onClearReceipt();
-        getAnalyticsService().logEvent('receiptCreated').catch(handleError);
-        onSuccess && onSuccess();
-        ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
-      }, 500);
+      callback();
+      saveReceipt({
+        tax,
+        realm,
+        payments,
+        customer,
+        amountPaid,
+        totalAmount,
+        creditAmount,
+        dueDate,
+        receiptItems: products,
+      }).catch(handleError);
+      onClearReceipt();
+      getAnalyticsService().logEvent('receiptCreated').catch(handleError);
+      onSuccess && onSuccess();
+      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
     },
     [
       realm,

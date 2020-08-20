@@ -57,13 +57,11 @@ export const AddDeliveryAgent = (props: Props) => {
         );
       } else {
         setIsLoading(true);
-        setTimeout(() => {
-          saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
-          setIsLoading(false);
-          clearForm();
-          onSubmit ? onSubmit(deliveryAgent) : navigation.goBack();
-          ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
-        }, 300);
+        saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+        setIsLoading(false);
+        clearForm();
+        onSubmit ? onSubmit(deliveryAgent) : navigation.goBack();
+        ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
     } else {
       Alert.alert('Error', 'Please add delivery agent information.');

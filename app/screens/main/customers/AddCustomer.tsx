@@ -56,12 +56,10 @@ const AddCustomer = (props: Props) => {
         };
         saveCustomer({realm, customer});
         setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          getAnalyticsService().logEvent('customerAdded').catch(handleError);
-          onSubmit ? onSubmit(customer) : navigation.goBack();
-          ToastAndroid.show('Customer added', ToastAndroid.SHORT);
-        }, 750);
+        setIsLoading(false);
+        getAnalyticsService().logEvent('customerAdded').catch(handleError);
+        onSubmit ? onSubmit(customer) : navigation.goBack();
+        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
       }
     }
   }, [navigation, name, mobile, realm, onSubmit, customers, handleError]);

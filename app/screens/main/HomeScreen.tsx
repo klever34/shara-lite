@@ -20,8 +20,6 @@ import {colors} from '@/styles';
 import {BusinessTab} from './business';
 import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
-import Touchable from '../../components/Touchable';
-import Icon from '../../components/Icon';
 import {useScreenRecord} from '@/services/analytics';
 
 type HomeTabParamList = {
@@ -68,26 +66,6 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     navigation.setOptions({
       headerRight: () => (
         <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
           <HeaderRight
             menuOptions={[
               {

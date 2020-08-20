@@ -57,13 +57,11 @@ export const RecordCreditPayment = () => {
     (payload, callback) => {
       if (customer.name) {
         setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          saveCreditPayment({realm, customer, ...payload});
-          callback();
-          navigation.goBack();
-          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
-        }, 300);
+        setIsLoading(false);
+        saveCreditPayment({realm, customer, ...payload});
+        callback();
+        navigation.goBack();
+        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
       } else {
         Alert.alert('Info', 'Please select a customer');
       }

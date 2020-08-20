@@ -34,17 +34,15 @@ export const CustomerCreditDetails = ({
     (payload, callback) => {
       if (creditDetails) {
         setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          saveCreditPayment({
-            realm,
-            ...payload,
-            customer: creditDetails.customer,
-          });
-          callback();
-          navigation.navigate('CustomerDetails', {screen: 'CreditsTab'});
-          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
-        }, 300);
+        setIsLoading(false);
+        saveCreditPayment({
+          realm,
+          ...payload,
+          customer: creditDetails.customer,
+        });
+        callback();
+        navigation.navigate('CustomerDetails', {screen: 'CreditsTab'});
+        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
       }
     },
     [realm, navigation, creditDetails],

@@ -54,14 +54,12 @@ export const AddSupplier = () => {
         );
       } else {
         setIsLoading(true);
-        setTimeout(() => {
-          saveSupplier({realm, supplier});
-          getAnalyticsService().logEvent('supplierAdded').catch(handleError);
-          setIsLoading(false);
-          clearForm();
-          navigation.goBack();
-          ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
-        }, 300);
+        saveSupplier({realm, supplier});
+        getAnalyticsService().logEvent('supplierAdded').catch(handleError);
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+        ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
       }
     } else {
       Alert.alert('Info', "Please provider supplier's name and phone number");

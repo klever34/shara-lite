@@ -29,16 +29,14 @@ const CreditPayment = ({route}: any) => {
   const handleSubmit = useCallback(
     (payload, callback) => {
       setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        saveCreditPayment({
-          realm,
-          ...payload,
-          customer: creditDetails.customer,
-        });
-        callback();
-        navigation.goBack();
-      }, 300);
+      setIsLoading(false);
+      saveCreditPayment({
+        realm,
+        ...payload,
+        customer: creditDetails.customer,
+      });
+      callback();
+      navigation.goBack();
     },
     [realm, creditDetails.customer, navigation],
   );
