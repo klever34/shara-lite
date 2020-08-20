@@ -27,6 +27,7 @@ workflows:
       - fastlane:
           context: shara-test
           lane: internal
+          gradleTask: assembleDevRelease
           requires:
             - checkout_code
             - test
@@ -54,6 +55,7 @@ workflows:
       - fastlane:
           context: shara-discovery
           lane: internal
+          gradleTask: assembleDiscoveryRelease
           requires:
             - test
           filters:
@@ -77,6 +79,7 @@ workflows:
       - fastlane:
           context: shara-dev
           lane: internal
+          gradleTask: assembleDeliveryRelease
           requires:
             - test
           filters:
@@ -110,6 +113,7 @@ workflows:
       - fastlane:
           context: shara-qa
           lane: internal
+          gradleTask: assembleQaRelease
           requires:
             - test
           filters:
@@ -143,6 +147,7 @@ workflows:
       - fastlane:
           context: shara-beta
           lane: internal
+          gradleTask: assembleProductionRelease
           requires:
             - test
           filters:
@@ -244,8 +249,8 @@ jobs:
             echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > android/app/shara.keystore
             echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
             echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> android/gradle.properties
-            sed -i "s#SHARA_VERSION_CODE#${CIRCLE_BUILD_NUM}#g" android/app/build.gradle
-            sed -i "s#SHARA_VERSION_NAME#${NEW_VERSION}#g" android/app/build.gradle
+#            sed -i "s#SHARA_VERSION_CODE#${CIRCLE_BUILD_NUM}#g" android/app/build.gradle
+#            sed -i "s#SHARA_VERSION_NAME#${NEW_VERSION}#g" android/app/build.gradle
       - persist_to_workspace:
           paths: .
           root: .
@@ -266,8 +271,15 @@ jobs:
       track:
         type: string
         default: internal
+      gradleTask:
+        type: string
+        default: assembleRelease
+      testersGroup:
+        type: string
+        default: shara-product
     docker:
       - image: circleci/android:api-27-node
+    resource_class: large
     steps:
       - attach_workspace:
           at: .
@@ -276,6 +288,8 @@ jobs:
           command: |
             NEW_VERSION=$(jq ".version" -r package.json)
             echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
+            echo "export SHARA_VERSION_NAME=${NEW_VERSION}" >> $BASH_ENV
+            echo "export SHARA_VERSION_CODE=${CIRCLE_BUILD_NUM}" >> $BASH_ENV
             echo "NEW_VERSION=${NEW_VERSION}"
       - run:
           name: Install Fastlane & Firebase tools
@@ -286,11 +300,16 @@ jobs:
       - run:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           command: |
+            NEW_VERSION=$(jq ".version" -r package.json)
+            export NEW_VERSION=${NEW_VERSION}
+            export SHARA_VERSION_NAME=${NEW_VERSION}
+            export SHARA_VERSION_CODE=${CIRCLE_BUILD_NUM}
             cd android
             bundle exec fastlane <<parameters.lane>>
           environment:
             GOOGLE_PLAY_TRACK: <<parameters.track>>
-            SHARA_VERSION_NAME: $NEW_VERSION
+            GRADLE_TASK: <<parameters.gradleTask>>
+            FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results

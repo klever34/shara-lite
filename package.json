@@ -1,9 +1,9 @@
 {
   "name": "shara",
-  "version": "0.2.11-bugfix.phone-book-flow-update+build.1654",
+  "version": "0.2.12-bugfix.phone-book-flow-update+build.1662",
   "private": true,
   "scripts": {
-    "android": "react-native run-android",
+    "android": "react-native run-android --variant localDebug --appIdSuffix local",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
