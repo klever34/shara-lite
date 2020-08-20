@@ -220,7 +220,7 @@ const MainScreens = ({navigation}: any) => {
           name="Home"
           component={HomeScreen}
           options={{
-            title: 'Shara',
+            title: Config.app_name,
             headerStyle: {
               elevation: 0,
               backgroundColor: colors.primary,

@@ -35,7 +35,7 @@ Deploy a new version to the Google Play Internal Test Release
 ```
 fastlane android play
 ```
-Deploy a new version to the Google Play lane
+Deploy a new version to the Google Play lane internal
 
 ----
 
