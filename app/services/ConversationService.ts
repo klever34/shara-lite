@@ -133,7 +133,6 @@ export class ConversationService implements IConversationService {
           }
         }
       }
-      console.log(realm.schemaVersion, 'schemaVersion');
       realm.commitTransaction();
     } catch (e) {
       realm.cancelTransaction();

@@ -1,16 +1,16 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, ScrollView, Text, View, ToastAndroid} from 'react-native';
 import {Button, FloatingLabelInput} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
-import {applyStyles} from '../../../../helpers/utils';
-import {ISupplier} from '../../../../models/Supplier';
-import {getAnalyticsService} from '../../../../services';
-import {useScreenRecord} from '../../../../services/analytics';
-import {useRealm} from '../../../../services/realm';
-import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {ISupplier} from '@/models/Supplier';
+import {getAnalyticsService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
+import {useRealm} from '@/services/realm';
+import {getSuppliers, saveSupplier} from '@/services/SupplierService';
+import {colors} from '@/styles';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 

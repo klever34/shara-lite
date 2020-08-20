@@ -3,7 +3,7 @@ import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -18,12 +18,12 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {ISupplier} from '../../../../models/Supplier';
-import {useScreenRecord} from '../../../../services/analytics';
-import {useRealm} from '../../../../services/realm';
-import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {ISupplier} from '@/models/Supplier';
+import {useScreenRecord} from '@/services/analytics';
+import {useRealm} from '@/services/realm';
+import {getSuppliers, saveSupplier} from '@/services/SupplierService';
+import {colors} from '@/styles';
 
 type SupplierItemProps = {
   item: ISupplier;

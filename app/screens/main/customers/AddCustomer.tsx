@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   ScrollView,
@@ -10,12 +10,12 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {Button, FloatingLabelInput} from '../../../components';
-import {applyStyles} from '../../../helpers/utils';
-import {getAnalyticsService} from '../../../services';
-import {useScreenRecord} from '../../../services/analytics';
-import {getCustomers, saveCustomer} from '../../../services/CustomerService';
-import {useRealm} from '../../../services/realm';
-import {colors} from '../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {getAnalyticsService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
+import {getCustomers, saveCustomer} from '@/services/CustomerService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 
 const AddCustomer = () => {
   useScreenRecord();

@@ -3,7 +3,6 @@ import {useNavigation} from '@react-navigation/native';
 import {MessageEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
 import {Alert, Platform, SafeAreaView, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import Realm from 'realm';
@@ -27,6 +26,7 @@ import CustomersTab from './customers';
 import Touchable from '../../components/Touchable';
 import Icon from '../../components/Icon';
 import {useScreenRecord} from '@/services/analytics';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -155,9 +155,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           );
         }).then();
       } catch (e) {
-        //@TODO Handle gracefully
-        console.log(e);
-        // handleError(e);
+        handleError(e);
       }
     }
 

@@ -12,13 +12,13 @@ import {
   ToastAndroid,
 } from 'react-native';
 import Share from 'react-native-share';
-import {Payment} from '../../../../../types/app';
+import {Payment} from 'types/app';
 import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
 } from '../../../../components';
-import {ContactsListModal} from '../../../../components/ContactsListModal';
+import {ContactsListModal} from '@/components';
 import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -27,14 +27,14 @@ import {
   applyStyles,
   getDueDateValue,
   numberWithCommas,
-} from '../../../../helpers/utils';
-import {ICustomer} from '../../../../models';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
+} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService, getAuthService} from '../../../../services';
-import {getCustomers} from '../../../../services/CustomerService';
-import {useRealm} from '../../../../services/realm';
-import {saveReceipt} from '../../../../services/ReceiptService';
-import {colors} from '../../../../styles';
+import {getCustomers} from '@/services/CustomerService';
+import {useRealm} from '@/services/realm';
+import {saveReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
 import {CustomerDetailsModal} from './CustomerDetailsModal';
 import {CustomersList} from './CustomersList';
 import {EditProductModal} from './EditProductModal';
@@ -42,7 +42,7 @@ import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 import {format} from 'date-fns/esm';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;

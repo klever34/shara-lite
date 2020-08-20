@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import isEmpty from 'lodash/isEmpty';
 import React, {useCallback, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -20,14 +20,14 @@ import {
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
-import {IStockItem} from '../../../../models/StockItem';
-import {ISupplier} from '../../../../models/Supplier';
-import {getAnalyticsService} from '../../../../services';
-import {useRealm} from '../../../../services/realm';
-import {addNewInventory} from '../../../../services/ReceivedInventoryService';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {IDeliveryAgent} from '@/models/DeliveryAgent';
+import {IStockItem} from '@/models/StockItem';
+import {ISupplier} from '@/models/Supplier';
+import {getAnalyticsService} from '@/services';
+import {useRealm} from '@/services/realm';
+import {addNewInventory} from '@/services/ReceivedInventoryService';
+import {colors} from '@/styles';
 import {DeliveryAgentsModal} from './DeliveryAgentsModal';
 
 type Payload = IDeliveryAgent;
