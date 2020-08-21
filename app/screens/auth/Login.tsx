@@ -15,7 +15,6 @@ import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
 import {loginToRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
-import {setPartitionKey} from '../../helpers/models';
 
 type Fields = {
   mobile: string;
@@ -74,7 +73,6 @@ export const Login = ({navigation}: any) => {
         realmService.setInstance(realm as Realm);
       }
 
-      await setPartitionKey({key: user.id.toString()});
       setLoading(false);
       navigation.reset({
         index: 0,

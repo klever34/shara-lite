@@ -296,11 +296,9 @@ export class RealmService implements IRealmService {
                 .objects<IContact>('Contact')
                 .filtered(`mobile = "${members[j]}"`)[0];
               if (contact) {
-                this.realm.write(() => {
-                  contact.groups = contact.groups
-                    ? `${contact.groups},${channel}`
-                    : channel;
-                });
+                contact.groups = contact.groups
+                  ? `${contact.groups},${channel}`
+                  : channel;
               }
             }
           } else {
@@ -308,10 +306,8 @@ export class RealmService implements IRealmService {
               .objects<IContact>('Contact')
               .filtered(`mobile = "${conversation.name}"`)[0];
             if (contact) {
-              this.realm.write(() => {
-                conversation.name = contact.fullName;
-                contact.channel = conversation.channel;
-              });
+              conversation.name = contact.fullName;
+              contact.channel = conversation.channel;
             }
           }
         }

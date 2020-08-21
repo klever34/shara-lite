@@ -11,6 +11,6 @@ export const getBaseModelValues = () => {
   };
 };
 
-export const setPartitionKey = async ({key}: {key: string}): Promise<void> => {
+export const setBasePartitionKey = (key: string) => {
   partitionKey = key;
 };

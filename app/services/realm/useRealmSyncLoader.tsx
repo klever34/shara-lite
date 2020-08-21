@@ -2,14 +2,18 @@ import {useCallback, useContext, useEffect, useState, useRef} from 'react';
 // import NetInfo from '@react-native-community/netinfo';
 import {getAuthService, getRealmService} from '../index';
 import {RealmContext} from './provider';
-import {loginToRealm} from './index';
+import {loginToRealm, useRealm} from './index';
 
 const useRealmSyncLoader = () => {
   const unsubscribeFromRealmCheck = useRef();
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedRealm, setHasLoadedRealm] = useState(false);
   const authService = getAuthService();
-  const {updateSyncRealm} = useContext(RealmContext);
+  const {
+    updateSyncRealm,
+    isRealmSyncLoaderInitiated,
+    setIsRealmSyncLoaderInitiated,
+  } = useContext(RealmContext);
 
   const updateRealm = useCallback(async () => {
     if (isLoading || hasLoadedRealm) {
@@ -56,19 +60,21 @@ const useRealmSyncLoader = () => {
   */
 
   useEffect(() => {
+    if (isRealmSyncLoaderInitiated) {
+      return;
+    }
+    setIsRealmSyncLoaderInitiated && setIsRealmSyncLoaderInitiated(true);
+
     if (unsubscribeFromRealmCheck.current) {
       return;
     }
+    updateRealm();
 
     // @ts-ignore
     unsubscribeFromRealmCheck.current = setInterval(() => {
       updateRealm();
     }, 1000 * 60 * 10);
-  }, [updateRealm]);
-
-  useEffect(() => {
-    updateRealm();
-  }, [updateRealm]);
+  }, [unsubscribeFromRealmCheck]);
 };
 
 export default useRealmSyncLoader;
