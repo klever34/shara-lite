@@ -471,7 +471,7 @@ const ReceiptSummary = (props: Props) => {
           creditAmount,
           dueDate,
           receiptItems: products,
-        }).catch(handleError);
+        });
         onClearReceipt();
         getAnalyticsService().logEvent('receiptCreated').catch(handleError);
         onSuccess && onSuccess();

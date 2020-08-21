@@ -20,51 +20,58 @@ import {initLocalRealm} from '../services/realm';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  const {realm, updateLocalRealm} = useContext(RealmContext);
+  const {updateLocalRealm} = useContext(RealmContext);
 
   useEffect(() => {
     const navigationService = getNavigationService();
     navigationService.setInstance(navigation);
   });
-  const handleRedirect = useCallback(async () => {
-    const authService = getAuthService();
-    await authService.initialize();
-    try {
-      const createdRealm = await initLocalRealm();
-      updateLocalRealm && updateLocalRealm(createdRealm);
-      const realmService = getRealmService();
-      realmService.setInstance(realm as Realm);
-    } catch (e) {
-      Alert.alert(
-        'Oops! Something went wrong.',
-        'Try clearing app data from application settings',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              if (process.env.NODE_ENV === 'production') {
-                if (Platform.OS === 'android') {
-                  BackHandler.exitApp();
-                }
-              }
-            },
-          },
-        ],
-      );
-    }
+  const handleRedirect = useCallback(
+    async () => {
+      const authService = getAuthService();
+      await authService.initialize();
 
-    if (authService.isLoggedIn()) {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
-      });
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Auth'}],
-      });
-    }
-  }, [navigation, realm, updateLocalRealm]);
+      if (authService.isLoggedIn()) {
+        try {
+          const createdRealm = await initLocalRealm();
+          updateLocalRealm && updateLocalRealm(createdRealm);
+          const realmService = getRealmService();
+          realmService.setInstance(createdRealm);
+        } catch (e) {
+          Alert.alert(
+            'Oops! Something went wrong.',
+            'Try clearing app data from application settings',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  if (process.env.NODE_ENV === 'production') {
+                    if (Platform.OS === 'android') {
+                      BackHandler.exitApp();
+                    }
+                  }
+                },
+              },
+            ],
+          );
+        }
+      }
+
+      if (authService.isLoggedIn()) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Auth'}],
+        });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [navigation],
+  );
 
   useEffect(() => {
     setTimeout(handleRedirect, 750);

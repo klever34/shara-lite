@@ -25,11 +25,5 @@ export const saveReceiptItem = ({
     ...getBaseModelValues(),
   };
 
-  realm.write(() => {
-    realm.create<IReceiptItem>(
-      modelName,
-      receiptItemToSave,
-      UpdateMode.Modified,
-    );
-  });
+  realm.create<IReceiptItem>(modelName, receiptItemToSave, UpdateMode.Modified);
 };

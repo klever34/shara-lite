@@ -9,7 +9,11 @@ const useRealmSyncLoader = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasLoadedRealm, setHasLoadedRealm] = useState(false);
   const authService = getAuthService();
-  const {updateSyncRealm} = useContext(RealmContext);
+  const {
+    updateSyncRealm,
+    isRealmSyncLoaderInitiated,
+    setIsRealmSyncLoaderInitiated,
+  } = useContext(RealmContext);
 
   const updateRealm = useCallback(async () => {
     if (isLoading || hasLoadedRealm) {
@@ -55,20 +59,27 @@ const useRealmSyncLoader = () => {
   });
   */
 
-  useEffect(() => {
-    if (unsubscribeFromRealmCheck.current) {
-      return;
-    }
+  useEffect(
+    () => {
+      if (isRealmSyncLoaderInitiated) {
+        return;
+      }
 
-    // @ts-ignore
-    unsubscribeFromRealmCheck.current = setInterval(() => {
+      setIsRealmSyncLoaderInitiated && setIsRealmSyncLoaderInitiated(true);
+
+      if (unsubscribeFromRealmCheck.current) {
+        return;
+      }
       updateRealm();
-    }, 1000 * 60 * 10);
-  }, [updateRealm]);
 
-  useEffect(() => {
-    updateRealm();
-  }, [updateRealm]);
+      // @ts-ignore
+      unsubscribeFromRealmCheck.current = setInterval(() => {
+        updateRealm();
+      }, 1000 * 20);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isRealmSyncLoaderInitiated],
+  );
 };
 
 export default useRealmSyncLoader;
