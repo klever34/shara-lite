@@ -13,7 +13,7 @@ import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
 import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
-import {initLocalRealm, loginToRealm} from '../../services/realm';
+import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
 
 type Fields = {
@@ -24,9 +24,7 @@ type Fields = {
 
 export const Login = ({navigation}: any) => {
   // @ts-ignore
-  const {updateLocalRealm, updateSyncRealm, logoutFromRealm} = useContext(
-    RealmContext,
-  );
+  const {updateLocalRealm, logoutFromRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -60,22 +58,11 @@ export const Login = ({navigation}: any) => {
     const apiService = getApiService();
     try {
       setLoading(true);
-      const loginResponse = await apiService.logIn(payload);
-      const {
-        data: {
-          realmCredentials: {jwt},
-        },
-      } = loginResponse;
-
+      await apiService.logIn(payload);
       const createdLocalRealm = await initLocalRealm();
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
       const realmService = getRealmService();
       realmService.setInstance(createdLocalRealm);
-
-      const createdRealm = await loginToRealm({jwt});
-      if (createdRealm) {
-        updateSyncRealm && updateSyncRealm(createdRealm);
-      }
 
       setLoading(false);
       navigation.reset({
