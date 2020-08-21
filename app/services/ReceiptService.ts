@@ -64,34 +64,6 @@ export const saveReceipt = async ({
 
   realm.write(() => {
     realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
-
-    receiptItems.forEach((receiptItem: IReceiptItem) => {
-      saveReceiptItem({
-        realm,
-        receipt,
-        receiptItem,
-      });
-
-      restockProduct({
-        realm,
-        product: receiptItem.product,
-        quantity: receiptItem.quantity * -1,
-      });
-    });
-
-    if (creditAmount > 0) {
-      saveCredit({
-        dueDate,
-        creditAmount,
-        //@ts-ignore
-        customer: receiptCustomer,
-        receipt,
-        realm,
-      });
-      getAnalyticsService()
-        .logEvent('creditAdded')
-        .then(() => {});
-    }
   });
 
   payments.forEach((payment) => {
@@ -103,6 +75,35 @@ export const saveReceipt = async ({
       ...payment,
     });
   });
+
+  receiptItems.forEach((receiptItem: IReceiptItem) => {
+    saveReceiptItem({
+      realm,
+      receipt,
+      receiptItem,
+    });
+
+    restockProduct({
+      realm,
+      product: receiptItem.product,
+      quantity: receiptItem.quantity * -1,
+    });
+  });
+
+  if (creditAmount > 0) {
+    saveCredit({
+      dueDate,
+      creditAmount,
+      //@ts-ignore
+      customer: receiptCustomer,
+      receipt,
+      realm,
+    });
+
+    getAnalyticsService()
+      .logEvent('creditAdded')
+      .then(() => {});
+  }
 };
 
 export const updateReceipt = ({
