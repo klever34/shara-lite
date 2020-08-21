@@ -60,8 +60,8 @@ export const ReceiveInventoryStock = ({
   }, [navigation]);
 
   const handleAddItem = useCallback(() => {
-    if (quantity && price) {
-      const itemPrice = parseInt(price, 10);
+    if (quantity) {
+      const itemPrice = price ? parseInt(price, 10) : 0;
       const itemQuantity = parseInt(quantity, 10);
       const stock = {
         supplier,
@@ -155,8 +155,8 @@ export const ReceiveInventoryStock = ({
 
   const handleDone = useCallback(() => {
     let items = inventoryStock;
-    if (selectedProduct && quantity && price) {
-      const itemPrice = parseInt(price, 10);
+    if (selectedProduct && quantity) {
+      const itemPrice = price ? parseInt(price, 10) : 0;
       const itemQuantity = parseInt(quantity, 10);
       const stock = {
         supplier,

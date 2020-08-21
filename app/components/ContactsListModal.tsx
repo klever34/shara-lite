@@ -89,10 +89,14 @@ export function ContactsListModal<T>({
       setSearchInputValue(searchedText);
       if (searchedText) {
         const sort = (item: Contact, text: string) => {
+          const name = `${item.givenName} ${item.familyName}`;
+          const mobile =
+            item.phoneNumbers &&
+            item.phoneNumbers[0] &&
+            item.phoneNumbers[0].number;
           return (
-            `${item.givenName} ${item.familyName}`
-              .toLowerCase()
-              .indexOf(text.toLowerCase()) > -1
+            name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
+            mobile.toLowerCase().indexOf(text.toLowerCase()) > -1
           );
         };
         var results = contacts.filter((item: Contact) => {
