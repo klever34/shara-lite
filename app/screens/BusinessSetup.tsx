@@ -186,7 +186,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
         })}>
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} persistentScrollbar={true}>
           <View style={applyStyles('mb-lg')}>
             <Touchable onPress={handleSkip}>
               <View

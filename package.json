@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.13-discovery",
+  "version": "0.2.13-bugfix.phone-book-flow-update+build.1738",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",

@@ -1,15 +1,16 @@
 import {useNavigation} from '@react-navigation/native';
+import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
 import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
-  View,
   ToastAndroid,
+  View,
 } from 'react-native';
 import Share from 'react-native-share';
 import {Payment} from '../../../../../types/app';
@@ -17,6 +18,7 @@ import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
+  PageModal,
 } from '../../../../components';
 import {ContactsListModal} from '../../../../components/ContactsListModal';
 import HeaderRight from '../../../../components/HeaderRight';
@@ -31,18 +33,15 @@ import {
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAnalyticsService, getAuthService} from '../../../../services';
-import {getCustomers} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {saveReceipt} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
-import {CustomerDetailsModal} from './CustomerDetailsModal';
-import {CustomersList} from './CustomersList';
 import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import {format} from 'date-fns/esm';
-import {useErrorHandler} from 'react-error-boundary';
+import {getCustomers} from '@/services/CustomerService';
+import AddCustomer from '../../customers/AddCustomer';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -190,6 +189,7 @@ const ReceiptSummary = (props: Props) => {
   const navigation = useNavigation();
   const authService = getAuthService();
   const user = authService.getUser();
+  const customers = getCustomers({realm});
   const currency = authService.getUserCurrency();
   const businessInfo = user?.businesses[0];
 
@@ -219,11 +219,9 @@ const ReceiptSummary = (props: Props) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
+  const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
-  const customers = getCustomers({realm});
   const creditAmount = payments.length ? totalAmount - amountPaid : totalAmount;
 
   //@ts-ignore
@@ -259,14 +257,6 @@ const ReceiptSummary = (props: Props) => {
     setIsShareModalOpen(false);
   }, []);
 
-  const handleOpenCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(false);
-  }, []);
-
   const handleOpenEditProductModal = useCallback((item: IReceiptItem) => {
     setSelectedProduct(item);
   }, []);
@@ -287,23 +277,21 @@ const ReceiptSummary = (props: Props) => {
     setIsPaymentModalOpen(false);
   }, []);
 
-  const handleOpenCustomerList = useCallback(() => {
-    setIsCustomerListModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerList = useCallback(() => {
-    setIsCustomerListModalOpen(false);
-  }, []);
-
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
-    handleCloseCustomerModal();
-    handleCloseCustomerList();
-  }, [handleCloseCustomerModal, handleCloseCustomerList]);
+  }, []);
+
+  const handleOpenAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(false);
+  }, []);
 
   const handleDueDateChange = useCallback((value: string) => {
     const number = parseInt(value, 10);
@@ -452,13 +440,6 @@ const ReceiptSummary = (props: Props) => {
     [payments],
   );
 
-  const handleCustomerSelect = useCallback(
-    ({customer: customerData}) => {
-      setCustomer(customerData);
-    },
-    [setCustomer],
-  );
-
   const handleSetCustomer = useCallback((value: ICustomer) => {
     setCustomer(value);
   }, []);
@@ -467,9 +448,10 @@ const ReceiptSummary = (props: Props) => {
     if (products.length) {
       handleOpenSuccessModal();
     } else {
-      Alert.alert('Error', 'Please select at least one product item');
+      Alert.alert('Info', 'Please select at least one product item');
     }
   };
+
   const handleError = useErrorHandler();
 
   const handleSaveReceipt = useCallback(
@@ -556,7 +538,10 @@ const ReceiptSummary = (props: Props) => {
 
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <ScrollView style={styles.scrollView} nestedScrollEnabled>
+      <ScrollView
+        style={styles.scrollView}
+        nestedScrollEnabled
+        persistentScrollbar={true}>
         <View>
           <Text style={applyStyles('pb-xs', styles.sectionTitle)}>
             Products
@@ -904,14 +889,7 @@ const ReceiptSummary = (props: Props) => {
         visible={isSuccessModalOpen}
         onOpenShareModal={handleOpenShareModal}
         onNewReceiptClick={handleNewReceiptClick}
-        onOpenCustomerModal={handleOpenCustomerModal}
-      />
-      <CustomerDetailsModal
-        customer={customer}
-        visible={isCustomerModalOpen}
-        onClose={handleCloseCustomerModal}
-        onSelectCustomer={handleSetCustomer}
-        onOpenCustomerList={handleOpenCustomerList}
+        onOpenCustomerModal={handleOpenContactListModal}
       />
       <ShareReceiptModal
         tax={tax}
@@ -926,21 +904,12 @@ const ReceiptSummary = (props: Props) => {
         onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
-      <Modal
-        animationType="slide"
-        visible={isCustomerListModalOpen}
-        onDismiss={handleCloseCustomerList}
-        onRequestClose={handleCloseCustomerList}>
-        <CustomersList
-          customers={customers}
-          onModalClose={handleCloseCustomerList}
-          onCustomerSelect={handleCustomerSelect}
-          onOpenContactList={handleOpenContactListModal}
-        />
-      </Modal>
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        entity="Customer"
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
+        onAddNew={handleOpenAddCustomerModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>
           handleSetCustomer({
             name: `${givenName} ${familyName}`,
@@ -964,6 +933,18 @@ const ReceiptSummary = (props: Props) => {
         onRemoveProductItem={onRemoveProductItem}
         onUpdateProductItem={onUpdateProductItem}
       />
+
+      <PageModal
+        title="Add Customer"
+        visible={isAddCustomerModalOpen}
+        onClose={handleCloseAddCustomerModal}>
+        <AddCustomer
+          onSubmit={(newCustomer) => {
+            handleSetCustomer(newCustomer);
+            handleCloseAddCustomerModal();
+          }}
+        />
+      </PageModal>
     </KeyboardAvoidingView>
   );
 };
