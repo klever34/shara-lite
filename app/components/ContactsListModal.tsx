@@ -84,44 +84,46 @@ export function ContactsListModal<T>({
       });
   }, [navigation]);
 
-  const handleSearch = useCallback(
-    (searchedText: string) => {
-      setSearchInputValue(searchedText);
-      if (searchedText) {
-        const sort = (item: Contact, text: string) => {
-          const name = `${item.givenName} ${item.familyName}`;
-          const mobile =
-            item.phoneNumbers &&
-            item.phoneNumbers[0] &&
-            item.phoneNumbers[0].number;
-          return (
-            name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
-            mobile.toLowerCase().indexOf(text.toLowerCase()) > -1
-          );
-        };
-        var results = contacts.filter((item: Contact) => {
-          return sort(item, searchedText);
-        });
-        setContacts(results);
-      } else {
-        setContacts(ref.current.contacts);
-      }
-    },
-    [contacts],
-  );
+  const handleClose = useCallback(() => {
+    setSearchInputValue('');
+    onClose();
+  }, [onClose]);
+
+  const handleSearch = useCallback((searchedText: string) => {
+    setSearchInputValue(searchedText);
+    if (searchedText) {
+      const sort = (item: Contact, text: string) => {
+        const name = `${item.givenName} ${item.familyName}`;
+        const mobile =
+          item.phoneNumbers &&
+          item.phoneNumbers[0] &&
+          item.phoneNumbers[0].number;
+        return (
+          name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
+          mobile.replace('-', '').replace(/\s+/g, '').indexOf(text) > -1
+        );
+      };
+      const results = ref.current.contacts.filter((item: Contact) => {
+        return sort(item, searchedText);
+      });
+      setContacts(results);
+    } else {
+      setContacts(ref.current.contacts);
+    }
+  }, []);
 
   const handleContactSelect = useCallback(
     (contact: Contact) => {
       onContactSelect && onContactSelect(contact);
-      onClose();
+      handleClose();
     },
-    [onClose, onContactSelect],
+    [handleClose, onContactSelect],
   );
 
   const handleAddNew = useCallback(() => {
-    onClose();
+    handleClose();
     onAddNew && onAddNew();
-  }, [onAddNew, onClose]);
+  }, [onAddNew, handleClose]);
 
   const renderContactItem = useCallback(
     ({item: contact}: ListRenderItemInfo<Contact>) => {
@@ -207,8 +209,8 @@ export function ContactsListModal<T>({
     <Modal
       animationType="slide"
       visible={visible}
-      onDismiss={onClose}
-      onRequestClose={onClose}>
+      onDismiss={handleClose}
+      onRequestClose={handleClose}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon
@@ -261,7 +263,7 @@ export function ContactsListModal<T>({
           renderItem={renderContactItem}
           data={orderBy(contacts, 'givenName', 'asc')}
           ListHeaderComponent={renderContactListHeader}
-          keyExtractor={(item: Contact) => item.recordID}
+          keyExtractor={(item: Contact, index) => `${item.recordID}-${index}`}
           ListEmptyComponent={
             <View
               style={applyStyles('flex-1', 'items-center', 'justify-center', {
@@ -279,7 +281,7 @@ export function ContactsListModal<T>({
       )}
       <View>
         <Button
-          onPress={onClose}
+          onPress={handleClose}
           variantColor="clear"
           style={applyStyles({
             width: '100%',
