@@ -62,7 +62,6 @@ export const Login = ({navigation}: any) => {
       const {
         data: {
           realmCredentials: {jwt},
-          user,
         },
       } = loginResponse;
 

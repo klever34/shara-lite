@@ -78,8 +78,8 @@ const syncLocalData = ({
     return;
   }
 
-  copyRealm(localRealm, syncRealm);
-  copyRealm(syncRealm, localRealm);
+  copyRealm({sourceRealm: localRealm, targetRealm: syncRealm});
+  copyRealm({sourceRealm: syncRealm, targetRealm: localRealm});
   syncLocalRealm({localRealm, syncRealm});
 };
 

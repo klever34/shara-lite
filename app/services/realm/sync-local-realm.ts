@@ -8,7 +8,7 @@ export const syncLocalRealm = ({
   syncRealm: Realm;
 }) => {
   localRealm.schema.forEach((objSchema) => {
-    const modelName = objSchema['name'];
+    const modelName = objSchema.name;
     const collectionListenerRetainer = localRealm.objects(modelName);
 
     // @ts-ignore
@@ -36,7 +36,7 @@ export const syncLocalRealm = ({
       });
 
       // @ts-ignore
-      changes.deletions.forEach((index) => {
+      changes.deletions.forEach(() => {
         // Deleted objects cannot be accessed directly
         // Support for accessing deleted objects coming soon...
       });

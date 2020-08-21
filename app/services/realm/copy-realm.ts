@@ -1,13 +1,19 @@
-// Copy local realm to ROS
-// @ts-nocheck
-
 import Realm from 'realm';
 
-const copyObject = function (obj, objSchema, targetRealm) {
+const copyObject = ({
+  obj,
+  objSchema,
+  targetRealm,
+}: {
+  obj: any;
+  objSchema: any;
+  targetRealm: Realm;
+}) => {
   const copy = {};
   for (let key in objSchema.properties) {
     const prop = objSchema.properties[key];
-    if (!prop.type !== 'linkingObjects') {
+    if (prop.type !== 'linkingObjects') {
+      // @ts-ignore
       copy[key] = obj[key];
     }
   }
@@ -18,15 +24,21 @@ const copyObject = function (obj, objSchema, targetRealm) {
   }
 };
 
-export const copyRealm = (sourceRealm, targetRealm) => {
+export const copyRealm = ({
+  sourceRealm,
+  targetRealm,
+}: {
+  sourceRealm: Realm;
+  targetRealm: Realm;
+}) => {
   const sourceRealmSchema = sourceRealm.schema;
   targetRealm.write(() => {
     sourceRealmSchema.forEach((objSchema) => {
-      const allObjects = sourceRealm.objects(objSchema['name']);
+      const allObjects = sourceRealm.objects(objSchema.name);
 
-      allObjects.forEach((obj) => {
+      allObjects.forEach((obj: any) => {
         if (obj._partition) {
-          copyObject(obj, objSchema, targetRealm);
+          copyObject({obj, objSchema, targetRealm});
         }
       });
     });

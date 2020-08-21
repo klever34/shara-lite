@@ -2,7 +2,7 @@ import {useCallback, useContext, useEffect, useState, useRef} from 'react';
 // import NetInfo from '@react-native-community/netinfo';
 import {getAuthService, getRealmService} from '../index';
 import {RealmContext} from './provider';
-import {loginToRealm, useRealm} from './index';
+import {loginToRealm} from './index';
 
 const useRealmSyncLoader = () => {
   const unsubscribeFromRealmCheck = useRef();
@@ -74,7 +74,12 @@ const useRealmSyncLoader = () => {
     unsubscribeFromRealmCheck.current = setInterval(() => {
       updateRealm();
     }, 1000 * 60 * 10);
-  }, [unsubscribeFromRealmCheck]);
+  }, [
+    unsubscribeFromRealmCheck,
+    isRealmSyncLoaderInitiated,
+    setIsRealmSyncLoaderInitiated,
+    updateRealm,
+  ]);
 };
 
 export default useRealmSyncLoader;
