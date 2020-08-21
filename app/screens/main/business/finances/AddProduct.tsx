@@ -13,7 +13,7 @@ import {saveProduct} from '../../../../services/ProductService';
 import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {getAnalyticsService} from '../../../../services';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;

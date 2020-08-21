@@ -1,6 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, ScrollView, Text, View, ToastAndroid} from 'react-native';
 import {Button, FloatingLabelInput} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';

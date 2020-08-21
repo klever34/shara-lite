@@ -21,7 +21,7 @@ import {useScreenRecord} from '../../../../services/analytics';
 import {ContactsListModal} from '@/components';
 import {Contact} from 'react-native-contacts';
 import {getAnalyticsService} from '@/services';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type SupplierItemProps = {
   item: ISupplier;
