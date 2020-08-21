@@ -50,6 +50,8 @@ const RealmProvider = (props: any) => {
         localRealm.current?.deleteAll();
       });
     }
+
+    setIsRealmSyncLoaderInitiated(false);
   };
 
   return (

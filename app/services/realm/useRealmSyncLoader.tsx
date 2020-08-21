@@ -59,27 +59,27 @@ const useRealmSyncLoader = () => {
   });
   */
 
-  useEffect(() => {
-    if (isRealmSyncLoaderInitiated) {
-      return;
-    }
-    setIsRealmSyncLoaderInitiated && setIsRealmSyncLoaderInitiated(true);
+  useEffect(
+    () => {
+      if (isRealmSyncLoaderInitiated) {
+        return;
+      }
 
-    if (unsubscribeFromRealmCheck.current) {
-      return;
-    }
-    updateRealm();
+      setIsRealmSyncLoaderInitiated && setIsRealmSyncLoaderInitiated(true);
 
-    // @ts-ignore
-    unsubscribeFromRealmCheck.current = setInterval(() => {
+      if (unsubscribeFromRealmCheck.current) {
+        return;
+      }
       updateRealm();
-    }, 1000 * 20);
-  }, [
-    unsubscribeFromRealmCheck,
-    isRealmSyncLoaderInitiated,
-    setIsRealmSyncLoaderInitiated,
-    updateRealm,
-  ]);
+
+      // @ts-ignore
+      unsubscribeFromRealmCheck.current = setInterval(() => {
+        updateRealm();
+      }, 1000 * 20);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [isRealmSyncLoaderInitiated],
+  );
 };
 
 export default useRealmSyncLoader;
