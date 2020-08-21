@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.13-feature.realm-updates+build.1694",
+  "version": "0.2.13-feature.realm-updates+build.1698",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
