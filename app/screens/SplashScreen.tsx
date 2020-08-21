@@ -29,28 +29,31 @@ const SplashScreen = () => {
   const handleRedirect = useCallback(async () => {
     const authService = getAuthService();
     await authService.initialize();
-    try {
-      const createdRealm = await initLocalRealm();
-      updateLocalRealm && updateLocalRealm(createdRealm);
-      const realmService = getRealmService();
-      realmService.setInstance(realm as Realm);
-    } catch (e) {
-      Alert.alert(
-        'Oops! Something went wrong.',
-        'Try clearing app data from application settings',
-        [
-          {
-            text: 'OK',
-            onPress: () => {
-              if (process.env.NODE_ENV === 'production') {
-                if (Platform.OS === 'android') {
-                  BackHandler.exitApp();
+
+    if (authService.isLoggedIn()) {
+      try {
+        const createdRealm = await initLocalRealm();
+        updateLocalRealm && updateLocalRealm(createdRealm);
+        const realmService = getRealmService();
+        realmService.setInstance(realm as Realm);
+      } catch (e) {
+        Alert.alert(
+          'Oops! Something went wrong.',
+          'Try clearing app data from application settings',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                if (process.env.NODE_ENV === 'production') {
+                  if (Platform.OS === 'android') {
+                    BackHandler.exitApp();
+                  }
                 }
-              }
+              },
             },
-          },
-        ],
-      );
+          ],
+        );
+      }
     }
 
     if (authService.isLoggedIn()) {
