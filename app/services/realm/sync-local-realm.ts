@@ -16,22 +16,26 @@ export const syncLocalRealm = ({
       changes.insertions.forEach((index: number) => {
         const insertedRecord = records[index];
         syncRealm.write(() => {
-          syncRealm.create(
-            modelName,
-            insertedRecord,
-            Realm.UpdateMode.Modified,
-          );
+          if (insertedRecord._partition) {
+            syncRealm.create(
+              modelName,
+              insertedRecord,
+              Realm.UpdateMode.Modified,
+            );
+          }
         });
       });
 
       changes.modifications.forEach((index: number) => {
         const modifiedRecord = records[index];
         syncRealm.write(() => {
-          syncRealm.create(
-            modelName,
-            modifiedRecord,
-            Realm.UpdateMode.Modified,
-          );
+          if (modifiedRecord._partition) {
+            syncRealm.create(
+              modelName,
+              modifiedRecord,
+              Realm.UpdateMode.Modified,
+            );
+          }
         });
       });
 
