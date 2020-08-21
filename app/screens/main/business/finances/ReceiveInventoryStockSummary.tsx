@@ -1,3 +1,4 @@
+import {getDeliveryAgents} from '@/services/DeliveryAgentService';
 import {useNavigation} from '@react-navigation/native';
 import isEmpty from 'lodash/isEmpty';
 import React, {useCallback, useState} from 'react';
@@ -13,11 +14,7 @@ import {
   View,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
-import {
-  Button,
-  ContactsListModal,
-  FloatingLabelInput,
-} from '../../../../components';
+import {Button, ContactsListModal, PageModal} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '@/helpers/utils';
@@ -28,7 +25,7 @@ import {getAnalyticsService} from '@/services';
 import {useRealm} from '@/services/realm';
 import {addNewInventory} from '@/services/ReceivedInventoryService';
 import {colors} from '@/styles';
-import {DeliveryAgentsModal} from './DeliveryAgentsModal';
+import {AddDeliveryAgent} from './AddDeliveryAgent';
 
 type Payload = IDeliveryAgent;
 
@@ -127,23 +124,17 @@ export const SummaryTableItem = ({
 export const ReceiveInventoryStockSummary = (props: Props) => {
   const realm = useRealm();
   const navigation = useNavigation();
+  const deliveryAgents = getDeliveryAgents({realm});
 
   const {products, supplier, onCloseSummaryModal} = props;
 
   const [isSaving, setIsSaving] = useState(false);
   const [agent, setAgent] = useState<Payload | undefined>();
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const [isDeliveryAgentsModalOpen, setIsDeliveryAgentsModalOpen] = useState(
-    false,
-  );
-
-  const handleOpenDeliveryAgentsModal = useCallback(() => {
-    setIsDeliveryAgentsModalOpen(true);
-  }, []);
-
-  const handleCloseDeliveryAgentsModal = useCallback(() => {
-    setIsDeliveryAgentsModalOpen(false);
-  }, []);
+  const [
+    isAddDeliveryAgentModalOpen,
+    setIsAddDeliveryAgentModalOpen,
+  ] = useState(false);
 
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
@@ -151,12 +142,20 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
-    handleCloseDeliveryAgentsModal();
-  }, [handleCloseDeliveryAgentsModal]);
+  }, []);
+
+  const handleOpenAddDeliveryAgentModal = useCallback(() => {
+    setIsAddDeliveryAgentModalOpen(true);
+  }, []);
+
+  const handleCloseAddDeliveryAgentModal = useCallback(() => {
+    setIsAddDeliveryAgentModalOpen(false);
+  }, []);
 
   const handleCancel = useCallback(() => {
     onCloseSummaryModal();
   }, [onCloseSummaryModal]);
+
   const handleError = useErrorHandler();
 
   const handleFinish = () => {
@@ -169,30 +168,25 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       return;
     }
     setIsSaving(true);
-    setTimeout(() => {
-      addNewInventory({
-        realm,
-        supplier,
-        stockItems: products,
-        delivery_agent: agent,
-      });
-      getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
-      setIsSaving(false);
-      clearForm();
-      handleCancel();
-      navigation.navigate('ReceivedInventoryList');
-      ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
-    }, 300);
+    addNewInventory({
+      realm,
+      supplier,
+      stockItems: products,
+      delivery_agent: agent,
+    });
+    getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
+    setIsSaving(false);
+    clearForm();
+    handleCancel();
+    navigation.navigate('ReceivedInventoryList');
+    ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
   };
 
-  const handleChange = useCallback(
-    (value: string | number, key: keyof Payload) => {
-      setAgent({
-        ...agent,
-        [key]: value,
-      } as Payload);
+  const handleSetDeliveryAgent = useCallback(
+    (deliveryAgent: IDeliveryAgent) => {
+      setAgent(deliveryAgent);
     },
-    [agent],
+    [],
   );
 
   const handleSelectContact = useCallback((contact: Contact) => {
@@ -201,13 +195,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
     const contactMobile = phoneNumbers[0].number;
     setAgent({full_name: contactName, mobile: contactMobile});
   }, []);
-
-  const handleDeliveryAgentSelect = useCallback(
-    (deliveryAgent: IDeliveryAgent) => {
-      setAgent(deliveryAgent);
-    },
-    [],
-  );
 
   const clearForm = useCallback(() => {
     setAgent({} as Payload);
@@ -220,7 +207,10 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
 
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <ScrollView style={styles.scrollView} nestedScrollEnabled>
+      <ScrollView
+        persistentScrollbar={true}
+        style={styles.scrollView}
+        nestedScrollEnabled>
         <View>
           <Text style={applyStyles('pb-xl', styles.sectionTitle)}>
             Products
@@ -255,55 +245,73 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           </View>
         </Button>
         <Text
-          style={applyStyles('mt-xl mb-lg text-400', {
+          style={applyStyles('mt-xl mb-lg text-center text-400', {
             fontSize: 18,
             color: colors.primary,
           })}>
-          Delivery Agent Details
+          Delivery Agent Details (optional)
         </Text>
-        <Button
-          style={applyStyles('mb-lg')}
-          onPress={handleOpenDeliveryAgentsModal}>
-          <View
-            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-            <Icon
-              size={24}
-              name="user"
-              type="feathericons"
-              color={colors.white}
-            />
-            <Text
-              style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
-                color: colors.white,
-              })}>
-              Select delivery agent
-            </Text>
-          </View>
-        </Button>
+        {!agent && (
+          <Button
+            style={applyStyles('mb-lg')}
+            onPress={handleOpenContactListModal}>
+            <View
+              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+              <Icon
+                size={24}
+                name="user"
+                type="feathericons"
+                color={colors.white}
+              />
+              <Text
+                style={applyStyles('text-400', 'pl-md', 'text-uppercase', {
+                  color: colors.white,
+                })}>
+                Select delivery agent
+              </Text>
+            </View>
+          </Button>
+        )}
 
-        <Text
-          style={applyStyles('mb-lg', 'text-center', 'text-400', {
-            color: colors['gray-100'],
-          })}>
-          Or enter delivery agent details below
-        </Text>
-        <View style={applyStyles({marginBottom: 48})}>
-          <View style={applyStyles('mb-md flex-row', 'items-center')}>
-            <FloatingLabelInput
-              value={agent?.mobile}
-              keyboardType="phone-pad"
-              label="Phone Number (optional)"
-              onChangeText={(text) => handleChange(text, 'mobile')}
-            />
+        {agent && (
+          <View style={applyStyles('w-full')}>
+            <Text
+              style={applyStyles('pb-sm text-400 text-center text-uppercase', {
+                fontSize: 18,
+                color: colors['gray-300'],
+              })}>
+              {agent?.full_name}
+            </Text>
+            <Text
+              style={applyStyles('pb-md text-400 text-center', {
+                color: colors['gray-300'],
+              })}>
+              {agent?.mobile}
+            </Text>
+            <Touchable onPress={handleOpenContactListModal}>
+              <View
+                style={applyStyles(
+                  'w-full flex-row items-center justify-center',
+                  {
+                    paddingVertical: 16,
+                  },
+                )}>
+                <Icon
+                  size={24}
+                  name="edit"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('pl-md text-400 text-uppercase', {
+                    color: colors.primary,
+                  })}>
+                  Change delivery agent
+                </Text>
+              </View>
+            </Touchable>
           </View>
-          <View style={applyStyles('flex-row', 'items-center')}>
-            <FloatingLabelInput
-              value={agent?.full_name}
-              label="Full Name (optional)"
-              onChangeText={(text) => handleChange(text, 'full_name')}
-            />
-          </View>
-        </View>
+        )}
       </ScrollView>
       <View style={styles.actionButtons}>
         <Button
@@ -320,17 +328,26 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
           style={styles.actionButton}
         />
       </View>
-      <ContactsListModal
+      <ContactsListModal<IDeliveryAgent>
+        entity="Delivery Agent"
+        createdData={deliveryAgents}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
+        onAddNew={handleOpenAddDeliveryAgentModal}
         onContactSelect={(contact) => handleSelectContact(contact)}
       />
-      <DeliveryAgentsModal
-        visible={isDeliveryAgentsModalOpen}
-        onClose={handleCloseDeliveryAgentsModal}
-        onOpenContactList={handleOpenContactListModal}
-        onSelectDeliveryAgent={handleDeliveryAgentSelect}
-      />
+
+      <PageModal
+        title="Add Delivery Agent"
+        visible={isAddDeliveryAgentModalOpen}
+        onClose={handleCloseAddDeliveryAgentModal}>
+        <AddDeliveryAgent
+          onSubmit={(deliveryAgent) => {
+            handleSetDeliveryAgent(deliveryAgent);
+            handleCloseAddDeliveryAgentModal();
+          }}
+        />
+      </PageModal>
     </KeyboardAvoidingView>
   );
 };

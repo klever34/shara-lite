@@ -98,7 +98,10 @@ export const Login = ({navigation}: any) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="always"
+      persistentScrollbar={true}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
           <View style={applyStyles({height: 40, width: 40})}>

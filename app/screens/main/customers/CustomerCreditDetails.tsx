@@ -34,24 +34,25 @@ export const CustomerCreditDetails = ({
     (payload, callback) => {
       if (creditDetails) {
         setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          saveCreditPayment({
-            realm,
-            ...payload,
-            customer: creditDetails.customer,
-          });
-          callback();
-          navigation.navigate('CustomerDetails', {screen: 'CreditsTab'});
-          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
-        }, 300);
+        setIsLoading(false);
+        saveCreditPayment({
+          realm,
+          ...payload,
+          customer: creditDetails.customer,
+        });
+        callback();
+        navigation.navigate('CustomerDetails', {screen: 'CreditsTab'});
+        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
       }
     },
     [realm, navigation, creditDetails],
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      persistentScrollbar={true}
+      style={styles.container}
+      keyboardShouldPersistTaps="always">
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],

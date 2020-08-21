@@ -1,4 +1,4 @@
-import {ContactsListModal} from '@/components';
+import {ContactsListModal, FAButton} from '@/components';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
@@ -149,31 +149,10 @@ export const DeliveryAgents = () => {
           />
         </View>
       </View>
-      <Touchable onPress={handleOpenContactListModal}>
-        <View
-          style={applyStyles('flex-row px-lg py-lg items-center', {
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-20'],
-          })}>
-          <Icon
-            size={24}
-            name="user-plus"
-            type="feathericons"
-            color={colors.primary}
-          />
-          <Text
-            style={applyStyles('text-400 pl-md', {
-              fontSize: 16,
-              color: colors['gray-300'],
-            })}>
-            Add Delivery Agent
-          </Text>
-        </View>
-      </Touchable>
       <FlatList
         renderItem={renderDeliveryAgentListItem}
         keyExtractor={(item) => `${item._id}`}
-        data={orderBy(myDeliveryAgents, 'created_at', 'desc')}
+        data={orderBy(myDeliveryAgents, 'full_name', 'asc')}
         style={applyStyles({backgroundColor: colors.white})}
         ListHeaderComponent={renderDeliveryAgentListHeader}
         ListEmptyComponent={
@@ -187,13 +166,22 @@ export const DeliveryAgents = () => {
           />
         }
       />
-      <ContactsListModal
+      <ContactsListModal<IDeliveryAgent>
         entity="Delivery Agent"
+        createdData={deliveryAgents}
         visible={isContactListModalOpen}
         onAddNew={handleAddDeliveryAgent}
         onClose={handleCloseContactListModal}
         onContactSelect={(contact) => handleCreateDeliveryAgent(contact)}
       />
+      <FAButton style={styles.fabButton} onPress={handleOpenContactListModal}>
+        <View style={styles.fabButtonContent}>
+          <Icon size={18} name="plus" color="white" type="feathericons" />
+          <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
+            Create delivery agent
+          </Text>
+        </View>
+      </FAButton>
     </View>
   );
 };
@@ -247,5 +235,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontFamily: 'Rubik-Regular',
     color: colors['gray-300'],
+  },
+  fabButton: {
+    height: 48,
+    width: 'auto',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fabButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fabButtonText: {
+    fontSize: 16,
+    paddingLeft: 8,
+    color: colors.white,
+    textTransform: 'uppercase',
   },
 });

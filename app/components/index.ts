@@ -1,6 +1,7 @@
 export * from './Card';
 export * from './Button';
 export * from './FAButton';
+export * from './PageModal';
 export * from './ActionCard';
 export * from './PasswordField';
 export * from './CurrencyInput';

@@ -12,9 +12,12 @@ import {
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 
+type Props = {onSubmit?: (deliveryAgent: IDeliveryAgent) => void};
 type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
 
-export const AddDeliveryAgent = () => {
+export const AddDeliveryAgent = (props: Props) => {
+  const {onSubmit} = props;
+
   const realm = useRealm();
   const navigation = useNavigation();
   const deliveryAgents = getDeliveryAgents({realm});
@@ -54,18 +57,16 @@ export const AddDeliveryAgent = () => {
         );
       } else {
         setIsLoading(true);
-        setTimeout(() => {
-          saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
-          setIsLoading(false);
-          clearForm();
-          navigation.goBack();
-          ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
-        }, 300);
+        saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+        setIsLoading(false);
+        clearForm();
+        onSubmit ? onSubmit(deliveryAgent) : navigation.goBack();
+        ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
     } else {
       Alert.alert('Error', 'Please add delivery agent information.');
     }
-  }, [realm, clearForm, deliveryAgent, deliveryAgents, navigation]);
+  }, [realm, clearForm, onSubmit, deliveryAgent, deliveryAgents, navigation]);
 
   return (
     <View
@@ -73,7 +74,10 @@ export const AddDeliveryAgent = () => {
         paddingTop: 48,
         backgroundColor: colors.white,
       })}>
-      <ScrollView style={applyStyles('px-lg')}>
+      <ScrollView
+        persistentScrollbar={true}
+        style={applyStyles('px-lg')}
+        keyboardShouldPersistTaps="always">
         <Text
           style={applyStyles('text-400 pb-lg', {
             fontSize: 18,
@@ -97,9 +101,9 @@ export const AddDeliveryAgent = () => {
           />
         </View>
         <Button
+          title="Save"
           isLoading={isLoading}
           onPress={handleSubmit}
-          title="Add delivery agent"
           style={applyStyles({marginVertical: 48})}
         />
       </ScrollView>

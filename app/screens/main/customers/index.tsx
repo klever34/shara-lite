@@ -72,7 +72,7 @@ const CustomersTab = () => {
 
       if (customers.map((item) => item.mobile).includes(mobile)) {
         Alert.alert(
-          'Error',
+          'Info',
           'Customer with the same phone number has been created.',
         );
       } else {
@@ -141,8 +141,9 @@ const CustomersTab = () => {
           </View>
         </FAButton>
 
-        <ContactsListModal
+        <ContactsListModal<ICustomer>
           entity="Customer"
+          createdData={customers}
           visible={isContactListModalOpen}
           onClose={handleCloseContactListModal}
           onAddNew={() => navigation.navigate('AddCustomer')}
@@ -178,8 +179,8 @@ const CustomersTab = () => {
           <FlatList
             renderItem={renderCustomerListItem}
             keyExtractor={(item) => `${item._id}`}
+            data={orderBy(myCustomers, 'name', 'asc')}
             ListHeaderComponent={renderCustomerListHeader}
-            data={orderBy(myCustomers, 'created_at', 'desc')}
           />
         </>
       ) : (
@@ -197,8 +198,9 @@ const CustomersTab = () => {
         </View>
       </FAButton>
 
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
         entity="Customer"
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={() => navigation.navigate('AddCustomer')}

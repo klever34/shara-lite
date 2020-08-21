@@ -347,7 +347,7 @@ export const ReceiptStatusModal = (props: Props) => {
 
   return (
     <Modal transparent={false} animationType="slide" visible={visible}>
-      <ScrollView>
+      <ScrollView persistentScrollbar={true}>
         <View style={styles.statusModalContent}>
           <Image
             source={statusProps.success.icon}
@@ -438,7 +438,9 @@ export const ReceiptStatusModal = (props: Props) => {
                     type="feathericons"
                     color={colors.primary}
                   />
-                  <Text style={styles.addProductButtonText}>Edit details</Text>
+                  <Text style={styles.addProductButtonText}>
+                    Change customer
+                  </Text>
                 </View>
               </Touchable>
             </>

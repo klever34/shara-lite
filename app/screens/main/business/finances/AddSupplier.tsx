@@ -54,14 +54,12 @@ export const AddSupplier = () => {
         );
       } else {
         setIsLoading(true);
-        setTimeout(() => {
-          saveSupplier({realm, supplier});
-          getAnalyticsService().logEvent('supplierAdded').catch(handleError);
-          setIsLoading(false);
-          clearForm();
-          navigation.goBack();
-          ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
-        }, 300);
+        saveSupplier({realm, supplier});
+        getAnalyticsService().logEvent('supplierAdded').catch(handleError);
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+        ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
       }
     } else {
       Alert.alert('Info', "Please provider supplier's name and phone number");
@@ -73,7 +71,10 @@ export const AddSupplier = () => {
       style={applyStyles('flex-1', {
         backgroundColor: colors.white,
       })}>
-      <ScrollView style={applyStyles('px-lg', {paddingTop: 48})}>
+      <ScrollView
+        persistentScrollbar={true}
+        style={applyStyles('px-lg', {paddingTop: 48})}
+        keyboardShouldPersistTaps="always">
         <Text
           style={applyStyles('text-400', {
             fontSize: 18,
@@ -104,7 +105,7 @@ export const AddSupplier = () => {
           />
         </View>
         <Button
-          title="Add supplier"
+          title="Save"
           isLoading={isLoading}
           onPress={handleSubmit}
           style={applyStyles({marginVertical: 48})}

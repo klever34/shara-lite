@@ -49,14 +49,12 @@ export const AddProduct = () => {
   const handleSubmit = useCallback(() => {
     if (Object.values(product).length === 3) {
       setIsLoading(true);
-      setTimeout(() => {
-        saveProduct({realm, product});
-        getAnalyticsService().logEvent('productAdded').catch(handleError);
-        setIsLoading(false);
-        clearForm();
-        navigation.goBack();
-        ToastAndroid.show('Product added', ToastAndroid.SHORT);
-      }, 300);
+      saveProduct({realm, product});
+      getAnalyticsService().logEvent('productAdded').catch(handleError);
+      setIsLoading(false);
+      clearForm();
+      navigation.goBack();
+      ToastAndroid.show('Product added', ToastAndroid.SHORT);
     }
   }, [product, realm, handleError, clearForm, navigation]);
 
@@ -65,7 +63,9 @@ export const AddProduct = () => {
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
-      })}>
+      })}
+      persistentScrollbar={true}
+      keyboardShouldPersistTaps="always">
       <Text
         style={applyStyles('text-400', {
           fontSize: 18,
@@ -98,7 +98,7 @@ export const AddProduct = () => {
         </View>
       </View>
       <Button
-        title="Add product"
+        title="Save"
         isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}

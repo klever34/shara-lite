@@ -107,7 +107,7 @@ export const ReceiveInventory = () => {
       if (name) {
         if (suppliers.map((item) => item.mobile).includes(mobile)) {
           Alert.alert(
-            'Error',
+            'Info',
             'Supplier with the same phone number has been created.',
           );
         } else {
@@ -182,8 +182,9 @@ export const ReceiveInventory = () => {
           />
         }
       />
-      <ContactsListModal
+      <ContactsListModal<ISupplier>
         entity="Supplier"
+        createdData={suppliers}
         onAddNew={handleAddSupplier}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}

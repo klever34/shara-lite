@@ -16,9 +16,15 @@ import {useScreenRecord} from '@/services/analytics';
 import {getCustomers, saveCustomer} from '@/services/CustomerService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
+import {ICustomer} from '@/models';
 
-const AddCustomer = () => {
+type Props = {
+  onSubmit?: (customer: ICustomer) => void;
+};
+
+const AddCustomer = (props: Props) => {
   useScreenRecord();
+  const {onSubmit} = props;
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
@@ -40,7 +46,7 @@ const AddCustomer = () => {
     if (name && mobile) {
       if (customers.map((item) => item.mobile).includes(mobile)) {
         Alert.alert(
-          'Error',
+          'Info',
           'Customer with the same phone number has been created.',
         );
       } else {
@@ -50,18 +56,19 @@ const AddCustomer = () => {
         };
         saveCustomer({realm, customer});
         setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          getAnalyticsService().logEvent('customerAdded').catch(handleError);
-          navigation.goBack();
-          ToastAndroid.show('Customer added', ToastAndroid.SHORT);
-        }, 750);
+        setIsLoading(false);
+        getAnalyticsService().logEvent('customerAdded').catch(handleError);
+        onSubmit ? onSubmit(customer) : navigation.goBack();
+        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
       }
     }
-  }, [navigation, name, mobile, realm, customers, handleError]);
+  }, [navigation, name, mobile, realm, onSubmit, customers, handleError]);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      persistentScrollbar={true}
+      style={styles.container}
+      keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Customer Details</Text>
       <View>
         <View style={styles.formInputs}>
@@ -81,8 +88,8 @@ const AddCustomer = () => {
           />
         </View>
         <Button
+          title="Save"
           variantColor="red"
-          title="Add customer"
           isLoading={isLoading}
           style={styles.button}
           onPress={handleSubmit}
