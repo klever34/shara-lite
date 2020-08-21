@@ -47,13 +47,6 @@ export function MyReceipts() {
     setIsShareModalOpen(false);
   }, []);
 
-  const handlePrintReceipt = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt printing is coming in the next release',
-    );
-  }, []);
-
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
@@ -134,7 +127,7 @@ export function MyReceipts() {
         whatsAppNumber: 'Please check the phone number supplied',
       } as {[key: string]: any};
 
-      if (!activeReceipt?.customer_mobile) {
+      if (!activeReceipt?.customer?.mobile) {
         Alert.alert(
           'Info',
           'Please select a customer to share receipt with via Whatsapp',
@@ -243,13 +236,14 @@ export function MyReceipts() {
         onClose={handleCloseShareModal}
         customer={activeReceipt?.customer}
         onWhatsappShare={handleWhatsappShare}
+        amountPaid={activeReceipt?.amount_paid}
         totalAmount={activeReceipt?.total_amount}
+        creditAmount={activeReceipt?.credit_amount}
       />
 
       <ReceiptDetailsModal
         receipt={activeReceipt}
         visible={!!activeReceipt}
-        onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onClose={handleCloseReceiptDetailsModal}
       />

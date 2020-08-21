@@ -893,8 +893,10 @@ const ReceiptSummary = (props: Props) => {
         tax={tax}
         products={products}
         customer={customer}
+        amountPaid={amountPaid}
         totalAmount={totalAmount}
         visible={isShareModalOpen}
+        creditAmount={creditAmount}
         onSmsShare={handleSmsShare}
         onEmailShare={handleEmailShare}
         onClose={handleCloseShareModal}
