@@ -20,7 +20,7 @@ import {initLocalRealm} from '../services/realm';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  const {realm, updateLocalRealm} = useContext(RealmContext);
+  const {updateLocalRealm} = useContext(RealmContext);
 
   useEffect(() => {
     const navigationService = getNavigationService();
@@ -35,7 +35,7 @@ const SplashScreen = () => {
         const createdRealm = await initLocalRealm();
         updateLocalRealm && updateLocalRealm(createdRealm);
         const realmService = getRealmService();
-        realmService.setInstance(realm as Realm);
+        realmService.setInstance(createdRealm);
       } catch (e) {
         Alert.alert(
           'Oops! Something went wrong.',
@@ -67,7 +67,7 @@ const SplashScreen = () => {
         routes: [{name: 'Auth'}],
       });
     }
-  }, [navigation, realm, updateLocalRealm]);
+  }, [navigation, updateLocalRealm]);
 
   useEffect(() => {
     setTimeout(handleRedirect, 750);
