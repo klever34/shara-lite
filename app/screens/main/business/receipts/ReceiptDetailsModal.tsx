@@ -97,6 +97,10 @@ export function ReceiptDetailsModal(props: Props) {
     fetchPrinter();
   }, [storageService]);
 
+  useEffect(() => {
+    setCustomer(receipt?.customer);
+  }, [receipt]);
+
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);

@@ -2,7 +2,7 @@ import {getAuthService} from '@/services';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useLayoutEffect} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, SafeAreaView, View} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {applyStyles} from '../../../../helpers/utils';
