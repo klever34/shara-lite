@@ -210,7 +210,7 @@ const ReceiptSummary = (props: Props) => {
   >('cash');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [dueDateString, setDueDateString] = useState('7 days');
+  const [dueDateString, setDueDateString] = useState('7');
   const [payments, setPayments] = useState<Payment[]>([]);
   const [dueDate, setDueDate] = useState<Date | undefined>(
     addDays(new Date(), 7),
