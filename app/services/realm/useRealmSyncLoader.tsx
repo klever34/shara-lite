@@ -73,7 +73,7 @@ const useRealmSyncLoader = () => {
     // @ts-ignore
     unsubscribeFromRealmCheck.current = setInterval(() => {
       updateRealm();
-    }, 1000 * 60 * 10);
+    }, 1000 * 20);
   }, [
     unsubscribeFromRealmCheck,
     isRealmSyncLoaderInitiated,
