@@ -16,7 +16,7 @@ export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
 };
 
-export const saveReceipt = async ({
+export const saveReceipt = ({
   realm,
   customer,
   amountPaid,
@@ -36,7 +36,7 @@ export const saveReceipt = async ({
   tax: number;
   payments: Payment[];
   receiptItems: IReceiptItem[];
-}): Promise<void> => {
+}) => {
   const receipt: IReceipt = {
     tax,
     amount_paid: amountPaid,
@@ -64,6 +64,20 @@ export const saveReceipt = async ({
 
   realm.write(() => {
     realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
+
+    receiptItems.forEach((receiptItem: IReceiptItem) => {
+      saveReceiptItem({
+        realm,
+        receipt,
+        receiptItem,
+      });
+
+      restockProduct({
+        realm,
+        product: receiptItem.product,
+        quantity: receiptItem.quantity * -1,
+      });
+    });
   });
 
   payments.forEach((payment) => {
@@ -73,20 +87,6 @@ export const saveReceipt = async ({
       receipt,
       type: 'receipt',
       ...payment,
-    });
-  });
-
-  receiptItems.forEach((receiptItem: IReceiptItem) => {
-    saveReceiptItem({
-      realm,
-      receipt,
-      receiptItem,
-    });
-
-    restockProduct({
-      realm,
-      product: receiptItem.product,
-      quantity: receiptItem.quantity * -1,
     });
   });
 
