@@ -13,9 +13,8 @@ import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
 import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
-import {loginToRealm} from '../../services/realm';
+import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
-import {setPartitionKey} from '../../helpers/models';
 
 type Fields = {
   mobile: string;
@@ -25,7 +24,7 @@ type Fields = {
 
 export const Login = ({navigation}: any) => {
   // @ts-ignore
-  const {realm, updateSyncRealm, logoutFromRealm} = useContext(RealmContext);
+  const {updateLocalRealm, logoutFromRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -59,22 +58,12 @@ export const Login = ({navigation}: any) => {
     const apiService = getApiService();
     try {
       setLoading(true);
-      const loginResponse = await apiService.logIn(payload);
-      const {
-        data: {
-          realmCredentials: {jwt},
-          user,
-        },
-      } = loginResponse;
+      await apiService.logIn(payload);
+      const createdLocalRealm = await initLocalRealm();
+      updateLocalRealm && updateLocalRealm(createdLocalRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(createdLocalRealm);
 
-      const createdRealm = await loginToRealm({jwt});
-      if (createdRealm) {
-        updateSyncRealm && updateSyncRealm(createdRealm);
-        const realmService = getRealmService();
-        realmService.setInstance(realm as Realm);
-      }
-
-      await setPartitionKey({key: user.id.toString()});
       setLoading(false);
       navigation.reset({
         index: 0,

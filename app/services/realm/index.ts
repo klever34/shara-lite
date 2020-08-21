@@ -15,6 +15,8 @@ import {RealmContext} from './provider';
 import {Alert} from 'react-native';
 import {StorageService} from '../storage';
 import {ReceivedInventory} from '@/models/ReceivedInventory';
+import {setRealmPartitionKey} from '@/models/baseSchema';
+import {setBasePartitionKey} from '@/helpers/models';
 
 export const schema = [
   Contact,
@@ -52,6 +54,8 @@ export const createRealm = async (options?: any): Promise<Realm> => {
     // Realm.deleteFile({});
   }
   const partitionValue = await getRealmPartitionKey();
+  setRealmPartitionKey(partitionValue);
+  setBasePartitionKey(partitionValue);
 
   const config: Realm.Configuration = {
     schema,
