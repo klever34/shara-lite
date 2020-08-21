@@ -115,9 +115,6 @@ export const copyRealm = (sourceRealm, targetRealm) => {
   const sourceRealmSchema = sourceRealm.schema;
   targetRealm.write(() => {
     sourceRealmSchema.forEach((objSchema) => {
-      if (objSchema['name'] === 'Conversation') {
-        return;
-      }
       const allObjects = sourceRealm.objects(objSchema['name']);
 
       allObjects.forEach((obj) => {
