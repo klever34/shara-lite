@@ -3,6 +3,7 @@ import {useNavigation} from '@react-navigation/native';
 import {MessageEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, Platform, SafeAreaView, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import Realm from 'realm';
@@ -24,7 +25,6 @@ import {BusinessTab} from './business';
 import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
 import {useScreenRecord} from '@/services/analytics';
-import {useErrorHandler} from '@/services/error-boundary';
 
 type HomeTabParamList = {
   ChatList: undefined;

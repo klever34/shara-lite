@@ -1,7 +1,7 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -42,6 +42,7 @@ import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
 import {getCustomers} from '@/services/CustomerService';
 import AddCustomer from '../../customers/AddCustomer';
+import {addDays} from 'date-fns';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -209,9 +210,11 @@ const ReceiptSummary = (props: Props) => {
   >('cash');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [dueDateString, setDueDateString] = useState('');
+  const [dueDateString, setDueDateString] = useState('7');
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [dueDate, setDueDate] = useState<Date | undefined>();
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    addDays(new Date(), 7),
+  );
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
