@@ -192,7 +192,7 @@ export const ReceiveInventoryStock = ({
         items = [stock, ...inventoryStock];
       }
     }
-    if ((selectedProduct && quantity && price) || items.length) {
+    if ((selectedProduct && quantity) || items.length) {
       setInventoryStock(items);
       setSelectedProduct(null);
       handleOpenSummaryModal();
