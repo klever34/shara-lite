@@ -95,7 +95,7 @@ export const Suppliers = () => {
       if (name) {
         if (suppliers.map((item) => item.mobile).includes(mobile)) {
           Alert.alert(
-            'Error',
+            'Info',
             'Supplier with the same phone number has been created.',
           );
         } else {

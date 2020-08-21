@@ -196,7 +196,7 @@ export const NewReceipt = () => {
       setSelectedProduct(null);
       handleOpenSummaryModal();
     } else {
-      Alert.alert('Error', 'Please select at least one product item');
+      Alert.alert('Info', 'Please select at least one product item');
     }
   }, [
     price,

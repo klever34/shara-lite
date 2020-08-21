@@ -448,7 +448,7 @@ const ReceiptSummary = (props: Props) => {
     if (products.length) {
       handleOpenSuccessModal();
     } else {
-      Alert.alert('Error', 'Please select at least one product item');
+      Alert.alert('Info', 'Please select at least one product item');
     }
   };
 

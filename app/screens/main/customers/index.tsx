@@ -72,7 +72,7 @@ const CustomersTab = () => {
 
       if (customers.map((item) => item.mobile).includes(mobile)) {
         Alert.alert(
-          'Error',
+          'Info',
           'Customer with the same phone number has been created.',
         );
       } else {
