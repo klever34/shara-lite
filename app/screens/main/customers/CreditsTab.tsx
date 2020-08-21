@@ -103,7 +103,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView persistentScrollbar={true} style={styles.container}>
       <View style={applyStyles('p-xl')}>
         <Button
           title="record credit payment"

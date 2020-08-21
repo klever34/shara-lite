@@ -111,6 +111,7 @@ export const MyCredit = () => {
   return (
     <>
       <ScrollView
+        persistentScrollbar={true}
         style={applyStyles('flex-1', {backgroundColor: colors['gray-10']})}>
         <View style={applyStyles('p-xl')}>
           <Button

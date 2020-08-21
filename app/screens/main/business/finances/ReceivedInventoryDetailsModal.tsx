@@ -62,7 +62,9 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
       onDismiss={onClose}
       animationType="slide"
       onRequestClose={onClose}>
-      <ScrollView style={applyStyles('flex-1', 'px-md')}>
+      <ScrollView
+        style={applyStyles('flex-1', 'px-md')}
+        persistentScrollbar={true}>
         <View style={applyStyles('flex-1')}>
           <View style={applyStyles({marginVertical: 32})}>
             <Text
@@ -201,7 +203,7 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
       </ScrollView>
       <Button
         variantColor="clear"
-        style={applyStyles('w-full mb-xl', {
+        style={applyStyles('w-full', {
           borderTopColor: colors['gray-20'],
           borderTopWidth: 1,
         })}

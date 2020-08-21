@@ -55,7 +55,7 @@ export const ReceiveInventoryStockPreview = (props: Props) => {
       </View>
       <Button
         variantColor="clear"
-        style={applyStyles('w-full mb-xl', {
+        style={applyStyles('w-full', {
           borderTopColor: colors['gray-20'],
           borderTopWidth: 1,
         })}

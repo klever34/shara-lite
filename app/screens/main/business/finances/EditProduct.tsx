@@ -51,21 +51,21 @@ export const EditProduct = ({
 
   const handleSubmit = useCallback(() => {
     setIsLoading(true);
-    setTimeout(() => {
-      updateProduct({realm, product: productProps, updates: product});
-      setIsLoading(false);
-      clearForm();
-      navigation.goBack();
-      ToastAndroid.show('Product edited', ToastAndroid.SHORT);
-    }, 300);
+    updateProduct({realm, product: productProps, updates: product});
+    setIsLoading(false);
+    clearForm();
+    navigation.goBack();
+    ToastAndroid.show('Product edited', ToastAndroid.SHORT);
   }, [realm, clearForm, productProps, product, navigation]);
 
   return (
     <ScrollView
+      persistentScrollbar={true}
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
-      })}>
+      })}
+      keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Product Details</Text>
       <View style={applyStyles('flex-row', 'items-center')}>
         <FloatingLabelInput

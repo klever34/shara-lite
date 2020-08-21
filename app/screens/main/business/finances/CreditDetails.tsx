@@ -80,27 +80,25 @@ export const CreditDetails = ({route}: any) => {
     (payload, callback) => {
       if (creditDetails.customer?.name || customer.name) {
         setIsLoading(true);
-        setTimeout(() => {
-          setIsLoading(false);
-          const newCustomer = creditDetails.customer?.name
-            ? creditDetails.customer
-            : customer._id
-            ? customer
-            : saveCustomer({realm, customer});
-          updateReceipt({
-            realm,
-            customer: newCustomer,
-            receipt: creditDetails.receipt as IReceipt,
-          });
-          saveCreditPayment({
-            realm,
-            ...payload,
-            customer: newCustomer,
-          });
-          callback();
-          navigation.navigate('Finances', {screen: 'Credit'});
-          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
-        }, 300);
+        setIsLoading(false);
+        const newCustomer = creditDetails.customer?.name
+          ? creditDetails.customer
+          : customer._id
+          ? customer
+          : saveCustomer({realm, customer});
+        updateReceipt({
+          realm,
+          customer: newCustomer,
+          receipt: creditDetails.receipt as IReceipt,
+        });
+        saveCreditPayment({
+          realm,
+          ...payload,
+          customer: newCustomer,
+        });
+        callback();
+        navigation.navigate('Finances', {screen: 'Credit'});
+        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
       } else {
         Alert.alert('Info', 'Please select a customer');
       }
@@ -109,7 +107,7 @@ export const CreditDetails = ({route}: any) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView style={styles.container} persistentScrollbar={true}>
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],
@@ -210,7 +208,8 @@ export const CreditDetails = ({route}: any) => {
           onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>

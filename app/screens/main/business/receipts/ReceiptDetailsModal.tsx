@@ -19,6 +19,7 @@ import {
   BluetoothModal,
   Button,
   ContactsListModal,
+  PageModal,
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -32,20 +33,19 @@ import {ICustomer} from '../../../../models';
 import {IReceipt} from '../../../../models/Receipt';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService, getStorageService} from '../../../../services';
-import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
+import {saveCustomer, getCustomers} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {
   getAllPayments,
   updateReceipt,
 } from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
-import {CustomerDetailsModal} from './CustomerDetailsModal';
-import {CustomersList} from './CustomersList';
 import {
   SummaryTableHeader,
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
+import AddCustomer from '../../customers/AddCustomer';
 
 type Props = {
   visible: boolean;
@@ -61,12 +61,11 @@ type ProductItemProps = {
 export function ReceiptDetailsModal(props: Props) {
   const {receipt, visible, onClose, onOpenShareModal} = props;
 
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
+  const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [customer, setCustomer] = useState<Customer | ICustomer | undefined>(
     receipt ? receipt.customer : ({} as Customer),
   );
-  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
   const [isPrintError, setIsPrintError] = useState(false);
   const [isPrintSuccess, setIsPrintSuccess] = useState(false);
@@ -77,8 +76,8 @@ export function ReceiptDetailsModal(props: Props) {
 
   const realm = useRealm();
   const authService = getAuthService();
-  const storageService = getStorageService();
   const user = authService.getUser();
+  const storageService = getStorageService();
   const currencyCode = authService.getUserCurrencyCode();
   const creditAmountLeft = receipt?.credits?.reduce(
     (acc, item) => acc + item.amount_left,
@@ -98,33 +97,20 @@ export function ReceiptDetailsModal(props: Props) {
     fetchPrinter();
   }, [storageService]);
 
-  const handleOpenCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(false);
-  }, []);
-
-  const handleOpenCustomerListModal = useCallback(() => {
-    setIsCustomerListModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerListModal = useCallback(() => {
-    setIsCustomerListModalOpen(false);
-  }, []);
-
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
-    handleCloseCustomerListModal();
-  }, [handleCloseCustomerListModal]);
+  }, []);
 
-  const handleSetCustomer = useCallback((value: ICustomer) => {
-    setCustomer(value);
+  const handleOpenAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(false);
   }, []);
 
   const handleSaveCustomer = useCallback(
@@ -140,9 +126,13 @@ export function ReceiptDetailsModal(props: Props) {
     [realm, receipt],
   );
 
-  const handleCustomerSelect = useCallback(({customer: customerData}) => {
-    setCustomer(customerData);
-  }, []);
+  const handleAddNewCustomer = useCallback(
+    (newCustomer) => {
+      handleSaveCustomer(newCustomer);
+      handleCloseAddCustomerModal();
+    },
+    [handleSaveCustomer, handleCloseAddCustomerModal],
+  );
 
   const handleOpenPrinterModal = useCallback(() => {
     setIsPrintingModalOpen(true);
@@ -394,7 +384,7 @@ export function ReceiptDetailsModal(props: Props) {
       animationType="slide"
       onDismiss={onClose}
       onRequestClose={onClose}>
-      <ScrollView style={applyStyles('px-lg py-xl')}>
+      <ScrollView style={applyStyles('px-lg py-xl')} persistentScrollbar={true}>
         <View
           style={applyStyles(
             'pb-md mb-lg w-full flex-row justify-space-between',
@@ -448,7 +438,7 @@ export function ReceiptDetailsModal(props: Props) {
         </View>
         {!receipt?.customer?.name && (
           <View>
-            <Touchable onPress={handleOpenCustomerModal}>
+            <Touchable onPress={handleOpenContactListModal}>
               <View
                 style={applyStyles(
                   'py-lg mb-xl flex-row items-center justify-center',
@@ -663,36 +653,20 @@ export function ReceiptDetailsModal(props: Props) {
         />
       </View>
 
-      <CustomerDetailsModal
-        customer={customer}
-        visible={isCustomerModalOpen}
-        onClose={handleCloseCustomerModal}
-        onSelectCustomer={handleSaveCustomer}
-        onOpenCustomerList={handleOpenCustomerListModal}
-      />
-
-      <Modal
-        animationType="slide"
-        visible={isCustomerListModalOpen}
-        onDismiss={handleCloseCustomerListModal}
-        onRequestClose={handleCloseCustomerListModal}>
-        <CustomersList
-          customers={customers}
-          onCustomerSelect={handleCustomerSelect}
-          onModalClose={handleCloseCustomerListModal}
-          onOpenContactList={handleOpenContactListModal}
-        />
-      </Modal>
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        entity="Customer"
+        createdData={customers}
         visible={isContactListModalOpen}
+        onAddNew={handleOpenAddCustomerModal}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>
-          handleSetCustomer({
+          handleSaveCustomer({
             name: `${givenName} ${familyName}`,
             mobile: phoneNumbers[0].number,
           })
         }
       />
+
       <BluetoothModal
         print={isPrinting}
         error={isPrintError}
@@ -701,6 +675,13 @@ export function ReceiptDetailsModal(props: Props) {
         onClose={handleClosePrinterModal}
         onPrintReceipt={handlePrintReceipt}
       />
+
+      <PageModal
+        title="Add Customer"
+        visible={isAddCustomerModalOpen}
+        onClose={handleCloseAddCustomerModal}>
+        <AddCustomer onSubmit={handleAddNewCustomer} />
+      </PageModal>
     </Modal>
   );
 }
