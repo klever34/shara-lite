@@ -26,48 +26,52 @@ const SplashScreen = () => {
     const navigationService = getNavigationService();
     navigationService.setInstance(navigation);
   });
-  const handleRedirect = useCallback(async () => {
-    const authService = getAuthService();
-    await authService.initialize();
+  const handleRedirect = useCallback(
+    async () => {
+      const authService = getAuthService();
+      await authService.initialize();
 
-    if (authService.isLoggedIn()) {
-      try {
-        const createdRealm = await initLocalRealm();
-        updateLocalRealm && updateLocalRealm(createdRealm);
-        const realmService = getRealmService();
-        realmService.setInstance(createdRealm);
-      } catch (e) {
-        Alert.alert(
-          'Oops! Something went wrong.',
-          'Try clearing app data from application settings',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                if (process.env.NODE_ENV === 'production') {
-                  if (Platform.OS === 'android') {
-                    BackHandler.exitApp();
+      if (authService.isLoggedIn()) {
+        try {
+          const createdRealm = await initLocalRealm();
+          updateLocalRealm && updateLocalRealm(createdRealm);
+          const realmService = getRealmService();
+          realmService.setInstance(createdRealm);
+        } catch (e) {
+          Alert.alert(
+            'Oops! Something went wrong.',
+            'Try clearing app data from application settings',
+            [
+              {
+                text: 'OK',
+                onPress: () => {
+                  if (process.env.NODE_ENV === 'production') {
+                    if (Platform.OS === 'android') {
+                      BackHandler.exitApp();
+                    }
                   }
-                }
+                },
               },
-            },
-          ],
-        );
+            ],
+          );
+        }
       }
-    }
 
-    if (authService.isLoggedIn()) {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
-      });
-    } else {
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Auth'}],
-      });
-    }
-  }, [navigation, updateLocalRealm]);
+      if (authService.isLoggedIn()) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Auth'}],
+        });
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [navigation],
+  );
 
   useEffect(() => {
     setTimeout(handleRedirect, 750);
