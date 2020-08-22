@@ -29,6 +29,7 @@ import {
   applyStyles,
   getDueDateValue,
   numberWithCommas,
+  getCustomerWhatsappNumber,
 } from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
@@ -193,6 +194,7 @@ const ReceiptSummary = (props: Props) => {
   const customers = getCustomers({realm});
   const currency = authService.getUserCurrency();
   const businessInfo = user?.businesses[0];
+  const userCountryCode = user?.country_code;
 
   const {
     products,
@@ -376,12 +378,14 @@ const ReceiptSummary = (props: Props) => {
   const handleWhatsappShare = useCallback(
     async (receiptImage: string) => {
       // TODO: use better copy for shara invite
+      const mobile = customer.mobile;
+      const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
       const shareOptions = {
+        whatsAppNumber,
         social: Share.Social.WHATSAPP,
         title: `Share receipt with ${customer.name}`,
         url: `data:image/png;base64,${receiptImage}`,
         message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
-        whatsAppNumber: `${customer.mobile}`, // country code + phone number
       };
       const errorMessages = {
         filename: 'Invalid file attached',
@@ -401,7 +405,7 @@ const ReceiptSummary = (props: Props) => {
         }
       }
     },
-    [customer.mobile, customer.name, businessInfo],
+    [customer.mobile, customer.name, userCountryCode, businessInfo],
   );
 
   const handleRemovePayment = useCallback(
