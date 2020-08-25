@@ -1,5 +1,4 @@
 import Realm from 'realm';
-import {omit} from 'lodash';
 
 import {Contact} from '@/services/realm/migrations/1598342143007-add-test-to-payment/models/Contact';
 import {Conversation} from '@/services/realm/migrations/1598342143007-add-test-to-payment/models/Conversation';
@@ -22,10 +21,6 @@ import {Supplier} from '@/services/realm/migrations/1598342143007-add-test-to-pa
 const migration = (oldRealm: Realm, newRealm: Realm) => {
   const oldObjects = (oldRealm.objects('Product') as unknown) as IProduct[];
   const newObjects = (newRealm.objects('Product') as unknown) as IProduct[];
-
-  console.log(oldObjects.length, newObjects.length);
-  console.log('----->', omit(oldObjects[0]));
-  console.log('----->', omit(newObjects[0]));
 
   // loop through all objects and set the name property in the new schema
   for (let i = 0; i < oldObjects.length; i++) {
