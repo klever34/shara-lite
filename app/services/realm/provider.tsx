@@ -83,13 +83,9 @@ const syncLocalData = ({
   if (!syncRealm || !localRealm) {
     return;
   }
-  console.log('About to sync');
+
   copyRealm({sourceRealm: localRealm, targetRealm: syncRealm});
-
-  console.log('------>00000000000000 Done with sync  to local');
-
   copyRealm({sourceRealm: syncRealm, targetRealm: localRealm});
-
   syncLocalRealm({localRealm, syncRealm});
 };
 
