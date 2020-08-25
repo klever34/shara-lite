@@ -1,5 +1,5 @@
 import format from 'date-fns/format';
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Image,
   ImageProps,
@@ -8,26 +8,26 @@ import {
   StyleSheet,
   Text,
   TextStyle,
+  ToastAndroid,
   View,
   ViewStyle,
-  Alert,
 } from 'react-native';
 import {
-  BluetoothManager,
-  BluetoothEscposPrinter, //@ts-ignore
+  BluetoothEscposPrinter,
+  BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {Button, BluetoothModal} from '../../../../components';
+import {BluetoothModal, Button} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {
-  applyStyles,
   amountWithCurrency,
+  applyStyles,
   numberWithCommas,
 } from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
 import {ICustomer} from '../../../../models';
-import {getAuthService, getStorageService} from '../../../../services';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService, getStorageService} from '../../../../services';
+import {colors} from '../../../../styles';
 
 type Props = {
   visible: boolean;
@@ -76,9 +76,6 @@ export const ReceiptStatusModal = (props: Props) => {
   } = props;
 
   const [customer, setCustomer] = useState(customerProps);
-  const [isPrinting, setIsPrinting] = useState(false);
-  const [isPrintError, setIsPrintError] = useState(false);
-  const [isPrintSuccess, setIsPrintSuccess] = useState(false);
   const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
   const [printer, setPrinter] = useState<{address: string}>(
     {} as {address: string},
@@ -97,7 +94,8 @@ export const ReceiptStatusModal = (props: Props) => {
       setPrinter(savedPrinter);
     };
     fetchPrinter();
-  }, [storageService]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPrintingModalOpen]);
 
   useEffect(() => {
     setCustomer(customerProps);
@@ -135,16 +133,12 @@ export const ReceiptStatusModal = (props: Props) => {
   }, []);
 
   const handleClosePrinterModal = useCallback(() => {
-    setIsPrinting(false);
-    setIsPrintError(false);
-    setIsPrintSuccess(false);
     setIsPrintingModalOpen(false);
   }, []);
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
       const productListColumnWidth = [14, 6, 12];
-      setIsPrinting(true);
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -319,10 +313,10 @@ export const ReceiptStatusModal = (props: Props) => {
         await BluetoothEscposPrinter.printText('\n\r', {});
         await BluetoothEscposPrinter.printText('\n\r', {});
         await BluetoothEscposPrinter.printText('\n\r', {});
-        setIsPrintSuccess(true);
+        handleClosePrinterModal();
       } catch (err) {
-        Alert.alert('Bluetooth Error', err.toString());
-        setIsPrintError(true);
+        ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
+        handleOpenPrinterModal();
       }
     },
     [
@@ -334,6 +328,8 @@ export const ReceiptStatusModal = (props: Props) => {
       amountPaid,
       creditAmount,
       user,
+      handleOpenPrinterModal,
+      handleClosePrinterModal,
     ],
   );
 
@@ -539,9 +535,6 @@ export const ReceiptStatusModal = (props: Props) => {
         />
       </View>
       <BluetoothModal
-        print={isPrinting}
-        error={isPrintError}
-        success={isPrintSuccess}
         visible={isPrintingModalOpen}
         onClose={handleClosePrinterModal}
         onPrintReceipt={handlePrintReceipt}

@@ -1,7 +1,6 @@
 import {format} from 'date-fns';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
-  Alert,
   FlatList,
   Modal,
   ScrollView,
@@ -33,19 +32,19 @@ import {ICustomer} from '../../../../models';
 import {IReceipt} from '../../../../models/Receipt';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
 import {getAuthService, getStorageService} from '../../../../services';
-import {saveCustomer, getCustomers} from '../../../../services/CustomerService';
+import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
 import {useRealm} from '../../../../services/realm';
 import {
   getAllPayments,
   updateReceipt,
 } from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
+import AddCustomer from '../../customers/AddCustomer';
 import {
   SummaryTableHeader,
   summaryTableItemStyles,
   summaryTableStyles,
 } from './ReceiptSummary';
-import AddCustomer from '../../customers/AddCustomer';
 
 type Props = {
   visible: boolean;
@@ -66,9 +65,6 @@ export function ReceiptDetailsModal(props: Props) {
   const [customer, setCustomer] = useState<Customer | ICustomer | undefined>(
     receipt ? receipt.customer : ({} as Customer),
   );
-  const [isPrinting, setIsPrinting] = useState(false);
-  const [isPrintError, setIsPrintError] = useState(false);
-  const [isPrintSuccess, setIsPrintSuccess] = useState(false);
   const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
   const [printer, setPrinter] = useState<{address: string}>(
     {} as {address: string},
@@ -95,7 +91,8 @@ export function ReceiptDetailsModal(props: Props) {
       setPrinter(savedPrinter);
     };
     fetchPrinter();
-  }, [storageService]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPrintingModalOpen]);
 
   useEffect(() => {
     setCustomer(receipt?.customer);
@@ -143,16 +140,12 @@ export function ReceiptDetailsModal(props: Props) {
   }, []);
 
   const handleClosePrinterModal = useCallback(() => {
-    setIsPrinting(false);
-    setIsPrintError(false);
-    setIsPrintSuccess(false);
     setIsPrintingModalOpen(false);
   }, []);
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
       const productListColumnWidth = [14, 6, 12];
-      setIsPrinting(true);
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -334,13 +327,21 @@ export function ReceiptDetailsModal(props: Props) {
         await BluetoothEscposPrinter.printText('\n\r', {});
         await BluetoothEscposPrinter.printText('\n\r', {});
         await BluetoothEscposPrinter.printText('\n\r', {});
-        setIsPrintSuccess(true);
+        handleClosePrinterModal();
       } catch (err) {
-        Alert.alert('Bluetooth Error', err.toString());
-        setIsPrintError(true);
+        ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
+        handleOpenPrinterModal();
       }
     },
-    [currencyCode, customer, printer, receipt, user],
+    [
+      currencyCode,
+      customer,
+      handleClosePrinterModal,
+      handleOpenPrinterModal,
+      printer,
+      receipt,
+      user,
+    ],
   );
 
   const handlePrintClick = useCallback(() => {
@@ -672,9 +673,6 @@ export function ReceiptDetailsModal(props: Props) {
       />
 
       <BluetoothModal
-        print={isPrinting}
-        error={isPrintError}
-        success={isPrintSuccess}
         visible={isPrintingModalOpen}
         onClose={handleClosePrinterModal}
         onPrintReceipt={handlePrintReceipt}
