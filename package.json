@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.17-bugfix.whatsapp-share+build.1791",
+  "version": "0.2.17-bugfix.whatsapp-share+build.1795",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
