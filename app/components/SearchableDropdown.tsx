@@ -1,11 +1,16 @@
 import React, {useCallback, useState} from 'react';
-import {Keyboard, StyleSheet, Text, TextInput, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {
+  FlatList,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+} from 'react-native';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
-import Touchable from './Touchable';
 
 //TODO: Type component props
 const SearchableDropdown = (props: any) => {
@@ -13,16 +18,14 @@ const SearchableDropdown = (props: any) => {
     items,
     setSort,
     onFocus,
-    itemStyle,
     searchTerm,
+    renderItem,
     onChangeText,
     onItemSelect,
-    itemTextStyle,
     textInputProps,
     emptyStateText,
     noResultsAction,
     noResultsActionButtonText,
-    itemsContainerStyle,
   } = props;
   const [focus, setFocus] = useState(false);
   const [value, setValue] = useState<any>({});
@@ -71,33 +74,44 @@ const SearchableDropdown = (props: any) => {
   const renderFlatList = () => {
     if (focus) {
       return listItems.length ? (
-        <FlatList
-          data={listItems}
-          renderItem={renderItems}
-          style={applyStyles(itemsContainerStyle)}
-          keyExtractor={(item, index) => index.toString()}
-          ListEmptyComponent={
-            <View
-              style={applyStyles('px-lg flex-1 items-center justify-center', {
-                paddingVertical: 100,
-              })}>
-              <Text
-                style={applyStyles('mb-xs heading-700', 'text-center', {
-                  color: colors['gray-300'],
+        <View
+          style={applyStyles({
+            top: 60,
+            zIndex: 100,
+            elevation: 2,
+            width: '100%',
+            position: 'absolute',
+            backgroundColor: colors.white,
+          })}>
+          <FlatList
+            data={listItems}
+            renderItem={({item}) =>
+              renderItem({item, onPress: handleItemSelect})
+            }
+            keyExtractor={(item, index) => index.toString()}
+            ListEmptyComponent={
+              <View
+                style={applyStyles('px-lg flex-1 items-center justify-center', {
+                  paddingVertical: 100,
                 })}>
-                No results found
-              </Text>
-              {noResultsAction && (
-                <Button
-                  variantColor="clear"
-                  onPress={noResultsAction}
-                  style={applyStyles('w-full')}
-                  title={noResultsActionButtonText}
-                />
-              )}
-            </View>
-          }
-        />
+                <Text
+                  style={applyStyles('mb-xs heading-700', 'text-center', {
+                    color: colors['gray-300'],
+                  })}>
+                  No results found
+                </Text>
+                {noResultsAction && (
+                  <Button
+                    variantColor="clear"
+                    onPress={noResultsAction}
+                    style={applyStyles('w-full')}
+                    title={noResultsActionButtonText}
+                  />
+                )}
+              </View>
+            }
+          />
+        </View>
       ) : (
         <View style={styles.emptyState}>
           <Text
@@ -119,19 +133,6 @@ const SearchableDropdown = (props: any) => {
         </View>
       );
     }
-  };
-
-  const renderItems = ({item}: any) => {
-    return (
-      <Touchable onPress={() => handleItemSelect(item)}>
-        <View style={applyStyles(styles.listItem, itemStyle)}>
-          <Text
-            style={applyStyles(styles.listItemText, itemTextStyle, 'text-400')}>
-            {item[searchTerm]}
-          </Text>
-        </View>
-      </Touchable>
-    );
   };
 
   const renderTextInput = () => {
@@ -188,15 +189,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingLeft: 36,
     backgroundColor: colors.white,
-  },
-  listItem: {
-    fontSize: 16,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-20'],
-  },
-  listItemText: {
-    fontSize: 16,
   },
   emptyState: {
     paddingVertical: 50,

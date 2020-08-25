@@ -209,6 +209,25 @@ export const ReceiveInventoryStock = ({
     handleAddItem,
   ]);
 
+  const handleProductSearch = useCallback((item: IProduct, text: string) => {
+    return (
+      `${item.sku} - ${item.name}`.toLowerCase().indexOf(text.toLowerCase()) >
+      -1
+    );
+  }, []);
+
+  const renderSearchDropdownItem = useCallback(({item, onPress}) => {
+    return (
+      <Touchable onPress={() => onPress(item)}>
+        <View style={styles.recentProductItem}>
+          <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
+            {item.sku} - {item.name} {item.weight ? `(${item.weight}))` : ''}
+          </Text>
+        </View>
+      </Touchable>
+    );
+  }, []);
+
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
       return (
@@ -238,8 +257,9 @@ export const ReceiveInventoryStock = ({
     <SafeAreaView style={styles.container}>
       <SearchableDropdown
         items={products}
-        searchTerm="name"
+        setSort={handleProductSearch}
         onItemSelect={handleSelectProduct}
+        renderItem={renderSearchDropdownItem}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
         noResultsAction={() => navigation.navigate('AddProduct')}
