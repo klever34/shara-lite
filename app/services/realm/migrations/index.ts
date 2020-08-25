@@ -1,6 +1,5 @@
-import schema1 from './1598342143007-add-test-to-payment';
-
-const schemas: any[] = []; // [{schemaVersion: 1, ...schema1}];
+import Realm from 'realm';
+import schemas from '@/services/realm/migrations/schemas';
 
 export const runMigration = ({currentSchema}: {currentSchema: any}) => {
   if (!schemas.length) {
