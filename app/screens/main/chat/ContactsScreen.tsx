@@ -1,5 +1,5 @@
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {Alert, Platform, Text, View} from 'react-native';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {Alert, Platform, Text, ToastAndroid, View} from 'react-native';
 import {
   getAnalyticsService,
   getApiService,
@@ -46,6 +46,10 @@ const ContactsScreen = ({
         .syncPhoneContacts()
         .then(() => {
           setLoadingContacts(false);
+          ToastAndroid.show(
+            'Your contact list has been updated',
+            ToastAndroid.SHORT,
+          );
         })
         .catch((error) => {
           handleError(error);
@@ -69,7 +73,6 @@ const ContactsScreen = ({
     },
     [contacts.length, handleError, navigation],
   );
-  useEffect(loadContacts, []);
   const inviteFriend = useCallback(async () => {
     // TODO: use better copy for shara invite
     const title = 'Share via';
