@@ -60,9 +60,6 @@ const ContactsScreen = ({
             [
               {
                 text: 'OK',
-                onPress: () => {
-                  navigation.goBack();
-                },
               },
             ],
             {
@@ -71,7 +68,7 @@ const ContactsScreen = ({
           );
         });
     },
-    [contacts.length, handleError, navigation],
+    [contacts.length, handleError],
   );
   const inviteFriend = useCallback(async () => {
     // TODO: use better copy for shara invite
