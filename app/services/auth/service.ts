@@ -3,7 +3,7 @@ import {IPubNubService} from '../pubnub';
 import {INavigationService} from '../navigation';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
-import {User} from '../../../types/app';
+import {User} from 'types/app';
 
 export interface IAuthService {
   initialize(): Promise<void>;

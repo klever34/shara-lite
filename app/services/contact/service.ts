@@ -19,14 +19,16 @@ export interface IContactService {
   ): Promise<void>;
   getContactByMobile(mobile: string): IContact | null;
   getContact(id: string): IContact | null;
-  createContact(contact: IContact, updateMode?: UpdateMode): Promise<IContact>;
-  createMultipleContacts(
-    contact: IContact[],
-    updateMode?: UpdateMode,
-  ): Promise<IContact[]>;
+  manageContact(contact: IContact): Promise<IContact>;
+  manageMultipleContacts(contact: IContact[]): Promise<IContact[]>;
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
 }
+
+const parseDateString = (dateString: string) => {
+  const parsed = Date.parse(dateString);
+  return parsed ? new Date(parsed) : new Date();
+};
 
 export class ContactService implements IContactService {
   constructor(
@@ -105,9 +107,11 @@ export class ContactService implements IContactService {
           ),
         ),
       );
-      await this.syncMobiles(numbers, (_, index) => ({
-        recordId: contacts[index].recordID,
-      }));
+      await this.syncMobiles(numbers, (_, index) => {
+        return {
+          recordId: contacts[index]?.recordID,
+        };
+      });
     } catch (error) {
       throw error;
     }
@@ -121,9 +125,11 @@ export class ContactService implements IContactService {
     try {
       const users = await this.apiService.getUserDetails(mobiles);
       const me = this.authService.getUser();
-      const nextContacts = users.map((user, index) => {
+      const nextContacts = users.map<IContact>((user, index) => {
         return {
           ...user,
+          created_at: parseDateString(user.created_at),
+          updated_at: parseDateString(user.updated_at),
           isMe: user.id === me?.id,
           groups: '',
           fullName: '',
@@ -149,20 +155,34 @@ export class ContactService implements IContactService {
     return realm?.objectForPrimaryKey<IContact>('Contact', id) || null;
   }
 
-  createContact(
-    contact: IContact,
-    updateMode: UpdateMode = UpdateMode.Never,
-  ): Promise<IContact> {
+  private prepareContact(contact: IContact): IContact {
+    if (contact._id) {
+      return contact;
+    }
+    const prevContact = this.getContactByMobile(contact.mobile);
+    if (prevContact) {
+      contact = {
+        _id: prevContact._id,
+        ...contact,
+      };
+    } else {
+      contact = {
+        ...contact,
+        ...getBaseModelValues(),
+      };
+    }
+    return contact;
+  }
+
+  manageContact(contact: IContact): Promise<IContact> {
     const realm = this.realmService.getInstance();
     return new Promise<IContact>((resolve, reject) => {
-      const existingMobile = this.getContactByMobile(contact.mobile);
-      const updatePayload = existingMobile || getBaseModelValues();
       try {
         realm?.write(() => {
           const createdContact = realm.create<IContact>(
             'Contact',
-            {...contact, ...updatePayload},
-            updateMode,
+            this.prepareContact(contact),
+            UpdateMode.Modified,
           );
           resolve(createdContact);
         });
@@ -172,43 +192,32 @@ export class ContactService implements IContactService {
     });
   }
 
-  createMultipleContacts(
-    contacts: IContact[],
-    updateMode: UpdateMode = UpdateMode.Never,
-  ): Promise<IContact[]> {
+  manageMultipleContacts(contacts: IContact[]): Promise<IContact[]> {
     const realm = this.realmService.getInstance();
     return new Promise<IContact[]>((resolve, reject) => {
       try {
-        const existingContacts = realm?.objects<IContact>('Contact');
-        const contactsWithBaseValues = contacts
-          .map((contact) => ({
-            ...contact,
-            ...getBaseModelValues(),
-          }))
-          .filter(
-            (contact) =>
-              !existingContacts?.find(({mobile}) => contact.mobile === mobile),
-          );
         realm?.write(() => {
-          const createdContacts = contactsWithBaseValues.map((contact) => {
-            return realm.create<IContact>('Contact', contact, updateMode);
+          const createdContacts = contacts.map((contact) => {
+            return realm.create<IContact>(
+              'Contact',
+              this.prepareContact(contact),
+              UpdateMode.Modified,
+            );
           });
           resolve(createdContacts);
         });
       } catch (e) {
+        console.log(e, 'e');
         reject(e);
       }
     });
   }
 
   updateContact(contact: Partial<IContact>): Promise<IContact> {
-    return this.createContact(contact as IContact, UpdateMode.Modified);
+    return this.manageContact(contact as IContact);
   }
 
   updateMultipleContacts(contacts: Partial<IContact[]>): Promise<IContact[]> {
-    return this.createMultipleContacts(
-      contacts as IContact[],
-      UpdateMode.Modified,
-    );
+    return this.manageMultipleContacts(contacts as IContact[]);
   }
 }

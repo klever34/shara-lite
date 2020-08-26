@@ -3,7 +3,6 @@ import omit from 'lodash/omit';
 import PubNub from 'pubnub';
 import {getBaseModelValues} from '@/helpers/models';
 import {UpdateMode} from 'realm';
-import {IContact} from '@/models';
 import {ChannelCustom} from 'types/app';
 import {compact} from 'lodash';
 import {decrypt, generateUniqueId} from '@/helpers/utils';
@@ -59,6 +58,27 @@ export class ConversationService implements IConversationService {
   //   return new Promise<IConversation>((resolve, reject) => {});
   // }
 
+  private prepareConversation(conversation: IConversation): IConversation {
+    if (conversation._id) {
+      return conversation;
+    }
+    const prevConversation = this.getConversationByChannel(
+      conversation.channel,
+    );
+    if (prevConversation) {
+      conversation = {
+        _id: prevConversation._id,
+        ...conversation,
+      };
+    } else {
+      conversation = {
+        ...conversation,
+        ...getBaseModelValues(),
+      };
+    }
+    return conversation;
+  }
+
   async restoreAllConversations(): Promise<void> {
     const pubNub = this.pubNubService.getInstance();
     const realm = this.realmService.getInstance();
@@ -83,59 +103,62 @@ export class ConversationService implements IConversationService {
           },
         );
       });
-      const channels: string[] = [];
-      const conversations: {[channel: string]: IConversation} = {};
+      const conversations: IConversation[] = [];
       for (let i = 0; i < data.length; i += 1) {
         const {channel: channelMetadata} = data[i];
         try {
-          const conversation = await this.getConversationFromChannelMetadata(
+          let conversation = await this.getConversationFromChannelMetadata(
             channelMetadata,
           );
-          const channel = channelMetadata.id;
-          channels.push(channel);
-          conversations[channel] = conversation;
-        } catch (e) {}
-      }
-      realm.beginTransaction();
-      for (let i = 0; i < channels.length; i += 1) {
-        const channel = channels[i];
-        const existingChannel = this.getConversationByChannel(channel);
-        const updatePayload = omit(existingChannel || getBaseModelValues(), []);
-        const conversation = realm.create<IConversation>(
-          'Conversation',
-          {...conversations[channel], ...updatePayload},
-          UpdateMode.Modified,
-        );
-        if (conversation.type === 'group') {
-          const members = conversation.members;
-          for (let j = 0; j < members.length; j += 1) {
-            const memberMobile = members[j];
-            let contact: IContact = realm
-              .objects<IContact>('Contact')
-              .filtered(`mobile = "${memberMobile}"`)[0];
-            if (!contact) {
-              await this.contactService.syncMobiles([memberMobile], () => ({
-                groups: channel,
-              }));
-            } else {
-              contact.groups = contact.groups
-                ? `${contact.groups},${channel}`
-                : channel;
+          conversation = this.prepareConversation(conversation);
+          const channel = conversation.channel;
+          if (conversation.type === 'group') {
+            const members = conversation.members;
+            for (let j = 0; j < members.length; j += 1) {
+              const memberMobile = members[j];
+              let contact = this.contactService.getContactByMobile(
+                memberMobile,
+              );
+              if (!contact) {
+                await this.contactService.syncMobiles([memberMobile], () => ({
+                  groups: channel,
+                }));
+              } else {
+                await this.contactService.updateContact({
+                  _id: contact._id,
+                  groups: contact.groups
+                    ? `${contact.groups},${channel}`
+                    : channel,
+                });
+              }
+            }
+          } else {
+            let contact = this.contactService.getContactByMobile(
+              conversation.name,
+            );
+            if (contact) {
+              conversation.name = contact.fullName;
+              await this.contactService.updateContact({
+                _id: contact._id,
+                channel: conversation.channel,
+              });
             }
           }
-        } else {
-          const contact = realm
-            .objects<IContact>('Contact')
-            .filtered(`mobile = "${conversation.name}"`)[0];
-          if (contact) {
-            conversation.name = contact.fullName;
-            contact.channel = conversation.channel;
-          }
+          conversations.push(conversation);
+        } catch (e) {
+          console.log('restoreAllConversations', e);
         }
       }
-      realm.commitTransaction();
+      realm.write(() => {
+        conversations.forEach((conversation) => {
+          realm.create<IConversation>(
+            'Conversation',
+            conversation,
+            UpdateMode.Modified,
+          );
+        });
+      });
     } catch (e) {
-      realm.cancelTransaction();
       throw e;
     }
   }

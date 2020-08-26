@@ -201,21 +201,13 @@ const ChatDetailsScreen = ({
                               i += 1
                             ) {
                               const contact = selectedContacts[i];
-                              const existingMobile = getContactService().getContactByMobile(
-                                contact.mobile,
-                              );
-                              const updatePayload =
-                                existingMobile || getBaseModelValues();
-                              realm.create<IContact>(
-                                'Contact',
-                                {
-                                  mobile: contact.mobile,
-                                  ...updatePayload,
+                              getContactService()
+                                .updateContact({
+                                  _id: contact._id,
                                   groups:
                                     contact.groups + ',' + conversation.channel,
-                                },
-                                UpdateMode.Modified,
-                              );
+                                })
+                                .catch(handleError);
                             }
                           });
                         } catch (e) {
@@ -265,25 +257,18 @@ const ChatDetailsScreen = ({
         conversation.members = conversation.members.filter(
           (member) => member !== contact.mobile,
         );
-        const existingMobile = getContactService().getContactByMobile(
-          contact.mobile,
-        );
-        const updatePayload = existingMobile || getBaseModelValues();
-        realm.create<IContact>(
-          'Contact',
-          {
-            mobile: contact.mobile,
-            ...updatePayload,
+        getContactService()
+          .updateContact({
+            _id: contact._id,
             groups: contact.groups
               .split(',')
               .filter((channel) => channel !== conversation.channel)
               .join(','),
-          },
-          UpdateMode.Modified,
-        );
+          })
+          .catch(handleError);
       });
     },
-    [conversation.channel, conversation.members, realm],
+    [conversation.channel, conversation.members, handleError, realm],
   );
 
   const admins = (conversation?.admins ?? []).reduce<{[key: string]: boolean}>(

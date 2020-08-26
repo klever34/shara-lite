@@ -1,9 +1,10 @@
 import capitalize from 'lodash/capitalize';
 import {User} from 'types/app';
-import {BaseModel, baseModelSchema} from './baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IContact
-  extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'> {
+  extends Pick<User, 'firstname' | 'lastname' | 'mobile' | 'id'>,
+    BaseModelInterface {
   channel?: string;
   groups: string;
   isMe: boolean;
