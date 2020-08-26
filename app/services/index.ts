@@ -1,3 +1,4 @@
+import DIContainer, {object, get, IDIContainer} from 'rsdi';
 import {IStorageService, StorageService} from './storage';
 import {ContactService, IContactService} from './contact';
 import {AuthService, IAuthService} from './auth';
@@ -12,97 +13,61 @@ import {
   IConversationService,
 } from '@/services/ConversationService';
 
-let navigationService: INavigationService | null = null;
-let analyticsService: IAnalyticsService | null = null;
-let pubNubService: IPubNubService | null = null;
-let realmService: IRealmService | null = null;
-let storageService: IStorageService | null = null;
-let authService: IAuthService | null = null;
-let apiService: IApiService | null = null;
-let contactService: IContactService | null = null;
-let messageService: IMessageService | null = null;
-let conversationService: IConversationService | null = null;
-
-export const getNavigationService = () => {
-  if (!navigationService) {
-    navigationService = new NavigationService();
-  }
-  return navigationService;
+const createDIContainer = (): IDIContainer => {
+  const container = new DIContainer();
+  container.addDefinitions({
+    Navigation: object(NavigationService),
+    Analytics: object(AnalyticsService),
+    PubNub: object(PubNubService),
+    Realm: object(RealmService),
+    Storage: object(StorageService),
+    Auth: object(AuthService).construct(
+      get('Storage'),
+      get('PubNub'),
+      get('Navigation'),
+    ),
+    Api: object(ApiService).construct(get('Auth'), get('Storage')),
+    Contact: object(ContactService).construct(
+      get('Realm'),
+      get('Api'),
+      get('Auth'),
+    ),
+    Message: object(MessageService).construct(get('Realm'), get('PubNub')),
+    Conversation: object(ConversationService).construct(
+      get('Realm'),
+      get('PubNub'),
+      get('Auth'),
+      get('Api'),
+      get('Contact'),
+    ),
+  });
+  return container;
 };
 
-export const getAnalyticsService = () => {
-  if (!analyticsService) {
-    analyticsService = new AnalyticsService();
-  }
-  return analyticsService;
-};
+export const container = createDIContainer();
 
-export const getPubNubService = () => {
-  if (!pubNubService) {
-    pubNubService = new PubNubService();
-  }
-  return pubNubService;
-};
+export const getNavigationService = () =>
+  container.get<INavigationService>('Navigation');
 
-export const getRealmService = () => {
-  if (!realmService) {
-    realmService = new RealmService();
-  }
-  return realmService;
-};
+export const getAnalyticsService = () =>
+  container.get<IAnalyticsService>('Analytics');
 
-export const getStorageService = () => {
-  if (!storageService) {
-    storageService = new StorageService();
-  }
-  return storageService;
-};
+export const getPubNubService = () => container.get<IPubNubService>('PubNub');
 
-export const getAuthService = () => {
-  if (!authService) {
-    authService = new AuthService(
-      getStorageService(),
-      getPubNubService(),
-      getNavigationService(),
-    );
-  }
-  return authService;
-};
+export const getRealmService = () => container.get<IRealmService>('Realm');
 
-export const getApiService = () => {
-  if (!apiService) {
-    apiService = new ApiService(getAuthService(), getStorageService());
-  }
-  return apiService;
-};
+export const getStorageService = () =>
+  container.get<IStorageService>('Storage');
 
-export const getContactService = () => {
-  if (!contactService) {
-    contactService = new ContactService(
-      getRealmService(),
-      getApiService(),
-      getAuthService(),
-    );
-  }
-  return contactService;
-};
+export const getAuthService = () => container.get<IAuthService>('Auth');
 
-export const getMessageService = () => {
-  if (!messageService) {
-    messageService = new MessageService(getRealmService(), getPubNubService());
-  }
-  return messageService;
-};
+export const getApiService = () => container.get<IApiService>('Api');
 
-export const getConversationService = () => {
-  if (!conversationService) {
-    conversationService = new ConversationService(
-      getRealmService(),
-      getPubNubService(),
-      getAuthService(),
-      getApiService(),
-      getContactService(),
-    );
-  }
-  return conversationService;
-};
+export const getContactService = () =>
+  container.get<IContactService>('Contact');
+
+export const getMessageService = () =>
+  container.get<IMessageService>('Message');
+
+export const getConversationService = () =>
+  container.get<IConversationService>('Conversation');
