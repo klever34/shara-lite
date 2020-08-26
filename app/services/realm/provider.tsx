@@ -46,7 +46,9 @@ const RealmProvider = (props: any) => {
 
   const logoutFromRealm = () => {
     if (syncRealm.current) {
-      syncRealm.current = undefined;
+      syncRealm.current.write(() => {
+        syncRealm.current?.deleteAll();
+      });
     }
 
     if (localRealm.current) {
