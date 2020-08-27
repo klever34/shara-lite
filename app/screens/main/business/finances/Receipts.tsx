@@ -8,7 +8,11 @@ import {FAButton} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
+import {
+  amountWithCurrency,
+  applyStyles,
+  getCustomerWhatsappNumber,
+} from '../../../../helpers/utils';
 import {IReceipt} from '../../../../models/Receipt';
 import {getAuthService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
@@ -27,6 +31,7 @@ export function MyReceipts() {
   const authService = getAuthService();
   const user = authService.getUser();
   const businessInfo = user?.businesses[0];
+  const userCountryCode = user?.country_code;
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeReceipt, setActiveReceipt] = useState<IReceipt | null>(null);
@@ -115,10 +120,12 @@ export function MyReceipts() {
   const handleWhatsappShare = useCallback(
     async (receiptImage: string) => {
       // TODO: use better copy for shara invite
+      const mobile = activeReceipt?.customer?.mobile;
+      const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
       const shareOptions = {
+        whatsAppNumber,
         social: Share.Social.WHATSAPP,
         url: `data:image/png;base64,${receiptImage}`,
-        whatsAppNumber: `${activeReceipt?.customer?.mobile}`,
         message: `Hi ${activeReceipt?.customer?.name}, Here is your receipt from ${businessInfo?.name}`,
         title: `Share receipt with ${activeReceipt?.customer?.name}`,
       };
@@ -140,7 +147,7 @@ export function MyReceipts() {
         }
       }
     },
-    [activeReceipt, businessInfo],
+    [activeReceipt, businessInfo, userCountryCode],
   );
 
   const renderReceiptItem = useCallback(
