@@ -71,6 +71,7 @@ const useRealmSyncLoader = () => {
         return;
       }
 
+      setHasLoadedRealm(false);
       setIsRealmSyncLoaderInitiated && setIsRealmSyncLoaderInitiated(true);
       updateRealm();
     },
