@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.20-discovery",
+  "version": "0.2.20-feature.realm-migrations+build.1860",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",

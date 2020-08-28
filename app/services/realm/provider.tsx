@@ -7,7 +7,13 @@ type RealmObject = {
   realm?: Realm;
   isRealmSyncLoaderInitiated?: Boolean;
   updateLocalRealm?: (realm: Realm) => void;
-  updateSyncRealm?: (realm: Realm) => void;
+  updateSyncRealm?: ({
+    newRealm,
+    realmUser,
+  }: {
+    newRealm: Realm;
+    realmUser: any;
+  }) => void;
   logoutFromRealm?: () => void;
   setIsRealmSyncLoaderInitiated?: (isLoaded: Boolean) => void;
 };
@@ -24,10 +30,19 @@ const RealmProvider = (props: any) => {
     Boolean
   >(false);
   const [realm, setRealm] = useState<Realm>();
+  const [realmUser, setRealmUser] = useState<any>(false);
   const syncRealm = useRef<Realm>();
   const localRealm = useRef<Realm>();
 
-  const updateSyncRealm = (newRealm: Realm) => {
+  const updateSyncRealm = ({
+    newRealm,
+    realmUser,
+  }: {
+    newRealm: Realm;
+    realmUser: any;
+  }) => {
+    setRealmUser(realmUser);
+
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
@@ -41,17 +56,21 @@ const RealmProvider = (props: any) => {
   };
 
   const logoutFromRealm = () => {
-    if (syncRealm.current) {
-      syncRealm.current = undefined;
-    }
-
     if (localRealm.current) {
       localRealm.current.write(() => {
         localRealm.current?.deleteAll();
       });
     }
 
+    if (syncRealm.current) {
+      if (realmUser) {
+        realmUser.logOut();
+        setRealmUser(undefined);
+      }
+    }
+
     setIsRealmSyncLoaderInitiated(false);
+    setRealm(undefined);
   };
 
   return (
@@ -79,7 +98,6 @@ const syncLocalData = ({
   if (!syncRealm || !localRealm) {
     return;
   }
-
   copyRealm({sourceRealm: localRealm, targetRealm: syncRealm});
   copyRealm({sourceRealm: syncRealm, targetRealm: localRealm});
   syncLocalRealm({localRealm, syncRealm});

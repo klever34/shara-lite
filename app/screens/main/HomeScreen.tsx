@@ -2,7 +2,13 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {useNavigation} from '@react-navigation/native';
 import {MessageEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, Platform, SafeAreaView, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
@@ -21,6 +27,7 @@ import {BusinessTab} from './business';
 import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
 import {useScreenRecord} from '@/services/analytics';
+import {RealmContext} from '@/services/realm/provider';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -32,6 +39,7 @@ const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
 const HomeScreen = ({openModal}: ModalWrapperFields) => {
   useScreenRecord();
+  const {logoutFromRealm} = useContext(RealmContext);
   const realm = useRealm();
   const pubNub = usePubNub();
   const navigation = useNavigation();
@@ -46,10 +54,11 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
         index: 0,
         routes: [{name: 'Auth'}],
       });
+      logoutFromRealm && logoutFromRealm();
     } catch (e) {
       handleError(e);
     }
-  }, [handleError, navigation]);
+  }, [handleError, navigation, logoutFromRealm]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Restoring messages...'});

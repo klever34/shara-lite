@@ -45,6 +45,7 @@ export const saveCreditPayment = ({
     }
 
     const amountLeftFromDeduction = amountLeft - credit.amount_left;
+
     const creditUpdates: any = {
       _id: credit._id,
     };
