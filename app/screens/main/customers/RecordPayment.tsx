@@ -17,16 +17,18 @@ const RecordPayment = ({route}: any) => {
     (payload, callback) => {
       const {amount, method} = payload;
       setIsLoading(true);
-      setIsLoading(false);
-      saveCreditPayment({
-        realm,
-        method,
-        customer,
-        amount: parseFloat(amount),
-      });
-      callback();
-      navigation.navigate('CreditsTab');
-      ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
+      setTimeout(() => {
+        setIsLoading(false);
+        saveCreditPayment({
+          realm,
+          method,
+          customer,
+          amount: parseFloat(amount),
+        });
+        callback();
+        navigation.navigate('CreditsTab');
+        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
+      }, 300);
     },
     [realm, customer, navigation],
   );

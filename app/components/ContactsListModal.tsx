@@ -100,7 +100,7 @@ export function ContactsListModal<T>({
           item.phoneNumbers[0].number;
         return (
           name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
-          mobile.replace('-', '').replace(/\s+/g, '').indexOf(text) > -1
+          mobile.replace(/[\s-]+/g, '').indexOf(text) > -1
         );
       };
       const results = ref.current.contacts.filter((item: Contact) => {
