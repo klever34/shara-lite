@@ -168,18 +168,20 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
       return;
     }
     setIsSaving(true);
-    addNewInventory({
-      realm,
-      supplier,
-      stockItems: products,
-      delivery_agent: agent,
-    });
-    getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
-    setIsSaving(false);
-    clearForm();
-    handleCancel();
-    navigation.navigate('ReceivedInventoryList');
-    ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
+    setTimeout(() => {
+      addNewInventory({
+        realm,
+        supplier,
+        stockItems: products,
+        delivery_agent: agent,
+      });
+      getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
+      setIsSaving(false);
+      clearForm();
+      handleCancel();
+      navigation.navigate('ReceivedInventoryList');
+      ToastAndroid.show('Inventory recorded', ToastAndroid.SHORT);
+    }, 300);
   };
 
   const handleSetDeliveryAgent = useCallback(
