@@ -78,7 +78,7 @@ export const loginToRealm = async ({
 }: {
   jwt: 'string';
   hideError?: boolean;
-}): Promise<Realm | null> => {
+}): Promise<{realm: Realm | null; realmUser: any}> => {
   try {
     // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
@@ -89,13 +89,20 @@ export const loginToRealm = async ({
     // @ts-ignore
     const app = new Realm.App(appConfig);
     const realmUser = await app.logIn(credentials);
-    return await createRealm({realmUser});
+    const realm = await createRealm({realmUser});
+    return {
+      realmUser,
+      realm,
+    };
   } catch (e) {
     if (!hideError) {
       Alert.alert('Error', e.message);
     }
 
-    return null;
+    return {
+      realmUser: undefined,
+      realm: null,
+    };
   }
 };
 
