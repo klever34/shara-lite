@@ -68,7 +68,9 @@ const RealmProvider = (props: any) => {
         setRealmUser(undefined);
       }
     }
+
     setIsRealmSyncLoaderInitiated(false);
+    setRealm(undefined);
   };
 
   return (
