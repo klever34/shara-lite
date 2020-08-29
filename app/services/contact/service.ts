@@ -19,8 +19,8 @@ export interface IContactService {
   ): Promise<void>;
   getContactByMobile(mobile: string): IContact | null;
   getContact(id: string): IContact | null;
-  manageContact(contact: IContact): Promise<IContact>;
-  manageMultipleContacts(contact: IContact[]): Promise<IContact[]>;
+  createContact(contact: IContact): Promise<IContact>;
+  createMultipleContacts(contact: IContact[]): Promise<IContact[]>;
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
 }
@@ -174,7 +174,7 @@ export class ContactService implements IContactService {
     return contact;
   }
 
-  manageContact(contact: IContact): Promise<IContact> {
+  createContact(contact: IContact): Promise<IContact> {
     const realm = this.realmService.getInstance();
     return new Promise<IContact>((resolve, reject) => {
       try {
@@ -192,7 +192,7 @@ export class ContactService implements IContactService {
     });
   }
 
-  manageMultipleContacts(contacts: IContact[]): Promise<IContact[]> {
+  createMultipleContacts(contacts: IContact[]): Promise<IContact[]> {
     const realm = this.realmService.getInstance();
     return new Promise<IContact[]>((resolve, reject) => {
       try {
@@ -207,17 +207,16 @@ export class ContactService implements IContactService {
           resolve(createdContacts);
         });
       } catch (e) {
-        console.log(e, 'e');
         reject(e);
       }
     });
   }
 
   updateContact(contact: Partial<IContact>): Promise<IContact> {
-    return this.manageContact(contact as IContact);
+    return this.createContact(contact as IContact);
   }
 
   updateMultipleContacts(contacts: Partial<IContact[]>): Promise<IContact[]> {
-    return this.manageMultipleContacts(contacts as IContact[]);
+    return this.createMultipleContacts(contacts as IContact[]);
   }
 }

@@ -6,5 +6,9 @@ export const useErrorHandler = () => {
     if (error.message) {
       ToastAndroid.show(error.message, ToastAndroid.SHORT);
     }
+    console.log('Error: ', error);
+    if (error.stack) {
+      console.log('Stack: ', error.stack);
+    }
   }, []);
 };

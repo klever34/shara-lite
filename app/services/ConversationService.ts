@@ -145,9 +145,7 @@ export class ConversationService implements IConversationService {
             }
           }
           conversations.push(conversation);
-        } catch (e) {
-          console.log('restoreAllConversations', e);
-        }
+        } catch (e) {}
       }
       realm.write(() => {
         conversations.forEach((conversation) => {

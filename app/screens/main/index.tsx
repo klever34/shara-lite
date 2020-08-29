@@ -7,20 +7,20 @@ import {ActivityIndicator, View, BackHandler, ToastAndroid} from 'react-native';
 import Config from 'react-native-config';
 import {Results} from 'realm';
 import getUuidByString from 'uuid-by-string';
-import {FAButtonProps} from '../../components';
-import {applyStyles} from '../../helpers/utils';
+import {FAButtonProps} from '@/components';
+import {applyStyles} from '@/helpers/utils';
 import {IContact, IConversation} from '../../models';
-import {ICredit} from '../../models/Credit';
-import {ICreditPayment} from '../../models/CreditPayment';
-import {IPayment} from '../../models/Payment';
-import {IProduct} from '../../models/Product';
+import {ICredit} from '@/models/Credit';
+import {ICreditPayment} from '@/models/CreditPayment';
+import {IPayment} from '@/models/Payment';
+import {IProduct} from '@/models/Product';
 import {
   getAnalyticsService,
   getAuthService,
   getContactService,
   getPubNubService,
 } from '../../services';
-import {colors} from '../../styles';
+import {colors} from '@/styles';
 import {BusinessSetup} from '../BusinessSetup';
 import {
   AddProduct,
@@ -57,7 +57,7 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {ISupplier} from '../../models/Supplier';
+import {ISupplier} from '@/models/Supplier';
 import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
 import {Expenses} from './business/finances/Expenses';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
