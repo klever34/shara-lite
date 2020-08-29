@@ -9,23 +9,15 @@ import {
   View,
 } from 'react-native';
 import {colors, dimensions} from '../styles';
-import {
-  getAuthService,
-  getNavigationService,
-  getRealmService,
-} from '../services';
+import {getAuthService, getRealmService} from '../services';
 import {useNavigation} from '@react-navigation/native';
-import {RealmContext} from '../services/realm/provider';
-import {initLocalRealm} from '../services/realm';
+import {RealmContext} from '@/services/realm/provider';
+import {initLocalRealm} from '@/services/realm';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
   const {updateLocalRealm} = useContext(RealmContext);
 
-  useEffect(() => {
-    const navigationService = getNavigationService();
-    navigationService.setInstance(navigation);
-  });
   const handleRedirect = useCallback(
     async () => {
       const authService = getAuthService();
