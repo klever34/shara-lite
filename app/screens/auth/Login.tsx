@@ -22,11 +22,17 @@ type Fields = {
   countryCode: string | null;
 };
 
+const defaultLogin = {
+  mobile: '8056636694',
+  password: 'some-password',
+  countryCode: '234',
+};
+
 export const Login = ({navigation}: any) => {
   // @ts-ignore
   const {updateLocalRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>({} as Fields);
+  const [fields, setFields] = React.useState<Fields>(defaultLogin as Fields);
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -49,6 +55,7 @@ export const Login = ({navigation}: any) => {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
+    console.log(payload);
     const apiService = getApiService();
     try {
       setLoading(true);
