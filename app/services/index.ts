@@ -5,6 +5,7 @@ import {AuthService, IAuthService} from './auth';
 import {IRealmService, RealmService} from './realm';
 import {ApiService, IApiService} from './api';
 import {IPubNubService, PubNubService} from './pubnub';
+import {INavigationService, NavigationService} from './navigation';
 import {AnalyticsService, IAnalyticsService} from './analytics';
 import {IMessageService, MessageService} from '@/services/MessageService';
 import {
@@ -20,11 +21,16 @@ const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
   container.addDefinitions({
     Notification: object(NotificationService),
+    Navigation: object(NavigationService),
     Analytics: object(AnalyticsService),
     PubNub: object(PubNubService),
     Realm: object(RealmService),
     Storage: object(StorageService),
-    Auth: object(AuthService).construct(get('Storage'), get('PubNub')),
+    Auth: object(AuthService).construct(
+      get('Storage'),
+      get('PubNub'),
+      get('Navigation'),
+    ),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
       get('Realm'),
@@ -47,6 +53,9 @@ export const container = createDIContainer();
 
 export const getNotificationService = () =>
   container.get<INotificationService>('Notification');
+
+export const getNavigationService = () =>
+  container.get<INavigationService>('Navigation');
 
 export const getAnalyticsService = () =>
   container.get<IAnalyticsService>('Analytics');

@@ -1,5 +1,6 @@
 import {IStorageService} from '../storage';
 import {IPubNubService} from '../pubnub';
+import {INavigationService} from '../navigation';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
 import {User} from 'types/app';
@@ -36,6 +37,7 @@ export class AuthService implements IAuthService {
   constructor(
     private storageService: IStorageService,
     private pubNubService: IPubNubService,
+    private navigationService: INavigationService,
   ) {}
 
   public async initialize(): Promise<void> {
@@ -93,6 +95,7 @@ export class AuthService implements IAuthService {
         this.realmCredentials = null;
         await this.storageService.clear();
         this.pubNubService.getInstance()?.unsubscribeAll();
+        this.navigationService.goToAuth();
       }
     } catch (e) {
       throw e;
