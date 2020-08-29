@@ -289,21 +289,19 @@ jobs:
           condition: <<parameters.testBuild>>
           steps:
             - run:
-                name: Test Build
+                name: Test Build Config
                 command: |
                   echo '' >> .env
-                  echo 'CI_TESTS=false' >> .env
-                  cat .env
+                  echo 'CI_TESTS=true' >> .env
       - when:
           condition: <<parameters.testBuild>>
           steps:
             - run:
-                name: Release Build
+                name: Release Build Config
                 command: |
                   echo '' >> .env
-                  echo 'CI_TESTS=true' >> .env
-                  cat .env
-      - run:
+                  echo 'CI_TESTS=false' >> .env
+s      - run:
           name: Set Version
           command: |
             NEW_VERSION=$(jq ".version" -r package.json)
