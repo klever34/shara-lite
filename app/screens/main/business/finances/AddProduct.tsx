@@ -49,12 +49,14 @@ export const AddProduct = () => {
   const handleSubmit = useCallback(() => {
     if (Object.values(product).length === 3) {
       setIsLoading(true);
-      saveProduct({realm, product});
-      getAnalyticsService().logEvent('productAdded').catch(handleError);
-      setIsLoading(false);
-      clearForm();
-      navigation.goBack();
-      ToastAndroid.show('Product added', ToastAndroid.SHORT);
+      setTimeout(() => {
+        saveProduct({realm, product});
+        getAnalyticsService().logEvent('productAdded').catch(handleError);
+        setIsLoading(false);
+        clearForm();
+        navigation.goBack();
+        ToastAndroid.show('Product added', ToastAndroid.SHORT);
+      }, 300);
     }
   }, [product, realm, handleError, clearForm, navigation]);
 
