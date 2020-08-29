@@ -12,10 +12,15 @@ import {
   ConversationService,
   IConversationService,
 } from '@/services/ConversationService';
+import {
+  INotificationService,
+  NotificationService,
+} from './notification/service';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
   container.addDefinitions({
+    Notification: object(NotificationService),
     Navigation: object(NavigationService),
     Analytics: object(AnalyticsService),
     PubNub: object(PubNubService),
@@ -45,6 +50,9 @@ const createDIContainer = (): IDIContainer => {
 };
 
 export const container = createDIContainer();
+
+export const getNotificationService = () =>
+  container.get<INotificationService>('Notification');
 
 export const getNavigationService = () =>
   container.get<INavigationService>('Navigation');

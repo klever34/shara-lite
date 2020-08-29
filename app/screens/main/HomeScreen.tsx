@@ -7,15 +7,12 @@ import React, {
   useContext,
   useEffect,
   useLayoutEffect,
-  useState,
 } from 'react';
 import {useErrorHandler} from '@/services/error-boundary';
-import {Alert, Platform, SafeAreaView, View} from 'react-native';
-import PushNotification from 'react-native-push-notification';
+import {Alert, Platform, SafeAreaView} from 'react-native';
 import Realm from 'realm';
 import {MessageActionEvent} from 'types/pubnub';
 import HeaderRight from '../../components/HeaderRight';
-import {PushNotificationToken} from 'types/app';
 import {getBaseModelValues} from '@/helpers/models';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles, retryPromise} from '@/helpers/utils';
@@ -24,11 +21,11 @@ import {
   getAuthService,
   getConversationService,
   getMessageService,
+  getNotificationService,
 } from '../../services';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {BusinessTab} from './business';
-import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
 import {useScreenRecord} from '@/services/analytics';
 import {RealmContext} from '@/services/realm/provider';
@@ -48,7 +45,6 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   const pubNub = usePubNub();
   const navigation = useNavigation();
   const handleError = useErrorHandler();
-  const [notificationToken, setNotificationToken] = useState('');
 
   const handleLogout = useCallback(async () => {
     try {
@@ -77,40 +73,24 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row flex-1 items-center')}>
-          <HeaderRight
-            menuOptions={[
-              {
-                text: 'Restore Messages',
-                onSelect: () => {
-                  Alert.alert('Backup Restore', 'Restore all your messages?', [
-                    {
-                      text: 'CANCEL',
-                    },
-                    {
-                      text: 'OK',
-                      onPress: restoreAllMessages,
-                    },
-                  ]);
-                },
+        <HeaderRight
+          menuOptions={[
+            {
+              text: 'Log out',
+              onSelect: () => {
+                Alert.alert('Log Out', 'Are you sure you want to log out?', [
+                  {
+                    text: 'CANCEL',
+                  },
+                  {
+                    text: 'OK',
+                    onPress: handleLogout,
+                  },
+                ]);
               },
-              {
-                text: 'Log out',
-                onSelect: () => {
-                  Alert.alert('Log Out', 'Are you sure you want to log out?', [
-                    {
-                      text: 'CANCEL',
-                    },
-                    {
-                      text: 'OK',
-                      onPress: handleLogout,
-                    },
-                  ]);
-                },
-              },
-            ]}
-          />
-        </View>
+            },
+          ]}
+        />
       ),
     });
   }, [handleLogout, navigation, restoreAllMessages]);
@@ -125,6 +105,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     pubNub.subscribe({channels, channelGroups});
 
     const pushGateway = Platform.select({android: 'gcm', ios: 'apns'});
+    const notificationToken = getNotificationService().getNotificationToken();
     if (pushGateway && notificationToken) {
       try {
         new Promise<any>((resolve, reject) => {
@@ -151,22 +132,18 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
         pubNub.unsubscribeAll();
       }
     };
-  }, [handleError, notificationToken, pubNub, realm]);
+  }, [handleError, pubNub, realm]);
 
   useEffect(() => {
-    PushNotification.configure({
-      onRegister: (token: PushNotificationToken) => {
-        setNotificationToken(token.token);
-      },
-      onNotification: (notification: any) => {
-        if (!notification.foreground) {
-          const conversation = realm
-            .objects<IConversation>('Conversation')
-            .filtered(`channel = "${notification.channel}"`)[0];
-          navigation.navigate('Chat', conversation);
-          PushNotification.cancelAllLocalNotifications();
-        }
-      },
+    const notificationService = getNotificationService();
+    return notificationService.addEventListener((notification) => {
+      if (!notification.foreground) {
+        const conversation = getConversationService().getConversationByChannel(
+          notification.channel,
+        ) as IConversation;
+        navigation.navigate('Chat', conversation);
+        notificationService.cancelAllLocalNotifications();
+      }
     });
   }, [navigation, realm]);
 
@@ -310,11 +287,6 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           name="Customers"
           component={CustomersTab}
           options={{title: 'My Customers'}}
-        />
-        <HomeTab.Screen
-          name="ChatList"
-          options={{title: 'Chat'}}
-          component={ChatListScreen}
         />
       </HomeTab.Navigator>
     </SafeAreaView>
