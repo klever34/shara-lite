@@ -285,7 +285,7 @@ jobs:
     steps:
       - attach_workspace:
           at: .
-      - unless:
+      - when:
           condition: <<parameters.testBuild>>
           steps:
             - run:
@@ -293,7 +293,7 @@ jobs:
                 command: |
                   echo '' >> .env
                   echo 'CI_TESTS=true' >> .env
-      - when:
+      - unless:
           condition: <<parameters.testBuild>>
           steps:
             - run:
