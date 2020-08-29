@@ -301,7 +301,7 @@ jobs:
                 command: |
                   echo '' >> .env
                   echo 'CI_TESTS=false' >> .env
-s      - run:
+      - run:
           name: Set Version
           command: |
             NEW_VERSION=$(jq ".version" -r package.json)
