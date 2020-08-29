@@ -28,6 +28,7 @@ workflows:
           context: shara-test
           lane: internal
           gradleTask: assembleDevRelease
+          testBuild: true
           requires:
             - checkout_code
             - test
@@ -275,12 +276,29 @@ jobs:
       testersGroup:
         type: string
         default: shara-product
+      testBuild:
+        type: boolean
+        default: false
     docker:
       - image: circleci/android:api-27-node
     resource_class: large
     steps:
       - attach_workspace:
           at: .
+      - unless:
+          condition: <<parameters.testBuild>>
+          steps:
+            - run:
+                name: Test Build
+                command: |
+                  echo 'CI_TESTS=false' >> .env
+      - when:
+          condition: <<parameters.testBuild>>
+          steps:
+            - run:
+                name: Test Build
+                command: |
+                  echo 'CI_TESTS=true' >> .env
       - run:
           name: Set Version
           command: |
