@@ -15,6 +15,7 @@ import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
 import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type Fields = {
   mobile: string;
@@ -22,17 +23,13 @@ type Fields = {
   countryCode: string | null;
 };
 
-const defaultLogin = {
-  mobile: '8056636694',
-  password: 'some-password',
-  countryCode: '234',
-};
-
 export const Login = ({navigation}: any) => {
   // @ts-ignore
   const {updateLocalRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>(defaultLogin as Fields);
+  const [fields, setFields] = React.useState<Fields>(
+    FormDefaults.get('login') as Fields,
+  );
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({

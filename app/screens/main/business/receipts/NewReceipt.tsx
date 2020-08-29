@@ -29,6 +29,7 @@ import {colors} from '../../../../styles';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
 import {useScreenRecord} from '../../../../services/analytics';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -47,7 +48,9 @@ export const NewReceipt = () => {
 
   const [price, setPrice] = useState<string | undefined>('');
   const [receipt, setReceipt] = useState<IReceiptItem[]>([]);
-  const [quantity, setQuantity] = useState<string | undefined>('');
+  const [quantity, setQuantity] = useState<string | undefined>(
+    FormDefaults.get('quantity'),
+  );
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
     false,

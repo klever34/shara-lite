@@ -17,6 +17,7 @@ import {getCustomers, saveCustomer} from '../../../services/CustomerService';
 import {useRealm} from '../../../services/realm';
 import {colors} from '../../../styles';
 import {ICustomer} from '@/models';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type Props = {
   onSubmit?: (customer: ICustomer) => void;
@@ -28,8 +29,8 @@ const AddCustomer = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
-  const [name, setName] = useState('');
-  const [mobile, setMobile] = useState('');
+  const [name, setName] = useState(FormDefaults.get('newCustomerName'));
+  const [mobile, setMobile] = useState(FormDefaults.get('newCustomerMobile'));
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNameChange = useCallback((text: string) => {

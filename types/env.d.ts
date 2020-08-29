@@ -12,6 +12,8 @@ declare module 'react-native-config' {
 
   export const UXCAM_KEY: string;
 
+  export const CI_TESTS: string;
+
   export const ENVIRONMENT:
     | 'delivery'
     | 'test'
