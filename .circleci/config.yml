@@ -291,14 +291,18 @@ jobs:
             - run:
                 name: Test Build
                 command: |
+                  echo '' >> .env
                   echo 'CI_TESTS=false' >> .env
+                  cat .env
       - when:
           condition: <<parameters.testBuild>>
           steps:
             - run:
-                name: Test Build
+                name: Release Build
                 command: |
+                  echo '' >> .env
                   echo 'CI_TESTS=true' >> .env
+                  cat .env
       - run:
           name: Set Version
           command: |
