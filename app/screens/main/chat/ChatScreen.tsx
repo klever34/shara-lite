@@ -26,7 +26,11 @@ import {applyStyles, generateUniqueId, retryPromise} from '@/helpers/utils';
 import {colors} from '@/styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
-import {getAnalyticsService, getAuthService} from '../../../services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getPubNubService,
+} from '../../../services';
 import {useRealm} from '@/services/realm';
 import {UpdateMode} from 'realm';
 import {IMessage} from '@/models';
@@ -119,8 +123,8 @@ const ChatScreen = ({
     };
   }, [channel, handleError, me, pubNub, realm]);
   useEffect(() => {
-    const listener = {
-      messageAction: (evt: MessageActionEvent) => {
+    return getPubNubService().addMessageActionEventListener(
+      (evt: MessageActionEvent) => {
         try {
           if (
             evt.data.value === 'message_read' &&
@@ -139,12 +143,8 @@ const ChatScreen = ({
           handleError(e);
         }
       },
-    };
-    pubNub.addListener(listener);
-    return () => {
-      pubNub.removeListener(listener);
-    };
-  }, [channel, handleError, pubNub, realm]);
+    );
+  }, [handleError, pubNub, realm]);
 
   const headerDescription = useMemo(() => {
     if (conversation.type === 'group') {

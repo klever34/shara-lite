@@ -1,7 +1,9 @@
 import PushNotification from 'react-native-push-notification';
 import {PushNotificationToken} from 'types/app';
 
-type NotificationListener = (notification: any) => any;
+export type Notification = any;
+
+export type NotificationListener = (notification: Notification) => void;
 
 export interface INotificationService {
   initialize(): void;
@@ -18,7 +20,7 @@ export class NotificationService implements INotificationService {
       onRegister: (token: PushNotificationToken) => {
         this.notificationToken = token.token;
       },
-      onNotification: (notification: any) => {
+      onNotification: (notification: Notification) => {
         this.listeners.forEach((listener) => {
           listener(notification);
         });

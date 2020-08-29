@@ -11,29 +11,37 @@ import {IPubNubService} from '@/services/pubnub';
 import {IAuthService} from '@/services/auth';
 import {IApiService} from '@/services/api';
 import {IContactService} from '@/services/contact';
+import {Platform} from 'react-native';
+import {getNotificationService} from '@/services/index';
 
 export interface IConversationService {
   getConversationByChannel(channel: string): IConversation | null;
 
   getConversation(conversationId: string): IConversation | null;
 
-  // createConversation(conversation: IConversation): Promise<IConversation>;
-  // updateConversation(conversation: IConversation): Promise<IConversation>;
   restoreAllConversations(): Promise<void>;
 
   getConversationFromChannelMetadata(
     channelMetadata: PubNub.ChannelMetadataObject<PubNub.ObjectCustom>,
   ): Promise<IConversation>;
+  setUpSubscriptions(): () => void;
+  setUpConversationNotification(): Promise<void>;
 }
 
 export class ConversationService implements IConversationService {
+  public conversations?: Realm.Results<IConversation & Realm.Object>;
   constructor(
     private realmService: IRealmService,
     private pubNubService: IPubNubService,
     private authService: IAuthService,
     private apiService: IApiService,
     private contactService: IContactService,
-  ) {}
+  ) {
+    const realm = realmService.getInstance();
+    if (realm) {
+      this.conversations = realm.objects<IConversation>('Conversation');
+    }
+  }
 
   getConversationByChannel(channel: string): IConversation | null {
     const realm = this.realmService.getInstance();
@@ -49,14 +57,6 @@ export class ConversationService implements IConversationService {
     const realm = this.realmService.getInstance();
     return realm?.objectForPrimaryKey('Conversation', conversationId) || null;
   }
-
-  // createConversation(conversation: IConversation): Promise<IConversation> {
-  //   return new Promise<IConversation>((resolve, reject) => {});
-  // }
-  //
-  // updateConversation(conversation: IConversation): Promise<IConversation> {
-  //   return new Promise<IConversation>((resolve, reject) => {});
-  // }
 
   private prepareConversation(conversation: IConversation): IConversation {
     if (conversation._id) {
@@ -212,6 +212,50 @@ export class ConversationService implements IConversationService {
       return conversation;
     } catch (e) {
       throw e;
+    }
+  }
+
+  public getAllConversationChannels(): string[] {
+    const channels: string[] = [];
+    channels.push(
+      ...(this.conversations?.map((conversation) => conversation.channel) ??
+        []),
+    );
+    return channels;
+  }
+
+  setUpSubscriptions(): () => void {
+    const pubNub = this.pubNubService.getInstance();
+    const channelGroups: string[] = [pubNub?.getUUID() ?? ''];
+    const channels = this.getAllConversationChannels();
+    pubNub?.subscribe({channels, channelGroups});
+    return () => {
+      pubNub?.unsubscribeAll();
+    };
+  }
+
+  setUpConversationNotification(): Promise<void> {
+    const channels = this.getAllConversationChannels();
+    const pushGateway = Platform.select({android: 'gcm', ios: 'apns'});
+    const notificationToken = getNotificationService().getNotificationToken();
+    const pubNub = this.pubNubService.getInstance();
+    if (pushGateway && notificationToken && pubNub) {
+      return new Promise<any>((resolve, reject) => {
+        pubNub.push.addChannels(
+          {
+            channels: [...channels, pubNub.getUUID()],
+            device: notificationToken,
+            pushGateway,
+          },
+          (status) => {
+            if (status.error) {
+              reject(status);
+            }
+          },
+        );
+      });
+    } else {
+      return Promise.resolve();
     }
   }
 }

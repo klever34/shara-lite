@@ -12,10 +12,7 @@ import {
   ConversationService,
   IConversationService,
 } from '@/services/ConversationService';
-import {
-  INotificationService,
-  NotificationService,
-} from './notification/service';
+import {INotificationService, NotificationService} from './notification';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
@@ -26,11 +23,7 @@ const createDIContainer = (): IDIContainer => {
     PubNub: object(PubNubService),
     Realm: object(RealmService),
     Storage: object(StorageService),
-    Auth: object(AuthService).construct(
-      get('Storage'),
-      get('PubNub'),
-      get('Navigation'),
-    ),
+    Auth: object(AuthService).construct(get('Storage'), get('PubNub')),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
       get('Realm'),

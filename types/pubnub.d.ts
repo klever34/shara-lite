@@ -3,7 +3,7 @@ import {
   MessageActionEvent as PubNubMessageActionEvent,
 } from 'pubnub';
 
-type MessageActionEvent = PubNubMessageActionEvent & {
+export type MessageActionEvent = PubNubMessageActionEvent & {
   data: MessageAction;
   event: string;
 };
