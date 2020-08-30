@@ -50,9 +50,6 @@ export const useRealm = (): Realm => {
 };
 
 export const createRealm = async (options?: any): Promise<Realm> => {
-  if (process.env.NODE_ENV === 'development') {
-    // Realm.deleteFile({});
-  }
   const partitionValue = await getRealmPartitionKey();
   setRealmPartitionKey(partitionValue);
   setBasePartitionKey(partitionValue);
@@ -67,6 +64,8 @@ export const createRealm = async (options?: any): Promise<Realm> => {
       user: options.realmUser,
       partitionValue,
     };
+    // @ts-ignore
+    config.path = `user-data-${partitionValue}`;
   }
 
   return Realm.open(config as Realm.Configuration);
@@ -78,8 +77,13 @@ export const loginToRealm = async ({
 }: {
   jwt: 'string';
   hideError?: boolean;
-}): Promise<{realm: Realm | null; realmUser: any}> => {
+}): Promise<{
+  realm: Realm | null;
+  realmUser?: any;
+  partitionValue?: string;
+}> => {
   try {
+    const partitionValue = await getRealmPartitionKey();
     // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
     const appConfig = {
@@ -93,6 +97,7 @@ export const loginToRealm = async ({
     return {
       realmUser,
       realm,
+      partitionValue,
     };
   } catch (e) {
     if (!hideError) {
@@ -100,7 +105,6 @@ export const loginToRealm = async ({
     }
 
     return {
-      realmUser: undefined,
       realm: null,
     };
   }

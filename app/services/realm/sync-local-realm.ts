@@ -3,9 +3,11 @@ import Realm from 'realm';
 export const syncLocalRealm = ({
   localRealm,
   syncRealm,
+  partitionValue,
 }: {
   localRealm: Realm;
   syncRealm: Realm;
+  partitionValue: string;
 }) => {
   localRealm.schema.forEach((objSchema) => {
     const modelName = objSchema.name;
@@ -15,8 +17,12 @@ export const syncLocalRealm = ({
     function listener(records, changes) {
       changes.insertions.forEach((index: number) => {
         const insertedRecord = records[index];
+
         syncRealm.write(() => {
-          if (insertedRecord._partition) {
+          if (
+            insertedRecord._partition &&
+            insertedRecord._partition === partitionValue
+          ) {
             syncRealm.create(
               modelName,
               insertedRecord,
@@ -28,8 +34,12 @@ export const syncLocalRealm = ({
 
       changes.modifications.forEach((index: number) => {
         const modifiedRecord = records[index];
+
         syncRealm.write(() => {
-          if (modifiedRecord._partition) {
+          if (
+            modifiedRecord._partition &&
+            modifiedRecord._partition === partitionValue
+          ) {
             syncRealm.create(
               modelName,
               modifiedRecord,

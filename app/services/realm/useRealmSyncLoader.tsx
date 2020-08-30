@@ -37,17 +37,24 @@ const useRealmSyncLoader = () => {
       try {
         setIsLoading(true);
         const {jwt} = realmCredentials;
-        const {realm: newRealm, realmUser} = await loginToRealm({
-          jwt,
-          hideError: true,
-        });
+        const {realm: newRealm, realmUser, partitionValue} = await loginToRealm(
+          {
+            jwt,
+            hideError: true,
+          },
+        );
         setIsLoading(false);
         if (!newRealm) {
           retryUpdate();
           return;
         }
 
-        updateSyncRealm && updateSyncRealm({newRealm, realmUser});
+        updateSyncRealm &&
+          updateSyncRealm({
+            newRealm,
+            realmUser,
+            partitionValue: partitionValue || '',
+          });
         const realmService = getRealmService();
         realmService.setInstance(newRealm);
         setHasLoadedRealm(true);

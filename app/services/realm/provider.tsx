@@ -10,17 +10,14 @@ type RealmObject = {
   updateSyncRealm?: ({
     newRealm,
     realmUser,
+    partitionValue,
   }: {
     newRealm: Realm;
     realmUser: any;
+    partitionValue: string;
   }) => void;
   logoutFromRealm?: () => void;
   setIsRealmSyncLoaderInitiated?: (isLoaded: Boolean) => void;
-};
-
-type RealmCloneParams = {
-  realm?: Realm;
-  args: Array<any>;
 };
 
 export const RealmContext = createContext<RealmObject>({});
@@ -37,15 +34,17 @@ const RealmProvider = (props: any) => {
   const updateSyncRealm = ({
     newRealm,
     realmUser,
+    partitionValue,
   }: {
     newRealm: Realm;
     realmUser: any;
+    partitionValue: string;
   }) => {
     setRealmUser(realmUser);
-
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
+      partitionValue,
     });
     syncRealm.current = newRealm;
   };
@@ -57,13 +56,18 @@ const RealmProvider = (props: any) => {
 
   const logoutFromRealm = () => {
     if (localRealm.current) {
+      localRealm.current?.removeAllListeners();
+
       localRealm.current.write(() => {
         localRealm.current?.deleteAll();
       });
     }
 
     if (syncRealm.current) {
+      syncRealm.current?.removeAllListeners();
+
       if (realmUser) {
+        // @ts-ignore
         realmUser.logOut();
         setRealmUser(undefined);
       }
@@ -91,16 +95,18 @@ const RealmProvider = (props: any) => {
 const syncLocalData = ({
   syncRealm,
   localRealm,
+  partitionValue,
 }: {
   syncRealm?: Realm;
   localRealm?: Realm;
+  partitionValue: string;
 }) => {
   if (!syncRealm || !localRealm) {
     return;
   }
-  copyRealm({sourceRealm: localRealm, targetRealm: syncRealm});
-  copyRealm({sourceRealm: syncRealm, targetRealm: localRealm});
-  syncLocalRealm({localRealm, syncRealm});
+  copyRealm({sourceRealm: localRealm, targetRealm: syncRealm, partitionValue});
+  copyRealm({sourceRealm: syncRealm, targetRealm: localRealm, partitionValue});
+  syncLocalRealm({localRealm, syncRealm, partitionValue});
 };
 
 export default RealmProvider;
