@@ -145,7 +145,7 @@ export function ReceiptDetailsModal(props: Props) {
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [14, 6, 12];
+      const productListColumnWidth = [12, 6, 14];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -270,7 +270,7 @@ export function ReceiptDetailsModal(props: Props) {
                 BluetoothEscposPrinter.ALIGN.RIGHT,
               ],
               [
-                `${item.product.sku} - ${item.product.name}`,
+                `${item.product.name}`,
                 `${q}`,
                 `${currencyCode}${numberWithCommas(parseInt(total, 10))}`,
               ],
