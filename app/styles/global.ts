@@ -29,6 +29,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'self-start': {
     alignSelf: 'flex-start',
   },
+  'self-center': {
+    alignSelf: 'center',
+  },
+  'self-end': {
+    alignSelf: 'flex-end',
+  },
   center: {
     justifyContent: 'center',
     alignItems: 'center',
@@ -155,6 +161,10 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       // border
       [`rounded-${curr}`]: {borderRadius: spacing[curr]},
       [`border-${curr}`]: {borderWidth: spacing[curr]},
+      [`border-b-${curr}`]: {borderBottomWidth: spacing[curr]},
+
+      // line-height
+      [`leading-${curr}`]: {lineHeight: spacing[curr]},
 
       // positions
       [`top-${curr}`]: {top: spacing[curr]},
@@ -173,6 +183,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`bg-${curr}`]: {backgroundColor: colors[curr]},
       [`text-${curr}`]: {color: colors[curr]},
       [`border-${curr}`]: {borderColor: colors[curr]},
+      [`border-b-${curr}`]: {borderBottomColor: colors[curr]},
     };
   }, {}),
   ...[0, 1, 2, 3, 4].reduce((acc, curr) => {

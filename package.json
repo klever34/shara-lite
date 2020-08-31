@@ -61,6 +61,7 @@
     "readable-stream": "1.0.33",
     "realm": "10.0.0-beta.7",
     "rn-fetch-blob": "^0.12.0",
+    "rsdi": "^1.0.5",
     "uuid": "^8.2.0",
     "uuid-by-string": "^3.0.2"
   },

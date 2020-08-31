@@ -1,6 +1,6 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import EmptyState from '../../../../components/EmptyState';
 import {
   StyleSheet,
@@ -13,11 +13,11 @@ import {
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import {useNavigation} from '@react-navigation/native';
-import {useRealm} from '../../../../services/realm';
+import {useRealm} from '@/services/realm';
 import Touchable from '../../../../components/Touchable';
-import {ISupplier} from '../../../../models/Supplier';
-import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
-import {useScreenRecord} from '../../../../services/analytics';
+import {ISupplier} from '@/models/Supplier';
+import {getSuppliers, saveSupplier} from '@/services/SupplierService';
+import {useScreenRecord} from '@/services/analytics';
 import {ContactsListModal} from '@/components';
 import {Contact} from 'react-native-contacts';
 import {getAnalyticsService} from '@/services';

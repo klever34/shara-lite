@@ -10,7 +10,7 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getNotificationService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 
 export type RootStackParamList = {
@@ -26,6 +26,9 @@ const App = () => {
   useEffect(() => {
     getAnalyticsService().initialize().catch(handleError);
   }, [handleError]);
+  useEffect(() => {
+    getNotificationService().initialize();
+  }, []);
   return (
     <RealmProvider>
       <NavigationContainer>

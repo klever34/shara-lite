@@ -2,19 +2,19 @@ import {useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
 import Config from 'react-native-config';
 import {Contact, Message, Conversation, Customer} from '../../models';
-import {Payment} from '../../models/Payment';
-import {Credit} from '../../models/Credit';
-import {CreditPayment} from '../../models/CreditPayment';
-import {Receipt} from '../../models/Receipt';
-import {ReceiptItem} from '../../models/ReceiptItem';
-import {Product} from '../../models/Product';
-import {Supplier} from '../../models/Supplier';
-import {StockItem} from '../../models/StockItem';
-import {DeliveryAgent} from '../../models/DeliveryAgent';
+import {Payment} from '@/models/Payment';
+import {Credit} from '@/models/Credit';
+import {CreditPayment} from '@/models/CreditPayment';
+import {Receipt} from '@/models/Receipt';
+import {ReceiptItem} from '@/models/ReceiptItem';
+import {Product} from '@/models/Product';
+import {Supplier} from '@/models/Supplier';
+import {StockItem} from '@/models/StockItem';
+import {DeliveryAgent} from '@/models/DeliveryAgent';
 import {RealmContext} from './provider';
 import {Alert} from 'react-native';
 import {StorageService} from '../storage';
-import {ReceivedInventory} from '../../models/ReceivedInventory';
+import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
@@ -55,12 +55,17 @@ export const createRealm = async (options?: any): Promise<Realm> => {
   setRealmPartitionKey(partitionValue);
   setBasePartitionKey(partitionValue);
 
-  const config: {
-    schema: Array<object>;
-  } = {schema};
+  const config: Realm.Configuration = {
+    schema,
+    schemaVersion: 1,
+    migration: (oldRealm) => {
+      if (oldRealm.schemaVersion < 1) {
+        // Do migration to schema version one here
+      }
+    },
+  };
 
-  if (options && options.realmUser) {
-    // @ts-ignore
+  if (options?.realmUser) {
     config.sync = {
       user: options.realmUser,
       partitionValue,
@@ -74,7 +79,7 @@ export const createRealm = async (options?: any): Promise<Realm> => {
     config.schemaVersion = options.schemaVersion;
   }
 
-  return Realm.open(config as Realm.Configuration);
+  return Realm.open(config);
 };
 
 export const loginToRealm = async ({
