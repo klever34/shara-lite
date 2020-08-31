@@ -13,7 +13,7 @@ export interface BaseModelInterface {
 export const baseModelSchema = {
   _id: {type: 'objectId', indexed: true},
   _partition: 'string',
-  is_deleted: {type: 'bool', default: false},
+  is_deleted: {type: 'bool', default: false, optional: true},
   created_at: 'date?',
   updated_at: 'date?',
 };
