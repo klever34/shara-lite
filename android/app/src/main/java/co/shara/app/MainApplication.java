@@ -6,6 +6,7 @@ import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
 import cn.jystudio.bluetooth.RNBluetoothEscposPrinterPackage;
 import cn.jystudio.bluetooth.RNBluetoothEscposPrinterPackage;
+import cn.jystudio.bluetooth.RNBluetoothEscposPrinterPackage;
 import fr.greweb.reactnativeviewshot.RNViewShotPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
 import com.RNFetchBlob.RNFetchBlobPackage;
