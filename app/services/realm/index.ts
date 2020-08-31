@@ -66,7 +66,7 @@ export const createRealm = async (options?: any): Promise<Realm> => {
       partitionValue,
     };
     // @ts-ignore
-    config.path = `user-data-${partitionValue}`;
+    config.path = `sync-user-data-${partitionValue}`;
   }
 
   if (options && options.schemaVersion) {
