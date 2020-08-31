@@ -26,7 +26,7 @@ export class Contact extends BaseModel implements Partial<IContact> {
       channel: 'string?',
       groups: 'string',
       isMe: 'bool',
-      recordId: 'string?',
+      // recordId: 'string?',
     },
   };
   public firstname: string | undefined;
