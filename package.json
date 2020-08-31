@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.21-chore.investigate-printout-issue+build.1946",
+  "version": "0.2.21-chore.investigate-printout-issue+build.1950",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
