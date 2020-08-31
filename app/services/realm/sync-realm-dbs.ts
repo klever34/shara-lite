@@ -1,29 +1,28 @@
 import Realm from 'realm';
 
-export const syncLocalRealm = ({
-  localRealm,
-  syncRealm,
+export const syncRealmDbs = ({
+  sourceRealm,
+  targetRealm,
   partitionValue,
 }: {
-  localRealm: Realm;
-  syncRealm: Realm;
+  sourceRealm: Realm;
+  targetRealm: Realm;
   partitionValue: string;
 }) => {
-  localRealm.schema.forEach((objSchema) => {
+  sourceRealm.schema.forEach((objSchema) => {
     const modelName = objSchema.name;
-    const collectionListenerRetainer = localRealm.objects(modelName);
+    const collectionListenerRetainer = sourceRealm.objects(modelName);
 
     // @ts-ignore
     function listener(records, changes) {
       changes.insertions.forEach((index: number) => {
         const insertedRecord = records[index];
-
-        syncRealm.write(() => {
+        targetRealm.write(() => {
           if (
             insertedRecord._partition &&
             insertedRecord._partition === partitionValue
           ) {
-            syncRealm.create(
+            targetRealm.create(
               modelName,
               insertedRecord,
               Realm.UpdateMode.Modified,
@@ -34,13 +33,12 @@ export const syncLocalRealm = ({
 
       changes.modifications.forEach((index: number) => {
         const modifiedRecord = records[index];
-
-        syncRealm.write(() => {
+        targetRealm.write(() => {
           if (
             modifiedRecord._partition &&
             modifiedRecord._partition === partitionValue
           ) {
-            syncRealm.create(
+            targetRealm.create(
               modelName,
               modifiedRecord,
               Realm.UpdateMode.Modified,

@@ -1,7 +1,7 @@
 import Realm from 'realm';
 import React, {createContext, useRef, useState} from 'react';
 import {copyRealm} from '@/services/realm/copy-realm';
-import {syncLocalRealm} from '@/services/realm/sync-local-realm';
+import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
 
 type RealmObject = {
   realm?: Realm;
@@ -106,7 +106,16 @@ const syncLocalData = ({
   }
   copyRealm({sourceRealm: localRealm, targetRealm: syncRealm, partitionValue});
   copyRealm({sourceRealm: syncRealm, targetRealm: localRealm, partitionValue});
-  syncLocalRealm({localRealm, syncRealm, partitionValue});
+  syncRealmDbs({
+    sourceRealm: localRealm,
+    targetRealm: syncRealm,
+    partitionValue,
+  });
+  syncRealmDbs({
+    sourceRealm: syncRealm,
+    targetRealm: localRealm,
+    partitionValue,
+  });
 };
 
 export default RealmProvider;
