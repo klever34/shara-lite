@@ -165,7 +165,6 @@ export const ReceiptStatusModal = (props: Props) => {
             fonttype: 1,
           },
         };
-        // TODO Print Receipt
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
