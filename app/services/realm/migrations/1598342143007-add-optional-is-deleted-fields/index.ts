@@ -8,10 +8,7 @@ import {Customer} from '@/services/realm/migrations/1598342143007-add-optional-i
 import {DeliveryAgent} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/DeliveryAgent';
 import {Message} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Message';
 import {Payment} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
-import {
-  IProduct,
-  Product,
-} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Product';
+import {Product} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Product';
 import {Receipt} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Receipt';
 import {ReceiptItem} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/ReceiptItem';
 import {ReceivedInventory} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/ReceivedInventory';
@@ -19,13 +16,13 @@ import {StockItem} from '@/services/realm/migrations/1598342143007-add-optional-
 import {Supplier} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Supplier';
 
 const migration = (oldRealm: Realm, newRealm: Realm) => {
-  const oldObjects = (oldRealm.objects('Product') as unknown) as IProduct[];
-  const newObjects = (newRealm.objects('Product') as unknown) as IProduct[];
-
-  // loop through all objects and set the name property in the new schema
-  for (let i = 0; i < oldObjects.length; i++) {
-    newObjects[i].test = oldObjects[i].name + ' ' + oldObjects[i].sku;
-  }
+  const newRealmSchema = newRealm.schema;
+  newRealmSchema.forEach((objSchema) => {
+    const allObjects = newRealm.objects(objSchema.name);
+    allObjects.forEach((obj: any) => {
+      obj.is_deleted = false;
+    });
+  });
 };
 
 const schema = [
