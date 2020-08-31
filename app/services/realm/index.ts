@@ -17,6 +17,7 @@ import {StorageService} from '../storage';
 import {ReceivedInventory} from '../../models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
+import {runMigration} from '@/services/realm/migrations';
 
 export const schema = [
   Contact,
@@ -68,6 +69,11 @@ export const createRealm = async (options?: any): Promise<Realm> => {
     config.path = `user-data-${partitionValue}`;
   }
 
+  if (options && options.schemaVersion) {
+    // @ts-ignore
+    config.schemaVersion = options.schemaVersion;
+  }
+
   return Realm.open(config as Realm.Configuration);
 };
 
@@ -112,7 +118,8 @@ export const loginToRealm = async ({
 
 export const initLocalRealm = async (): Promise<Realm> => {
   try {
-    const realm = await createRealm();
+    const {schemaVersion} = runMigration({currentSchema: schema});
+    const realm = await createRealm({schemaVersion});
     return realm;
   } catch (e) {
     throw e;

@@ -1,5 +1,5 @@
-// import schema1 from './1598342143007-add-test-to-payment';
+import schema1 from './1598342143007-add-optional-is-deleted-fields';
 
-const schemas: any[] = []; // [{schemaVersion: 1, ...schema1}];
+const schemas: any[] = [{schemaVersion: 1, ...schema1}];
 
 export default schemas;
