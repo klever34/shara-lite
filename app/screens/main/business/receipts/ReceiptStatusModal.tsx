@@ -170,35 +170,35 @@ export const ReceiptStatusModal = (props: Props) => {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `${user?.businesses[0].name}\n\r`,
+          `${user?.businesses[0].name}\n`,
           receiptStyles.header,
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `${user?.businesses[0].address}\n\r`,
+          `${user?.businesses[0].address}\n`,
           receiptStyles.header,
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `Tel: ${user?.mobile}\n\r`,
+          `Tel: ${user?.mobile}\n`,
           receiptStyles.header,
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printColumn(
@@ -223,7 +223,7 @@ export const ReceiptStatusModal = (props: Props) => {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printColumn(
@@ -240,7 +240,7 @@ export const ReceiptStatusModal = (props: Props) => {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         for (const item of products) {
@@ -265,7 +265,7 @@ export const ReceiptStatusModal = (props: Props) => {
             BluetoothEscposPrinter.ALIGN.LEFT,
           );
           await BluetoothEscposPrinter.printText(
-            '--------------------------------\n\r',
+            '--------------------------------\n',
             {},
           );
         }
@@ -273,38 +273,38 @@ export const ReceiptStatusModal = (props: Props) => {
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
         await BluetoothEscposPrinter.printText(
-          `Tax: ${0}\n\r`,
+          `Tax: ${0}\n`,
           receiptStyles.product,
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
         await BluetoothEscposPrinter.printText(
-          `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n\r`,
+          `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n`,
           receiptStyles.subheader,
         );
         await BluetoothEscposPrinter.printText(
-          `Paid: ${currencyCode} ${numberWithCommas(amountPaid)}\n\r`,
+          `Paid: ${currencyCode} ${numberWithCommas(amountPaid)}\n`,
           receiptStyles.subheader,
         );
         creditAmount &&
           (await BluetoothEscposPrinter.printText(
-            `Balance: ${currencyCode} ${numberWithCommas(creditAmount)}\n\r`,
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmount)}\n`,
             receiptStyles.subheader,
           ));
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          'Powered by Shara. www.shara.co\n\r',
+          'Powered by Shara. www.shara.co\n',
           receiptStyles.product,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
