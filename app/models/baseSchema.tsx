@@ -5,6 +5,7 @@ let partitionKey = '';
 export interface BaseModelInterface {
   _id?: ObjectId;
   _partition?: string;
+  is_deleted?: boolean;
   created_at?: Date;
   updated_at?: Date;
 }
@@ -12,6 +13,7 @@ export interface BaseModelInterface {
 export const baseModelSchema = {
   _id: {type: 'objectId', indexed: true},
   _partition: 'string',
+  is_deleted: {type: 'bool', default: false},
   created_at: 'date?',
   updated_at: 'date?',
 };
