@@ -16,13 +16,14 @@ export class Contact extends BaseModel implements Partial<IContact> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      id: {type: 'int', indexed: true},
-      mobile: 'string',
+      id: {type: 'int', indexed: true, optional: true},
+      mobile: 'string?',
       channel: 'string?',
-      groups: 'string',
-      isMe: 'bool',
-      firstname: 'string',
-      lastname: 'string',
+      groups: 'string?',
+      isMe: 'bool?',
+      firstname: 'string?',
+      lastname: 'string?',
+      recordId: 'string?',
     },
   };
   public firstname: string | undefined;
