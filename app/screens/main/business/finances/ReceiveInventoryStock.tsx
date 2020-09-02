@@ -44,11 +44,11 @@ export const ReceiveInventoryStock = ({
   const products = getProducts({realm});
   const {supplier} = route.params;
 
-  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
-  const [price, setPrice] = useState<string | undefined>('');
-  const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
+  const [price, setPrice] = useState<number | undefined>();
   const [quantity, setQuantity] = useState<string | undefined>('');
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
     false,
   );
@@ -61,7 +61,7 @@ export const ReceiveInventoryStock = ({
 
   const handleAddItem = useCallback(() => {
     if (quantity) {
-      const itemPrice = price ? parseInt(price, 10) : 0;
+      const itemPrice = price ? price : 0;
       const itemQuantity = parseInt(quantity, 10);
       const stock = {
         supplier,
@@ -97,7 +97,7 @@ export const ReceiveInventoryStock = ({
         setInventoryStock([stock, ...inventoryStock]);
       }
       setSelectedProduct(null);
-      setPrice('');
+      setPrice(undefined);
       setQuantity('');
     }
   }, [price, quantity, inventoryStock, selectedProduct, supplier]);
@@ -118,7 +118,7 @@ export const ReceiveInventoryStock = ({
 
       if (stock) {
         setQuantity(stock.quantity.toString());
-        setPrice(stock?.cost_price?.toString());
+        setPrice(stock?.cost_price);
         setSelectedProduct(product);
       } else {
         setSelectedProduct(product);
@@ -156,7 +156,7 @@ export const ReceiveInventoryStock = ({
   const handleDone = useCallback(() => {
     let items = inventoryStock;
     if (selectedProduct && quantity) {
-      const itemPrice = price ? parseInt(price, 10) : 0;
+      const itemPrice = price ? price : 0;
       const itemQuantity = parseInt(quantity, 10);
       const stock = {
         supplier,
@@ -385,9 +385,9 @@ export const ReceiveInventoryStock = ({
                     width: '100%',
                   })}>
                   <CurrencyInput
-                    value={price}
                     label="Cost Price"
-                    onChange={handlePriceChange}
+                    value={price?.toString()}
+                    onChange={(text) => handlePriceChange(text)}
                   />
                 </View>
               </View>
