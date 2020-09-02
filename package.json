@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.21-feature.handling-decimals+build.1930",
+  "version": "0.2.21-feature.handling-decimals+build.1958",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
