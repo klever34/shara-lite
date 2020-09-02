@@ -20,7 +20,7 @@ const toThousandString = (text: string) => {
     if (parts.length > 1) {
       const n = toNumber(parts[0]);
       const part0 = new Intl.NumberFormat('en-GB').format(n);
-      const part1 = parts[1];
+      const part1 = parts[1].toString().substring(0, 2);
       return `${part0}.${part1}`;
     } else {
       return text;
