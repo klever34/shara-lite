@@ -72,6 +72,7 @@ const useRealmSyncLoader = () => {
       }
 
       setIsRealmSyncLoaderInitiated && setIsRealmSyncLoaderInitiated(true);
+      updateRealm();
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isRealmSyncLoaderInitiated],
