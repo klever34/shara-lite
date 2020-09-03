@@ -51,11 +51,13 @@ export const syncRealmDbs = ({
         });
       };
 
-      if (targetRealm.isInTransaction) {
-        updateRecords();
-      } else {
-        targetRealm.write(updateRecords);
-      }
+      setTimeout(() => {
+        if (targetRealm.isInTransaction) {
+          updateRecords();
+        } else {
+          targetRealm.write(updateRecords);
+        }
+      }, 1000);
     }
 
     // @ts-ignore
