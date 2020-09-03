@@ -16,7 +16,6 @@ import {applyStyles} from '@/helpers/utils';
 import ContactsList from '../../../components/ContactsList';
 import {useRealm} from '@/services/realm';
 import {IContact} from '@/models';
-import {IConversation} from '@/models';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import TextInput from '../../../components/TextInput';
 import {
@@ -123,7 +122,7 @@ const ChatDetailsScreen = ({
             conversation.channel,
           );
           const updatePayload = existingChannel || getBaseModelValues();
-          realm.create<IConversation>(
+          realm.create(
             'Conversation',
             {
               ...updatePayload,

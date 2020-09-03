@@ -100,7 +100,7 @@ export class MessageService implements IMessageService {
                 const conversation = realm
                   .objects<IConversation>('Conversation')
                   .filtered(`channel="${channel}"`)[0];
-                realm.create<IMessage>(
+                realm.create(
                   'Message',
                   {_id: message._id, lastMessage: conversation.lastMessage},
                   UpdateMode.Modified,

@@ -205,7 +205,7 @@ export const useChat = () => {
             });
           } else {
             realm.write(() => {
-              realm.create<IConversation>(
+              realm.create(
                 'Conversation',
                 {
                   channel,

@@ -119,8 +119,9 @@ export const updateReceipt = ({
     const updates = {
       customer,
       _id: receipt._id,
+      _partition: receipt._partition,
     };
-    realm.create<Payment>(modelName, updates, UpdateMode.Modified);
+    realm.create(modelName, updates, UpdateMode.Modified);
     (receipt.payments || []).forEach((payment) => {
       updatePayment({realm, payment, updates: {customer}});
     });

@@ -1,4 +1,4 @@
-import {Customer, ICustomer, modelName} from '../models';
+import {ICustomer, modelName} from '../models';
 import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '../helpers/models';
 import {omit} from 'lodash';
@@ -31,7 +31,7 @@ export const saveCustomer = ({
   }
 
   realm.write(() => {
-    realm.create<Customer>(modelName, customerDetails, UpdateMode.Modified);
+    realm.create<ICustomer>(modelName, customerDetails, UpdateMode.Modified);
   });
 
   return customerDetails;

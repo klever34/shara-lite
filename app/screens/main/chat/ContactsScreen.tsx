@@ -150,7 +150,8 @@ const ContactsScreen = ({
             ...getBaseModelValues(),
           };
           realm.write(() => {
-            conversation = realm.create<IConversation>(
+            conversation = realm.create(
+              // @ts-ignore
               'Conversation',
               conversationData,
               UpdateMode.Modified,
@@ -224,9 +225,7 @@ const ContactsScreen = ({
                                   ...getBaseModelValues(),
                                 };
                                 realm.write(() => {
-                                  const conversation = realm.create<
-                                    IConversation
-                                  >(
+                                  const conversation = realm.create(
                                     'Conversation',
                                     groupChatData,
                                     UpdateMode.Modified,
