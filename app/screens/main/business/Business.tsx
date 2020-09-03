@@ -1,16 +1,19 @@
 import {useNavigation} from '@react-navigation/native';
-import React, {useState, useCallback} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
-import {useRealm} from '../../../services/realm';
-import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
-import {colors} from '../../../styles';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
+import {useRealm} from '@/services/realm';
+import {getSummary, IFinanceSummary} from '@/services/FinanceService';
+import {colors} from '@/styles';
+import {applyStyles, amountWithCurrency} from '@/helpers/utils';
 import {Button, ActionCard} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {getAuthService} from '../../../services';
+import {getAuthService} from '@/services';
 import {BusinessSetup} from '../../BusinessSetup';
-import {useScreenRecord} from '../../../services/analytics';
+import {useScreenRecord} from '@/services/analytics';
+import MapView, {Marker} from 'react-native-maps';
+import {LocationService} from '@/services/location';
+import {Location} from 'react-native-location';
 
 export const BusinessTab = () => {
   useScreenRecord();
@@ -130,7 +133,13 @@ export const BusinessTab = () => {
   const handleViewFinances = useCallback(() => {
     navigation.navigate('Finances', {screen: 'FinancesTab'});
   }, [navigation]);
-
+  const [location, setLocation] = useState<Location>();
+  useEffect(() => {
+    const locationService = new LocationService();
+    locationService.getLatestLocation().then((currLocation) => {
+      setLocation(currLocation);
+    });
+  }, []);
   return (
     <View style={styles.container}>
       {!(user?.businesses && user?.businesses.length) && (
@@ -246,6 +255,23 @@ export const BusinessTab = () => {
         visible={isBusinessSetupModalOpen}
         onClose={() => setIsBusinessSetupModalOpen(false)}
       />
+      {location && (
+        <MapView
+          style={applyStyles('w-full', {
+            height: 192,
+          })}
+          initialRegion={{
+            ...location,
+            latitudeDelta: 0.1,
+            longitudeDelta: 0.1,
+          }}>
+          <Marker
+            coordinate={{...location}}
+            title={'Foo'}
+            description={'bar'}
+          />
+        </MapView>
+      )}
     </View>
   );
 };
