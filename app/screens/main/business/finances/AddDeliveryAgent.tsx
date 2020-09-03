@@ -11,6 +11,7 @@ import {
 } from '../../../../services/DeliveryAgentService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type Props = {onSubmit?: (deliveryAgent: IDeliveryAgent) => void};
 type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
@@ -22,7 +23,9 @@ export const AddDeliveryAgent = (props: Props) => {
   const navigation = useNavigation();
   const deliveryAgents = getDeliveryAgents({realm});
   const [isLoading, setIsLoading] = useState(false);
-  const [deliveryAgent, setDeliveryAgent] = useState<Payload>({} as Payload);
+  const [deliveryAgent, setDeliveryAgent] = useState<Payload>(
+    FormDefaults.get('deliveryAgent', {}) as Payload,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

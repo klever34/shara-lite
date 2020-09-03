@@ -21,6 +21,10 @@ export class FormDefaults {
         address: faker.address.streetAddress(),
         mobile: faker.phone.phoneNumber(),
       },
+      deliveryAgent: {
+        full_name: faker.name.findName(),
+        mobile: faker.phone.phoneNumber(),
+      },
       quantity: `${Math.floor(Math.random() * 100)}`,
       newProduct: {
         name: faker.commerce.productName(),
