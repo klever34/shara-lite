@@ -23,11 +23,12 @@ platform :android do
 
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :internal do
-    gradle(task: "clean assembleRelease")
+    # gradle(task: "clean assembleRelease")
+    gradle(task: "clean " + ENV['GRADLE_TASK'])
     firebase_app_distribution(
       app: ENV['FIREBASE_APP_ID_ANDROID'],
       firebase_cli_token: ENV['FIREBASE_TOKEN'],
-      groups: "shara-product"
+      groups: ENV['FIREBASE_APP_DIST_GROUP']
     )
   end
 
@@ -37,7 +38,7 @@ platform :android do
     upload_to_play_store_internal_app_sharing
   end
 
-  desc "Deploy a new version to the Google Play lane"
+  desc "Deploy a new version to the Google Play lane " + ENV['GOOGLE_PLAY_TRACK']
   lane :play do
     gradle(task: "clean bundleRelease")
     upload_to_play_store(
@@ -48,7 +49,7 @@ platform :android do
   after_all do |lane|
     # This block is called, only if the executed lane was successful
     slack(
-      message: "Successfully deployed new Shara app",
+      message: "Successfully deployed Shara v" + ENV['SHARA_VERSION_NAME'],
       slack_url: ENV['SLACK_WEBHOOK'],
       channel: ENV['SLACK_CHANNEL']
     )
@@ -56,7 +57,7 @@ platform :android do
 
   error do |lane, exception|
     slack(
-      message: exception.message,
+      message: exception.message + ENV['SHARA_VERSION_NAME'],
       slack_url: ENV['SLACK_WEBHOOK'],
       success: false
     )

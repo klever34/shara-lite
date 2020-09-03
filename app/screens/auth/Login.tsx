@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {
   Alert,
   ScrollView,
@@ -11,8 +11,10 @@ import {Button, PasswordField, PhoneNumberField} from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
-import {getApiService} from '../../services';
+import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
+import {initLocalRealm} from '../../services/realm';
+import {RealmContext} from '../../services/realm/provider';
 
 type Fields = {
   mobile: string;
@@ -21,6 +23,8 @@ type Fields = {
 };
 
 export const Login = ({navigation}: any) => {
+  // @ts-ignore
+  const {updateLocalRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>({} as Fields);
 
@@ -49,6 +53,11 @@ export const Login = ({navigation}: any) => {
     try {
       setLoading(true);
       await apiService.logIn(payload);
+      const createdLocalRealm = await initLocalRealm();
+      updateLocalRealm && updateLocalRealm(createdLocalRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(createdLocalRealm);
+
       setLoading(false);
       navigation.reset({
         index: 0,
@@ -72,7 +81,10 @@ export const Login = ({navigation}: any) => {
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="always"
+      persistentScrollbar={true}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
           <View style={applyStyles({height: 40, width: 40})}>
@@ -103,7 +115,7 @@ export const Login = ({navigation}: any) => {
           variantColor="red"
           onPress={onSubmit}
           isLoading={loading}
-          disabled={isButtonDisabled() || loading}
+          disabled={isButtonDisabled()}
         />
       </View>
       <View>

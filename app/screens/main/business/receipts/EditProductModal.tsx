@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useCallback} from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import {View, Text, StyleSheet, ToastAndroid} from 'react-native';
 import Modal from 'react-native-modal';
 import {
   Button,
@@ -70,6 +70,7 @@ export const EditProductModal = (props: Props) => {
     } as IReceiptItem;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
+    ToastAndroid.show('Product edited', ToastAndroid.SHORT);
   }, [item, price, quantity, onUpdateProductItem, handleClose]);
 
   const getSubtotal = useCallback(() => {

@@ -1,27 +1,42 @@
+import {ContactsListModal, FAButton} from '@/components';
+import EmptyState from '@/components/EmptyState';
+import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {applyStyles} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {getAnalyticsService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
+import {getCustomers, saveCustomer} from '@/services/CustomerService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState, useEffect} from 'react';
-import {FlatList, StyleSheet, Text, TextInput, View} from 'react-native';
-import {FAButton} from '../../../components';
-import EmptyState from '../../../components/EmptyState';
-import Icon from '../../../components/Icon';
-import Touchable from '../../../components/Touchable';
-import {applyStyles} from '../../../helpers/utils';
-import {ICustomer} from '../../../models';
-import {getCustomers} from '../../../services/CustomerService';
-import {useRealm} from '../../../services/realm';
-import {colors} from '../../../styles';
+import orderBy from 'lodash/orderBy';
+import React, {useCallback, useEffect, useState} from 'react';
+import {useErrorHandler} from '@/services/error-boundary';
+import {
+  Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
+  ToastAndroid,
+  View,
+} from 'react-native';
+import {Contact} from 'react-native-contacts';
 
 type CustomerItemProps = {
   item: ICustomer;
 };
 
 const CustomersTab = () => {
+  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
+  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -31,6 +46,16 @@ const CustomersTab = () => {
     return unsubscribe;
   }, [navigation, realm]);
 
+  const handleError = useErrorHandler();
+
+  const handleOpenContactListModal = useCallback(() => {
+    setIsContactListModalOpen(true);
+  }, []);
+
+  const handleCloseContactListModal = useCallback(() => {
+    setIsContactListModalOpen(false);
+  }, []);
+
   const handleSelectCustomer = useCallback(
     (item?: ICustomer) => {
       navigation.navigate('CustomerDetails', {customer: item});
@@ -38,6 +63,29 @@ const CustomersTab = () => {
       setMyCustomers(customers);
     },
     [navigation, customers],
+  );
+
+  const handleCreateCustomer = useCallback(
+    (contact: Contact) => {
+      const mobile = contact.phoneNumbers[0].number;
+      const name = `${contact.givenName} ${contact.familyName}`;
+
+      if (customers.map((item) => item.mobile).includes(mobile)) {
+        Alert.alert(
+          'Info',
+          'Customer with the same phone number has been created.',
+        );
+      } else {
+        const customer = {
+          name,
+          mobile,
+        };
+        saveCustomer({realm, customer});
+        getAnalyticsService().logEvent('customerAdded').catch(handleError);
+        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
+      }
+    },
+    [customers, handleError, realm],
   );
 
   const handleCustomerSearch = useCallback(
@@ -84,9 +132,7 @@ const CustomersTab = () => {
           source={require('../../../assets/images/coming-soon.png')}
           text="Click the button below to add a new customer"
         />
-        <FAButton
-          style={styles.fabButton}
-          onPress={() => navigation.navigate('AddCustomer')}>
+        <FAButton style={styles.fabButton} onPress={handleOpenContactListModal}>
           <View style={styles.fabButtonContent}>
             <Icon size={18} name="plus" color="white" type="feathericons" />
             <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
@@ -94,6 +140,15 @@ const CustomersTab = () => {
             </Text>
           </View>
         </FAButton>
+
+        <ContactsListModal<ICustomer>
+          entity="Customer"
+          createdData={customers}
+          visible={isContactListModalOpen}
+          onClose={handleCloseContactListModal}
+          onAddNew={() => navigation.navigate('AddCustomer')}
+          onContactSelect={(contact) => handleCreateCustomer(contact)}
+        />
       </>
     );
   }
@@ -122,9 +177,9 @@ const CustomersTab = () => {
       {myCustomers.length ? (
         <>
           <FlatList
-            data={myCustomers}
             renderItem={renderCustomerListItem}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item) => `${item._id}`}
+            data={orderBy(myCustomers, 'name', 'asc')}
             ListHeaderComponent={renderCustomerListHeader}
           />
         </>
@@ -134,9 +189,7 @@ const CustomersTab = () => {
           text="Click the button below to add a new customer"
         />
       )}
-      <FAButton
-        style={styles.fabButton}
-        onPress={() => navigation.navigate('AddCustomer')}>
+      <FAButton style={styles.fabButton} onPress={handleOpenContactListModal}>
         <View style={styles.fabButtonContent}>
           <Icon size={18} name="plus" color="white" type="feathericons" />
           <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
@@ -144,6 +197,15 @@ const CustomersTab = () => {
           </Text>
         </View>
       </FAButton>
+
+      <ContactsListModal<ICustomer>
+        entity="Customer"
+        createdData={customers}
+        visible={isContactListModalOpen}
+        onClose={handleCloseContactListModal}
+        onAddNew={() => navigation.navigate('AddCustomer')}
+        onContactSelect={(contact) => handleCreateCustomer(contact)}
+      />
     </View>
   );
 };

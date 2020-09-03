@@ -1,19 +1,21 @@
-import {useNavigation, useFocusEffect} from '@react-navigation/native';
+import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {ScrollView, Text, View} from 'react-native';
 import {Button} from '../../../../components';
-import React, {useState, useCallback, useLayoutEffect} from 'react';
-import {ScrollView, Text, View, Alert} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
-import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
+import {IProduct} from '../../../../models/Product';
+import {getProduct} from '../../../../services/ProductService';
+import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {MainStackParamList} from '../../index';
-import {getProduct, deleteProduct} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
-import {IProduct} from 'app/models/Product';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const ViewProductDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ViewProductDetails'>) => {
+  useScreenRecord();
   const {product: productId} = route.params;
   const realm = useRealm();
   const navigation = useNavigation();
@@ -29,30 +31,30 @@ export const ViewProductDetails = ({
     }, [productId, realm]),
   );
 
-  const onDeleteProduct = useCallback(() => {
-    deleteProduct({realm, product});
-    navigation.navigate('Inventory');
-  }, [realm, product, navigation]);
+  // const onDeleteProduct = useCallback(() => {
+  //   deleteProduct({realm, product});
+  //   navigation.navigate('Inventory');
+  // }, [realm, product, navigation]);
 
   const handleEditProduct = useCallback(() => {
     navigation.navigate('EditProduct', {product});
   }, [navigation, product]);
 
-  const handleDeleteProduct = useCallback(() => {
-    Alert.alert(
-      'Delete Product',
-      'Are you sure you want to delete this product',
-      [
-        {
-          text: 'CANCEL',
-        },
-        {
-          text: 'YES',
-          onPress: onDeleteProduct,
-        },
-      ],
-    );
-  }, [onDeleteProduct]);
+  // const handleDeleteProduct = useCallback(() => {
+  //   Alert.alert(
+  //     'Delete Product',
+  //     'Are you sure you want to delete this product',
+  //     [
+  //       {
+  //         text: 'CANCEL',
+  //       },
+  //       {
+  //         text: 'YES',
+  //         onPress: onDeleteProduct,
+  //       },
+  //     ],
+  //   );
+  // }, [onDeleteProduct]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -62,6 +64,7 @@ export const ViewProductDetails = ({
 
   return (
     <ScrollView
+      persistentScrollbar={true}
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
@@ -136,14 +139,14 @@ export const ViewProductDetails = ({
         style={applyStyles('flex-row w-full justify-space-between', {
           marginTop: 56,
         })}>
-        <View style={applyStyles({width: '48%'})}>
+        {/* <View style={applyStyles({width: '48%'})}>
           <Button
             title="Delete"
             variantColor="white"
             onPress={handleDeleteProduct}
           />
-        </View>
-        <View style={applyStyles({width: '48%'})}>
+        </View> */}
+        <View style={applyStyles({width: '100%'})}>
           <Button title="Edit" onPress={handleEditProduct} />
         </View>
       </View>

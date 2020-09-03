@@ -3,8 +3,10 @@ import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
+import {useScreenRecord} from '../../../services/analytics';
 
 const OrderDetails = ({route}: any) => {
+  useScreenRecord();
   const {order} = route.params;
 
   return (

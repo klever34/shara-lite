@@ -1,7 +1,7 @@
 import {Picker} from '@react-native-community/picker';
 import React, {useCallback, useState} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {Button} from '.';
+import {Button} from './Button';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {CurrencyInput} from './CurrencyInput';
@@ -73,7 +73,7 @@ export const CreditPaymentForm = (props: Props) => {
         isLoading={isLoading}
         onPress={handleSubmit}
         title="Confirm payment"
-        disabled={isLoading || !payload.amount}
+        disabled={!payload.amount}
         style={applyStyles({marginBottom: 40})}
       />
     </View>

@@ -103,7 +103,7 @@ export const Button = ({
   return (
     <BaseButton
       onPress={onPress}
-      disabled={disabled}
+      disabled={disabled || isLoading}
       style={applyStyles(
         styles.button,
         variantColorStyles[variantColor].button,

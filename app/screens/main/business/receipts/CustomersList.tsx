@@ -92,7 +92,7 @@ export const CustomersList = (props: Props) => {
   const renderCustomerListHeader = useCallback(
     () => (
       <Text style={applyStyles(styles.customerListHeader, 'text-500')}>
-        Select a customer
+        Your customers
       </Text>
     ),
     [],
@@ -110,7 +110,6 @@ export const CustomersList = (props: Props) => {
             color={colors.primary}
           />
           <TextInput
-            autoFocus
             value={searchInputValue}
             style={applyStyles(styles.searchInput, 'text-400')}
             placeholder="Search Customer"
@@ -146,7 +145,7 @@ export const CustomersList = (props: Props) => {
         data={myCustomers}
         renderItem={renderCustomerListItem}
         ListHeaderComponent={renderCustomerListHeader}
-        keyExtractor={(item, index) => `${item.id}-${index}`}
+        keyExtractor={(item, index) => `${item._id}-${index}`}
         ListEmptyComponent={
           <View
             style={applyStyles('flex-1', 'items-center', 'justify-center', {

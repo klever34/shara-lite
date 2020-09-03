@@ -1,7 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {ScrollView, StyleSheet, Text, View, Modal, Alert} from 'react-native';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Modal,
+  Alert,
+  ToastAndroid,
+} from 'react-native';
 import {CreditPaymentForm, ContactsListModal} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
@@ -16,8 +24,10 @@ import {CustomersList} from '../receipts';
 import {updateReceipt} from '../../../../services/ReceiptService';
 import {IReceipt} from '../../../../models/Receipt';
 import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const CreditDetails = ({route}: any) => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -74,7 +84,7 @@ export const CreditDetails = ({route}: any) => {
           setIsLoading(false);
           const newCustomer = creditDetails.customer?.name
             ? creditDetails.customer
-            : customer.id
+            : customer._id
             ? customer
             : saveCustomer({realm, customer});
           updateReceipt({
@@ -89,6 +99,7 @@ export const CreditDetails = ({route}: any) => {
           });
           callback();
           navigation.navigate('Finances', {screen: 'Credit'});
+          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
         }, 300);
       } else {
         Alert.alert('Info', 'Please select a customer');
@@ -98,7 +109,10 @@ export const CreditDetails = ({route}: any) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      persistentScrollbar={true}
+      keyboardShouldPersistTaps="always">
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],
@@ -187,7 +201,11 @@ export const CreditDetails = ({route}: any) => {
           <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
         </View>
       </View>
-      <Modal animationType="slide" visible={isCustomersListModalOpen}>
+      <Modal
+        animationType="slide"
+        visible={isCustomersListModalOpen}
+        onDismiss={handleCloseCustomersList}
+        onRequestClose={handleCloseCustomersList}>
         <CustomersList
           customers={customers}
           onModalClose={handleCloseCustomersList}
@@ -195,7 +213,8 @@ export const CreditDetails = ({route}: any) => {
           onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>

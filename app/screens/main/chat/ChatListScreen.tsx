@@ -6,35 +6,41 @@ import {
   Text,
   View,
 } from 'react-native';
-import {FAButton} from '../../../components';
+import Realm from 'realm';
+import {FAButton} from '@/components';
 import {useNavigation} from '@react-navigation/native';
-import {applyStyles} from '../../../helpers/utils';
-import {colors} from '../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import Touchable from '../../../components/Touchable';
-import {IConversation, IMessage} from '../../../models';
-import {useRealm} from '../../../services/realm';
-import {useTyping} from '../../../services/pubnub';
+import {IConversation} from '@/models';
+import {IMessage} from '@/models';
+import {useRealm} from '@/services/realm';
+import {useTyping} from '@/services/pubnub';
 import PlaceholderImage from '../../../components/PlaceholderImage';
 import MessageStatusIcon from '../../../components/MessageStatusIcon';
-import {getAuthService} from '../../../services';
+import {getAuthService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
 
 type ChatListItemProps = {
   conversation: IConversation;
 };
 
 const ChatListItem = ({conversation}: ChatListItemProps) => {
+  useScreenRecord();
   const typingMessage = useTyping(conversation.channel);
   const navigation = useNavigation();
   const lastMessage = conversation.lastMessage;
   const realm = useRealm();
   const user = getAuthService().getUser();
   const messages = realm
-    .objects<IMessage>('Message')
-    .filtered(
-      `channel = "${conversation.channel}" AND author != "${
-        user?.mobile ?? ''
-      }" AND delivered_timetoken != null AND read_timetoken = null`,
-    );
+    ? realm
+        .objects<IMessage>('Message')
+        .filtered(
+          `channel = "${conversation.channel}" AND author != "${
+            user?.mobile ?? ''
+          }" AND delivered_timetoken != null AND read_timetoken = null`,
+        )
+    : [];
   const dateText = useMemo(() => {
     if (!lastMessage) {
       return '';
@@ -124,10 +130,15 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
 const ChatListScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const conversations = realm
-    .objects<IConversation>('Conversation')
-    .filtered('lastMessage != null OR type = "group"')
-    .sorted('lastMessage.created_at', true);
+  const fetchedConversations = realm
+    ? realm.objects<IConversation>('Conversation')
+    : [];
+  const conversations = fetchedConversations.length
+    ? realm
+        .objects<IConversation>('Conversation')
+        .filtered('lastMessage != null OR type = "group"')
+        .sorted('lastMessage.created_at', true)
+    : [];
   const renderChatListItem = useCallback(
     ({item}: ListRenderItemInfo<IConversation>) => {
       return <ChatListItem conversation={item} />;

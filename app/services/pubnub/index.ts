@@ -2,7 +2,7 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../realm';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 
 export const useTyping = (channel: string, input: string = '') => {
   const pubNub = usePubNub();
@@ -10,7 +10,7 @@ export const useTyping = (channel: string, input: string = '') => {
   const [reset, setReset] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
-  const timer = useRef<number | null>(null);
+  const timer = useRef<NodeJS.Timeout | null>(null);
   const handleError = useErrorHandler();
   const stopTyping = useCallback(async () => {
     if (timer.current) {

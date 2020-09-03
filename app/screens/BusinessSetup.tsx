@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Text,
   View,
+  ToastAndroid,
 } from 'react-native';
 import ImagePicker from 'react-native-image-picker';
 import {ImagePickerOptions} from 'react-native-image-picker/src/internal/types';
@@ -134,6 +135,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
           setLoading(false);
           handleHideSignatureCapture();
           handleSkip();
+          ToastAndroid.show('Business setup successful', ToastAndroid.SHORT);
         } catch (error) {
           setLoading(false);
           Alert.alert('Error', error.message);
@@ -175,12 +177,16 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   }, []);
 
   return (
-    <Modal visible={visible}>
+    <Modal
+      visible={visible}
+      animationType="slide"
+      onDismiss={handleSkip}
+      onRequestClose={handleSkip}>
       <View
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
         })}>
-        <ScrollView style={styles.container}>
+        <ScrollView style={styles.container} persistentScrollbar={true}>
           <View style={applyStyles('mb-lg')}>
             <Touchable onPress={handleSkip}>
               <View
@@ -356,7 +362,6 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
           <Button
             title="Done"
             variantColor="red"
-            disabled={loading}
             isLoading={loading}
             style={styles.actionButton}
             onPress={signature ? saveSign : onSaveWithoutSignature}

@@ -6,8 +6,10 @@ import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
 import {colors} from '../../../styles';
 import {IPayment} from '../../../models/Payment';
 import HeaderRight from '../../../components/HeaderRight';
+import {useScreenRecord} from '../../../services/analytics';
 
 export const CustomerCreditPaymentDetails = ({route}: any) => {
+  useScreenRecord();
   const navigation = useNavigation();
   const {creditPaymentDetails}: {creditPaymentDetails: IPayment} = route.params;
 
@@ -20,7 +22,7 @@ export const CustomerCreditPaymentDetails = ({route}: any) => {
   }, [navigation]);
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView persistentScrollbar={true} style={styles.container}>
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],

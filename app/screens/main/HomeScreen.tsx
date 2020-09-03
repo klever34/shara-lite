@@ -2,25 +2,32 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {useNavigation} from '@react-navigation/native';
 import {MessageEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useState,
+} from 'react';
+import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, Platform, SafeAreaView, View} from 'react-native';
 import PushNotification from 'react-native-push-notification';
 import Realm from 'realm';
-import {PushNotificationToken} from '../../../types/app';
-import {MessageActionEvent} from '../../../types/pubnub';
+import {MessageActionEvent} from 'types/pubnub';
 import HeaderRight from '../../components/HeaderRight';
-import {ModalWrapperFields, withModal} from '../../helpers/hocs';
-import {applyStyles, retryPromise} from '../../helpers/utils';
+import {PushNotificationToken} from 'types/app';
+import {getBaseModelValues} from '@/helpers/models';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {applyStyles, retryPromise} from '@/helpers/utils';
 import {IContact, IConversation, IMessage} from '../../models';
 import {getAuthService, getRealmService} from '../../services';
-import {useRealm} from '../../services/realm';
-import {colors} from '../../styles';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {BusinessTab} from './business';
 import ChatListScreen from './chat/ChatListScreen';
 import CustomersTab from './customers';
-import Touchable from '../../components/Touchable';
-import Icon from '../../components/Icon';
+import {useScreenRecord} from '@/services/analytics';
+import {RealmContext} from '@/services/realm/provider';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -31,6 +38,8 @@ type HomeTabParamList = {
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
 const HomeScreen = ({openModal}: ModalWrapperFields) => {
+  useScreenRecord();
+  const {logoutFromRealm} = useContext(RealmContext);
   const realm = useRealm();
   const pubNub = usePubNub();
   const navigation = useNavigation();
@@ -45,10 +54,11 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
         index: 0,
         routes: [{name: 'Auth'}],
       });
+      logoutFromRealm && logoutFromRealm();
     } catch (e) {
       handleError(e);
     }
-  }, [handleError, navigation]);
+  }, [handleError, navigation, logoutFromRealm]);
 
   const restoreAllMessages = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Restoring messages...'});
@@ -65,26 +75,6 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
     navigation.setOptions({
       headerRight: () => (
         <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
           <HeaderRight
             menuOptions={[
               {
@@ -149,7 +139,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           );
         }).then();
       } catch (e) {
-        handleError(e);
+        //@TODO Handle gracefully
+        console.log(e);
+        // handleError(e);
       }
     }
 
@@ -190,8 +182,8 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                 'Message',
                 {
                   ...message,
-                  created_at: new Date(message.created_at),
                   timetoken: String(timetoken),
+                  ...getBaseModelValues(),
                 },
                 Realm.UpdateMode.Modified,
               );
@@ -223,6 +215,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     ...conversation,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );
@@ -234,6 +227,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
                   {
                     channel,
                     lastMessage,
+                    ...getBaseModelValues(),
                   },
                   Realm.UpdateMode.Modified,
                 );
@@ -300,7 +294,7 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <HomeTab.Navigator
-        initialRouteName="ChatList"
+        initialRouteName="Business"
         tabBarOptions={{
           indicatorContainerStyle: {backgroundColor: colors.primary},
           indicatorStyle: {backgroundColor: colors.white},
@@ -309,9 +303,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           inactiveTintColor: 'rgba(255,255,255, 0.75)',
         }}>
         <HomeTab.Screen
-          name="ChatList"
-          options={{title: 'Chat'}}
-          component={ChatListScreen}
+          name="Business"
+          component={BusinessTab}
+          options={{title: 'My Business'}}
         />
         <HomeTab.Screen
           name="Customers"
@@ -319,9 +313,9 @@ const HomeScreen = ({openModal}: ModalWrapperFields) => {
           options={{title: 'My Customers'}}
         />
         <HomeTab.Screen
-          name="Business"
-          component={BusinessTab}
-          options={{title: 'My Business'}}
+          name="ChatList"
+          options={{title: 'Chat'}}
+          component={ChatListScreen}
         />
       </HomeTab.Navigator>
     </SafeAreaView>

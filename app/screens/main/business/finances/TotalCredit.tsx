@@ -12,10 +12,13 @@ import {ICredit} from '../../../../models/Credit';
 import {colors} from '../../../../styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../..';
+import {orderBy} from 'lodash';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const TotalCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'TotalCredit'>) => {
+  useScreenRecord();
   const navigation = useNavigation();
 
   const credits = route.params.credits;
@@ -119,9 +122,9 @@ export const TotalCredit = ({
         backgroundColor: colors['gray-20'],
       })}>
       <FlatList
+        data={orderBy(credits, 'created_at', 'desc')}
         renderItem={renderCreditItem}
-        keyExtractor={(item) => `${item.id}`}
-        data={credits.filter((item) => item.amount_left)}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No credit"

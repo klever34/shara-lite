@@ -1,6 +1,5 @@
 import {IProduct} from '../app/models/Product';
-import {ISupplier} from '../app/models/Supplier';
-import {DeliveryAgent} from '../app/models/DeliveryAgent';
+import {ObjectId} from 'bson';
 
 type Falsy = undefined | null | false;
 
@@ -80,23 +79,17 @@ type ReceiptItem = {
   product: IProduct;
 };
 
-type InventoryStockItem = {
-  quantity: string;
-  cost_price?: string;
-  supplier: ISupplier;
-  product: IProduct;
-  delivery_agent: DeliveryAgent;
-};
-
 type Customer = {
-  id: string;
+  _id: ObjectId;
   mobile: string;
   name: string;
 };
+
 type ApiResponse<T extends any = any> = {
   data: any;
   message: string;
 };
+
 type CreditDetails = {
   id: string;
   amount: number;
@@ -104,6 +97,7 @@ type CreditDetails = {
   dueOn: string;
   givenBy: string;
 };
+
 type Order = {
   id: string;
   amount: number;
@@ -125,4 +119,5 @@ type Payment = {
 declare module 'country-currency-map';
 // @ts-ignore
 declare module 'react-native-signature-capture';
+// @ts-ignore
 declare module 'react-native-bluetooth-escpos-printer';

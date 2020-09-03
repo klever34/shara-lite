@@ -9,8 +9,10 @@ import {colors} from '../../../styles';
 import {useRealm} from '../../../services/realm';
 import {saveCreditPayment} from '../../../services/CreditPaymentService';
 import HeaderRight from '../../../components/HeaderRight';
+import {useScreenRecord} from '../../../services/analytics';
 
 const CreditPayment = ({route}: any) => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -42,7 +44,10 @@ const CreditPayment = ({route}: any) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      persistentScrollbar={true}
+      style={styles.container}
+      keyboardShouldPersistTaps="always">
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],

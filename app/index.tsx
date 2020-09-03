@@ -1,26 +1,17 @@
 import 'react-native-gesture-handler';
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import {MenuProvider} from 'react-native-popup-menu';
 import {NavigationContainer} from '@react-navigation/native';
 import {createStackNavigator} from '@react-navigation/stack';
-import {useErrorHandler, withErrorBoundary} from 'react-error-boundary';
+import {withErrorBoundary} from 'react-error-boundary';
 import Sentry from '@sentry/react-native';
 import SplashScreen from './screens/SplashScreen';
 import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
-import Realm from 'realm';
-import {createRealm, RealmProvider} from './services/realm';
-import {getAnalyticsService, getRealmService} from './services';
-import {
-  ActivityIndicator,
-  Alert,
-  View,
-  BackHandler,
-  Platform,
-} from 'react-native';
-import {colors} from './styles';
-import {applyStyles} from './helpers/utils';
-import FallbackComponent from './components/FallbackComponent';
+import ErrorFallback from './components/ErrorFallback';
+import RealmProvider from './services/realm/provider';
+import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -31,53 +22,12 @@ export type RootStackParamList = {
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
-  const [realm, setRealm] = useState<Realm | null>(null);
-  const [error, setError] = useState(false);
   const handleError = useErrorHandler();
-
   useEffect(() => {
     getAnalyticsService().initialize().catch(handleError);
   }, [handleError]);
-
-  useEffect(() => {
-    createRealm()
-      .then((nextRealm) => {
-        const realmService = getRealmService();
-        realmService.setInstance(nextRealm);
-        setRealm(nextRealm);
-      })
-      .catch(() => {
-        setError(true);
-        Alert.alert(
-          'Oops! Something went wrong.',
-          'Try clearing app data from application settings',
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                if (process.env.NODE_ENV === 'production') {
-                  if (Platform.OS === 'android') {
-                    BackHandler.exitApp();
-                  }
-                }
-              },
-            },
-          ],
-        );
-      });
-  }, []);
-  if (error) {
-    return null;
-  }
-  if (!realm) {
-    return (
-      <View style={applyStyles('flex-1 center')}>
-        <ActivityIndicator color={colors.primary} size={40} />
-      </View>
-    );
-  }
   return (
-    <RealmProvider value={realm}>
+    <RealmProvider>
       <NavigationContainer>
         <MenuProvider>
           <RootStack.Navigator initialRouteName="Splash">
@@ -104,8 +54,8 @@ const App = () => {
 };
 
 export default withErrorBoundary(App, {
-  FallbackComponent,
-  onError(error, componentStack) {
+  FallbackComponent: ErrorFallback,
+  onError: (error: Error, componentStack: string) => {
     if (process.env.NODE_ENV === 'production') {
       Sentry.captureException(error, (scope) => {
         if (componentStack) {

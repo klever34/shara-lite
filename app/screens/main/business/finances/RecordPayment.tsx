@@ -1,19 +1,29 @@
 import {useNavigation} from '@react-navigation/native';
+import {uniqBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
-import {Modal, ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
+import {
+  Alert,
+  Modal,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  ToastAndroid,
+} from 'react-native';
 import {CreditPaymentForm} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {saveCreditPayment} from '../../../../services/CreditPaymentService';
+import {getCredits} from '../../../../services/CreditService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
 import {CustomersList} from '../receipts';
-import {getCredits} from '../../../../services/CreditService';
-import {uniqBy} from 'lodash';
+import {useScreenRecord} from '../../../../services/analytics';
 
 export const RecordCreditPayment = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -26,7 +36,7 @@ export const RecordCreditPayment = () => {
     .filter((item) => !item.fulfilled)
     .filter((item) => item.customer)
     .map((item) => item.customer) as ICustomer[];
-  const creditCustomers = uniqBy(customers, 'id');
+  const creditCustomers = uniqBy(customers, '_id');
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
@@ -52,6 +62,7 @@ export const RecordCreditPayment = () => {
           saveCreditPayment({realm, customer, ...payload});
           callback();
           navigation.goBack();
+          ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
         }, 300);
       } else {
         Alert.alert('Info', 'Please select a customer');
@@ -61,7 +72,10 @@ export const RecordCreditPayment = () => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      persistentScrollbar={true}
+      keyboardShouldPersistTaps="always">
       {!!customer.name && (
         <View style={applyStyles('mb-lg')}>
           <Text
@@ -108,7 +122,11 @@ export const RecordCreditPayment = () => {
         </View>
       </Touchable>
       <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
-      <Modal animationType="slide" visible={isCustomersListModalOpen}>
+      <Modal
+        animationType="slide"
+        visible={isCustomersListModalOpen}
+        onDismiss={handleCloseCustomersList}
+        onRequestClose={handleCloseCustomersList}>
         <CustomersList
           showAddFromPhone={false}
           customers={creditCustomers}

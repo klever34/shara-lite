@@ -8,7 +8,11 @@ import {FAButton} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
+import {
+  amountWithCurrency,
+  applyStyles,
+  getCustomerWhatsappNumber,
+} from '../../../../helpers/utils';
 import {IReceipt} from '../../../../models/Receipt';
 import {getAuthService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
@@ -27,6 +31,7 @@ export function MyReceipts() {
   const authService = getAuthService();
   const user = authService.getUser();
   const businessInfo = user?.businesses[0];
+  const userCountryCode = user?.country_code;
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeReceipt, setActiveReceipt] = useState<IReceipt | null>(null);
@@ -47,20 +52,27 @@ export function MyReceipts() {
     setIsShareModalOpen(false);
   }, []);
 
-  const handlePrintReceipt = useCallback(() => {
-    Alert.alert(
-      'Coming soon',
-      'Receipt printing is coming in the next release',
-    );
-  }, []);
-
   const handleSmsShare = useCallback(async () => {
     // TODO: use better copy for shara invite
     const shareOptions = {
-      url: 'https://shara.co/',
       // @ts-ignore
       social: Share.Social.SMS,
-      message: 'Here is your receipt',
+      message: `Hi ${
+        activeReceipt?.customer?.name
+      }, thank you for your recent purchase of ${
+        activeReceipt?.items?.length
+      } item(s) from ${
+        user?.businesses[0].name
+      }.  You paid ${amountWithCurrency(
+        activeReceipt?.amount_paid,
+      )} and owe ${amountWithCurrency(activeReceipt?.credit_amount)} ${
+        activeReceipt?.credits && activeReceipt?.credits[0]?.due_date
+          ? `(which is due on ${format(
+              new Date(activeReceipt?.credits[0]?.due_date),
+              'MMM dd, yyyy',
+            )})`
+          : ''
+      }. Thank you.`,
       recipient: `${activeReceipt?.customer_mobile}`,
       title: `Share receipt with ${activeReceipt?.customer_name}`,
     };
@@ -77,7 +89,7 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     }
-  }, [activeReceipt]);
+  }, [activeReceipt, user]);
 
   const handleEmailShare = useCallback(
     async (
@@ -108,10 +120,12 @@ export function MyReceipts() {
   const handleWhatsappShare = useCallback(
     async (receiptImage: string) => {
       // TODO: use better copy for shara invite
+      const mobile = activeReceipt?.customer?.mobile;
+      const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
       const shareOptions = {
+        whatsAppNumber,
         social: Share.Social.WHATSAPP,
         url: `data:image/png;base64,${receiptImage}`,
-        whatsAppNumber: `${activeReceipt?.customer?.mobile}`,
         message: `Hi ${activeReceipt?.customer?.name}, Here is your receipt from ${businessInfo?.name}`,
         title: `Share receipt with ${activeReceipt?.customer?.name}`,
       };
@@ -120,7 +134,7 @@ export function MyReceipts() {
         whatsAppNumber: 'Please check the phone number supplied',
       } as {[key: string]: any};
 
-      if (!activeReceipt?.customer_mobile) {
+      if (!activeReceipt?.customer?.mobile) {
         Alert.alert(
           'Info',
           'Please select a customer to share receipt with via Whatsapp',
@@ -133,7 +147,7 @@ export function MyReceipts() {
         }
       }
     },
-    [activeReceipt, businessInfo],
+    [activeReceipt, businessInfo, userCountryCode],
   );
 
   const renderReceiptItem = useCallback(
@@ -199,7 +213,7 @@ export function MyReceipts() {
       <FlatList
         data={orderBy(receipts, 'created_at', 'desc')}
         renderItem={renderReceiptItem}
-        keyExtractor={(item) => `${item.id}`}
+        keyExtractor={(item) => `${item._id}`}
         ListEmptyComponent={
           <EmptyState
             heading="No receipts created"
@@ -229,13 +243,14 @@ export function MyReceipts() {
         onClose={handleCloseShareModal}
         customer={activeReceipt?.customer}
         onWhatsappShare={handleWhatsappShare}
+        amountPaid={activeReceipt?.amount_paid}
         totalAmount={activeReceipt?.total_amount}
+        creditAmount={activeReceipt?.credit_amount}
       />
 
       <ReceiptDetailsModal
         receipt={activeReceipt}
         visible={!!activeReceipt}
-        onPrintReceipt={handlePrintReceipt}
         onOpenShareModal={handleOpenShareModal}
         onClose={handleCloseReceiptDetailsModal}
       />

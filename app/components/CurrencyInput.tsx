@@ -26,6 +26,8 @@ export const CurrencyInput = (props: Props) => {
     valueProp ? toThousandString(numberValue) : '',
   );
 
+  const paddingLeft = currency.length > 1 ? 36 : 16;
+
   useEffect(() => {
     const number = valueProp ? parseFloat(valueProp) : 0;
     setValue(toThousandString(number));
@@ -45,7 +47,7 @@ export const CurrencyInput = (props: Props) => {
       value={value}
       keyboardType="number-pad"
       onChangeText={handleChange}
-      inputStyle={applyStyles({paddingLeft: 32})}
+      inputStyle={applyStyles({paddingLeft})}
       leftIcon={
         <Text
           style={applyStyles('text-400', {

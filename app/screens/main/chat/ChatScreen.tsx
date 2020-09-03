@@ -33,11 +33,13 @@ import {MainStackParamList} from '../index';
 import {getAnalyticsService, getAuthService} from '../../../services';
 import {useRealm} from '../../../services/realm';
 import {UpdateMode} from 'realm';
-import {IMessage} from '../../../models';
+import {IMessage} from '../../../models/Message';
 import {useTyping} from '../../../services/pubnub';
 import {MessageActionEvent} from '../../../../types/pubnub';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
+import {getBaseModelValues} from '../../../helpers/models';
+import {useScreenRecord} from '../../../services/analytics';
 
 type MessageItemProps = {
   item: IMessage;
@@ -49,6 +51,7 @@ const ChatScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
+  useScreenRecord();
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
   const conversation = route.params;
@@ -192,7 +195,11 @@ const ChatScreen = ({
     };
     try {
       realm.write(() => {
-        message = realm.create<IMessage>('Message', message, UpdateMode.Never);
+        message = realm.create<IMessage>(
+          'Message',
+          {...message, ...getBaseModelValues()},
+          UpdateMode.Never,
+        );
         conversation.lastMessage = message;
       });
     } catch (e) {

@@ -1,19 +1,19 @@
 import React, {useCallback} from 'react';
-import {Modal, Text, View, FlatList} from 'react-native';
-import {applyStyles} from '../../../../helpers/utils';
+import {FlatList, Modal, Text, View} from 'react-native';
 import {Button} from '../../../../components';
+import {applyStyles} from '../../../../helpers/utils';
+import {IStockItem} from '../../../../models/StockItem';
 import {colors} from '../../../../styles';
 import {
-  SummaryTableItemProps,
-  SummaryTableItem,
   SummaryTableHeader,
+  SummaryTableItem,
+  SummaryTableItemProps,
 } from './ReceiveInventoryStockSummary';
-import {InventoryStockItem} from '../../../../../types/app';
 
 type Props = {
   visible: boolean;
   onClose: () => void;
-  products: InventoryStockItem[];
+  products: IStockItem[];
 };
 
 export const ReceiveInventoryStockPreview = (props: Props) => {
@@ -25,7 +25,11 @@ export const ReceiveInventoryStockPreview = (props: Props) => {
   );
 
   return (
-    <Modal animationType="slide" visible={visible}>
+    <Modal
+      visible={visible}
+      onDismiss={onClose}
+      animationType="slide"
+      onRequestClose={onClose}>
       <View style={applyStyles('flex-1', 'px-md')}>
         <View style={applyStyles('flex-1')}>
           <View style={applyStyles({marginVertical: 32})}>
@@ -51,7 +55,10 @@ export const ReceiveInventoryStockPreview = (props: Props) => {
       </View>
       <Button
         variantColor="clear"
-        style={applyStyles({width: '100%', marginBottom: 24})}
+        style={applyStyles('w-full', {
+          borderTopColor: colors['gray-20'],
+          borderTopWidth: 1,
+        })}
         onPress={onClose}>
         <Text
           style={applyStyles('text-400', 'text-uppercase', {

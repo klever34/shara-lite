@@ -2,7 +2,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Modal, ScrollView, StyleSheet, Text, View, Alert} from 'react-native';
 import {Button, FloatingLabelInput} from '../../../../components';
 import Icon from '../../../../components/Icon';
-import {applyStyles, generateUniqueId} from '../../../../helpers/utils';
+import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {colors} from '../../../../styles';
 import {Customer} from '../../../../../types/app';
@@ -36,15 +36,13 @@ export const CustomerDetailsModal = (props: Props) => {
       if (isNewCustomer) {
         const data = {
           ...customer,
-          id: generateUniqueId(),
-          updated_at: new Date(),
-          created_at: new Date(),
         };
         setIsNewCustomer(false);
         onSelectCustomer(data);
       } else {
         onSelectCustomer(customer);
       }
+      setCustomer(undefined);
       onClose();
     } else {
       Alert.alert('Info', 'Please select a customer.');
@@ -65,6 +63,7 @@ export const CustomerDetailsModal = (props: Props) => {
       visible={visible}
       transparent={false}
       animationType="slide"
+      onDismiss={onClose}
       onRequestClose={onClose}>
       <ScrollView style={applyStyles('px-lg', {paddingVertical: 48})}>
         <View style={applyStyles({marginBottom: 48})}>

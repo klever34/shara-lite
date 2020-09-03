@@ -40,7 +40,7 @@ export const savePayment = ({
     payment.customer_mobile = customer.mobile;
   }
 
-  if (customer && customer.id) {
+  if (customer && customer._id) {
     payment.customer = customer as ICustomer;
   }
 
@@ -61,7 +61,7 @@ export const updatePayment = ({
   updates: object;
 }) => {
   const updatedPayment = {
-    id: payment.id,
+    _id: payment._id,
     ...updates,
   };
 

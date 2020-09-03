@@ -76,3 +76,25 @@ export const castObjectValuesToString = (object: {
     };
   }, {});
 };
+
+export const getCustomerWhatsappNumber = (
+  number?: string,
+  userCountryCode?: string,
+) => {
+  if (number) {
+    const mobile = number;
+    if (userCountryCode && mobile?.includes(userCountryCode)) {
+      return `${userCountryCode}${number
+        .replace(userCountryCode, '')
+        .replace(/[\s-]+/g, '')
+        .substring(1)}`;
+    }
+    if (userCountryCode && mobile?.includes(`+${userCountryCode}`)) {
+      return `${userCountryCode}${number
+        .replace(`+${userCountryCode}`, '')
+        .replace(/[\s-]+/g, '')
+        .substring(1)}`;
+    }
+    return `${userCountryCode}${number.replace(/[\s-]+/g, '').substring(1)}`;
+  }
+};

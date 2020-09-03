@@ -9,6 +9,8 @@ import {Customer, Payment} from '../../types/app';
 import {IReceiptItem} from '../models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './CustomerService';
+import {getAnalyticsService} from './index';
+import {restockProduct} from '@/services/ProductService';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -34,7 +36,7 @@ export const saveReceipt = ({
   tax: number;
   payments: Payment[];
   receiptItems: IReceiptItem[];
-}): void => {
+}) => {
   const receipt: IReceipt = {
     tax,
     amount_paid: amountPaid,
@@ -50,10 +52,10 @@ export const saveReceipt = ({
     receipt.customer_mobile = customer.mobile;
   }
 
-  if (!customer.id && customer.name && customer.mobile) {
+  if (!customer._id && customer.name && customer.mobile) {
     receiptCustomer = saveCustomer({realm, customer});
   }
-  if (customer.id) {
+  if (customer._id) {
     receiptCustomer = customer;
   }
 
@@ -62,6 +64,20 @@ export const saveReceipt = ({
 
   realm.write(() => {
     realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
+
+    receiptItems.forEach((receiptItem: IReceiptItem) => {
+      saveReceiptItem({
+        realm,
+        receipt,
+        receiptItem,
+      });
+
+      restockProduct({
+        realm,
+        product: receiptItem.product,
+        quantity: receiptItem.quantity * -1,
+      });
+    });
   });
 
   payments.forEach((payment) => {
@@ -74,14 +90,6 @@ export const saveReceipt = ({
     });
   });
 
-  receiptItems.forEach((receiptItem: any) => {
-    saveReceiptItem({
-      realm,
-      receipt,
-      receiptItem,
-    });
-  });
-
   if (creditAmount > 0) {
     saveCredit({
       dueDate,
@@ -91,6 +99,10 @@ export const saveReceipt = ({
       receipt,
       realm,
     });
+
+    getAnalyticsService()
+      .logEvent('creditAdded')
+      .then(() => {});
   }
 };
 
@@ -104,10 +116,15 @@ export const updateReceipt = ({
   receipt: IReceipt;
 }): void => {
   realm.write(() => {
-    receipt.customer = customer;
+    const updates = {
+      customer,
+      _id: receipt._id,
+    };
+    realm.create<Payment>(modelName, updates, UpdateMode.Modified);
     (receipt.payments || []).forEach((payment) => {
       updatePayment({realm, payment, updates: {customer}});
     });
+
     if (
       receipt.credit_amount > 0 &&
       receipt.credits &&

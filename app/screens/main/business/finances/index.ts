@@ -15,3 +15,5 @@ export * from './ReceiveInventory';
 export * from './ViewProductDetails';
 export * from './CreditPaymentDetails';
 export * from './ReceiveInventoryStock';
+export * from './ReceivedInventoryList';
+export * from './ReceivedInventoryDetailsModal';

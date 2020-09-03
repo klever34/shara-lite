@@ -25,7 +25,11 @@ export const ProductsPreviewModal = (props: Props) => {
   );
 
   return (
-    <Modal animationType="slide" visible={visible}>
+    <Modal
+      visible={visible}
+      onDismiss={onClose}
+      animationType="slide"
+      onRequestClose={onClose}>
       <View style={applyStyles('flex-1', 'px-md')}>
         <View style={applyStyles('flex-1')}>
           <View style={applyStyles({marginVertical: 32})}>
@@ -44,14 +48,14 @@ export const ProductsPreviewModal = (props: Props) => {
             data={products}
             nestedScrollEnabled
             renderItem={renderSummaryItem}
-            keyExtractor={(item) => `${item.id}`}
+            keyExtractor={(item) => `${item._id}`}
             ListHeaderComponent={SummaryTableHeader}
           />
         </View>
       </View>
       <Button
         variantColor="clear"
-        style={applyStyles({width: '100%', marginBottom: 24})}
+        style={applyStyles({width: '100%'})}
         onPress={onClose}>
         <Text
           style={applyStyles('text-400', 'text-uppercase', {

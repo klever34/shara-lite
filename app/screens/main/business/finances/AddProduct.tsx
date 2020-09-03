@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useLayoutEffect} from 'react';
-import {ScrollView, Text, View} from 'react-native';
+import {ScrollView, Text, View, ToastAndroid} from 'react-native';
 import {applyStyles} from '../../../../helpers/utils';
 import {
   CurrencyInput,
@@ -12,10 +12,14 @@ import {useRealm} from '../../../../services/realm';
 import {saveProduct} from '../../../../services/ProductService';
 import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
+import {getAnalyticsService} from '../../../../services';
+import {useErrorHandler} from '@/services/error-boundary';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
 export const AddProduct = () => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
@@ -40,25 +44,30 @@ export const AddProduct = () => {
   const clearForm = useCallback(() => {
     setProduct({} as Payload);
   }, []);
+  const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
     if (Object.values(product).length === 3) {
       setIsLoading(true);
       setTimeout(() => {
         saveProduct({realm, product});
+        getAnalyticsService().logEvent('productAdded').catch(handleError);
         setIsLoading(false);
         clearForm();
         navigation.goBack();
+        ToastAndroid.show('Product added', ToastAndroid.SHORT);
       }, 300);
     }
-  }, [realm, clearForm, product, navigation]);
+  }, [product, realm, handleError, clearForm, navigation]);
 
   return (
     <ScrollView
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
-      })}>
+      })}
+      persistentScrollbar={true}
+      keyboardShouldPersistTaps="always">
       <Text
         style={applyStyles('text-400', {
           fontSize: 18,
@@ -91,9 +100,8 @@ export const AddProduct = () => {
         </View>
       </View>
       <Button
-        title="Add product"
+        title="Save"
         isLoading={isLoading}
-        disabled={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}
       />

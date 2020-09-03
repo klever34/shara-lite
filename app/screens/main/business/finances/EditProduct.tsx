@@ -1,5 +1,5 @@
 import React, {useState, useCallback, useLayoutEffect} from 'react';
-import {ScrollView, Text, View, StyleSheet} from 'react-native';
+import {ScrollView, Text, View, StyleSheet, ToastAndroid} from 'react-native';
 import {applyStyles} from '../../../../helpers/utils';
 import {
   CurrencyInput,
@@ -15,12 +15,14 @@ import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../..';
+import {useScreenRecord} from '../../../../services/analytics';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
 export const EditProduct = ({
   route,
 }: StackScreenProps<MainStackParamList, 'EditProduct'>) => {
+  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const {product: productProps} = route.params;
@@ -49,20 +51,21 @@ export const EditProduct = ({
 
   const handleSubmit = useCallback(() => {
     setIsLoading(true);
-    setTimeout(() => {
-      updateProduct({realm, product: productProps, updates: product});
-      setIsLoading(false);
-      clearForm();
-      navigation.goBack();
-    }, 300);
+    updateProduct({realm, product: productProps, updates: product});
+    setIsLoading(false);
+    clearForm();
+    navigation.goBack();
+    ToastAndroid.show('Product edited', ToastAndroid.SHORT);
   }, [realm, clearForm, productProps, product, navigation]);
 
   return (
     <ScrollView
+      persistentScrollbar={true}
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
-      })}>
+      })}
+      keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Product Details</Text>
       <View style={applyStyles('flex-row', 'items-center')}>
         <FloatingLabelInput
@@ -89,8 +92,7 @@ export const EditProduct = ({
         </View>
       </View>
       <Button
-        title="Edit product"
-        disabled={isLoading}
+        title="Save"
         isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles({marginVertical: 48})}
