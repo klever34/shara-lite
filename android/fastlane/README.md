@@ -25,7 +25,7 @@ Runs all the tests
 ```
 fastlane android testlab
 ```
-Submit a new build to Firebase Test Lab
+Submit a test build to Firebase Test Lab
 ### android internal
 ```
 fastlane android internal

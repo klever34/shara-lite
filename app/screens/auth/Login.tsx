@@ -28,7 +28,7 @@ export const Login = ({navigation}: any) => {
   const {updateLocalRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('login') as Fields,
+    FormDefaults.get('login', {}) as Fields,
   );
 
   const onChangeText = (value: string, field: keyof Fields) => {

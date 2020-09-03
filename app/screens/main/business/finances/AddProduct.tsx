@@ -25,7 +25,7 @@ export const AddProduct = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const [product, setProduct] = useState<Payload>(
-    FormDefaults.get('newProduct') as Payload,
+    FormDefaults.get('newProduct', {}) as Payload,
   );
 
   useLayoutEffect(() => {

@@ -29,8 +29,10 @@ const AddCustomer = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
-  const [name, setName] = useState(FormDefaults.get('newCustomerName'));
-  const [mobile, setMobile] = useState(FormDefaults.get('newCustomerMobile'));
+  const [name, setName] = useState(FormDefaults.get('newCustomerName', ''));
+  const [mobile, setMobile] = useState(
+    FormDefaults.get('newCustomerMobile', ''),
+  );
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNameChange = useCallback((text: string) => {
