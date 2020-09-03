@@ -10,8 +10,15 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getNotificationService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
+import {Platform} from 'react-native';
+
+if (Platform.OS === 'android') {
+  // only android needs polyfill
+  require('intl');
+  require('intl/locale-data/jsonp/en-GB');
+}
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -26,6 +33,9 @@ const App = () => {
   useEffect(() => {
     getAnalyticsService().initialize().catch(handleError);
   }, [handleError]);
+  useEffect(() => {
+    getNotificationService().initialize();
+  }, []);
   return (
     <RealmProvider>
       <NavigationContainer>

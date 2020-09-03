@@ -16,8 +16,8 @@ export class DeliveryAgent extends BaseModel
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      full_name: 'string',
-      mobile: 'string',
+      full_name: 'string?',
+      mobile: 'string?',
       suppliedInventories: {
         type: 'linkingObjects',
         objectType: 'ReceivedInventory',

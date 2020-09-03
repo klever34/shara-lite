@@ -15,7 +15,7 @@ import {
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
 import {applyStyles} from '../helpers/utils';
-import {getContactsService} from '../services';
+import {getContactService} from '../services';
 import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
@@ -46,10 +46,10 @@ export function ContactsListModal<T>({
 
   useEffect(() => {
     setIsLoading(true);
-    const contactsService = getContactsService();
+    const contactsService = getContactService();
     contactsService
-      .getAll()
-      .then((nextContacts) => {
+      .getPhoneContacts()
+      .then((nextContacts: any[]) => {
         setIsLoading(false);
         const data = nextContacts.filter((contact) => {
           if (contact.phoneNumbers.length) {
@@ -64,7 +64,7 @@ export function ContactsListModal<T>({
         ref.current.contacts = data;
         setContacts(data);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         setIsLoading(false);
         Alert.alert(
           'Error',

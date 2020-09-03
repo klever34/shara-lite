@@ -46,7 +46,7 @@ export const NewReceipt = () => {
 
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
-  const [price, setPrice] = useState<string | undefined>('');
+  const [price, setPrice] = useState<number | undefined>();
   const [receipt, setReceipt] = useState<IReceiptItem[]>([]);
   const [quantity, setQuantity] = useState<string | undefined>(
     FormDefaults.get('quantity', ''),
@@ -73,7 +73,7 @@ export const NewReceipt = () => {
 
   const handleSelectProduct = useCallback((item: IProduct) => {
     setSelectedProduct(item);
-    setPrice(item?.price?.toString());
+    setPrice(item?.price);
   }, []);
 
   const handleOpenSummaryModal = useCallback(() => {
@@ -107,7 +107,7 @@ export const NewReceipt = () => {
       const product = {
         ...selectedProduct,
         _id: selectedProduct?._id,
-        price: parseFloat(price),
+        price,
         product: selectedProduct,
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
@@ -132,7 +132,7 @@ export const NewReceipt = () => {
         setReceipt([product, ...receipt]);
       }
       setSelectedProduct(null);
-      setPrice('');
+      setPrice(undefined);
       setQuantity('');
     }
   }, [price, quantity, receipt, selectedProduct]);
@@ -168,7 +168,7 @@ export const NewReceipt = () => {
       const product = {
         ...selectedProduct,
         _id: selectedProduct._id,
-        price: parseFloat(price),
+        price,
         product: selectedProduct,
         name: selectedProduct.name,
         quantity: parseFloat(quantity),
@@ -255,7 +255,7 @@ export const NewReceipt = () => {
   );
 
   const getSubtotal = useCallback(() => {
-    const p = price ? parseFloat(price) : 0;
+    const p = price ? price : 0;
     const q = quantity ? parseFloat(quantity) : 0;
     const total = p * q;
     return numberWithCommas(total);
@@ -379,9 +379,9 @@ export const NewReceipt = () => {
                     width: '48%',
                   })}>
                   <CurrencyInput
-                    value={price}
                     label="Unit Price"
-                    onChange={handlePriceChange}
+                    value={price?.toString()}
+                    onChange={(text) => handlePriceChange(text)}
                   />
                 </View>
                 <View

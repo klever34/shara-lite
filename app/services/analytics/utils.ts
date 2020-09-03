@@ -1,6 +1,6 @@
 import {useEffect} from 'react';
 import analytics from '@segment/analytics-react-native';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {useRoute} from '@react-navigation/native';
 
 export const useScreenRecord = () => {

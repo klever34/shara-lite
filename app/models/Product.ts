@@ -16,10 +16,10 @@ export class Product extends BaseModel implements Partial<IProduct> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      name: 'string',
-      sku: 'string',
-      price: 'double',
-      quantity: {type: 'int', default: 0},
+      name: 'string?',
+      sku: 'string?',
+      price: 'double?',
+      quantity: {type: 'int', default: 0, optional: true},
       weight: 'string?',
     },
   };

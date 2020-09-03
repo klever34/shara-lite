@@ -1,20 +1,20 @@
 import React, {useState, useCallback, useLayoutEffect} from 'react';
 import {ScrollView, Text, View, ToastAndroid} from 'react-native';
-import {applyStyles} from '../../../../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import {
   CurrencyInput,
   FloatingLabelInput,
   Button,
 } from '../../../../components';
-import {IProduct} from '../../../../models/Product';
-import {colors} from '../../../../styles';
-import {useRealm} from '../../../../services/realm';
-import {saveProduct} from '../../../../services/ProductService';
+import {IProduct} from '@/models/Product';
+import {colors} from '@/styles';
+import {useRealm} from '@/services/realm';
+import {saveProduct} from '@/services/ProductService';
 import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
-import {getAnalyticsService} from '../../../../services';
+import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
-import {useScreenRecord} from '../../../../services/analytics';
+import {useScreenRecord} from '@/services/analytics';
 import {FormDefaults} from '@/services/FormDefaults';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;

@@ -10,12 +10,12 @@ import {
   ToastAndroid,
 } from 'react-native';
 import {Button, FloatingLabelInput} from '../../../components';
-import {applyStyles} from '../../../helpers/utils';
-import {getAnalyticsService} from '../../../services';
-import {useScreenRecord} from '../../../services/analytics';
-import {getCustomers, saveCustomer} from '../../../services/CustomerService';
-import {useRealm} from '../../../services/realm';
-import {colors} from '../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {getAnalyticsService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
+import {getCustomers, saveCustomer} from '@/services/CustomerService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {ICustomer} from '@/models';
 import {FormDefaults} from '@/services/FormDefaults';
 

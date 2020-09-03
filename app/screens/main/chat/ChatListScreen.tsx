@@ -81,39 +81,42 @@ const ChatListItem = ({conversation}: ChatListItemProps) => {
             <Text style={listItemStyles.titleText} numberOfLines={1}>
               {conversation.name}
             </Text>
-            <Text style={listItemStyles.dateText} numberOfLines={1}>
+            <Text
+              style={applyStyles(
+                'text-xs leading-14 text-400 text-gray-200',
+                !!messages.length && 'text-primary',
+              )}
+              numberOfLines={1}>
               {dateText}
             </Text>
           </View>
           <View style={listItemStyles.messageContainer}>
             {lastMessage && (
-              <View style={applyStyles('flex-row items-center flex-1')}>
+              <View style={applyStyles('flex-row items-start flex-1')}>
                 {!typingMessage && (
                   <MessageStatusIcon
                     message={lastMessage}
-                    style={applyStyles('mr-xs')}
+                    style={applyStyles('mr-xs mt-2')}
                   />
                 )}
                 <Text
                   style={applyStyles(
                     listItemStyles.contentText,
                     typingMessage && {color: 'green'},
+                    'flex-1',
                   )}
-                  numberOfLines={1}>
+                  numberOfLines={2}>
                   {typingMessage || lastMessage.content}
                 </Text>
               </View>
             )}
             {!!messages.length && (
               <View
-                style={applyStyles('center', {
-                  width: 24,
-                  height: 24,
-                  backgroundColor: colors.primary,
-                  borderRadius: 12,
-                })}>
+                style={applyStyles(
+                  'center self-center ml-4 w-24 h-20 rounded-10 bg-primary',
+                )}>
                 <Text
-                  style={applyStyles('text-xs font-bold', {
+                  style={applyStyles('text-xs leading-14 font-bold', {
                     color: colors.white,
                   })}>
                   {messages.length >= 100 ? '99+' : messages.length}
@@ -163,22 +166,17 @@ const ChatListScreen = () => {
 };
 
 const listItemStyles = StyleSheet.create({
-  container: applyStyles('flex-row items-center px-md'),
-  imageContainer: applyStyles('center my-md mr-md', {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: colors.primary,
-  }),
-  contentContainer: applyStyles('flex-col flex-1 py-md', {
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-20'],
-  }),
-  titleContainer: applyStyles('h-full flex-1 flex-row'),
-  titleText: applyStyles('flex-1 text-lg text-700 mb-sm'),
-  dateText: applyStyles('text-sm  text-400', {color: colors['gray-200']}),
+  container: applyStyles(
+    'flex-row items-center mx-md border-b-1 border-b-gray-20',
+  ),
+  imageContainer: applyStyles(
+    'center my-md mr-md w-56 h-56 rounded-28 bg-primary',
+  ),
+  contentContainer: applyStyles('flex-col flex-1 py-md '),
+  titleContainer: applyStyles('flex-row'),
+  titleText: applyStyles('flex-1 text-base leading-24 text-500 text-gray-300'),
   messageContainer: applyStyles('flex-row self-start'),
-  contentText: applyStyles('text-base', {color: colors['gray-50']}),
+  contentText: applyStyles('text-xs leading-20 text-400 text-gray-200'),
 });
 
 export default memo(ChatListScreen);

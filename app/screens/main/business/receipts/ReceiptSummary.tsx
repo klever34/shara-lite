@@ -13,14 +13,14 @@ import {
   View,
 } from 'react-native';
 import Share from 'react-native-share';
-import {Payment} from '../../../../../types/app';
+import {Payment} from 'types/app';
 import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
   PageModal,
 } from '../../../../components';
-import {ContactsListModal} from '../../../../components/ContactsListModal';
+import {ContactsListModal} from '@/components';
 import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -30,13 +30,13 @@ import {
   getDueDateValue,
   numberWithCommas,
   getCustomerWhatsappNumber,
-} from '../../../../helpers/utils';
-import {ICustomer} from '../../../../models';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
+} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService, getAuthService} from '../../../../services';
-import {useRealm} from '../../../../services/realm';
-import {saveReceipt} from '../../../../services/ReceiptService';
-import {colors} from '../../../../styles';
+import {useRealm} from '@/services/realm';
+import {saveReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
 import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
@@ -440,7 +440,7 @@ const ReceiptSummary = (props: Props) => {
     (type: 'cash' | 'transfer' | 'mobile') => {
       const method = payments.find((item) => item.method === type);
       if (method) {
-        return method.amount.toString();
+        return method?.amount?.toString();
       }
       return '0';
     },
@@ -531,7 +531,10 @@ const ReceiptSummary = (props: Props) => {
 
   useEffect(() => {
     if (payments.length) {
-      const paid = payments.reduce((acc, item) => acc + item.amount, 0);
+      const paid = payments.reduce(
+        (acc, item) => acc + (item.amount ? item.amount : 0),
+        0,
+      );
       setAmountPaid(paid);
     }
   }, [payments]);

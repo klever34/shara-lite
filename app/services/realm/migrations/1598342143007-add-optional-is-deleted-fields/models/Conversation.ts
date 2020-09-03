@@ -21,15 +21,14 @@ export class Conversation extends BaseModel implements Partial<IConversation> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      channel: 'string',
-      type: 'string',
+      channel: 'string?',
+      type: 'string?',
       lastMessage: 'Message?',
       admins: 'string[]',
       members: 'string[]',
-      name: 'string',
+      name: 'string?',
       description: 'string?',
-      id: 'string',
-      creator: 'string?',
+      id: 'string?',
     },
   };
 }

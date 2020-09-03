@@ -6,6 +6,7 @@ export const dimensions = {
 };
 
 export const colors: {[key: string]: string} = {
+  'red-30': '#FFE2E2',
   'red-50': '#F4B1B1',
   'red-200': '#DD0404',
   primary: '#dd0404',
@@ -28,7 +29,9 @@ const sizes = [
   4,
   6,
   8,
+  10,
   12,
+  14,
   16,
   20,
   24,
