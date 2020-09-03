@@ -23,8 +23,8 @@ const useRealmSyncLoader = () => {
   };
 
   const updateRealm = useCallback(
-    async () => {
-      if (isLoading || hasLoadedRealm) {
+    async (forceUpdate?: boolean) => {
+      if (!forceUpdate && (isLoading || hasLoadedRealm)) {
         return;
       }
 
@@ -64,7 +64,7 @@ const useRealmSyncLoader = () => {
       }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [authService, updateSyncRealm, hasLoadedRealm, isLoading],
+    [authService, updateSyncRealm, isLoading],
   );
 
   /*
@@ -83,7 +83,7 @@ const useRealmSyncLoader = () => {
 
       setHasLoadedRealm(false);
       setIsRealmSyncLoaderInitiated && setIsRealmSyncLoaderInitiated(true);
-      updateRealm();
+      updateRealm(true);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [isRealmSyncLoaderInitiated],
