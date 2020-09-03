@@ -199,15 +199,12 @@ export function ReceiptDetailsModal(props: Props) {
         );
         await BluetoothEscposPrinter.printText(
           `${user?.businesses[0].address}\n`,
-          receiptStyles.header,
+          {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
-        await BluetoothEscposPrinter.printText(
-          `Tel: ${user?.mobile}\n`,
-          receiptStyles.header,
-        );
+        await BluetoothEscposPrinter.printText(`Tel: ${user?.mobile}\n`, {});
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
@@ -216,7 +213,7 @@ export function ReceiptDetailsModal(props: Props) {
           {},
         );
         await BluetoothEscposPrinter.printColumn(
-          [16, 12],
+          [16, 16],
           [
             BluetoothEscposPrinter.ALIGN.LEFT,
             BluetoothEscposPrinter.ALIGN.RIGHT,
@@ -225,7 +222,7 @@ export function ReceiptDetailsModal(props: Props) {
           {},
         );
         await BluetoothEscposPrinter.printColumn(
-          [16, 12],
+          [16, 16],
           [
             BluetoothEscposPrinter.ALIGN.LEFT,
             BluetoothEscposPrinter.ALIGN.RIGHT,
@@ -288,27 +285,24 @@ export function ReceiptDetailsModal(props: Props) {
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
-        await BluetoothEscposPrinter.printText(
-          `Tax: ${0}\n`,
-          receiptStyles.product,
-        );
+        await BluetoothEscposPrinter.printText(`Tax: ${0}\n`, {});
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
         await BluetoothEscposPrinter.printText(
           `Total: ${currencyCode} ${numberWithCommas(receipt?.total_amount)}\n`,
-          receiptStyles.subheader,
+          {},
         );
         await BluetoothEscposPrinter.printText(
           `Paid: ${currencyCode} ${numberWithCommas(receipt?.amount_paid)}\n`,
-          receiptStyles.subheader,
+          {},
         );
         receipt?.credit_amount &&
           (await BluetoothEscposPrinter.printText(
             `Balance: ${currencyCode} ${numberWithCommas(
               receipt?.credit_amount,
             )}\n`,
-            receiptStyles.subheader,
+            {},
           ));
 
         await BluetoothEscposPrinter.printText(

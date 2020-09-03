@@ -184,15 +184,12 @@ export const ReceiptStatusModal = (props: Props) => {
         );
         await BluetoothEscposPrinter.printText(
           `${user?.businesses[0].address}\n`,
-          receiptStyles.header,
+          {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
-        await BluetoothEscposPrinter.printText(
-          `Tel: ${user?.mobile}\n`,
-          receiptStyles.header,
-        );
+        await BluetoothEscposPrinter.printText(`Tel: ${user?.mobile}\n`, {});
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
@@ -201,7 +198,7 @@ export const ReceiptStatusModal = (props: Props) => {
           {},
         );
         await BluetoothEscposPrinter.printColumn(
-          [16, 12],
+          [16, 16],
           [
             BluetoothEscposPrinter.ALIGN.LEFT,
             BluetoothEscposPrinter.ALIGN.RIGHT,
@@ -210,7 +207,7 @@ export const ReceiptStatusModal = (props: Props) => {
           {},
         );
         await BluetoothEscposPrinter.printColumn(
-          [16, 12],
+          [16, 16],
           [
             BluetoothEscposPrinter.ALIGN.LEFT,
             BluetoothEscposPrinter.ALIGN.RIGHT,
