@@ -197,22 +197,9 @@ export const ReceiptStatusModal = (props: Props) => {
           '--------------------------------\n',
           {},
         );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 16],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          [`${customerText}`, `${format(new Date(), 'dd/MM/yyyy')}`],
-          {},
-        );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 16],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          ['', `${format(new Date(), 'hh:mm:a')}`],
+        await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
+        await BluetoothEscposPrinter.printText(
+          `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
@@ -268,25 +255,22 @@ export const ReceiptStatusModal = (props: Props) => {
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
-        await BluetoothEscposPrinter.printText(
-          `Tax: ${0}\n`,
-          receiptStyles.product,
-        );
+        await BluetoothEscposPrinter.printText(`Tax: ${0}\n`, {});
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
         await BluetoothEscposPrinter.printText(
           `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n`,
-          receiptStyles.subheader,
+          {},
         );
         await BluetoothEscposPrinter.printText(
           `Paid: ${currencyCode} ${numberWithCommas(amountPaid)}\n`,
-          receiptStyles.subheader,
+          {},
         );
         creditAmount &&
           (await BluetoothEscposPrinter.printText(
             `Balance: ${currencyCode} ${numberWithCommas(creditAmount)}\n`,
-            receiptStyles.subheader,
+            {},
           ));
         await BluetoothEscposPrinter.printText(
           '--------------------------------\n',

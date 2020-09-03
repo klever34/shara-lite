@@ -181,13 +181,6 @@ export function ReceiptDetailsModal(props: Props) {
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
@@ -212,22 +205,9 @@ export function ReceiptDetailsModal(props: Props) {
           '--------------------------------\n',
           {},
         );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 16],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          [`${customerText}`, `${format(new Date(), 'dd/MM/yyyy')}`],
-          {},
-        );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 16],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          ['', `${format(new Date(), 'hh:mm:a')}`],
+        await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
+        await BluetoothEscposPrinter.printText(
+          `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
