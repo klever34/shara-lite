@@ -16,7 +16,11 @@ export class FormDefaults {
         password: 'some-password',
         countryCode: '234',
       },
-      receipt: {},
+      supplier: {
+        name: faker.name.findName(),
+        address: faker.address.streetAddress(),
+        mobile: faker.phone.phoneNumber(),
+      },
       quantity: `${Math.floor(Math.random() * 100)}`,
       newProduct: {
         name: faker.commerce.productName(),
@@ -29,9 +33,10 @@ export class FormDefaults {
   }
 
   static get(section: string, defaultValue: any = {}): any {
-    // @ts-ignore
+    const defaults = this.testDefaults();
     return Config.CI_TESTS === 'true'
-      ? this.testDefaults()[section]
+      ? // @ts-ignore
+        defaults[section]
       : defaultValue;
   }
 }
