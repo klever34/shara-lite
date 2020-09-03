@@ -62,6 +62,7 @@ import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
 import {Expenses} from './business/finances/Expenses';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import {useNavigationState} from '@react-navigation/native';
+import {useRealm} from '@/services/realm';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -160,6 +161,7 @@ const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
   const authService = getAuthService();
+  const realm = useRealm();
   const user = authService.getUser();
   useRealmSyncLoader();
   // @ts-ignore
@@ -190,6 +192,14 @@ const MainScreens = ({navigation}: any) => {
     const contactsService = getContactService();
     contactsService.syncPhoneContacts().catch(handleError);
   }, [navigation, handleError]);
+
+  if (!realm) {
+    return (
+      <View style={applyStyles('flex-1 center')}>
+        <ActivityIndicator color={colors.primary} size={40} />
+      </View>
+    );
+  }
 
   if (!pubNubClient) {
     return (
