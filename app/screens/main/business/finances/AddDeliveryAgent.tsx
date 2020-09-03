@@ -47,7 +47,7 @@ export const AddDeliveryAgent = (props: Props) => {
   }, []);
 
   const handleSubmit = useCallback(() => {
-    if (Object.keys(deliveryAgent).length === 2) {
+    if (Object.keys(deliveryAgent).length >= 1) {
       if (
         deliveryAgents.map((item) => item.mobile).includes(deliveryAgent.mobile)
       ) {
