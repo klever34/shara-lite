@@ -78,6 +78,17 @@ workflows:
             branches:
               only:
                 - discovery
+      - fastlane:
+          context: shara-discovery
+          lane: testlab
+          testBuild: true
+          gradleTask: assembleDiscoveryRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
   delivery-workflow:
     jobs:
       - checkout_code:
@@ -95,6 +106,17 @@ workflows:
       - fastlane:
           context: shara-dev
           lane: internal
+          gradleTask: assembleDeliveryRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          context: shara-dev
+          lane: testlab
+          testBuild: true
           gradleTask: assembleDeliveryRelease
           requires:
             - test
@@ -136,6 +158,17 @@ workflows:
             branches:
               only:
                 - /^release.*/
+      - fastlane:
+          context: shara-qa
+          lane: testlab
+          testBuild: true
+          gradleTask: assembleQaRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^release.*/
   beta-workflow:
     jobs:
       - checkout_code:
@@ -163,6 +196,17 @@ workflows:
       - fastlane:
           context: shara-beta
           lane: internal
+          gradleTask: assembleProductionRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - fastlane:
+          context: shara-beta
+          lane: testlab
+          testBuild: true
           gradleTask: assembleProductionRelease
           requires:
             - test
