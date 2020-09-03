@@ -21,7 +21,55 @@ platform :android do
     gradle(task: "test")
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
+  desc "Submit a new build to Firebase Test Lab"
+  lane :testlab do
+    gradle(task: "clean " + ENV['GRADLE_TASK'])
+
+    # Upload to Firebase Test Lab
+    firebase_test_lab_android(
+      project_id: ENV['GOOGLE_PROJECT_ID'],                                    # Your Firebase project name.
+      gcloud_service_key_file: ENV['GCLOUD_SERVICE_KEY_FILE'],         # File path containing the gcloud auth key.
+
+      # gcloud_components_channel: "beta",                            # If you use gcloud component channel option (alpha/beta).
+      type: "robo",                                                   # Optional: Test type (robo/instrumentation).
+      # TODO Thorough QA Test
+      devices: [                                                      # Devices
+        {
+          model: "Nexus6P",
+          version: "28",
+          locale: "en",
+          orientation: "portrait"
+        },
+        {
+          model: "Pixel2",
+          version: "28"
+        }
+      ],
+      # TODO Get APK from build output or use a static output apk path and name (currently varies based on flavour and release type)
+      app_apk: ENV['GRADLE_APK_OUTPUT_PATH'],                                       # The path for your android app apk.
+      # app_test_apk: "app-test.apk",                                 # The path for your android instrumentation test apk.
+      # use_orchestrator: false,                                      # If you use orchestrator when set instrumentation test.
+      console_log_file_name: "fastlane/console_output.log",
+      timeout: "3m",
+      firebase_test_lab_results_bucket: ENV['SHARA_TEST_LAB_BUCKET'],  # If you want to naming bucket of GCS
+      # firebase_test_lab_results_dir: "firebase_cats_test_dir",      # If you want to naming results of GCS. (Maybe don't need it.)
+      slack_url: ENV["SLACK_WEBHOOK"],                                    # If you want notify to Slack.
+
+      # TODO Link to PRs:
+      # If you want notify to Github pull requests.
+      # github_owner: "******",                                         # Owner name.
+      # github_repository: "************",                              # Repository name.
+      # github_pr_number: pr_number,                                    # If you using run on CI that need pull request number for auto comment.
+      # github_api_token: ENV["GITHUB_API_TOKEN"],                      # https://github.com/settings/tokens
+      # download_dir: ".results",                                       # If you want to download to the results of Firebase test lab.
+
+
+      # If you want to ignore some social sign-in buttons.
+      extra_options: "--robo-directives ignore:image_button_sign_in_twitter=,ignore:image_button_sign_in_instagram="
+    )
+  end
+
+  desc "Submit a new build to Firebase App Distribution"
   lane :internal do
     # gradle(task: "clean assembleRelease")
     gradle(task: "clean " + ENV['GRADLE_TASK'])
