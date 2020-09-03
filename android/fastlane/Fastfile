@@ -28,7 +28,7 @@ platform :android do
     # Upload to Firebase Test Lab
     firebase_test_lab_android(
       project_id: ENV['GOOGLE_PROJECT_ID'],                                    # Your Firebase project name.
-      gcloud_service_key_file: ENV['GCLOUD_SERVICE_KEY_FILE'],         # File path containing the gcloud auth key.
+      gcloud_service_key_file: ENV['FIREBASE_TESTLAB_SERVICE_KEY_FILE'],         # File path containing the gcloud auth key.
 
       # gcloud_components_channel: "beta",                            # If you use gcloud component channel option (alpha/beta).
       type: "robo",                                                   # Optional: Test type (robo/instrumentation).
