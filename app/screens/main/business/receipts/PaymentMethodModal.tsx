@@ -32,14 +32,14 @@ export const PaymentMethodModal = (props: Props) => {
     mobile: 'Mobile Money',
   };
   const [note, setNote] = useState('');
-  const [amount, setAmount] = useState(totalAmount.toString() || '');
+  const [amount, setAmount] = useState<number>(totalAmount);
 
   useEffect(() => {
-    setAmount(totalAmount.toString());
+    setAmount(totalAmount);
   }, [totalAmount]);
 
   const handleAmountChange = useCallback((value: number) => {
-    setAmount(value.toString());
+    setAmount(value);
   }, []);
 
   const handleNoteChange = useCallback((value: string) => {
@@ -48,12 +48,12 @@ export const PaymentMethodModal = (props: Props) => {
 
   const handleClose = useCallback(() => {
     setNote('');
-    setAmount('');
+    setAmount(0);
     onClose();
   }, [onClose]);
 
   const handleSubmit = useCallback(() => {
-    const payload = {amount: parseFloat(amount), note, method: type};
+    const payload = {amount, note, method: type};
     onSubmit && onSubmit(payload);
     handleClose();
   }, [onSubmit, amount, note, type, handleClose]);
@@ -88,9 +88,9 @@ export const PaymentMethodModal = (props: Props) => {
         <View style={applyStyles('px-lg')}>
           <View style={applyStyles('mb-md')}>
             <CurrencyInput
-              value={amount}
               label="Amount Paid"
               keyboardType="numeric"
+              value={amount?.toString()}
               onChange={handleAmountChange}
             />
           </View>

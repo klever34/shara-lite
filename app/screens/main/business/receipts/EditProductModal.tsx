@@ -27,17 +27,15 @@ export const EditProductModal = (props: Props) => {
     onUpdateProductItem,
     onRemoveProductItem,
   } = props;
-  const [price, setPrice] = useState<string | undefined>(
-    item ? item.price.toString() : '',
-  );
   const [quantity, setQuantity] = useState<string | undefined>(
     item ? item.quantity.toString() : '',
   );
+  const [price, setPrice] = useState<number | undefined>(item?.price);
   const authService = getAuthService();
   const currency = authService.getUserCurrency();
 
   useEffect(() => {
-    setPrice(item?.price.toString());
+    setPrice(item?.price);
     setQuantity(item?.quantity.toString());
   }, [item]);
 
@@ -50,7 +48,7 @@ export const EditProductModal = (props: Props) => {
   }, []);
 
   const handleClose = useCallback(() => {
-    setPrice('');
+    setPrice(undefined);
     setQuantity('');
     onClose();
   }, [onClose]);
@@ -65,7 +63,7 @@ export const EditProductModal = (props: Props) => {
   const handleUpdate = useCallback(() => {
     const payload = {
       ...item,
-      price: price ? parseFloat(price) : 0,
+      price: price ? price : 0,
       quantity: quantity ? parseFloat(quantity) : 0,
     } as IReceiptItem;
     onUpdateProductItem && onUpdateProductItem(payload);
@@ -74,7 +72,7 @@ export const EditProductModal = (props: Props) => {
   }, [item, price, quantity, onUpdateProductItem, handleClose]);
 
   const getSubtotal = useCallback(() => {
-    const p = price ? parseFloat(price) : 0;
+    const p = price ? price : 0;
     const q = quantity ? parseFloat(quantity) : 0;
     const total = p * q;
     return numberWithCommas(total);
@@ -106,8 +104,8 @@ export const EditProductModal = (props: Props) => {
                   width: '48%',
                 })}>
                 <CurrencyInput
-                  value={price}
                   label="Unit Price"
+                  value={price?.toString()}
                   onChange={handlePriceChange}
                 />
               </View>
