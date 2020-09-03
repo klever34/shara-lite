@@ -27,7 +27,7 @@ platform :android do
     print "APK: "
     print lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH]
 
-    # Get Pull request number from CI
+    # TODO Get Pull request number from CI
     pr_number = ENV["CI_PULL_REQUEST"] != nil ? ENV["CI_PULL_REQUEST"][/(?<=https:\/\/github.com\/shara-inc\/mobile\/pull\/)(.*)/] : nil
     print "PR Number: "
     print pr_number
@@ -40,20 +40,18 @@ platform :android do
 
       # gcloud_components_channel: "beta",                            # If you use gcloud component channel option (alpha/beta).
       type: "robo",                                                   # Optional: Test type (robo/instrumentation).
-      # TODO Thorough QA Test
       devices: [                                                      # Devices
         {
-          model: "Nexus6P",
+          model: "OnePlus6T",
           version: "28",
-          locale: "en",
           orientation: "portrait"
         },
         {
           model: "Pixel2",
-          version: "28"
+          version: "28",
+          orientation: "portrait"
         }
       ],
-      # TODO Get APK from build output or use a static output apk path and name (currently varies based on flavour and release type)
       app_apk: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],                                       # The path for your android app apk.
       # app_test_apk: "app-test.apk",                                 # The path for your android instrumentation test apk.
       # use_orchestrator: false,                                      # If you use orchestrator when set instrumentation test.
