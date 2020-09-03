@@ -17,7 +17,7 @@ export class CreditPayment extends BaseModel
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      amount_paid: 'double',
+      amount_paid: 'double?',
       credit: 'Credit?',
       payment: 'Payment?',
     },

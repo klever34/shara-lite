@@ -7,20 +7,20 @@ import {ActivityIndicator, View, BackHandler, ToastAndroid} from 'react-native';
 import Config from 'react-native-config';
 import {Results} from 'realm';
 import getUuidByString from 'uuid-by-string';
-import {FAButtonProps} from '../../components';
-import {applyStyles} from '../../helpers/utils';
+import {FAButtonProps} from '@/components';
+import {applyStyles} from '@/helpers/utils';
 import {IContact, IConversation} from '../../models';
-import {ICredit} from '../../models/Credit';
-import {ICreditPayment} from '../../models/CreditPayment';
-import {IPayment} from '../../models/Payment';
-import {IProduct} from '../../models/Product';
+import {ICredit} from '@/models/Credit';
+import {ICreditPayment} from '@/models/CreditPayment';
+import {IPayment} from '@/models/Payment';
+import {IProduct} from '@/models/Product';
 import {
   getAnalyticsService,
   getAuthService,
-  getContactsService,
+  getContactService,
   getPubNubService,
 } from '../../services';
-import {colors} from '../../styles';
+import {colors} from '@/styles';
 import {BusinessSetup} from '../BusinessSetup';
 import {
   AddProduct,
@@ -57,11 +57,12 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {ISupplier} from '../../models/Supplier';
+import {ISupplier} from '@/models/Supplier';
 import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
 import {Expenses} from './business/finances/Expenses';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import {useNavigationState} from '@react-navigation/native';
+import {useRealm} from '@/services/realm';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -160,6 +161,7 @@ const MainScreens = ({navigation}: any) => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
   const authService = getAuthService();
+  const realm = useRealm();
   const user = authService.getUser();
   useRealmSyncLoader();
   // @ts-ignore
@@ -187,9 +189,17 @@ const MainScreens = ({navigation}: any) => {
   }, [user]);
 
   useEffect(() => {
-    const contactsService = getContactsService();
-    contactsService.loadContacts().catch(handleError);
+    const contactsService = getContactService();
+    contactsService.syncPhoneContacts().catch(handleError);
   }, [navigation, handleError]);
+
+  if (!realm) {
+    return (
+      <View style={applyStyles('flex-1 center')}>
+        <ActivityIndicator color={colors.primary} size={40} />
+      </View>
+    );
+  }
 
   if (!pubNubClient) {
     return (

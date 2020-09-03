@@ -84,7 +84,11 @@ export const saveCreditPayment = ({
       ...getBaseModelValues(),
     };
     realm.write(() => {
-      realm.create<ICredit>(modelName, creditPayment, UpdateMode.Modified);
+      realm.create<ICreditPayment>(
+        modelName,
+        creditPayment,
+        UpdateMode.Modified,
+      );
     });
 
     amountLeft = amountLeftFromDeduction <= 0 ? 0 : amountLeftFromDeduction;

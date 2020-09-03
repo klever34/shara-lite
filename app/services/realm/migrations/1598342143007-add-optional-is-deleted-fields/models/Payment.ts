@@ -21,9 +21,9 @@ export class Payment extends BaseModel implements Partial<IPayment> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      amount_paid: 'double',
-      type: 'string',
-      method: 'string',
+      amount_paid: 'double?',
+      type: 'string?',
+      method: 'string?',
       note: 'string?',
       customer_name: 'string?',
       customer_mobile: 'string?',

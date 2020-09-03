@@ -65,5 +65,5 @@ export const updatePayment = ({
     ...updates,
   };
 
-  realm.create<IPayment>(modelName, updatedPayment, UpdateMode.Modified);
+  realm.create(modelName, updatedPayment, UpdateMode.Modified);
 };

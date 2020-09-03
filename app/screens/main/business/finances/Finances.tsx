@@ -5,9 +5,9 @@ import React, {useCallback, useLayoutEffect} from 'react';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, SafeAreaView, View} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
-import {applyStyles} from '../../../../helpers/utils';
-import {useScreenRecord} from '../../../../services/analytics';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {useScreenRecord} from '@/services/analytics';
+import {colors} from '@/styles';
 import {MyCredit, MyInventory, MyReceipts} from './index';
 
 type TabStackParamList = {
