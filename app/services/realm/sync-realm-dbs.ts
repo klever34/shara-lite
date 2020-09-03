@@ -15,9 +15,9 @@ export const syncRealmDbs = ({
 
     // @ts-ignore
     function listener(records, changes) {
-      changes.insertions.forEach((index: number) => {
-        const insertedRecord = records[index];
-        targetRealm.write(() => {
+      const updateRecords = () => {
+        changes.insertions.forEach((index: number) => {
+          const insertedRecord = records[index];
           if (
             insertedRecord._partition &&
             insertedRecord._partition === partitionValue
@@ -29,11 +29,9 @@ export const syncRealmDbs = ({
             );
           }
         });
-      });
 
-      changes.modifications.forEach((index: number) => {
-        const modifiedRecord = records[index];
-        targetRealm.write(() => {
+        changes.modifications.forEach((index: number) => {
+          const modifiedRecord = records[index];
           if (
             modifiedRecord._partition &&
             modifiedRecord._partition === partitionValue
@@ -45,13 +43,19 @@ export const syncRealmDbs = ({
             );
           }
         });
-      });
 
-      // @ts-ignore
-      changes.deletions.forEach(() => {
-        // Deleted objects cannot be accessed directly
-        // Support for accessing deleted objects coming soon...
-      });
+        // @ts-ignore
+        changes.deletions.forEach(() => {
+          // Deleted objects cannot be accessed directly
+          // Support for accessing deleted objects coming soon...
+        });
+      };
+
+      if (targetRealm.isInTransaction) {
+        updateRecords();
+      } else {
+        targetRealm.write(updateRecords);
+      }
     }
 
     // @ts-ignore
