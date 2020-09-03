@@ -50,12 +50,14 @@ export const EditProduct = ({
   }, []);
 
   const handleSubmit = useCallback(() => {
-    setIsLoading(true);
-    updateProduct({realm, product: productProps, updates: product});
-    setIsLoading(false);
-    clearForm();
-    navigation.goBack();
-    ToastAndroid.show('Product edited', ToastAndroid.SHORT);
+    if (product.name && product.price) {
+      setIsLoading(true);
+      updateProduct({realm, product: productProps, updates: product});
+      setIsLoading(false);
+      clearForm();
+      navigation.goBack();
+      ToastAndroid.show('Product edited', ToastAndroid.SHORT);
+    }
   }, [realm, clearForm, productProps, product, navigation]);
 
   return (

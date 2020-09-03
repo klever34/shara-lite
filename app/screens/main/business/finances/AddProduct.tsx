@@ -47,7 +47,7 @@ export const AddProduct = () => {
   const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
-    if (Object.values(product).length === 3) {
+    if (product.name && product.price) {
       setIsLoading(true);
       setTimeout(() => {
         saveProduct({realm, product});

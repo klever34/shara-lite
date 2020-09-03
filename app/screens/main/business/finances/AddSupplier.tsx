@@ -46,7 +46,7 @@ export const AddSupplier = () => {
   const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
-    if (supplier.name && supplier.mobile) {
+    if (supplier.name) {
       if (suppliers.map((item) => item.mobile).includes(supplier.mobile)) {
         Alert.alert(
           'Error',
