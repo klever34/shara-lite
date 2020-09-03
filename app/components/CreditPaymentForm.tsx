@@ -7,7 +7,7 @@ import {colors} from '../styles';
 import {CurrencyInput} from './CurrencyInput';
 
 type Payload = {
-  amount: string;
+  amount: number | undefined;
   method: string;
 };
 
@@ -20,7 +20,7 @@ export const CreditPaymentForm = (props: Props) => {
   const {isLoading, onSubmit} = props;
   const [payload, setPayload] = useState<Payload>({
     method: 'cash',
-    amount: '',
+    amount: undefined,
   } as Payload);
 
   const handleChange = useCallback(
@@ -46,9 +46,9 @@ export const CreditPaymentForm = (props: Props) => {
       <View style={applyStyles('flex-row', 'items-center')}>
         <CurrencyInput
           label="Amount Paid"
-          value={payload.amount}
           keyboardType="number-pad"
           containerStyle={styles.input}
+          value={payload.amount?.toString()}
           onChange={(text) => handleChange(text, 'amount')}
         />
       </View>

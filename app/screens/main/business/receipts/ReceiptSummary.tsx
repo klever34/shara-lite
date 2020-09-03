@@ -440,7 +440,7 @@ const ReceiptSummary = (props: Props) => {
     (type: 'cash' | 'transfer' | 'mobile') => {
       const method = payments.find((item) => item.method === type);
       if (method) {
-        return method.amount.toString();
+        return method?.amount?.toString();
       }
       return '0';
     },
@@ -531,7 +531,10 @@ const ReceiptSummary = (props: Props) => {
 
   useEffect(() => {
     if (payments.length) {
-      const paid = payments.reduce((acc, item) => acc + item.amount, 0);
+      const paid = payments.reduce(
+        (acc, item) => acc + (item.amount ? item.amount : 0),
+        0,
+      );
       setAmountPaid(paid);
     }
   }, [payments]);
