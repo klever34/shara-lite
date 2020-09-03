@@ -12,8 +12,26 @@ type Props = Omit<FloatingLabelInputProps, 'onChange' | 'onChangeText'> & {
   onChange?: (value: number) => void;
 };
 
-const toThousandString = (number: number) =>
-  number ? number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '';
+const toThousandString = (text: string) => {
+  const numberValue = toNumber(text);
+  if (text.includes('.')) {
+    const parts = text.split('.');
+
+    if (parts.length > 1) {
+      const n = toNumber(parts[0]);
+      const part0 = new Intl.NumberFormat('en-GB').format(n);
+      const part1 = parts[1].toString().substring(0, 2);
+      return `${part0}.${part1}`;
+    } else {
+      return text;
+    }
+  } else {
+    return new Intl.NumberFormat('en-GB', {
+      style: 'decimal',
+      maximumFractionDigits: 2,
+    }).format(numberValue);
+  }
+};
 
 const toNumber = (value: string) => parseFloat(value.replace(/,/g, ''));
 
@@ -21,23 +39,26 @@ export const CurrencyInput = (props: Props) => {
   const authService = getAuthService();
   const currency = authService.getUserCurrency();
   const {value: valueProp, onChange, ...rest} = props;
-  const numberValue = valueProp ? parseFloat(valueProp) : 0;
-  const [value, setValue] = useState(
-    valueProp ? toThousandString(numberValue) : '',
-  );
+  const [value, setValue] = useState(valueProp);
 
   const paddingLeft = currency.length > 1 ? 36 : 16;
 
   useEffect(() => {
-    const number = valueProp ? parseFloat(valueProp) : 0;
-    setValue(toThousandString(number));
+    if (valueProp) {
+      valueProp && setValue(toThousandString(valueProp));
+    }
   }, [valueProp]);
 
   const handleChange = useCallback(
     (text) => {
-      const number = toNumber(text);
-      setValue(toThousandString(number));
-      onChange && onChange(number);
+      if (text) {
+        const numberValue = toNumber(text);
+        const stringValue = toThousandString(text);
+        setValue(stringValue);
+        onChange && onChange(numberValue);
+      } else {
+        setValue('');
+      }
     },
     [onChange],
   );
