@@ -1,4 +1,4 @@
-import {Alert, PermissionsAndroid} from 'react-native';
+import {Alert} from 'react-native';
 import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
@@ -37,64 +37,51 @@ export class ContactService implements IContactService {
     private authService: IAuthService,
   ) {}
 
+  private permissionGranted: boolean = false;
+
   private async checkPermission() {
-    return new Promise((resolve) => {
-      RNContacts.checkPermission((error, result) => {
-        if (result === 'authorized') {
-          resolve(true);
-        } else {
-          Alert.alert(
-            'Access to your contacts',
-            'Shara would like to view your contacts.',
-            [
-              {
-                text: 'Cancel',
-                onPress: () => {
-                  resolve(false);
-                },
+    if (!this.permissionGranted) {
+      return new Promise((resolve) => {
+        Alert.alert(
+          'Access to your contacts',
+          'Shara would like to view your contacts.',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                this.permissionGranted = false;
+                resolve(this.permissionGranted);
               },
-              {
-                text: 'OK',
-                onPress: () => {
-                  PermissionsAndroid.request(
-                    PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-                  ).then((status) => {
-                    if (status === 'granted') {
-                      resolve(true);
-                    } else {
-                      resolve(false);
-                    }
-                  });
-                },
+            },
+            {
+              text: 'OK',
+              onPress: () => {
+                RNContacts.requestPermission((error, result) => {
+                  this.permissionGranted = result === 'authorized';
+                  resolve(this.permissionGranted);
+                });
               },
-            ],
-            {cancelable: false},
-          );
-        }
+            },
+          ],
+          {cancelable: false},
+        );
       });
-    });
+    }
+    return this.permissionGranted;
   }
 
   public async getPhoneContacts() {
-    return new Promise<RNContacts.Contact[]>((resolve, reject) => {
-      this.checkPermission().then((hasPermission) => {
-        const error = new Error('We are unable to access your contacts');
-        if (hasPermission) {
-          RNContacts.getAll((err, contacts) => {
-            if (err) {
-              reject(err);
-            }
-            if (contacts) {
-              resolve(contacts);
-            } else {
-              reject(error);
-            }
-          });
-        } else {
-          reject(error);
-        }
+    if (await this.checkPermission()) {
+      return new Promise<RNContacts.Contact[]>((resolve, reject) => {
+        RNContacts.getAll((err, contacts) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(contacts);
+        });
       });
-    });
+    }
+    throw new Error('We are unable to access your contacts.');
   }
 
   public async syncPhoneContacts() {

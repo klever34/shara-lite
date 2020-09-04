@@ -14,9 +14,9 @@ import {
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
-import {applyStyles} from '../helpers/utils';
-import {getContactService} from '../services';
-import {colors} from '../styles';
+import {applyStyles} from '@/helpers/utils';
+import {getContactService} from '@/services';
+import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
@@ -45,44 +45,45 @@ export function ContactsListModal<T>({
   const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
     setIsLoading(true);
-    const contactsService = getContactService();
-    contactsService
-      .getPhoneContacts()
-      .then((nextContacts: Contact[]) => {
-        setIsLoading(false);
-        const data = nextContacts.filter((contact) => {
-          if (contact.phoneNumbers.length) {
-            return {
-              firstname: contact.givenName,
-              lastname: contact.familyName,
-              mobile: contact.phoneNumbers[0].number,
-              fullName: `${contact.givenName} ${contact.familyName}`,
-            };
-          }
-        });
-        ref.current.contacts = data;
-        setContacts(data);
-      })
-      .catch((error: any) => {
-        setIsLoading(false);
-        Alert.alert(
-          'Error',
-          error.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.goBack();
+    setTimeout(() => {
+      getContactService()
+        .getPhoneContacts()
+        .then((nextContacts: Contact[]) => {
+          setIsLoading(false);
+          const data = nextContacts.filter((contact) => {
+            if (contact.phoneNumbers.length) {
+              return {
+                firstname: contact.givenName,
+                lastname: contact.familyName,
+                mobile: contact.phoneNumbers[0].number,
+                fullName: `${contact.givenName} ${contact.familyName}`,
+              };
+            }
+          });
+          ref.current.contacts = data;
+          setContacts(data);
+        })
+        .catch((error: Error) => {
+          setIsLoading(false);
+          Alert.alert(
+            '',
+            error.message,
+            [
+              {
+                text: 'OK',
               },
+            ],
+            {
+              cancelable: false,
             },
-          ],
-          {
-            cancelable: false,
-          },
-        );
-      });
-  }, [navigation]);
+          );
+        });
+    }, 500);
+  }, [navigation, visible]);
 
   const handleClose = useCallback(() => {
     setSearchInputValue('');
@@ -253,7 +254,7 @@ export function ContactsListModal<T>({
         </Touchable>
       )}
 
-      {isLoading ? (
+      {isLoading && !contacts.length ? (
         <View style={applyStyles('flex-1 items-center justify-center')}>
           <ActivityIndicator color={colors.primary} />
         </View>
