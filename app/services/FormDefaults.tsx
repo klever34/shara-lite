@@ -2,6 +2,11 @@ import Config from 'react-native-config';
 import faker from 'faker';
 
 export class FormDefaults {
+  /**
+   * Test fixtures to be used for Firebase Test Lab
+   *
+   * @private
+   */
   private static testDefaults() {
     return {
       login: {
@@ -36,6 +41,12 @@ export class FormDefaults {
     };
   }
 
+  /**
+   * Returns test values if CI_TESTS=true and defaultValue if CI_TESTS=false
+   *
+   * @param section - Section of app
+   * @param {*} [defaultValue={}] - Default value return if CI_TESTS=false
+   */
   static get(section: string, defaultValue: any = {}): any {
     const defaults = this.testDefaults();
     return Config.CI_TESTS === 'true'
