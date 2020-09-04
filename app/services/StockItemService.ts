@@ -1,5 +1,5 @@
 import Realm, {UpdateMode} from 'realm';
-import {IStockItem, modelName, StockItem} from '../models/StockItem';
+import {IStockItem, modelName} from '../models/StockItem';
 import {restockProduct} from './ProductService';
 
 export const getStockItems = ({realm}: {realm: Realm}): IStockItem[] => {
@@ -14,7 +14,7 @@ export const addNewStockItem = ({
   stockItem: IStockItem;
 }): void => {
   realm.write(() => {
-    realm.create<StockItem>(modelName, stockItem, UpdateMode.Modified);
+    realm.create<IStockItem>(modelName, stockItem, UpdateMode.Modified);
   });
 
   restockProduct({

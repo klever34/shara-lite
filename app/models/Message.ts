@@ -17,14 +17,13 @@ export class Message extends BaseModel implements Partial<IMessage> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      id: 'string',
-      channel: 'string',
-      content: 'string',
-      author: 'string',
+      id: 'string?',
+      channel: 'string?',
+      content: 'string?',
+      author: 'string?',
       timetoken: 'string?',
       delivered_timetoken: 'string?',
       read_timetoken: 'string?',
-      created_at: 'date',
     },
   };
 }

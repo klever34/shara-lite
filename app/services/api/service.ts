@@ -1,5 +1,5 @@
 import flatten from 'lodash/flatten';
-import {IContact} from '../../models';
+import {IContact} from '@/models';
 import Config from 'react-native-config';
 import queryString from 'query-string';
 import {IAuthService} from '../auth';
@@ -10,7 +10,7 @@ import {
   GroupChatMember,
   GroupChat,
   Business,
-} from '../../../types/app';
+} from 'types/app';
 
 export type Requester = {
   get: <T extends any = any>(

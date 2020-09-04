@@ -22,9 +22,9 @@ export class ReceivedInventory implements Partial<ReceivedInventory> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      batch_id: 'string',
-      supplier_name: 'string',
-      total_amount: 'double',
+      batch_id: 'string?',
+      supplier_name: 'string?',
+      total_amount: 'double?',
       delivery_agent_full_name: 'string?',
       delivery_agent_mobile: 'string?',
       delivery_agent: 'DeliveryAgent?',

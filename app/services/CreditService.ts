@@ -59,5 +59,5 @@ export const updateCredit = ({
     ...updates,
   };
 
-  realm.create<ICredit>(modelName, updatedCredit, UpdateMode.Modified);
+  realm.create(modelName, updatedCredit, UpdateMode.Modified);
 };
