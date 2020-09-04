@@ -62,7 +62,7 @@ export const AddSupplier = () => {
         ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
       }
     } else {
-      Alert.alert('Info', "Please provider supplier's name and phone number");
+      Alert.alert('Info', "Please provider supplier's name");
     }
   }, [realm, clearForm, supplier, suppliers, navigation, handleError]);
 

@@ -53,7 +53,7 @@ export const getCustomerByMobile = ({
   mobile,
 }: {
   realm: Realm;
-  mobile: string;
+  mobile?: string;
 }): ICustomer | null => {
   const foundCustomers = realm
     .objects<ICustomer>(modelName)

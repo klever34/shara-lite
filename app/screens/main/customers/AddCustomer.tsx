@@ -29,7 +29,7 @@ const AddCustomer = (props: Props) => {
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
   const [name, setName] = useState('');
-  const [mobile, setMobile] = useState('');
+  const [mobile, setMobile] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
 
   const handleNameChange = useCallback((text: string) => {

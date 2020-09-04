@@ -18,7 +18,7 @@ export const getDeliveryAgentByMobile = ({
   mobile,
 }: {
   realm: Realm;
-  mobile: string;
+  mobile?: string;
 }): IDeliveryAgent | null => {
   const foundDeliveryAgents = realm
     .objects<IDeliveryAgent>(modelName)

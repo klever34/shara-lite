@@ -64,7 +64,7 @@ export const AddDeliveryAgent = (props: Props) => {
         ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
     } else {
-      Alert.alert('Error', 'Please add delivery agent information.');
+      Alert.alert('Error', "Please provider delivery agent's name");
     }
   }, [realm, clearForm, onSubmit, deliveryAgent, deliveryAgents, navigation]);
 
