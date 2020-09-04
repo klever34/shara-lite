@@ -65,7 +65,7 @@ platform :android do
 
     # Get Pull request number from CI
     pr_number = ENV["CI_PULL_REQUEST"] != nil ? ENV["CI_PULL_REQUEST"][/(?<=https:\/\/github.com\/shara-inc\/mobile\/pull\/)(.*)/] : nil
-    test_devices = ENV["GRADLE_TASK"] == "assembleQaRelease" ? qa_devices : basic_devices
+    test_devices = ENV["GRADLE_TASK"] == "assembleDevRelease" ? basic_devices : qa_devices
 
     # Upload to Firebase Test Lab
     firebase_test_lab_android(
