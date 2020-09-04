@@ -131,6 +131,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'heading-700': {
     fontFamily: 'CocogoosePro-Regular',
   },
+  'overflow-hidden': {
+    overflow: 'hidden',
+  },
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
       ...acc,

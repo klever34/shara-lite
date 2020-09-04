@@ -13,6 +13,7 @@ import {
   IConversationService,
 } from '@/services/ConversationService';
 import {INotificationService, NotificationService} from './notification';
+import {IGeolocationService, GeolocationService} from './geolocation';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
@@ -23,6 +24,7 @@ const createDIContainer = (): IDIContainer => {
     PubNub: object(PubNubService),
     Realm: object(RealmService),
     Storage: object(StorageService),
+    Geolocation: object(GeolocationService),
     Auth: object(AuthService).construct(get('Storage'), get('PubNub')),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
@@ -72,3 +74,6 @@ export const getMessageService = () =>
 
 export const getConversationService = () =>
   container.get<IConversationService>('Conversation');
+
+export const getGeolocationService = () =>
+  container.get<IGeolocationService>('Geolocation');

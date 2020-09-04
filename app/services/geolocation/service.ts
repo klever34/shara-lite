@@ -1,11 +1,13 @@
 import RNLocation, {Location} from 'react-native-location';
 
-export interface ILocationService {
+export type {Location};
+
+export interface IGeolocationService {
   initialize(): Promise<boolean>;
-  getLatestLocation(): Promise<Location>;
+  getCurrentPosition(): Promise<Location>;
 }
 
-export class LocationService implements ILocationService {
+export class GeolocationService implements IGeolocationService {
   private initialized: boolean = false;
   private permissionGranted: boolean = false;
 
@@ -15,6 +17,13 @@ export class LocationService implements ILocationService {
         ios: 'whenInUse',
         android: {
           detail: 'fine',
+          rationale: {
+            title: 'We need to access your location',
+            message:
+              'We use your location to help you map your customers and your business operations',
+            buttonPositive: 'OK',
+            buttonNegative: 'Cancel',
+          },
         },
       });
     }
@@ -30,7 +39,7 @@ export class LocationService implements ILocationService {
     return this.initialized;
   }
 
-  async getLatestLocation(): Promise<Location> {
+  async getCurrentPosition(): Promise<Location> {
     let location: Location | null = null;
     if ((await this.initialize()) && (await this.requestPermission())) {
       location = await RNLocation.getLatestLocation();
