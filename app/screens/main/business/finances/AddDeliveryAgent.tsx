@@ -94,9 +94,9 @@ export const AddDeliveryAgent = (props: Props) => {
         </View>
         <View style={applyStyles('flex-row pb-xl items-center')}>
           <FloatingLabelInput
-            label="Phone number"
-            value={deliveryAgent.mobile}
             keyboardType="phone-pad"
+            value={deliveryAgent.mobile}
+            label="Phone number (optional)"
             onChangeText={(text) => handleChange(text, 'mobile')}
           />
         </View>

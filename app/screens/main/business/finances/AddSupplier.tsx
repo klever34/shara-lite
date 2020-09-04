@@ -98,9 +98,9 @@ export const AddSupplier = () => {
         </View>
         <View style={applyStyles('flex-row', 'items-center')}>
           <FloatingLabelInput
-            label="Phone number"
             value={supplier.mobile}
             keyboardType="phone-pad"
+            label="Phone number (optional)"
             onChangeText={(text) => handleChange(text, 'mobile')}
           />
         </View>
