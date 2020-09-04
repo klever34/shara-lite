@@ -29,28 +29,26 @@ basic_devices = [
 ]
 
 qa_devices = [
-    [
-        {
-            model: "OnePlus6T",
-            version: "28",
-            orientation: "portrait"
-        },
-        {
-            model: "Pixel2",
-            version: "28",
-            orientation: "portrait"
-        },
-        {
-            model: "Pixel2",
-            version: "28",
-            orientation: "landscape"
-        },
-        {
-            model: "a5y17lte",
-            version: "24",
-            orientation: "portrait"
-        }
-    ]
+    {
+        model: "OnePlus6T",
+        version: "28",
+        orientation: "portrait"
+    },
+    {
+        model: "Pixel2",
+        version: "28",
+        orientation: "portrait"
+    },
+    {
+        model: "Pixel2",
+        version: "28",
+        orientation: "landscape"
+    },
+    {
+        model: "a5y17lte",
+        version: "24",
+        orientation: "portrait"
+    }
 ]
 
 platform :android do
