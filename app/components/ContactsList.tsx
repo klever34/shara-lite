@@ -6,13 +6,13 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useRealm} from '../services/realm';
-import {IContact} from '../models';
+import {useRealm} from '@/services/realm';
+import {IContact} from '@/models';
 import Touchable from './Touchable';
-import {applyStyles} from '../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import PlaceholderImage, {PlaceholderImageProps} from './PlaceholderImage';
 import {Collection} from 'realm';
-import {getAuthService} from '../services';
+import {getAuthService} from '@/services';
 
 type ContactsListProps = Omit<
   FlatListProps<IContact>,
@@ -42,7 +42,11 @@ const ContactsList = ({
     contacts ??
     realm
       .objects<IContact>('Contact')
-      .filtered(`mobile != "${getAuthService().getUser()?.mobile ?? ''}"`)
+      .filtered(
+        `mobile != "${
+          getAuthService().getUser()?.mobile ?? ''
+        }" && recordId != null`,
+      )
       .sorted('firstname');
   const renderContactItem = useCallback(
     ({item}: ListRenderItemInfo<IContact>) => {
@@ -95,7 +99,7 @@ const ContactsList = ({
       {...restProps}
       data={contacts}
       renderItem={renderContactItem}
-      keyExtractor={(item: IContact) => item.mobile}
+      keyExtractor={(item: IContact) => String(item._id)}
     />
   );
 };

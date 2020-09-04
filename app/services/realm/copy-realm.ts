@@ -27,9 +27,11 @@ const copyObject = ({
 export const copyRealm = ({
   sourceRealm,
   targetRealm,
+  partitionValue,
 }: {
   sourceRealm: Realm;
   targetRealm: Realm;
+  partitionValue: string;
 }) => {
   const sourceRealmSchema = sourceRealm.schema;
   targetRealm.write(() => {
@@ -37,7 +39,7 @@ export const copyRealm = ({
       const allObjects = sourceRealm.objects(objSchema.name);
 
       allObjects.forEach((obj: any) => {
-        if (obj._partition) {
+        if (obj._partition && obj._partition === partitionValue) {
           copyObject({obj, objSchema, targetRealm});
         }
       });

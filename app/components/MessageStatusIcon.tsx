@@ -1,8 +1,8 @@
 import React from 'react';
 import Icon from './Icon';
-import {applyStyles} from '../helpers/utils';
-import {IMessage} from '../models';
-import {getAuthService} from '../services';
+import {applyStyles} from '@/helpers/utils';
+import {IMessage} from '@/models';
+import {getAuthService} from '@/services';
 
 type MessageStatus = 'pending' | 'sent' | 'received' | 'read';
 
@@ -46,7 +46,7 @@ const MessageStatusIcon = ({message, style = {}}: MessageStatusIconProps) => {
         color: status === 'read' ? 'dodgerblue' : 'black',
         opacity: status === 'read' ? 1 : 0.5,
       })}
-      size={12}
+      size={14}
     />
   );
 };

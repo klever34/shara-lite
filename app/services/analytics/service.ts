@@ -1,9 +1,9 @@
-import {User} from '../../../types/app';
+import {User} from 'types/app';
 import analytics from '@segment/analytics-react-native';
 import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
-import {castObjectValuesToString} from '../../helpers/utils';
+import {castObjectValuesToString} from '@/helpers/utils';
 
 export interface IAnalyticsService {
   initialize(): Promise<void>;
