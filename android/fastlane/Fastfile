@@ -15,13 +15,79 @@
 
 default_platform(:android)
 
+basic_devices = [
+    {
+        model: "OnePlus6T",
+        version: "28",
+        orientation: "portrait"
+    },
+    {
+        model: "Pixel2",
+        version: "28",
+        orientation: "portrait"
+    }
+]
+
+qa_devices = [
+    [
+        {
+            model: "OnePlus6T",
+            version: "28",
+            orientation: "portrait"
+        },
+        {
+            model: "Pixel2",
+            version: "28",
+            orientation: "portrait"
+        },
+        {
+            model: "Pixel2",
+            version: "28",
+            orientation: "landscape"
+        },
+        {
+            model: "a5y17lte",
+            version: "24",
+            orientation: "portrait"
+        }
+    ]
+]
+
 platform :android do
   desc "Runs all the tests"
   lane :test do
     gradle(task: "test")
   end
 
-  desc "Submit a new Beta Build to Crashlytics Beta"
+  desc "Submit a test build to Firebase Test Lab"
+  lane :testlab do
+    gradle(task: "clean " + ENV['GRADLE_TASK'])
+
+    # Get Pull request number from CI
+    pr_number = ENV["CI_PULL_REQUEST"] != nil ? ENV["CI_PULL_REQUEST"][/(?<=https:\/\/github.com\/shara-inc\/mobile\/pull\/)(.*)/] : nil
+    test_devices = ENV["GRADLE_TASK"] == "assembleDevRelease" ? basic_devices : qa_devices
+
+    # Upload to Firebase Test Lab
+    firebase_test_lab_android(
+      project_id: ENV['GOOGLE_PROJECT_ID'],
+      gcloud_service_key_file: ENV['FIREBASE_TESTLAB_SERVICE_KEY_FILE'],
+      type: "robo",
+      devices: test_devices,
+      app_apk: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
+      console_log_file_name: "fastlane/console_output.log",
+      timeout: "5m",
+      firebase_test_lab_results_bucket: ENV['SHARA_TEST_LAB_BUCKET'],
+      slack_url: ENV["SLACK_WEBHOOK"],
+
+      # If you want notify to Github pull requests.
+      github_owner: ENV["GITHUB_OWNER"],
+      github_repository: ENV["GITHUB_REPO"],
+      github_pr_number: pr_number,
+      github_api_token: ENV["GITHUB_API_TOKEN"],
+    )
+  end
+
+  desc "Submit a new build to Firebase App Distribution"
   lane :internal do
     # gradle(task: "clean assembleRelease")
     gradle(task: "clean " + ENV['GRADLE_TASK'])

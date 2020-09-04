@@ -15,6 +15,7 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useScreenRecord} from '@/services/analytics';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
@@ -23,7 +24,9 @@ export const AddProduct = () => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const [product, setProduct] = useState<Payload>({} as Payload);
+  const [product, setProduct] = useState<Payload>(
+    FormDefaults.get('newProduct', {}) as Payload,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

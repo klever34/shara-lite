@@ -20,6 +20,7 @@ import {applyStyles} from '../../helpers/utils';
 import {RootStackParamList} from '../../index';
 import {getApiService} from '../../services';
 import {colors} from '../../styles';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type Fields = {
   firstname: string;
@@ -33,7 +34,9 @@ export const Register = ({
   navigation,
 }: StackScreenProps<RootStackParamList>) => {
   const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>({} as Fields);
+  const [fields, setFields] = React.useState<Fields>(
+    FormDefaults.get('signup') as Fields,
+  );
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({

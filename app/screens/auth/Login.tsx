@@ -15,6 +15,7 @@ import {getApiService, getRealmService} from '../../services';
 import {colors} from '../../styles';
 import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type Fields = {
   mobile: string;
@@ -26,7 +27,9 @@ export const Login = ({navigation}: any) => {
   // @ts-ignore
   const {updateLocalRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>({} as Fields);
+  const [fields, setFields] = React.useState<Fields>(
+    FormDefaults.get('login', {}) as Fields,
+  );
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -49,6 +52,7 @@ export const Login = ({navigation}: any) => {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
+    console.log(payload);
     const apiService = getApiService();
     try {
       setLoading(true);

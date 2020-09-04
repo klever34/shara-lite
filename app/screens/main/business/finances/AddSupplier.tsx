@@ -11,6 +11,7 @@ import {useScreenRecord} from '@/services/analytics';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {colors} from '@/styles';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 
@@ -20,7 +21,9 @@ export const AddSupplier = () => {
   const navigation = useNavigation();
   const suppliers = getSuppliers({realm});
   const [isLoading, setIsLoading] = useState(false);
-  const [supplier, setSupplier] = useState<Payload>({} as Payload);
+  const [supplier, setSupplier] = useState<Payload>(
+    FormDefaults.get('supplier', {}) as Payload,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
