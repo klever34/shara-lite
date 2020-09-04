@@ -1,4 +1,4 @@
-import {Alert} from 'react-native';
+import {Alert, PermissionsAndroid} from 'react-native';
 import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
@@ -56,10 +56,17 @@ export class ContactService implements IContactService {
             {
               text: 'OK',
               onPress: () => {
-                RNContacts.requestPermission((error, result) => {
-                  this.permissionGranted = result === 'authorized';
-                  resolve(this.permissionGranted);
-                });
+                PermissionsAndroid.request(
+                  PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+                )
+                  .then((status) => {
+                    this.permissionGranted = status === 'granted';
+                    resolve(this.permissionGranted);
+                  })
+                  .catch(() => {
+                    this.permissionGranted = false;
+                    resolve(this.permissionGranted);
+                  });
               },
             },
           ],
