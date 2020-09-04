@@ -43,7 +43,7 @@ const AddCustomer = (props: Props) => {
   const handleError = useErrorHandler();
 
   const handleSubmit = useCallback(() => {
-    if (name && mobile) {
+    if (name) {
       if (customers.map((item) => item.mobile).includes(mobile)) {
         Alert.alert(
           'Info',
