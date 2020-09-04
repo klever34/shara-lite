@@ -138,7 +138,7 @@ export const ReceiptStatusModal = (props: Props) => {
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [14, 6, 12];
+      const productListColumnWidth = [12, 6, 14];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -165,65 +165,48 @@ export const ReceiptStatusModal = (props: Props) => {
             fonttype: 1,
           },
         };
-        // TODO Print Receipt
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `${user?.businesses[0].name}\n\r`,
+          `${user?.businesses[0].name}\n`,
           receiptStyles.header,
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `${user?.businesses[0].address}\n\r`,
-          receiptStyles.header,
+          `${user?.businesses[0].address}\n`,
+          {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
-        await BluetoothEscposPrinter.printText(
-          `Tel: ${user?.mobile}\n\r`,
-          receiptStyles.header,
-        );
+        await BluetoothEscposPrinter.printText(`Tel: ${user?.mobile}\n`, {});
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 12],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          [`${customerText}`, `${format(new Date(), 'dd/MM/yyyy')}`],
-          {},
-        );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 12],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          ['', `${format(new Date(), 'hh:mm:a')}`],
+        await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
+        await BluetoothEscposPrinter.printText(
+          `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printColumn(
@@ -240,7 +223,7 @@ export const ReceiptStatusModal = (props: Props) => {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         for (const item of products) {
@@ -255,7 +238,7 @@ export const ReceiptStatusModal = (props: Props) => {
               BluetoothEscposPrinter.ALIGN.RIGHT,
             ],
             [
-              `${item.product.sku} - ${item.product.name}`,
+              `${item.product.name}`,
               `${q}`,
               `${currencyCode}${numberWithCommas(parseInt(total, 10))}`,
             ],
@@ -265,46 +248,43 @@ export const ReceiptStatusModal = (props: Props) => {
             BluetoothEscposPrinter.ALIGN.LEFT,
           );
           await BluetoothEscposPrinter.printText(
-            '--------------------------------\n\r',
+            '--------------------------------\n',
             {},
           );
         }
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
-        await BluetoothEscposPrinter.printText(
-          `Tax: ${0}\n\r`,
-          receiptStyles.product,
-        );
+        await BluetoothEscposPrinter.printText(`Tax: ${0}\n`, {});
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
         await BluetoothEscposPrinter.printText(
-          `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n\r`,
-          receiptStyles.subheader,
+          `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n`,
+          {},
         );
         await BluetoothEscposPrinter.printText(
-          `Paid: ${currencyCode} ${numberWithCommas(amountPaid)}\n\r`,
-          receiptStyles.subheader,
+          `Paid: ${currencyCode} ${numberWithCommas(amountPaid)}\n`,
+          {},
         );
         creditAmount &&
           (await BluetoothEscposPrinter.printText(
-            `Balance: ${currencyCode} ${numberWithCommas(creditAmount)}\n\r`,
-            receiptStyles.subheader,
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmount)}\n`,
+            {},
           ));
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          'Powered by Shara. www.shara.co\n\r',
+          'Powered by Shara. www.shara.co\n',
           receiptStyles.product,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printerAlign(

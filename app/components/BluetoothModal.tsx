@@ -65,17 +65,34 @@ export const BluetoothModal = ({onClose, visible, onPrintReceipt}: Props) => {
         setFoundDevices(ss.found);
         setIsScanning(false);
       },
-      (errorData: any) => {
+      () => {
         setIsScanning(false);
-        Alert.alert('Error', JSON.stringify(errorData));
       },
     );
   }, []);
 
+  const handlePrintReceipt = useCallback(
+    async (address?: string) => {
+      await storageService.setItem('printer', {
+        address,
+      });
+      onPrintReceipt && onPrintReceipt(address);
+      handleClose();
+    },
+    [onPrintReceipt, storageService, handleClose],
+  );
+
   const handleEnableBluetooth = useCallback(() => {
     BluetoothManager.enableBluetooth().then(
-      (r: any[]) => {
+      async (r: any[]) => {
         var paired = [];
+        const savedPrinter = (await storageService.getItem('printer')) as {
+          address: string;
+        };
+        if (savedPrinter) {
+          handlePrintReceipt(savedPrinter.address);
+          return;
+        }
         if (r && r.length > 0) {
           for (var i = 0; i < r.length; i++) {
             try {
@@ -94,18 +111,7 @@ export const BluetoothModal = ({onClose, visible, onPrintReceipt}: Props) => {
         Alert.alert('Error', JSON.stringify(errorInfo));
       },
     );
-  }, [handleBluetoothScan]);
-
-  const handlePrintReceipt = useCallback(
-    async (address?: string) => {
-      await storageService.setItem('printer', {
-        address,
-      });
-      onPrintReceipt && onPrintReceipt(address);
-      handleClose();
-    },
-    [onPrintReceipt, storageService, handleClose],
-  );
+  }, [handleBluetoothScan, handlePrintReceipt, storageService]);
 
   const handleConnect = useCallback(
     (rowData) => {
@@ -369,7 +375,7 @@ export const BluetoothModal = ({onClose, visible, onPrintReceipt}: Props) => {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [visible]);
 
   return (
     <Modal
