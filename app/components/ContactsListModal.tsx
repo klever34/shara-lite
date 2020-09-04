@@ -49,7 +49,7 @@ export function ContactsListModal<T>({
     const contactsService = getContactService();
     contactsService
       .getPhoneContacts()
-      .then((nextContacts) => {
+      .then((nextContacts: Contact[]) => {
         setIsLoading(false);
         const data = nextContacts.filter((contact) => {
           if (contact.phoneNumbers.length) {
@@ -64,7 +64,7 @@ export function ContactsListModal<T>({
         ref.current.contacts = data;
         setContacts(data);
       })
-      .catch((error) => {
+      .catch((error: any) => {
         setIsLoading(false);
         Alert.alert(
           'Error',
