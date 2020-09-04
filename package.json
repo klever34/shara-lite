@@ -102,6 +102,9 @@
   },
   "jest": {
     "preset": "react-native",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|react-navigation|react-navigation-redux-helpers|@sentry|@react-navigation|rsdi/.*)"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -109,6 +112,9 @@
       "jsx",
       "json",
       "node"
+    ],
+    "setupFiles": [
+      "./node_modules/react-native-gesture-handler/jestSetup.js"
     ]
   },
   "lint-staged": {
