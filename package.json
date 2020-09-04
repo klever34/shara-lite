@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.26-discovery",
+  "version": "0.2.26-chore.contact-permission-context+build.2140",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
