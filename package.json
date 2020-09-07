@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.28-discovery",
+  "version": "0.2.28-feature.realm-backup-fixes+build.2170",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
