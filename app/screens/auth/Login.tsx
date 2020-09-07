@@ -52,7 +52,6 @@ export const Login = ({navigation}: any) => {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
-    console.log(payload);
     const apiService = getApiService();
     try {
       setLoading(true);
