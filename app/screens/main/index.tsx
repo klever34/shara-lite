@@ -17,7 +17,6 @@ import {IProduct} from '@/models/Product';
 import {
   getAnalyticsService,
   getAuthService,
-  getContactService,
   getPubNubService,
 } from '../../services';
 import {colors} from '@/styles';
@@ -156,7 +155,7 @@ const useRepeatBackToExit = () => {
   }, [handleBackButton]);
 };
 
-const MainScreens = ({navigation}: any) => {
+const MainScreens = () => {
   useRepeatBackToExit();
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
@@ -187,11 +186,6 @@ const MainScreens = ({navigation}: any) => {
       setPubNubClient(pubNub);
     }
   }, [user]);
-
-  useEffect(() => {
-    const contactsService = getContactService();
-    contactsService.syncPhoneContacts().catch(handleError);
-  }, [navigation, handleError]);
 
   if (!realm) {
     return (

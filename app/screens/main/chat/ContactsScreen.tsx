@@ -51,7 +51,7 @@ const ContactsScreen = ({
             ToastAndroid.SHORT,
           );
         })
-        .catch((error) => {
+        .catch((error: any) => {
           handleError(error);
           setLoadingContacts(false);
           Alert.alert(
@@ -150,6 +150,7 @@ const ContactsScreen = ({
             ...getBaseModelValues(),
           };
           realm.write(() => {
+            //@ts-ignore
             conversation = realm.create(
               // @ts-ignore
               'Conversation',
@@ -207,7 +208,7 @@ const ContactsScreen = ({
                           const apiService = getApiService();
                           apiService
                             .createGroupChat(groupName, participants)
-                            .then((groupChat) => {
+                            .then((groupChat: any) => {
                               try {
                                 const groupChatData = {
                                   id: String(groupChat.id),
