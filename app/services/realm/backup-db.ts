@@ -16,7 +16,9 @@ export const runDbBackup = async ({
     const allObjects = realm.objects(objSchema.name);
     return {
       model: objSchema.name,
-      data: allObjects.map((obj) => getRealmObjectCopy({obj, objSchema})),
+      data: allObjects.map((obj) =>
+        getRealmObjectCopy({obj, objSchema, extracObjectId: true}),
+      ),
     };
   });
 
