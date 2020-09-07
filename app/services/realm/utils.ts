@@ -1,17 +1,17 @@
 export const getRealmObjectCopy = ({
   obj,
   objSchema,
-  extracObjectId,
+  extractObjectId,
 }: {
   obj: any;
   objSchema: any;
-  extracObjectId?: boolean;
+  extractObjectId?: boolean;
 }) => {
   const copy = {};
   for (let key in objSchema.properties) {
     const prop = objSchema.properties[key];
     if (prop.type !== 'linkingObjects') {
-      if (extracObjectId && obj[key] && obj[key]._id) {
+      if (extractObjectId && obj[key] && obj[key]._id) {
         // @ts-ignore
         copy[key] = obj[key]._id;
       } else {
