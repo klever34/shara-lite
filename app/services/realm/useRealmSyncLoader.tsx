@@ -3,12 +3,14 @@ import {useCallback, useContext, useEffect} from 'react';
 import {getAuthService, getRealmService} from '../index';
 import {RealmContext} from './provider';
 import {loginToRealm} from './index';
+import {runDbBackup} from '@/services/realm/backup-db';
 
 const syncInterval = 1000 * 20;
 
 const useRealmSyncLoader = () => {
   const authService = getAuthService();
   const {
+    realm,
     updateSyncRealm,
     isRealmSyncLoaderInitiated,
     setIsRealmSyncLoaderInitiated,
@@ -29,6 +31,12 @@ const useRealmSyncLoader = () => {
       }
 
       try {
+        if (!realm) {
+          retryUpdate();
+          return;
+        }
+        await runDbBackup({realm});
+
         const {jwt} = realmCredentials;
         const {realm: newRealm, realmUser, partitionValue} = await loginToRealm(
           {
