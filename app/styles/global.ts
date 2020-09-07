@@ -164,6 +164,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       // border
       [`rounded-${curr}`]: {borderRadius: spacing[curr]},
       [`border-${curr}`]: {borderWidth: spacing[curr]},
+      [`border-t-${curr}`]: {borderTopWidth: spacing[curr]},
       [`border-b-${curr}`]: {borderBottomWidth: spacing[curr]},
 
       // line-height
@@ -186,6 +187,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`bg-${curr}`]: {backgroundColor: colors[curr]},
       [`text-${curr}`]: {color: colors[curr]},
       [`border-${curr}`]: {borderColor: colors[curr]},
+      [`border-t-${curr}`]: {borderTopColor: colors[curr]},
       [`border-b-${curr}`]: {borderBottomColor: colors[curr]},
     };
   }, {}),
@@ -195,4 +197,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`elevation-${curr}`]: {elevation: curr},
     };
   }, {}),
+  uppercase: {
+    textTransform: 'uppercase',
+  },
 });
