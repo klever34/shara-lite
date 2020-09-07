@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.28-feature.setup-shara-v2-designs-workflow+build.2202",
+  "version": "0.2.29-shara-v2-designs",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
