@@ -1,10 +1,17 @@
 import isEmpty from 'lodash/isEmpty';
 import React from 'react';
-import {StyleSheet, TextInput, TextInputProperties, View} from 'react-native';
+import {
+  StyleSheet,
+  TextInput,
+  TextInputProperties,
+  View,
+  Text,
+} from 'react-native';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import Icon from './Icon';
+import {FloatingLabelInputProps} from './FloatingLabelInput';
 
 export type PhoneNumber = {
   code: string;
@@ -15,10 +22,19 @@ type Props = {
   value: string;
   countryCode: string | null;
   onChangeText(number: PhoneNumber): void;
+  isInvalid?: FloatingLabelInputProps['isInvalid'];
+  errorMessage?: FloatingLabelInputProps['errorMessage'];
 } & Omit<TextInputProperties, 'onChangeText'>;
 
 export const PhoneNumberField = (props: Props) => {
-  const {value, countryCode, onChangeText, ...rest} = props;
+  const {
+    value,
+    isInvalid,
+    countryCode,
+    onChangeText,
+    errorMessage,
+    ...rest
+  } = props;
   const [phoneNumber, setPhoneNumber] = React.useState(value || '');
   const [callingCode, setCallingCode] = React.useState(countryCode || '234');
   const [country, setCountry] = React.useState<Country>({} as Country);
@@ -36,6 +52,7 @@ export const PhoneNumberField = (props: Props) => {
   };
 
   const pickerStyles = isEmpty(country) ? {top: 6} : {top: 3};
+  const inputContainerStyle = isInvalid ? {top: 10} : {};
 
   return (
     <View style={styles.container}>
@@ -61,16 +78,27 @@ export const PhoneNumberField = (props: Props) => {
           style={styles.arrowDownIcon}
         />
       </View>
-      <TextInput
-        value={phoneNumber}
-        autoCompleteType="tel"
-        keyboardType="phone-pad"
-        style={styles.inputField}
-        placeholder="Phone Number"
-        placeholderTextColor={colors['gray-50']}
-        onChangeText={(text) => onInputChangeText(text)}
-        {...rest}
-      />
+      <View style={applyStyles('flex-1', inputContainerStyle)}>
+        <TextInput
+          value={phoneNumber}
+          autoCompleteType="tel"
+          keyboardType="phone-pad"
+          style={styles.inputField}
+          placeholder="Phone Number"
+          placeholderTextColor={colors['gray-50']}
+          onChangeText={(text) => onInputChangeText(text)}
+          {...rest}
+        />
+        {isInvalid && (
+          <Text
+            style={applyStyles('text-500 pt-xs', {
+              fontSize: 14,
+              color: colors['red-200'],
+            })}>
+            {errorMessage}
+          </Text>
+        )}
+      </View>
     </View>
   );
 };

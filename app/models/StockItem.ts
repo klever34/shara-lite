@@ -7,7 +7,7 @@ export interface IStockItem extends BaseModelInterface {
   supplier_name: string;
   batch_id?: string;
   name: string;
-  sku: string;
+  sku?: string;
   weight?: string;
   quantity: number;
   cost_price?: number;
