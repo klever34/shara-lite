@@ -35,6 +35,7 @@ const useRealmSyncLoader = () => {
           retryUpdate();
           return;
         }
+
         await runDbBackup({realm});
 
         const {jwt} = realmCredentials;

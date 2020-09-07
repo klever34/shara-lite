@@ -1,4 +1,5 @@
 import Realm from 'realm';
+import {getRealmObjectCopy} from '@/services/realm/utils';
 
 const copyObject = ({
   obj,
@@ -9,14 +10,7 @@ const copyObject = ({
   objSchema: any;
   targetRealm: Realm;
 }) => {
-  const copy = {};
-  for (let key in objSchema.properties) {
-    const prop = objSchema.properties[key];
-    if (prop.type !== 'linkingObjects') {
-      // @ts-ignore
-      copy[key] = obj[key];
-    }
-  }
+  const copy = getRealmObjectCopy({obj, objSchema});
   try {
     targetRealm.create(objSchema.name, copy, Realm.UpdateMode.Modified);
   } catch (e) {

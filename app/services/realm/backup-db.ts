@@ -1,7 +1,7 @@
 import Realm from 'realm';
 import RNFetchBlob from 'rn-fetch-blob';
-import {omit} from 'lodash';
 import {getApiService} from '@/services';
+import {getRealmObjectCopy} from '@/services/realm/utils';
 
 export const runDbBackup = async ({realm}: {realm: Realm}) => {
   const apiService = getApiService();
@@ -11,7 +11,7 @@ export const runDbBackup = async ({realm}: {realm: Realm}) => {
     const allObjects = realm.objects(objSchema.name);
     return {
       model: objSchema.name,
-      data: allObjects.map(omit),
+      data: allObjects.map((obj) => getRealmObjectCopy({obj, objSchema})),
     };
   });
 
@@ -22,6 +22,8 @@ export const runDbBackup = async ({realm}: {realm: Realm}) => {
 
 export const saveToFile = async ({jsonData}: {jsonData: string}) => {
   const dirs = RNFetchBlob.fs.dirs;
-  const path = dirs.DCIMDir + '/realm-db-backup.json';
+  const path = dirs.DocumentDir + '/realm-db-backup.json';
+
+  console.log(path);
   await RNFetchBlob.fs.writeFile(path, jsonData, 'utf8');
 };
