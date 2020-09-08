@@ -11,8 +11,14 @@ import {useScreenRecord} from '@/services/analytics';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {colors} from '@/styles';
+import {Formik, FormikHelpers} from 'formik';
+import * as yup from 'yup';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
+
+const formValidation = yup.object().shape({
+  name: yup.string().required('Supplier name is required'),
+});
 
 export const AddSupplier = () => {
   useScreenRecord();
@@ -20,7 +26,6 @@ export const AddSupplier = () => {
   const navigation = useNavigation();
   const suppliers = getSuppliers({realm});
   const [isLoading, setIsLoading] = useState(false);
-  const [supplier, setSupplier] = useState<Payload>({} as Payload);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -30,41 +35,27 @@ export const AddSupplier = () => {
     });
   }, [navigation]);
 
-  const handleChange = useCallback(
-    (value: string | number, key: keyof Payload) => {
-      setSupplier({
-        ...supplier,
-        [key]: value,
-      });
-    },
-    [supplier],
-  );
-
-  const clearForm = useCallback(() => {
-    setSupplier({} as Payload);
-  }, []);
   const handleError = useErrorHandler();
 
-  const handleSubmit = useCallback(() => {
-    if (supplier.name) {
-      if (suppliers.map((item) => item.mobile).includes(supplier.mobile)) {
+  const onFormSubmit = useCallback(
+    (values: Payload, {resetForm}: FormikHelpers<Payload>) => {
+      if (suppliers.map((item) => item.mobile).includes(values.mobile)) {
         Alert.alert(
           'Error',
           'Supplier with the same phone number has been created.',
         );
       } else {
         setIsLoading(true);
-        saveSupplier({realm, supplier});
+        saveSupplier({realm, supplier: values});
         getAnalyticsService().logEvent('supplierAdded').catch(handleError);
         setIsLoading(false);
-        clearForm();
+        resetForm();
         navigation.goBack();
         ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
       }
-    } else {
-      Alert.alert('Info', "Please provider supplier's name");
-    }
-  }, [realm, clearForm, supplier, suppliers, navigation, handleError]);
+    },
+    [realm, suppliers, navigation, handleError],
+  );
 
   return (
     <View
@@ -82,34 +73,45 @@ export const AddSupplier = () => {
           })}>
           Supplier Details
         </Text>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <FloatingLabelInput
-            label="Name"
-            value={supplier.name}
-            onChangeText={(text) => handleChange(text, 'name')}
-          />
-        </View>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <FloatingLabelInput
-            label="Address (optional)"
-            value={supplier.address}
-            onChangeText={(text) => handleChange(text, 'address')}
-          />
-        </View>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <FloatingLabelInput
-            value={supplier.mobile}
-            keyboardType="phone-pad"
-            label="Phone number (optional)"
-            onChangeText={(text) => handleChange(text, 'mobile')}
-          />
-        </View>
-        <Button
-          title="Save"
-          isLoading={isLoading}
-          onPress={handleSubmit}
-          style={applyStyles({marginVertical: 48})}
-        />
+        <Formik
+          onSubmit={onFormSubmit}
+          initialValues={{name: ''}}
+          validationSchema={formValidation}>
+          {({values, errors, touched, handleChange, handleSubmit}) => (
+            <>
+              <View style={applyStyles('flex-row', 'items-center')}>
+                <FloatingLabelInput
+                  label="Name"
+                  value={values.name}
+                  errorMessage={errors.name}
+                  onChangeText={handleChange('name')}
+                  isInvalid={touched.name && !!errors.name}
+                />
+              </View>
+              <View style={applyStyles('flex-row', 'items-center')}>
+                <FloatingLabelInput
+                  label="Address (optional)"
+                  value={values.address}
+                  onChangeText={handleChange('address')}
+                />
+              </View>
+              <View style={applyStyles('flex-row', 'items-center')}>
+                <FloatingLabelInput
+                  value={values.mobile}
+                  keyboardType="phone-pad"
+                  label="Phone number (optional)"
+                  onChangeText={handleChange('mobile')}
+                />
+              </View>
+              <Button
+                title="Save"
+                isLoading={isLoading}
+                onPress={handleSubmit}
+                style={applyStyles({marginVertical: 48})}
+              />
+            </>
+          )}
+        </Formik>
       </ScrollView>
     </View>
   );
