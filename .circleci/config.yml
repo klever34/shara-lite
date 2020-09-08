@@ -140,17 +140,6 @@ workflows:
             - checkout_code
       - fastlane:
           context: shara-qa
-          lane: play
-          track: internal
-          gradleTask: assembleQaRelease
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - /^release.*/
-      - fastlane:
-          context: shara-qa
           lane: internal
           gradleTask: assembleQaRelease
           requires:
