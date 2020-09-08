@@ -100,17 +100,23 @@ export class ApiService implements IApiService {
     get: <T extends any = any>(
       url: string,
       params: {[key: string]: string | number},
+      isExternalDomain?: boolean,
     ) => {
-      return fetch(
-        `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      ).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      const fetchUrl = isExternalDomain
+        ? url
+        : `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`;
+      const headers: {Authorization?: string; 'Content-Type'?: string} = {};
+
+      if (!isExternalDomain) {
+        headers.Authorization = `Bearer ${this.authService.getToken() ?? ''}`;
+        headers['Content-Type'] = 'application/json';
+      }
+
+      return fetch(fetchUrl, {
+        method: 'GET',
+        // @ts-ignore
+        headers,
+      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
     post: <T extends any = any>(
       url: string,
