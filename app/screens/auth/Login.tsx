@@ -16,6 +16,7 @@ import {colors} from '../../styles';
 import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
 import {FormDefaults} from '@/services/FormDefaults';
+import analytics from '@react-native-firebase/analytics';
 
 type Fields = {
   mobile: string;
@@ -52,7 +53,10 @@ export const Login = ({navigation}: any) => {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
-    console.log(payload);
+    analytics().logEvent('login', {
+      countryCode,
+      mobile: `${countryCode}${mobile}`,
+    });
     const apiService = getApiService();
     try {
       setLoading(true);
@@ -61,13 +65,20 @@ export const Login = ({navigation}: any) => {
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
       const realmService = getRealmService();
       realmService.setInstance(createdLocalRealm);
-
+      analytics().logEvent('login_success', {
+        countryCode,
+        mobile: `${countryCode}${mobile}`,
+      });
       setLoading(false);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
       });
     } catch (error) {
+      analytics().logEvent('login_error', {
+        countryCode,
+        mobile: `${countryCode}${mobile}`,
+      });
       setLoading(false);
       Alert.alert('Error', error.message);
     }
