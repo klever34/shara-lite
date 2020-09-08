@@ -13,10 +13,14 @@ type IPGeolocationObject = {
   callingCode: string;
 };
 
-export const IPGeolocationContext = createContext<IPGeolocationObject>({
+const defaultValue = {
   countryCode2: '',
   callingCode: '',
-});
+};
+
+export const IPGeolocationContext = createContext<IPGeolocationObject>(
+  defaultValue,
+);
 
 export const useIPGeolocation = (): IPGeolocationObject => {
   return useContext(IPGeolocationContext);
