@@ -379,6 +379,7 @@ jobs:
             curl -sL https://firebase.tools | bash
       - run:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
+          no_output_timeout: 30m
           command: |
             NEW_VERSION=$(jq ".version" -r package.json)
             export NEW_VERSION=${NEW_VERSION}
