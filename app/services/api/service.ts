@@ -16,6 +16,7 @@ export type Requester = {
   get: <T extends any = any>(
     url: string,
     params: {[key: string]: any},
+    isExternalDomain?: boolean,
   ) => Promise<ApiResponse<T>>;
   post: <T extends any = any>(
     url: string,
@@ -88,6 +89,8 @@ export interface IApiService {
   businessSetup(payload: FormData): Promise<ApiResponse>;
 
   backupData({data, type}: {data: any; type: string}): Promise<void>;
+
+  getUserIPDetails(): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -102,9 +105,9 @@ export class ApiService implements IApiService {
       params: {[key: string]: string | number},
       isExternalDomain?: boolean,
     ) => {
-      const fetchUrl = isExternalDomain
-        ? url
-        : `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`;
+      const fetchUrl = `${
+        isExternalDomain ? '' : Config.API_BASE_URL
+      }${url}?${queryString.stringify(params)}`;
       const headers: {Authorization?: string; 'Content-Type'?: string} = {};
 
       if (!isExternalDomain) {
@@ -335,6 +338,20 @@ export class ApiService implements IApiService {
         data,
         type,
       });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getUserIPDetails() {
+    try {
+      return this.requester.get(
+        'https://api.ipgeolocation.io/ipgeo',
+        {
+          apiKey: Config.IP_GEOLOCATION_KEY,
+        },
+        true,
+      );
     } catch (e) {
       throw e;
     }

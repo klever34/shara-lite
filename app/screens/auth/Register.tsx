@@ -21,6 +21,7 @@ import {RootStackParamList} from '../../index';
 import {getApiService} from '../../services';
 import {colors} from '../../styles';
 import {FormDefaults} from '@/services/FormDefaults';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 
 type Fields = {
   firstname: string;
@@ -33,9 +34,10 @@ type Fields = {
 export const Register = ({
   navigation,
 }: StackScreenProps<RootStackParamList>) => {
+  const {callingCode, countryCode2} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('signup') as Fields,
+    FormDefaults.get('signup', {countryCode: callingCode}) as Fields,
   );
 
   const onChangeText = (value: string, field: keyof Fields) => {
@@ -125,6 +127,7 @@ export const Register = ({
           <View style={applyStyles({paddingVertical: 18})}>
             <PhoneNumberField
               value={fields.mobile}
+              countryCode2={countryCode2}
               countryCode={fields.countryCode}
               onChangeText={(data) => onChangeMobile(data)}
             />
