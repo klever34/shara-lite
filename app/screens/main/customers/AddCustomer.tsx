@@ -17,10 +17,18 @@ import {getCustomers, saveCustomer} from '@/services/CustomerService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {ICustomer} from '@/models';
+import {Formik, FormikHelpers} from 'formik';
+import * as yup from 'yup';
 
 type Props = {
   onSubmit?: (customer: ICustomer) => void;
 };
+
+type FormValues = {name: string; mobile?: string};
+
+const formValidation = yup.object().shape({
+  name: yup.string().required('Customer name is required'),
+});
 
 const AddCustomer = (props: Props) => {
   useScreenRecord();
@@ -28,41 +36,29 @@ const AddCustomer = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
-  const [name, setName] = useState('');
-  const [mobile, setMobile] = useState<string | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleNameChange = useCallback((text: string) => {
-    setName(text);
-  }, []);
-
-  const handleMobileChange = useCallback((text: string) => {
-    setMobile(text);
-  }, []);
 
   const handleError = useErrorHandler();
 
-  const handleSubmit = useCallback(() => {
-    if (name) {
-      if (customers.map((item) => item.mobile).includes(mobile)) {
+  const onFormSubmit = useCallback(
+    (values: FormValues, {resetForm}: FormikHelpers<FormValues>) => {
+      if (customers.map((item) => item.mobile).includes(values.mobile)) {
         Alert.alert(
           'Info',
           'Customer with the same phone number has been created.',
         );
       } else {
-        const customer = {
-          name,
-          mobile,
-        };
-        saveCustomer({realm, customer});
+        saveCustomer({realm, customer: values});
         setIsLoading(true);
         setIsLoading(false);
         getAnalyticsService().logEvent('customerAdded').catch(handleError);
-        onSubmit ? onSubmit(customer) : navigation.goBack();
+        onSubmit ? onSubmit(values) : navigation.goBack();
+        resetForm();
         ToastAndroid.show('Customer added', ToastAndroid.SHORT);
       }
-    }
-  }, [navigation, name, mobile, realm, onSubmit, customers, handleError]);
+    },
+    [navigation, realm, onSubmit, customers, handleError],
+  );
 
   return (
     <ScrollView
@@ -70,31 +66,40 @@ const AddCustomer = (props: Props) => {
       style={styles.container}
       keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Customer Details</Text>
-      <View>
-        <View style={styles.formInputs}>
-          <FloatingLabelInput
-            value={name}
-            label="Name"
-            onChangeText={handleNameChange}
-            containerStyle={applyStyles('mb-xl')}
-          />
-          <FloatingLabelInput
-            value={mobile}
-            label="Phone Number"
-            autoCompleteType="tel"
-            keyboardType="phone-pad"
-            containerStyle={styles.input}
-            onChangeText={handleMobileChange}
-          />
-        </View>
-        <Button
-          title="Save"
-          variantColor="red"
-          isLoading={isLoading}
-          style={styles.button}
-          onPress={handleSubmit}
-        />
-      </View>
+      <Formik
+        onSubmit={onFormSubmit}
+        validationSchema={formValidation}
+        initialValues={{name: ''}}>
+        {({values, errors, touched, handleChange, handleSubmit}) => (
+          <View>
+            <View style={styles.formInputs}>
+              <FloatingLabelInput
+                label="Name"
+                value={values.name}
+                errorMessage={errors.name}
+                onChangeText={handleChange('name')}
+                containerStyle={applyStyles('mb-xl')}
+                isInvalid={touched.name && !!errors.name}
+              />
+              <FloatingLabelInput
+                label="Phone Number"
+                autoCompleteType="tel"
+                value={values.mobile}
+                keyboardType="phone-pad"
+                containerStyle={styles.input}
+                onChangeText={handleChange('mobile')}
+              />
+            </View>
+            <Button
+              title="Save"
+              variantColor="red"
+              isLoading={isLoading}
+              style={styles.button}
+              onPress={handleSubmit}
+            />
+          </View>
+        )}
+      </Formik>
     </ScrollView>
   );
 };

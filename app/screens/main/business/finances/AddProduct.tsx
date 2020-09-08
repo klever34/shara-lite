@@ -7,7 +7,7 @@ import {saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
-import {Formik} from 'formik';
+import {Formik, FormikHelpers} from 'formik';
 import * as yup from 'yup';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, Text, ToastAndroid, View} from 'react-native';
@@ -30,9 +30,8 @@ export const AddProduct = () => {
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const [product, setProduct] = useState<Payload>({} as Payload);
 
-  const formInitialValues: Payload = {name: '', sku: '', price: undefined};
+  const formInitialValues: Payload = {name: '', price: undefined};
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -40,24 +39,21 @@ export const AddProduct = () => {
     });
   }, [navigation]);
 
-  const clearForm = useCallback(() => {
-    setProduct({} as Payload);
-  }, []);
   const handleError = useErrorHandler();
 
   const onSubmit = useCallback(
-    (values) => {
+    (values, {resetForm}: FormikHelpers<Payload>) => {
       setIsLoading(true);
       setTimeout(() => {
         saveProduct({realm, product: values});
         getAnalyticsService().logEvent('productAdded').catch(handleError);
         setIsLoading(false);
-        clearForm();
+        resetForm();
         navigation.goBack();
         ToastAndroid.show('Product added', ToastAndroid.SHORT);
       }, 300);
     },
-    [realm, handleError, clearForm, navigation],
+    [realm, handleError, navigation],
   );
 
   return (
@@ -112,7 +108,7 @@ export const AddProduct = () => {
                   errorMessage={errors.price}
                   isInvalid={touched.price && !!errors.price}
                   onChange={(text) => setFieldValue('price', text)}
-                  value={product.price ? product.price.toString() : ''}
+                  value={values.price ? values.price.toString() : ''}
                 />
               </View>
             </View>
