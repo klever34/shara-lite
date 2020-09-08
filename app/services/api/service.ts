@@ -86,6 +86,8 @@ export interface IApiService {
   ): Promise<any>;
 
   businessSetup(payload: FormData): Promise<ApiResponse>;
+
+  backupData({data, type}: {data: any; type: string}): Promise<void>;
 }
 
 export class ApiService implements IApiService {
@@ -318,6 +320,17 @@ export class ApiService implements IApiService {
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async backupData({data, type}: {data: any; type: 'string'}) {
+    try {
+      await this.requester.post('/backup', {
+        data,
+        type,
+      });
+    } catch (e) {
+      throw e;
     }
   }
 

@@ -3,14 +3,15 @@ import {IProduct} from '@/models/Product';
 import {getAnalyticsService} from '@/services';
 import {useScreenRecord} from '@/services/analytics';
 import {useErrorHandler} from '@/services/error-boundary';
+import {FormDefaults} from '@/services/FormDefaults';
 import {saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import {Formik, FormikHelpers} from 'formik';
-import * as yup from 'yup';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, Text, ToastAndroid, View} from 'react-native';
+import * as yup from 'yup';
 import {
   Button,
   CurrencyInput,
@@ -31,7 +32,11 @@ export const AddProduct = () => {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
 
-  const formInitialValues: Payload = {name: '', price: undefined};
+  const formInitialValues: Payload =
+    {
+      name: '',
+      price: undefined,
+    } || FormDefaults.get('newProduct', {});
 
   useLayoutEffect(() => {
     navigation.setOptions({

@@ -28,6 +28,22 @@ workflows:
           context: shara-test
           lane: internal
           gradleTask: assembleDevRelease
+          testBuild: false
+          requires:
+            - checkout_code
+            - test
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+      - fastlane:
+          context: shara-test
+          lane: testlab
+          gradleTask: assembleDevRelease
+          testBuild: true
           requires:
             - checkout_code
             - test
@@ -62,6 +78,17 @@ workflows:
             branches:
               only:
                 - discovery
+      - fastlane:
+          context: shara-discovery
+          lane: testlab
+          testBuild: true
+          gradleTask: assembleDiscoveryRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
   delivery-workflow:
     jobs:
       - checkout_code:
@@ -79,6 +106,17 @@ workflows:
       - fastlane:
           context: shara-dev
           lane: internal
+          gradleTask: assembleDeliveryRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          context: shara-dev
+          lane: testlab
+          testBuild: true
           gradleTask: assembleDeliveryRelease
           requires:
             - test
@@ -120,6 +158,17 @@ workflows:
             branches:
               only:
                 - /^release.*/
+      - fastlane:
+          context: shara-qa
+          lane: testlab
+          testBuild: true
+          gradleTask: assembleQaRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^release.*/
   beta-workflow:
     jobs:
       - checkout_code:
@@ -147,6 +196,17 @@ workflows:
       - fastlane:
           context: shara-beta
           lane: internal
+          gradleTask: assembleProductionRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - fastlane:
+          context: shara-beta
+          lane: testlab
+          testBuild: true
           gradleTask: assembleProductionRelease
           requires:
             - test
@@ -246,11 +306,11 @@ jobs:
           command: |
             echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > android/app/google-services.json
             echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > android/google-play-store-service-account.json
+            echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
             echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > android/app/shara.keystore
             echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
             echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> android/gradle.properties
-#            sed -i "s#SHARA_VERSION_CODE#${CIRCLE_BUILD_NUM}#g" android/app/build.gradle
-#            sed -i "s#SHARA_VERSION_NAME#${NEW_VERSION}#g" android/app/build.gradle
+
       - persist_to_workspace:
           paths: .
           root: .
@@ -277,12 +337,31 @@ jobs:
       testersGroup:
         type: string
         default: shara-product
+      testBuild:
+        type: boolean
+        default: false
     docker:
       - image: circleci/android:api-27-node
-    resource_class: large
+    resource_class: xlarge
     steps:
       - attach_workspace:
           at: .
+      - when:
+          condition: <<parameters.testBuild>>
+          steps:
+            - run:
+                name: Test Build Config
+                command: |
+                  echo '' >> .env
+                  echo 'CI_TESTS=true' >> .env
+      - unless:
+          condition: <<parameters.testBuild>>
+          steps:
+            - run:
+                name: Release Build Config
+                command: |
+                  echo '' >> .env
+                  echo 'CI_TESTS=false' >> .env
       - run:
           name: Set Version
           command: |
@@ -310,6 +389,8 @@ jobs:
             GOOGLE_PLAY_TRACK: <<parameters.track>>
             GRADLE_TASK: <<parameters.gradleTask>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
+            GOOGLE_PROJECT_ID: shara-dev
+            # TODO Add `GOOGLE_PROJECT_ID` using environment variables or parameters
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results

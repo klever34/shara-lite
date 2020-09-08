@@ -1,18 +1,19 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
-import {Alert, ScrollView, Text, View, ToastAndroid} from 'react-native';
-import {Button, FloatingLabelInput} from '../../../../components';
-import HeaderRight from '../../../../components/HeaderRight';
 import {applyStyles} from '@/helpers/utils';
 import {ISupplier} from '@/models/Supplier';
 import {getAnalyticsService} from '@/services';
 import {useScreenRecord} from '@/services/analytics';
+import {useErrorHandler} from '@/services/error-boundary';
+import {FormDefaults} from '@/services/FormDefaults';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {colors} from '@/styles';
+import {useNavigation} from '@react-navigation/native';
 import {Formik, FormikHelpers} from 'formik';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {Alert, ScrollView, Text, ToastAndroid, View} from 'react-native';
 import * as yup from 'yup';
+import {Button, FloatingLabelInput} from '../../../../components';
+import HeaderRight from '../../../../components/HeaderRight';
 
 type Payload = Pick<ISupplier, 'name' | 'mobile' | 'address'>;
 
@@ -75,7 +76,7 @@ export const AddSupplier = () => {
         </Text>
         <Formik
           onSubmit={onFormSubmit}
-          initialValues={{name: ''}}
+          initialValues={{name: ''} || FormDefaults.get('supplier', {})}
           validationSchema={formValidation}>
           {({values, errors, touched, handleChange, handleSubmit}) => (
             <>

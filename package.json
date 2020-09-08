@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.24-feature.optional-fields+build.2182",
+  "version": "0.2.29-discovery",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -27,6 +27,7 @@
     "crypto-js": "^3.3.0",
     "date-fns": "^2.14.0",
     "formik": "^2.1.5",
+    "faker": "^5.1.0",
     "intl": "^1.2.5",
     "lodash": "^4.17.15",
     "promise-retry": "^2.0.1",
@@ -76,6 +77,7 @@
     "@types/crypto-js": "^3.1.47",
     "@types/cryptr": "^4.0.1",
     "@types/date-fns": "^2.6.0",
+    "@types/faker": "^4.1.12",
     "@types/jest": "^24.0.24",
     "@types/lodash": "^4.14.157",
     "@types/node": "^12.12.54",
@@ -103,6 +105,9 @@
   },
   "jest": {
     "preset": "react-native",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(jest-)?react-native|react-navigation|react-navigation-redux-helpers|@sentry|@react-navigation|rsdi/.*)"
+    ],
     "moduleFileExtensions": [
       "ts",
       "tsx",
@@ -110,6 +115,9 @@
       "jsx",
       "json",
       "node"
+    ],
+    "setupFiles": [
+      "./node_modules/react-native-gesture-handler/jestSetup.js"
     ]
   },
   "lint-staged": {

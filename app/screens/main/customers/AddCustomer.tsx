@@ -1,24 +1,25 @@
-import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useState} from 'react';
+import {applyStyles} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {getAnalyticsService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
+import {getCustomers, saveCustomer} from '@/services/CustomerService';
 import {useErrorHandler} from '@/services/error-boundary';
+import {FormDefaults} from '@/services/FormDefaults';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
+import {useNavigation} from '@react-navigation/native';
+import {Formik, FormikHelpers} from 'formik';
+import React, {useCallback, useState} from 'react';
 import {
   Alert,
   ScrollView,
   StyleSheet,
   Text,
-  View,
   ToastAndroid,
+  View,
 } from 'react-native';
-import {Button, FloatingLabelInput} from '../../../components';
-import {applyStyles} from '@/helpers/utils';
-import {getAnalyticsService} from '@/services';
-import {useScreenRecord} from '@/services/analytics';
-import {getCustomers, saveCustomer} from '@/services/CustomerService';
-import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
-import {ICustomer} from '@/models';
-import {Formik, FormikHelpers} from 'formik';
 import * as yup from 'yup';
+import {Button, FloatingLabelInput} from '../../../components';
 
 type Props = {
   onSubmit?: (customer: ICustomer) => void;
@@ -69,7 +70,7 @@ const AddCustomer = (props: Props) => {
       <Formik
         onSubmit={onFormSubmit}
         validationSchema={formValidation}
-        initialValues={{name: ''}}>
+        initialValues={{name: ''} || FormDefaults.get('newCustomerMobile', '')}>
         {({values, errors, touched, handleChange, handleSubmit}) => (
           <View>
             <View style={styles.formInputs}>
