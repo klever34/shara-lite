@@ -142,6 +142,7 @@ workflows:
           context: shara-qa
           lane: play
           track: internal
+          gradleTask: assembleQaRelease
           requires:
             - test
           filters:
