@@ -10,16 +10,16 @@ export interface IStorageService {
 
 export class StorageService implements IStorageService {
   async getItem<T>(key: string) {
-    try {
-      const data = await AsyncStorage.getItem(key);
-      if (!data) {
-        return null;
-      }
+    const data = await AsyncStorage.getItem(key);
+    if (!data) {
+      return null;
+    }
 
+    try {
       const parsedData: T = JSON.parse(data);
       return parsedData;
     } catch (e) {
-      return null;
+      return (data as unknown) as T;
     }
   }
 
