@@ -225,7 +225,7 @@ export function ReceiptDetailsModal(props: Props) {
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
           ['Description', 'QTY', 'SubTotal(NGN)'],
-          {},
+          receiptStyles.product,
         );
         if (receipt && receipt.items) {
           for (const item of receipt.items) {
