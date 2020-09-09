@@ -242,7 +242,7 @@ export function ReceiptDetailsModal(props: Props) {
               [
                 `${item.product.name}`,
                 `${q}`,
-                `${numberWithCommas(parseInt(total, 10))}`,
+                `${numberWithCommas(parseFloat(total))}`,
               ],
               receiptStyles.product,
             );
