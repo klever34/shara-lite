@@ -1,5 +1,6 @@
 import {User} from 'types/app';
-import analytics from '@segment/analytics-react-native';
+import segmentAnalytics from '@segment/analytics-react-native';
+import firebaseAnalytics from '@react-native-firebase/analytics';
 import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
@@ -15,7 +16,7 @@ export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
       if (process.env.NODE_ENV === 'production') {
-        await analytics.setup(Config.SEGMENT_KEY, {
+        await segmentAnalytics.setup(Config.SEGMENT_KEY, {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
@@ -53,8 +54,8 @@ export class AnalyticsService implements IAnalyticsService {
       }
       RNUxcam.setUserProperty('alias', alias);
 
-      await analytics.identify(String(user.id), userData);
-      await analytics.alias(alias);
+      await segmentAnalytics.identify(String(user.id), userData);
+      await segmentAnalytics.alias(alias);
     } catch (e) {
       throw e;
     }
@@ -68,8 +69,9 @@ export class AnalyticsService implements IAnalyticsService {
       eventData = castObjectValuesToString(eventData);
     }
     try {
-      await analytics.track(eventName, eventData);
+      await segmentAnalytics.track(eventName, eventData);
       // RNUxcam.logEvent(eventName, eventData);
+      await firebaseAnalytics().logEvent(eventName, eventData);
     } catch (e) {
       throw e;
     }
