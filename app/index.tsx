@@ -13,6 +13,7 @@ import RealmProvider from './services/realm/provider';
 import {getAnalyticsService, getNotificationService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Platform} from 'react-native';
+import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -38,27 +39,29 @@ const App = () => {
   }, []);
   return (
     <RealmProvider>
-      <NavigationContainer>
-        <MenuProvider>
-          <RootStack.Navigator initialRouteName="Splash">
-            <RootStack.Screen
-              name="Splash"
-              component={SplashScreen}
-              options={{headerShown: false}}
-            />
-            <RootStack.Screen
-              name="Auth"
-              component={AuthScreens}
-              options={{headerShown: false}}
-            />
-            <RootStack.Screen
-              name="Main"
-              component={MainScreens}
-              options={{headerShown: false}}
-            />
-          </RootStack.Navigator>
-        </MenuProvider>
-      </NavigationContainer>
+      <IPGeolocationProvider>
+        <NavigationContainer>
+          <MenuProvider>
+            <RootStack.Navigator initialRouteName="Splash">
+              <RootStack.Screen
+                name="Splash"
+                component={SplashScreen}
+                options={{headerShown: false}}
+              />
+              <RootStack.Screen
+                name="Auth"
+                component={AuthScreens}
+                options={{headerShown: false}}
+              />
+              <RootStack.Screen
+                name="Main"
+                component={MainScreens}
+                options={{headerShown: false}}
+              />
+            </RootStack.Navigator>
+          </MenuProvider>
+        </NavigationContainer>
+      </IPGeolocationProvider>
     </RealmProvider>
   );
 };

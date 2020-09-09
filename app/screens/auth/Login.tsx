@@ -16,6 +16,7 @@ import {colors} from '../../styles';
 import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
 import {FormDefaults} from '@/services/FormDefaults';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 
 type Fields = {
   mobile: string;
@@ -26,9 +27,10 @@ type Fields = {
 export const Login = ({navigation}: any) => {
   // @ts-ignore
   const {updateLocalRealm} = useContext(RealmContext);
+  const {callingCode, countryCode2} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('login', {}) as Fields,
+    FormDefaults.get('login', {countryCode: callingCode}) as Fields,
   );
 
   const onChangeText = (value: string, field: keyof Fields) => {
@@ -104,6 +106,7 @@ export const Login = ({navigation}: any) => {
           <PhoneNumberField
             value={fields.mobile}
             countryCode={fields.countryCode}
+            countryCode2={countryCode2}
             onChangeText={(data) => onChangeMobile(data)}
           />
         </View>
