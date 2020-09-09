@@ -70,11 +70,12 @@ export const DeliveryAgents = () => {
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
+        const searchValue = searchedText.trim();
         const sort = (item: IDeliveryAgent, text: string) => {
           return item.full_name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
         const ac = deliveryAgents.filter((item: IDeliveryAgent) => {
-          return sort(item, searchedText);
+          return sort(item, searchValue);
         });
         setMyDeliveryAgents(ac);
       } else {
