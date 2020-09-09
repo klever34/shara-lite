@@ -231,7 +231,7 @@ export function ReceiptDetailsModal(props: Props) {
           for (const item of receipt.items) {
             const p = item.price;
             const q = item.quantity;
-            const total = Math.imul(q, p).toString();
+            const total = p * q;
             await BluetoothEscposPrinter.printColumn(
               productListColumnWidth,
               [
@@ -239,11 +239,7 @@ export function ReceiptDetailsModal(props: Props) {
                 BluetoothEscposPrinter.ALIGN.CENTER,
                 BluetoothEscposPrinter.ALIGN.RIGHT,
               ],
-              [
-                `${item.product.name}`,
-                `${q}`,
-                `${numberWithCommas(parseFloat(total))}`,
-              ],
+              [`${item.product.name}`, `${q}`, `${numberWithCommas(total)}`],
               receiptStyles.product,
             );
           }
