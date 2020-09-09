@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.30-bugfix.receipt-printout+build.2290",
+  "version": "0.2.30-bugfix.receipt-printout+build.2297",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
