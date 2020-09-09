@@ -219,13 +219,6 @@ export const ReceiptStatusModal = (props: Props) => {
           ['Description', 'QTY', 'Subtotal'],
           {},
         );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
         for (const item of products) {
           const p = item.price;
           const q = item.quantity;
@@ -244,14 +237,14 @@ export const ReceiptStatusModal = (props: Props) => {
             ],
             {},
           );
-          await BluetoothEscposPrinter.printerAlign(
-            BluetoothEscposPrinter.ALIGN.LEFT,
-          );
-          await BluetoothEscposPrinter.printText(
-            '--------------------------------\n',
-            {},
-          );
         }
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n',
+          {},
+        );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );

@@ -227,13 +227,6 @@ export function ReceiptDetailsModal(props: Props) {
           ['Description', 'QTY', 'Subtotal'],
           {},
         );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
         if (receipt && receipt.items) {
           for (const item of receipt.items) {
             const p = item.price;
@@ -253,15 +246,15 @@ export function ReceiptDetailsModal(props: Props) {
               ],
               {},
             );
-            await BluetoothEscposPrinter.printerAlign(
-              BluetoothEscposPrinter.ALIGN.LEFT,
-            );
-            await BluetoothEscposPrinter.printText(
-              '--------------------------------\n',
-              {},
-            );
           }
         }
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n',
+          {},
+        );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
