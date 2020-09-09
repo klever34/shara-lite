@@ -1,14 +1,19 @@
 import {useCallback, useContext, useEffect} from 'react';
 // import NetInfo from '@react-native-community/netinfo';
-import {getAuthService, getRealmService} from '../index';
+import {getAuthService, getRealmService, getStorageService} from '../index';
 import {RealmContext} from './provider';
 import {loginToRealm} from './index';
+import {runDbBackup} from '@/services/realm/backup-db';
 
 const syncInterval = 1000 * 20;
 
 const useRealmSyncLoader = () => {
   const authService = getAuthService();
+  const storageService = getStorageService();
+  const backupKey = 'dbBackedUp';
+
   const {
+    realm,
     updateSyncRealm,
     isRealmSyncLoaderInitiated,
     setIsRealmSyncLoaderInitiated,
@@ -29,6 +34,20 @@ const useRealmSyncLoader = () => {
       }
 
       try {
+        if (!realm) {
+          retryUpdate();
+          return;
+        }
+
+        const isAlreadyBackedUp = await storageService.getItem(backupKey);
+        const isBackupSuccessful =
+          isAlreadyBackedUp || (await runDbBackup({realm}));
+        if (!isBackupSuccessful) {
+          retryUpdate();
+          return;
+        }
+
+        storageService.setItem(backupKey, 'true');
         const {jwt} = realmCredentials;
         const {realm: newRealm, realmUser, partitionValue} = await loginToRealm(
           {
