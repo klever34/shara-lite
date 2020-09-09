@@ -145,7 +145,7 @@ export function ReceiptDetailsModal(props: Props) {
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [12, 6, 14];
+      const productListColumnWidth = [22, 5, 15];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -224,8 +224,8 @@ export function ReceiptDetailsModal(props: Props) {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
-          ['Description', 'QTY', 'Subtotal'],
-          {},
+          ['Description', 'QTY', 'SubTotal(NGN)'],
+          receiptStyles.subheader ,
         );
         if (receipt && receipt.items) {
           for (const item of receipt.items) {
@@ -242,9 +242,9 @@ export function ReceiptDetailsModal(props: Props) {
               [
                 `${item.product.name}`,
                 `${q}`,
-                `${currencyCode}${numberWithCommas(parseInt(total, 10))}`,
+                `${numberWithCommas(parseInt(total, 10))}`,
               ],
-              {},
+              receiptStyles.product,
             );
           }
         }
@@ -296,8 +296,6 @@ export function ReceiptDetailsModal(props: Props) {
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
-        await BluetoothEscposPrinter.printText('\n\r', {});
-        await BluetoothEscposPrinter.printText('\n\r', {});
         await BluetoothEscposPrinter.printText('\n\r', {});
         handleClosePrinterModal();
       } catch (err) {
