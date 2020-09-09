@@ -21,6 +21,7 @@ export type PhoneNumber = {
 type Props = {
   value: string;
   countryCode: string | null;
+  countryCode2: string;
   onChangeText(number: PhoneNumber): void;
   isInvalid?: FloatingLabelInputProps['isInvalid'];
   errorMessage?: FloatingLabelInputProps['errorMessage'];
@@ -31,6 +32,7 @@ export const PhoneNumberField = (props: Props) => {
     value,
     isInvalid,
     countryCode,
+    countryCode2,
     onChangeText,
     errorMessage,
     ...rest
@@ -67,7 +69,7 @@ export const PhoneNumberField = (props: Props) => {
           withCallingCodeButton
           // @ts-ignore
           placeholder="Country"
-          countryCode={country.cca2}
+          countryCode={country.cca2 || countryCode2}
           containerButtonStyle={styles.pickerButton}
         />
         <Icon
