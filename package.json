@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.32-feature.optional-fields+build.2369",
+  "version": "0.2.33-discovery",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
