@@ -161,11 +161,15 @@ export function MyReceipts() {
               'flex-row',
               'justify-space-between',
               {
+                flexWrap: 'wrap',
                 borderBottomWidth: 1,
                 borderBottomColor: colors['gray-20'],
               },
             )}>
-            <View>
+            <View
+              style={applyStyles({
+                width: '48%',
+              })}>
               <Text
                 style={applyStyles('pb-sm', 'text-400', {
                   fontSize: 16,
@@ -184,7 +188,10 @@ export function MyReceipts() {
                   : 'Product'}
               </Text>
             </View>
-            <View>
+            <View
+              style={applyStyles({
+                width: '48%',
+              })}>
               <Text
                 style={applyStyles('pb-sm', 'text-400', {
                   fontSize: 16,
@@ -198,7 +205,7 @@ export function MyReceipts() {
                   color: colors['gray-200'],
                 })}>
                 {receipt.created_at &&
-                  format(receipt.created_at, 'MMM dd, yyyy')}
+                  format(receipt.created_at, 'MMM dd, yyyy hh:mm:a')}
               </Text>
             </View>
           </View>
