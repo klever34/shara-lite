@@ -35,16 +35,20 @@ type CardDetailProps = {
   style?: ViewStyle;
   name: string;
   value: string;
+  onPress?: () => void;
 };
 
-export const CardDetail = ({style, name, value}: CardDetailProps) => {
+export const CardDetail = ({style, name, value, onPress}: CardDetailProps) => {
   return (
-    <View style={applyStyles('', style)}>
-      <Text style={applyStyles('text-base text-xs text-400 text-primary mb-2')}>
-        {name}
-      </Text>
-      <Text style={applyStyles('text-base text-400')}>{value}</Text>
-    </View>
+    <Touchable onPress={onPress}>
+      <View style={applyStyles('', style)}>
+        <Text
+          style={applyStyles('text-base text-xs text-400 text-primary mb-2')}>
+          {name}
+        </Text>
+        <Text style={applyStyles('text-base text-400')}>{value}</Text>
+      </View>
+    </Touchable>
   );
 };
 

@@ -10,3 +10,4 @@ export * from './PhoneNumberField';
 export * from './CreditPaymentForm';
 export * from './ContactsListModal';
 export * from './FloatingLabelInput';
+export * from './FormBuilder';

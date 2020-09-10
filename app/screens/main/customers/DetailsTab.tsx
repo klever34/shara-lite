@@ -1,23 +1,105 @@
-import React, {useState} from 'react';
-import {Linking, Platform, ScrollView, View} from 'react-native';
+import React, {useCallback, useState} from 'react';
+import {Linking, Platform, ScrollView, View, Text} from 'react-native';
 import {applyStyles, renderList} from '@/helpers/utils';
 import {colors} from '@/styles';
-import {CardHeader, CardDetail, Card, CardButton} from '@/components';
+import {
+  CardHeader,
+  CardDetail,
+  Card,
+  CardButton,
+  Button,
+  FormBuilder,
+  FormFields,
+} from '@/components';
 import {useGeolocation} from '@/services/geolocation';
 import MapView, {Marker} from 'react-native-maps';
 import {useErrorHandler} from '@/services/error-boundary';
 // import RNGooglePlaces from 'react-native-google-places';
 import EmptyState from '@/components/EmptyState';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 
 type Location = {
   coordinate: string;
   address: string;
 };
 
-const DetailsTab = () => {
+type DetailsTabProps = ModalWrapperFields & {};
+
+const DetailsTab = ({openModal}: DetailsTabProps) => {
   const {location} = useGeolocation();
   const handleError = useErrorHandler();
-  const [locations, setLocations] = useState<Location[]>([]);
+  const [locations] = useState<Location[]>([]);
+  const handleAddAddress = useCallback(() => {
+    let address = '';
+    let mapAddress = false;
+    const fields: FormFields = {
+      address: {
+        type: 'text',
+        props: {
+          autoFocus: true,
+          placeholder: 'Type in address',
+          icon: {
+            type: 'feathericons',
+            name: 'map-pin',
+            onPress: (active) => {
+              mapAddress = active;
+            },
+            activeStyle: 'text-green',
+          },
+        },
+      },
+    };
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => {
+        return (
+          <View>
+            <View style={applyStyles('border-b-1 border-gray-20 mb-4')}>
+              <Text
+                style={applyStyles(
+                  'text-primary uppercase text-center py-16 text-500',
+                )}>
+                add address
+              </Text>
+            </View>
+            <View style={applyStyles('px-8')}>
+              <FormBuilder
+                fields={fields}
+                onInputChange={(values) => {
+                  ({address} = values);
+                }}
+              />
+            </View>
+            <View style={applyStyles('p-8 flex-row w-full')}>
+              <Button
+                onPress={() => {
+                  closeModal();
+                }}
+                title="cancel"
+                style={applyStyles('flex-1')}
+                variantColor="clear"
+              />
+              <Button
+                onPress={() => {
+                  console.log('location', location);
+                  if (address) {
+                    if (!mapAddress || !location) {
+                      console.log(address, mapAddress);
+                    } else {
+                      const position = `${location.latitude},${location.longitude}`;
+                      console.log(address, mapAddress, position);
+                    }
+                  }
+                  closeModal();
+                }}
+                title="save"
+                style={applyStyles('flex-1')}
+              />
+            </View>
+          </View>
+        );
+      },
+    });
+  }, [location, openModal]);
   return (
     <ScrollView
       style={applyStyles('p-lg', {backgroundColor: colors['gray-10']})}>
@@ -73,7 +155,15 @@ const DetailsTab = () => {
                       <Marker coordinate={location} />
                     </MapView>
                   </View>
-                  <CardDetail name="Address" value={address} />
+                  <CardDetail
+                    name="Address"
+                    value={address}
+                    onPress={() => {
+                      openModal('options', {
+                        options: [{text: 'Map address', onPress: () => {}}],
+                      });
+                    }}
+                  />
                 </View>
               );
             },
@@ -83,24 +173,11 @@ const DetailsTab = () => {
               text="No location details added yet"
             />,
           )}
-          <CardButton
-            onPress={() => {
-              if (location) {
-                setLocations([
-                  {
-                    coordinate: `${location.latitude},${location.longitude}`,
-                    address:
-                      '105 Ngong Road, Highlands Nairobi, Nairobi Province, Kenya',
-                  },
-                ]);
-              }
-            }}>
-            edit
-          </CardButton>
+          <CardButton onPress={handleAddAddress}>add</CardButton>
         </Card>
       )}
     </ScrollView>
   );
 };
 
-export default DetailsTab;
+export default withModal(DetailsTab);
