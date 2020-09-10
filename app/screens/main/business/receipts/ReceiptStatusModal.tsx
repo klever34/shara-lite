@@ -138,7 +138,7 @@ export const ReceiptStatusModal = (props: Props) => {
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [12, 6, 14];
+      const productListColumnWidth = [22, 5, 15];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -216,20 +216,13 @@ export const ReceiptStatusModal = (props: Props) => {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
-          ['Description', 'QTY', 'Subtotal'],
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
+          ['Description', 'QTY', 'SubTotal(NGN)'],
+          receiptStyles.product,
         );
         for (const item of products) {
           const p = item.price;
           const q = item.quantity;
-          const total = Math.imul(q, p).toString();
+          const total = p * q;
           await BluetoothEscposPrinter.printColumn(
             productListColumnWidth,
             [
@@ -237,21 +230,17 @@ export const ReceiptStatusModal = (props: Props) => {
               BluetoothEscposPrinter.ALIGN.CENTER,
               BluetoothEscposPrinter.ALIGN.RIGHT,
             ],
-            [
-              `${item.product.name}`,
-              `${q}`,
-              `${currencyCode}${numberWithCommas(parseInt(total, 10))}`,
-            ],
-            {},
-          );
-          await BluetoothEscposPrinter.printerAlign(
-            BluetoothEscposPrinter.ALIGN.LEFT,
-          );
-          await BluetoothEscposPrinter.printText(
-            '--------------------------------\n',
-            {},
+            [`${item.product.name}`, `${q}`, `${numberWithCommas(total)}`],
+            receiptStyles.product,
           );
         }
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n',
+          {},
+        );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
@@ -290,8 +279,6 @@ export const ReceiptStatusModal = (props: Props) => {
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
-        await BluetoothEscposPrinter.printText('\n\r', {});
-        await BluetoothEscposPrinter.printText('\n\r', {});
         await BluetoothEscposPrinter.printText('\n\r', {});
         handleClosePrinterModal();
       } catch (err) {
