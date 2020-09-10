@@ -17,6 +17,7 @@ import {colors} from '../../styles';
 import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
 import {FormDefaults} from '@/services/FormDefaults';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import analytics from '@react-native-firebase/analytics';
 
 type Fields = {
@@ -28,9 +29,10 @@ type Fields = {
 export const Login = ({navigation}: any) => {
   // @ts-ignore
   const {updateLocalRealm} = useContext(RealmContext);
+  const {callingCode, countryCode2} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('login', {}) as Fields,
+    FormDefaults.get('login', {countryCode: callingCode}) as Fields,
   );
   const handleError = useErrorHandler();
 
@@ -55,10 +57,6 @@ export const Login = ({navigation}: any) => {
       ...rest,
       mobile: `${countryCode}${mobile}`,
     };
-    analytics().logEvent('login', {
-      countryCode,
-      mobile: `${countryCode}${mobile}`,
-    });
     const apiService = getApiService();
     try {
       setLoading(true);
@@ -111,6 +109,7 @@ export const Login = ({navigation}: any) => {
           <PhoneNumberField
             value={fields.mobile}
             countryCode={fields.countryCode}
+            countryCode2={countryCode2}
             onChangeText={(data) => onChangeMobile(data)}
           />
         </View>
