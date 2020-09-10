@@ -15,11 +15,12 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
-      if (process.env.NODE_ENV === 'production') {
-        await segmentAnalytics.setup(Config.SEGMENT_KEY, {
-          recordScreenViews: true,
-          trackAppLifecycleEvents: true,
-        });
+      await segmentAnalytics.setup(Config.SEGMENT_KEY, {
+        recordScreenViews: true,
+        trackAppLifecycleEvents: true,
+      });
+
+      if (Config.ENVIRONMENT !== 'local') {
         RNUxcam.optIntoSchematicRecordings();
         RNUxcam.startWithKey(Config.UXCAM_KEY);
       }
