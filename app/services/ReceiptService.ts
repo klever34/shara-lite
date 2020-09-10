@@ -52,7 +52,7 @@ export const saveReceipt = ({
     receipt.customer_mobile = customer.mobile;
   }
 
-  if (!customer._id && customer.name && customer.mobile) {
+  if (!customer._id && customer.name) {
     receiptCustomer = saveCustomer({realm, customer});
   }
   if (customer._id) {
