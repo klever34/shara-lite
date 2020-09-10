@@ -14,11 +14,12 @@ export type PhoneNumber = {
 type Props = {
   value: string;
   countryCode: string | null;
+  countryCode2: string;
   onChangeText(number: PhoneNumber): void;
 } & Omit<TextInputProperties, 'onChangeText'>;
 
 export const PhoneNumberField = (props: Props) => {
-  const {value, countryCode, onChangeText, ...rest} = props;
+  const {value, countryCode2, countryCode, onChangeText, ...rest} = props;
   const [phoneNumber, setPhoneNumber] = React.useState(value || '');
   const [callingCode, setCallingCode] = React.useState(countryCode || '234');
   const [country, setCountry] = React.useState<Country>({} as Country);
@@ -50,7 +51,7 @@ export const PhoneNumberField = (props: Props) => {
           withCallingCodeButton
           // @ts-ignore
           placeholder="Country"
-          countryCode={country.cca2}
+          countryCode={country.cca2 || countryCode2}
           containerButtonStyle={styles.pickerButton}
         />
         <Icon
