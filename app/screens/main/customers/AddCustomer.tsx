@@ -83,7 +83,7 @@ const AddCustomer = (props: Props) => {
                 isInvalid={touched.name && !!errors.name}
               />
               <FloatingLabelInput
-                label="Phone Number"
+                label="Phone Number (optional)"
                 autoCompleteType="tel"
                 value={values.mobile}
                 keyboardType="phone-pad"

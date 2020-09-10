@@ -1,6 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {Modal, Text, View} from 'react-native';
-import {Button, FloatingLabelInput} from '../../../../components';
+import {Button} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
@@ -21,8 +21,8 @@ type Props = {
   products?: IReceiptItem[];
   onWhatsappShare?: (receiptImage: string) => void;
   onEmailShare?: (
-    {email, receiptImage}: {email: string; receiptImage: string},
-    callback: () => void,
+    {receiptImage}: {receiptImage: string},
+    callback?: () => void,
   ) => void;
 };
 
@@ -41,30 +41,19 @@ export const ShareReceiptModal = ({
 }: Props) => {
   const authService = getAuthService();
   const user = authService.getUser();
-  const [email, setEmail] = useState('');
   const [receiptImage, setReceiptImage] = useState('');
-  const [showEmailField, setShowEmailField] = useState(false);
-
-  const handleClearEmailField = useCallback(() => {
-    setEmail('');
-    setShowEmailField(false);
-  }, []);
 
   const handleSmsShare = useCallback(() => {
     onSmsShare && onSmsShare();
   }, [onSmsShare]);
 
   const handleEmailShare = useCallback(() => {
-    onEmailShare && onEmailShare({email, receiptImage}, handleClearEmailField);
-  }, [email, receiptImage, onEmailShare, handleClearEmailField]);
+    onEmailShare && onEmailShare({receiptImage});
+  }, [receiptImage, onEmailShare]);
 
   const handleWhatsappShare = useCallback(() => {
     onWhatsappShare && onWhatsappShare(receiptImage);
   }, [onWhatsappShare, receiptImage]);
-
-  const handleEmailChange = useCallback((text) => {
-    setEmail(text);
-  }, []);
 
   return (
     <Modal
@@ -88,62 +77,27 @@ export const ShareReceiptModal = ({
           Select a sharing option
         </Text>
 
-        {!showEmailField ? (
-          <Button
-            variantColor="white"
-            style={applyStyles('w-full', 'mb-md')}
-            onPress={() => setShowEmailField(true)}>
-            <View
-              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
-              <Icon
-                size={24}
-                name="mail"
-                type="feathericons"
-                color={colors.primary}
-              />
-              <Text
-                style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                  color: colors['gray-200'],
-                })}>
-                Share via email
-              </Text>
-            </View>
-          </Button>
-        ) : (
-          <View style={applyStyles('w-full')}>
-            <FloatingLabelInput
-              value={email}
-              keyboardType="email-address"
-              label="Customer email address"
-              onChangeText={handleEmailChange}
-              inputStyle={applyStyles('mb-md')}
+        <Button
+          variantColor="white"
+          style={applyStyles('w-full', 'mb-md')}
+          onPress={handleEmailShare}>
+          <View
+            style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+            <Icon
+              size={24}
+              name="mail"
+              type="feathericons"
+              color={colors.primary}
             />
-            <Button
-              variantColor="white"
-              style={applyStyles('w-full', 'mb-md')}
-              onPress={handleEmailShare}>
-              <View
-                style={applyStyles(
-                  'flex-row',
-                  'items-center',
-                  'justify-center',
-                )}>
-                <Icon
-                  size={24}
-                  name="mail"
-                  type="feathericons"
-                  color={colors.primary}
-                />
-                <Text
-                  style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
-                    color: colors['gray-200'],
-                  })}>
-                  Share via email
-                </Text>
-              </View>
-            </Button>
+            <Text
+              style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                color: colors['gray-200'],
+              })}>
+              Share via email
+            </Text>
           </View>
-        )}
+        </Button>
+
         <Button
           variantColor="white"
           style={applyStyles('w-full', 'mb-xl')}

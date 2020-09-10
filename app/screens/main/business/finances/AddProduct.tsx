@@ -100,7 +100,7 @@ export const AddProduct = () => {
             </View>
             <View style={applyStyles('flex-row', 'items-center')}>
               <FloatingLabelInput
-                label="Product SKU"
+                label="Product SKU (optional)"
                 value={values.sku}
                 onChangeText={handleChange('sku')}
               />
