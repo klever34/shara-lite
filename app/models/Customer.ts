@@ -5,7 +5,7 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface ICustomer extends BaseModelInterface {
   name: string;
-  mobile: string;
+  mobile?: string;
   receipts?: IReceipt[];
   payments?: IPayment[];
   credits?: ICredit[];

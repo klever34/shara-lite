@@ -372,7 +372,7 @@ export function ReceiptDetailsModal(props: Props) {
               Receipt for
             </Text>
             <View>
-              {receipt?.customer?.mobile ? (
+              {receipt?.customer?.name ? (
                 <Text
                   style={applyStyles('text-400', {
                     fontSize: 18,

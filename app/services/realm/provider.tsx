@@ -34,14 +34,14 @@ const RealmProvider = (props: any) => {
 
   const updateSyncRealm = ({
     newRealm,
-    realmUser,
+    realmUser: user,
     partitionValue,
   }: {
     newRealm: Realm;
     realmUser: any;
     partitionValue: string;
   }) => {
-    setRealmUser(realmUser);
+    setRealmUser(user);
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,

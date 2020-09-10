@@ -2,8 +2,8 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IProduct extends BaseModelInterface {
   name: string;
-  sku: string;
-  price: number;
+  sku?: string;
+  price?: number;
   weight?: string;
   quantity?: number;
 }

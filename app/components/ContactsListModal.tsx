@@ -93,6 +93,7 @@ export function ContactsListModal<T>({
   const handleSearch = useCallback((searchedText: string) => {
     setSearchInputValue(searchedText);
     if (searchedText) {
+      const searchValue = searchedText.trim();
       const sort = (item: Contact, text: string) => {
         const name = `${item.givenName} ${item.familyName}`;
         const mobile =
@@ -105,7 +106,7 @@ export function ContactsListModal<T>({
         );
       };
       const results = ref.current.contacts.filter((item: Contact) => {
-        return sort(item, searchedText);
+        return sort(item, searchValue);
       });
       setContacts(results);
     } else {

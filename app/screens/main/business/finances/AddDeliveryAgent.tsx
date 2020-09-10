@@ -11,10 +11,16 @@ import {
 } from '../../../../services/DeliveryAgentService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
+import {Formik, FormikHelpers} from 'formik';
+import * as yup from 'yup';
 import {FormDefaults} from '@/services/FormDefaults';
 
 type Props = {onSubmit?: (deliveryAgent: IDeliveryAgent) => void};
 type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
+
+const formValidation = yup.object().shape({
+  full_name: yup.string().required('Delivery agent name is required'),
+});
 
 export const AddDeliveryAgent = (props: Props) => {
   const {onSubmit} = props;
@@ -23,9 +29,6 @@ export const AddDeliveryAgent = (props: Props) => {
   const navigation = useNavigation();
   const deliveryAgents = getDeliveryAgents({realm});
   const [isLoading, setIsLoading] = useState(false);
-  const [deliveryAgent, setDeliveryAgent] = useState<Payload>(
-    FormDefaults.get('deliveryAgent', {}) as Payload,
-  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,41 +38,24 @@ export const AddDeliveryAgent = (props: Props) => {
     });
   }, [navigation]);
 
-  const handleChange = useCallback(
-    (value: string | number, key: keyof Payload) => {
-      setDeliveryAgent({
-        ...deliveryAgent,
-        [key]: value,
-      });
-    },
-    [deliveryAgent],
-  );
-
-  const clearForm = useCallback(() => {
-    setDeliveryAgent({} as Payload);
-  }, []);
-
-  const handleSubmit = useCallback(() => {
-    if (Object.keys(deliveryAgent).length === 2) {
-      if (
-        deliveryAgents.map((item) => item.mobile).includes(deliveryAgent.mobile)
-      ) {
+  const onFormSubmit = useCallback(
+    (values: Payload, {resetForm}: FormikHelpers<Payload>) => {
+      if (deliveryAgents.map((item) => item.mobile).includes(values.mobile)) {
         Alert.alert(
           'Error',
           'Delivery Agent with the same phone number has been created.',
         );
       } else {
         setIsLoading(true);
-        saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+        saveDeliveryAgent({realm, delivery_agent: values});
         setIsLoading(false);
-        clearForm();
-        onSubmit ? onSubmit(deliveryAgent) : navigation.goBack();
+        onSubmit ? onSubmit(values) : navigation.goBack();
+        resetForm();
         ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
-    } else {
-      Alert.alert('Error', 'Please add delivery agent information.');
-    }
-  }, [realm, clearForm, onSubmit, deliveryAgent, deliveryAgents, navigation]);
+    },
+    [realm, onSubmit, deliveryAgents, navigation],
+  );
 
   return (
     <View
@@ -88,27 +74,40 @@ export const AddDeliveryAgent = (props: Props) => {
           })}>
           Delivery Agent Details
         </Text>
-        <View style={applyStyles('flex-row pb-xl items-center')}>
-          <FloatingLabelInput
-            label="Name"
-            value={deliveryAgent.full_name}
-            onChangeText={(text) => handleChange(text, 'full_name')}
-          />
-        </View>
-        <View style={applyStyles('flex-row pb-xl items-center')}>
-          <FloatingLabelInput
-            label="Phone number"
-            value={deliveryAgent.mobile}
-            keyboardType="phone-pad"
-            onChangeText={(text) => handleChange(text, 'mobile')}
-          />
-        </View>
-        <Button
-          title="Save"
-          isLoading={isLoading}
-          onPress={handleSubmit}
-          style={applyStyles({marginVertical: 48})}
-        />
+        <Formik
+          onSubmit={onFormSubmit}
+          initialValues={
+            {full_name: ''} || FormDefaults.get('deliveryAgent', {})
+          }
+          validationSchema={formValidation}>
+          {({values, errors, touched, handleChange, handleSubmit}) => (
+            <>
+              <View style={applyStyles('flex-row pb-xl items-center')}>
+                <FloatingLabelInput
+                  label="Name"
+                  value={values.full_name}
+                  errorMessage={errors.full_name}
+                  onChangeText={handleChange('full_name')}
+                  isInvalid={touched.full_name && !!errors.full_name}
+                />
+              </View>
+              <View style={applyStyles('flex-row pb-xl items-center')}>
+                <FloatingLabelInput
+                  keyboardType="phone-pad"
+                  value={values.mobile}
+                  label="Phone number (optional)"
+                  onChangeText={handleChange('mobile')}
+                />
+              </View>
+              <Button
+                title="Save"
+                isLoading={isLoading}
+                onPress={handleSubmit}
+                style={applyStyles({marginVertical: 48})}
+              />
+            </>
+          )}
+        </Formik>
       </ScrollView>
     </View>
   );

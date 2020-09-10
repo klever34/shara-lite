@@ -4,7 +4,7 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IReceiptItem extends BaseModelInterface {
   name: string;
-  sku: string;
+  sku?: string;
   weight?: string;
   quantity: number;
   price: number;

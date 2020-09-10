@@ -7,7 +7,9 @@ import {applyStyles} from '../helpers/utils';
 
 type Props = {
   value: string;
+  isInvalid?: boolean;
   placeholder?: string;
+  errorMessage?: string;
   onChangeText(text: string): void;
 };
 
