@@ -31,17 +31,13 @@ const IPGeolocationProvider = (props: any) => {
   const [callingCode, setCallingCode] = useState<string>('');
   const apiService = getApiService();
 
-  const fetchCountryCode = useCallback(
-    async () => {
-      try {
-        const response: IPGeolocationResponse = await apiService.getUserIPDetails();
-        setCountryCode2(response.country_code2);
-        setCallingCode(response.calling_code.replace('+', ''));
-      } catch (e) {}
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [apiService],
-  );
+  const fetchCountryCode = useCallback(async () => {
+    try {
+      const response: IPGeolocationResponse = await apiService.getUserIPDetails();
+      setCountryCode2(response.country_code2);
+      setCallingCode(response.calling_code.replace('+', ''));
+    } catch (e) {}
+  }, [apiService]);
 
   useEffect(() => {
     fetchCountryCode();

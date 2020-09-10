@@ -1,10 +1,11 @@
 import {Picker} from '@react-native-community/picker';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Button} from './Button';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {CurrencyInput} from './CurrencyInput';
+import {Formik} from 'formik';
 
 type Payload = {
   amount: number | undefined;
@@ -18,64 +19,69 @@ type Props = {
 
 export const CreditPaymentForm = (props: Props) => {
   const {isLoading, onSubmit} = props;
-  const [payload, setPayload] = useState<Payload>({
-    method: 'cash',
-    amount: undefined,
-  } as Payload);
 
-  const handleChange = useCallback(
-    (value: string | number, key: keyof Payload) => {
-      setPayload({
-        ...payload,
-        [key]: value,
-      });
+  const onFormSubmit = useCallback(
+    (values, {resetForm}) => {
+      onSubmit(values, resetForm);
     },
-    [payload],
+    [onSubmit],
   );
-
-  const clearForm = useCallback(() => {
-    setPayload({} as Payload);
-  }, []);
-
-  const handleSubmit = useCallback(() => {
-    onSubmit(payload, clearForm);
-  }, [clearForm, onSubmit, payload]);
 
   return (
     <View>
-      <View style={applyStyles('flex-row', 'items-center')}>
-        <CurrencyInput
-          label="Amount Paid"
-          keyboardType="number-pad"
-          containerStyle={styles.input}
-          value={payload.amount?.toString()}
-          onChange={(text) => handleChange(text, 'amount')}
-        />
-      </View>
-      <View style={styles.pickerContainer}>
-        <Text style={applyStyles('text-400', styles.pickerLabel)}>
-          Payment method
-        </Text>
-        <Picker
-          mode="dropdown"
-          style={styles.picker}
-          prompt="Payment Method"
-          itemStyle={styles.pickerItem}
-          selectedValue={payload.method}
-          onValueChange={(itemValue) => handleChange(itemValue, 'method')}>
-          <Picker.Item label="Cash" value="cash" />
-          <Picker.Item label="Bank Transfer" value="transfer" />
-          <Picker.Item label="Mobile Money" value="mobile" />
-        </Picker>
-      </View>
+      <Formik
+        onSubmit={onFormSubmit}
+        initialValues={{amount: 0, method: 'cash'}}>
+        {({values, errors, touched, setFieldValue, handleSubmit}) => (
+          <>
+            <View style={applyStyles('flex-row', 'items-center')}>
+              <CurrencyInput
+                label="Amount Paid"
+                keyboardType="number-pad"
+                containerStyle={styles.input}
+                value={values.amount?.toString()}
+                isInvalid={touched.amount && !!errors.amount}
+                onChange={(text) => setFieldValue('amount', text)}
+              />
+            </View>
+            <View style={styles.pickerContainer}>
+              <Text style={applyStyles('text-400', styles.pickerLabel)}>
+                Payment method
+              </Text>
+              <Picker
+                mode="dropdown"
+                style={styles.picker}
+                prompt="Payment Method"
+                itemStyle={styles.pickerItem}
+                selectedValue={values.method}
+                onValueChange={(itemValue) =>
+                  setFieldValue('method', itemValue)
+                }>
+                <Picker.Item label="Cash" value="cash" />
+                <Picker.Item label="Bank Transfer" value="transfer" />
+                <Picker.Item label="Mobile Money" value="mobile" />
+              </Picker>
+              {!!errors.method && (
+                <Text
+                  style={applyStyles('text-500 pt-xs', {
+                    fontSize: 14,
+                    color: colors['red-200'],
+                  })}>
+                  {errors.method}
+                </Text>
+              )}
+            </View>
 
-      <Button
-        isLoading={isLoading}
-        onPress={handleSubmit}
-        title="Confirm payment"
-        disabled={!payload.amount}
-        style={applyStyles({marginBottom: 40})}
-      />
+            <Button
+              isLoading={isLoading}
+              onPress={handleSubmit}
+              title="Confirm payment"
+              disabled={!values.amount}
+              style={applyStyles({marginBottom: 40})}
+            />
+          </>
+        )}
+      </Formik>
     </View>
   );
 };

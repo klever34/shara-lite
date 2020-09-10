@@ -92,15 +92,15 @@ export function MyReceipts() {
   }, [activeReceipt, user]);
 
   const handleEmailShare = useCallback(
-    async (
-      {email, receiptImage}: {email: string; receiptImage: string},
-      callback: () => void,
-    ) => {
+    async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
-        email,
         title: 'Share receipt',
-        message: `Hi ${activeReceipt?.customer?.name}, here is your receipt from ${businessInfo?.name}`,
+        message: `Hi${
+          activeReceipt?.customer?.name
+            ? ` ${activeReceipt?.customer?.name}`
+            : ''
+        }, here is your receipt from ${businessInfo?.name}`,
         subject: activeReceipt?.customer?.name
           ? `${activeReceipt?.customer.name}'s Receipt`
           : 'Your Receipt',
@@ -109,7 +109,7 @@ export function MyReceipts() {
 
       try {
         await Share.open(shareOptions);
-        callback();
+        callback && callback();
       } catch (e) {
         Alert.alert('Error', e.error);
       }
@@ -161,11 +161,15 @@ export function MyReceipts() {
               'flex-row',
               'justify-space-between',
               {
+                flexWrap: 'wrap',
                 borderBottomWidth: 1,
                 borderBottomColor: colors['gray-20'],
               },
             )}>
-            <View>
+            <View
+              style={applyStyles({
+                width: '48%',
+              })}>
               <Text
                 style={applyStyles('pb-sm', 'text-400', {
                   fontSize: 16,
@@ -184,7 +188,10 @@ export function MyReceipts() {
                   : 'Product'}
               </Text>
             </View>
-            <View>
+            <View
+              style={applyStyles({
+                width: '48%',
+              })}>
               <Text
                 style={applyStyles('pb-sm', 'text-400', {
                   fontSize: 16,
@@ -198,7 +205,7 @@ export function MyReceipts() {
                   color: colors['gray-200'],
                 })}>
                 {receipt.created_at &&
-                  format(receipt.created_at, 'MMM dd, yyyy')}
+                  format(receipt.created_at, 'MMM dd, yyyy hh:mm:a')}
               </Text>
             </View>
           </View>

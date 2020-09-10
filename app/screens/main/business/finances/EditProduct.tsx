@@ -6,7 +6,6 @@ import {
   FloatingLabelInput,
   Button,
 } from '../../../../components';
-import omit from 'lodash/omit';
 import {IProduct} from '../../../../models/Product';
 import {colors} from '../../../../styles';
 import {useRealm} from '../../../../services/realm';
@@ -16,8 +15,15 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../..';
 import {useScreenRecord} from '../../../../services/analytics';
+import {Formik, FormikHelpers} from 'formik';
+import * as yup from 'yup';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
+
+const formValidation = yup.object().shape({
+  name: yup.string().required('Product name is required'),
+  price: yup.string().required('Product price is required'),
+});
 
 export const EditProduct = ({
   route,
@@ -27,7 +33,8 @@ export const EditProduct = ({
   const navigation = useNavigation();
   const {product: productProps} = route.params;
   const [isLoading, setIsLoading] = useState(false);
-  const [product, setProduct] = useState<Payload>(omit(productProps, []));
+
+  const formInitialValues: Payload = {name: '', price: undefined};
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -35,28 +42,17 @@ export const EditProduct = ({
     });
   }, [navigation]);
 
-  const handleChange = useCallback(
-    (value: string | number, key: keyof Payload) => {
-      setProduct({
-        ...product,
-        [key]: value,
-      });
+  const onSubmit = useCallback(
+    (values: Payload, {resetForm}: FormikHelpers<Payload>) => {
+      setIsLoading(true);
+      updateProduct({realm, product: productProps, updates: values});
+      setIsLoading(false);
+      resetForm();
+      navigation.goBack();
+      ToastAndroid.show('Product edited', ToastAndroid.SHORT);
     },
-    [product],
+    [realm, productProps, navigation],
   );
-
-  const clearForm = useCallback(() => {
-    setProduct({} as Payload);
-  }, []);
-
-  const handleSubmit = useCallback(() => {
-    setIsLoading(true);
-    updateProduct({realm, product: productProps, updates: product});
-    setIsLoading(false);
-    clearForm();
-    navigation.goBack();
-    ToastAndroid.show('Product edited', ToastAndroid.SHORT);
-  }, [realm, clearForm, productProps, product, navigation]);
 
   return (
     <ScrollView
@@ -67,36 +63,56 @@ export const EditProduct = ({
       })}
       keyboardShouldPersistTaps="always">
       <Text style={styles.title}>Product Details</Text>
-      <View style={applyStyles('flex-row', 'items-center')}>
-        <FloatingLabelInput
-          label="Product Name"
-          value={product.name}
-          onChangeText={(text) => handleChange(text, 'name')}
-        />
-      </View>
-      <View style={applyStyles('flex-row', 'items-center')}>
-        <FloatingLabelInput
-          label="Product SKU"
-          value={product.sku}
-          onChangeText={(text) => handleChange(text, 'sku')}
-        />
-      </View>
-      <View>
-        <View style={applyStyles('flex-row', 'items-center')}>
-          <CurrencyInput
-            label="Price"
-            keyboardType="number-pad"
-            onChange={(text) => handleChange(text, 'price')}
-            value={product.price ? product.price.toString() : ''}
-          />
-        </View>
-      </View>
-      <Button
-        title="Save"
-        isLoading={isLoading}
-        onPress={handleSubmit}
-        style={applyStyles({marginVertical: 48})}
-      />
+      <Formik
+        onSubmit={onSubmit}
+        initialValues={formInitialValues}
+        validationSchema={formValidation}>
+        {({
+          values,
+          errors,
+          touched,
+          handleSubmit,
+          handleChange,
+          setFieldValue,
+        }) => (
+          <>
+            <View style={applyStyles('flex-row', 'items-center')}>
+              <FloatingLabelInput
+                label="Product Name"
+                value={values.name}
+                errorMessage={errors.name}
+                onChangeText={handleChange('name')}
+                isInvalid={touched.name && !!errors.name}
+              />
+            </View>
+            <View style={applyStyles('flex-row', 'items-center')}>
+              <FloatingLabelInput
+                label="Product SKU (optional)"
+                value={values.sku}
+                onChangeText={handleChange('sku')}
+              />
+            </View>
+            <View>
+              <View style={applyStyles('flex-row', 'items-center')}>
+                <CurrencyInput
+                  label="Price"
+                  keyboardType="number-pad"
+                  errorMessage={errors.price}
+                  isInvalid={touched.price && !!errors.price}
+                  onChange={(text) => setFieldValue('price', text)}
+                  value={values.price ? values.price.toString() : ''}
+                />
+              </View>
+            </View>
+            <Button
+              title="Save"
+              isLoading={isLoading}
+              onPress={handleSubmit}
+              style={applyStyles({marginVertical: 48})}
+            />
+          </>
+        )}
+      </Formik>
     </ScrollView>
   );
 };

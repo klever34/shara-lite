@@ -352,7 +352,7 @@ export const ReceiptStatusModal = (props: Props) => {
         </View>
 
         <View style={applyStyles({marginBottom: 40, paddingHorizontal: 16})}>
-          {customer.mobile ? (
+          {customer.name ? (
             <>
               <Text
                 style={applyStyles(
@@ -379,12 +379,14 @@ export const ReceiptStatusModal = (props: Props) => {
                 )}>
                 {customer.name}
               </Text>
-              <Text
-                style={applyStyles('pb-md', 'text-400', 'text-center', {
-                  color: colors['gray-300'],
-                })}>
-                {customer.mobile}
-              </Text>
+              {customer.mobile && (
+                <Text
+                  style={applyStyles('pb-md', 'text-400', 'text-center', {
+                    color: colors['gray-300'],
+                  })}>
+                  {customer.mobile}
+                </Text>
+              )}
               <Touchable onPress={onOpenCustomerModal}>
                 <View
                   style={applyStyles(

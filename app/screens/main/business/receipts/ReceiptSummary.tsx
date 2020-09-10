@@ -314,7 +314,9 @@ const ReceiptSummary = (props: Props) => {
     const shareOptions = {
       // @ts-ignore
       social: Share.Social.SMS,
-      message: `Hi ${customer.name}, thank you for your recent purchase of ${
+      message: `Hi${
+        customer.name ? ` ${customer.name}` : ''
+      }, thank you for your recent purchase of ${
         products.length
       } item(s) from ${
         user?.businesses[0].name
@@ -352,22 +354,20 @@ const ReceiptSummary = (props: Props) => {
   ]);
 
   const handleEmailShare = useCallback(
-    async (
-      {email, receiptImage}: {email: string; receiptImage: string},
-      callback: () => void,
-    ) => {
+    async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
-        email,
         title: 'Share receipt',
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
+        message: `Hi${
+          customer.name ? ` ${customer.name}` : ''
+        }, here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
       try {
         await Share.open(shareOptions);
-        callback();
+        callback && callback();
       } catch (e) {
         Alert.alert('Error', e.error);
       }
@@ -385,7 +385,9 @@ const ReceiptSummary = (props: Props) => {
         social: Share.Social.WHATSAPP,
         title: `Share receipt with ${customer.name}`,
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
+        message: `Hi${
+          customer.name ? ` ${customer.name}` : ''
+        }, here is your receipt from ${businessInfo?.name}`,
       };
       const errorMessages = {
         filename: 'Invalid file attached',
