@@ -16,14 +16,26 @@ export type TextInputProps = RNTextInputProps & {
     inactiveStyle?: string;
     onPress?: (active: boolean) => void;
   };
+  initialValue?: string;
 };
 
-const TextInput = ({style, icon, ...restProps}: TextInputProps) => {
+const TextInput = ({
+  style,
+  icon,
+  initialValue = '',
+  ...restProps
+}: TextInputProps) => {
   const [iconActive, setIconActive] = useState(false);
+  const [value, setValue] = useState(initialValue);
   return (
     <View style={applyStyles('relative mb-24 w-full')}>
       <RNTextInput
         {...restProps}
+        value={value}
+        onChangeText={(nextValue) => {
+          restProps.onChangeText?.(nextValue);
+          setValue(nextValue);
+        }}
         style={applyStyles(styles.inputField, style)}
       />
       {icon && (

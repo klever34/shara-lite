@@ -36,6 +36,11 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
         objectType: 'Credit',
         property: 'customer',
       },
+      // addresses: {
+      //   type: 'linkingObjects',
+      //   objectType: 'Address',
+      //   property: 'customer',
+      // },
     },
   };
 }

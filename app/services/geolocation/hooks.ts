@@ -14,7 +14,7 @@ export const useGeolocation = () => {
         setLoading(false);
       });
   }, []);
-  return useMemo(() => ({loading, location: currentLocation}), [
+  return useMemo(() => ({loading, currentLocation}), [
     currentLocation,
     loading,
   ]);
