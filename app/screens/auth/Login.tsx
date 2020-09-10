@@ -11,7 +11,8 @@ import {Button, PasswordField, PhoneNumberField} from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
 import {applyStyles} from '../../helpers/utils';
-import {getApiService, getRealmService} from '../../services';
+import {getAnalyticsService, getApiService, getRealmService} from '../../services';
+import {useErrorHandler} from '@/services/error-boundary';
 import {colors} from '../../styles';
 import {initLocalRealm} from '../../services/realm';
 import {RealmContext} from '../../services/realm/provider';
@@ -31,6 +32,7 @@ export const Login = ({navigation}: any) => {
   const [fields, setFields] = React.useState<Fields>(
     FormDefaults.get('login', {}) as Fields,
   );
+  const handleError = useErrorHandler();
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -65,20 +67,13 @@ export const Login = ({navigation}: any) => {
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
       const realmService = getRealmService();
       realmService.setInstance(createdLocalRealm);
-      analytics().logEvent('login_success', {
-        countryCode,
-        mobile: `${countryCode}${mobile}`,
-      });
+      getAnalyticsService().logEvent('login').catch(handleError);
       setLoading(false);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
       });
     } catch (error) {
-      analytics().logEvent('login_error', {
-        countryCode,
-        mobile: `${countryCode}${mobile}`,
-      });
       setLoading(false);
       Alert.alert('Error', error.message);
     }
