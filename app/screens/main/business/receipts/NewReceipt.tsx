@@ -103,7 +103,9 @@ export const NewReceipt = () => {
   }, [handleCloseSummaryModal]);
 
   const handleAddItem = useCallback(() => {
-    if (price && quantity) {
+    const priceCondition = price || price === 0 ? true : false;
+    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    if (priceCondition && quantityCondition && quantity) {
       const product = {
         ...selectedProduct,
         _id: selectedProduct?._id,
@@ -134,6 +136,11 @@ export const NewReceipt = () => {
       setSelectedProduct(null);
       setPrice(undefined);
       setQuantity('');
+    } else {
+      Alert.alert(
+        'Info',
+        'Please select at least one product item with quantity',
+      );
     }
   }, [price, quantity, receipt, selectedProduct]);
 
@@ -164,7 +171,9 @@ export const NewReceipt = () => {
 
   const handleDone = useCallback(() => {
     let items = receipt;
-    if (selectedProduct && quantity && price) {
+    const priceCondition = price || price === 0 ? true : false;
+    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    if (selectedProduct && quantity && quantityCondition && priceCondition) {
       const product = {
         ...selectedProduct,
         _id: selectedProduct._id,
@@ -194,12 +203,18 @@ export const NewReceipt = () => {
         items = [product, ...receipt];
       }
     }
-    if ((selectedProduct && quantity && price) || items.length) {
+    if (
+      (selectedProduct && quantity && quantityCondition && priceCondition) ||
+      items.length
+    ) {
       setReceipt(items);
       setSelectedProduct(null);
       handleOpenSummaryModal();
     } else {
-      Alert.alert('Info', 'Please select at least one product item');
+      Alert.alert(
+        'Info',
+        'Please select at least one product item with quantity',
+      );
     }
   }, [
     price,
