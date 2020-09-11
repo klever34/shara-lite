@@ -30,22 +30,15 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
   const {currentLocation} = useGeolocation();
   const handleError = useErrorHandler();
   const handleSaveAddress = useCallback(
-    (
-      address: IAddress = {
-        ...getBaseModelValues(),
-        text: '',
-        coordinates: '',
-        customer,
-      },
-    ) => {
-      let addressText = address.text;
-      let mapAddress = false;
+    (address?: IAddress) => {
+      let addressText = address?.text;
+      let mapAddress = !!address?.coordinates;
       const fields: FormFields = {
         address: {
           type: 'text',
           props: {
-            initialValue: address.text,
-            initialToggle: !!address.coordinates,
+            initialValue: addressText,
+            initialToggle: mapAddress,
             autoFocus: true,
             placeholder: 'Type in address',
             icon: {
@@ -90,15 +83,27 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                 />
                 <Button
                   onPress={() => {
+                    console.log('addressText', addressText);
+                    console.log('customer', customer);
                     if (addressText && customer) {
-                      const nextAddress: Partial<IAddress> = {
-                        _id: address._id,
-                        ...address,
-                        text: addressText,
-                        coordinates: mapAddress ? address.coordinates : '',
-                      };
+                      let nextAddress: Partial<IAddress>;
+                      if (!address) {
+                        nextAddress = {
+                          ...getBaseModelValues(),
+                          text: addressText,
+                          coordinates: '',
+                          customer,
+                        };
+                      } else {
+                        nextAddress = {
+                          _id: address._id,
+                          text: addressText,
+                        };
+                      }
                       if (mapAddress && currentLocation) {
                         nextAddress.coordinates = `${currentLocation.latitude},${currentLocation.longitude}`;
+                      } else {
+                        nextAddress.coordinates = '';
                       }
                       getAddressService().saveAddress(nextAddress);
                     }

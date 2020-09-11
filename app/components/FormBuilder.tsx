@@ -26,9 +26,12 @@ export const FormBuilder = ({fields, onInputChange}: FormBuilderProps) => {
   }, [fields]);
   const [values, setValues] = useState(
     names.reduce((acc, name) => {
+      const {
+        props: {initialValue},
+      } = fields[name];
       return {
         ...acc,
-        [name]: '',
+        [name]: initialValue ?? '',
       };
     }, {}),
   );
