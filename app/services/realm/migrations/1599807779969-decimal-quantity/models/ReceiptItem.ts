@@ -1,5 +1,5 @@
-import {IReceipt} from './Receipt';
-import {IProduct} from './Product';
+import {IProduct} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Product';
+import {IReceipt} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Receipt';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IReceiptItem extends BaseModelInterface {
