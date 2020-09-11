@@ -76,8 +76,8 @@ export function MyReceipts() {
       } item(s) from ${
         user?.businesses[0].name
       }.  You paid ${amountWithCurrency(
-        activeReceipt?.amount_paid,
-      )} and owe ${amountWithCurrency(activeReceipt?.credit_amount)} ${
+        totalAmountPaid,
+      )} and owe ${amountWithCurrency(creditAmountLeft)} ${
         activeReceipt?.credits && activeReceipt?.credits[0]?.due_date
           ? `(which is due on ${format(
               new Date(activeReceipt?.credits[0]?.due_date),
@@ -101,7 +101,7 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     }
-  }, [activeReceipt, user]);
+  }, [activeReceipt, creditAmountLeft, totalAmountPaid, user]);
 
   const handleEmailShare = useCallback(
     async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
