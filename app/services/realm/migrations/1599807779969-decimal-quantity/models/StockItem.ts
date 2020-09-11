@@ -1,13 +1,13 @@
-import {IProduct} from './Product';
-import {ISupplier} from './Supplier';
+import {IProduct} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Product';
+import {ISupplier} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Supplier';
+import {IReceivedInventory} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/ReceivedInventory';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IReceivedInventory} from './ReceivedInventory';
 
 export interface IStockItem extends BaseModelInterface {
   supplier_name: string;
   batch_id?: string;
   name: string;
-  sku?: string;
+  sku: string;
   weight?: string;
   quantity: number;
   cost_price?: number;
