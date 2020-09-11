@@ -1,10 +1,16 @@
+import {applyStyles} from '@/helpers/utils';
+import {IDeliveryAgent} from '@/models/DeliveryAgent';
+import {IStockItem} from '@/models/StockItem';
+import {ISupplier} from '@/models/Supplier';
+import {getAnalyticsService} from '@/services';
 import {getDeliveryAgents} from '@/services/DeliveryAgentService';
-import {useNavigation} from '@react-navigation/native';
-import isEmpty from 'lodash/isEmpty';
-import React, {useCallback, useState} from 'react';
 import {useErrorHandler} from '@/services/error-boundary';
+import {useRealm} from '@/services/realm';
+import {addNewInventory} from '@/services/ReceivedInventoryService';
+import {colors} from '@/styles';
+import {useNavigation} from '@react-navigation/native';
+import React, {useCallback, useState} from 'react';
 import {
-  Alert,
   FlatList,
   KeyboardAvoidingView,
   ScrollView,
@@ -17,14 +23,6 @@ import {Contact} from 'react-native-contacts';
 import {Button, ContactsListModal, PageModal} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '@/helpers/utils';
-import {IDeliveryAgent} from '@/models/DeliveryAgent';
-import {IStockItem} from '@/models/StockItem';
-import {ISupplier} from '@/models/Supplier';
-import {getAnalyticsService} from '@/services';
-import {useRealm} from '@/services/realm';
-import {addNewInventory} from '@/services/ReceivedInventoryService';
-import {colors} from '@/styles';
 import {AddDeliveryAgent} from './AddDeliveryAgent';
 
 type Payload = IDeliveryAgent;
@@ -159,14 +157,6 @@ export const ReceiveInventoryStockSummary = (props: Props) => {
   const handleError = useErrorHandler();
 
   const handleFinish = () => {
-    if (!isEmpty(agent) && !agent?.mobile) {
-      Alert.alert('Info', 'Please add delivery agent phone number');
-      return;
-    }
-    if (!isEmpty(agent) && !agent?.full_name) {
-      Alert.alert('Info', 'Please add delivery agent name');
-      return;
-    }
     setIsSaving(true);
     setTimeout(() => {
       addNewInventory({

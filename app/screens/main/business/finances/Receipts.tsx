@@ -16,7 +16,7 @@ import {
 import {IReceipt} from '../../../../models/Receipt';
 import {getAuthService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
-import {getReceipts} from '../../../../services/ReceiptService';
+import {getReceipts, getAllPayments} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
 import {ReceiptDetailsModal, ShareReceiptModal} from '../receipts';
 
@@ -35,6 +35,18 @@ export function MyReceipts() {
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeReceipt, setActiveReceipt] = useState<IReceipt | null>(null);
+
+  const allPayments = activeReceipt
+    ? getAllPayments({receipt: activeReceipt})
+    : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
+  const creditAmountLeft = activeReceipt?.credits?.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
 
   const handleReceiptItemClick = useCallback((receipt) => {
     setActiveReceipt(receipt);
@@ -92,15 +104,15 @@ export function MyReceipts() {
   }, [activeReceipt, user]);
 
   const handleEmailShare = useCallback(
-    async (
-      {email, receiptImage}: {email: string; receiptImage: string},
-      callback: () => void,
-    ) => {
+    async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
-        email,
         title: 'Share receipt',
-        message: `Hi ${activeReceipt?.customer?.name}, here is your receipt from ${businessInfo?.name}`,
+        message: `Hi${
+          activeReceipt?.customer?.name
+            ? ` ${activeReceipt?.customer?.name}`
+            : ''
+        }, here is your receipt from ${businessInfo?.name}`,
         subject: activeReceipt?.customer?.name
           ? `${activeReceipt?.customer.name}'s Receipt`
           : 'Your Receipt',
@@ -109,7 +121,7 @@ export function MyReceipts() {
 
       try {
         await Share.open(shareOptions);
-        callback();
+        callback && callback();
       } catch (e) {
         Alert.alert('Error', e.error);
       }
@@ -161,11 +173,15 @@ export function MyReceipts() {
               'flex-row',
               'justify-space-between',
               {
+                flexWrap: 'wrap',
                 borderBottomWidth: 1,
                 borderBottomColor: colors['gray-20'],
               },
             )}>
-            <View>
+            <View
+              style={applyStyles({
+                width: '48%',
+              })}>
               <Text
                 style={applyStyles('pb-sm', 'text-400', {
                   fontSize: 16,
@@ -184,7 +200,10 @@ export function MyReceipts() {
                   : 'Product'}
               </Text>
             </View>
-            <View>
+            <View
+              style={applyStyles({
+                width: '48%',
+              })}>
               <Text
                 style={applyStyles('pb-sm', 'text-400', {
                   fontSize: 16,
@@ -198,7 +217,7 @@ export function MyReceipts() {
                   color: colors['gray-200'],
                 })}>
                 {receipt.created_at &&
-                  format(receipt.created_at, 'MMM dd, yyyy')}
+                  format(receipt.created_at, 'MMM dd, yyyy hh:mm:a')}
               </Text>
             </View>
           </View>
@@ -238,14 +257,14 @@ export function MyReceipts() {
         tax={activeReceipt?.tax}
         visible={isShareModalOpen}
         onSmsShare={handleSmsShare}
+        amountPaid={totalAmountPaid}
         products={activeReceipt?.items}
         onEmailShare={handleEmailShare}
+        creditAmount={creditAmountLeft}
         onClose={handleCloseShareModal}
         customer={activeReceipt?.customer}
         onWhatsappShare={handleWhatsappShare}
-        amountPaid={activeReceipt?.amount_paid}
         totalAmount={activeReceipt?.total_amount}
-        creditAmount={activeReceipt?.credit_amount}
       />
 
       <ReceiptDetailsModal

@@ -12,7 +12,7 @@ export const getSupplierByMobile = ({
   mobile,
 }: {
   realm: Realm;
-  mobile: string;
+  mobile?: string;
 }): ISupplier | null => {
   const foundSuppliers = realm
     .objects<ISupplier>(modelName)

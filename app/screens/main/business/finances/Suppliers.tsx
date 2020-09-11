@@ -67,11 +67,12 @@ export const Suppliers = () => {
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
+        const searchValue = searchedText.trim();
         const sort = (item: ISupplier, text: string) => {
           return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
         const ac = suppliers.filter((item: ISupplier) => {
-          return sort(item, searchedText);
+          return sort(item, searchValue);
         });
         setMySuppliers(ac);
       } else {

@@ -81,6 +81,10 @@ export function ReceiptDetailsModal(props: Props) {
   );
   const customers = getCustomers({realm});
   const allPayments = receipt ? getAllPayments({receipt}) : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
   const creditDueDate = receipt?.credits?.length && receipt.credits[0].due_date;
 
   useEffect(() => {
@@ -263,14 +267,12 @@ export function ReceiptDetailsModal(props: Props) {
           {},
         );
         await BluetoothEscposPrinter.printText(
-          `Paid: ${currencyCode} ${numberWithCommas(receipt?.amount_paid)}\n`,
+          `Paid: ${currencyCode} ${numberWithCommas(totalAmountPaid)}\n`,
           {},
         );
-        receipt?.credit_amount &&
+        creditAmountLeft &&
           (await BluetoothEscposPrinter.printText(
-            `Balance: ${currencyCode} ${numberWithCommas(
-              receipt?.credit_amount,
-            )}\n`,
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmountLeft)}\n`,
             {},
           ));
 
@@ -307,6 +309,8 @@ export function ReceiptDetailsModal(props: Props) {
       printer,
       receipt,
       user,
+      totalAmountPaid,
+      creditAmountLeft,
     ],
   );
 
@@ -372,7 +376,7 @@ export function ReceiptDetailsModal(props: Props) {
               Receipt for
             </Text>
             <View>
-              {receipt?.customer?.mobile ? (
+              {receipt?.customer?.name ? (
                 <Text
                   style={applyStyles('text-400', {
                     fontSize: 18,
