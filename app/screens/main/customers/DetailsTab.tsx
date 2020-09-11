@@ -1,13 +1,13 @@
 import React, {useCallback, useContext} from 'react';
-import {Linking, Platform, ScrollView, View, Text} from 'react-native';
+import {Linking, Platform, ScrollView, Text, View} from 'react-native';
 import {applyStyles, renderList} from '@/helpers/utils';
 import {colors} from '@/styles';
 import {
-  CardHeader,
-  CardDetail,
+  Button,
   Card,
   CardButton,
-  Button,
+  CardDetail,
+  CardHeader,
   FormBuilder,
   FormFields,
 } from '@/components';
@@ -19,9 +19,8 @@ import EmptyState from '@/components/EmptyState';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IAddress} from '@/models/Address';
 import {getBaseModelValues} from '@/helpers/models';
-import {CustomerContext, updateCustomer} from '@/services/customer';
-import {ICustomer} from '@/models';
-import {useRealm} from '@/services/realm';
+import {CustomerContext} from '@/services/customer';
+import {getAddressService} from '@/services';
 
 type DetailsTabProps = ModalWrapperFields & {};
 
@@ -30,20 +29,23 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
   const {addresses = []} = customer || {};
   const {currentLocation} = useGeolocation();
   const handleError = useErrorHandler();
-  const realm = useRealm();
   const handleSaveAddress = useCallback(
     (
-      nextAddress: IAddress = {
+      address: IAddress = {
         ...getBaseModelValues(),
         text: '',
+        coordinates: '',
+        customer,
       },
     ) => {
+      let addressText = address.text;
       let mapAddress = false;
       const fields: FormFields = {
         address: {
           type: 'text',
           props: {
-            initialValue: nextAddress.text,
+            initialValue: address.text,
+            initialToggle: !!address.coordinates,
             autoFocus: true,
             placeholder: 'Type in address',
             icon: {
@@ -73,7 +75,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                 <FormBuilder
                   fields={fields}
                   onInputChange={(values) => {
-                    nextAddress.text = values.address;
+                    addressText = values.address;
                   }}
                 />
               </View>
@@ -88,29 +90,17 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                 />
                 <Button
                   onPress={() => {
-                    if (nextAddress.text && customer) {
+                    if (addressText && customer) {
+                      const nextAddress: Partial<IAddress> = {
+                        _id: address._id,
+                        ...address,
+                        text: addressText,
+                        coordinates: mapAddress ? address.coordinates : '',
+                      };
                       if (mapAddress && currentLocation) {
                         nextAddress.coordinates = `${currentLocation.latitude},${currentLocation.longitude}`;
                       }
-                      const prevAddresses = addresses;
-                      const index = prevAddresses.findIndex(
-                        (prevAddress) => prevAddress._id === nextAddress._id,
-                      );
-                      let updates: Partial<ICustomer>;
-                      if (index === -1) {
-                        updates = {
-                          addresses: [...prevAddresses, nextAddress],
-                        };
-                      } else {
-                        updates = {
-                          addresses: [
-                            ...prevAddresses.slice(0, index),
-                            nextAddress,
-                            ...prevAddresses.slice(index + 1),
-                          ],
-                        };
-                      }
-                      updateCustomer({realm, customer, updates});
+                      getAddressService().saveAddress(nextAddress);
                     }
                     closeModal();
                   }}
@@ -123,36 +113,22 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
         },
       });
     },
-    [addresses, currentLocation, customer, openModal, realm],
+    [currentLocation, customer, openModal],
   );
   const handleMapAddress = useCallback(
     (address) => {
       if (!customer) {
         return;
       }
-      const prevAddresses = addresses;
-      const index = prevAddresses.findIndex(
-        (prevLocation) => prevLocation._id === address._id,
-      );
-      if (index === -1) {
-        return;
-      }
       if (!currentLocation) {
         return;
       }
-      const updates: Partial<ICustomer> = {
-        addresses: [
-          ...prevAddresses.slice(0, index),
-          {
-            ...address,
-            coordinates: `${currentLocation.latitude},${currentLocation.longitude}`,
-          },
-          ...prevAddresses.slice(index + 1),
-        ],
-      };
-      updateCustomer({realm, customer, updates});
+      getAddressService().saveAddress({
+        _id: address._id,
+        coordinates: `${currentLocation.latitude},${currentLocation.longitude}`,
+      });
     },
-    [addresses, currentLocation, customer, realm],
+    [currentLocation, customer],
   );
   return (
     <ScrollView
@@ -163,7 +139,10 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
           {renderList<IAddress>(
             addresses,
             (address, index) => {
-              const {coordinates = ',', text} = address;
+              let {coordinates, text} = address;
+              if (!coordinates) {
+                coordinates = ',';
+              }
               const [latitude, longitude] = coordinates.split(',');
               return (
                 <View

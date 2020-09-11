@@ -1,8 +1,10 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
+import {ICustomer} from '@/models/Customer';
 
 export interface IAddress extends BaseModelInterface {
   text: string;
-  coordinates?: string;
+  coordinates: string;
+  customer?: ICustomer;
 }
 
 export const modelName = 'Address';

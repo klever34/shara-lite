@@ -17,15 +17,17 @@ export type TextInputProps = RNTextInputProps & {
     onPress?: (active: boolean) => void;
   };
   initialValue?: string;
+  initialToggle?: boolean;
 };
 
 const TextInput = ({
   style,
   icon,
   initialValue = '',
+  initialToggle = false,
   ...restProps
 }: TextInputProps) => {
-  const [iconActive, setIconActive] = useState(false);
+  const [iconActive, setIconActive] = useState(initialToggle);
   const [value, setValue] = useState(initialValue);
   return (
     <View style={applyStyles('relative mb-24 w-full')}>
