@@ -25,10 +25,6 @@ type Props = {
   getImageUri: (base64: string) => void;
 };
 
-type State = {
-  uri: string;
-};
-
 export const ReceiptImage = (props: Props) => {
   const {
     tax,
