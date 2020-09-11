@@ -2,7 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
-  Alert,
   FlatList,
   Modal as ReactNativeModal,
   SafeAreaView,
@@ -44,11 +43,12 @@ export const ReceiveInventoryStock = ({
   const products = getProducts({realm});
   const {supplier} = route.params;
 
-  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
-  const [price, setPrice] = useState<string | undefined>('');
-  const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
+  const [price, setPrice] = useState<number | undefined>();
   const [quantity, setQuantity] = useState<string | undefined>('');
+  const [showQuantityError, setShowQuantityError] = useState(false);
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
+  const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
     false,
   );
@@ -59,9 +59,19 @@ export const ReceiveInventoryStock = ({
     });
   }, [navigation]);
 
+  const handleShowError = useCallback((string) => {
+    if (string?.trim() === '') {
+      setShowQuantityError(true);
+      return;
+    } else {
+      setShowQuantityError(false);
+    }
+  }, []);
+
   const handleAddItem = useCallback(() => {
-    if (quantity && price) {
-      const itemPrice = parseInt(price, 10);
+    handleShowError(quantity);
+    if (quantity) {
+      const itemPrice = price ? price : 0;
       const itemQuantity = parseInt(quantity, 10);
       const stock = {
         supplier,
@@ -83,11 +93,11 @@ export const ReceiveInventoryStock = ({
         setInventoryStock(
           inventoryStock.map((item) => {
             if (
-              item.product._id?.toString() === stock.product._id?.toHexString()
+              item.product._id?.toString() === stock.product._id?.toString()
             ) {
               return {
                 ...item,
-                quantity: parseFloat(quantity),
+                ...stock,
               };
             }
             return item;
@@ -97,28 +107,40 @@ export const ReceiveInventoryStock = ({
         setInventoryStock([stock, ...inventoryStock]);
       }
       setSelectedProduct(null);
-      setPrice('');
+      setPrice(undefined);
       setQuantity('');
     }
-  }, [price, quantity, inventoryStock, selectedProduct, supplier]);
+  }, [
+    handleShowError,
+    quantity,
+    price,
+    supplier,
+    selectedProduct,
+    inventoryStock,
+  ]);
 
   const handlePriceChange = useCallback((item) => {
     setPrice(item);
   }, []);
 
-  const handleQuantityChange = useCallback((item) => {
-    setQuantity(item);
-  }, []);
+  const handleQuantityChange = useCallback(
+    (item) => {
+      handleShowError(item);
+      setQuantity(item);
+    },
+    [handleShowError],
+  );
 
   const handleSelectProduct = useCallback(
     (product: IProduct) => {
+      setShowQuantityError(false);
       const stock = inventoryStock.find((item) => {
         return item.product._id?.toString() === product._id?.toString();
       });
 
       if (stock) {
         setQuantity(stock.quantity.toString());
-        setPrice(stock?.cost_price?.toString());
+        setPrice(stock?.cost_price);
         setSelectedProduct(product);
       } else {
         setSelectedProduct(product);
@@ -146,6 +168,7 @@ export const ReceiveInventoryStock = ({
   const handleCloseProductModal = useCallback(() => {
     setSelectedProduct(null);
     setQuantity('');
+    setShowQuantityError(false);
   }, []);
 
   const handleClearReceipt = useCallback(() => {
@@ -155,9 +178,10 @@ export const ReceiveInventoryStock = ({
 
   const handleDone = useCallback(() => {
     let items = inventoryStock;
-    if (selectedProduct && quantity && price) {
-      const itemPrice = parseInt(price, 10);
-      const itemQuantity = parseInt(quantity, 10);
+    handleShowError(quantity);
+    if (selectedProduct && quantity) {
+      const itemPrice = price ? price : 0;
+      const itemQuantity = parseFloat(quantity);
       const stock = {
         supplier,
         cost_price: itemPrice,
@@ -175,15 +199,14 @@ export const ReceiveInventoryStock = ({
       if (
         inventoryStock
           .map((item) => item.product._id?.toString())
-          .includes(stock?.product._id?.toHexString())
+          .includes(stock?.product._id?.toString())
       ) {
         items = inventoryStock.map((item) => {
-          if (
-            item.product._id?.toString() === stock.product._id?.toHexString()
-          ) {
+          if (item.product._id?.toString() === stock.product._id?.toString()) {
+            console.log(item);
             return {
               ...item,
-              quantity: parseFloat(quantity),
+              ...stock,
             };
           }
           return item;
@@ -192,22 +215,40 @@ export const ReceiveInventoryStock = ({
         items = [stock, ...inventoryStock];
       }
     }
-    if ((selectedProduct && quantity && price) || items.length) {
+    if ((selectedProduct && quantity) || items.length) {
       setInventoryStock(items);
       setSelectedProduct(null);
       handleOpenSummaryModal();
-    } else {
-      Alert.alert('Error', 'Please select at least one product item');
     }
   }, [
     inventoryStock,
+    handleShowError,
     selectedProduct,
     quantity,
-    handleOpenSummaryModal,
-    supplier,
     price,
+    supplier,
     handleAddItem,
+    handleOpenSummaryModal,
   ]);
+
+  const handleProductSearch = useCallback((item: IProduct, text: string) => {
+    return (
+      `${item.sku} - ${item.name}`.toLowerCase().indexOf(text.toLowerCase()) >
+      -1
+    );
+  }, []);
+
+  const renderSearchDropdownItem = useCallback(({item, onPress}) => {
+    return (
+      <Touchable onPress={() => onPress(item)}>
+        <View style={styles.recentProductItem}>
+          <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
+            {item.sku} - {item.name} {item.weight ? `(${item.weight}))` : ''}
+          </Text>
+        </View>
+      </Touchable>
+    );
+  }, []);
 
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
@@ -215,8 +256,8 @@ export const ReceiveInventoryStock = ({
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
             <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
-              {product.sku} - {product.name}{' '}
-              {product.weight ? `(${product.weight}))` : ''}
+              {product.sku ? `${product.sku} - ` : ''}
+              {product.name} {product.weight ? `(${product.weight}))` : ''}
             </Text>
           </View>
         </Touchable>
@@ -238,8 +279,9 @@ export const ReceiveInventoryStock = ({
     <SafeAreaView style={styles.container}>
       <SearchableDropdown
         items={products}
-        searchTerm="name"
+        setSort={handleProductSearch}
         onItemSelect={handleSelectProduct}
+        renderItem={renderSearchDropdownItem}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
         noResultsAction={() => navigation.navigate('AddProduct')}
@@ -357,7 +399,10 @@ export const ReceiveInventoryStock = ({
                     value={quantity}
                     label="Quantity"
                     keyboardType="numeric"
+                    isInvalid={showQuantityError}
                     onChangeText={handleQuantityChange}
+                    onBlur={() => handleShowError(quantity)}
+                    errorMessage="Product quantity is required"
                   />
                 </View>
                 <View
@@ -365,9 +410,9 @@ export const ReceiveInventoryStock = ({
                     width: '100%',
                   })}>
                   <CurrencyInput
-                    value={price}
                     label="Cost Price"
-                    onChange={handlePriceChange}
+                    value={price?.toString()}
+                    onChange={(text) => handlePriceChange(text)}
                   />
                 </View>
               </View>

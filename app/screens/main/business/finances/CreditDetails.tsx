@@ -109,7 +109,10 @@ export const CreditDetails = ({route}: any) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      persistentScrollbar={true}
+      keyboardShouldPersistTaps="always">
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],
@@ -210,7 +213,8 @@ export const CreditDetails = ({route}: any) => {
           onOpenContactList={handleOpenContactListModal}
         />
       </Modal>
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>

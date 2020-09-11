@@ -44,7 +44,10 @@ const CreditPayment = ({route}: any) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      persistentScrollbar={true}
+      style={styles.container}
+      keyboardShouldPersistTaps="always">
       <View
         style={applyStyles('mb-xl pb-md', {
           borderBottomColor: colors['gray-20'],

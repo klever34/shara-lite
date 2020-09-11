@@ -5,7 +5,7 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface ICustomer extends BaseModelInterface {
   name: string;
-  mobile: string;
+  mobile?: string;
   receipts?: IReceipt[];
   payments?: IPayment[];
   credits?: ICredit[];
@@ -19,8 +19,8 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      name: 'string',
-      mobile: 'string',
+      name: 'string?',
+      mobile: 'string?',
       receipts: {
         type: 'linkingObjects',
         objectType: 'Receipt',

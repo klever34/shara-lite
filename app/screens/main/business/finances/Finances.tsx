@@ -1,14 +1,14 @@
+import {getAuthService} from '@/services';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
-import React, {useLayoutEffect} from 'react';
-import {SafeAreaView, View} from 'react-native';
-import Icon from '../../../../components/Icon';
-import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
-import {MyCredit, MyInventory, MyReceipts} from './index';
+import React, {useCallback, useLayoutEffect} from 'react';
+import {useErrorHandler} from '@/services/error-boundary';
+import {Alert, SafeAreaView, View} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
-import {useScreenRecord} from '../../../../services/analytics';
+import {applyStyles} from '@/helpers/utils';
+import {useScreenRecord} from '@/services/analytics';
+import {colors} from '@/styles';
+import {MyCredit, MyInventory, MyReceipts} from './index';
 
 type TabStackParamList = {
   Credit: undefined;
@@ -22,37 +22,46 @@ export const Finances = () => {
   useScreenRecord();
   const navigation = useNavigation();
 
+  const handleError = useErrorHandler();
+  const handleLogout = useCallback(async () => {
+    try {
+      const authService = getAuthService();
+      await authService.logOut();
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Auth'}],
+      });
+    } catch (e) {
+      handleError(e);
+    }
+  }, [handleError, navigation]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
         <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <View style={applyStyles({width: '33%'})}>
-            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-          </View>
+          <HeaderRight
+            menuOptions={[
+              {
+                text: 'Log out',
+                onSelect: () => {
+                  Alert.alert('Log Out', 'Are you sure you want to log out?', [
+                    {
+                      text: 'CANCEL',
+                    },
+                    {
+                      text: 'OK',
+                      onPress: handleLogout,
+                    },
+                  ]);
+                },
+              },
+            ]}
+          />
         </View>
       ),
     });
-  }, [navigation]);
+  }, [handleLogout, navigation]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

@@ -18,7 +18,7 @@ export const getDeliveryAgentByMobile = ({
   mobile,
 }: {
   realm: Realm;
-  mobile: string;
+  mobile?: string;
 }): IDeliveryAgent | null => {
   const foundDeliveryAgents = realm
     .objects<IDeliveryAgent>(modelName)
@@ -80,11 +80,7 @@ export const updateDeliveryAgent = ({
   };
 
   const updateDeliveryAgentInDb = () => {
-    realm.create<IDeliveryAgent>(
-      modelName,
-      updatedDeliveryAgent,
-      UpdateMode.Modified,
-    );
+    realm.create(modelName, updatedDeliveryAgent, UpdateMode.Modified);
   };
 
   if (realm.isInTransaction) {

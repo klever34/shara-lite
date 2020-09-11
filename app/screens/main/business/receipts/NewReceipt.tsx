@@ -29,6 +29,7 @@ import {colors} from '../../../../styles';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
 import {useScreenRecord} from '../../../../services/analytics';
+import {FormDefaults} from '@/services/FormDefaults';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -45,9 +46,11 @@ export const NewReceipt = () => {
 
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
 
-  const [price, setPrice] = useState<string | undefined>('');
+  const [price, setPrice] = useState<number | undefined>();
   const [receipt, setReceipt] = useState<IReceiptItem[]>([]);
-  const [quantity, setQuantity] = useState<string | undefined>('');
+  const [quantity, setQuantity] = useState<string | undefined>(
+    FormDefaults.get('quantity', ''),
+  );
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [isProductsPreviewModalOpen, setIsProductsPreviewModalOpen] = useState(
     false,
@@ -70,7 +73,7 @@ export const NewReceipt = () => {
 
   const handleSelectProduct = useCallback((item: IProduct) => {
     setSelectedProduct(item);
-    setPrice(item?.price?.toString());
+    setPrice(item?.price);
   }, []);
 
   const handleOpenSummaryModal = useCallback(() => {
@@ -104,7 +107,7 @@ export const NewReceipt = () => {
       const product = {
         ...selectedProduct,
         _id: selectedProduct?._id,
-        price: parseFloat(price),
+        price,
         product: selectedProduct,
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
@@ -129,7 +132,7 @@ export const NewReceipt = () => {
         setReceipt([product, ...receipt]);
       }
       setSelectedProduct(null);
-      setPrice('');
+      setPrice(undefined);
       setQuantity('');
     }
   }, [price, quantity, receipt, selectedProduct]);
@@ -165,7 +168,7 @@ export const NewReceipt = () => {
       const product = {
         ...selectedProduct,
         _id: selectedProduct._id,
-        price: parseFloat(price),
+        price,
         product: selectedProduct,
         name: selectedProduct.name,
         quantity: parseFloat(quantity),
@@ -196,7 +199,7 @@ export const NewReceipt = () => {
       setSelectedProduct(null);
       handleOpenSummaryModal();
     } else {
-      Alert.alert('Error', 'Please select at least one product item');
+      Alert.alert('Info', 'Please select at least one product item');
     }
   }, [
     price,
@@ -207,14 +210,33 @@ export const NewReceipt = () => {
     handleOpenSummaryModal,
   ]);
 
+  const handleProductSearch = useCallback((item: IProduct, text: string) => {
+    return (
+      `${item.sku} - ${item.name}`.toLowerCase().indexOf(text.toLowerCase()) >
+      -1
+    );
+  }, []);
+
+  const renderSearchDropdownItem = useCallback(({item, onPress}) => {
+    return (
+      <Touchable onPress={() => onPress(item)}>
+        <View style={styles.recentProductItem}>
+          <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
+            {item.sku} - {item.name} {item.weight ? `(${item.weight}))` : ''}
+          </Text>
+        </View>
+      </Touchable>
+    );
+  }, []);
+
   const renderRecentProducts = useCallback(
     ({item: product}: RecentProductItemProps) => {
       return (
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
             <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
-              {product.sku} - {product.name}{' '}
-              {product.weight ? `(${product.weight}))` : ''}
+              {product.sku ? `${product.sku} - ` : ''}
+              {product.name} {product.weight ? `(${product.weight}))` : ''}
             </Text>
           </View>
         </Touchable>
@@ -233,7 +255,7 @@ export const NewReceipt = () => {
   );
 
   const getSubtotal = useCallback(() => {
-    const p = price ? parseFloat(price) : 0;
+    const p = price ? price : 0;
     const q = quantity ? parseFloat(quantity) : 0;
     const total = p * q;
     return numberWithCommas(total);
@@ -243,8 +265,9 @@ export const NewReceipt = () => {
     <SafeAreaView style={styles.container}>
       <SearchableDropdown
         items={products}
-        searchTerm="name"
+        setSort={handleProductSearch}
         onItemSelect={handleSelectProduct}
+        renderItem={renderSearchDropdownItem}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
         noResultsAction={() => navigation.navigate('AddProduct')}
@@ -356,9 +379,9 @@ export const NewReceipt = () => {
                     width: '48%',
                   })}>
                   <CurrencyInput
-                    value={price}
                     label="Unit Price"
-                    onChange={handlePriceChange}
+                    value={price?.toString()}
+                    onChange={(text) => handlePriceChange(text)}
                   />
                 </View>
                 <View

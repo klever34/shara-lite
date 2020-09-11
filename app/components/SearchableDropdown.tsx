@@ -1,31 +1,52 @@
 import React, {useCallback, useState} from 'react';
-import {Keyboard, StyleSheet, Text, TextInput, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {
+  FlatList,
+  Keyboard,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
+  TextInputProps,
+} from 'react-native';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
-import Touchable from './Touchable';
 
-//TODO: Type component props
-const SearchableDropdown = (props: any) => {
+type Props<T> = {
+  items: T[];
+  onFocus?: () => void;
+  emptyStateText?: string;
+  noResultsAction?: () => void;
+  textInputProps?: TextInputProps;
+  onItemSelect?: (item: T) => void;
+  noResultsActionButtonText?: string;
+  setSort: (item: T, text: string) => void;
+  onChangeText?: TextInputProps['onChangeText'];
+  renderItem: ({
+    item,
+    onPress,
+  }: {
+    item: T;
+    onPress: (item: T) => void;
+  }) => React.ReactNode;
+};
+
+function SearchableDropdown<T>(props: Props<T>) {
   const {
     items,
     setSort,
     onFocus,
-    itemStyle,
-    searchTerm,
+    renderItem,
     onChangeText,
     onItemSelect,
-    itemTextStyle,
     textInputProps,
     emptyStateText,
     noResultsAction,
     noResultsActionButtonText,
-    itemsContainerStyle,
   } = props;
+  const [value, setValue] = useState('');
   const [focus, setFocus] = useState(false);
-  const [value, setValue] = useState<any>({});
   const [listItems, setListItems] = useState(items || []);
 
   const handleItemSelect = useCallback(
@@ -44,23 +65,20 @@ const SearchableDropdown = (props: any) => {
 
   const handleInputFocus = useCallback(() => {
     onFocus && onFocus();
-    setValue({});
+    setValue('');
     setFocus(true);
     setListItems(items);
   }, [onFocus, items]);
 
   const searchedItems = (searchedText: string) => {
+    setValue(searchedText);
+    const searchValue = searchedText.trim();
     let sort = setSort;
-    if (!sort && typeof sort !== 'function') {
-      sort = (item: any, text: string) => {
-        return item[searchTerm].toLowerCase().indexOf(text.toLowerCase()) > -1;
-      };
-    }
-    var ac = items.filter((item: any) => {
-      return sort(item, searchedText);
+    var ac = items.filter((item: T) => {
+      return sort(item, searchValue);
     });
     setListItems(ac);
-    const onTextChange = onChangeText || textInputProps.onChangeText;
+    const onTextChange = onChangeText || textInputProps?.onChangeText;
     if (onTextChange && typeof onTextChange === 'function') {
       setTimeout(() => {
         onTextChange(searchedText);
@@ -70,68 +88,72 @@ const SearchableDropdown = (props: any) => {
 
   const renderFlatList = () => {
     if (focus) {
-      return listItems.length ? (
-        <FlatList
-          data={listItems}
-          renderItem={renderItems}
-          style={applyStyles(itemsContainerStyle)}
-          keyExtractor={(item, index) => index.toString()}
-          ListEmptyComponent={
-            <View
-              style={applyStyles('px-lg flex-1 items-center justify-center', {
-                paddingVertical: 100,
-              })}>
+      return (
+        <View
+          style={applyStyles({
+            top: 60,
+            zIndex: 100,
+            elevation: 2,
+            width: '100%',
+            position: 'absolute',
+            backgroundColor: colors.white,
+          })}>
+          {listItems.length ? (
+            <FlatList
+              data={listItems}
+              //@ts-ignore
+              renderItem={({item}) =>
+                renderItem({item, onPress: handleItemSelect})
+              }
+              keyExtractor={(item, index) => index.toString()}
+              ListEmptyComponent={
+                <View
+                  style={applyStyles(
+                    'px-lg flex-1 items-center justify-center',
+                    {
+                      paddingVertical: 100,
+                    },
+                  )}>
+                  <Text
+                    style={applyStyles('mb-xs heading-700', 'text-center', {
+                      color: colors['gray-300'],
+                    })}>
+                    No results found
+                  </Text>
+                  {noResultsAction && (
+                    <Button
+                      variantColor="clear"
+                      onPress={noResultsAction}
+                      style={applyStyles('w-full')}
+                      title={noResultsActionButtonText}
+                    />
+                  )}
+                </View>
+              }
+            />
+          ) : (
+            <View style={styles.emptyState}>
               <Text
-                style={applyStyles('mb-xs heading-700', 'text-center', {
-                  color: colors['gray-300'],
-                })}>
+                style={applyStyles(
+                  'heading-700',
+                  styles.emptyStateText,
+                  styles.emptyStateHeading,
+                )}>
                 No results found
               </Text>
-              {noResultsAction && (
-                <Button
-                  variantColor="clear"
-                  onPress={noResultsAction}
-                  style={applyStyles('w-full')}
-                  title={noResultsActionButtonText}
-                />
-              )}
+              <Text
+                style={applyStyles(
+                  'text-400',
+                  styles.emptyStateText,
+                  styles.emptyStateDescription,
+                )}>
+                {emptyStateText}
+              </Text>
             </View>
-          }
-        />
-      ) : (
-        <View style={styles.emptyState}>
-          <Text
-            style={applyStyles(
-              'heading-700',
-              styles.emptyStateText,
-              styles.emptyStateHeading,
-            )}>
-            No results found
-          </Text>
-          <Text
-            style={applyStyles(
-              'text-400',
-              styles.emptyStateText,
-              styles.emptyStateDescription,
-            )}>
-            {emptyStateText}
-          </Text>
+          )}
         </View>
       );
     }
-  };
-
-  const renderItems = ({item}: any) => {
-    return (
-      <Touchable onPress={() => handleItemSelect(item)}>
-        <View style={applyStyles(styles.listItem, itemStyle)}>
-          <Text
-            style={applyStyles(styles.listItemText, itemTextStyle, 'text-400')}>
-            {item[searchTerm]}
-          </Text>
-        </View>
-      </Touchable>
-    );
   };
 
   const renderTextInput = () => {
@@ -146,8 +168,8 @@ const SearchableDropdown = (props: any) => {
             color={colors.primary}
           />
           <TextInput
+            value={value}
             onFocus={handleInputFocus}
-            value={value[searchTerm]}
             onChangeText={searchedItems}
             placeholderTextColor={colors['gray-50']}
             style={applyStyles(styles.searchInput, 'text-400')}
@@ -164,7 +186,7 @@ const SearchableDropdown = (props: any) => {
       {renderFlatList()}
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   searchContainer: {
@@ -188,15 +210,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingLeft: 36,
     backgroundColor: colors.white,
-  },
-  listItem: {
-    fontSize: 16,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-20'],
-  },
-  listItemText: {
-    fontSize: 16,
   },
   emptyState: {
     paddingVertical: 50,

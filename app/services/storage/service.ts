@@ -2,32 +2,38 @@ import AsyncStorage from '@react-native-community/async-storage';
 
 export interface IStorageService {
   getItem<T>(key: string): Promise<T | null>;
+
   setItem<T>(key: string, value: T): Promise<boolean>;
+
   clear(): Promise<boolean>;
 }
 
 export class StorageService implements IStorageService {
   async getItem<T>(key: string) {
+    const data = await AsyncStorage.getItem(key);
+    if (!data) {
+      return null;
+    }
+
     try {
-      const data = await AsyncStorage.getItem(key);
-      if (!data) {
-        return null;
-      }
       const parsedData: T = JSON.parse(data);
       return parsedData;
     } catch (e) {
-      return null;
+      return (data as unknown) as T;
     }
   }
+
   async setItem<T>(key: string, value: T) {
     try {
-      const stringifiedValue = JSON.stringify(value);
-      await AsyncStorage.setItem(key, stringifiedValue);
+      const valueToSave =
+        typeof value === 'string' ? value : JSON.stringify(value);
+      await AsyncStorage.setItem(key, valueToSave);
       return true;
     } catch (e) {
       return false;
     }
   }
+
   async clear() {
     try {
       await AsyncStorage.clear();

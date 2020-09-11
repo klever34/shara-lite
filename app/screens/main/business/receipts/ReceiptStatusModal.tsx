@@ -1,5 +1,5 @@
 import format from 'date-fns/format';
-import React, {useEffect, useState, useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Image,
   ImageProps,
@@ -8,26 +8,26 @@ import {
   StyleSheet,
   Text,
   TextStyle,
+  ToastAndroid,
   View,
   ViewStyle,
-  Alert,
 } from 'react-native';
 import {
-  BluetoothManager,
-  BluetoothEscposPrinter, //@ts-ignore
+  BluetoothEscposPrinter,
+  BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {Button, BluetoothModal} from '../../../../components';
+import {BluetoothModal, Button} from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
 import {
-  applyStyles,
   amountWithCurrency,
+  applyStyles,
   numberWithCommas,
 } from '../../../../helpers/utils';
-import {colors} from '../../../../styles';
 import {ICustomer} from '../../../../models';
-import {getAuthService, getStorageService} from '../../../../services';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {getAuthService, getStorageService} from '../../../../services';
+import {colors} from '../../../../styles';
 
 type Props = {
   visible: boolean;
@@ -76,9 +76,6 @@ export const ReceiptStatusModal = (props: Props) => {
   } = props;
 
   const [customer, setCustomer] = useState(customerProps);
-  const [isPrinting, setIsPrinting] = useState(false);
-  const [isPrintError, setIsPrintError] = useState(false);
-  const [isPrintSuccess, setIsPrintSuccess] = useState(false);
   const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
   const [printer, setPrinter] = useState<{address: string}>(
     {} as {address: string},
@@ -97,7 +94,8 @@ export const ReceiptStatusModal = (props: Props) => {
       setPrinter(savedPrinter);
     };
     fetchPrinter();
-  }, [storageService]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isPrintingModalOpen]);
 
   useEffect(() => {
     setCustomer(customerProps);
@@ -135,16 +133,12 @@ export const ReceiptStatusModal = (props: Props) => {
   }, []);
 
   const handleClosePrinterModal = useCallback(() => {
-    setIsPrinting(false);
-    setIsPrintError(false);
-    setIsPrintSuccess(false);
     setIsPrintingModalOpen(false);
   }, []);
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [14, 6, 12];
-      setIsPrinting(true);
+      const productListColumnWidth = [22, 5, 15];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -171,65 +165,48 @@ export const ReceiptStatusModal = (props: Props) => {
             fonttype: 1,
           },
         };
-        // TODO Print Receipt
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `${user?.businesses[0].name}\n\r`,
+          `${user?.businesses[0].name}\n`,
           receiptStyles.header,
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `${user?.businesses[0].address}\n\r`,
-          receiptStyles.header,
+          `${user?.businesses[0].address}\n`,
+          {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
-        await BluetoothEscposPrinter.printText(
-          `Tel: ${user?.mobile}\n\r`,
-          receiptStyles.header,
-        );
+        await BluetoothEscposPrinter.printText(`Tel: ${user?.mobile}\n`, {});
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 12],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          [`${customerText}`, `${format(new Date(), 'dd/MM/yyyy')}`],
-          {},
-        );
-        await BluetoothEscposPrinter.printColumn(
-          [16, 12],
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          ['', `${format(new Date(), 'hh:mm:a')}`],
+        await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
+        await BluetoothEscposPrinter.printText(
+          `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
+          '--------------------------------\n',
           {},
         );
         await BluetoothEscposPrinter.printColumn(
@@ -239,20 +216,13 @@ export const ReceiptStatusModal = (props: Props) => {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
-          ['Description', 'QTY', 'Subtotal'],
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n\r',
-          {},
+          ['Description', 'QTY', 'SubTotal(NGN)'],
+          receiptStyles.product,
         );
         for (const item of products) {
           const p = item.price;
           const q = item.quantity;
-          const total = Math.imul(q, p).toString();
+          const total = p * q;
           await BluetoothEscposPrinter.printColumn(
             productListColumnWidth,
             [
@@ -260,42 +230,74 @@ export const ReceiptStatusModal = (props: Props) => {
               BluetoothEscposPrinter.ALIGN.CENTER,
               BluetoothEscposPrinter.ALIGN.RIGHT,
             ],
-            [
-              `${item.product.sku} - ${item.product.name}`,
-              `${q}`,
-              `${currencyCode}${numberWithCommas(parseInt(total, 10))}`,
-            ],
-            {},
-          );
-          await BluetoothEscposPrinter.printerAlign(
-            BluetoothEscposPrinter.ALIGN.LEFT,
-          );
-          await BluetoothEscposPrinter.printText(
-            '--------------------------------\n\r',
-            {},
+            [`${item.product.name}`, `${q}`, `${numberWithCommas(total)}`],
+            receiptStyles.product,
           );
         }
         await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.RIGHT,
+          BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText(
-          `Tax: ${0}\n\r`,
-          receiptStyles.product,
+          '--------------------------------\n',
+          {},
         );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
-        await BluetoothEscposPrinter.printText(
-          `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n\r`,
-          receiptStyles.subheader,
+        await BluetoothEscposPrinter.printText(`Tax: ${0}\n`, {});
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.RIGHT,
         );
-        setIsPrintSuccess(true);
+        await BluetoothEscposPrinter.printText(
+          `Total: ${currencyCode} ${numberWithCommas(totalAmount)}\n`,
+          {},
+        );
+        await BluetoothEscposPrinter.printText(
+          `Paid: ${currencyCode} ${numberWithCommas(amountPaid)}\n`,
+          {},
+        );
+        creditAmount &&
+          (await BluetoothEscposPrinter.printText(
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmount)}\n`,
+            {},
+          ));
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n',
+          {},
+        );
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.CENTER,
+        );
+        await BluetoothEscposPrinter.printText(
+          'Powered by Shara. www.shara.co\n',
+          receiptStyles.product,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n',
+          {},
+        );
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText('\n\r', {});
+        handleClosePrinterModal();
       } catch (err) {
-        Alert.alert('Bluetooth Error', err.toString());
-        setIsPrintError(true);
+        ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
+        handleOpenPrinterModal();
       }
     },
-    [currencyCode, customer, printer, products, totalAmount, user],
+    [
+      currencyCode,
+      customer,
+      printer,
+      products,
+      totalAmount,
+      amountPaid,
+      creditAmount,
+      user,
+      handleOpenPrinterModal,
+      handleClosePrinterModal,
+    ],
   );
 
   const handlePrintClick = useCallback(() => {
@@ -308,7 +310,7 @@ export const ReceiptStatusModal = (props: Props) => {
 
   return (
     <Modal transparent={false} animationType="slide" visible={visible}>
-      <ScrollView>
+      <ScrollView persistentScrollbar={true}>
         <View style={styles.statusModalContent}>
           <Image
             source={statusProps.success.icon}
@@ -350,7 +352,7 @@ export const ReceiptStatusModal = (props: Props) => {
         </View>
 
         <View style={applyStyles({marginBottom: 40, paddingHorizontal: 16})}>
-          {customer.mobile ? (
+          {customer.name ? (
             <>
               <Text
                 style={applyStyles(
@@ -377,12 +379,14 @@ export const ReceiptStatusModal = (props: Props) => {
                 )}>
                 {customer.name}
               </Text>
-              <Text
-                style={applyStyles('pb-md', 'text-400', 'text-center', {
-                  color: colors['gray-300'],
-                })}>
-                {customer.mobile}
-              </Text>
+              {customer.mobile && (
+                <Text
+                  style={applyStyles('pb-md', 'text-400', 'text-center', {
+                    color: colors['gray-300'],
+                  })}>
+                  {customer.mobile}
+                </Text>
+              )}
               <Touchable onPress={onOpenCustomerModal}>
                 <View
                   style={applyStyles(
@@ -399,7 +403,9 @@ export const ReceiptStatusModal = (props: Props) => {
                     type="feathericons"
                     color={colors.primary}
                   />
-                  <Text style={styles.addProductButtonText}>Edit details</Text>
+                  <Text style={styles.addProductButtonText}>
+                    Change customer
+                  </Text>
                 </View>
               </Touchable>
             </>
@@ -498,9 +504,6 @@ export const ReceiptStatusModal = (props: Props) => {
         />
       </View>
       <BluetoothModal
-        print={isPrinting}
-        error={isPrintError}
-        success={isPrintSuccess}
         visible={isPrintingModalOpen}
         onClose={handleClosePrinterModal}
         onPrintReceipt={handlePrintReceipt}

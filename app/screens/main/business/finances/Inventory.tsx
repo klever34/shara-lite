@@ -189,7 +189,7 @@ export function MyInventory() {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                {product.quantity || 0}
+                {product.quantity?.toFixed(2) || 0}
               </Text>
             </View>
           </View>

@@ -40,7 +40,7 @@ export const updateProduct = ({
   };
 
   const updateProductInDb = () => {
-    realm.create<IProduct>(modelName, updatedProduct, UpdateMode.Modified);
+    realm.create(modelName, updatedProduct, UpdateMode.Modified);
   };
 
   if (realm.isInTransaction) {

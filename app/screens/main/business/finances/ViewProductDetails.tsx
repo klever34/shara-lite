@@ -64,6 +64,7 @@ export const ViewProductDetails = ({
 
   return (
     <ScrollView
+      persistentScrollbar={true}
       style={applyStyles('px-lg', {
         paddingTop: 40,
         backgroundColor: colors.white,
@@ -129,7 +130,7 @@ export const ViewProductDetails = ({
                 fontSize: 16,
                 color: colors['gray-300'],
               })}>
-              {product.quantity}
+              {product.quantity.toFixed(2)}
             </Text>
           </View>
         )}

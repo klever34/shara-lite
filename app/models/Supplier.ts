@@ -4,7 +4,7 @@ import {IReceivedInventory} from './ReceivedInventory';
 
 export interface ISupplier extends BaseModelInterface {
   name: string;
-  mobile: string;
+  mobile?: string;
   address?: string;
   suppliedInventories?: IReceivedInventory[];
   suppliedStockItems?: IStockItem[];
@@ -18,8 +18,8 @@ export class Supplier extends BaseModel implements Partial<ISupplier> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      name: 'string',
-      mobile: 'string',
+      name: 'string?',
+      mobile: 'string?',
       address: 'string?',
       suppliedInventories: {
         type: 'linkingObjects',

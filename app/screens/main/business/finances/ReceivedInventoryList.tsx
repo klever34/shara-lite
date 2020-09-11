@@ -38,30 +38,8 @@ export function ReceivedInventoryList() {
         />
       ),
       headerRight: () => (
-        <View style={applyStyles('flex-row  items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs')}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs')}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <View style={applyStyles({width: '33%'})}>
-            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-          </View>
+        <View>
+          <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
         </View>
       ),
     });

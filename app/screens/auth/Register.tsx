@@ -20,6 +20,8 @@ import {applyStyles} from '../../helpers/utils';
 import {RootStackParamList} from '../../index';
 import {getApiService} from '../../services';
 import {colors} from '../../styles';
+import {FormDefaults} from '@/services/FormDefaults';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 
 type Fields = {
   firstname: string;
@@ -32,8 +34,11 @@ type Fields = {
 export const Register = ({
   navigation,
 }: StackScreenProps<RootStackParamList>) => {
+  const {callingCode, countryCode2} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>({} as Fields);
+  const [fields, setFields] = React.useState<Fields>(
+    FormDefaults.get('signup', {countryCode: callingCode}) as Fields,
+  );
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -84,7 +89,10 @@ export const Register = ({
   };
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      keyboardShouldPersistTaps="always"
+      persistentScrollbar={true}>
       <View style={styles.backButton}>
         <Touchable onPress={() => handleNavigate('Welcome')}>
           <View style={applyStyles({height: 40, width: 40})}>
@@ -119,6 +127,7 @@ export const Register = ({
           <View style={applyStyles({paddingVertical: 18})}>
             <PhoneNumberField
               value={fields.mobile}
+              countryCode2={countryCode2}
               countryCode={fields.countryCode}
               onChangeText={(data) => onChangeMobile(data)}
             />

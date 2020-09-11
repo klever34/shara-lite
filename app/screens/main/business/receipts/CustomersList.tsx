@@ -41,11 +41,12 @@ export const CustomersList = (props: Props) => {
   const handleCustomerSearch = useCallback(
     (searchedText: string) => {
       setSearchInputValue(searchedText);
+      const searchValue = searchedText.trim();
       const sort = (item: ICustomer, text: string) => {
         return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
       };
       var ac = customers.filter((item: ICustomer) => {
-        return sort(item, searchedText);
+        return sort(item, searchValue);
       });
       setMyCustomers(ac);
     },

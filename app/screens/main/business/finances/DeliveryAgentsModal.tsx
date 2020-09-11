@@ -149,7 +149,7 @@ export const DeliveryAgentsModal = (props: Props) => {
         />
         <Button
           variantColor="clear"
-          style={applyStyles('w-full mb-xl', {
+          style={applyStyles('w-full', {
             borderTopColor: colors['gray-20'],
             borderTopWidth: 1,
           })}

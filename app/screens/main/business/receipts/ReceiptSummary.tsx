@@ -1,24 +1,26 @@
 import {useNavigation} from '@react-navigation/native';
+import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
   KeyboardAvoidingView,
-  Modal,
   ScrollView,
   StyleSheet,
   Text,
-  View,
   ToastAndroid,
+  View,
 } from 'react-native';
 import Share from 'react-native-share';
-import {Payment} from '../../../../../types/app';
+import {Payment} from 'types/app';
 import {
   Button,
   CurrencyInput,
   FloatingLabelInput,
+  PageModal,
 } from '../../../../components';
-import {ContactsListModal} from '../../../../components/ContactsListModal';
+import {ContactsListModal} from '@/components';
 import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
@@ -27,22 +29,21 @@ import {
   applyStyles,
   getDueDateValue,
   numberWithCommas,
-} from '../../../../helpers/utils';
-import {ICustomer} from '../../../../models';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
+  getCustomerWhatsappNumber,
+} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService, getAuthService} from '../../../../services';
-import {getCustomers} from '../../../../services/CustomerService';
-import {useRealm} from '../../../../services/realm';
-import {saveReceipt} from '../../../../services/ReceiptService';
-import {colors} from '../../../../styles';
-import {CustomerDetailsModal} from './CustomerDetailsModal';
-import {CustomersList} from './CustomersList';
+import {useRealm} from '@/services/realm';
+import {saveReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
 import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import {format} from 'date-fns/esm';
-import {useErrorHandler} from 'react-error-boundary';
+import {getCustomers} from '@/services/CustomerService';
+import AddCustomer from '../../customers/AddCustomer';
+import {addDays} from 'date-fns';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
@@ -190,8 +191,10 @@ const ReceiptSummary = (props: Props) => {
   const navigation = useNavigation();
   const authService = getAuthService();
   const user = authService.getUser();
+  const customers = getCustomers({realm});
   const currency = authService.getUserCurrency();
   const businessInfo = user?.businesses[0];
+  const userCountryCode = user?.country_code;
 
   const {
     products,
@@ -209,9 +212,11 @@ const ReceiptSummary = (props: Props) => {
   >('cash');
   const [amountPaid, setAmountPaid] = useState(0);
   const [totalAmount, setTotalAmount] = useState(0);
-  const [dueDateString, setDueDateString] = useState('');
+  const [dueDateString, setDueDateString] = useState('7');
   const [payments, setPayments] = useState<Payment[]>([]);
-  const [dueDate, setDueDate] = useState<Date | undefined>();
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    addDays(new Date(), 7),
+  );
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
   const [selectedProduct, setSelectedProduct] = useState<IReceiptItem | null>(
     null,
@@ -219,11 +224,9 @@ const ReceiptSummary = (props: Props) => {
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [isSuccessModalOpen, setIsSuccessModalOpen] = useState(false);
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
-  const [isCustomerModalOpen, setIsCustomerModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-  const [isCustomerListModalOpen, setIsCustomerListModalOpen] = useState(false);
+  const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
-  const customers = getCustomers({realm});
   const creditAmount = payments.length ? totalAmount - amountPaid : totalAmount;
 
   //@ts-ignore
@@ -259,14 +262,6 @@ const ReceiptSummary = (props: Props) => {
     setIsShareModalOpen(false);
   }, []);
 
-  const handleOpenCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerModal = useCallback(() => {
-    setIsCustomerModalOpen(false);
-  }, []);
-
   const handleOpenEditProductModal = useCallback((item: IReceiptItem) => {
     setSelectedProduct(item);
   }, []);
@@ -287,23 +282,21 @@ const ReceiptSummary = (props: Props) => {
     setIsPaymentModalOpen(false);
   }, []);
 
-  const handleOpenCustomerList = useCallback(() => {
-    setIsCustomerListModalOpen(true);
-  }, []);
-
-  const handleCloseCustomerList = useCallback(() => {
-    setIsCustomerListModalOpen(false);
-  }, []);
-
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
 
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
-    handleCloseCustomerModal();
-    handleCloseCustomerList();
-  }, [handleCloseCustomerModal, handleCloseCustomerList]);
+  }, []);
+
+  const handleOpenAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(true);
+  }, []);
+
+  const handleCloseAddCustomerModal = useCallback(() => {
+    setIsAddCustomerModalOpen(false);
+  }, []);
 
   const handleDueDateChange = useCallback((value: string) => {
     const number = parseInt(value, 10);
@@ -321,7 +314,9 @@ const ReceiptSummary = (props: Props) => {
     const shareOptions = {
       // @ts-ignore
       social: Share.Social.SMS,
-      message: `Hi ${customer.name}, thank you for your recent purchase of ${
+      message: `Hi${
+        customer.name ? ` ${customer.name}` : ''
+      }, thank you for your recent purchase of ${
         products.length
       } item(s) from ${
         user?.businesses[0].name
@@ -359,22 +354,20 @@ const ReceiptSummary = (props: Props) => {
   ]);
 
   const handleEmailShare = useCallback(
-    async (
-      {email, receiptImage}: {email: string; receiptImage: string},
-      callback: () => void,
-    ) => {
+    async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
-        email,
         title: 'Share receipt',
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
+        message: `Hi${
+          customer.name ? ` ${customer.name}` : ''
+        }, here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
       try {
         await Share.open(shareOptions);
-        callback();
+        callback && callback();
       } catch (e) {
         Alert.alert('Error', e.error);
       }
@@ -385,12 +378,16 @@ const ReceiptSummary = (props: Props) => {
   const handleWhatsappShare = useCallback(
     async (receiptImage: string) => {
       // TODO: use better copy for shara invite
+      const mobile = customer.mobile;
+      const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
       const shareOptions = {
+        whatsAppNumber,
         social: Share.Social.WHATSAPP,
         title: `Share receipt with ${customer.name}`,
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
-        whatsAppNumber: `${customer.mobile}`, // country code + phone number
+        message: `Hi${
+          customer.name ? ` ${customer.name}` : ''
+        }, here is your receipt from ${businessInfo?.name}`,
       };
       const errorMessages = {
         filename: 'Invalid file attached',
@@ -410,7 +407,7 @@ const ReceiptSummary = (props: Props) => {
         }
       }
     },
-    [customer.mobile, customer.name, businessInfo],
+    [customer.mobile, customer.name, userCountryCode, businessInfo],
   );
 
   const handleRemovePayment = useCallback(
@@ -445,18 +442,11 @@ const ReceiptSummary = (props: Props) => {
     (type: 'cash' | 'transfer' | 'mobile') => {
       const method = payments.find((item) => item.method === type);
       if (method) {
-        return method.amount.toString();
+        return method?.amount?.toString();
       }
       return '0';
     },
     [payments],
-  );
-
-  const handleCustomerSelect = useCallback(
-    ({customer: customerData}) => {
-      setCustomer(customerData);
-    },
-    [setCustomer],
   );
 
   const handleSetCustomer = useCallback((value: ICustomer) => {
@@ -467,9 +457,10 @@ const ReceiptSummary = (props: Props) => {
     if (products.length) {
       handleOpenSuccessModal();
     } else {
-      Alert.alert('Error', 'Please select at least one product item');
+      Alert.alert('Info', 'Please select at least one product item');
     }
   };
+
   const handleError = useErrorHandler();
 
   const handleSaveReceipt = useCallback(
@@ -486,7 +477,7 @@ const ReceiptSummary = (props: Props) => {
           creditAmount,
           dueDate,
           receiptItems: products,
-        }).catch(handleError);
+        });
         onClearReceipt();
         getAnalyticsService().logEvent('receiptCreated').catch(handleError);
         onSuccess && onSuccess();
@@ -542,7 +533,10 @@ const ReceiptSummary = (props: Props) => {
 
   useEffect(() => {
     if (payments.length) {
-      const paid = payments.reduce((acc, item) => acc + item.amount, 0);
+      const paid = payments.reduce(
+        (acc, item) => acc + (item.amount ? item.amount : 0),
+        0,
+      );
       setAmountPaid(paid);
     }
   }, [payments]);
@@ -556,7 +550,10 @@ const ReceiptSummary = (props: Props) => {
 
   return (
     <KeyboardAvoidingView style={styles.container}>
-      <ScrollView style={styles.scrollView} nestedScrollEnabled>
+      <ScrollView
+        style={styles.scrollView}
+        nestedScrollEnabled
+        persistentScrollbar={true}>
         <View>
           <Text style={applyStyles('pb-xs', styles.sectionTitle)}>
             Products
@@ -904,41 +901,27 @@ const ReceiptSummary = (props: Props) => {
         visible={isSuccessModalOpen}
         onOpenShareModal={handleOpenShareModal}
         onNewReceiptClick={handleNewReceiptClick}
-        onOpenCustomerModal={handleOpenCustomerModal}
-      />
-      <CustomerDetailsModal
-        customer={customer}
-        visible={isCustomerModalOpen}
-        onClose={handleCloseCustomerModal}
-        onSelectCustomer={handleSetCustomer}
-        onOpenCustomerList={handleOpenCustomerList}
+        onOpenCustomerModal={handleOpenContactListModal}
       />
       <ShareReceiptModal
         tax={tax}
         products={products}
         customer={customer}
+        amountPaid={amountPaid}
         totalAmount={totalAmount}
         visible={isShareModalOpen}
+        creditAmount={creditAmount}
         onSmsShare={handleSmsShare}
         onEmailShare={handleEmailShare}
         onClose={handleCloseShareModal}
         onWhatsappShare={handleWhatsappShare}
       />
-      <Modal
-        animationType="slide"
-        visible={isCustomerListModalOpen}
-        onDismiss={handleCloseCustomerList}
-        onRequestClose={handleCloseCustomerList}>
-        <CustomersList
-          customers={customers}
-          onModalClose={handleCloseCustomerList}
-          onCustomerSelect={handleCustomerSelect}
-          onOpenContactList={handleOpenContactListModal}
-        />
-      </Modal>
-      <ContactsListModal
+      <ContactsListModal<ICustomer>
+        entity="Customer"
+        createdData={customers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
+        onAddNew={handleOpenAddCustomerModal}
         onContactSelect={({givenName, familyName, phoneNumbers}) =>
           handleSetCustomer({
             name: `${givenName} ${familyName}`,
@@ -962,6 +945,18 @@ const ReceiptSummary = (props: Props) => {
         onRemoveProductItem={onRemoveProductItem}
         onUpdateProductItem={onUpdateProductItem}
       />
+
+      <PageModal
+        title="Add Customer"
+        visible={isAddCustomerModalOpen}
+        onClose={handleCloseAddCustomerModal}>
+        <AddCustomer
+          onSubmit={(newCustomer) => {
+            handleSetCustomer(newCustomer);
+            handleCloseAddCustomerModal();
+          }}
+        />
+      </PageModal>
     </KeyboardAvoidingView>
   );
 };

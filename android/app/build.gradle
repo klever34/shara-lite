@@ -120,6 +120,25 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+
+/**
+ * Versioning from environment variables
+ *
+ * This is used by CircleCI to set the build num as version code and to get the
+ * version from package.json and set it as the version name
+ */
+def appVersionCode = Integer.valueOf(System.getenv('SHARA_VERSION_CODE') ?: 10000).toInteger()
+def appVersionName = System.getenv('SHARA_VERSION_NAME') ?: "0.1.0-default"
+
+/**
+ * Keystore credentials from environment variables
+ */
+def sharaKeyAlias = System.getenv('SHARA_UPLOAD_KEY_ALIAS') ?: "keyAlias"
+def sharaKeyPassword = System.getenv('SHARA_UPLOAD_KEY_PASSWORD') ?: "keyPassword"
+def sharaStoreFile = System.getenv('SHARA_UPLOAD_STORE_FILE') ?: "storeFile"
+def sharaStorePassword = System.getenv('SHARA_UPLOAD_STORE_PASSWORD') ?: "storePassword"
+
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
 
@@ -132,9 +151,10 @@ android {
         applicationId "co.shara.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode SHARA_VERSION_CODE
-        versionName "SHARA_VERSION_NAME"
+        versionCode appVersionCode
+        versionName appVersionName
         multiDexEnabled true
+        resValue "string", "build_config_package", "co.shara.app"
     }
     splits {
         abi {
@@ -152,17 +172,44 @@ android {
             keyPassword 'android'
         }
         release {
-            if (project.hasProperty('SHARA_UPLOAD_STORE_FILE')) {
-                storeFile file(SHARA_UPLOAD_STORE_FILE)
-                storePassword SHARA_UPLOAD_STORE_PASSWORD
-                keyAlias SHARA_UPLOAD_KEY_ALIAS
-                keyPassword SHARA_UPLOAD_KEY_PASSWORD
-            }
+            storeFile file(sharaStoreFile)
+            storePassword sharaStorePassword
+            keyAlias sharaKeyAlias
+            keyPassword sharaKeyPassword
+        }
+    }
+    flavorDimensions "standard"
+    productFlavors {
+        local {
+            applicationIdSuffix ".local"
+            dimension "standard"
+        }
+//      Flavor below should test but productFlavor cannot start with test
+        dev {
+            applicationIdSuffix ".test"
+            dimension "standard"
+        }
+        discovery {
+            applicationIdSuffix ".discovery"
+            dimension "standard"
+        }
+        delivery {
+            applicationIdSuffix ".delivery"
+            dimension "standard"
+        }
+        qa {
+            applicationIdSuffix ".qa"
+            dimension "standard"
+        }
+        production {
+            applicationId "co.shara.app"
+            dimension "standard"
         }
     }
     buildTypes {
         debug {
             signingConfig signingConfigs.debug
+            debuggable true
         }
         release {
             // Caution! In production, you need to generate your own keystore file.
@@ -201,6 +248,7 @@ android {
 }
 
 dependencies {
+    implementation 'com.facebook.soloader:soloader:0.9.0+'
     implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
     implementation "com.facebook.react:react-native:+"  // From node_modules

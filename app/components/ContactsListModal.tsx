@@ -1,40 +1,43 @@
 import {useNavigation} from '@react-navigation/native';
+import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
+  ActivityIndicator,
   Alert,
   FlatList,
+  Image,
   ListRenderItemInfo,
   Modal,
   StyleSheet,
   Text,
   View,
-  Image,
-  ActivityIndicator,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
-import {applyStyles} from '../helpers/utils';
-import {getContactsService} from '../services';
-import {colors} from '../styles';
+import {applyStyles} from '@/helpers/utils';
+import {getContactService} from '@/services';
+import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
 
-type Props = {
+type Props<T> = {
   visible: boolean;
   entity?: string;
   onClose: () => void;
+  createdData?: T[];
   onAddNew?: () => void;
   onContactSelect?: (contact: Contact) => void;
 };
 
-export const ContactsListModal = ({
+export function ContactsListModal<T>({
   visible,
   onClose,
   entity,
   onAddNew,
+  createdData,
   onContactSelect,
-}: Props) => {
+}: Props<T>) {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
   const ref = useRef<{contacts: Contact[]}>({contacts: []});
@@ -42,126 +45,157 @@ export const ContactsListModal = ({
   const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
+    if (!visible) {
+      return;
+    }
     setIsLoading(true);
-    const contactsService = getContactsService();
-    contactsService
-      .getAll()
-      .then((nextContacts) => {
-        setIsLoading(false);
-        const data = nextContacts.filter((contact) => {
-          if (contact.phoneNumbers.length) {
-            return {
-              firstname: contact.givenName,
-              lastname: contact.familyName,
-              mobile: contact.phoneNumbers[0].number,
-              fullName: `${contact.givenName} ${contact.familyName}`,
-            };
-          }
-        });
-        ref.current.contacts = data;
-        setContacts(data);
-      })
-      .catch((error) => {
-        setIsLoading(false);
-        Alert.alert(
-          'Error',
-          error.message,
-          [
-            {
-              text: 'OK',
-              onPress: () => {
-                navigation.goBack();
+    setTimeout(() => {
+      getContactService()
+        .getPhoneContacts()
+        .then((nextContacts: Contact[]) => {
+          setIsLoading(false);
+          const data = nextContacts.filter((contact) => {
+            if (contact.phoneNumbers.length) {
+              return {
+                firstname: contact.givenName,
+                lastname: contact.familyName,
+                mobile: contact.phoneNumbers[0].number,
+                fullName: `${contact.givenName} ${contact.familyName}`,
+              };
+            }
+          });
+          ref.current.contacts = data;
+          setContacts(data);
+        })
+        .catch((error: Error) => {
+          setIsLoading(false);
+          Alert.alert(
+            '',
+            error.message,
+            [
+              {
+                text: 'OK',
               },
+            ],
+            {
+              cancelable: false,
             },
-          ],
-          {
-            cancelable: false,
-          },
-        );
-      });
-  }, [navigation]);
-
-  const handleSearch = useCallback(
-    (searchedText: string) => {
-      setSearchInputValue(searchedText);
-      if (searchedText) {
-        const sort = (item: Contact, text: string) => {
-          return (
-            `${item.givenName} ${item.familyName}`
-              .toLowerCase()
-              .indexOf(text.toLowerCase()) > -1
           );
-        };
-        var results = contacts.filter((item: Contact) => {
-          return sort(item, searchedText);
         });
-        setContacts(results);
-      } else {
-        setContacts(ref.current.contacts);
-      }
-    },
-    [contacts],
-  );
+    }, 500);
+  }, [navigation, visible]);
+
+  const handleClose = useCallback(() => {
+    setSearchInputValue('');
+    onClose();
+  }, [onClose]);
+
+  const handleSearch = useCallback((searchedText: string) => {
+    setSearchInputValue(searchedText);
+    if (searchedText) {
+      const searchValue = searchedText.trim();
+      const sort = (item: Contact, text: string) => {
+        const name = `${item.givenName} ${item.familyName}`;
+        const mobile =
+          item.phoneNumbers &&
+          item.phoneNumbers[0] &&
+          item.phoneNumbers[0].number;
+        return (
+          name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
+          mobile.replace(/[\s-]+/g, '').indexOf(text) > -1
+        );
+      };
+      const results = ref.current.contacts.filter((item: Contact) => {
+        return sort(item, searchValue);
+      });
+      setContacts(results);
+    } else {
+      setContacts(ref.current.contacts);
+    }
+  }, []);
 
   const handleContactSelect = useCallback(
     (contact: Contact) => {
       onContactSelect && onContactSelect(contact);
-      onClose();
+      handleClose();
     },
-    [onClose, onContactSelect],
+    [handleClose, onContactSelect],
   );
 
   const handleAddNew = useCallback(() => {
-    onClose();
+    handleClose();
     onAddNew && onAddNew();
-  }, [onAddNew, onClose]);
+  }, [onAddNew, handleClose]);
 
   const renderContactItem = useCallback(
     ({item: contact}: ListRenderItemInfo<Contact>) => {
+      const contactMobile =
+        contact.phoneNumbers && contact.phoneNumbers[0]
+          ? contact.phoneNumbers[0].number
+          : '';
+      const isAdded =
+        createdData &&
+        createdData.map((item: any) => item.mobile).includes(contactMobile);
       return (
         <Touchable onPress={() => handleContactSelect(contact)}>
           <View
-            style={applyStyles('flex-row items-center p-md', 'mx-lg', {
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
-            })}>
-            {contact.hasThumbnail ? (
-              <Image
-                style={applyStyles('mr-md', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                  backgroundColor: '#FFE2E2',
-                })}
-                source={{uri: contact.thumbnailPath}}
-              />
-            ) : (
-              <View
-                style={applyStyles('mr-md items-center justify-center', {
-                  height: 48,
-                  width: 48,
-                  borderRadius: 24,
-                  backgroundColor: '#FFE2E2',
-                })}>
-                <Text
-                  style={applyStyles('text-center text-500', {
-                    color: colors.primary,
-                    fontSize: 12,
+            style={applyStyles(
+              'mx-lg flex-row items-center p-md justify-space-between',
+              {
+                borderBottomWidth: 1,
+                borderBottomColor: colors['gray-20'],
+              },
+            )}>
+            <View style={applyStyles('flex-row items-center')}>
+              {contact.hasThumbnail ? (
+                <Image
+                  style={applyStyles('mr-md', {
+                    height: 48,
+                    width: 48,
+                    borderRadius: 24,
+                    backgroundColor: '#FFE2E2',
+                  })}
+                  source={{uri: contact.thumbnailPath}}
+                />
+              ) : (
+                <View
+                  style={applyStyles('mr-md items-center justify-center', {
+                    height: 48,
+                    width: 48,
+                    borderRadius: 24,
+                    backgroundColor: '#FFE2E2',
                   })}>
-                  {contact.givenName[0]}
-                  {contact.familyName[0]}
+                  <Text
+                    style={applyStyles('text-center text-500', {
+                      color: colors.primary,
+                      fontSize: 12,
+                    })}>
+                    {contact.givenName[0]}
+                    {contact.familyName[0]}
+                  </Text>
+                </View>
+              )}
+
+              <Text style={applyStyles('text-400', 'text-lg')}>
+                {contact.givenName} {contact.familyName}
+              </Text>
+            </View>
+            {isAdded && (
+              <View>
+                <Text
+                  style={applyStyles('text-400', {
+                    fontSize: 12,
+                    color: colors['gray-50'],
+                  })}>
+                  Already Added
                 </Text>
               </View>
             )}
-
-            <Text style={applyStyles('text-400', 'text-lg')}>
-              {contact.givenName} {contact.familyName}
-            </Text>
           </View>
         </Touchable>
       );
     },
-    [handleContactSelect],
+    [createdData, handleContactSelect],
   );
 
   const renderContactListHeader = useCallback(
@@ -177,8 +211,8 @@ export const ContactsListModal = ({
     <Modal
       animationType="slide"
       visible={visible}
-      onDismiss={onClose}
-      onRequestClose={onClose}>
+      onDismiss={handleClose}
+      onRequestClose={handleClose}>
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
           <Icon
@@ -221,17 +255,17 @@ export const ContactsListModal = ({
         </Touchable>
       )}
 
-      {isLoading ? (
+      {isLoading && !contacts.length ? (
         <View style={applyStyles('flex-1 items-center justify-center')}>
           <ActivityIndicator color={colors.primary} />
         </View>
       ) : (
         <FlatList
-          data={contacts}
           style={applyStyles('flex-1')}
           renderItem={renderContactItem}
+          data={orderBy(contacts, 'givenName', 'asc')}
           ListHeaderComponent={renderContactListHeader}
-          keyExtractor={(item: Contact) => item.recordID}
+          keyExtractor={(item: Contact, index) => `${item.recordID}-${index}`}
           ListEmptyComponent={
             <View
               style={applyStyles('flex-1', 'items-center', 'justify-center', {
@@ -249,7 +283,7 @@ export const ContactsListModal = ({
       )}
       <View>
         <Button
-          onPress={onClose}
+          onPress={handleClose}
           variantColor="clear"
           style={applyStyles({
             width: '100%',
@@ -266,7 +300,7 @@ export const ContactsListModal = ({
       </View>
     </Modal>
   );
-};
+}
 
 const styles = StyleSheet.create({
   searchContainer: {

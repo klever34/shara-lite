@@ -1,9 +1,9 @@
-import {ContactsListModal} from '@/components';
+import {ContactsListModal, FAButton} from '@/components';
 import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
+import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -18,12 +18,12 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {ISupplier} from '../../../../models/Supplier';
-import {useScreenRecord} from '../../../../services/analytics';
-import {useRealm} from '../../../../services/realm';
-import {getSuppliers, saveSupplier} from '../../../../services/SupplierService';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {ISupplier} from '@/models/Supplier';
+import {useScreenRecord} from '@/services/analytics';
+import {useRealm} from '@/services/realm';
+import {getSuppliers, saveSupplier} from '@/services/SupplierService';
+import {colors} from '@/styles';
 
 type SupplierItemProps = {
   item: ISupplier;
@@ -67,11 +67,12 @@ export const Suppliers = () => {
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
+        const searchValue = searchedText.trim();
         const sort = (item: ISupplier, text: string) => {
           return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
         const ac = suppliers.filter((item: ISupplier) => {
-          return sort(item, searchedText);
+          return sort(item, searchValue);
         });
         setMySuppliers(ac);
       } else {
@@ -95,7 +96,7 @@ export const Suppliers = () => {
       if (name) {
         if (suppliers.map((item) => item.mobile).includes(mobile)) {
           Alert.alert(
-            'Error',
+            'Info',
             'Supplier with the same phone number has been created.',
           );
         } else {
@@ -147,31 +148,10 @@ export const Suppliers = () => {
           />
         </View>
       </View>
-      <Touchable onPress={handleOpenContactListModal}>
-        <View
-          style={applyStyles('flex-row px-lg py-lg items-center', {
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-20'],
-          })}>
-          <Icon
-            size={24}
-            name="user-plus"
-            type="feathericons"
-            color={colors.primary}
-          />
-          <Text
-            style={applyStyles('text-400 pl-md', {
-              fontSize: 16,
-              color: colors['gray-300'],
-            })}>
-            Add Supplier
-          </Text>
-        </View>
-      </Touchable>
       <FlatList
         renderItem={renderSupplierListItem}
         keyExtractor={(item) => `${item._id}`}
-        data={orderBy(mySuppliers, 'created_at', 'desc')}
+        data={orderBy(mySuppliers, 'name', 'asc')}
         ListHeaderComponent={renderSupplierListHeader}
         ListEmptyComponent={
           <EmptyState
@@ -183,13 +163,22 @@ export const Suppliers = () => {
           />
         }
       />
-      <ContactsListModal
+      <ContactsListModal<ISupplier>
         entity="Supplier"
+        createdData={suppliers}
         onAddNew={handleAddSupplier}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onContactSelect={(contact) => handleCreateSupplier(contact)}
       />
+      <FAButton style={styles.fabButton} onPress={handleOpenContactListModal}>
+        <View style={styles.fabButtonContent}>
+          <Icon size={18} name="plus" color="white" type="feathericons" />
+          <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
+            Create supplier
+          </Text>
+        </View>
+      </FAButton>
     </View>
   );
 };
@@ -242,5 +231,23 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
+  },
+  fabButton: {
+    height: 48,
+    width: 'auto',
+    borderRadius: 16,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fabButtonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  fabButtonText: {
+    fontSize: 16,
+    paddingLeft: 8,
+    color: colors.white,
+    textTransform: 'uppercase',
   },
 });

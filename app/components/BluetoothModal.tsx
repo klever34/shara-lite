@@ -32,21 +32,11 @@ type Props = {
   onPrintReceipt?: (address?: string) => void;
 };
 
-export const BluetoothModal = ({
-  error,
-  print,
-  success,
-  onClose,
-  visible,
-  onPrintReceipt,
-}: Props) => {
+export const BluetoothModal = ({onClose, visible, onPrintReceipt}: Props) => {
   const [section, setSection] = useState(0);
   const [isScanning, setIsScanning] = useState(false);
-  const [isPrinting, setIsPrinting] = useState(print || false);
   const [foundDevices, setFoundDevices] = useState<BluetoothDevice[]>([]);
   const [pairedDevices, setPairedDevices] = useState<BluetoothDevice[]>([]);
-  const [isPrintError, setIsPrintError] = useState(error || false);
-  const [isPrintSuccess, setIsPrintSuccess] = useState(success || false);
 
   const storageService = getStorageService();
 
@@ -63,9 +53,6 @@ export const BluetoothModal = ({
   ];
 
   const handleClose = useCallback(() => {
-    setIsPrinting(false);
-    setIsPrintError(false);
-    setIsPrintSuccess(false);
     onClose && onClose();
   }, [onClose]);
 
@@ -78,17 +65,34 @@ export const BluetoothModal = ({
         setFoundDevices(ss.found);
         setIsScanning(false);
       },
-      (errorData: any) => {
+      () => {
         setIsScanning(false);
-        Alert.alert('Error', JSON.stringify(errorData));
       },
     );
   }, []);
 
+  const handlePrintReceipt = useCallback(
+    async (address?: string) => {
+      await storageService.setItem('printer', {
+        address,
+      });
+      onPrintReceipt && onPrintReceipt(address);
+      handleClose();
+    },
+    [onPrintReceipt, storageService, handleClose],
+  );
+
   const handleEnableBluetooth = useCallback(() => {
     BluetoothManager.enableBluetooth().then(
-      (r: any[]) => {
+      async (r: any[]) => {
         var paired = [];
+        const savedPrinter = (await storageService.getItem('printer')) as {
+          address: string;
+        };
+        if (savedPrinter) {
+          handlePrintReceipt(savedPrinter.address);
+          return;
+        }
         if (r && r.length > 0) {
           for (var i = 0; i < r.length; i++) {
             try {
@@ -107,21 +111,7 @@ export const BluetoothModal = ({
         Alert.alert('Error', JSON.stringify(errorInfo));
       },
     );
-  }, [handleBluetoothScan]);
-
-  const handlePrintReceipt = useCallback(
-    async (address?: string) => {
-      const savedPrinter = (await storageService.getItem('printer')) as {
-        address: string;
-      };
-      if (savedPrinter) {
-        onPrintReceipt && onPrintReceipt(savedPrinter.address);
-      } else {
-        onPrintReceipt && onPrintReceipt(address);
-      }
-    },
-    [onPrintReceipt, storageService],
-  );
+  }, [handleBluetoothScan, handlePrintReceipt, storageService]);
 
   const handleConnect = useCallback(
     (rowData) => {
@@ -265,7 +255,7 @@ export const BluetoothModal = ({
 
   const renderDeviceList = useCallback(() => {
     return (
-      <ScrollView style={applyStyles('pb-xl')}>
+      <ScrollView style={applyStyles('pb-xl')} persistentScrollbar={true}>
         <View
           style={applyStyles('p-sm', {
             borderBottomWidth: 1,
@@ -313,96 +303,6 @@ export const BluetoothModal = ({
       </ScrollView>
     );
   }, [devices, handleBluetoothScan, renderBluetoothDevice]);
-
-  const renderPrintInProgress = useCallback(() => {
-    return (
-      <View
-        style={applyStyles('px-lg pb-xl items-center justify-center', {
-          paddingTop: 48,
-        })}>
-        <Icon
-          size={48}
-          name="printer"
-          type="feathericons"
-          color={colors['gray-50']}
-          style={applyStyles('mb-lg')}
-        />
-        <Text
-          style={applyStyles('text-400 text-center pb-xl', {
-            fontSize: 16,
-            color: colors['gray-200'],
-          })}>
-          Print in progress...
-        </Text>
-        <Button
-          title="Cancel"
-          onPress={handleClose}
-          style={applyStyles('w-full')}
-        />
-      </View>
-    );
-  }, [handleClose]);
-
-  const renderPrintSuccess = useCallback(() => {
-    return (
-      <View
-        style={applyStyles('px-lg pb-xl items-center justify-center', {
-          paddingTop: 48,
-        })}>
-        <Icon
-          size={48}
-          name="check-circle"
-          type="feathericons"
-          color={colors.primary}
-          style={applyStyles('mb-lg')}
-        />
-        <Text
-          style={applyStyles('text-400 text-center pb-xl', {
-            fontSize: 16,
-            color: colors['gray-200'],
-          })}>
-          Print Successful
-        </Text>
-        <Button
-          title="Done"
-          onPress={handleClose}
-          style={applyStyles('w-full')}
-        />
-      </View>
-    );
-  }, [handleClose]);
-
-  const renderPrintError = useCallback(() => {
-    return (
-      <View
-        style={applyStyles('px-lg pb-xl items-center justify-center', {
-          paddingTop: 48,
-        })}>
-        <Icon
-          size={48}
-          name="x-circle"
-          type="feathericons"
-          color={colors.primary}
-          style={applyStyles('mb-lg')}
-        />
-        <Text
-          style={applyStyles('text-400 text-center pb-xl px-xl', {
-            fontSize: 16,
-            color: colors['gray-200'],
-          })}>
-          We encountered an error while trying to print.
-        </Text>
-        <View style={applyStyles('flex-row w-full justify-space-between')}>
-          <View style={applyStyles({width: '48%'})}>
-            <Button title="Cancel" variantColor="clear" onPress={handleClose} />
-          </View>
-          <View style={applyStyles({width: '48%'})}>
-            <Button title="Retry" onPress={handlePrintReceipt} />
-          </View>
-        </View>
-      </View>
-    );
-  }, [handleClose, handlePrintReceipt]);
 
   useEffect(() => {
     BluetoothManager.isBluetoothEnabled().then(
@@ -475,28 +375,7 @@ export const BluetoothModal = ({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (print) {
-      setIsPrinting(true);
-      setSection(2);
-    }
-  }, [print]);
-
-  useEffect(() => {
-    if (success) {
-      setSection(3);
-      setIsPrintSuccess(true);
-    }
-  }, [success]);
-
-  useEffect(() => {
-    if (error) {
-      setIsPrintError(true);
-      setSection(4);
-    }
-  }, [error]);
+  }, [visible]);
 
   return (
     <Modal
@@ -530,9 +409,6 @@ export const BluetoothModal = ({
           <View>
             {section === 0 && renderSetupBluetooth()}
             {section === 1 && renderDeviceList()}
-            {section === 2 && isPrinting && renderPrintInProgress()}
-            {section === 3 && isPrintSuccess && renderPrintSuccess()}
-            {section === 4 && isPrintError && renderPrintError()}
           </View>
         )}
       </View>

@@ -1,12 +1,26 @@
 import {useCallback, useEffect, useRef, useState} from 'react';
-import {SignalEvent} from 'pubnub';
+import {MessageEvent, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../realm';
 import {useErrorHandler} from '@/services/error-boundary';
+import {
+  getConversationService,
+  getMessageService,
+  getNotificationService,
+  getPubNubService,
+} from '@/services';
+import {Notification} from '@/services/notification';
+import {IContact, IConversation, IMessage} from '@/models';
+import {getBaseModelValues} from '@/helpers/models';
+import Realm from 'realm';
+import {retryPromise} from '@/helpers/utils';
+import {MessageActionEvent} from 'types/pubnub';
+import {useNavigation} from '@react-navigation/native';
+import {useModal} from '@/helpers/hocs';
 
 export const useTyping = (channel: string, input: string = '') => {
   const pubNub = usePubNub();
-  const realm = useRealm();
+  useRealm();
   const [reset, setReset] = useState(true);
   const [isTyping, setIsTyping] = useState(false);
   const [typingMessage, setTypingMessage] = useState('');
@@ -78,29 +92,183 @@ export const useTyping = (channel: string, input: string = '') => {
     }
   }, [reset, input, isTyping, startTyping, stopTyping]);
   useEffect(() => {
-    if (pubNub) {
-      const listener = {
-        signal: (envelope: SignalEvent) => {
-          if (
-            channel === envelope.channel &&
-            envelope.message === 'TYPING_ON' &&
-            envelope.publisher !== pubNub.getUUID()
-          ) {
-            setTypingMessage('typing...');
-          } else {
-            setTypingMessage('');
-          }
-        },
-      };
-      // Add the listener to pubNub instance and subscribe to `chat` channel.
-      pubNub.addListener(listener);
-      // We need to return a function that will handle unsubscription on unmount
-      return () => {
-        pubNub.removeListener(listener);
-      };
-    }
-  }, [channel, pubNub, realm]);
+    return getPubNubService().addSignalEventListener(
+      (envelope: SignalEvent) => {
+        if (
+          channel === envelope.channel &&
+          envelope.message === 'TYPING_ON' &&
+          envelope.publisher !== pubNub.getUUID()
+        ) {
+          setTypingMessage('typing...');
+        } else {
+          setTypingMessage('');
+        }
+      },
+    );
+  }, [channel, pubNub]);
   return typingMessage;
+};
+
+export const useChat = () => {
+  const navigation = useNavigation();
+  const {openModal} = useModal();
+  const realm = useRealm();
+  const pubNub = usePubNub();
+  const handleError = useErrorHandler();
+
+  useCallback(async () => {
+    const closeModal = openModal?.('loading', {text: 'Restoring messages...'});
+    try {
+      await getMessageService().restoreAllMessages();
+    } catch (e) {
+      handleError(e);
+    }
+    closeModal?.();
+  }, [handleError, openModal]);
+
+  useEffect(() => {
+    return getConversationService().setUpSubscriptions();
+  }, []);
+
+  useEffect(() => {
+    getConversationService().setUpConversationNotification().catch(handleError);
+  }, [handleError]);
+
+  useEffect(() => {
+    getConversationService().restoreAllConversations().catch(handleError);
+  }, [handleError]);
+
+  useEffect(() => {
+    const notificationService = getNotificationService();
+    return notificationService.addEventListener(
+      (notification: Notification) => {
+        if (!notification.foreground) {
+          const conversation = getConversationService().getConversationByChannel(
+            notification.channel,
+          ) as IConversation;
+          navigation.navigate('Chat', conversation);
+          notificationService.cancelAllLocalNotifications();
+        }
+      },
+    );
+  }, [navigation]);
+
+  useEffect(() => {
+    const pubNubService = getPubNubService();
+    return pubNubService.addMessageEventListener(async (evt: MessageEvent) => {
+      const {channel, publisher, timetoken} = evt;
+      const message = evt.message as IMessage;
+      try {
+        if (publisher !== pubNub.getUUID()) {
+          let lastMessage: IMessage;
+          realm.write(() => {
+            lastMessage = realm.create<IMessage>(
+              'Message',
+              {
+                ...message,
+                timetoken: String(timetoken),
+                ...getBaseModelValues(),
+              },
+              Realm.UpdateMode.Modified,
+            );
+          });
+          let conversation: IConversation = realm
+            .objects<IConversation>('Conversation')
+            .filtered(`channel = "${channel}"`)[0];
+          if (!conversation) {
+            const response = await pubNub.objects.getChannelMetadata({
+              channel,
+              include: {customFields: true},
+            });
+            conversation = await getConversationService().getConversationFromChannelMetadata(
+              response.data,
+            );
+            realm.write(() => {
+              if (conversation.type === '1-1') {
+                const contact = realm
+                  .objects<IContact>('Contact')
+                  .filtered(`mobile = "${conversation.name}"`)[0];
+                if (contact) {
+                  conversation.name = contact.fullName;
+                  contact.channel = conversation.channel;
+                }
+              }
+              realm.create<IConversation>(
+                'Conversation',
+                {
+                  ...conversation,
+                  lastMessage,
+                  ...getBaseModelValues(),
+                },
+                Realm.UpdateMode.Modified,
+              );
+            });
+          } else {
+            realm.write(() => {
+              realm.create(
+                'Conversation',
+                {
+                  channel,
+                  lastMessage,
+                  ...getBaseModelValues(),
+                },
+                Realm.UpdateMode.Modified,
+              );
+            });
+          }
+          retryPromise(() => {
+            return new Promise<any>((resolve, reject) => {
+              pubNub.addMessageAction(
+                {
+                  channel,
+                  messageTimetoken: timetoken,
+                  action: {type: 'receipt', value: 'message_delivered'},
+                },
+                (status, response) => {
+                  if (status.error) {
+                    reject(status);
+                  } else {
+                    resolve(response);
+                  }
+                },
+              );
+            });
+          }).then((response) => {
+            realm.write(() => {
+              lastMessage.delivered_timetoken = String(response.timetoken);
+            });
+          });
+        }
+      } catch (e) {
+        handleError(e);
+      }
+    });
+  }, [handleError, pubNub, realm]);
+
+  useEffect(() => {
+    const pubNubService = getPubNubService();
+    return pubNubService.addMessageActionEventListener(
+      (evt: MessageActionEvent) => {
+        try {
+          if (
+            evt.data.value === 'message_delivered' &&
+            evt.publisher !== pubNub.getUUID()
+          ) {
+            const message = realm
+              .objects<IMessage>('Message')
+              .filtered(`timetoken = "${evt.data.messageTimetoken}"`)[0];
+            if (message) {
+              realm.write(() => {
+                message.delivered_timetoken = evt.data.actionTimetoken;
+              });
+            }
+          }
+        } catch (e) {
+          handleError(e);
+        }
+      },
+    );
+  }, [handleError, pubNub, realm]);
 };
 
 export * from './service';
