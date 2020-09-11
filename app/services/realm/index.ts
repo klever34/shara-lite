@@ -18,8 +18,10 @@ import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
+import {Address} from '@/models/Address';
 
 export const schema = [
+  Address,
   Contact,
   Conversation,
   Customer,

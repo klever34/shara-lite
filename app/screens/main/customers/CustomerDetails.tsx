@@ -27,6 +27,7 @@ const CustomerDetails = ({route}: {route: any}) => {
   useScreenRecord();
   const navigation = useNavigation();
   const {customer} = route.params;
+  console.log(customer);
 
   useLayoutEffect(() => {
     navigation.setOptions({
