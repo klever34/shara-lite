@@ -270,11 +270,9 @@ export function ReceiptDetailsModal(props: Props) {
           `Paid: ${currencyCode} ${numberWithCommas(totalAmountPaid)}\n`,
           {},
         );
-        receipt?.credit_amount &&
+        creditAmountLeft &&
           (await BluetoothEscposPrinter.printText(
-            `Balance: ${currencyCode} ${numberWithCommas(
-              receipt?.credit_amount,
-            )}\n`,
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmountLeft)}\n`,
             {},
           ));
 
@@ -312,6 +310,7 @@ export function ReceiptDetailsModal(props: Props) {
       receipt,
       user,
       totalAmountPaid,
+      creditAmountLeft,
     ],
   );
 
