@@ -101,7 +101,7 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     }
-  }, [activeReceipt, user]);
+  }, [activeReceipt, creditAmountLeft, totalAmountPaid, user]);
 
   const handleEmailShare = useCallback(
     async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
