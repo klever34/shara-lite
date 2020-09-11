@@ -2,6 +2,7 @@ import {IPayment} from './Payment';
 import {IReceipt} from './Receipt';
 import {ICredit} from './Credit';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
+import {IAddress} from '@/models/Address';
 
 export interface ICustomer extends BaseModelInterface {
   name: string;
@@ -9,6 +10,7 @@ export interface ICustomer extends BaseModelInterface {
   receipts?: IReceipt[];
   payments?: IPayment[];
   credits?: ICredit[];
+  addresses?: IAddress[];
 }
 
 export const modelName = 'Customer';

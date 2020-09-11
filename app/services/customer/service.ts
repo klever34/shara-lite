@@ -1,6 +1,6 @@
-import {ICustomer, modelName} from '../models';
+import {ICustomer, modelName} from '../../models';
 import Realm, {UpdateMode} from 'realm';
-import {getBaseModelValues} from '../helpers/models';
+import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
 import {ObjectId} from 'bson';
 
@@ -35,6 +35,31 @@ export const saveCustomer = ({
   });
 
   return customerDetails;
+};
+
+export const updateCustomer = ({
+  realm,
+  customer,
+  updates,
+}: {
+  realm: Realm;
+  customer: ICustomer;
+  updates: Partial<ICustomer>;
+}) => {
+  const updatedCustomer = {
+    _id: customer._id,
+    ...updates,
+  };
+
+  const updateCustomerInDb = () => {
+    realm.create(modelName, updatedCustomer, UpdateMode.Modified);
+  };
+
+  if (realm.isInTransaction) {
+    updateCustomerInDb();
+  } else {
+    realm.write(updateCustomerInDb);
+  }
 };
 
 export const getCustomer = ({

@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext} from 'react';
 import {Linking, Platform, ScrollView, View, Text} from 'react-native';
 import {applyStyles, renderList} from '@/helpers/utils';
 import {colors} from '@/styles';
@@ -19,13 +19,18 @@ import EmptyState from '@/components/EmptyState';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IAddress} from '@/models/Address';
 import {getBaseModelValues} from '@/helpers/models';
+import {CustomerContext, updateCustomer} from '@/services/customer';
+import {ICustomer} from '@/models';
+import {useRealm} from '@/services/realm';
 
 type DetailsTabProps = ModalWrapperFields & {};
 
 const DetailsTab = ({openModal}: DetailsTabProps) => {
+  const customer = useContext(CustomerContext);
+  const {addresses = []} = customer || {};
   const {currentLocation} = useGeolocation();
   const handleError = useErrorHandler();
-  const [addresses, setAddresses] = useState<IAddress[]>([]);
+  const realm = useRealm();
   const handleSaveAddress = useCallback(
     (
       nextAddress: IAddress = {
@@ -83,24 +88,29 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                 />
                 <Button
                   onPress={() => {
-                    if (nextAddress.text) {
+                    if (nextAddress.text && customer) {
                       if (mapAddress && currentLocation) {
                         nextAddress.coordinates = `${currentLocation.latitude},${currentLocation.longitude}`;
                       }
-                      setAddresses((prevAddresses) => {
-                        const index = prevAddresses.findIndex(
-                          (prevAddress) => prevAddress._id === nextAddress._id,
-                        );
-                        console.log('index', index);
-                        if (index === -1) {
-                          return [...prevAddresses, nextAddress];
-                        }
-                        return [
-                          ...prevAddresses.slice(0, index),
-                          nextAddress,
-                          ...prevAddresses.slice(index + 1),
-                        ];
-                      });
+                      const prevAddresses = addresses;
+                      const index = prevAddresses.findIndex(
+                        (prevAddress) => prevAddress._id === nextAddress._id,
+                      );
+                      let updates: Partial<ICustomer>;
+                      if (index === -1) {
+                        updates = {
+                          addresses: [...prevAddresses, nextAddress],
+                        };
+                      } else {
+                        updates = {
+                          addresses: [
+                            ...prevAddresses.slice(0, index),
+                            nextAddress,
+                            ...prevAddresses.slice(index + 1),
+                          ],
+                        };
+                      }
+                      updateCustomer({realm, customer, updates});
                     }
                     closeModal();
                   }}
@@ -113,31 +123,36 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
         },
       });
     },
-    [currentLocation, openModal],
+    [addresses, currentLocation, customer, openModal, realm],
   );
   const handleMapAddress = useCallback(
     (address) => {
-      setAddresses((prevLocations) => {
-        const index = prevLocations.findIndex(
-          (prevLocation) => prevLocation._id === address._id,
-        );
-        if (index === -1) {
-          return prevLocations;
-        }
-        if (!currentLocation) {
-          return prevLocations;
-        }
-        return [
-          ...prevLocations.slice(0, index),
+      if (!customer) {
+        return;
+      }
+      const prevAddresses = addresses;
+      const index = prevAddresses.findIndex(
+        (prevLocation) => prevLocation._id === address._id,
+      );
+      if (index === -1) {
+        return;
+      }
+      if (!currentLocation) {
+        return;
+      }
+      const updates: Partial<ICustomer> = {
+        addresses: [
+          ...prevAddresses.slice(0, index),
           {
             ...address,
             coordinates: `${currentLocation.latitude},${currentLocation.longitude}`,
           },
-          ...prevLocations.slice(index + 1),
-        ];
-      });
+          ...prevAddresses.slice(index + 1),
+        ],
+      };
+      updateCustomer({realm, customer, updates});
     },
-    [currentLocation],
+    [addresses, currentLocation, customer, realm],
   );
   return (
     <ScrollView
