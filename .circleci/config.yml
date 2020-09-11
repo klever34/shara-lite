@@ -177,15 +177,6 @@ workflows:
           context: shara-beta
           lane: play
           track: beta
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - master
-      - fastlane:
-          context: shara-beta
-          lane: internal
           gradleTask: assembleProductionRelease
           requires:
             - test
@@ -195,8 +186,7 @@ workflows:
                 - master
       - fastlane:
           context: shara-beta
-          lane: testlab
-          testBuild: true
+          lane: internal
           gradleTask: assembleProductionRelease
           requires:
             - test
