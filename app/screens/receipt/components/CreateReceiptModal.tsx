@@ -1,5 +1,6 @@
 import {Button, PaymentMethodSelect} from '@/components';
 import Icon from '@/components/Icon';
+import TextInput from '@/components/TextInput';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import BottomHalfModal from '@/modals/BottomHalfModal';
@@ -16,10 +17,15 @@ type Props = {
 export const CreateReceiptModal = (props: Props) => {
   const {visible, closeModal} = props;
 
+  const [amountPaid, setAmountPaid] = useState('');
   const [paymentMethod, setPaymentMethod] = useState<string[]>([]);
 
   const handlePaymentMethodChange = useCallback((value: string[]) => {
     setPaymentMethod(value);
+  }, []);
+
+  const handleAmountPaidChange = useCallback((text: string) => {
+    setAmountPaid(text);
   }, []);
 
   const renderContent = useCallback(
@@ -104,12 +110,28 @@ export const CreateReceiptModal = (props: Props) => {
               </View>
 
               <View style={applyStyles({paddingBottom: 32})}>
-                <View style={applyStyles('flex-row items-center')}>
+                <View style={applyStyles('pb-xl flex-row items-center')}>
                   <Text style={applyStyles('text-400')}>Paid with:</Text>
                   <View style={applyStyles('ml-sm')}>
                     <PaymentMethodSelect
                       value={paymentMethod}
                       onChange={handlePaymentMethodChange}
+                    />
+                  </View>
+                </View>
+                <View style={applyStyles('flex-row items-center')}>
+                  <Text style={applyStyles('text-400')}>Paid:</Text>
+                  <View style={applyStyles('ml-sm')}>
+                    <TextInput
+                      value={amountPaid}
+                      style={applyStyles('px-lg', {
+                        height: 48,
+                        width: 200,
+                        borderWidth: 1,
+                        fontFamily: 'Rubik-Regular',
+                        borderColor: colors['gray-50'],
+                      })}
+                      onChangeText={handleAmountPaidChange}
                     />
                   </View>
                 </View>
@@ -121,7 +143,12 @@ export const CreateReceiptModal = (props: Props) => {
         </View>
       );
     },
-    [paymentMethod, handlePaymentMethodChange],
+    [
+      amountPaid,
+      paymentMethod,
+      handlePaymentMethodChange,
+      handleAmountPaidChange,
+    ],
   );
 
   return (
