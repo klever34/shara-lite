@@ -11,6 +11,7 @@ import Touchable from '../../../components/Touchable';
 import {getAuthService} from '../../../services';
 import {BusinessSetup} from '../../BusinessSetup';
 import {useScreenRecord} from '../../../services/analytics';
+import {CreateReceiptModal} from '@/screens/receipt';
 
 export const BusinessTab = () => {
   useScreenRecord();
@@ -246,6 +247,7 @@ export const BusinessTab = () => {
         visible={isBusinessSetupModalOpen}
         onClose={() => setIsBusinessSetupModalOpen(false)}
       />
+      <CreateReceiptModal visible={true} closeModal={() => {}} />
     </View>
   );
 };
