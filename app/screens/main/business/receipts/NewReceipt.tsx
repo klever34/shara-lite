@@ -71,10 +71,22 @@ export const NewReceipt = () => {
     setQuantity(item);
   }, []);
 
-  const handleSelectProduct = useCallback((item: IProduct) => {
-    setSelectedProduct(item);
-    setPrice(item?.price);
-  }, []);
+  const handleSelectProduct = useCallback(
+    (item: IProduct) => {
+      const addedItem = receipt.find(
+        (receiptItem) =>
+          receiptItem?.product &&
+          receiptItem?.product?._id?.toString() === item?._id?.toString(),
+      );
+      console.log(addedItem);
+      if (addedItem) {
+        setQuantity(addedItem.quantity.toString());
+      }
+      setSelectedProduct(item);
+      setPrice(item?.price);
+    },
+    [receipt],
+  );
 
   const handleOpenSummaryModal = useCallback(() => {
     setIsSummaryModalOpen(true);
@@ -124,7 +136,7 @@ export const NewReceipt = () => {
             if (item._id?.toString() === product._id?.toString()) {
               return {
                 ...item,
-                quantity: item.quantity + parseFloat(quantity),
+                quantity: parseFloat(quantity),
               };
             }
             return item;
@@ -137,10 +149,7 @@ export const NewReceipt = () => {
       setPrice(undefined);
       setQuantity('');
     } else {
-      Alert.alert(
-        'Info',
-        'Please select at least one product item with quantity',
-      );
+      Alert.alert('Info', 'Please add product quantity');
     }
   }, [price, quantity, receipt, selectedProduct]);
 
@@ -174,40 +183,9 @@ export const NewReceipt = () => {
     const priceCondition = price || price === 0 ? true : false;
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
     if (selectedProduct && quantity && quantityCondition && priceCondition) {
-      const product = {
-        ...selectedProduct,
-        _id: selectedProduct._id,
-        price,
-        product: selectedProduct,
-        name: selectedProduct.name,
-        quantity: parseFloat(quantity),
-      } as IReceiptItem;
-
       handleAddItem();
-
-      if (
-        receipt
-          .map((item) => item._id?.toString())
-          .includes(product?._id?.toString())
-      ) {
-        items = receipt.map((item) => {
-          if (item._id?.toString() === product._id?.toString()) {
-            return {
-              ...item,
-              quantity: item.quantity + parseFloat(quantity),
-            };
-          }
-          return item;
-        });
-      } else {
-        items = [product, ...receipt];
-      }
-    }
-    if (
-      (selectedProduct && quantity && quantityCondition && priceCondition) ||
-      items.length
-    ) {
-      setReceipt(items);
+      handleOpenSummaryModal();
+    } else if (items.length) {
       setSelectedProduct(null);
       handleOpenSummaryModal();
     } else {
