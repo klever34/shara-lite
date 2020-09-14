@@ -14,12 +14,12 @@ import {useAppNavigation} from '@/services/navigation';
 type Fields = {
   mobile: string;
   password: string;
-  countryCode: string | null;
+  countryCode?: string;
 };
 
 export const Login = () => {
   const {updateLocalRealm} = useContext(RealmContext);
-  const {callingCode, countryCode2} = useIPGeolocation();
+  const {callingCode} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
     FormDefaults.get('login', {countryCode: callingCode}) as Fields,
@@ -79,7 +79,6 @@ export const Login = () => {
           <PhoneNumberField
             value={fields.mobile}
             countryCode={fields.countryCode}
-            countryCode2={countryCode2}
             onChangeText={(data) => onChangeMobile(data)}
           />
         </View>

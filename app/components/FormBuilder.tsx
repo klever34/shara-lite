@@ -3,14 +3,23 @@ import TextInput, {TextInputProps} from '@/components/TextInput';
 import {View} from 'react-native';
 import {Button, ButtonProps} from '@/components/Button';
 import {useAsync} from '@/services/api';
+import {
+  PhoneNumberField,
+  PhoneNumberFieldProps,
+} from '@/components/PhoneNumberField';
+import {applyStyles} from '@/helpers/utils';
+import {PasswordField} from '@/components/PasswordField';
 
 type FormFieldProps = {
   text: TextInputProps;
+  mobile: PhoneNumberFieldProps;
+  password: PhoneNumberFieldProps;
 };
 
 export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
   type: K;
   props: FormFieldProps[K];
+  required?: boolean;
 };
 
 export type FormFields = {
@@ -19,9 +28,9 @@ export type FormFields = {
 
 type FormBuilderProps<fields extends FormFields = FormFields> = {
   fields: fields;
-  onInputChange?: (values: {[name: string]: string}) => void;
+  onInputChange?: (values: {[name: string]: any}) => void;
   submitBtn?: ButtonProps;
-  onSubmit?: (values: {[name: string]: string}) => Promise<any>;
+  onSubmit?: (values: {[name: string]: any}) => Promise<any>;
 };
 
 export const FormBuilder = ({
@@ -33,37 +42,61 @@ export const FormBuilder = ({
   const names = useMemo(() => {
     return Object.keys(fields);
   }, [fields]);
-  const [values, setValues] = useState(
+  const [values, setValues] = useState<{[name: string]: any}>(
     names.reduce((acc, name) => {
       const {
-        props: {initialValue},
+        props: {value = ''},
       } = fields[name];
       return {
         ...acc,
-        [name]: initialValue ?? '',
+        [name]: value,
       };
     }, {}),
   );
   useEffect(() => {
     onInputChange?.(values);
   }, [onInputChange, values]);
-  const _onSubmitBtnPress = useCallback(
-    () => onSubmit?.(values) ?? Promise.resolve(),
-    [onSubmit, values],
+  const _onSubmitBtnPress = useCallback(() => {
+    const formComplete = Object.keys(values).reduce((acc, name) => {
+      return acc && (!fields[name].required || !!values[name]);
+    }, true);
+    if (!formComplete) {
+      return Promise.resolve();
+    }
+    return onSubmit?.(values) ?? Promise.resolve();
+  }, [fields, onSubmit, values]);
+  const {loading, run: onSubmitBtnPress} = useAsync(_onSubmitBtnPress, {
+    defer: true,
+  });
+  const onChangeText = useCallback(
+    (name) => (value: any) => {
+      setValues((prevValues) => ({...prevValues, [name]: value}));
+    },
+    [],
   );
-  const {loading, run: onSubmitBtnPress} = useAsync(_onSubmitBtnPress);
   return (
     <View>
       {names.map((name) => {
-        const {type, props} = fields[name];
-        switch (type) {
+        const field = fields[name];
+        switch (field.type) {
           case 'text':
             return (
-              <TextInput
-                {...props}
-                onChangeText={(value) => {
-                  setValues((prevValues) => ({...prevValues, [name]: value}));
-                }}
+              <TextInput {...field.props} onChangeText={onChangeText(name)} />
+            );
+          case 'mobile':
+            return (
+              <PhoneNumberField
+                {...field.props}
+                containerStyle={applyStyles('mb-24')}
+                onChangeText={onChangeText(name)}
+              />
+            );
+          case 'password':
+            return (
+              <PasswordField
+                {...field.props}
+                containerStyle={applyStyles('mb-24')}
+                onChangeText={onChangeText(name)}
               />
             );
           default:

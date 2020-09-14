@@ -1,26 +1,15 @@
 import {useNavigation, StackActions} from '@react-navigation/native';
 import {useCallback, useMemo} from 'react';
+import {NavigationProp} from '@react-navigation/core/lib/typescript/src/types';
+import {ParamListBase} from '@react-navigation/routers';
 
-export const useAppNavigation = () => {
-  const navigation = useNavigation();
-  const handleNavigate = useCallback(
-    (route: string) => {
-      navigation.reset({
-        index: 0,
-        routes: [{name: route}],
-      });
-    },
-    [navigation],
-  );
+export const useAppNavigation = <T extends NavigationProp<ParamListBase>>() => {
+  const navigation = useNavigation<T>();
   const replace = useCallback(
     (route: string, params?: {[key: string]: any}) => {
       navigation.dispatch(StackActions.replace(route, params));
     },
     [navigation],
   );
-  return useMemo(() => ({...navigation, replace, handleNavigate}), [
-    handleNavigate,
-    navigation,
-    replace,
-  ]);
+  return useMemo(() => ({...navigation, replace}), [navigation, replace]);
 };

@@ -1,14 +1,14 @@
 import React, {useState} from 'react';
 import {
   StyleSheet,
-  TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
   View,
 } from 'react-native';
-import {colors} from '../styles';
-import {applyStyles} from '../helpers/utils';
+import {colors} from '@/styles';
+import {applyStyles} from '@/helpers/utils';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
+import {FloatingLabelInput} from '@/components/FloatingLabelInput';
 
 export type TextInputProps = RNTextInputProps & {
   icon?: IconProps & {
@@ -16,29 +16,28 @@ export type TextInputProps = RNTextInputProps & {
     inactiveStyle?: string;
     onPress?: (active: boolean) => void;
   };
-  initialValue?: string;
   initialToggle?: boolean;
 };
 
 const TextInput = ({
   style,
   icon,
-  initialValue = '',
+  value: initialValue = '',
   initialToggle = false,
   ...restProps
 }: TextInputProps) => {
   const [iconActive, setIconActive] = useState(initialToggle);
   const [value, setValue] = useState(initialValue);
   return (
-    <View style={applyStyles('relative mb-24 w-full')}>
-      <RNTextInput
+    <View style={applyStyles('relative mb-24 w-full', icon && 'pb-48')}>
+      <FloatingLabelInput
         {...restProps}
         value={value}
         onChangeText={(nextValue) => {
           restProps.onChangeText?.(nextValue);
           setValue(nextValue);
         }}
-        style={applyStyles(styles.inputField, style, icon && 'bg-white mr-48')}
+        style={applyStyles(styles.inputField, style)}
       />
       {icon && (
         <Touchable

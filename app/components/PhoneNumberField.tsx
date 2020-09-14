@@ -3,40 +3,42 @@ import React from 'react';
 import {
   StyleSheet,
   TextInput,
-  TextInputProperties,
   View,
   Text,
+  TextInputProps,
+  ViewStyle,
 } from 'react-native';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
-import {applyStyles} from '../helpers/utils';
-import {colors} from '../styles';
+import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import Icon from './Icon';
 import {FloatingLabelInputProps} from './FloatingLabelInput';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 
 export type PhoneNumber = {
   code: string;
   number: string;
 };
 
-type Props = {
-  value: string;
-  countryCode: string | null;
-  countryCode2: string;
+export type PhoneNumberFieldProps = {
+  countryCode?: string;
   onChangeText(number: PhoneNumber): void;
   isInvalid?: FloatingLabelInputProps['isInvalid'];
   errorMessage?: FloatingLabelInputProps['errorMessage'];
-} & Omit<TextInputProperties, 'onChangeText'>;
+  containerStyle?: ViewStyle;
+} & Omit<TextInputProps, 'onChangeText'>;
 
-export const PhoneNumberField = (props: Props) => {
+export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
   const {
     value,
     isInvalid,
     countryCode,
-    countryCode2,
     onChangeText,
     errorMessage,
+    containerStyle,
     ...rest
   } = props;
+  const {countryCode2} = useIPGeolocation();
   const [phoneNumber, setPhoneNumber] = React.useState(value || '');
   const [callingCode, setCallingCode] = React.useState(countryCode || '234');
   const [country, setCountry] = React.useState<Country>({} as Country);
@@ -57,7 +59,7 @@ export const PhoneNumberField = (props: Props) => {
   const inputContainerStyle = isInvalid ? {top: 10} : {};
 
   return (
-    <View style={styles.container}>
+    <View style={applyStyles(styles.container, containerStyle)}>
       <View style={applyStyles(styles.picker, pickerStyles)}>
         <CountryPicker
           withModal

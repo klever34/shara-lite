@@ -37,7 +37,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
         address: {
           type: 'text',
           props: {
-            initialValue: addressText,
+            value: addressText,
             initialToggle: mapAddress,
             autoFocus: true,
             placeholder: 'Type in address',

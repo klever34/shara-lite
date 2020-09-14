@@ -24,7 +24,7 @@ type Fields = {
 
 export const Register = () => {
   const navigation = useAppNavigation();
-  const {callingCode, countryCode2} = useIPGeolocation();
+  const {callingCode} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
     FormDefaults.get('signup', {countryCode: callingCode}) as Fields,
@@ -93,7 +93,6 @@ export const Register = () => {
           <View style={applyStyles({paddingVertical: 18})}>
             <PhoneNumberField
               value={fields.mobile}
-              countryCode2={countryCode2}
               countryCode={fields.countryCode}
               onChangeText={(data) => onChangeMobile(data)}
             />

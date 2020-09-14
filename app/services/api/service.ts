@@ -6,10 +6,10 @@ import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 import {
   ApiResponse,
-  User,
-  GroupChatMember,
-  GroupChat,
   Business,
+  GroupChat,
+  GroupChatMember,
+  User,
 } from 'types/app';
 
 export type Requester = {
@@ -45,6 +45,12 @@ export interface IApiService {
   }): Promise<ApiResponse>;
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
+  forgotPassword(payload: {mobile: string}): Promise<ApiResponse>;
+  resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<ApiResponse>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -206,6 +212,27 @@ export class ApiService implements IApiService {
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  public async forgotPassword(payload: {mobile: string}): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/password-reset', payload);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<any> {
+    try {
+      const {data} = await this.requester.patch('/password-reset', payload);
+      console.log(data);
+    } catch (e) {
+      throw e;
     }
   }
 

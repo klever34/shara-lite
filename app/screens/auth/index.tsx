@@ -4,8 +4,17 @@ import {Login} from './Login';
 import {Register} from './Register';
 import {createStackNavigator} from '@react-navigation/stack';
 import ForgotPassword from '@/screens/auth/ForgotPassword';
+import ResetPassword from '@/screens/auth/ResetPassword';
 
-const AuthStack = createStackNavigator();
+export type AuthStackParamList = {
+  Welcome: undefined;
+  Login: undefined;
+  Register: undefined;
+  ForgotPassword: undefined;
+  ResetPassword: {mobile: string};
+};
+
+const AuthStack = createStackNavigator<AuthStackParamList>();
 
 const AuthScreens = () => {
   useEffect(() => {
@@ -35,6 +44,11 @@ const AuthScreens = () => {
       <AuthStack.Screen
         name="ForgotPassword"
         component={ForgotPassword}
+        options={{headerShown: false}}
+      />
+      <AuthStack.Screen
+        name="ResetPassword"
+        component={ResetPassword}
         options={{headerShown: false}}
       />
     </AuthStack.Navigator>

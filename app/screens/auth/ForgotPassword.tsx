@@ -1,8 +1,14 @@
 import React from 'react';
 import {AuthView} from '@/components/AuthView';
-import {FormBuilder} from '@/components';
+import {FormBuilder, PhoneNumber} from '@/components';
+import {getApiService} from '@/services';
+import {ToastAndroid} from 'react-native';
+import {useErrorHandler} from '@/services/error-boundary';
+import {useAppNavigation} from '@/services/navigation';
 
 const ForgotPassword = () => {
+  const handleError = useErrorHandler();
+  const navigation = useAppNavigation();
   return (
     <AuthView
       title="Forgot your password"
@@ -10,18 +16,24 @@ const ForgotPassword = () => {
       <FormBuilder
         fields={{
           mobile: {
-            type: 'text',
+            type: 'mobile',
             props: {autoFocus: true, placeholder: ''},
+            required: true,
           },
         }}
         submitBtn={{title: 'submit'}}
         onSubmit={(values) => {
-          return new Promise((resolve) => {
-            console.log(values);
-            setTimeout(() => {
-              resolve();
-            }, 2000);
-          });
+          const phoneNumber = values.mobile as PhoneNumber;
+          const mobile = `${phoneNumber.code}${phoneNumber.number}`;
+          return getApiService()
+            .forgotPassword({
+              mobile,
+            })
+            .then(({message}) => {
+              ToastAndroid.show(message, ToastAndroid.LONG);
+              navigation.replace('ResetPassword', {mobile});
+            })
+            .catch(handleError);
         }}
       />
     </AuthView>
