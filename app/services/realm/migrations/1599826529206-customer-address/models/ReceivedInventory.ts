@@ -1,7 +1,11 @@
-import {ISupplier} from './Supplier';
-import {BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IStockItem} from './StockItem';
-import {IDeliveryAgent} from './DeliveryAgent';
+import {IDeliveryAgent} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/DeliveryAgent';
+import {ISupplier} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Supplier';
+
+import {
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IStockItem} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/StockItem';
 
 export interface IReceivedInventory extends BaseModelInterface {
   supplier_name: string;

@@ -1,14 +1,14 @@
 import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models';
-import {IReceipt, modelName} from '../models/Receipt';
+import {ICustomer} from '@/models';
+import {IReceipt, modelName} from '@/models/Receipt';
 import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment, updatePayment} from './PaymentService';
-import {getBaseModelValues} from '../helpers/models';
+import {getBaseModelValues} from '@/helpers/models';
 import {saveCredit, updateCredit} from './CreditService';
-import {Customer, Payment} from '../../types/app';
-import {IReceiptItem} from '../models/ReceiptItem';
+import {Customer, Payment} from 'types/app';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
-import {saveCustomer} from './CustomerService';
+import {saveCustomer} from './customer/service';
 import {getAnalyticsService} from './index';
 import {restockProduct} from '@/services/ProductService';
 

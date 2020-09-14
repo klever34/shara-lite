@@ -6,7 +6,7 @@ import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 import {useScreenRecord} from '@/services/analytics';
-import {getCustomers, saveCustomer} from '@/services/CustomerService';
+import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
@@ -39,11 +39,10 @@ const CustomersTab = () => {
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       const customersData = getCustomers({realm});
       setMyCustomers(customersData);
     });
-    return unsubscribe;
   }, [navigation, realm]);
 
   const handleError = useErrorHandler();

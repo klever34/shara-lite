@@ -12,19 +12,22 @@ import {
 } from 'react-native';
 import {CreditPaymentForm, ContactsListModal} from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
-import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {saveCreditPayment} from '../../../../services/CreditPaymentService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {saveCreditPayment} from '@/services/CreditPaymentService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import Touchable from '../../../../components/Touchable';
 import Icon from '../../../../components/Icon';
-import {ICustomer} from '../../../../models';
+import {ICustomer} from '@/models';
 import {CustomersList} from '../receipts';
-import {updateReceipt} from '../../../../services/ReceiptService';
-import {IReceipt} from '../../../../models/Receipt';
-import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
-import {useScreenRecord} from '../../../../services/analytics';
+import {updateReceipt} from '@/services/ReceiptService';
+import {IReceipt} from '@/models/Receipt';
+import {
+  getCustomers,
+  saveCustomer,
+} from '../../../../services/customer/service';
+import {useScreenRecord} from '@/services/analytics';
 
 export const CreditDetails = ({route}: any) => {
   useScreenRecord();
