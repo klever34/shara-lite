@@ -23,12 +23,12 @@ const ResetPassword = () => {
           },
           password: {
             type: 'password',
-            props: {autoFocus: true, placeholder: 'Enter you new password'},
+            props: {placeholder: 'Enter you new password'},
             required: true,
           },
           repeat_password: {
             type: 'password',
-            props: {autoFocus: true, placeholder: 'Enter your password again'},
+            props: {placeholder: 'Enter your password again'},
             required: true,
           },
         }}
