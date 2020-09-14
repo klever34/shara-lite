@@ -38,7 +38,7 @@ const TextInput = ({
           restProps.onChangeText?.(nextValue);
           setValue(nextValue);
         }}
-        style={applyStyles(styles.inputField, style)}
+        style={applyStyles(styles.inputField, style, icon && 'bg-white mr-48')}
       />
       {icon && (
         <Touchable
