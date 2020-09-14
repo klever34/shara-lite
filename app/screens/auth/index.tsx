@@ -3,6 +3,7 @@ import {Welcome} from './Welcome';
 import {Login} from './Login';
 import {Register} from './Register';
 import {createStackNavigator} from '@react-navigation/stack';
+import ForgotPassword from '@/screens/auth/ForgotPassword';
 
 const AuthStack = createStackNavigator();
 
@@ -29,6 +30,11 @@ const AuthScreens = () => {
       <AuthStack.Screen
         name="Register"
         component={Register}
+        options={{headerShown: false}}
+      />
+      <AuthStack.Screen
+        name="ForgotPassword"
+        component={ForgotPassword}
         options={{headerShown: false}}
       />
     </AuthStack.Navigator>

@@ -1,27 +1,18 @@
-import {StackScreenProps} from '@react-navigation/stack';
 import React from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   Button,
   FloatingLabelInput,
   PasswordField,
   PhoneNumberField,
 } from '../../components';
-import Icon from '../../components/Icon';
-import Touchable from '../../components/Touchable';
-import {applyStyles} from '../../helpers/utils';
-import {RootStackParamList} from '../../index';
-import {getApiService} from '../../services';
-import {colors} from '../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {getApiService} from '@/services';
+import {colors} from '@/styles';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import {useAppNavigation} from '@/services/navigation';
+import {AuthView} from '@/components/AuthView';
 
 type Fields = {
   firstname: string;
@@ -31,9 +22,8 @@ type Fields = {
   countryCode: string;
 };
 
-export const Register = ({
-  navigation,
-}: StackScreenProps<RootStackParamList>) => {
+export const Register = () => {
+  const navigation = useAppNavigation();
   const {callingCode, countryCode2} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
@@ -67,21 +57,11 @@ export const Register = ({
       setLoading(true);
       await apiService.register(payload);
       setLoading(false);
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Login'}],
-      });
+      navigation.replace('Login');
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);
     }
-  };
-
-  const handleNavigate = (route: string) => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: route}],
-    });
   };
 
   const isButtonDisabled = () => {
@@ -89,23 +69,9 @@ export const Register = ({
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      keyboardShouldPersistTaps="always"
-      persistentScrollbar={true}>
-      <View style={styles.backButton}>
-        <Touchable onPress={() => handleNavigate('Welcome')}>
-          <View style={applyStyles({height: 40, width: 40})}>
-            <Icon size={24} type="feathericons" name="arrow-left" />
-          </View>
-        </Touchable>
-      </View>
-      <View style={applyStyles({marginBottom: 16})}>
-        <Text style={styles.heading}>Sign Up</Text>
-        <Text style={styles.description}>
-          Create an account to do business faster and better.
-        </Text>
-      </View>
+    <AuthView
+      title="Sign Up"
+      description="Create an account to do business faster and better.">
       <View>
         <View style={applyStyles({marginBottom: 32})}>
           <View style={styles.inputFieldSpacer}>
@@ -153,12 +119,12 @@ export const Register = ({
         />
         <TouchableOpacity
           style={styles.helpSection}
-          onPress={() => handleNavigate('Login')}>
+          onPress={() => navigation.replace('Login')}>
           <Text style={styles.helpSectionText}>Already have an account? </Text>
           <Text style={styles.helpSectionButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </AuthView>
   );
 };
 
