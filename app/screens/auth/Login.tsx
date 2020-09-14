@@ -99,7 +99,9 @@ export const Login = () => {
       <View style={applyStyles('mb-16')}>
         <TouchableOpacity
           style={styles.helpSection}
-          onPress={() => navigation.navigate('ForgotPassword')}>
+          onPress={() =>
+            navigation.navigate('ForgotPassword', {mobile: fields.mobile})
+          }>
           <Text style={styles.helpSectionText}>Forgot your password? </Text>
         </TouchableOpacity>
       </View>

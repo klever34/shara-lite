@@ -5,10 +5,13 @@ import {getApiService} from '@/services';
 import {ToastAndroid} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import {AuthStackParamList} from '@/screens/auth/index';
 
 const ForgotPassword = () => {
   const handleError = useErrorHandler();
   const navigation = useAppNavigation();
+  const {params} = useRoute<RouteProp<AuthStackParamList, 'ForgotPassword'>>();
   return (
     <AuthView
       title="Forgot your password"
@@ -17,7 +20,11 @@ const ForgotPassword = () => {
         fields={{
           mobile: {
             type: 'mobile',
-            props: {autoFocus: true, placeholder: ''},
+            props: {
+              autoFocus: true,
+              placeholder: '',
+              value: params?.mobile ?? '',
+            },
             required: true,
           },
         }}

@@ -10,7 +10,7 @@ export type AuthStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Register: undefined;
-  ForgotPassword: undefined;
+  ForgotPassword: {mobile?: string};
   ResetPassword: {mobile: string};
 };
 
