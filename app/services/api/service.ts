@@ -229,8 +229,7 @@ export class ApiService implements IApiService {
     password: string;
   }): Promise<any> {
     try {
-      const {data} = await this.requester.patch('/password-reset', payload);
-      console.log(data);
+      return await this.requester.patch('/password-reset', payload);
     } catch (e) {
       throw e;
     }
