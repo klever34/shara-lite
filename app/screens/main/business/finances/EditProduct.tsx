@@ -15,7 +15,7 @@ import HeaderRight from '../../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../..';
 import {useScreenRecord} from '../../../../services/analytics';
-import {Formik, FormikHelpers} from 'formik';
+import {Formik} from 'formik';
 import * as yup from 'yup';
 
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
@@ -34,8 +34,6 @@ export const EditProduct = ({
   const {product: productProps} = route.params;
   const [isLoading, setIsLoading] = useState(false);
 
-  const formInitialValues: Payload = {name: '', price: undefined};
-
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => <HeaderRight menuOptions={[]} />,
@@ -43,7 +41,7 @@ export const EditProduct = ({
   }, [navigation]);
 
   const onSubmit = useCallback(
-    (values: Payload, {resetForm}: FormikHelpers<Payload>) => {
+    (values: any, {resetForm}: any) => {
       setIsLoading(true);
       updateProduct({realm, product: productProps, updates: values});
       setIsLoading(false);
@@ -65,7 +63,11 @@ export const EditProduct = ({
       <Text style={styles.title}>Product Details</Text>
       <Formik
         onSubmit={onSubmit}
-        initialValues={formInitialValues}
+        initialValues={{
+          name: productProps.name,
+          sku: productProps.sku,
+          price: productProps.price,
+        }}
         validationSchema={formValidation}>
         {({
           values,

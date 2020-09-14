@@ -64,7 +64,7 @@ export const createRealm = async (options?: any): Promise<Realm> => {
       user: options.realmUser,
       partitionValue,
     };
-    config.path = `sync-user-data-${partitionValue}`;
+    config.path = `sync-user-data-${partitionValue}-v2`;
   }
 
   if (options && options.schemaVersion) {

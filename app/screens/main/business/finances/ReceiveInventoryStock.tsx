@@ -256,8 +256,8 @@ export const ReceiveInventoryStock = ({
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
             <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
-              {product.sku} - {product.name}{' '}
-              {product.weight ? `(${product.weight}))` : ''}
+              {product.sku ? `${product.sku} - ` : ''}
+              {product.name} {product.weight ? `(${product.weight}))` : ''}
             </Text>
           </View>
         </Touchable>

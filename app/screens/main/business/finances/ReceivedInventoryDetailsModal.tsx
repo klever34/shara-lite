@@ -42,7 +42,7 @@ export const ReceivedInventoryDetailsModal = (props: Props) => {
           style={applyStyles(summaryTableStyles['column-20'], {
             alignItems: 'flex-end',
           })}>
-          <Text style={summaryTableItemStyles.text}>{quantity}</Text>
+          <Text style={summaryTableItemStyles.text}>{quantity.toFixed(2)}</Text>
         </View>
         <View
           style={applyStyles(summaryTableStyles['column-40'], {
