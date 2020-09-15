@@ -53,6 +53,7 @@ export const FormBuilder = ({
       };
     }, {}),
   );
+  console.log(values);
   useEffect(() => {
     onInputChange?.(values);
   }, [onInputChange, values]);
@@ -78,23 +79,30 @@ export const FormBuilder = ({
     <View>
       {names.map((name) => {
         const field = fields[name];
+        if (field.type === 'text') {
+          console.log(field.props);
+        }
+        let fieldProps;
         switch (field.type) {
           case 'text':
+            fieldProps = field.props as TextInputProps;
             return (
-              <TextInput {...field.props} onChangeText={onChangeText(name)} />
+              <TextInput {...fieldProps} onChangeText={onChangeText(name)} />
             );
           case 'mobile':
+            fieldProps = field.props as PhoneNumberFieldProps;
             return (
               <PhoneNumberField
-                {...field.props}
+                {...fieldProps}
                 containerStyle={applyStyles('mb-24')}
                 onChangeText={onChangeText(name)}
               />
             );
           case 'password':
+            fieldProps = field.props as PasswordFieldProps;
             return (
               <PasswordField
-                {...field.props}
+                {...fieldProps}
                 containerStyle={applyStyles('mb-24')}
                 onChangeText={onChangeText(name)}
               />

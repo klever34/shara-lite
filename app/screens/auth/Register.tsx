@@ -92,8 +92,7 @@ export const Register = () => {
           </View>
           <View style={applyStyles({paddingVertical: 18})}>
             <PhoneNumberField
-              value={fields.mobile}
-              countryCode={fields.countryCode}
+              value={{number: fields.mobile, code: fields.countryCode}}
               onChangeText={(data) => onChangeMobile(data)}
             />
           </View>

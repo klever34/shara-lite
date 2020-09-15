@@ -14,7 +14,7 @@ import {useAppNavigation} from '@/services/navigation';
 type Fields = {
   mobile: string;
   password: string;
-  countryCode?: string;
+  countryCode: string;
 };
 
 export const Login = () => {
@@ -77,8 +77,7 @@ export const Login = () => {
       <View style={styles.form}>
         <View style={styles.inputField}>
           <PhoneNumberField
-            value={fields.mobile}
-            countryCode={fields.countryCode}
+            value={{number: fields.mobile, code: fields.countryCode}}
             onChangeText={(data) => onChangeMobile(data)}
           />
         </View>

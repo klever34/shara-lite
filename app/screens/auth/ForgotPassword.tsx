@@ -23,8 +23,7 @@ const ForgotPassword = () => {
             props: {
               autoFocus: true,
               placeholder: '',
-              value: params.mobile?.number,
-              countryCode: params.mobile?.code,
+              value: params.mobile,
             },
             required: true,
           },
