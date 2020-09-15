@@ -53,7 +53,6 @@ export const FormBuilder = ({
       };
     }, {}),
   );
-  console.log(values);
   useEffect(() => {
     onInputChange?.(values);
   }, [onInputChange, values]);
@@ -79,9 +78,6 @@ export const FormBuilder = ({
     <View>
       {names.map((name) => {
         const field = fields[name];
-        if (field.type === 'text') {
-          console.log(field.props);
-        }
         let fieldProps;
         switch (field.type) {
           case 'text':

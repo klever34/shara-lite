@@ -83,8 +83,6 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                 />
                 <Button
                   onPress={() => {
-                    console.log('addressText', addressText);
-                    console.log('customer', customer);
                     if (addressText && customer) {
                       let nextAddress: Partial<IAddress>;
                       if (!address) {
