@@ -8,12 +8,12 @@ import {
   PhoneNumberFieldProps,
 } from '@/components/PhoneNumberField';
 import {applyStyles} from '@/helpers/utils';
-import {PasswordField} from '@/components/PasswordField';
+import {PasswordField, PasswordFieldProps} from '@/components/PasswordField';
 
 type FormFieldProps = {
   text: TextInputProps;
   mobile: PhoneNumberFieldProps;
-  password: PhoneNumberFieldProps;
+  password: PasswordFieldProps;
 };
 
 export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {

@@ -5,12 +5,13 @@ import {Register} from './Register';
 import {createStackNavigator} from '@react-navigation/stack';
 import ForgotPassword from '@/screens/auth/ForgotPassword';
 import ResetPassword from '@/screens/auth/ResetPassword';
+import {PhoneNumber} from '@/components';
 
 export type AuthStackParamList = {
   Welcome: undefined;
   Login: undefined;
   Register: undefined;
-  ForgotPassword: {mobile?: string};
+  ForgotPassword: {mobile?: PhoneNumber};
   ResetPassword: {mobile: string};
 };
 

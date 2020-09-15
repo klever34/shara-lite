@@ -100,7 +100,9 @@ export const Login = () => {
         <TouchableOpacity
           style={styles.helpSection}
           onPress={() =>
-            navigation.navigate('ForgotPassword', {mobile: fields.mobile})
+            navigation.navigate('ForgotPassword', {
+              mobile: {number: fields.mobile, code: fields.countryCode},
+            })
           }>
           <Text style={styles.helpSectionText}>Forgot your password? </Text>
         </TouchableOpacity>
