@@ -203,7 +203,6 @@ export const ReceiveInventoryStock = ({
       ) {
         items = inventoryStock.map((item) => {
           if (item.product._id?.toString() === stock.product._id?.toString()) {
-            console.log(item);
             return {
               ...item,
               ...stock,
