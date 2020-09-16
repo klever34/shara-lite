@@ -61,7 +61,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                   style={applyStyles(
                     'text-primary uppercase text-center py-16 text-500',
                   )}>
-                  add address
+                  {address ? 'edit' : 'add'} address
                 </Text>
               </View>
               <View style={applyStyles('px-8')}>
