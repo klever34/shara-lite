@@ -136,105 +136,107 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
   return (
     <ScrollView
       style={applyStyles('p-lg', {backgroundColor: colors['gray-10']})}>
-      {currentLocation && (
-        <Card>
-          <CardHeader style={applyStyles('mb-md')}>Location Details</CardHeader>
-          {renderList<IAddress>(
-            addresses,
-            (address, index) => {
-              let {coordinates, text} = address;
-              if (!coordinates) {
-                coordinates = ',';
-              }
-              const [latitude, longitude] = coordinates.split(',');
-              return (
-                <View
-                  style={applyStyles(
-                    '',
-                    addresses.length - 1 !== index &&
-                      'mb-lg border-b-1 border-gray-20 pb-md',
-                  )}>
-                  {!!latitude && !!longitude && (
-                    <View
-                      style={applyStyles(
-                        'w-full rounded-8 overflow-hidden border-1 border-red-50 mb-md',
-                        {
-                          height: 128,
-                        },
-                      )}>
-                      <MapView
-                        onPress={() => {
-                          const scheme = Platform.select({
-                            ios: 'maps:0,0?q=',
-                            android: 'geo:0,0?q=',
-                          });
-                          const latLng = coordinates;
-                          const label = text;
-                          const url = Platform.select({
-                            ios: `${scheme}${label}@${latLng}`,
-                            android: `${scheme}${latLng}(${label})`,
-                          });
-                          if (url) {
-                            Linking.openURL(url).catch(handleError);
-                          }
-                        }}
-                        style={applyStyles('w-full h-full')}
-                        initialRegion={{
+      <Card>
+        <CardHeader style={applyStyles('mb-md')}>Location Details</CardHeader>
+        {renderList<IAddress>(
+          addresses,
+          (address, index) => {
+            let {coordinates, text} = address;
+            if (!coordinates) {
+              coordinates = ',';
+            }
+            const [latitude, longitude] = coordinates.split(',');
+            return (
+              <View
+                style={applyStyles(
+                  '',
+                  addresses.length - 1 !== index &&
+                    'mb-lg border-b-1 border-gray-20 pb-md',
+                )}>
+                {!!latitude && !!longitude && (
+                  <View
+                    style={applyStyles(
+                      'w-full rounded-8 overflow-hidden border-1 border-red-50 mb-md',
+                      {
+                        height: 128,
+                      },
+                    )}>
+                    <MapView
+                      onPress={() => {
+                        const scheme = Platform.select({
+                          ios: 'maps:0,0?q=',
+                          android: 'geo:0,0?q=',
+                        });
+                        const latLng = coordinates;
+                        const label = text;
+                        const url = Platform.select({
+                          ios: `${scheme}${label}@${latLng}`,
+                          android: `${scheme}${latLng}(${label})`,
+                        });
+                        if (url) {
+                          Linking.openURL(url).catch(handleError);
+                        }
+                      }}
+                      style={applyStyles('w-full h-full')}
+                      initialCamera={{
+                        center: {
                           latitude: Number(latitude),
                           longitude: Number(longitude),
-                          latitudeDelta: 0.1,
-                          longitudeDelta: 0.1,
-                        }}>
-                        <Marker
-                          coordinate={{
-                            latitude: Number(latitude),
-                            longitude: Number(longitude),
-                          }}
-                        />
-                      </MapView>
-                    </View>
-                  )}
-                  <CardDetail
-                    name="Address"
-                    value={text}
-                    onPress={() => {
-                      const closeModal = openModal('options', {
-                        options: [
-                          {
-                            text: 'Map current location as address',
-                            onPress: () => {
-                              handleMapAddress(address);
-                              closeModal();
-                            },
+                        },
+                        pitch: 0,
+                        heading: 0,
+                        altitude: 0,
+                        zoom: 12,
+                      }}>
+                      <Marker
+                        coordinate={{
+                          latitude: Number(latitude),
+                          longitude: Number(longitude),
+                        }}
+                      />
+                    </MapView>
+                  </View>
+                )}
+                <CardDetail
+                  name="Address"
+                  value={text}
+                  onPress={() => {
+                    const closeModal = openModal('options', {
+                      options: [
+                        {
+                          text: 'Map current location as address',
+                          onPress: () => {
+                            handleMapAddress(address);
+                            closeModal();
                           },
-                          {
-                            text: 'Edit Address',
-                            onPress: () => {
-                              closeModal();
-                              handleSaveAddress(address);
-                            },
+                        },
+                        {
+                          text: 'Edit Address',
+                          onPress: () => {
+                            closeModal();
+                            handleSaveAddress(address);
                           },
-                        ],
-                      });
-                    }}
-                  />
-                </View>
-              );
-            },
-            <EmptyState
-              source={require('@/assets/images/coming-soon.png')}
-              heading=""
-              text="No location details added yet"
-            />,
-          )}
-          <CardButton
-            onPress={() => {
-              handleSaveAddress();
-            }}>
-            add
-          </CardButton>
-        </Card>
-      )}
+                        },
+                      ],
+                    });
+                  }}
+                />
+              </View>
+            );
+          },
+          <EmptyState
+            source={require('@/assets/images/coming-soon.png')}
+            heading=""
+            text="No location details added yet"
+          />,
+        )}
+        <CardButton
+          onPress={() => {
+            handleSaveAddress();
+          }}>
+          add
+        </CardButton>
+      </Card>
     </ScrollView>
   );
 };
