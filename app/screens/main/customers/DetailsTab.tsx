@@ -1,7 +1,7 @@
 import React, {useCallback, useContext} from 'react';
 import {Linking, Platform, ScrollView, Text, View} from 'react-native';
 import {applyStyles, renderList} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {colors, dimensions} from '@/styles';
 import {
   Button,
   Card,
@@ -12,9 +12,7 @@ import {
   FormFields,
 } from '@/components';
 import {useGeolocation} from '@/services/geolocation';
-import MapView, {Marker} from 'react-native-maps';
 import {useErrorHandler} from '@/services/error-boundary';
-// import RNGooglePlaces from 'react-native-google-places';
 import EmptyState from '@/components/EmptyState';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IAddress} from '@/models/Address';
@@ -22,6 +20,9 @@ import {getBaseModelValues} from '@/helpers/models';
 import {CustomerContext} from '@/services/customer';
 import {getAddressService} from '@/services';
 import Icon from '@/components/Icon';
+import StaticMap from '@/components/StaticMap';
+import Config from 'react-native-config';
+import Touchable from '@/components/Touchable';
 
 type DetailsTabProps = ModalWrapperFields & {};
 
@@ -163,7 +164,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           height: 128,
                         },
                       )}>
-                      <MapView
+                      <Touchable
                         onPress={() => {
                           const scheme = Platform.select({
                             ios: 'maps:0,0?q=',
@@ -178,25 +179,20 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           if (url) {
                             Linking.openURL(url).catch(handleError);
                           }
-                        }}
-                        style={applyStyles('w-full h-full')}
-                        initialCamera={{
-                          center: {
-                            latitude: Number(latitude),
-                            longitude: Number(longitude),
-                          },
-                          pitch: 0,
-                          heading: 0,
-                          altitude: 0,
-                          zoom: 12,
                         }}>
-                        <Marker
+                        <StaticMap
                           coordinate={{
-                            latitude: Number(latitude),
-                            longitude: Number(longitude),
+                            latitude,
+                            longitude,
                           }}
+                          size={{
+                            width: Math.round(dimensions.fullWidth) - 66,
+                            height: 128,
+                          }}
+                          zoom={14}
+                          apiKey={Config.GOOGLE_API_KEY}
                         />
-                      </MapView>
+                      </Touchable>
                     </View>
                   )}
                   <CardDetail

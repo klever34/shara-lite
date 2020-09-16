@@ -4,12 +4,12 @@ import {applyStyles} from '@/helpers/utils';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 
-type Props = {
+type CardProps = {
   style?: ViewStyle;
   children: ReactNode;
 };
 
-export const Card = ({style, children}: Props) => {
+export const Card = ({style, children}: CardProps) => {
   return (
     <View
       style={applyStyles('w-full p-lg elevation-3 bg-white rounded-16', style)}>
