@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {
   StyleSheet,
   TextInput as RNTextInput,
@@ -29,6 +29,13 @@ const TextInput = ({
 }: TextInputProps) => {
   const [iconActive, setIconActive] = useState(initialToggle);
   const [value, setValue] = useState(initialValue);
+  const onIconPress = useCallback(() => {
+    setIconActive((prevActive) => {
+      const nextActive = !prevActive;
+      icon?.onPress?.(nextActive);
+      return nextActive;
+    });
+  }, [icon]);
   return (
     <View
       style={applyStyles('flex-row mb-24 w-full border-b-1 border-gray-50')}>
@@ -42,19 +49,8 @@ const TextInput = ({
         style={applyStyles(styles.inputField, style, icon && 'flex-1 border-0')}
       />
       {icon && (
-        <Touchable
-          onPress={
-            icon.onPress
-              ? () => {
-                  setIconActive((prevActive) => {
-                    const nextActive = !prevActive;
-                    icon.onPress?.(nextActive);
-                    return nextActive;
-                  });
-                }
-              : undefined
-          }>
-          <View style={applyStyles('w-48 h-48 top-0 bottom-0 right-0 center')}>
+        <Touchable onPress={icon.onPress ? onIconPress : undefined}>
+          <View style={applyStyles('w-48 h-48 center')}>
             <Icon
               size={24}
               {...icon}
@@ -62,6 +58,7 @@ const TextInput = ({
                 icon.style,
                 iconActive ? icon.activeStyle : icon.inactiveStyle,
               )}
+              onPress={icon.onPress ? onIconPress : undefined}
             />
           </View>
         </Touchable>
