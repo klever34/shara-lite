@@ -134,6 +134,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'overflow-hidden': {
     overflow: 'hidden',
   },
+  'w-auto': {
+    width: 'auto',
+  },
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
       ...acc,
