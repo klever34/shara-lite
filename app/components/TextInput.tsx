@@ -5,8 +5,8 @@ import {
   TextInputProps as RNTextInputProps,
   View,
 } from 'react-native';
-import {colors} from '../styles';
-import {applyStyles} from '../helpers/utils';
+import {colors} from '@/styles';
+import {applyStyles} from '@/helpers/utils';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 
@@ -30,7 +30,8 @@ const TextInput = ({
   const [iconActive, setIconActive] = useState(initialToggle);
   const [value, setValue] = useState(initialValue);
   return (
-    <View style={applyStyles('relative mb-24 w-full')}>
+    <View
+      style={applyStyles('flex-row mb-24 w-full border-b-1 border-gray-50')}>
       <RNTextInput
         {...restProps}
         value={value}
@@ -38,7 +39,7 @@ const TextInput = ({
           restProps.onChangeText?.(nextValue);
           setValue(nextValue);
         }}
-        style={applyStyles(styles.inputField, style, icon && 'bg-white mr-48')}
+        style={applyStyles(styles.inputField, style, icon && 'flex-1 border-0')}
       />
       {icon && (
         <Touchable
@@ -53,10 +54,7 @@ const TextInput = ({
                 }
               : undefined
           }>
-          <View
-            style={applyStyles(
-              'w-48 h-48 absolute top-0 bottom-0 right-0 center',
-            )}>
+          <View style={applyStyles('w-48 h-48 top-0 bottom-0 right-0 center')}>
             <Icon
               size={24}
               {...icon}
