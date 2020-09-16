@@ -198,7 +198,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                   <CardDetail
                     name="Address"
                     value={text}
-                    onPress={() => {
+                    onMorePress={() => {
                       const closeModal = openModal('options', {
                         options: [
                           {
