@@ -13,7 +13,7 @@ import {IApiService} from '@/services/api';
 import {IContactService} from '@/services/contact';
 import {Platform} from 'react-native';
 import {getNotificationService} from '@/services/index';
-console.log('foo');
+
 export interface IConversationService {
   getConversationByChannel(channel: string): IConversation | null;
 
