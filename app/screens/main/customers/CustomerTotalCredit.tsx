@@ -7,13 +7,11 @@ import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {ActionCard} from '../../../components';
 import EmptyState from '../../../components/EmptyState';
 import HeaderRight from '../../../components/HeaderRight';
-import Icon from '../../../components/Icon';
-import Touchable from '../../../components/Touchable';
 import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
 import {ICredit} from '../../../models/Credit';
+import {useScreenRecord} from '../../../services/analytics';
 import {colors} from '../../../styles';
 import {MainStackParamList} from '../index';
-import {useScreenRecord} from '../../../services/analytics';
 
 export const CustomerTotalCredit = ({
   route,
@@ -26,31 +24,7 @@ export const CustomerTotalCredit = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <View style={applyStyles('px-xs', {width: '33%'})}>
-            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-          </View>
-        </View>
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);

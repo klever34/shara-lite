@@ -1,19 +1,17 @@
 import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
 import format from 'date-fns/format';
+import {orderBy} from 'lodash';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {MainStackParamList} from '../..';
 import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
-import Icon from '../../../../components/Icon';
 import HeaderRight from '../../../../components/HeaderRight';
-import Touchable from '../../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
-import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '../..';
-import {orderBy} from 'lodash';
 import {useScreenRecord} from '../../../../services/analytics';
+import {colors} from '../../../../styles';
 
 export const TotalCredit = ({
   route,
@@ -26,31 +24,7 @@ export const TotalCredit = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <View style={applyStyles('px-xs', {width: '33%'})}>
-            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-          </View>
-        </View>
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);

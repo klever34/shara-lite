@@ -123,7 +123,7 @@ export function MyReceipts() {
         await Share.open(shareOptions);
         callback && callback();
       } catch (e) {
-        Alert.alert('Error', e.error);
+        console.log('Error', e.error);
       }
     },
     [activeReceipt, businessInfo],

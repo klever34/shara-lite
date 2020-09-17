@@ -41,6 +41,7 @@ export const CreditDetails = ({route}: any) => {
   const authService = getAuthService();
   const user = authService.getUser();
   const navigation = useNavigation();
+
   const [isLoading, setIsLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState('');
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
@@ -64,6 +65,17 @@ export const CreditDetails = ({route}: any) => {
     (acc, item) => acc + item.amount_left,
     0,
   );
+  const paymentReminderMessage = `Hello, you purchased some items from ${
+    businessInfo?.name
+  } for ${amountWithCurrency(
+    creditDetails.receipt?.total_amount,
+  )}. You paid ${amountWithCurrency(
+    totalAmountPaid,
+  )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
+    creditDetails.due_date
+      ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+      : ''
+  }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
@@ -102,23 +114,12 @@ export const CreditDetails = ({route}: any) => {
   }, [navigation]);
 
   const handleSmsShare = useCallback(async () => {
-    // TODO: use better copy for shara invite
     const shareOptions = {
       // @ts-ignore
       social: Share.Social.SMS,
-      message: `Hello, you purchased some items from ${
-        businessInfo?.name
-      } for ${amountWithCurrency(
-        creditDetails.receipt?.total_amount,
-      )}. You paid ${amountWithCurrency(
-        totalAmountPaid,
-      )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
-        creditDetails.due_date
-          ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
-          : ''
-      }. Don't forget to make payment.\nPowered by Shara for free. http://shara.co`,
-      recipient: `${creditDetails.customer?.mobile}`,
       title: 'Payment Reminder',
+      message: paymentReminderMessage,
+      recipient: `${creditDetails.customer?.mobile}`,
     };
 
     if (!creditDetails.customer?.mobile) {
@@ -133,69 +134,32 @@ export const CreditDetails = ({route}: any) => {
         Alert.alert('Error', e.error);
       }
     }
-  }, [
-    businessInfo,
-    creditAmountLeft,
-    creditDetails.customer,
-    creditDetails.due_date,
-    creditDetails.receipt,
-    totalAmountPaid,
-  ]);
+  }, [creditDetails.customer, paymentReminderMessage]);
 
   const handleEmailShare = useCallback(async () => {
-    // TODO: use better copy for shara invite
     const shareOptions = {
       title: 'Payment Reminder',
-      message: `Hello, you purchased some items from ${
-        businessInfo?.name
-      } for ${amountWithCurrency(
-        creditDetails.receipt?.total_amount,
-      )}. You paid ${amountWithCurrency(
-        totalAmountPaid,
-      )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
-        creditDetails.due_date
-          ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
-          : ''
-      }. Don't forget to make payment.\nPowered by Shara for free. http://shara.co`,
       subject: 'Payment Reminder',
+      message: paymentReminderMessage,
       url: `data:image/png;base64,${receiptImage}`,
     };
 
     try {
       await Share.open(shareOptions);
     } catch (e) {
-      Alert.alert('Error', e.error);
+      console.log('Error', e.error);
     }
-  }, [
-    businessInfo,
-    creditAmountLeft,
-    creditDetails,
-    receiptImage,
-    totalAmountPaid,
-  ]);
-
-  "Hello, you purchased some items from *Store name* for *Amount*. You paid *Amount* and owe *Amount* which is due on *Date*. Don't forget to make payment. Powered by Shara for free. http://shara.co";
+  }, [paymentReminderMessage, receiptImage]);
 
   const handleWhatsappShare = useCallback(async () => {
-    // TODO: use better copy for shara invite
     const mobile = creditDetails?.customer?.mobile;
     const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
     const shareOptions = {
       whatsAppNumber,
+      title: 'Payment Reminder',
+      message: paymentReminderMessage,
       social: Share.Social.WHATSAPP,
       url: `data:image/png;base64,${receiptImage}`,
-      message: `Hello, you purchased some items from ${
-        businessInfo?.name
-      } for ${amountWithCurrency(
-        creditDetails.receipt?.total_amount,
-      )}. You paid ${amountWithCurrency(
-        totalAmountPaid,
-      )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
-        creditDetails.due_date
-          ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
-          : ''
-      }. Don't forget to make payment.\nPowered by Shara for free. http://shara.co`,
-      title: 'Payment Reminder',
     };
     const errorMessages = {
       filename: 'Invalid file attached',
@@ -214,14 +178,7 @@ export const CreditDetails = ({route}: any) => {
         Alert.alert('Error', errorMessages[e.error]);
       }
     }
-  }, [
-    businessInfo,
-    creditAmountLeft,
-    creditDetails,
-    receiptImage,
-    totalAmountPaid,
-    userCountryCode,
-  ]);
+  }, [creditDetails, paymentReminderMessage, receiptImage, userCountryCode]);
 
   const handleSubmit = useCallback(
     (payload, callback) => {

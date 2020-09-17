@@ -369,7 +369,7 @@ const ReceiptSummary = (props: Props) => {
         await Share.open(shareOptions);
         callback && callback();
       } catch (e) {
-        Alert.alert('Error', e.error);
+        console.log('Error', e.error);
       }
     },
     [customer.name, businessInfo],

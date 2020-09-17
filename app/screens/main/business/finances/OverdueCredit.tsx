@@ -8,12 +8,10 @@ import {MainStackParamList} from '../..';
 import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import HeaderRight from '../../../../components/HeaderRight';
-import Icon from '../../../../components/Icon';
-import Touchable from '../../../../components/Touchable';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
 import {useScreenRecord} from '../../../../services/analytics';
+import {colors} from '../../../../styles';
 
 export const OverdueCredit = ({
   route,
@@ -25,31 +23,7 @@ export const OverdueCredit = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <View style={applyStyles('px-xs', {width: '33%'})}>
-            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-          </View>
-        </View>
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);
