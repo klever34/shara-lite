@@ -9,8 +9,9 @@ import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './customer/service';
-import {getAnalyticsService} from './index';
+import {getAnalyticsService, getGeolocationService} from './index';
 import {restockProduct} from '@/services/ProductService';
+import {convertToLocationString} from '@/services/geolocation';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -79,6 +80,17 @@ export const saveReceipt = ({
       });
     });
   });
+  getGeolocationService()
+    .getCurrentPosition()
+    .then((location) => {
+      realm.write(() => {
+        realm.create<Partial<IReceipt>>(
+          modelName,
+          {_id: receipt._id, coordinates: convertToLocationString(location)},
+          UpdateMode.Modified,
+        );
+      });
+    });
 
   payments.forEach((payment) => {
     savePayment({

@@ -15,6 +15,7 @@ export interface IReceipt extends BaseModelInterface {
   payments?: IPayment[];
   items?: IReceiptItem[];
   credits?: ICredit[];
+  coordinates?: string;
 }
 
 export const modelName = 'Receipt';
