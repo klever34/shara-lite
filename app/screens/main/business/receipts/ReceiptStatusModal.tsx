@@ -216,7 +216,7 @@ export const ReceiptStatusModal = (props: Props) => {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
-          ['Description', 'QTY', 'SubTotal(NGN)'],
+          ['Description', 'QTY', `SubTotal(${currencyCode})`],
           receiptStyles.product,
         );
         for (const item of products) {

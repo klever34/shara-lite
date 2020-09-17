@@ -1,7 +1,6 @@
 import React, {useCallback, useState} from 'react';
 import {
   StyleSheet,
-  TextInput as RNTextInput,
   TextInputProps as RNTextInputProps,
   View,
 } from 'react-native';
@@ -9,6 +8,7 @@ import {colors} from '@/styles';
 import {applyStyles} from '@/helpers/utils';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
+import {FloatingLabelInput} from '@/components/FloatingLabelInput';
 
 export type TextInputProps = RNTextInputProps & {
   icon?: IconProps & {
@@ -16,14 +16,13 @@ export type TextInputProps = RNTextInputProps & {
     inactiveStyle?: string;
     onPress?: (active: boolean) => void;
   };
-  initialValue?: string;
   initialToggle?: boolean;
 };
 
 const TextInput = ({
   style,
   icon,
-  initialValue = '',
+  value: initialValue = '',
   initialToggle = false,
   ...restProps
 }: TextInputProps) => {
@@ -38,8 +37,11 @@ const TextInput = ({
   }, [icon]);
   return (
     <View
-      style={applyStyles('flex-row mb-24 w-full border-b-1 border-gray-50')}>
-      <RNTextInput
+      style={applyStyles(
+        'flex-row mb-24 w-full border-b-1 border-gray-50',
+        icon && 'pb-48',
+      )}>
+      <FloatingLabelInput
         {...restProps}
         value={value}
         onChangeText={(nextValue) => {
