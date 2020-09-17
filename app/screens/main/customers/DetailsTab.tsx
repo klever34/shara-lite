@@ -11,7 +11,11 @@ import {
   FormBuilder,
   FormFields,
 } from '@/components';
-import {useGeolocation} from '@/services/geolocation';
+import {
+  convertToLocationString,
+  useGeolocation,
+  parseLocationString,
+} from '@/services/geolocation';
 import {useErrorHandler} from '@/services/error-boundary';
 import EmptyState from '@/components/EmptyState';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
@@ -101,7 +105,9 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                         };
                       }
                       if (mapAddress && currentLocation) {
-                        nextAddress.coordinates = `${currentLocation.latitude},${currentLocation.longitude}`;
+                        nextAddress.coordinates = convertToLocationString(
+                          currentLocation,
+                        );
                       } else {
                         nextAddress.coordinates = '';
                       }
@@ -130,7 +136,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
       }
       getAddressService().saveAddress({
         _id: address._id,
-        coordinates: `${currentLocation.latitude},${currentLocation.longitude}`,
+        coordinates: convertToLocationString(currentLocation),
       });
     },
     [currentLocation, customer],
@@ -145,10 +151,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
             addresses,
             (address, index) => {
               let {coordinates, text} = address;
-              if (!coordinates) {
-                coordinates = ',';
-              }
-              const [latitude, longitude] = coordinates.split(',');
+              const [latitude, longitude] = parseLocationString(coordinates);
               return (
                 <View
                   style={applyStyles(
