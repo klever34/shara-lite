@@ -1,26 +1,29 @@
-import {createStackNavigator} from '@react-navigation/stack';
-import PubNub from 'pubnub';
-import {PubNubProvider} from 'pubnub-react';
-import React, {useCallback, useEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
-import {ActivityIndicator, View, BackHandler, ToastAndroid} from 'react-native';
-import Config from 'react-native-config';
-import {Results} from 'realm';
-import getUuidByString from 'uuid-by-string';
 import {FAButtonProps} from '@/components';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {IContact, IConversation} from '../../models';
+import {applyStyles} from '@/helpers/utils';
 import {ICredit} from '@/models/Credit';
 import {ICreditPayment} from '@/models/CreditPayment';
 import {IPayment} from '@/models/Payment';
 import {IProduct} from '@/models/Product';
+import {ISupplier} from '@/models/Supplier';
+import {useErrorHandler} from '@/services/error-boundary';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
+import {useNavigationState} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import PubNub from 'pubnub';
+import {PubNubProvider} from 'pubnub-react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {ActivityIndicator, BackHandler, ToastAndroid, View} from 'react-native';
+import Config from 'react-native-config';
+import {Results} from 'realm';
+import getUuidByString from 'uuid-by-string';
+import {IContact, IConversation} from '../../models';
 import {
   getAnalyticsService,
   getAuthService,
-  getNotificationService,
   getPubNubService,
 } from '../../services';
-import {colors} from '@/styles';
+import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import {BusinessSetup} from '../BusinessSetup';
 import {
   AddProduct,
@@ -32,14 +35,16 @@ import {
   Finances,
   NewReceipt,
   OverdueCredit,
+  ReceivedInventoryList,
   ReceiveInventory,
+  ReceiveInventoryStock,
   RecordCreditPayment,
   Suppliers,
   TotalCredit,
   ViewProductDetails,
-  ReceiveInventoryStock,
-  ReceivedInventoryList,
 } from './business';
+import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
+import {Expenses} from './business/finances/Expenses';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
 import ContactsScreen from './chat/ContactsScreen';
@@ -57,14 +62,6 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {ISupplier} from '@/models/Supplier';
-import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
-import {Expenses} from './business/finances/Expenses';
-import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
-import {useNavigationState} from '@react-navigation/native';
-import {useRealm} from '@/services/realm';
-import {getCredits} from '@/services/CreditService';
-import {format} from 'date-fns';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -171,31 +168,31 @@ const MainScreens = () => {
     !(user?.businesses && user?.businesses.length) || false,
   );
 
-  const credits = getCredits({realm});
-  const overdueCredits = credits.filter(
-    (credit) =>
-      credit.due_date && credit?.due_date?.getTime() < new Date().getTime(),
-  );
+  // const credits = getCredits({realm});
+  // const overdueCredits = credits.filter(
+  //   (credit) =>
+  //     credit.due_date && credit?.due_date?.getTime() < new Date().getTime(),
+  // );
 
-  useEffect(() => {
-    if (realm && overdueCredits.length) {
-      console.log(overdueCredits.length);
-      overdueCredits.forEach((credit) => {
-        getNotificationService().scheduleNotification({
-          title: 'Overdue Credit',
-          date: new Date(Date.now() + 600 * 1000),
-          message: `${credit.customer?.name.trim()} owes you ${amountWithCurrency(
-            credit.amount_left,
-          )} ${
-            credit.due_date
-              ? `which was overdue ${format(credit.due_date, 'MMM dd, yyyy')}`
-              : ''
-          }`,
-        });
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  // useEffect(() => {
+  //   if (realm && overdueCredits.length) {
+  //     console.log(overdueCredits.length);
+  //     overdueCredits.forEach((credit) => {
+  //       getNotificationService().scheduleNotification({
+  //         title: 'Overdue Credit',
+  //         date: new Date(Date.now() + 600 * 1000),
+  //         message: `${credit.customer?.name.trim()} owes you ${amountWithCurrency(
+  //           credit.amount_left,
+  //         )} ${
+  //           credit.due_date
+  //             ? `which was overdue ${format(credit.due_date, 'MMM dd, yyyy')}`
+  //             : ''
+  //         }`,
+  //       });
+  //     });
+  //   }
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, []);
 
   useEffect(() => {
     if (user) {
