@@ -1,8 +1,11 @@
-import {IPayment} from './Payment';
-import {IReceipt} from './Receipt';
-import {ICredit} from './Credit';
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IAddress} from '@/models/Address';
+import {IPayment} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
+import {IReceipt} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Receipt';
+import {ICredit} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
 
 export interface ICustomer extends BaseModelInterface {
   name: string;
@@ -10,7 +13,6 @@ export interface ICustomer extends BaseModelInterface {
   receipts?: IReceipt[];
   payments?: IPayment[];
   credits?: ICredit[];
-  addresses?: IAddress[];
 }
 
 export const modelName = 'Customer';

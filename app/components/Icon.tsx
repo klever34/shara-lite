@@ -11,7 +11,7 @@ export type IconProps = {
 };
 
 //TODO: Potential reduce bundle size by removing unused font set from app
-const Icon = ({type, ...props}: IconProps) => {
+export const Icon = ({type, ...props}: IconProps) => {
   if (type === 'ionicons') {
     const {default: Ionicons} = require('react-native-vector-icons/Ionicons');
     return <Ionicons {...props} />;

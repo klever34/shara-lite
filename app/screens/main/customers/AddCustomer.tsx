@@ -2,7 +2,7 @@ import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 import {useScreenRecord} from '@/services/analytics';
-import {getCustomers, saveCustomer} from '@/services/CustomerService';
+import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useRealm} from '@/services/realm';
