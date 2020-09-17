@@ -32,7 +32,10 @@ export class GeolocationService implements IGeolocationService {
 
   public async initialize(): Promise<boolean> {
     if (!this.initialized) {
-      await RNLocation.configure({distanceFilter: 5.0});
+      await RNLocation.configure({
+        distanceFilter: 5.0,
+        desiredAccuracy: {android: 'highAccuracy', ios: 'best'},
+      });
       await this.requestPermission();
       this.initialized = true;
     }
