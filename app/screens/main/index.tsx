@@ -8,7 +8,7 @@ import Config from 'react-native-config';
 import {Results} from 'realm';
 import getUuidByString from 'uuid-by-string';
 import {FAButtonProps} from '@/components';
-import {applyStyles} from '@/helpers/utils';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {IContact, IConversation} from '../../models';
 import {ICredit} from '@/models/Credit';
 import {ICreditPayment} from '@/models/CreditPayment';
@@ -17,6 +17,7 @@ import {IProduct} from '@/models/Product';
 import {
   getAnalyticsService,
   getAuthService,
+  getNotificationService,
   getPubNubService,
 } from '../../services';
 import {colors} from '@/styles';
@@ -62,6 +63,8 @@ import {Expenses} from './business/finances/Expenses';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import {useNavigationState} from '@react-navigation/native';
 import {useRealm} from '@/services/realm';
+import {getCredits} from '@/services/CreditService';
+import {format} from 'date-fns';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -167,6 +170,32 @@ const MainScreens = () => {
   const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
     !(user?.businesses && user?.businesses.length) || false,
   );
+
+  const credits = getCredits({realm});
+  const overdueCredits = credits.filter(
+    (credit) =>
+      credit.due_date && credit?.due_date?.getTime() < new Date().getTime(),
+  );
+
+  useEffect(() => {
+    if (realm && overdueCredits.length) {
+      console.log(overdueCredits.length);
+      overdueCredits.forEach((credit) => {
+        getNotificationService().scheduleNotification({
+          title: 'Overdue Credit',
+          date: new Date(Date.now() + 600 * 1000),
+          message: `${credit.customer?.name.trim()} owes you ${amountWithCurrency(
+            credit.amount_left,
+          )} ${
+            credit.due_date
+              ? `which was overdue ${format(credit.due_date, 'MMM dd, yyyy')}`
+              : ''
+          }`,
+        });
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (user) {
