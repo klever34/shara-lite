@@ -16,12 +16,13 @@ import {
 } from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
-import {applyStyles} from '../../helpers/utils';
-import {RootStackParamList} from '../../index';
-import {getApiService} from '../../services';
-import {colors} from '../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {RootStackParamList} from '@/index';
+import {getAnalyticsService, getApiService} from '../../services';
+import {colors} from '@/styles';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type Fields = {
   firstname: string;
@@ -55,6 +56,7 @@ export const Register = ({
       countryCode: code,
     });
   };
+  const handleError = useErrorHandler();
   const onSubmit = async () => {
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
@@ -67,6 +69,9 @@ export const Register = ({
       setLoading(true);
       await apiService.register(payload);
       setLoading(false);
+      getAnalyticsService()
+        .logEvent('signup', {method: 'mobile'})
+        .catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Login'}],

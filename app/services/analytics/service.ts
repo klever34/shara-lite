@@ -5,10 +5,49 @@ import Config from 'react-native-config';
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
 
+type SharaAppEvents =
+  // Inventory
+  | 'supplierAdded'
+  | 'productStart'
+  | 'productAdded'
+  | 'inventoryReceived'
+  | 'deliveryAgentAdded'
+  // Credit Management
+  | 'creditAdded'
+  // Content
+  | 'share'
+  | 'selectContent'
+  | 'search'
+  | 'print'
+  // Receipts
+  | 'remainingBalance'
+  | 'receiptStart'
+  | 'receiptShared'
+  | 'receiptPrinted'
+  | 'receiptCreated'
+  | 'paymentMade'
+  | 'customerAddedToReceipt'
+  // Customer
+  | 'customerLocationAdded'
+  | 'customerAdded'
+  // Onboarding
+  | 'businessSetupComplete'
+  | 'businessSetupStart'
+  | 'login'
+  | 'logout'
+  | 'signup'
+  // Chat
+  | 'messageSent'
+  | 'oneOnOneChatInitiated'
+  | 'groupChatCreated';
+
 export interface IAnalyticsService {
   initialize(): Promise<void>;
   setUser(user: User): Promise<void>;
-  logEvent(eventName: string, eventData?: {[key: string]: any}): Promise<void>;
+  logEvent(
+    eventName: SharaAppEvents,
+    eventData?: {[key: string]: any},
+  ): Promise<void>;
   tagScreenName(screenName: string): Promise<void>;
 }
 
@@ -63,7 +102,7 @@ export class AnalyticsService implements IAnalyticsService {
   }
 
   async logEvent(
-    eventName: string,
+    eventName: SharaAppEvents,
     eventData?: {[p: string]: any},
   ): Promise<void> {
     if (eventData) {

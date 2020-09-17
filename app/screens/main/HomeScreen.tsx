@@ -6,7 +6,7 @@ import {Alert, SafeAreaView} from 'react-native';
 import HeaderRight from '../../components/HeaderRight';
 import {withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {colors} from '@/styles';
 import {BusinessTab} from './business';
 import CustomersTab from './customers';
@@ -31,6 +31,7 @@ const HomeScreen = () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
+      getAnalyticsService().logEvent('logout').catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],

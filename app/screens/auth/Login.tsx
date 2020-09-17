@@ -10,13 +10,18 @@ import {
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 import Icon from '../../components/Icon';
 import Touchable from '../../components/Touchable';
-import {applyStyles} from '../../helpers/utils';
-import {getApiService, getRealmService} from '../../services';
-import {colors} from '../../styles';
-import {initLocalRealm} from '../../services/realm';
-import {RealmContext} from '../../services/realm/provider';
+import {applyStyles} from '@/helpers/utils';
+import {
+  getAnalyticsService,
+  getApiService,
+  getRealmService,
+} from '../../services';
+import {colors} from '@/styles';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type Fields = {
   mobile: string;
@@ -48,6 +53,7 @@ export const Login = ({navigation}: any) => {
       countryCode: code,
     });
   };
+  const handleError = useErrorHandler();
   const onSubmit = async () => {
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
@@ -64,6 +70,9 @@ export const Login = ({navigation}: any) => {
       realmService.setInstance(createdLocalRealm);
 
       setLoading(false);
+      getAnalyticsService()
+        .logEvent('login', {method: 'mobile'})
+        .catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
