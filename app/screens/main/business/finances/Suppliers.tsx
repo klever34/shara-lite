@@ -1,9 +1,7 @@
 import {ContactsListModal, FAButton} from '@/components';
-import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -48,11 +46,10 @@ export const Suppliers = () => {
   }, [navigation]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       const suppliersData = getSuppliers({realm});
       setMySuppliers(suppliersData);
     });
-    return unsubscribe;
   }, [navigation, realm]);
 
   const handleOpenContactListModal = useCallback(() => {
@@ -86,8 +83,6 @@ export const Suppliers = () => {
     navigation.navigate('AddSupplier');
   }, [navigation]);
 
-  const handleError = useErrorHandler();
-
   const handleCreateSupplier = useCallback(
     (contact: Contact) => {
       const mobile = contact.phoneNumbers[0].number;
@@ -102,12 +97,11 @@ export const Suppliers = () => {
         } else {
           const supplier = {name, mobile};
           saveSupplier({realm, supplier});
-          getAnalyticsService().logEvent('supplierAdded').catch(handleError);
           ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
         }
       }
     },
-    [realm, suppliers, handleError],
+    [realm, suppliers],
   );
 
   const renderSupplierListItem = useCallback(

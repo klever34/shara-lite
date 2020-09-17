@@ -4,7 +4,6 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
 import {useScreenRecord} from '@/services/analytics';
 import {getCustomers, saveCustomer} from '@/services/CustomerService';
 import {useRealm} from '@/services/realm';
@@ -12,7 +11,6 @@ import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -39,14 +37,11 @@ const CustomersTab = () => {
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       const customersData = getCustomers({realm});
       setMyCustomers(customersData);
     });
-    return unsubscribe;
   }, [navigation, realm]);
-
-  const handleError = useErrorHandler();
 
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
@@ -81,11 +76,10 @@ const CustomersTab = () => {
           mobile,
         };
         saveCustomer({realm, customer});
-        getAnalyticsService().logEvent('customerAdded').catch(handleError);
         ToastAndroid.show('Customer added', ToastAndroid.SHORT);
       }
     },
-    [customers, handleError, realm],
+    [customers, realm],
   );
 
   const handleCustomerSearch = useCallback(
