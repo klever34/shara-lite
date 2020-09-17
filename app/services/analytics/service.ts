@@ -9,6 +9,7 @@ export interface IAnalyticsService {
   initialize(): Promise<void>;
   setUser(user: User): Promise<void>;
   logEvent(eventName: string, eventData?: {[key: string]: any}): Promise<void>;
+  tagScreenName(screenName: string): Promise<void>;
 }
 
 export class AnalyticsService implements IAnalyticsService {
@@ -20,6 +21,7 @@ export class AnalyticsService implements IAnalyticsService {
           trackAppLifecycleEvents: true,
         });
         RNUxcam.optIntoSchematicRecordings();
+        RNUxcam.setAutomaticScreenNameTagging(false);
         RNUxcam.startWithKey(Config.UXCAM_KEY);
       }
     } catch (e) {
@@ -73,5 +75,10 @@ export class AnalyticsService implements IAnalyticsService {
     } catch (e) {
       throw e;
     }
+  }
+
+  tagScreenName(screenName: string): Promise<void> {
+    RNUxcam.tagScreenName(screenName);
+    return Promise.resolve();
   }
 }
