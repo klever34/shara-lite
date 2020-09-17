@@ -5,49 +5,53 @@ import Config from 'react-native-config';
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
 
-type SharaAppEvents =
-  // Inventory
-  | 'supplierAdded'
-  | 'productStart'
-  | 'productAdded'
-  | 'inventoryReceived'
-  | 'deliveryAgentAdded'
-  // Credit Management
-  | 'creditAdded'
-  // Content
-  | 'share'
-  | 'selectContent'
-  | 'search'
-  | 'print'
-  // Receipts
-  | 'remainingBalance'
-  | 'receiptStart'
-  | 'receiptShared'
-  | 'receiptPrinted'
-  | 'receiptCreated'
-  | 'paymentMade'
-  | 'customerAddedToReceipt'
-  // Customer
-  | 'customerLocationAdded'
-  | 'customerAdded'
-  // Onboarding
-  | 'businessSetupComplete'
-  | 'businessSetupStart'
-  | 'login'
-  | 'logout'
-  | 'signup'
+type SharaAppEventsProperties = {
   // Chat
-  | 'messageSent'
-  | 'oneOnOneChatInitiated'
-  | 'groupChatCreated';
+  messageSent: undefined;
+  oneOnOneChatInitiated: undefined;
+  groupChatCreated: undefined;
+  // Onboarding
+  businessSetupComplete: undefined;
+  businessSetupStart: undefined;
+  login: {method: string};
+  logout: undefined;
+  signup: {method: string};
+  // Customer
+  customerLocationAdded: {user_id: string};
+  customerAdded: undefined;
+  // Receipts
+  remainingBalance: undefined;
+  receiptStart: undefined;
+  receiptShared: undefined;
+  receiptPrinted: undefined;
+  receiptCreated: undefined;
+  paymentMade: undefined;
+  customerAddedToReceipt: undefined;
+  // Content
+  share: {item_id: string; content_type: string};
+  selectContent: {item_id: string; content_type: string};
+  search: {search_term: string; content_type: string};
+  print: {item_id: string; content_type: string};
+  // Credit Management
+  creditAdded: undefined;
+  // Inventory
+  supplierAdded: undefined;
+  productStart: undefined;
+  productAdded: undefined;
+  inventoryReceived: undefined;
+  deliveryAgentAdded: undefined;
+};
 
 export interface IAnalyticsService {
   initialize(): Promise<void>;
+
   setUser(user: User): Promise<void>;
-  logEvent(
-    eventName: SharaAppEvents,
-    eventData?: {[key: string]: any},
+
+  logEvent<K extends keyof SharaAppEventsProperties>(
+    eventName: K,
+    eventData?: SharaAppEventsProperties[K],
   ): Promise<void>;
+
   tagScreenName(screenName: string): Promise<void>;
 }
 
@@ -101,16 +105,17 @@ export class AnalyticsService implements IAnalyticsService {
     }
   }
 
-  async logEvent(
-    eventName: SharaAppEvents,
-    eventData?: {[p: string]: any},
+  async logEvent<K extends keyof SharaAppEventsProperties>(
+    eventName: K,
+    eventData?: SharaAppEventsProperties[K],
   ): Promise<void> {
+    let nextEventData;
     if (eventData) {
-      eventData = castObjectValuesToString(eventData);
+      nextEventData = castObjectValuesToString(eventData as any);
     }
     try {
-      await analytics.track(eventName, eventData);
-      // RNUxcam.logEvent(eventName, eventData);
+      await analytics.track(eventName, nextEventData);
+      // RNUxcam.logEvent(eventName, nextEventData);
     } catch (e) {
       throw e;
     }
