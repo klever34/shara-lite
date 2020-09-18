@@ -1,7 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -33,7 +32,7 @@ import {
 } from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAnalyticsService, getAuthService} from '../../../../services';
+import {getAuthService} from '@/services';
 import {useRealm} from '@/services/realm';
 import {saveReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
@@ -461,8 +460,6 @@ const ReceiptSummary = (props: Props) => {
     }
   };
 
-  const handleError = useErrorHandler();
-
   const handleSaveReceipt = useCallback(
     (callback: () => void, onSuccess?: () => void) => {
       setTimeout(() => {
@@ -479,7 +476,6 @@ const ReceiptSummary = (props: Props) => {
           receiptItems: products,
         });
         onClearReceipt();
-        getAnalyticsService().logEvent('receiptCreated').catch(handleError);
         onSuccess && onSuccess();
         ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       }, 500);
@@ -494,7 +490,6 @@ const ReceiptSummary = (props: Props) => {
       dueDate,
       products,
       onClearReceipt,
-      handleError,
     ],
   );
 

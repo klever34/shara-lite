@@ -57,6 +57,9 @@ export const saveReceipt = ({
   }
   if (customer._id) {
     receiptCustomer = customer;
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
   }
 
   //@ts-ignore
@@ -79,6 +82,9 @@ export const saveReceipt = ({
       });
     });
   });
+  getAnalyticsService()
+    .logEvent('receiptCreated')
+    .then(() => {});
 
   payments.forEach((payment) => {
     savePayment({
