@@ -14,6 +14,7 @@ type Props = {
   onClose: () => void;
   onSmsShare?: () => void;
   tax?: number;
+  receiptId?: string;
   amountPaid?: number;
   customer?: ICustomer;
   totalAmount?: number;
@@ -32,6 +33,7 @@ export const ShareReceiptModal = ({
   onClose,
   customer,
   products,
+  receiptId,
   amountPaid,
   onSmsShare,
   totalAmount,
@@ -46,32 +48,36 @@ export const ShareReceiptModal = ({
 
   const handleSmsShare = useCallback(() => {
     analyticsService
-      .logEvent('share', {item_id: '', content_type: 'receipt', method: 'sms'})
+      .logEvent('share', {
+        method: 'sms',
+        item_id: receiptId ?? '',
+        content_type: 'receipt',
+      })
       .then(() => {});
     onSmsShare && onSmsShare();
-  }, [analyticsService, onSmsShare]);
+  }, [receiptId, analyticsService, onSmsShare]);
 
   const handleEmailShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
-        item_id: '',
         method: 'email',
         content_type: 'receipt',
+        item_id: receiptId ?? '',
       })
       .then(() => {});
     onEmailShare && onEmailShare({receiptImage});
-  }, [onEmailShare, receiptImage, analyticsService]);
+  }, [receiptId, onEmailShare, receiptImage, analyticsService]);
 
   const handleWhatsappShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
-        item_id: '',
         method: 'whatsapp',
         content_type: 'receipt',
+        item_id: receiptId ?? '',
       })
       .then(() => {});
     onWhatsappShare && onWhatsappShare(receiptImage);
-  }, [analyticsService, onWhatsappShare, receiptImage]);
+  }, [receiptId, analyticsService, onWhatsappShare, receiptImage]);
 
   return (
     <Modal
