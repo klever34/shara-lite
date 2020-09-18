@@ -213,7 +213,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                             width: Math.round(dimensions.fullWidth) - 66,
                             height: 128,
                           }}
-                          zoom={14}
+                          zoom={16}
                           apiKey={Config.GOOGLE_API_KEY}
                         />
                       </Touchable>
