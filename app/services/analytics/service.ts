@@ -22,8 +22,6 @@ type SharaAppEventsProperties = {
   // Receipts
   remainingBalance: undefined;
   receiptStart: undefined;
-  receiptShared: undefined;
-  receiptPrinted: undefined;
   receiptCreated: undefined;
   paymentMade: undefined;
   customerAddedToReceipt: undefined;
