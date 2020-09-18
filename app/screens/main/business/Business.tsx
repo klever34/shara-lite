@@ -123,6 +123,12 @@ export const BusinessTab = () => {
               .then(() => {});
             navigation.navigate(name);
             break;
+          case 'AddProduct':
+            getAnalyticsService()
+              .logEvent('productStart')
+              .then(() => {});
+            navigation.navigate(name);
+            break;
 
           default:
             navigation.navigate(name);

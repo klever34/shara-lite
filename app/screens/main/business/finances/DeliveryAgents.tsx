@@ -1,4 +1,5 @@
 import {ContactsListModal, FAButton} from '@/components';
+import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
@@ -102,6 +103,9 @@ export const DeliveryAgents = () => {
       } else {
         const deliveryAgent = {full_name: name, mobile};
         saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
+        getAnalyticsService()
+          .logEvent('deliveryAgentAdded')
+          .then(() => {});
         ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
     },

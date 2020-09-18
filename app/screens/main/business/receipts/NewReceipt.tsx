@@ -22,7 +22,7 @@ import Touchable from '../../../../components/Touchable';
 import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
 import {IProduct} from '../../../../models/Product';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService} from '../../../../services';
+import {getAnalyticsService, getAuthService} from '../../../../services';
 import {getProducts} from '../../../../services/ProductService';
 import {useRealm} from '../../../../services/realm';
 import {colors} from '../../../../styles';
@@ -209,6 +209,13 @@ export const NewReceipt = () => {
     );
   }, []);
 
+  const handleAddProduct = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('productStart')
+      .then(() => {});
+    () => navigation.navigate('AddProduct');
+  }, [navigation]);
+
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
     return (
       <Touchable onPress={() => onPress(item)}>
@@ -262,9 +269,9 @@ export const NewReceipt = () => {
         renderItem={renderSearchDropdownItem}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
-        noResultsAction={() => navigation.navigate('AddProduct')}
+        noResultsAction={handleAddProduct}
       />
-      <Touchable onPress={() => navigation.navigate('AddProduct')}>
+      <Touchable onPress={handleAddProduct}>
         <View
           style={applyStyles('flex-row px-lg py-lg items-center', {
             borderBottomWidth: 1,
@@ -306,7 +313,7 @@ export const NewReceipt = () => {
               title="Add Products"
               variantColor="clear"
               style={applyStyles('w-full')}
-              onPress={() => navigation.navigate('AddProduct')}
+              onPress={handleAddProduct}
             />
           </View>
         }

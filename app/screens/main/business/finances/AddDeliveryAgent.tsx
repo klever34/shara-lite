@@ -14,6 +14,7 @@ import {colors} from '../../../../styles';
 import {Formik, FormikHelpers} from 'formik';
 import * as yup from 'yup';
 import {FormDefaults} from '@/services/FormDefaults';
+import {getAnalyticsService} from '@/services';
 
 type Props = {onSubmit?: (deliveryAgent: IDeliveryAgent) => void};
 type Payload = Pick<IDeliveryAgent, 'full_name' | 'mobile'>;
@@ -50,6 +51,9 @@ export const AddDeliveryAgent = (props: Props) => {
         saveDeliveryAgent({realm, delivery_agent: values});
         setIsLoading(false);
         onSubmit ? onSubmit(values) : navigation.goBack();
+        getAnalyticsService()
+          .logEvent('deliveryAgentAdded')
+          .then(() => {});
         resetForm();
         ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
