@@ -30,19 +30,26 @@ export class GeolocationService implements IGeolocationService {
     return this.permissionGranted;
   }
 
-  async initialize(): Promise<boolean> {
+  public async initialize(): Promise<boolean> {
     if (!this.initialized) {
-      await RNLocation.configure({distanceFilter: 5.0});
+      await RNLocation.configure({
+        distanceFilter: 5.0,
+        desiredAccuracy: {android: 'highAccuracy', ios: 'best'},
+      });
       await this.requestPermission();
       this.initialized = true;
     }
     return this.initialized;
   }
 
-  async getCurrentPosition(): Promise<Location> {
+  public async getCurrentPosition(): Promise<Location> {
     let location: Location | null = null;
-    if ((await this.initialize()) && (await this.requestPermission())) {
-      location = await RNLocation.getLatestLocation();
+    try {
+      if ((await this.initialize()) && (await this.requestPermission())) {
+        location = await RNLocation.getLatestLocation();
+      }
+    } catch (e) {
+      throw e;
     }
     if (location) {
       return location;

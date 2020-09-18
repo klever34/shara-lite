@@ -127,15 +127,17 @@ const CustomersTab = () => {
           source={require('../../../assets/images/coming-soon.png')}
           text="Click the button below to add a new customer"
         />
-        <FAButton style={styles.fabButton} onPress={handleOpenContactListModal}>
-          <View style={styles.fabButtonContent}>
-            <Icon size={18} name="plus" color="white" type="feathericons" />
-            <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
-              Add Customer
-            </Text>
-          </View>
+        <FAButton
+          style={applyStyles(
+            'h-48 w-auto rounded-16 px-12 flex-row items-center',
+          )}
+          onPress={handleOpenContactListModal}>
+          <Icon size={18} name="plus" color="white" type="feathericons" />
+          <Text
+            style={applyStyles('text-400 text-base ml-8 text-white uppercase')}>
+            Add Customer
+          </Text>
         </FAButton>
-
         <ContactsListModal<ICustomer>
           entity="Customer"
           createdData={customers}
@@ -184,13 +186,16 @@ const CustomersTab = () => {
           text="Click the button below to add a new customer"
         />
       )}
-      <FAButton style={styles.fabButton} onPress={handleOpenContactListModal}>
-        <View style={styles.fabButtonContent}>
-          <Icon size={18} name="plus" color="white" type="feathericons" />
-          <Text style={applyStyles(styles.fabButtonText, 'text-400')}>
-            Add Customer
-          </Text>
-        </View>
+      <FAButton
+        style={applyStyles(
+          'h-48 w-auto rounded-16 px-12 flex-row items-center',
+        )}
+        onPress={handleOpenContactListModal}>
+        <Icon size={18} name="plus" color="white" type="feathericons" />
+        <Text
+          style={applyStyles('text-400 text-base ml-8 text-white uppercase')}>
+          Add Customer
+        </Text>
       </FAButton>
 
       <ContactsListModal<ICustomer>
@@ -253,24 +258,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-  },
-  fabButton: {
-    height: 48,
-    width: 'auto',
-    borderRadius: 16,
-    paddingHorizontal: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  fabButtonContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  fabButtonText: {
-    fontSize: 16,
-    paddingLeft: 8,
-    color: colors.white,
-    textTransform: 'uppercase',
   },
 });
 

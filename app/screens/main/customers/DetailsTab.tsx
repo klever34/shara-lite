@@ -1,34 +1,40 @@
 import React, {useCallback, useContext} from 'react';
 import {Linking, Platform, ScrollView, Text, View} from 'react-native';
 import {applyStyles, renderList} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {colors, dimensions} from '@/styles';
 import {
   Button,
   Card,
-  CardButton,
   CardDetail,
   CardHeader,
+  FAButton,
   FormBuilder,
   FormFields,
 } from '@/components';
-import {useGeolocation} from '@/services/geolocation';
-import MapView, {Marker} from 'react-native-maps';
+import {
+  convertToLocationString,
+  parseLocationString,
+} from '@/services/geolocation';
 import {useErrorHandler} from '@/services/error-boundary';
-// import RNGooglePlaces from 'react-native-google-places';
 import EmptyState from '@/components/EmptyState';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IAddress} from '@/models/Address';
 import {getBaseModelValues} from '@/helpers/models';
 import {CustomerContext} from '@/services/customer';
-import {getAddressService} from '@/services';
+import {getAddressService, getGeolocationService} from '@/services';
+import Icon from '@/components/Icon';
+import StaticMap from '@/components/StaticMap';
+import Config from 'react-native-config';
+import Touchable from '@/components/Touchable';
+import {useRealm} from '@/services/realm';
 
 type DetailsTabProps = ModalWrapperFields & {};
 
 const DetailsTab = ({openModal}: DetailsTabProps) => {
   const customer = useContext(CustomerContext);
   const {addresses = []} = customer || {};
-  const {currentLocation} = useGeolocation();
   const handleError = useErrorHandler();
+  useRealm();
   const handleSaveAddress = useCallback(
     (address?: IAddress) => {
       let addressText = address?.text;
@@ -61,7 +67,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                   style={applyStyles(
                     'text-primary uppercase text-center py-16 text-500',
                   )}>
-                  add address
+                  {address ? 'edit' : 'add'} address
                 </Text>
               </View>
               <View style={applyStyles('px-8')}>
@@ -83,6 +89,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                 />
                 <Button
                   onPress={() => {
+                    closeModal();
                     if (addressText && customer) {
                       let nextAddress: Partial<IAddress>;
                       if (!address) {
@@ -98,14 +105,30 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           text: addressText,
                         };
                       }
-                      if (mapAddress && currentLocation) {
-                        nextAddress.coordinates = `${currentLocation.latitude},${currentLocation.longitude}`;
+                      if (mapAddress) {
+                        getAddressService().saveAddress(nextAddress);
+                        const closeLoadingModal = openModal('loading', {
+                          text: 'Mapping Address...',
+                        });
+                        getGeolocationService()
+                          .getCurrentPosition()
+                          .then((currentLocation) => {
+                            getAddressService().saveAddress({
+                              _id: nextAddress._id,
+                              coordinates: convertToLocationString(
+                                currentLocation,
+                              ),
+                            });
+                          })
+                          .catch(handleError)
+                          .finally(() => {
+                            closeLoadingModal();
+                          });
                       } else {
                         nextAddress.coordinates = '';
+                        getAddressService().saveAddress(nextAddress);
                       }
-                      getAddressService().saveAddress(nextAddress);
                     }
-                    closeModal();
                   }}
                   title="save"
                   style={applyStyles('flex-1')}
@@ -116,37 +139,40 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
         },
       });
     },
-    [currentLocation, customer, openModal],
+    [customer, handleError, openModal],
   );
   const handleMapAddress = useCallback(
     (address) => {
       if (!customer) {
         return;
       }
-      if (!currentLocation) {
-        return;
-      }
-      getAddressService().saveAddress({
-        _id: address._id,
-        coordinates: `${currentLocation.latitude},${currentLocation.longitude}`,
-      });
+      const closeModal = openModal('loading', {text: 'Mapping Address...'});
+      getGeolocationService()
+        .getCurrentPosition()
+        .then((currentLocation) => {
+          getAddressService().saveAddress({
+            _id: address._id,
+            coordinates: convertToLocationString(currentLocation),
+          });
+        })
+        .catch(handleError)
+        .finally(() => {
+          closeModal();
+        });
     },
-    [currentLocation, customer],
+    [customer, handleError, openModal],
   );
   return (
-    <ScrollView
-      style={applyStyles('p-lg', {backgroundColor: colors['gray-10']})}>
-      {currentLocation && (
+    <>
+      <ScrollView
+        style={applyStyles('p-lg', {backgroundColor: colors['gray-10']})}>
         <Card>
           <CardHeader style={applyStyles('mb-md')}>Location Details</CardHeader>
           {renderList<IAddress>(
             addresses,
             (address, index) => {
               let {coordinates, text} = address;
-              if (!coordinates) {
-                coordinates = ',';
-              }
-              const [latitude, longitude] = coordinates.split(',');
+              const [latitude, longitude] = parseLocationString(coordinates);
               return (
                 <View
                   style={applyStyles(
@@ -162,7 +188,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           height: 128,
                         },
                       )}>
-                      <MapView
+                      <Touchable
                         onPress={() => {
                           const scheme = Platform.select({
                             ios: 'maps:0,0?q=',
@@ -177,34 +203,33 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           if (url) {
                             Linking.openURL(url).catch(handleError);
                           }
-                        }}
-                        style={applyStyles('w-full h-full')}
-                        initialRegion={{
-                          latitude: Number(latitude),
-                          longitude: Number(longitude),
-                          latitudeDelta: 0.1,
-                          longitudeDelta: 0.1,
                         }}>
-                        <Marker
+                        <StaticMap
                           coordinate={{
-                            latitude: Number(latitude),
-                            longitude: Number(longitude),
+                            latitude,
+                            longitude,
                           }}
+                          size={{
+                            width: Math.round(dimensions.fullWidth) - 66,
+                            height: 128,
+                          }}
+                          zoom={16}
+                          apiKey={Config.GOOGLE_API_KEY}
                         />
-                      </MapView>
+                      </Touchable>
                     </View>
                   )}
                   <CardDetail
                     name="Address"
                     value={text}
-                    onPress={() => {
+                    onMorePress={() => {
                       const closeModal = openModal('options', {
                         options: [
                           {
                             text: 'Map current location as address',
                             onPress: () => {
-                              handleMapAddress(address);
                               closeModal();
+                              handleMapAddress(address);
                             },
                           },
                           {
@@ -227,15 +252,23 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
               text="No location details added yet"
             />,
           )}
-          <CardButton
-            onPress={() => {
-              handleSaveAddress();
-            }}>
-            add
-          </CardButton>
         </Card>
-      )}
-    </ScrollView>
+        <View style={applyStyles('h-96')} />
+      </ScrollView>
+      <FAButton
+        style={applyStyles(
+          'h-48 w-auto rounded-16 px-12 flex-row items-center',
+        )}
+        onPress={() => {
+          handleSaveAddress();
+        }}>
+        <Icon size={18} name="plus" color="white" type="feathericons" />
+        <Text
+          style={applyStyles('text-400 text-base ml-8 text-white uppercase')}>
+          add address
+        </Text>
+      </FAButton>
+    </>
   );
 };
 
