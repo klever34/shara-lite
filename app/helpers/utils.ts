@@ -103,10 +103,10 @@ export const getCustomerWhatsappNumber = (
 export const renderList = <T extends {}>(
   list: T[],
   renderItem: (item: T, index: number, list: T[]) => ReactElement,
-  emptyState: ReactElement,
+  emptyState?: ReactElement,
 ) => {
   if (!list.length) {
-    return emptyState;
+    return emptyState ?? null;
   } else {
     return list.map((...args) => renderItem(...args));
   }

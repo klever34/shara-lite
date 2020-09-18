@@ -78,7 +78,6 @@ export const NewReceipt = () => {
           receiptItem?.product &&
           receiptItem?.product?._id?.toString() === item?._id?.toString(),
       );
-      console.log(addedItem);
       if (addedItem) {
         setQuantity(addedItem.quantity.toString());
       }

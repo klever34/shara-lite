@@ -4,12 +4,12 @@ import {applyStyles} from '@/helpers/utils';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 
-type Props = {
+type CardProps = {
   style?: ViewStyle;
   children: ReactNode;
 };
 
-export const Card = ({style, children}: Props) => {
+export const Card = ({style, children}: CardProps) => {
   return (
     <View
       style={applyStyles('w-full p-lg elevation-3 bg-white rounded-16', style)}>
@@ -36,17 +36,39 @@ type CardDetailProps = {
   name: string;
   value: string;
   onPress?: () => void;
+  onMorePress?: () => void;
 };
 
-export const CardDetail = ({style, name, value, onPress}: CardDetailProps) => {
+export const CardDetail = ({
+  style,
+  name,
+  value,
+  onPress,
+  onMorePress,
+}: CardDetailProps) => {
   return (
     <Touchable onPress={onPress}>
-      <View style={applyStyles('', style)}>
-        <Text
-          style={applyStyles('text-base text-xs text-400 text-primary mb-2')}>
-          {name}
-        </Text>
-        <Text style={applyStyles('text-base text-400')}>{value}</Text>
+      <View style={applyStyles('flex-row items-center')}>
+        <View style={applyStyles('flex-1', style)}>
+          <Text
+            style={applyStyles('text-base text-xs text-400 text-primary mb-2')}>
+            {name}
+          </Text>
+          <Text style={applyStyles('text-base text-400')}>{value}</Text>
+        </View>
+        {onMorePress && (
+          <Touchable onPress={onMorePress}>
+            <View style={applyStyles('w-32 h-32 center ml-4')}>
+              <Icon
+                size={16}
+                type="feathericons"
+                name="more-vertical"
+                style={applyStyles('')}
+                onPress={onMorePress}
+              />
+            </View>
+          </Touchable>
+        )}
       </View>
     </Touchable>
   );
