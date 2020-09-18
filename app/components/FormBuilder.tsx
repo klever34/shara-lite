@@ -83,7 +83,11 @@ export const FormBuilder = ({
           case 'text':
             fieldProps = field.props as TextInputProps;
             return (
-              <TextInput {...fieldProps} onChangeText={onChangeText(name)} />
+              <TextInput
+                {...fieldProps}
+                containerStyle={applyStyles('mb-24')}
+                onChangeText={onChangeText(name)}
+              />
             );
           case 'mobile':
             fieldProps = field.props as PhoneNumberFieldProps;
