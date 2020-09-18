@@ -108,6 +108,11 @@ export const saveReceipt = ({
       type: 'receipt',
       ...payment,
     });
+    getAnalyticsService().logEvent('paymentMade', {
+      method: payment.method,
+      amount: payment.amount.toString(),
+      item_id: receipt?._id?.toString() ?? '',
+    });
   });
 
   if (creditAmount > 0) {
@@ -119,10 +124,6 @@ export const saveReceipt = ({
       receipt,
       realm,
     });
-
-    getAnalyticsService()
-      .logEvent('creditAdded')
-      .then(() => {});
   }
 };
 

@@ -20,10 +20,15 @@ type SharaAppEventsProperties = {
   customerLocationAdded: {user_id: string};
   customerAdded: undefined;
   // Receipts
-  remainingBalance: undefined;
+  creditPaid: {
+    item_id: string;
+    amount: string;
+    method: string;
+    remaining_balance: string;
+  };
   receiptStart: undefined;
   receiptCreated: undefined;
-  paymentMade: undefined;
+  paymentMade: {item_id: string; method: string; amount: string};
   customerAddedToReceipt: undefined;
   // Content
   share: {item_id: string; content_type: string; method: string};
@@ -31,7 +36,7 @@ type SharaAppEventsProperties = {
   search: {search_term: string; content_type: string};
   print: {item_id: string; content_type: string};
   // Credit Management
-  creditAdded: undefined;
+  creditAdded: {item_id: string; amount: string};
   // Inventory
   supplierAdded: undefined;
   productStart: undefined;

@@ -4,6 +4,7 @@ import {ICredit, modelName} from '../models/Credit';
 import {IReceipt} from '../models/Receipt';
 import {getBaseModelValues} from '../helpers/models';
 import {Customer} from '../../types/app';
+import {getAnalyticsService} from '.';
 
 export const getCredits = ({realm}: {realm: Realm}): ICredit[] => {
   return (realm.objects<ICredit>(modelName) as unknown) as ICredit[];
@@ -43,6 +44,13 @@ export const saveCredit = ({
   realm.write(() => {
     realm.create<ICredit>(modelName, credit, UpdateMode.Modified);
   });
+
+  getAnalyticsService()
+    .logEvent('creditAdded', {
+      item_id: credit?._id?.toString() ?? '',
+      amount: creditAmount.toString(),
+    })
+    .then(() => {});
 };
 
 export const updateCredit = ({

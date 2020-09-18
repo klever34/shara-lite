@@ -265,7 +265,7 @@ export function MyReceipts() {
         customer={activeReceipt?.customer}
         onWhatsappShare={handleWhatsappShare}
         totalAmount={activeReceipt?.total_amount}
-        receiptId={activeReceipt?._id?.toHexString()}
+        receiptId={activeReceipt?._id?.toString()}
       />
 
       <ReceiptDetailsModal
