@@ -13,7 +13,6 @@ import {
 } from '@/components';
 import {
   convertToLocationString,
-  useGeolocation,
   parseLocationString,
 } from '@/services/geolocation';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -22,7 +21,7 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IAddress} from '@/models/Address';
 import {getBaseModelValues} from '@/helpers/models';
 import {CustomerContext} from '@/services/customer';
-import {getAddressService} from '@/services';
+import {getAddressService, getGeolocationService} from '@/services';
 import Icon from '@/components/Icon';
 import StaticMap from '@/components/StaticMap';
 import Config from 'react-native-config';
@@ -34,7 +33,6 @@ type DetailsTabProps = ModalWrapperFields & {};
 const DetailsTab = ({openModal}: DetailsTabProps) => {
   const customer = useContext(CustomerContext);
   const {addresses = []} = customer || {};
-  const {currentLocation} = useGeolocation();
   const handleError = useErrorHandler();
   useRealm();
   const handleSaveAddress = useCallback(
@@ -91,6 +89,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                 />
                 <Button
                   onPress={() => {
+                    closeModal();
                     if (addressText && customer) {
                       let nextAddress: Partial<IAddress>;
                       if (!address) {
@@ -106,16 +105,30 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           text: addressText,
                         };
                       }
-                      if (mapAddress && currentLocation) {
-                        nextAddress.coordinates = convertToLocationString(
-                          currentLocation,
-                        );
+                      if (mapAddress) {
+                        getAddressService().saveAddress(nextAddress);
+                        const closeLoadingModal = openModal('loading', {
+                          text: 'Mapping Address...',
+                        });
+                        getGeolocationService()
+                          .getCurrentPosition()
+                          .then((currentLocation) => {
+                            getAddressService().saveAddress({
+                              _id: nextAddress._id,
+                              coordinates: convertToLocationString(
+                                currentLocation,
+                              ),
+                            });
+                          })
+                          .catch(handleError)
+                          .finally(() => {
+                            closeLoadingModal();
+                          });
                       } else {
                         nextAddress.coordinates = '';
+                        getAddressService().saveAddress(nextAddress);
                       }
-                      getAddressService().saveAddress(nextAddress);
                     }
-                    closeModal();
                   }}
                   title="save"
                   style={applyStyles('flex-1')}
@@ -126,22 +139,28 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
         },
       });
     },
-    [currentLocation, customer, openModal],
+    [customer, handleError, openModal],
   );
   const handleMapAddress = useCallback(
     (address) => {
       if (!customer) {
         return;
       }
-      if (!currentLocation) {
-        return;
-      }
-      getAddressService().saveAddress({
-        _id: address._id,
-        coordinates: convertToLocationString(currentLocation),
-      });
+      const closeModal = openModal('loading', {text: 'Mapping Address...'});
+      getGeolocationService()
+        .getCurrentPosition()
+        .then((currentLocation) => {
+          getAddressService().saveAddress({
+            _id: address._id,
+            coordinates: convertToLocationString(currentLocation),
+          });
+        })
+        .catch(handleError)
+        .finally(() => {
+          closeModal();
+        });
     },
-    [currentLocation, customer],
+    [customer, handleError, openModal],
   );
   return (
     <>
@@ -209,8 +228,8 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           {
                             text: 'Map current location as address',
                             onPress: () => {
-                              handleMapAddress(address);
                               closeModal();
+                              handleMapAddress(address);
                             },
                           },
                           {
@@ -234,6 +253,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
             />,
           )}
         </Card>
+        <View style={applyStyles('h-96')} />
       </ScrollView>
       <FAButton
         style={applyStyles(
