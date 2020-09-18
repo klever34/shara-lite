@@ -5,7 +5,7 @@ import Icon from '../../../../components/Icon';
 import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService} from '../../../../services';
+import {getAnalyticsService, getAuthService} from '../../../../services';
 import {colors} from '../../../../styles';
 import {ReceiptImage} from './ReceiptImage';
 
@@ -41,19 +41,37 @@ export const ShareReceiptModal = ({
 }: Props) => {
   const authService = getAuthService();
   const user = authService.getUser();
+  const analyticsService = getAnalyticsService();
   const [receiptImage, setReceiptImage] = useState('');
 
   const handleSmsShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {item_id: '', content_type: 'receipt', method: 'sms'})
+      .then(() => {});
     onSmsShare && onSmsShare();
-  }, [onSmsShare]);
+  }, [analyticsService, onSmsShare]);
 
   const handleEmailShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        item_id: '',
+        method: 'email',
+        content_type: 'receipt',
+      })
+      .then(() => {});
     onEmailShare && onEmailShare({receiptImage});
-  }, [receiptImage, onEmailShare]);
+  }, [onEmailShare, receiptImage, analyticsService]);
 
   const handleWhatsappShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        item_id: '',
+        method: 'whatsapp',
+        content_type: 'receipt',
+      })
+      .then(() => {});
     onWhatsappShare && onWhatsappShare(receiptImage);
-  }, [onWhatsappShare, receiptImage]);
+  }, [analyticsService, onWhatsappShare, receiptImage]);
 
   return (
     <Modal

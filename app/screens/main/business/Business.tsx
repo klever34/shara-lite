@@ -8,7 +8,7 @@ import {colors} from '@/styles';
 import {applyStyles, amountWithCurrency} from '@/helpers/utils';
 import {Button, ActionCard} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {BusinessSetup} from '../../BusinessSetup';
 import {useScreenRecord} from '@/services/analytics';
 
@@ -116,6 +116,12 @@ export const BusinessTab = () => {
             break;
           case 'Inventory':
             navigation.navigate('Finances', {screen: 'Inventory'});
+            break;
+          case 'NewReceipt':
+            getAnalyticsService()
+              .logEvent('receiptStart')
+              .then(() => {});
+            navigation.navigate(name);
             break;
 
           default:

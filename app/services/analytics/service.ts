@@ -28,7 +28,7 @@ type SharaAppEventsProperties = {
   paymentMade: undefined;
   customerAddedToReceipt: undefined;
   // Content
-  share: {item_id: string; content_type: string};
+  share: {item_id: string; content_type: string; method: string};
   selectContent: {item_id: string; content_type: string};
   search: {search_term: string; content_type: string};
   print: {item_id: string; content_type: string};

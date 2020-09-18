@@ -31,7 +31,11 @@ import {
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAuthService, getStorageService} from '../../../../services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getStorageService,
+} from '../../../../services';
 import {
   getCustomers,
   saveCustomer,
@@ -295,6 +299,12 @@ export function ReceiptDetailsModal(props: Props) {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText('\n\r', {});
+        getAnalyticsService()
+          .logEvent('print', {
+            item_id: receipt?._id?.toString() ?? '',
+            content_type: 'receipt',
+          })
+          .then(() => {});
         handleClosePrinterModal();
       } catch (err) {
         ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
