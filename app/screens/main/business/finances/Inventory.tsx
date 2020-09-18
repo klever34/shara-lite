@@ -1,3 +1,4 @@
+import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
@@ -146,6 +147,12 @@ export function MyInventory() {
   const handleProductItemClick = useCallback(
     (product) => {
       navigation.navigate('ViewProductDetails', {product: product._id});
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: product?._id?.toString() ?? '',
+          content_type: 'product',
+        })
+        .then(() => {});
     },
     [navigation],
   );

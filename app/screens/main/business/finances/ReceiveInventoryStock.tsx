@@ -29,6 +29,7 @@ import {MainStackParamList} from '../../index';
 import {ReceiveInventoryStockPreview} from './ReceiveInventoryStockPreview';
 import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
 import {useScreenRecord} from '../../../../services/analytics';
+import {getAnalyticsService} from '@/services';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -145,6 +146,12 @@ export const ReceiveInventoryStock = ({
       } else {
         setSelectedProduct(product);
       }
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: product?._id?.toString() ?? '',
+          content_type: 'receiveInventory',
+        })
+        .then(() => {});
     },
     [inventoryStock],
   );

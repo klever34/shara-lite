@@ -14,7 +14,7 @@ import {
   getCustomerWhatsappNumber,
 } from '../../../../helpers/utils';
 import {IReceipt} from '../../../../models/Receipt';
-import {getAuthService} from '../../../../services';
+import {getAnalyticsService, getAuthService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
 import {getReceipts, getAllPayments} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
@@ -50,6 +50,12 @@ export function MyReceipts() {
 
   const handleReceiptItemClick = useCallback((receipt) => {
     setActiveReceipt(receipt);
+    getAnalyticsService()
+      .logEvent('selectContent', {
+        item_id: receipt?._id?.toString() ?? '',
+        content_type: 'receipt',
+      })
+      .then(() => {});
   }, []);
 
   const handleCloseReceiptDetailsModal = useCallback(() => {
