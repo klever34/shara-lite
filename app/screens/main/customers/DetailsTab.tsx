@@ -27,6 +27,7 @@ import Icon from '@/components/Icon';
 import StaticMap from '@/components/StaticMap';
 import Config from 'react-native-config';
 import Touchable from '@/components/Touchable';
+import {useRealm} from '@/services/realm';
 
 type DetailsTabProps = ModalWrapperFields & {};
 
@@ -35,6 +36,7 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
   const {addresses = []} = customer || {};
   const {currentLocation} = useGeolocation();
   const handleError = useErrorHandler();
+  useRealm();
   const handleSaveAddress = useCallback(
     (address?: IAddress) => {
       let addressText = address?.text;
