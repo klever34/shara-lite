@@ -61,7 +61,7 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
-      if (process.env.NODE_ENV === 'development') {
+      if (process.env.NODE_ENV === 'production') {
         await analytics.setup(Config.SEGMENT_KEY, {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,

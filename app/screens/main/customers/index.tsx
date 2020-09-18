@@ -4,6 +4,7 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {getAnalyticsService} from '@/services';
 import {useScreenRecord} from '@/services/analytics';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
@@ -31,6 +32,7 @@ const CustomersTab = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
+  const analyticsService = getAnalyticsService();
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
@@ -53,11 +55,17 @@ const CustomersTab = () => {
 
   const handleSelectCustomer = useCallback(
     (item?: ICustomer) => {
+      analyticsService
+        .logEvent('selectContent', {
+          item_id: item?._id?.toString() ?? '',
+          content_type: 'customer',
+        })
+        .then(() => {});
       navigation.navigate('CustomerDetails', {customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
     },
-    [navigation, customers],
+    [navigation, customers, analyticsService],
   );
 
   const handleCreateCustomer = useCallback(
@@ -97,8 +105,14 @@ const CustomersTab = () => {
       } else {
         setMyCustomers(customers);
       }
+      analyticsService
+        .logEvent('search', {
+          search_term: searchedText,
+          content_type: 'customer',
+        })
+        .then(() => {});
     },
-    [customers],
+    [analyticsService, customers],
   );
 
   const renderCustomerListItem = useCallback(

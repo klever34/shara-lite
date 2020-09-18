@@ -35,6 +35,7 @@ export const DeliveryAgents = () => {
   useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
+  const analyticsService = getAnalyticsService();
   const deliveryAgents = getDeliveryAgents({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
@@ -82,8 +83,14 @@ export const DeliveryAgents = () => {
       } else {
         setMyDeliveryAgents(deliveryAgents);
       }
+      analyticsService
+        .logEvent('search', {
+          search_term: searchedText,
+          content_type: 'deliveryAgent',
+        })
+        .then(() => {});
     },
-    [deliveryAgents],
+    [deliveryAgents, analyticsService],
   );
 
   const handleAddDeliveryAgent = useCallback(() => {
@@ -103,13 +110,11 @@ export const DeliveryAgents = () => {
       } else {
         const deliveryAgent = {full_name: name, mobile};
         saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
-        getAnalyticsService()
-          .logEvent('deliveryAgentAdded')
-          .then(() => {});
+        analyticsService.logEvent('deliveryAgentAdded').then(() => {});
         ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
     },
-    [deliveryAgents, realm],
+    [analyticsService, deliveryAgents, realm],
   );
 
   const renderDeliveryAgentListItem = useCallback(

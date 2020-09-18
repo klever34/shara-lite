@@ -14,6 +14,7 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../..';
 import {orderBy} from 'lodash';
 import {useScreenRecord} from '../../../../services/analytics';
+import {getAnalyticsService} from '@/services';
 
 export const TotalCredit = ({
   route,
@@ -56,7 +57,12 @@ export const TotalCredit = ({
   }, [navigation]);
 
   const handleViewDetails = (creditDetails: ICredit) => {
-    navigation.navigate('CreditDetails', {creditDetails});
+    getAnalyticsService()
+      .logEvent('selectContent', {
+        item_id: creditDetails?._id?.toString() ?? '',
+        content_type: 'deliveryAgent',
+      })
+      .then(() => {});
   };
 
   const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {

@@ -14,6 +14,7 @@ import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
 import {ICredit} from '../../../../models/Credit';
 import {colors} from '../../../../styles';
 import {useScreenRecord} from '../../../../services/analytics';
+import {getAnalyticsService} from '@/services';
 
 export const OverdueCredit = ({
   route,
@@ -55,7 +56,14 @@ export const OverdueCredit = ({
   }, [navigation]);
 
   const handleViewDetails = (creditDetails: ICredit) => {
-    navigation.navigate('CreditDetails', {creditDetails});
+    getAnalyticsService()
+      .logEvent('selectContent', {
+        item_id: creditDetails?._id?.toString() ?? '',
+        content_type: 'deliveryAgent',
+      })
+      .then(() => {
+        navigation.navigate('CreditDetails', {creditDetails});
+      });
   };
 
   const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {

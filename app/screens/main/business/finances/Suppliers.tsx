@@ -22,6 +22,7 @@ import {useScreenRecord} from '@/services/analytics';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {colors} from '@/styles';
+import {getAnalyticsService} from '@/services';
 
 type SupplierItemProps = {
   item: ISupplier;
@@ -75,6 +76,12 @@ export const Suppliers = () => {
       } else {
         setMySuppliers(suppliers);
       }
+      getAnalyticsService()
+        .logEvent('search', {
+          search_term: searchedText,
+          content_type: 'supplier',
+        })
+        .then(() => {});
     },
     [suppliers],
   );
