@@ -14,6 +14,7 @@ import {ICredit} from '../../../models/Credit';
 import {colors} from '../../../styles';
 import {MainStackParamList} from '../index';
 import {useScreenRecord} from '../../../services/analytics';
+import {getAnalyticsService} from '@/services';
 
 export const CustomerTotalCredit = ({
   route,
@@ -56,6 +57,12 @@ export const CustomerTotalCredit = ({
   }, [navigation]);
 
   const handleViewDetails = (creditDetails: ICredit) => {
+    getAnalyticsService()
+      .logEvent('selectContent', {
+        item_id: creditDetails?._id?.toString() ?? '',
+        content_type: 'credit',
+      })
+      .then(() => {});
     navigation.navigate('CustomerCreditDetails', {creditDetails});
   };
 

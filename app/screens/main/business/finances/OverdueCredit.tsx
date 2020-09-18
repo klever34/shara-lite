@@ -59,11 +59,10 @@ export const OverdueCredit = ({
     getAnalyticsService()
       .logEvent('selectContent', {
         item_id: creditDetails?._id?.toString() ?? '',
-        content_type: 'deliveryAgent',
+        content_type: 'credit',
       })
-      .then(() => {
-        navigation.navigate('CreditDetails', {creditDetails});
-      });
+      .then(() => {});
+    navigation.navigate('CreditDetails', {creditDetails});
   };
 
   const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {
