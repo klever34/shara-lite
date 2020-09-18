@@ -5,7 +5,7 @@ import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {useScreenRecord} from '@/services/analytics';
-import {getCustomers, saveCustomer} from '@/services/CustomerService';
+import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';

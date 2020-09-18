@@ -1,4 +1,4 @@
-import {ICustomer, modelName} from '../models';
+import {ICustomer, modelName} from '../../models';
 import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
