@@ -1,10 +1,10 @@
+import {getCredits} from '@/services/CreditService';
+import {useRealm} from '@/services/realm';
 import {useNavigation} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
 import format from 'date-fns/format';
 import {orderBy} from 'lodash';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {MainStackParamList} from '../..';
 import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import HeaderRight from '../../../../components/HeaderRight';
@@ -13,13 +13,12 @@ import {ICredit} from '../../../../models/Credit';
 import {useScreenRecord} from '../../../../services/analytics';
 import {colors} from '../../../../styles';
 
-export const TotalCredit = ({
-  route,
-}: StackScreenProps<MainStackParamList, 'TotalCredit'>) => {
+export const TotalCredit = () => {
   useScreenRecord();
+  const realm = useRealm();
+  const allCredits = getCredits({realm});
   const navigation = useNavigation();
-
-  const credits = route.params.credits;
+  const credits = allCredits.filter((item) => !item.fulfilled);
 
   useLayoutEffect(() => {
     navigation.setOptions({

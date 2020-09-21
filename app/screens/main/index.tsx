@@ -96,8 +96,8 @@ export type MainStackParamList = {
     title: string;
     next: (groupName: string) => FAButtonProps;
   };
-  TotalCredit: {credits: ICredit[]};
-  OverdueCredit: {credits: ICredit[]};
+  TotalCredit: undefined;
+  OverdueCredit: undefined;
   RecordCreditPayment: undefined;
   CreditDetails: {creditDetails: ICredit};
   CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};

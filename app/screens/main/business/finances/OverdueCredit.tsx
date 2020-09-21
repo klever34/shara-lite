@@ -1,10 +1,21 @@
+import Touchable from '@/components/Touchable';
+import {getAuthService} from '@/services';
+import {getCredits} from '@/services/CreditService';
+import {useRealm} from '@/services/realm';
+import {getAllPayments} from '@/services/ReceiptService';
 import {useNavigation} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
 import format from 'date-fns/format';
 import orderBy from 'lodash/orderBy';
-import React, {useLayoutEffect} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {MainStackParamList} from '../..';
+import React, {useCallback, useLayoutEffect} from 'react';
+import {
+  Alert,
+  FlatList,
+  SafeAreaView,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
+import Share from 'react-native-share';
 import {ActionCard} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import HeaderRight from '../../../../components/HeaderRight';
@@ -13,12 +24,17 @@ import {ICredit} from '../../../../models/Credit';
 import {useScreenRecord} from '../../../../services/analytics';
 import {colors} from '../../../../styles';
 
-export const OverdueCredit = ({
-  route,
-}: StackScreenProps<MainStackParamList, 'OverdueCredit'>) => {
+export const OverdueCredit = () => {
   useScreenRecord();
+  const realm = useRealm();
+  const today = new Date();
   const navigation = useNavigation();
-  const credits = route.params.credits;
+  const user = getAuthService().getUser();
+  const allCredits = getCredits({realm});
+  const credits = allCredits.filter(
+    ({fulfilled, due_date}) =>
+      !fulfilled && due_date && due_date.getTime() < today.getTime(),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -32,12 +48,52 @@ export const OverdueCredit = ({
     navigation.navigate('CreditDetails', {creditDetails});
   };
 
+  const handleSmsShare = useCallback(
+    async (credit: ICredit) => {
+      const allPayments = credit.receipt
+        ? getAllPayments({receipt: credit.receipt})
+        : [];
+      const totalAmountPaid = allPayments.reduce(
+        (total, payment) => total + payment.amount_paid,
+        0,
+      );
+      const creditAmountLeft = credit?.receipt?.credits?.reduce(
+        (acc, item) => acc + item.amount_left,
+        0,
+      );
+      const shareOptions = {
+        // @ts-ignore
+        social: Share.Social.SMS,
+        title: 'Payment Reminder',
+        message: `Hello, you purchased some items from ${
+          user?.businesses[0]?.name
+        } for ${amountWithCurrency(
+          credit.receipt?.total_amount,
+        )}. You paid ${amountWithCurrency(
+          totalAmountPaid,
+        )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
+          credit.due_date
+            ? format(new Date(credit.due_date), 'MMM dd, yyyy')
+            : ''
+        }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`,
+        recipient: `${credit.customer?.mobile}`,
+      };
+
+      try {
+        await Share.shareSingle(shareOptions);
+      } catch (e) {
+        Alert.alert('Error', e.error);
+      }
+    },
+    [user],
+  );
+
   const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {
+    const hasCustomer = creditDetails.customer?.mobile;
+
     return (
       <View style={styles.creditItem}>
-        <ActionCard
-          buttonText="view details"
-          onClick={() => handleViewDetails(creditDetails)}>
+        <ActionCard>
           <View style={applyStyles('flex-row', 'justify-space-between')}>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Customer</Text>
@@ -83,6 +139,45 @@ export const OverdueCredit = ({
                     : ''}
                 </Text>
               </View>
+            )}
+          </View>
+
+          <View
+            style={applyStyles('flex-row items-center justify-space-between', {
+              borderTopWidth: 1,
+              borderTopColor: colors['gray-20'],
+            })}>
+            <Touchable onPress={() => handleViewDetails(creditDetails)}>
+              <View
+                style={applyStyles('items-center justify-center', {
+                  height: 60,
+                  width: hasCustomer ? '48%' : '100%',
+                })}>
+                <Text
+                  style={applyStyles('text-400 text-uppercase', {
+                    color: colors.primary,
+                  })}>
+                  view details
+                </Text>
+              </View>
+            </Touchable>
+            {hasCustomer && (
+              <Touchable onPress={() => handleSmsShare(creditDetails)}>
+                <View
+                  style={applyStyles('items-center justify-center', {
+                    height: 60,
+                    width: '48%',
+                    borderLeftWidth: 1,
+                    borderLeftColor: colors['gray-20'],
+                  })}>
+                  <Text
+                    style={applyStyles('text-400 text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Send a reminder
+                  </Text>
+                </View>
+              </Touchable>
             )}
           </View>
         </ActionCard>

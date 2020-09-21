@@ -20,7 +20,7 @@ export const useCreditReminder = () => {
     if (realm && overdueCredits.length) {
       notificationService.localNotification({
         title: 'Overdue Credit',
-        message: `You have ${overdueCredits.length} due credit`,
+        message: `You have ${overdueCredits.length} overdue credit`,
       });
     }
   }, [notificationService, overdueCredits, realm]);
@@ -28,6 +28,7 @@ export const useCreditReminder = () => {
   useEffect(() => {
     BackgroundFetch.configure(
       {
+        stopOnTerminate: false,
         minimumFetchInterval: 15, // fetch interval in minutes
       },
       async (taskId) => {
@@ -35,14 +36,14 @@ export const useCreditReminder = () => {
 
         pushNotification();
 
-        // Call finish upon completion of the background task
         BackgroundFetch.finish(taskId);
       },
       () => {
         console.error('RNBackgroundFetch failed to start.');
       },
     );
-  }, [pushNotification]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     return notificationService.addEventListener(() => {

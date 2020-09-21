@@ -86,7 +86,7 @@
     "@types/pubnub": "^4.28.1",
     "@types/query-string": "^6.3.0",
     "@types/react-native": "^0.62.0",
-    "@types/react-native-push-notification": "^3.0.9",
+    "@types/react-native-push-notification": "^5.0.2",
     "@types/react-native-share": "^3.3.0",
     "@types/react-native-vector-icons": "^6.4.5",
     "@types/react-test-renderer": "16.9.2",
