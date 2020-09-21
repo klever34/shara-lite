@@ -2,6 +2,8 @@
 
 buildscript {
     ext {
+        supportLibVersion = "28.0.0"
+        androidMapsUtilsVersion = "+"
         googlePlayServicesVersion = "+"
         firebaseMessagingVersion = "+"
         buildToolsVersion = "28.0.3"

@@ -1,13 +1,13 @@
 import Realm, {UpdateMode} from 'realm';
 import {ObjectId} from 'bson';
-import {ICustomer} from '../models';
-import {ICredit} from '../models/Credit';
-import {ICreditPayment, modelName} from '../models/CreditPayment';
+import {ICustomer} from '@/models';
+import {ICredit} from '@/models/Credit';
+import {ICreditPayment, modelName} from '@/models/CreditPayment';
 import {savePayment} from './PaymentService';
-import {getBaseModelValues} from '../helpers/models';
+import {getBaseModelValues} from '@/helpers/models';
 import {updateCredit} from './CreditService';
-import {IPayment} from '../models/Payment';
-import {getCustomer} from './CustomerService';
+import {IPayment} from '@/models/Payment';
+import {getCustomer} from './customer/service';
 
 export const getCreditPayments = ({
   realm,

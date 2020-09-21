@@ -139,7 +139,7 @@ export const ReceiveInventory = () => {
           />
           <TextInput
             value={searchInputValue}
-            style={styles.searchInput}
+            containerStyle={styles.searchInput}
             placeholder="Search Suppliers"
             onChangeText={handleSupplierSearch}
             placeholderTextColor={colors['gray-50']}

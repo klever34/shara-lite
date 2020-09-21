@@ -11,29 +11,26 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {ContactsListModal, CreditPaymentForm} from '../../../../components';
-import HeaderRight from '../../../../components/HeaderRight';
-import Icon from '../../../../components/Icon';
-import Touchable from '../../../../components/Touchable';
+import {ContactsListModal, CreditPaymentForm} from '@/components';
+import HeaderRight from '@/components/HeaderRight';
+import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
 import {
   amountWithCurrency,
   applyStyles,
   getCustomerWhatsappNumber,
-} from '../../../../helpers/utils';
-import {ICustomer} from '../../../../models';
-import {ICredit} from '../../../../models/Credit';
-import {IReceipt} from '../../../../models/Receipt';
-import {useScreenRecord} from '../../../../services/analytics';
-import {saveCreditPayment} from '../../../../services/CreditPaymentService';
-import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
-import {useRealm} from '../../../../services/realm';
-import {
-  getAllPayments,
-  updateReceipt,
-} from '../../../../services/ReceiptService';
-import {colors} from '../../../../styles';
+} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {ICredit} from '@/models/Credit';
+import {IReceipt} from '@/models/Receipt';
+import {useScreenRecord} from '@/services/analytics';
+import {saveCreditPayment} from '@/services/CreditPaymentService';
+import {useRealm} from '@/services/realm';
+import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
 import {CustomersList, ReceiptImage} from '../receipts';
 import {getAuthService} from '@/services';
+import {getCustomers, saveCustomer} from '@/services/CustomerService';
 
 export const CreditDetails = ({route}: any) => {
   useScreenRecord();

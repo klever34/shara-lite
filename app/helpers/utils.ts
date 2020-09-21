@@ -2,12 +2,13 @@ import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
 import promiseRetry from 'promise-retry';
 import addDays from 'date-fns/addDays';
-import {globalStyles} from '../styles';
+import {globalStyles} from '@/styles';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
 import {TextStyle, ViewStyle} from 'react-native';
-import {getAuthService} from '../services';
-import {Falsy} from '../../types/app';
+import {getAuthService} from '@/services';
+import {Falsy} from 'types/app';
+import {ReactElement} from 'react';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -96,5 +97,17 @@ export const getCustomerWhatsappNumber = (
         .substring(1)}`;
     }
     return `${userCountryCode}${number.replace(/[\s-]+/g, '').substring(1)}`;
+  }
+};
+
+export const renderList = <T extends {}>(
+  list: T[],
+  renderItem: (item: T, index: number, list: T[]) => ReactElement,
+  emptyState?: ReactElement,
+) => {
+  if (!list.length) {
+    return emptyState ?? null;
+  } else {
+    return list.map((...args) => renderItem(...args));
   }
 };

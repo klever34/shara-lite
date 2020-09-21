@@ -75,6 +75,10 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'text-capitalize': {
     textTransform: 'capitalize',
   },
+  'text-2xl': {
+    fontSize: 24,
+    lineHeight: 32,
+  },
   'text-xl': {
     fontSize: 20,
     lineHeight: 24,
@@ -131,6 +135,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'heading-700': {
     fontFamily: 'CocogoosePro-Regular',
   },
+  'overflow-hidden': {
+    overflow: 'hidden',
+  },
+  'w-auto': {
+    width: 'auto',
+  },
   ...Object.keys(spacing).reduce((acc, curr) => {
     return {
       ...acc,
@@ -161,6 +171,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       // border
       [`rounded-${curr}`]: {borderRadius: spacing[curr]},
       [`border-${curr}`]: {borderWidth: spacing[curr]},
+      [`border-t-${curr}`]: {borderTopWidth: spacing[curr]},
       [`border-b-${curr}`]: {borderBottomWidth: spacing[curr]},
 
       // line-height
@@ -183,6 +194,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`bg-${curr}`]: {backgroundColor: colors[curr]},
       [`text-${curr}`]: {color: colors[curr]},
       [`border-${curr}`]: {borderColor: colors[curr]},
+      [`border-t-${curr}`]: {borderTopColor: colors[curr]},
       [`border-b-${curr}`]: {borderBottomColor: colors[curr]},
     };
   }, {}),
@@ -192,4 +204,7 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
       [`elevation-${curr}`]: {elevation: curr},
     };
   }, {}),
+  uppercase: {
+    textTransform: 'uppercase',
+  },
 });
