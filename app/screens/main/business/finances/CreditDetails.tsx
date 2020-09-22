@@ -1,6 +1,21 @@
+import {ContactsListModal, CreditPaymentForm} from '@/components';
+import HeaderRight from '@/components/HeaderRight';
+import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {ICredit} from '@/models/Credit';
+import {IReceipt} from '@/models/Receipt';
+import {getAuthService} from '@/services';
+import {useScreenRecord} from '@/services/analytics';
+import {saveCreditPayment} from '@/services/CreditPaymentService';
+import {getCustomers, saveCustomer} from '@/services/CustomerService';
+import {useRealm} from '@/services/realm';
+import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
+import {ShareHookProps, useShare} from '@/services/share';
+import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
-import Share from 'react-native-share';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
   Alert,
@@ -11,26 +26,7 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {ContactsListModal, CreditPaymentForm} from '@/components';
-import HeaderRight from '@/components/HeaderRight';
-import Icon from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {
-  amountWithCurrency,
-  applyStyles,
-  getCustomerWhatsappNumber,
-} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {ICredit} from '@/models/Credit';
-import {IReceipt} from '@/models/Receipt';
-import {useScreenRecord} from '@/services/analytics';
-import {saveCreditPayment} from '@/services/CreditPaymentService';
-import {useRealm} from '@/services/realm';
-import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
-import {colors} from '@/styles';
 import {CustomersList, ReceiptImage} from '../receipts';
-import {getAuthService} from '@/services';
-import {getCustomers, saveCustomer} from '@/services/CustomerService';
 
 export const CreditDetails = ({route}: any) => {
   useScreenRecord();
@@ -50,7 +46,6 @@ export const CreditDetails = ({route}: any) => {
   const {creditDetails}: {creditDetails: ICredit} = route.params;
   const customers = getCustomers({realm});
   const businessInfo = user?.businesses[0];
-  const userCountryCode = user?.country_code;
   const allPayments = creditDetails.receipt
     ? getAllPayments({receipt: creditDetails.receipt})
     : [];
@@ -73,6 +68,18 @@ export const CreditDetails = ({route}: any) => {
       ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
       : ''
   }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
+
+  const shareProps: ShareHookProps = {
+    image: receiptImage,
+    title: 'Payment Reminder',
+    subject: 'Payment Reminder',
+    message: paymentReminderMessage,
+    recipient: creditDetails.customer?.mobile,
+  };
+
+  const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
+    shareProps,
+  );
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
@@ -109,73 +116,6 @@ export const CreditDetails = ({route}: any) => {
       ),
     });
   }, [navigation]);
-
-  const handleSmsShare = useCallback(async () => {
-    const shareOptions = {
-      // @ts-ignore
-      social: Share.Social.SMS,
-      title: 'Payment Reminder',
-      message: paymentReminderMessage,
-      recipient: `${creditDetails.customer?.mobile}`,
-    };
-
-    if (!creditDetails.customer?.mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', e.error);
-      }
-    }
-  }, [creditDetails.customer, paymentReminderMessage]);
-
-  const handleEmailShare = useCallback(async () => {
-    const shareOptions = {
-      title: 'Payment Reminder',
-      subject: 'Payment Reminder',
-      message: paymentReminderMessage,
-      url: `data:image/png;base64,${receiptImage}`,
-    };
-
-    try {
-      await Share.open(shareOptions);
-    } catch (e) {
-      console.log('Error', e.error);
-    }
-  }, [paymentReminderMessage, receiptImage]);
-
-  const handleWhatsappShare = useCallback(async () => {
-    const mobile = creditDetails?.customer?.mobile;
-    const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
-    const shareOptions = {
-      whatsAppNumber,
-      title: 'Payment Reminder',
-      message: paymentReminderMessage,
-      social: Share.Social.WHATSAPP,
-      url: `data:image/png;base64,${receiptImage}`,
-    };
-    const errorMessages = {
-      filename: 'Invalid file attached',
-      whatsAppNumber: 'Please check the phone number supplied',
-    } as {[key: string]: any};
-
-    if (!creditDetails?.customer?.mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', errorMessages[e.error]);
-      }
-    }
-  }, [creditDetails, paymentReminderMessage, receiptImage, userCountryCode]);
 
   const handleSubmit = useCallback(
     (payload, callback) => {
@@ -267,7 +207,7 @@ export const CreditDetails = ({route}: any) => {
           )}
         </View>
       </View>
-      {!!creditDetails.customer?.name && (
+      {(creditDetails.customer?.name || customer.name) && (
         <View
           style={applyStyles('pb-xl mb-xl', {
             borderBottomColor: colors['gray-20'],
@@ -284,7 +224,7 @@ export const CreditDetails = ({route}: any) => {
           </View>
           <View
             style={applyStyles('flex-row items-center justify-space-between')}>
-            {creditDetails.customer.mobile && (
+            {(creditDetails?.customer?.mobile || customer.mobile) && (
               <View style={applyStyles({width: '33%'})}>
                 <Touchable onPress={handleWhatsappShare}>
                   <View
@@ -317,7 +257,7 @@ export const CreditDetails = ({route}: any) => {
                 </Touchable>
               </View>
             )}
-            {creditDetails.customer.mobile && (
+            {(creditDetails?.customer?.mobile || customer.mobile) && (
               <View style={applyStyles({width: '33%'})}>
                 <Touchable onPress={handleSmsShare}>
                   <View

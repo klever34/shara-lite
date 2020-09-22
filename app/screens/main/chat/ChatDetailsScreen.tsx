@@ -40,7 +40,7 @@ type EditTextPropertyProps = {
   placeholder: string;
   description?: string;
   initialValue?: string;
-  onCancel: () => void;
+  onCancel?: () => void;
   onDone: (value: string) => void;
 };
 
@@ -71,7 +71,7 @@ const EditTextProperty = ({
         <Touchable
           onPress={() => {
             onDone(value);
-            onCancel();
+            onCancel && onCancel();
           }}>
           <View
             style={applyStyles(
