@@ -16,7 +16,7 @@ import {
 import {IReceipt} from '../../../../models/Receipt';
 import {getAuthService} from '../../../../services';
 import {useRealm} from '../../../../services/realm';
-import {getReceipts} from '../../../../services/ReceiptService';
+import {getReceipts, getAllPayments} from '../../../../services/ReceiptService';
 import {colors} from '../../../../styles';
 import {ReceiptDetailsModal, ShareReceiptModal} from '../receipts';
 
@@ -35,6 +35,18 @@ export function MyReceipts() {
 
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [activeReceipt, setActiveReceipt] = useState<IReceipt | null>(null);
+
+  const allPayments = activeReceipt
+    ? getAllPayments({receipt: activeReceipt})
+    : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
+  const creditAmountLeft = activeReceipt?.credits?.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
 
   const handleReceiptItemClick = useCallback((receipt) => {
     setActiveReceipt(receipt);
@@ -64,8 +76,8 @@ export function MyReceipts() {
       } item(s) from ${
         user?.businesses[0].name
       }.  You paid ${amountWithCurrency(
-        activeReceipt?.amount_paid,
-      )} and owe ${amountWithCurrency(activeReceipt?.credit_amount)} ${
+        totalAmountPaid,
+      )} and owe ${amountWithCurrency(creditAmountLeft)} ${
         activeReceipt?.credits && activeReceipt?.credits[0]?.due_date
           ? `(which is due on ${format(
               new Date(activeReceipt?.credits[0]?.due_date),
@@ -89,7 +101,7 @@ export function MyReceipts() {
         Alert.alert('Error', e.error);
       }
     }
-  }, [activeReceipt, user]);
+  }, [activeReceipt, creditAmountLeft, totalAmountPaid, user]);
 
   const handleEmailShare = useCallback(
     async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
@@ -245,14 +257,14 @@ export function MyReceipts() {
         tax={activeReceipt?.tax}
         visible={isShareModalOpen}
         onSmsShare={handleSmsShare}
+        amountPaid={totalAmountPaid}
         products={activeReceipt?.items}
         onEmailShare={handleEmailShare}
+        creditAmount={creditAmountLeft}
         onClose={handleCloseShareModal}
         customer={activeReceipt?.customer}
         onWhatsappShare={handleWhatsappShare}
-        amountPaid={activeReceipt?.amount_paid}
         totalAmount={activeReceipt?.total_amount}
-        creditAmount={activeReceipt?.credit_amount}
       />
 
       <ReceiptDetailsModal

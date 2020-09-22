@@ -41,7 +41,7 @@ import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import {getCustomers} from '@/services/CustomerService';
+import {getCustomers} from '@/services/customer/service';
 import AddCustomer from '../../customers/AddCustomer';
 import {addDays} from 'date-fns';
 

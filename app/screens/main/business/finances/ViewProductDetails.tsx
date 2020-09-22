@@ -130,7 +130,7 @@ export const ViewProductDetails = ({
                 fontSize: 16,
                 color: colors['gray-300'],
               })}>
-              {product.quantity}
+              {product.quantity.toFixed(2)}
             </Text>
           </View>
         )}

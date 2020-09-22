@@ -23,7 +23,7 @@ export class ReceiptItem extends BaseModel implements Partial<IReceiptItem> {
       ...baseModelSchema,
       name: 'string?',
       sku: 'string?',
-      quantity: 'int?',
+      quantity: 'double?',
       price: 'double?',
       total_price: 'double?',
       weight: 'string?',

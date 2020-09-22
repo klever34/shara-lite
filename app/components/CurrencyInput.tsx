@@ -57,7 +57,8 @@ export const CurrencyInput = (props: Props) => {
         setValue(stringValue);
         onChange && onChange(numberValue);
       } else {
-        setValue('');
+        setValue('0');
+        onChange && onChange(0);
       }
     },
     [onChange],

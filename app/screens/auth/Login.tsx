@@ -1,40 +1,29 @@
 import React, {useContext} from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import Icon from '../../components/Icon';
-import Touchable from '../../components/Touchable';
-import {applyStyles} from '../../helpers/utils';
-import {getAnalyticsService, getApiService, getRealmService} from '../../services';
-import {useErrorHandler} from '@/services/error-boundary';
-import {colors} from '../../styles';
-import {initLocalRealm} from '../../services/realm';
-import {RealmContext} from '../../services/realm/provider';
+import {applyStyles} from '@/helpers/utils';
+import {getApiService, getRealmService} from '../../services';
+import {colors} from '@/styles';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import analytics from '@react-native-firebase/analytics';
+import {AuthView} from '@/components/AuthView';
+import {useAppNavigation} from '@/services/navigation';
 
 type Fields = {
   mobile: string;
   password: string;
-  countryCode: string | null;
+  countryCode: string;
 };
 
-export const Login = ({navigation}: any) => {
-  // @ts-ignore
+export const Login = () => {
   const {updateLocalRealm} = useContext(RealmContext);
-  const {callingCode, countryCode2} = useIPGeolocation();
+  const {callingCode} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
     FormDefaults.get('login', {countryCode: callingCode}) as Fields,
   );
-  const handleError = useErrorHandler();
 
   const onChangeText = (value: string, field: keyof Fields) => {
     setFields({
@@ -65,7 +54,7 @@ export const Login = ({navigation}: any) => {
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
       const realmService = getRealmService();
       realmService.setInstance(createdLocalRealm);
-      getAnalyticsService().logEvent('login').catch(handleError);
+
       setLoading(false);
       navigation.reset({
         index: 0,
@@ -77,39 +66,18 @@ export const Login = ({navigation}: any) => {
     }
   };
 
-  const handleNavigate = (route: string) => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: route}],
-    });
-  };
+  const navigation = useAppNavigation();
 
   const isButtonDisabled = () => {
     return !fields.mobile || !fields.password;
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      keyboardShouldPersistTaps="always"
-      persistentScrollbar={true}>
-      <View style={styles.backButton}>
-        <Touchable onPress={() => handleNavigate('Welcome')}>
-          <View style={applyStyles({height: 40, width: 40})}>
-            <Icon size={24} type="feathericons" name="arrow-left" />
-          </View>
-        </Touchable>
-      </View>
-      <View style={styles.headerSection}>
-        <Text style={styles.heading}>Welcome Back!</Text>
-        <Text style={styles.description}>Sign in to your account.</Text>
-      </View>
+    <AuthView title="Welcome Back!" description="Sign in to your account.">
       <View style={styles.form}>
         <View style={styles.inputField}>
           <PhoneNumberField
-            value={fields.mobile}
-            countryCode={fields.countryCode}
-            countryCode2={countryCode2}
+            value={{number: fields.mobile, code: fields.countryCode}}
             onChangeText={(data) => onChangeMobile(data)}
           />
         </View>
@@ -127,15 +95,26 @@ export const Login = ({navigation}: any) => {
           disabled={isButtonDisabled()}
         />
       </View>
+      <View style={applyStyles('mb-16')}>
+        <TouchableOpacity
+          style={styles.helpSection}
+          onPress={() =>
+            navigation.navigate('ForgotPassword', {
+              mobile: {number: fields.mobile, code: fields.countryCode},
+            })
+          }>
+          <Text style={styles.helpSectionText}>Forgot your password? </Text>
+        </TouchableOpacity>
+      </View>
       <View>
         <TouchableOpacity
           style={styles.helpSection}
-          onPress={() => handleNavigate('Register')}>
+          onPress={() => navigation.replace('Register')}>
           <Text style={styles.helpSectionText}>Don’t have an account? </Text>
           <Text style={styles.helpSectionButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </AuthView>
   );
 };
 

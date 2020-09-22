@@ -18,8 +18,10 @@ import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
+import {Address} from '@/models/Address';
 
 export const schema = [
+  Address,
   Contact,
   Conversation,
   Customer,
@@ -62,7 +64,7 @@ export const createRealm = async (options?: any): Promise<Realm> => {
       user: options.realmUser,
       partitionValue,
     };
-    config.path = `sync-user-data-${partitionValue}`;
+    config.path = `sync-user-data-${partitionValue}-v2`;
   }
 
   if (options && options.schemaVersion) {

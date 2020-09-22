@@ -29,7 +29,7 @@ export class StockItem extends BaseModel implements Partial<StockItem> {
       supplier_name: 'string?',
       name: 'string?',
       sku: 'string?',
-      quantity: 'int?',
+      quantity: 'double?',
       cost_price: 'double?',
       total_cost_price: 'double?',
       weight: 'string?',

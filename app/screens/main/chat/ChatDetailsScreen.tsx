@@ -56,7 +56,7 @@ const EditTextProperty = ({
     <View style={applyStyles('pt-md')}>
       <TextInput
         placeholder={placeholder}
-        style={applyStyles('px-lg')}
+        containerStyle={applyStyles('px-lg')}
         value={value}
         onChangeText={setValue}
       />

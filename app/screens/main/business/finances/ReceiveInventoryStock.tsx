@@ -203,7 +203,6 @@ export const ReceiveInventoryStock = ({
       ) {
         items = inventoryStock.map((item) => {
           if (item.product._id?.toString() === stock.product._id?.toString()) {
-            console.log(item);
             return {
               ...item,
               ...stock,
@@ -256,8 +255,8 @@ export const ReceiveInventoryStock = ({
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
             <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
-              {product.sku} - {product.name}{' '}
-              {product.weight ? `(${product.weight}))` : ''}
+              {product.sku ? `${product.sku} - ` : ''}
+              {product.name} {product.weight ? `(${product.weight}))` : ''}
             </Text>
           </View>
         </Touchable>
