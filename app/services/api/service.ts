@@ -121,6 +121,8 @@ export class ApiService implements IApiService {
         headers['Content-Type'] = 'application/json';
       }
 
+      // TODO HTTP Request Tracing using Firebase Performance Monitoring https://rnfirebase.io/perf/usage
+
       return fetch(fetchUrl, {
         method: 'GET',
         // @ts-ignore
