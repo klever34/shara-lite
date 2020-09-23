@@ -90,6 +90,7 @@ export const TotalCredit = () => {
   const renderCreditItem = useCallback(
     ({item: creditDetails}: {item: ICredit}) => {
       const hasCustomer = creditDetails.customer?.mobile;
+
       return (
         <View style={styles.creditItem}>
           <ActionCard>
@@ -188,8 +189,6 @@ export const TotalCredit = () => {
     },
     [handleOpenShareModal, handleViewDetails],
   );
-
-  console.log(selectedCredit?.customer?.name);
 
   return (
     <SafeAreaView

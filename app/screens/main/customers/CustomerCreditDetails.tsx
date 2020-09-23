@@ -1,33 +1,22 @@
-import {useNavigation} from '@react-navigation/native';
-import {format} from 'date-fns';
-import Share from 'react-native-share';
-import React, {useCallback, useState, useLayoutEffect} from 'react';
-import {
-  ScrollView,
-  StyleSheet,
-  Text,
-  View,
-  ToastAndroid,
-  Alert,
-} from 'react-native';
-import {CreditPaymentForm} from '../../../components';
-import {
-  applyStyles,
-  amountWithCurrency,
-  getCustomerWhatsappNumber,
-} from '../../../helpers/utils';
-import {ICredit} from '../../../models/Credit';
-import {colors} from '../../../styles';
-import {useRealm} from '../../../services/realm';
-import {saveCreditPayment} from '../../../services/CreditPaymentService';
-import HeaderRight from '../../../components/HeaderRight';
-import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '..';
-import {useScreenRecord} from '../../../services/analytics';
-import Touchable from '@/components/Touchable';
 import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
 import {getAuthService} from '@/services';
 import {getAllPayments} from '@/services/ReceiptService';
+import {ShareHookProps, useShare} from '@/services/share';
+import {useNavigation} from '@react-navigation/native';
+import {StackScreenProps} from '@react-navigation/stack';
+import {format} from 'date-fns';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {ScrollView, StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {MainStackParamList} from '..';
+import {CreditPaymentForm} from '../../../components';
+import HeaderRight from '../../../components/HeaderRight';
+import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
+import {ICredit} from '../../../models/Credit';
+import {useScreenRecord} from '../../../services/analytics';
+import {saveCreditPayment} from '../../../services/CreditPaymentService';
+import {useRealm} from '../../../services/realm';
+import {colors} from '../../../styles';
 import {ReceiptImage} from '../business';
 
 export const CustomerCreditDetails = ({
@@ -44,7 +33,6 @@ export const CustomerCreditDetails = ({
 
   const {creditDetails}: {creditDetails: ICredit} = route.params;
   const businessInfo = user?.businesses[0];
-  const userCountryCode = user?.country_code;
   const allPayments = creditDetails.receipt
     ? getAllPayments({receipt: creditDetails.receipt})
     : [];
@@ -68,6 +56,18 @@ export const CustomerCreditDetails = ({
       : ''
   }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
 
+  const shareProps: ShareHookProps = {
+    image: receiptImage,
+    title: 'Payment Reminder',
+    subject: 'Payment Reminder',
+    message: paymentReminderMessage,
+    recipient: creditDetails.customer?.mobile,
+  };
+
+  const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
+    shareProps,
+  );
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -75,73 +75,6 @@ export const CustomerCreditDetails = ({
       ),
     });
   }, [navigation]);
-
-  const handleSmsShare = useCallback(async () => {
-    const shareOptions = {
-      // @ts-ignore
-      social: Share.Social.SMS,
-      title: 'Payment Reminder',
-      message: paymentReminderMessage,
-      recipient: `${creditDetails.customer?.mobile}`,
-    };
-
-    if (!creditDetails.customer?.mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', e.error);
-      }
-    }
-  }, [creditDetails.customer, paymentReminderMessage]);
-
-  const handleEmailShare = useCallback(async () => {
-    const shareOptions = {
-      title: 'Payment Reminder',
-      subject: 'Payment Reminder',
-      message: paymentReminderMessage,
-      url: `data:image/png;base64,${receiptImage}`,
-    };
-
-    try {
-      await Share.open(shareOptions);
-    } catch (e) {
-      console.log('Error', e.error);
-    }
-  }, [paymentReminderMessage, receiptImage]);
-
-  const handleWhatsappShare = useCallback(async () => {
-    const mobile = creditDetails?.customer?.mobile;
-    const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
-    const shareOptions = {
-      whatsAppNumber,
-      title: 'Payment Reminder',
-      social: Share.Social.WHATSAPP,
-      message: paymentReminderMessage,
-      url: `data:image/png;base64,${receiptImage}`,
-    };
-    const errorMessages = {
-      filename: 'Invalid file attached',
-      whatsAppNumber: 'Please check the phone number supplied',
-    } as {[key: string]: any};
-
-    if (!creditDetails?.customer?.mobile) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
-    } else {
-      try {
-        await Share.shareSingle(shareOptions);
-      } catch (e) {
-        Alert.alert('Error', errorMessages[e.error]);
-      }
-    }
-  }, [creditDetails, paymentReminderMessage, receiptImage, userCountryCode]);
 
   const handleSubmit = useCallback(
     (payload, callback) => {

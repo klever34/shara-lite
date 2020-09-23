@@ -29,7 +29,7 @@ export const useCreditReminder = () => {
     BackgroundFetch.configure(
       {
         stopOnTerminate: false,
-        minimumFetchInterval: 15, // fetch interval in minutes
+        minimumFetchInterval: 120, // fetch interval in minutes
       },
       async (taskId) => {
         console.log('Received background-fetch event: ', taskId);
