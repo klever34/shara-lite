@@ -20,6 +20,7 @@ export const useCreditReminder = () => {
     if (realm && overdueCredits.length) {
       notificationService.localNotification({
         title: 'Overdue Credit',
+        smallIcon: 'ic_launcher',
         message: `You have ${overdueCredits.length} overdue credit`,
       });
     }
