@@ -26,7 +26,6 @@ export const useCreditReminder = () => {
       notificationService.localNotification({
         id: 0,
         title: 'Overdue Credit',
-        smallIcon: 'ic_launcher',
         message: `You have ${overdueCredits.length} overdue credit`,
       });
     }
@@ -42,7 +41,6 @@ export const useCreditReminder = () => {
       notificationService.localNotification({
         id: 1,
         message,
-        smallIcon: 'ic_launcher',
         title: 'Credit due tomorrow',
       });
     }
