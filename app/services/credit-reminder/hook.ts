@@ -14,11 +14,14 @@ export const useCreditReminder = () => {
 
   const overdueCredits = credits.filter(
     (credit) =>
-      credit.due_date && credit?.due_date?.getTime() <= new Date().getTime(),
+      !credit.fulfilled &&
+      credit.due_date &&
+      credit?.due_date?.getTime() <= new Date().getTime(),
   );
 
   const creditDueTomorrow = credits.filter(
-    (credit) => credit.due_date && isTomorrow(credit.due_date),
+    (credit) =>
+      !credit.fulfilled && credit.due_date && isTomorrow(credit.due_date),
   );
 
   const overdueCreditNotification = useCallback(() => {
