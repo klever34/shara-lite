@@ -4,6 +4,7 @@ import Config from 'react-native-config';
 import queryString from 'query-string';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
+import perf from '@react-native-firebase/perf';
 import {
   ApiResponse,
   Business,
@@ -197,6 +198,9 @@ export class ApiService implements IApiService {
 
   public async logIn(payload: {mobile: string; password: string}) {
     try {
+      // Define & start a trace
+      const trace = await perf().startTrace('login_trace');
+
       const fetchResponse = await this.requester.post('/login', payload);
       const {
         data: {
@@ -211,6 +215,13 @@ export class ApiService implements IApiService {
       this.authService.setToken(token);
       this.authService.setUser(user);
       this.authService.setRealmCredentials(realmCredentials);
+
+      // Define trace meta details
+      // trace.putMetric('mobile', user.mobile);
+      trace.putAttribute('user_id', user.id);
+
+      // Stop the trace
+      await trace.stop();
       return fetchResponse;
     } catch (error) {
       throw error;
