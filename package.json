@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.43-chore.analytics+build.2877",
+  "version": "0.2.43-chore.analytics+build.2882",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
