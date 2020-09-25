@@ -9,7 +9,11 @@ import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './customer/service';
-import {getAnalyticsService, getGeolocationService} from '@/services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getGeolocationService,
+} from '@/services';
 import {restockProduct} from '@/services/ProductService';
 import {convertToLocationString} from '@/services/geolocation';
 
@@ -83,9 +87,12 @@ export const saveReceipt = ({
       });
     });
   });
-
   getAnalyticsService()
-    .logEvent('receiptCreated')
+    .logEvent('receiptCreated', {
+      amount:
+        (getAuthService().getUser()?.currency_code ?? '') +
+        String(receipt.total_amount),
+    })
     .then(() => {});
 
   getGeolocationService()

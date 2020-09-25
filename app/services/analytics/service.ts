@@ -27,7 +27,7 @@ type SharaAppEventsProperties = {
     remaining_balance: string;
   };
   receiptStart: undefined;
-  receiptCreated: undefined;
+  receiptCreated: {amount: string};
   paymentMade: {item_id: string; method: string; amount: string};
   productAddedToReceipt: undefined;
   customerAddedToReceipt: undefined;
