@@ -29,6 +29,7 @@ import {colors} from '@/styles';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
 import {FormDefaults} from '@/services/FormDefaults';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -116,7 +117,7 @@ export const NewReceipt = () => {
     setReceipt([]);
     handleCloseSummaryModal();
   }, [handleCloseSummaryModal]);
-
+  const handleError = useErrorHandler();
   const handleAddItem = useCallback(() => {
     const priceCondition = price || price === 0 ? true : false;
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
@@ -129,6 +130,9 @@ export const NewReceipt = () => {
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
+      getAnalyticsService()
+        .logEvent('productAddedToReceipt')
+        .catch(handleError);
       if (
         receipt
           .map((item) => item._id?.toString())
@@ -154,7 +158,7 @@ export const NewReceipt = () => {
     } else {
       Alert.alert('Info', 'Please add product quantity');
     }
-  }, [price, quantity, receipt, selectedProduct]);
+  }, [handleError, price, quantity, receipt, selectedProduct]);
 
   const handleUpdateProductItem = useCallback(
     (item: IReceiptItem) => {
