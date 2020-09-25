@@ -217,7 +217,7 @@ export const NewReceipt = () => {
     getAnalyticsService()
       .logEvent('productStart')
       .then(() => {});
-    () => navigation.navigate('AddProduct');
+    navigation.navigate('AddProduct');
   }, [navigation]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {

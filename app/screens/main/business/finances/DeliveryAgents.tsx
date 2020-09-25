@@ -22,9 +22,9 @@ import {IDeliveryAgent} from '@/models/DeliveryAgent';
 import {
   getDeliveryAgents,
   saveDeliveryAgent,
-} from '../../../../services/DeliveryAgentService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+} from '@/services/DeliveryAgentService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 
 type DeliveryAgentItemProps = {
   item: IDeliveryAgent;
@@ -108,11 +108,10 @@ export const DeliveryAgents = () => {
       } else {
         const deliveryAgent = {full_name: name, mobile};
         saveDeliveryAgent({realm, delivery_agent: deliveryAgent});
-        analyticsService.logEvent('deliveryAgentAdded').then(() => {});
         ToastAndroid.show('Delivery agent added', ToastAndroid.SHORT);
       }
     },
-    [analyticsService, deliveryAgents, realm],
+    [deliveryAgents, realm],
   );
 
   const renderDeliveryAgentListItem = useCallback(

@@ -155,6 +155,9 @@ export const updateReceipt = ({
       updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
   });
+  getAnalyticsService()
+    .logEvent('customerAddedToReceipt')
+    .then(() => {});
 };
 
 export const getAllPayments = ({receipt}: {receipt: IReceipt}) => {
