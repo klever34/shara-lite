@@ -1,121 +1,195 @@
+import Touchable from '@/components/Touchable';
+import {getAuthService} from '@/services';
+import {getCredits} from '@/services/CreditService';
+import {useRealm} from '@/services/realm';
+import {getAllPayments} from '@/services/ReceiptService';
+import {ShareHookProps, useShare} from '@/services/share';
 import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
-import React, {useLayoutEffect} from 'react';
-import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {ActionCard} from '../../../../components';
-import EmptyState from '../../../../components/EmptyState';
-import Icon from '../../../../components/Icon';
-import HeaderRight from '../../../../components/HeaderRight';
-import Touchable from '../../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
-import {StackScreenProps} from '@react-navigation/stack';
-import {MainStackParamList} from '../..';
 import {orderBy} from 'lodash';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
+import {ActionCard, ShareModal} from '../../../../components';
+import EmptyState from '../../../../components/EmptyState';
+import HeaderRight from '../../../../components/HeaderRight';
+import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
+import {ICredit} from '../../../../models/Credit';
 import {useScreenRecord} from '../../../../services/analytics';
+import {colors} from '../../../../styles';
+import {ReceiptImage} from '../receipts';
 
-export const TotalCredit = ({
-  route,
-}: StackScreenProps<MainStackParamList, 'TotalCredit'>) => {
+export const TotalCredit = () => {
   useScreenRecord();
+  const realm = useRealm();
+  const user = getAuthService().getUser();
+  const businessInfo = user?.businesses[0];
+  const allCredits = getCredits({realm});
   const navigation = useNavigation();
+  const credits = allCredits.filter((item) => !item.fulfilled);
 
-  const credits = route.params.credits;
+  const [receiptImage, setReceiptImage] = useState('');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [selectedCredit, setSelectedCredit] = useState<ICredit | undefined>();
+
+  const allPayments = selectedCredit?.receipt
+    ? getAllPayments({receipt: selectedCredit.receipt})
+    : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
+  const creditAmountLeft = selectedCredit?.receipt?.credits?.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
+
+  const paymentReminderMessage = `Hello, you purchased some items from ${
+    businessInfo?.name
+  } for ${amountWithCurrency(
+    selectedCredit?.receipt?.total_amount,
+  )}. You paid ${amountWithCurrency(
+    totalAmountPaid,
+  )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
+    selectedCredit?.due_date
+      ? format(new Date(selectedCredit?.due_date), 'MMM dd, yyyy')
+      : ''
+  }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
+
+  const shareProps: ShareHookProps = {
+    image: receiptImage,
+    title: 'Payment Reminder',
+    subject: 'Payment Reminder',
+    message: paymentReminderMessage,
+    recipient: selectedCredit?.customer?.mobile,
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <View style={applyStyles('px-xs', {width: '33%'})}>
-            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-          </View>
-        </View>
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);
 
-  const handleViewDetails = (creditDetails: ICredit) => {
-    navigation.navigate('CreditDetails', {creditDetails});
-  };
+  const {handleEmailShare, handleSmsShare, handleWhatsappShare} = useShare(
+    shareProps,
+  );
 
-  const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {
-    return (
-      <View style={styles.creditItem}>
-        <ActionCard
-          buttonText="view details"
-          onClick={() => handleViewDetails(creditDetails)}>
-          <View style={applyStyles('flex-row', 'justify-space-between')}>
-            <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Customer</Text>
-              <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {creditDetails.customer?.name || 'No customer'}
-              </Text>
-            </View>
-            <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Amount</Text>
-              <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
-                {amountWithCurrency(creditDetails.amount_left)}
-              </Text>
-            </View>
-          </View>
-          <View style={applyStyles('flex-row', 'justify-space-between')}>
-            <View style={applyStyles('pb-sm', {width: '48%'})}>
-              <Text style={styles.itemTitle}>Given on</Text>
-              <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
-                  : ''}
-              </Text>
-              <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                {creditDetails.created_at
-                  ? format(new Date(creditDetails.created_at), 'hh:mm:a')
-                  : ''}
-              </Text>
-            </View>
-            {creditDetails.due_date && (
+  const handleViewDetails = useCallback(
+    (creditDetails: ICredit) => {
+      navigation.navigate('CreditDetails', {creditDetails});
+    },
+    [navigation],
+  );
+
+  const handleOpenShareModal = useCallback((credit: ICredit) => {
+    setIsShareModalOpen(true);
+    setSelectedCredit(credit);
+  }, []);
+
+  const renderCreditItem = useCallback(
+    ({item: creditDetails}: {item: ICredit}) => {
+      const hasCustomer = creditDetails.customer?.mobile;
+
+      return (
+        <View style={styles.creditItem}>
+          <ActionCard>
+            <View style={applyStyles('flex-row', 'justify-space-between')}>
               <View style={applyStyles('pb-sm', {width: '48%'})}>
-                <Text style={styles.itemTitle}>Due on</Text>
-                <Text
-                  style={applyStyles(styles.itemDataMedium, 'text-400', {
-                    color: colors.primary,
-                  })}>
-                  {creditDetails.due_date
-                    ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+                <Text style={styles.itemTitle}>Customer</Text>
+                <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+                  {creditDetails.customer?.name || 'No customer'}
+                </Text>
+              </View>
+              <View style={applyStyles('pb-sm', {width: '48%'})}>
+                <Text style={styles.itemTitle}>Amount</Text>
+                <Text style={applyStyles(styles.itemDataLarge, 'text-700')}>
+                  {amountWithCurrency(creditDetails.amount_left)}
+                </Text>
+              </View>
+            </View>
+            <View style={applyStyles('flex-row', 'justify-space-between')}>
+              <View style={applyStyles('pb-sm', {width: '48%'})}>
+                <Text style={styles.itemTitle}>Given on</Text>
+                <Text style={applyStyles(styles.itemDataMedium, 'text-400')}>
+                  {creditDetails.created_at
+                    ? format(new Date(creditDetails.created_at), 'MMM dd, yyyy')
                     : ''}
                 </Text>
                 <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
-                  {creditDetails.due_date
-                    ? format(new Date(creditDetails.due_date), 'hh:mm:a')
+                  {creditDetails.created_at
+                    ? format(new Date(creditDetails.created_at), 'hh:mm:a')
                     : ''}
                 </Text>
               </View>
-            )}
-          </View>
-        </ActionCard>
-      </View>
-    );
-  };
+              {creditDetails.due_date && (
+                <View style={applyStyles('pb-sm', {width: '48%'})}>
+                  <Text style={styles.itemTitle}>Due on</Text>
+                  <Text
+                    style={applyStyles(styles.itemDataMedium, 'text-400', {
+                      color: colors.primary,
+                    })}>
+                    {creditDetails.due_date
+                      ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+                      : ''}
+                  </Text>
+                  <Text style={applyStyles(styles.itemDataSmall, 'text-400')}>
+                    {creditDetails.due_date
+                      ? format(new Date(creditDetails.due_date), 'hh:mm:a')
+                      : ''}
+                  </Text>
+                </View>
+              )}
+            </View>
+
+            <View
+              style={applyStyles(
+                'flex-row items-center justify-space-between',
+                {
+                  borderTopWidth: 1,
+                  borderTopColor: colors['gray-20'],
+                },
+              )}>
+              <Touchable onPress={() => handleViewDetails(creditDetails)}>
+                <View
+                  style={applyStyles('items-center justify-center', {
+                    height: 60,
+                    width: hasCustomer ? '48%' : '100%',
+                  })}>
+                  <Text
+                    style={applyStyles('text-400 text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    view details
+                  </Text>
+                </View>
+              </Touchable>
+              {hasCustomer && (
+                <Touchable onPress={() => handleOpenShareModal(creditDetails)}>
+                  <View
+                    style={applyStyles('items-center justify-center', {
+                      height: 60,
+                      width: '48%',
+                      borderLeftWidth: 1,
+                      borderLeftColor: colors['gray-20'],
+                    })}>
+                    <Text
+                      style={applyStyles('text-400 text-uppercase', {
+                        color: colors.primary,
+                      })}>
+                      Send a reminder
+                    </Text>
+                  </View>
+                </Touchable>
+              )}
+            </View>
+          </ActionCard>
+        </View>
+      );
+    },
+    [handleOpenShareModal, handleViewDetails],
+  );
+
   return (
     <SafeAreaView
       style={applyStyles('py-xl', 'flex-1', {
@@ -133,6 +207,28 @@ export const TotalCredit = ({
           />
         }
       />
+      <ShareModal
+        title="Send reminder via"
+        visible={isShareModalOpen}
+        onSmsShare={handleSmsShare}
+        onEmailShare={handleEmailShare}
+        onWhatsappShare={handleWhatsappShare}
+        onClose={() => setIsShareModalOpen(false)}
+      />
+      <View style={applyStyles({opacity: 0, height: 0})}>
+        <ReceiptImage
+          user={user}
+          captureMode="update"
+          amountPaid={totalAmountPaid}
+          creditAmount={creditAmountLeft}
+          tax={selectedCredit?.receipt?.tax}
+          customer={selectedCredit?.customer}
+          createdAt={selectedCredit?.created_at}
+          products={selectedCredit?.receipt?.items}
+          getImageUri={(data) => setReceiptImage(data)}
+          totalAmount={selectedCredit?.receipt?.total_amount}
+        />
+      </View>
     </SafeAreaView>
   );
 };

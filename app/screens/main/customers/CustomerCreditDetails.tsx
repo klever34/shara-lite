@@ -1,26 +1,72 @@
+import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {getAuthService} from '@/services';
+import {getAllPayments} from '@/services/ReceiptService';
+import {ShareHookProps, useShare} from '@/services/share';
 import {useNavigation} from '@react-navigation/native';
-import {format} from 'date-fns';
-import React, {useCallback, useState, useLayoutEffect} from 'react';
-import {ScrollView, StyleSheet, Text, View, ToastAndroid} from 'react-native';
-import {CreditPaymentForm} from '../../../components';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
-import {ICredit} from '../../../models/Credit';
-import {colors} from '../../../styles';
-import {useRealm} from '../../../services/realm';
-import {saveCreditPayment} from '../../../services/CreditPaymentService';
-import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
+import {format} from 'date-fns';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {ScrollView, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {MainStackParamList} from '..';
+import {CreditPaymentForm} from '../../../components';
+import HeaderRight from '../../../components/HeaderRight';
+import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
+import {ICredit} from '../../../models/Credit';
 import {useScreenRecord} from '../../../services/analytics';
+import {saveCreditPayment} from '../../../services/CreditPaymentService';
+import {useRealm} from '../../../services/realm';
+import {colors} from '../../../styles';
+import {ReceiptImage} from '../business';
 
 export const CustomerCreditDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerCreditDetails'>) => {
   useScreenRecord();
   const realm = useRealm();
+  const authService = getAuthService();
+  const user = authService.getUser();
   const navigation = useNavigation();
+
   const [isLoading, setIsLoading] = useState(false);
+  const [receiptImage, setReceiptImage] = useState('');
+
   const {creditDetails}: {creditDetails: ICredit} = route.params;
+  const businessInfo = user?.businesses[0];
+  const allPayments = creditDetails.receipt
+    ? getAllPayments({receipt: creditDetails.receipt})
+    : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
+  const creditAmountLeft = creditDetails?.receipt?.credits?.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
+  const paymentReminderMessage = `Hello, you purchased some items from ${
+    businessInfo?.name
+  } for ${amountWithCurrency(
+    creditDetails.receipt?.total_amount,
+  )}. You paid ${amountWithCurrency(
+    totalAmountPaid,
+  )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
+    creditDetails.due_date
+      ? format(new Date(creditDetails.due_date), 'MMM dd, yyyy')
+      : ''
+  }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
+
+  const shareProps: ShareHookProps = {
+    image: receiptImage,
+    title: 'Payment Reminder',
+    subject: 'Payment Reminder',
+    message: paymentReminderMessage,
+    recipient: creditDetails.customer?.mobile,
+  };
+
+  const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
+    shareProps,
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -108,6 +154,118 @@ export const CustomerCreditDetails = ({
           )}
         </View>
       </View>
+      {!!creditDetails.customer?.name && (
+        <View
+          style={applyStyles('pb-xl mb-xl', {
+            borderBottomColor: colors['gray-20'],
+            borderBottomWidth: 1,
+          })}>
+          <View>
+            <Text
+              style={applyStyles('text-400 mb-lg', {
+                fontSize: 18,
+                color: colors.primary,
+              })}>
+              Send Reminder
+            </Text>
+          </View>
+          <View
+            style={applyStyles('flex-row items-center justify-space-between')}>
+            {creditDetails.customer.mobile && (
+              <View style={applyStyles({width: '33%'})}>
+                <Touchable onPress={handleWhatsappShare}>
+                  <View
+                    style={applyStyles(
+                      'flex-row',
+                      'items-center',
+                      'justify-center',
+                      {
+                        height: 48,
+                      },
+                    )}>
+                    <Icon
+                      size={24}
+                      type="ionicons"
+                      name="logo-whatsapp"
+                      color={colors.whatsapp}
+                    />
+                    <Text
+                      style={applyStyles(
+                        'pl-sm',
+                        'text-400',
+                        'text-uppercase',
+                        {
+                          color: colors['gray-200'],
+                        },
+                      )}>
+                      whatsapp
+                    </Text>
+                  </View>
+                </Touchable>
+              </View>
+            )}
+            {creditDetails.customer.mobile && (
+              <View style={applyStyles({width: '33%'})}>
+                <Touchable onPress={handleSmsShare}>
+                  <View
+                    style={applyStyles(
+                      'flex-row',
+                      'items-center',
+                      'justify-center',
+                      {
+                        height: 48,
+                      },
+                    )}>
+                    <Icon
+                      size={24}
+                      name="message-circle"
+                      type="feathericons"
+                      color={colors.primary}
+                    />
+                    <Text
+                      style={applyStyles(
+                        'pl-sm',
+                        'text-400',
+                        'text-uppercase',
+                        {
+                          color: colors['gray-200'],
+                        },
+                      )}>
+                      sms
+                    </Text>
+                  </View>
+                </Touchable>
+              </View>
+            )}
+            <View style={applyStyles({width: '33%'})}>
+              <Touchable onPress={handleEmailShare}>
+                <View
+                  style={applyStyles(
+                    'flex-row',
+                    'items-center',
+                    'justify-center',
+                    {
+                      height: 48,
+                    },
+                  )}>
+                  <Icon
+                    size={24}
+                    name="mail"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                      color: colors['gray-200'],
+                    })}>
+                    email
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
+          </View>
+        </View>
+      )}
       <View>
         <Text
           style={applyStyles('text-400', {
@@ -119,6 +277,18 @@ export const CustomerCreditDetails = ({
         <View style={applyStyles({marginBottom: 100})}>
           <CreditPaymentForm isLoading={isLoading} onSubmit={handleSubmit} />
         </View>
+      </View>
+      <View style={applyStyles({opacity: 0, height: 0})}>
+        <ReceiptImage
+          user={user}
+          amountPaid={totalAmountPaid}
+          creditAmount={creditAmountLeft}
+          tax={creditDetails.receipt?.tax}
+          customer={creditDetails.customer}
+          products={creditDetails.receipt?.items}
+          getImageUri={(data) => setReceiptImage(data)}
+          totalAmount={creditDetails.receipt?.total_amount}
+        />
       </View>
     </ScrollView>
   );
