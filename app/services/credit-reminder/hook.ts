@@ -8,7 +8,7 @@ import {useRealm} from '../realm';
 
 export const useCreditReminder = () => {
   const realm = useRealm();
-  const credits = getCredits({realm});
+  const credits = realm ? getCredits({realm}) : [];
   const navigation = useNavigation();
   const notificationService = getNotificationService();
 
