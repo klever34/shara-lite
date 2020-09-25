@@ -136,6 +136,11 @@ export const updateReceipt = ({
   customer: ICustomer;
   receipt: IReceipt;
 }): void => {
+  if (!receipt.customer) {
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
+  }
   realm.write(() => {
     const updates = {
       customer,
@@ -155,9 +160,6 @@ export const updateReceipt = ({
       updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
   });
-  getAnalyticsService()
-    .logEvent('customerAddedToReceipt')
-    .then(() => {});
 };
 
 export const getAllPayments = ({receipt}: {receipt: IReceipt}) => {
