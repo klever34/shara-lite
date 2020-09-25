@@ -2,24 +2,22 @@ import {useNavigation} from '@react-navigation/native';
 import format from 'date-fns/format';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {ActionCard} from '../../../../components';
+import {ActionCard} from '@/components';
 import EmptyState from '../../../../components/EmptyState';
 import Icon from '../../../../components/Icon';
 import HeaderRight from '../../../../components/HeaderRight';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, amountWithCurrency} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
+import {applyStyles, amountWithCurrency} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {colors} from '@/styles';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../..';
 import {orderBy} from 'lodash';
-import {useScreenRecord} from '../../../../services/analytics';
 import {getAnalyticsService} from '@/services';
 
 export const TotalCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'TotalCredit'>) => {
-  useScreenRecord();
   const navigation = useNavigation();
 
   const credits = route.params.credits;

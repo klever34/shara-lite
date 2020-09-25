@@ -1,6 +1,5 @@
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {useScreenRecord} from '@/services/analytics';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useRealm} from '@/services/realm';
@@ -30,7 +29,6 @@ const formValidation = yup.object().shape({
 });
 
 const AddCustomer = (props: Props) => {
-  useScreenRecord();
   const {onSubmit} = props;
   const navigation = useNavigation();
   const realm = useRealm() as Realm;

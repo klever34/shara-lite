@@ -1,21 +1,19 @@
 import React, {useLayoutEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import TextInput from '../../../components/TextInput';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import PlaceholderImage from '../../../components/PlaceholderImage';
-import {FAButton} from '../../../components';
-import {ModalWrapperFields} from '../../../helpers/hocs';
+import {FAButton} from '@/components';
+import {ModalWrapperFields} from '@/helpers/hocs';
 import HeaderTitle from '../../../components/HeaderTitle';
-import {useScreenRecord} from '../../../services/analytics';
 
 const SetGroupDetailsScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'SetGroupDetails'> &
   ModalWrapperFields) => {
-  useScreenRecord();
   const {participants, title, next} = route.params;
   const [groupName, setGroupName] = useState('');
   useLayoutEffect(() => {

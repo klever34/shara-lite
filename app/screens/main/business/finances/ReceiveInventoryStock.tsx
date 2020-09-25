@@ -19,16 +19,15 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {IProduct} from '../../../../models/Product';
-import {IStockItem} from '../../../../models/StockItem';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {IProduct} from '@/models/Product';
+import {IStockItem} from '@/models/StockItem';
+import {getProducts} from '@/services/ProductService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {MainStackParamList} from '../../index';
 import {ReceiveInventoryStockPreview} from './ReceiveInventoryStockPreview';
 import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
-import {useScreenRecord} from '../../../../services/analytics';
 import {getAnalyticsService} from '@/services';
 
 type RecentProductItemProps = {
@@ -38,7 +37,6 @@ type RecentProductItemProps = {
 export const ReceiveInventoryStock = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ReceiveInventoryStock'>) => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const products = getProducts({realm});

@@ -4,22 +4,20 @@ import format from 'date-fns/format';
 import orderBy from 'lodash/orderBy';
 import React, {useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {ActionCard} from '../../../components';
+import {ActionCard} from '@/components';
 import EmptyState from '../../../components/EmptyState';
 import HeaderRight from '../../../components/HeaderRight';
 import Icon from '../../../components/Icon';
 import Touchable from '../../../components/Touchable';
-import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
-import {ICredit} from '../../../models/Credit';
-import {colors} from '../../../styles';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {colors} from '@/styles';
 import {MainStackParamList} from '../index';
-import {useScreenRecord} from '../../../services/analytics';
 import {getAnalyticsService} from '@/services';
 
 export const CustomerOverdueCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerOverdueCredit'>) => {
-  useScreenRecord();
   const navigation = useNavigation();
   const credits = route.params.credits;
 

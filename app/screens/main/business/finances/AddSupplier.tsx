@@ -1,6 +1,5 @@
 import {applyStyles} from '@/helpers/utils';
 import {ISupplier} from '@/models/Supplier';
-import {useScreenRecord} from '@/services/analytics';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
@@ -20,7 +19,6 @@ const formValidation = yup.object().shape({
 });
 
 export const AddSupplier = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const suppliers = getSuppliers({realm});

@@ -10,7 +10,6 @@ import {getAnalyticsService, getAuthService} from '@/services';
 import {colors} from '@/styles';
 import {BusinessTab} from './business';
 import CustomersTab from './customers';
-import {useScreenRecord} from '@/services/analytics';
 import {RealmContext} from '@/services/realm/provider';
 
 type HomeTabParamList = {
@@ -22,7 +21,6 @@ type HomeTabParamList = {
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
 const HomeScreen = () => {
-  useScreenRecord();
   const {logoutFromRealm} = useContext(RealmContext);
   const navigation = useNavigation();
   const handleError = useErrorHandler();

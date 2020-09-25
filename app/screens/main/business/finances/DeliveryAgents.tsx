@@ -17,9 +17,8 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
-import {useScreenRecord} from '../../../../services/analytics';
+import {applyStyles} from '@/helpers/utils';
+import {IDeliveryAgent} from '@/models/DeliveryAgent';
 import {
   getDeliveryAgents,
   saveDeliveryAgent,
@@ -32,7 +31,6 @@ type DeliveryAgentItemProps = {
 };
 
 export const DeliveryAgents = () => {
-  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const analyticsService = getAnalyticsService();

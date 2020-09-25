@@ -2,21 +2,19 @@ import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useState, useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text, View, ToastAndroid} from 'react-native';
-import {CreditPaymentForm} from '../../../components';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
-import {ICredit} from '../../../models/Credit';
-import {colors} from '../../../styles';
-import {useRealm} from '../../../services/realm';
-import {saveCreditPayment} from '../../../services/CreditPaymentService';
+import {CreditPaymentForm} from '@/components';
+import {applyStyles, amountWithCurrency} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {colors} from '@/styles';
+import {useRealm} from '@/services/realm';
+import {saveCreditPayment} from '@/services/CreditPaymentService';
 import HeaderRight from '../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '..';
-import {useScreenRecord} from '../../../services/analytics';
 
 export const CustomerCreditDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerCreditDetails'>) => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);

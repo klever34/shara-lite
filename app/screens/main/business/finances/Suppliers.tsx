@@ -18,7 +18,6 @@ import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ISupplier} from '@/models/Supplier';
-import {useScreenRecord} from '@/services/analytics';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {colors} from '@/styles';
@@ -29,7 +28,6 @@ type SupplierItemProps = {
 };
 
 export const Suppliers = () => {
-  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const suppliers = getSuppliers({realm});

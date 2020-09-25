@@ -17,7 +17,6 @@ import {useRealm} from '@/services/realm';
 import Touchable from '../../../../components/Touchable';
 import {ISupplier} from '@/models/Supplier';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
-import {useScreenRecord} from '@/services/analytics';
 import {ContactsListModal} from '@/components';
 import {Contact} from 'react-native-contacts';
 import {getAnalyticsService} from '@/services';
@@ -27,7 +26,6 @@ type SupplierItemProps = {
 };
 
 export const ReceiveInventory = () => {
-  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const suppliers = getSuppliers({realm});

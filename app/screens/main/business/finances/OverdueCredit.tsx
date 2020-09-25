@@ -10,16 +10,14 @@ import EmptyState from '../../../../components/EmptyState';
 import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {colors} from '../../../../styles';
-import {useScreenRecord} from '../../../../services/analytics';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {colors} from '@/styles';
 import {getAnalyticsService} from '@/services';
 
 export const OverdueCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'OverdueCredit'>) => {
-  useScreenRecord();
   const navigation = useNavigation();
   const credits = route.params.credits;
 

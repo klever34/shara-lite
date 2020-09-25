@@ -27,10 +27,8 @@ import {
   getCustomers,
   saveCustomer,
 } from '../../../../services/customer/service';
-import {useScreenRecord} from '@/services/analytics';
 
 export const CreditDetails = ({route}: any) => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);

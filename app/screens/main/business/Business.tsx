@@ -10,10 +10,8 @@ import {Button, ActionCard} from '../../../components';
 import Touchable from '../../../components/Touchable';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {BusinessSetup} from '../../BusinessSetup';
-import {useScreenRecord} from '@/services/analytics';
 
 export const BusinessTab = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const authService = getAuthService();

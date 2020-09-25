@@ -19,16 +19,15 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {IProduct} from '../../../../models/Product';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
+import {applyStyles, numberWithCommas} from '@/helpers/utils';
+import {IProduct} from '@/models/Product';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService, getAuthService} from '../../../../services';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+import {getProducts} from '@/services/ProductService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
-import {useScreenRecord} from '../../../../services/analytics';
 import {FormDefaults} from '@/services/FormDefaults';
 
 type RecentProductItemProps = {
@@ -36,7 +35,6 @@ type RecentProductItemProps = {
 };
 
 export const NewReceipt = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   //@ts-ignore
