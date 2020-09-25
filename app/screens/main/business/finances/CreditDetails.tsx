@@ -7,7 +7,6 @@ import {ICustomer} from '@/models';
 import {ICredit} from '@/models/Credit';
 import {IReceipt} from '@/models/Receipt';
 import {getAuthService} from '@/services';
-import {useScreenRecord} from '@/services/analytics';
 import {saveCreditPayment} from '@/services/CreditPaymentService';
 import {getCustomers, saveCustomer} from '@/services/CustomerService';
 import {useRealm} from '@/services/realm';
@@ -29,7 +28,6 @@ import {
 import {CustomersList, ReceiptImage} from '../receipts';
 
 export const CreditDetails = ({route}: any) => {
-  useScreenRecord();
   const realm = useRealm();
   const authService = getAuthService();
   const user = authService.getUser();

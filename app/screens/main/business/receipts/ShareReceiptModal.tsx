@@ -5,7 +5,7 @@ import Icon from '../../../../components/Icon';
 import {applyStyles} from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService} from '../../../../services';
+import {getAnalyticsService, getAuthService} from '../../../../services';
 import {colors} from '../../../../styles';
 import {ReceiptImage} from './ReceiptImage';
 
@@ -14,6 +14,7 @@ type Props = {
   onClose: () => void;
   onSmsShare?: () => void;
   tax?: number;
+  receiptId?: string;
   amountPaid?: number;
   customer?: ICustomer;
   totalAmount?: number;
@@ -32,6 +33,7 @@ export const ShareReceiptModal = ({
   onClose,
   customer,
   products,
+  receiptId,
   amountPaid,
   onSmsShare,
   totalAmount,
@@ -41,19 +43,41 @@ export const ShareReceiptModal = ({
 }: Props) => {
   const authService = getAuthService();
   const user = authService.getUser();
+  const analyticsService = getAnalyticsService();
   const [receiptImage, setReceiptImage] = useState('');
 
   const handleSmsShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'sms',
+        item_id: receiptId ?? '',
+        content_type: 'receipt',
+      })
+      .then(() => {});
     onSmsShare && onSmsShare();
-  }, [onSmsShare]);
+  }, [receiptId, analyticsService, onSmsShare]);
 
   const handleEmailShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'email',
+        content_type: 'receipt',
+        item_id: receiptId ?? '',
+      })
+      .then(() => {});
     onEmailShare && onEmailShare({receiptImage});
-  }, [receiptImage, onEmailShare]);
+  }, [receiptId, onEmailShare, receiptImage, analyticsService]);
 
   const handleWhatsappShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'whatsapp',
+        content_type: 'receipt',
+        item_id: receiptId ?? '',
+      })
+      .then(() => {});
     onWhatsappShare && onWhatsappShare(receiptImage);
-  }, [onWhatsappShare, receiptImage]);
+  }, [receiptId, analyticsService, onWhatsappShare, receiptImage]);
 
   return (
     <Modal

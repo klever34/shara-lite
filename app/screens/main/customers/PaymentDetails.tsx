@@ -1,13 +1,11 @@
 import {format} from 'date-fns';
 import React from 'react';
 import {SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
-import {colors} from '../../../styles';
-import {IPayment} from '../../../models/Payment';
-import {useScreenRecord} from '../../../services/analytics';
+import {applyStyles, amountWithCurrency} from '@/helpers/utils';
+import {colors} from '@/styles';
+import {IPayment} from '@/models/Payment';
 
 const PaymentDetails = ({route}: any) => {
-  useScreenRecord();
   const {payment}: {payment: IPayment} = route.params;
 
   return (

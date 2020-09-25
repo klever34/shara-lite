@@ -9,7 +9,11 @@ import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './customer/service';
-import {getAnalyticsService, getGeolocationService} from './index';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getGeolocationService,
+} from '@/services';
 import {restockProduct} from '@/services/ProductService';
 import {convertToLocationString} from '@/services/geolocation';
 
@@ -58,6 +62,9 @@ export const saveReceipt = ({
   }
   if (customer._id) {
     receiptCustomer = customer;
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
   }
 
   //@ts-ignore
@@ -80,6 +87,14 @@ export const saveReceipt = ({
       });
     });
   });
+  getAnalyticsService()
+    .logEvent('receiptCreated', {
+      amount:
+        (getAuthService().getUser()?.currency_code ?? '') +
+        String(receipt.total_amount),
+    })
+    .then(() => {});
+
   getGeolocationService()
     .getCurrentPosition()
     .then((location) => {
@@ -100,6 +115,11 @@ export const saveReceipt = ({
       type: 'receipt',
       ...payment,
     });
+    getAnalyticsService().logEvent('paymentMade', {
+      method: payment.method,
+      amount: payment.amount.toString(),
+      item_id: receipt?._id?.toString() ?? '',
+    });
   });
 
   if (creditAmount > 0) {
@@ -111,10 +131,6 @@ export const saveReceipt = ({
       receipt,
       realm,
     });
-
-    getAnalyticsService()
-      .logEvent('creditAdded')
-      .then(() => {});
   }
 };
 
@@ -127,6 +143,11 @@ export const updateReceipt = ({
   customer: ICustomer;
   receipt: IReceipt;
 }): void => {
+  if (!receipt.customer) {
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
+  }
   realm.write(() => {
     const updates = {
       customer,

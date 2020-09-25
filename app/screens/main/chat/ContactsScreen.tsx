@@ -22,13 +22,11 @@ import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {getBaseModelValues} from '@/helpers/models';
-import {useScreenRecord} from '@/services/analytics';
 
 const ContactsScreen = ({
   navigation,
   openModal,
 }: StackScreenProps<MainStackParamList, 'Contacts'> & ModalWrapperFields) => {
-  useScreenRecord();
   const realm = useRealm() as Realm;
   const me = getAuthService().getUser();
   const contacts = realm.objects<IContact>('Contact').sorted('firstname');

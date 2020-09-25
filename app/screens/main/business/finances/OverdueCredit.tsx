@@ -1,5 +1,5 @@
 import Touchable from '@/components/Touchable';
-import {getAuthService} from '@/services';
+import {getAuthService, getAnalyticsService} from '@/services';
 import {getCredits} from '@/services/CreditService';
 import {useRealm} from '@/services/realm';
 import {getAllPayments} from '@/services/ReceiptService';
@@ -12,14 +12,12 @@ import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {ActionCard, ShareModal} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import HeaderRight from '../../../../components/HeaderRight';
-import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
-import {ICredit} from '../../../../models/Credit';
-import {useScreenRecord} from '../../../../services/analytics';
-import {colors} from '../../../../styles';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {colors} from '@/styles';
 import {ReceiptImage} from '../receipts';
 
 export const OverdueCredit = () => {
-  useScreenRecord();
   const realm = useRealm();
   const today = new Date();
   const navigation = useNavigation();
@@ -80,6 +78,12 @@ export const OverdueCredit = () => {
   );
 
   const handleViewDetails = (creditDetails: ICredit) => {
+    getAnalyticsService()
+      .logEvent('selectContent', {
+        item_id: creditDetails?._id?.toString() ?? '',
+        content_type: 'credit',
+      })
+      .then(() => {});
     navigation.navigate('CreditDetails', {creditDetails});
   };
 

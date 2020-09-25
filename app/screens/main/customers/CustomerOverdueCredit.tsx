@@ -1,5 +1,5 @@
 import Touchable from '@/components/Touchable';
-import {getAuthService} from '@/services';
+import {getAuthService, getAnalyticsService} from '@/services';
 import {getAllPayments} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useNavigation} from '@react-navigation/native';
@@ -11,17 +11,15 @@ import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
 import {ActionCard, ShareModal} from '../../../components';
 import EmptyState from '../../../components/EmptyState';
 import HeaderRight from '../../../components/HeaderRight';
-import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
-import {ICredit} from '../../../models/Credit';
-import {useScreenRecord} from '../../../services/analytics';
-import {colors} from '../../../styles';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {colors} from '@/styles';
 import {ReceiptImage} from '../business';
 import {MainStackParamList} from '../index';
 
 export const CustomerOverdueCredit = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerOverdueCredit'>) => {
-  useScreenRecord();
   const navigation = useNavigation();
   const credits = route.params.credits;
   const user = getAuthService().getUser();
@@ -76,6 +74,12 @@ export const CustomerOverdueCredit = ({
   }, [navigation]);
 
   const handleViewDetails = (creditDetails: ICredit) => {
+    getAnalyticsService()
+      .logEvent('selectContent', {
+        item_id: creditDetails?._id?.toString() ?? '',
+        content_type: 'credit',
+      })
+      .then(() => {});
     navigation.navigate('CustomerCreditDetails', {creditDetails});
   };
 

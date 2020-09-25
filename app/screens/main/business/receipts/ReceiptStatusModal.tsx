@@ -26,7 +26,11 @@ import {
 } from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService, getStorageService} from '../../../../services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getStorageService,
+} from '../../../../services';
 import {colors} from '../../../../styles';
 
 type Props = {
@@ -280,6 +284,12 @@ export const ReceiptStatusModal = (props: Props) => {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText('\n\r', {});
+        getAnalyticsService()
+          .logEvent('print', {
+            item_id: '',
+            content_type: 'receipt',
+          })
+          .then(() => {});
         handleClosePrinterModal();
       } catch (err) {
         ToastAndroid.show(err.toString(), ToastAndroid.SHORT);

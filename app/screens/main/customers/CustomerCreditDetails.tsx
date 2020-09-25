@@ -4,25 +4,23 @@ import {getAuthService} from '@/services';
 import {getAllPayments} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useNavigation} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, StyleSheet, Text, ToastAndroid, View} from 'react-native';
-import {MainStackParamList} from '..';
-import {CreditPaymentForm} from '../../../components';
-import HeaderRight from '../../../components/HeaderRight';
-import {amountWithCurrency, applyStyles} from '../../../helpers/utils';
-import {ICredit} from '../../../models/Credit';
-import {useScreenRecord} from '../../../services/analytics';
-import {saveCreditPayment} from '../../../services/CreditPaymentService';
-import {useRealm} from '../../../services/realm';
-import {colors} from '../../../styles';
+import {CreditPaymentForm} from '@/components';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICredit} from '@/models/Credit';
+import {colors} from '@/styles';
 import {ReceiptImage} from '../business';
+import {useRealm} from '@/services/realm';
+import {saveCreditPayment} from '@/services/CreditPaymentService';
+import HeaderRight from '../../../components/HeaderRight';
+import {StackScreenProps} from '@react-navigation/stack';
+import {MainStackParamList} from '..';
 
 export const CustomerCreditDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'CustomerCreditDetails'>) => {
-  useScreenRecord();
   const realm = useRealm();
   const authService = getAuthService();
   const user = authService.getUser();
@@ -71,7 +69,14 @@ export const CustomerCreditDetails = ({
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+        <HeaderRight
+          menuOptions={[
+            {
+              text: 'Help',
+              onSelect: () => {},
+            },
+          ]}
+        />
       ),
     });
   }, [navigation]);

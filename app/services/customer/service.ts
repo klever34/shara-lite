@@ -3,6 +3,7 @@ import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
 import {ObjectId} from 'bson';
+import {getAnalyticsService} from '@/services/index';
 
 export const getCustomers = ({realm}: {realm: Realm}): ICustomer[] => {
   return (realm.objects<ICustomer>(modelName) as unknown) as ICustomer[];
@@ -33,6 +34,10 @@ export const saveCustomer = ({
   realm.write(() => {
     realm.create<ICustomer>(modelName, customerDetails, UpdateMode.Modified);
   });
+
+  getAnalyticsService()
+    .logEvent('customerAdded')
+    .then(() => {});
 
   return customerDetails;
 };

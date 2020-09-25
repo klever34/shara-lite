@@ -73,7 +73,7 @@ export const castObjectValuesToString = (object: {
   return Object.keys(object).reduce((acc, key) => {
     return {
       ...acc,
-      [key]: String(key),
+      [key]: String(object[key]),
     };
   }, {});
 };

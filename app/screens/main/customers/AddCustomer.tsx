@@ -1,9 +1,6 @@
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
-import {useScreenRecord} from '@/services/analytics';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
-import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
@@ -32,14 +29,11 @@ const formValidation = yup.object().shape({
 });
 
 const AddCustomer = (props: Props) => {
-  useScreenRecord();
   const {onSubmit} = props;
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
   const [isLoading, setIsLoading] = useState(false);
-
-  const handleError = useErrorHandler();
 
   const onFormSubmit = useCallback(
     (values: FormValues, {resetForm}: FormikHelpers<FormValues>) => {
@@ -52,13 +46,12 @@ const AddCustomer = (props: Props) => {
         saveCustomer({realm, customer: values});
         setIsLoading(true);
         setIsLoading(false);
-        getAnalyticsService().logEvent('customerAdded').catch(handleError);
         onSubmit ? onSubmit(values) : navigation.goBack();
         resetForm();
         ToastAndroid.show('Customer added', ToastAndroid.SHORT);
       }
     },
-    [navigation, realm, onSubmit, customers, handleError],
+    [navigation, realm, onSubmit, customers],
   );
 
   return (

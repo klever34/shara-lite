@@ -8,7 +8,7 @@ import {useRealm} from '../realm';
 
 export const useCreditReminder = () => {
   const realm = useRealm();
-  const credits = getCredits({realm});
+  const credits = realm ? getCredits({realm}) : [];
   const navigation = useNavigation();
   const notificationService = getNotificationService();
 
@@ -53,8 +53,7 @@ export const useCreditReminder = () => {
     BackgroundFetch.configure(
       {
         stopOnTerminate: false,
-        // minimumFetchInterval: 1440, // fetch interval in minutes
-        minimumFetchInterval: 30,
+        minimumFetchInterval: 1440, // fetch interval in minutes
       },
       async (taskId) => {
         console.log('Received background-fetch event: ', taskId);

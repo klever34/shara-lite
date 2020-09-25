@@ -5,14 +5,12 @@ import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
-import {useScreenRecord} from '@/services/analytics';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -29,10 +27,10 @@ type CustomerItemProps = {
 };
 
 const CustomersTab = () => {
-  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
+  const analyticsService = getAnalyticsService();
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
@@ -45,8 +43,6 @@ const CustomersTab = () => {
     });
   }, [navigation, realm]);
 
-  const handleError = useErrorHandler();
-
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
@@ -57,11 +53,17 @@ const CustomersTab = () => {
 
   const handleSelectCustomer = useCallback(
     (item?: ICustomer) => {
+      analyticsService
+        .logEvent('selectContent', {
+          item_id: item?._id?.toString() ?? '',
+          content_type: 'customer',
+        })
+        .then(() => {});
       navigation.navigate('CustomerDetails', {customer: item});
       setSearchInputValue('');
       setMyCustomers(customers);
     },
-    [navigation, customers],
+    [navigation, customers, analyticsService],
   );
 
   const handleCreateCustomer = useCallback(
@@ -80,11 +82,10 @@ const CustomersTab = () => {
           mobile,
         };
         saveCustomer({realm, customer});
-        getAnalyticsService().logEvent('customerAdded').catch(handleError);
         ToastAndroid.show('Customer added', ToastAndroid.SHORT);
       }
     },
-    [customers, handleError, realm],
+    [customers, realm],
   );
 
   const handleCustomerSearch = useCallback(
@@ -102,8 +103,14 @@ const CustomersTab = () => {
       } else {
         setMyCustomers(customers);
       }
+      analyticsService
+        .logEvent('search', {
+          search_term: searchedText,
+          content_type: 'customer',
+        })
+        .then(() => {});
     },
-    [customers],
+    [analyticsService, customers],
   );
 
   const renderCustomerListItem = useCallback(

@@ -10,7 +10,6 @@ import DetailsTab from './DetailsTab';
 import OrdersTab from './OrdersTab';
 import PaymentsTab from './PaymentsTab';
 import HeaderRight from '../../../components/HeaderRight';
-import {useScreenRecord} from '@/services/analytics';
 import {CustomerContext} from '@/services/customer';
 
 type CustomerDetailsParamList = {
@@ -25,7 +24,6 @@ const CustomerDetailsTab = createMaterialTopTabNavigator<
 >();
 
 const CustomerDetails = ({route}: {route: any}) => {
-  useScreenRecord();
   const navigation = useNavigation();
   const {customer} = route.params;
 

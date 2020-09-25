@@ -21,7 +21,11 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IAddress} from '@/models/Address';
 import {getBaseModelValues} from '@/helpers/models';
 import {CustomerContext} from '@/services/customer';
-import {getAddressService, getGeolocationService} from '@/services';
+import {
+  getAddressService,
+  getAnalyticsService,
+  getGeolocationService,
+} from '@/services';
 import Icon from '@/components/Icon';
 import StaticMap from '@/components/StaticMap';
 import Config from 'react-native-config';
@@ -99,6 +103,9 @@ const DetailsTab = ({openModal}: DetailsTabProps) => {
                           coordinates: '',
                           customer,
                         };
+                        getAnalyticsService()
+                          .logEvent('customerLocationAdded')
+                          .catch(handleError);
                       } else {
                         nextAddress = {
                           _id: address._id,
