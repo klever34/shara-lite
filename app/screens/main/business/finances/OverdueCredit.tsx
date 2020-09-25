@@ -1,57 +1,81 @@
+import Touchable from '@/components/Touchable';
+import {getAuthService, getAnalyticsService} from '@/services';
+import {getCredits} from '@/services/CreditService';
+import {useRealm} from '@/services/realm';
+import {getAllPayments} from '@/services/ReceiptService';
+import {ShareHookProps, useShare} from '@/services/share';
 import {useNavigation} from '@react-navigation/native';
-import {StackScreenProps} from '@react-navigation/stack';
 import format from 'date-fns/format';
 import orderBy from 'lodash/orderBy';
-import React, {useLayoutEffect} from 'react';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {FlatList, SafeAreaView, StyleSheet, Text, View} from 'react-native';
-import {MainStackParamList} from '../..';
-import {ActionCard} from '../../../../components';
+import {ActionCard, ShareModal} from '../../../../components';
 import EmptyState from '../../../../components/EmptyState';
 import HeaderRight from '../../../../components/HeaderRight';
-import Icon from '../../../../components/Icon';
-import Touchable from '../../../../components/Touchable';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {ICredit} from '@/models/Credit';
 import {colors} from '@/styles';
-import {getAnalyticsService} from '@/services';
+import {ReceiptImage} from '../receipts';
 
-export const OverdueCredit = ({
-  route,
-}: StackScreenProps<MainStackParamList, 'OverdueCredit'>) => {
+export const OverdueCredit = () => {
+  const realm = useRealm();
+  const today = new Date();
   const navigation = useNavigation();
-  const credits = route.params.credits;
+  const user = getAuthService().getUser();
+  const businessInfo = user?.businesses[0];
+  const allCredits = getCredits({realm});
+  const credits = allCredits.filter(
+    ({fulfilled, due_date}) =>
+      !fulfilled && due_date && due_date.getTime() < today.getTime(),
+  );
+
+  const [receiptImage, setReceiptImage] = useState('');
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [selectedCredit, setSelectedCredit] = useState<ICredit | undefined>();
+
+  const allPayments = selectedCredit?.receipt
+    ? getAllPayments({receipt: selectedCredit.receipt})
+    : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
+  const creditAmountLeft = selectedCredit?.receipt?.credits?.reduce(
+    (acc, item) => acc + item.amount_left,
+    0,
+  );
+
+  const paymentReminderMessage = `Hello, you purchased some items from ${
+    businessInfo?.name
+  } for ${amountWithCurrency(
+    selectedCredit?.receipt?.total_amount,
+  )}. You paid ${amountWithCurrency(
+    totalAmountPaid,
+  )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
+    selectedCredit?.due_date
+      ? format(new Date(selectedCredit?.due_date), 'MMM dd, yyyy')
+      : ''
+  }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
+
+  const shareProps: ShareHookProps = {
+    image: receiptImage,
+    title: 'Payment Reminder',
+    subject: 'Payment Reminder',
+    message: paymentReminderMessage,
+    recipient: selectedCredit?.customer?.mobile,
+  };
 
   useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <View style={applyStyles('flex-row flex-1 items-center')}>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="sliders"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <Touchable onPress={() => {}}>
-            <View style={applyStyles('px-xs', {width: '33%'})}>
-              <Icon
-                size={24}
-                name="search"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          </Touchable>
-          <View style={applyStyles('px-xs', {width: '33%'})}>
-            <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-          </View>
-        </View>
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [navigation]);
+
+  const {handleEmailShare, handleSmsShare, handleWhatsappShare} = useShare(
+    shareProps,
+  );
 
   const handleViewDetails = (creditDetails: ICredit) => {
     getAnalyticsService()
@@ -63,12 +87,17 @@ export const OverdueCredit = ({
     navigation.navigate('CreditDetails', {creditDetails});
   };
 
+  const handleOpenShareModal = useCallback((credit: ICredit) => {
+    setIsShareModalOpen(true);
+    setSelectedCredit(credit);
+  }, []);
+
   const renderCreditItem = ({item: creditDetails}: {item: ICredit}) => {
+    const hasCustomer = creditDetails.customer?.mobile;
+
     return (
       <View style={styles.creditItem}>
-        <ActionCard
-          buttonText="view details"
-          onClick={() => handleViewDetails(creditDetails)}>
+        <ActionCard>
           <View style={applyStyles('flex-row', 'justify-space-between')}>
             <View style={applyStyles('pb-sm', {width: '48%'})}>
               <Text style={styles.itemTitle}>Customer</Text>
@@ -116,6 +145,45 @@ export const OverdueCredit = ({
               </View>
             )}
           </View>
+
+          <View
+            style={applyStyles('flex-row items-center justify-space-between', {
+              borderTopWidth: 1,
+              borderTopColor: colors['gray-20'],
+            })}>
+            <Touchable onPress={() => handleViewDetails(creditDetails)}>
+              <View
+                style={applyStyles('items-center justify-center', {
+                  height: 60,
+                  width: hasCustomer ? '48%' : '100%',
+                })}>
+                <Text
+                  style={applyStyles('text-400 text-uppercase', {
+                    color: colors.primary,
+                  })}>
+                  view details
+                </Text>
+              </View>
+            </Touchable>
+            {hasCustomer && (
+              <Touchable onPress={() => handleOpenShareModal(creditDetails)}>
+                <View
+                  style={applyStyles('items-center justify-center', {
+                    height: 60,
+                    width: '48%',
+                    borderLeftWidth: 1,
+                    borderLeftColor: colors['gray-20'],
+                  })}>
+                  <Text
+                    style={applyStyles('text-400 text-uppercase', {
+                      color: colors.primary,
+                    })}>
+                    Send a reminder
+                  </Text>
+                </View>
+              </Touchable>
+            )}
+          </View>
         </ActionCard>
       </View>
     );
@@ -138,6 +206,27 @@ export const OverdueCredit = ({
           />
         }
       />
+      <ShareModal
+        title="Send reminder via"
+        visible={isShareModalOpen}
+        onSmsShare={handleSmsShare}
+        onEmailShare={handleEmailShare}
+        onWhatsappShare={handleWhatsappShare}
+        onClose={() => setIsShareModalOpen(false)}
+      />
+      <View style={applyStyles({opacity: 0, height: 0})}>
+        <ReceiptImage
+          user={user}
+          captureMode="update"
+          amountPaid={totalAmountPaid}
+          creditAmount={creditAmountLeft}
+          tax={selectedCredit?.receipt?.tax}
+          customer={selectedCredit?.customer}
+          products={selectedCredit?.receipt?.items}
+          getImageUri={(data) => setReceiptImage(data)}
+          totalAmount={selectedCredit?.receipt?.total_amount}
+        />
+      </View>
     </SafeAreaView>
   );
 };

@@ -1,7 +1,7 @@
 import format from 'date-fns/format';
 import React, {useCallback} from 'react';
 import {FlatList, Image, ScrollView, Text, View} from 'react-native';
-import ViewShot from 'react-native-view-shot';
+import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {User} from '../../../../../types/app';
 import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
@@ -16,6 +16,7 @@ import {
 
 type Props = {
   tax?: number;
+  createdAt?: Date;
   user: User | null;
   amountPaid?: number;
   customer?: ICustomer;
@@ -23,6 +24,7 @@ type Props = {
   creditAmount?: number;
   products?: IReceiptItem[];
   getImageUri: (base64: string) => void;
+  captureMode?: ViewShotProperties['captureMode'];
 };
 
 export const ReceiptImage = (props: Props) => {
@@ -31,10 +33,12 @@ export const ReceiptImage = (props: Props) => {
     user,
     customer,
     products,
+    createdAt,
     amountPaid,
     totalAmount,
     getImageUri,
     creditAmount,
+    captureMode = 'mount',
   } = props;
   const businessInfo = user?.businesses[0];
 
@@ -55,8 +59,8 @@ export const ReceiptImage = (props: Props) => {
   return (
     <ScrollView>
       <ViewShot
-        captureMode="mount"
         onCapture={onCapture}
+        captureMode={captureMode}
         options={{format: 'png', quality: 0.9}}>
         <View
           style={applyStyles('px-lg flex-1', {
@@ -117,10 +121,16 @@ export const ReceiptImage = (props: Props) => {
               </View>
               <View style={applyStyles({width: '60%'})}>
                 <Text style={applyStyles('text-400')}>
-                  {format(new Date(), 'dd/MM/yyyy')}
+                  {format(
+                    createdAt ? new Date(createdAt) : new Date(),
+                    'dd/MM/yyyy',
+                  )}
                 </Text>
                 <Text style={applyStyles('text-400', {fontSize: 10})}>
-                  {format(new Date(), 'hh:mm:a')}
+                  {format(
+                    createdAt ? new Date(createdAt) : new Date(),
+                    'hh:mm:a',
+                  )}
                 </Text>
               </View>
             </View>
