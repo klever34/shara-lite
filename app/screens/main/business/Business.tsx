@@ -124,9 +124,8 @@ export const BusinessTab = () => {
           case 'AddProduct':
             getAnalyticsService()
               .logEvent('productStart')
-              .then(() => {
-                navigation.navigate(name);
-              });
+              .then(() => {});
+            navigation.navigate(name);
             break;
 
           default:

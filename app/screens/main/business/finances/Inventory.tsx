@@ -160,7 +160,18 @@ export function MyInventory() {
   const handleActionItemClick = useCallback(
     (name?: string) => {
       if (name) {
-        navigation.navigate(name);
+        switch (name) {
+          case 'AddProduct':
+            getAnalyticsService()
+              .logEvent('productStart')
+              .then(() => {});
+            navigation.navigate(name);
+            break;
+
+          default:
+            navigation.navigate(name);
+            break;
+        }
       }
     },
     [navigation],
