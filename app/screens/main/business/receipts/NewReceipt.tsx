@@ -82,12 +82,6 @@ export const NewReceipt = () => {
       }
       setSelectedProduct(item);
       setPrice(item?.price);
-      getAnalyticsService()
-        .logEvent('selectContent', {
-          item_id: item?._id?.toString() ?? '',
-          content_type: 'product',
-        })
-        .then(() => {});
     },
     [receipt],
   );
