@@ -118,14 +118,15 @@ export class AnalyticsService implements IAnalyticsService {
     }
     try {
       await analytics.track(eventName, nextEventData);
-      // RNUxcam.logEvent(eventName, nextEventData);
+      RNUxcam.logEvent(eventName, nextEventData);
     } catch (e) {
       throw e;
     }
   }
 
-  tagScreenName(screenName: string): Promise<void> {
+  async tagScreenName(screenName: string): Promise<void> {
     RNUxcam.tagScreenName(screenName);
+    await analytics.screen(screenName);
     return Promise.resolve();
   }
 }
