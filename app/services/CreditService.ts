@@ -1,10 +1,10 @@
 import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models';
-import {ICredit, modelName} from '../models/Credit';
-import {IReceipt} from '../models/Receipt';
-import {getBaseModelValues} from '../helpers/models';
-import {Customer} from '../../types/app';
-import {getAnalyticsService} from '.';
+import {ICustomer} from '@/models';
+import {ICredit, modelName} from '@/models/Credit';
+import {IReceipt} from '@/models/Receipt';
+import {getBaseModelValues} from '@/helpers/models';
+import {Customer} from 'types/app';
+import {getAnalyticsService} from '@/services';
 
 export const getCredits = ({realm}: {realm: Realm}): ICredit[] => {
   return (realm.objects<ICredit>(modelName) as unknown) as ICredit[];

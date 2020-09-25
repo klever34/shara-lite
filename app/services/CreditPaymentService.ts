@@ -8,7 +8,7 @@ import {getBaseModelValues} from '@/helpers/models';
 import {updateCredit} from './CreditService';
 import {IPayment} from '@/models/Payment';
 import {getCustomer} from './customer/service';
-import {getAnalyticsService} from '.';
+import {getAnalyticsService} from '@/services';
 
 export const getCreditPayments = ({
   realm,

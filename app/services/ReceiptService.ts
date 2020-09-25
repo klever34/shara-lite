@@ -9,7 +9,7 @@ import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
 import {saveCustomer} from './customer/service';
-import {getAnalyticsService, getGeolocationService} from './index';
+import {getAnalyticsService, getGeolocationService} from '@/services';
 import {restockProduct} from '@/services/ProductService';
 import {convertToLocationString} from '@/services/geolocation';
 
