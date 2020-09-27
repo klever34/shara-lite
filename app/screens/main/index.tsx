@@ -25,7 +25,6 @@ import {
   getPubNubService,
 } from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
-import {BusinessSetup} from '../BusinessSetup';
 import {
   AddProduct,
   AddSupplier,
@@ -167,9 +166,6 @@ const MainScreens = () => {
   useCreditReminder();
 
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
-  const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
-    !(user?.businesses && user?.businesses.length) || false,
-  );
 
   useEffect(() => {
     if (user) {
@@ -529,10 +525,6 @@ const MainScreens = () => {
           }}
         />
       </MainStack.Navigator>
-      <BusinessSetup
-        visible={isBusinessSetupModalOpen}
-        onClose={() => setIsBusinessSetupModalOpen(false)}
-      />
     </PubNubProvider>
   );
 };
