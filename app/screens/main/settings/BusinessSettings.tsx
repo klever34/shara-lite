@@ -28,7 +28,7 @@ export const BusinessSettings = () => {
       payload.append('profileImageFile', data?.profileImageFile);
 
       try {
-        await apiService.businessSetup(payload);
+        await apiService.businessSetupUpdate(payload, user?.id.toString());
         getAnalyticsService()
           .logEvent('businessSetupComplete')
           .catch(handleError);
@@ -40,7 +40,7 @@ export const BusinessSettings = () => {
         Alert.alert('Error', error.message);
       }
     },
-    [apiService, handleError],
+    [user, apiService, handleError],
   );
 
   return (
