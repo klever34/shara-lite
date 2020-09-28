@@ -5,6 +5,7 @@ import Config from 'react-native-config';
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
 import firebaseAnalytics from '@react-native-firebase/analytics';
+import {utils as firebaseUtils} from '@react-native-firebase/app';
 
 type SharaAppEventsProperties = {
   // Chat
@@ -63,7 +64,10 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
-      if (process.env.NODE_ENV === 'production') {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        !firebaseUtils().isRunningInTestLab
+      ) {
         await segmentAnalytics.setup(Config.SEGMENT_KEY, {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
