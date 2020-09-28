@@ -10,7 +10,7 @@ type HeaderTitleProps = {
   style?: ViewStyle;
 };
 
-const HeaderTitle = ({
+export const HeaderTitle = ({
   title,
   description = '',
   onPress,
@@ -40,5 +40,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Rubik-Regular',
   }),
 });
-
-export default HeaderTitle;

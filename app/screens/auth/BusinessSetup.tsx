@@ -1,10 +1,9 @@
-import {AuthView} from '@/components/AuthView';
+import {AuthView, BusinessForm} from '@/components';
 import {getAnalyticsService, getApiService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
-import {BusinessForm} from '@/components';
 import {applyStyles} from '@/helpers/utils';
 
 export const BusinessSetup = () => {

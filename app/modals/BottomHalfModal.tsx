@@ -20,9 +20,7 @@ const BottomHalfModal = ({
       swipeDirection={['down']}
       style={applyStyles('justify-end m-0')}>
       <View style={styles.content}>
-        <View
-          style={applyStyles('w-72 h-4 bg-gray-50 self-center rounded-8 my-6')}
-        />
+        <View style={applyStyles('w-72 h-4 bg-gray-50 self-center my-6')} />
         {renderContent({closeModal})}
       </View>
     </Modal>
@@ -31,7 +29,8 @@ const BottomHalfModal = ({
 
 const styles = StyleSheet.create({
   content: applyStyles('bg-white', {
-    borderRadius: 16,
+    borderTopLeftRadius: 16,
+    borderTopRightRadius: 16,
   }),
 });
 

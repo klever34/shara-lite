@@ -4,6 +4,7 @@ import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import Icon from '@/components/Icon';
 import {useNavigation} from '@react-navigation/native';
+import {colors} from '@/styles';
 
 export type AuthViewProps = {
   title: string;
@@ -23,7 +24,7 @@ export const AuthView = ({
   const navigation = useNavigation();
   return (
     <ScrollView
-      style={applyStyles('flex-1 py-32')}
+      style={applyStyles('flex-1 py-32', {backgroundColor: colors.white})}
       keyboardShouldPersistTaps="always"
       persistentScrollbar={true}>
       {showBackButton && (

@@ -3,15 +3,13 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Alert, SafeAreaView, View} from 'react-native';
-import HeaderRight from '../../components/HeaderRight';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {colors} from '@/styles';
 import {RealmContext} from '@/services/realm/provider';
-import HeaderTitle from '@/components/HeaderTitle';
 import {Icon} from '@/components/Icon';
-import {HomeMenu} from '@/components/HomeMenu';
+import {HomeMenu, HeaderTitle, HeaderRight} from '@/components';
 import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
