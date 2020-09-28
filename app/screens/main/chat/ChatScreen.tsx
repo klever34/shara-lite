@@ -39,7 +39,6 @@ import {MessageActionEvent} from 'types/pubnub';
 import {useErrorHandler} from '@/services/error-boundary';
 import HeaderTitle from '../../../components/HeaderTitle';
 import {getBaseModelValues} from '@/helpers/models';
-import {useScreenRecord} from '@/services/analytics';
 import HeaderRight, {HeaderRightMenuOption} from '@/components/HeaderRight';
 
 type MessageItemProps = {
@@ -52,7 +51,6 @@ const ChatScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'Chat'>) => {
-  useScreenRecord();
   const pubNub = usePubNub();
   const inputRef = useRef<any>(null);
   const conversation = route.params;

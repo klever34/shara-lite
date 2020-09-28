@@ -2,6 +2,7 @@ import Realm from 'realm';
 import React, {createContext, useRef, useState} from 'react';
 import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
+import {normalizeDb} from '@/services/realm/normalizations';
 
 type RealmObject = {
   realm?: Realm;
@@ -33,14 +34,14 @@ const RealmProvider = (props: any) => {
 
   const updateSyncRealm = ({
     newRealm,
-    realmUser,
+    realmUser: user,
     partitionValue,
   }: {
     newRealm: Realm;
     realmUser: any;
     partitionValue: string;
   }) => {
-    setRealmUser(realmUser);
+    setRealmUser(user);
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
@@ -104,6 +105,9 @@ const syncLocalData = ({
   if (!syncRealm || !localRealm) {
     return;
   }
+
+  normalizeDb({partitionKey: partitionValue, realm: localRealm});
+
   copyRealm({sourceRealm: localRealm, targetRealm: syncRealm, partitionValue});
   copyRealm({sourceRealm: syncRealm, targetRealm: localRealm, partitionValue});
   syncRealmDbs({

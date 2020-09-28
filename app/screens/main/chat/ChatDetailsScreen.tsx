@@ -29,7 +29,6 @@ import HeaderRight, {HeaderRightOption} from '@/components/HeaderRight';
 import {UpdateMode} from 'realm';
 import {ModalPropsList} from 'types/modal';
 import {getBaseModelValues} from '@/helpers/models';
-import {useScreenRecord} from '@/services/analytics';
 
 const DATA: never[] = [];
 const keyExtractor = () => 'key';
@@ -40,7 +39,7 @@ type EditTextPropertyProps = {
   placeholder: string;
   description?: string;
   initialValue?: string;
-  onCancel: () => void;
+  onCancel?: () => void;
   onDone: (value: string) => void;
 };
 
@@ -56,7 +55,7 @@ const EditTextProperty = ({
     <View style={applyStyles('pt-md')}>
       <TextInput
         placeholder={placeholder}
-        style={applyStyles('px-lg')}
+        containerStyle={applyStyles('px-lg')}
         value={value}
         onChangeText={setValue}
       />
@@ -71,7 +70,7 @@ const EditTextProperty = ({
         <Touchable
           onPress={() => {
             onDone(value);
-            onCancel();
+            onCancel && onCancel();
           }}>
           <View
             style={applyStyles(
@@ -91,7 +90,6 @@ const ChatDetailsScreen = ({
   openModal,
 }: StackScreenProps<MainStackParamList, 'ChatDetails'> &
   ModalWrapperFields) => {
-  useScreenRecord();
   const realm = useRealm();
   const conversation = route.params;
   const participants = realm

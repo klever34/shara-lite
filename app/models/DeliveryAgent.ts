@@ -3,7 +3,7 @@ import {IReceivedInventory} from './ReceivedInventory';
 
 export interface IDeliveryAgent extends BaseModelInterface {
   full_name: string;
-  mobile: string;
+  mobile?: string;
   suppliedInventories?: IReceivedInventory[];
 }
 

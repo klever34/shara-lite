@@ -13,7 +13,7 @@ import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {Customer} from '../../../../../types/app';
+import {Customer} from 'types/app';
 import {
   BluetoothModal,
   Button,
@@ -22,23 +22,27 @@ import {
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
+import {PAYMENT_METHOD_LABEL} from '@/helpers/constants';
 import {
   amountWithCurrency,
   applyStyles,
   numberWithCommas,
-} from '../../../../helpers/utils';
-import {ICustomer} from '../../../../models';
-import {IReceipt} from '../../../../models/Receipt';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService, getStorageService} from '../../../../services';
-import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
-import {useRealm} from '../../../../services/realm';
+} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IReceipt} from '@/models/Receipt';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {
-  getAllPayments,
-  updateReceipt,
-} from '../../../../services/ReceiptService';
-import {colors} from '../../../../styles';
+  getAnalyticsService,
+  getAuthService,
+  getStorageService,
+} from '../../../../services';
+import {
+  getCustomers,
+  saveCustomer,
+} from '../../../../services/customer/service';
+import {useRealm} from '@/services/realm';
+import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
 import AddCustomer from '../../customers/AddCustomer';
 import {
   SummaryTableHeader,
@@ -81,6 +85,10 @@ export function ReceiptDetailsModal(props: Props) {
   );
   const customers = getCustomers({realm});
   const allPayments = receipt ? getAllPayments({receipt}) : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
   const creditDueDate = receipt?.credits?.length && receipt.credits[0].due_date;
 
   useEffect(() => {
@@ -145,7 +153,7 @@ export function ReceiptDetailsModal(props: Props) {
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [12, 6, 14];
+      const productListColumnWidth = [22, 5, 15];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -224,21 +232,14 @@ export function ReceiptDetailsModal(props: Props) {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
-          ['Description', 'QTY', 'Subtotal'],
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
+          ['Description', 'QTY', `SubTotal(${currencyCode})`],
+          receiptStyles.product,
         );
         if (receipt && receipt.items) {
           for (const item of receipt.items) {
             const p = item.price;
             const q = item.quantity;
-            const total = Math.imul(q, p).toString();
+            const total = p * q;
             await BluetoothEscposPrinter.printColumn(
               productListColumnWidth,
               [
@@ -246,22 +247,18 @@ export function ReceiptDetailsModal(props: Props) {
                 BluetoothEscposPrinter.ALIGN.CENTER,
                 BluetoothEscposPrinter.ALIGN.RIGHT,
               ],
-              [
-                `${item.product.name}`,
-                `${q}`,
-                `${currencyCode}${numberWithCommas(parseInt(total, 10))}`,
-              ],
-              {},
-            );
-            await BluetoothEscposPrinter.printerAlign(
-              BluetoothEscposPrinter.ALIGN.LEFT,
-            );
-            await BluetoothEscposPrinter.printText(
-              '--------------------------------\n',
-              {},
+              [`${item.product.name}`, `${q}`, `${numberWithCommas(total)}`],
+              receiptStyles.product,
             );
           }
         }
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n',
+          {},
+        );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
@@ -274,14 +271,12 @@ export function ReceiptDetailsModal(props: Props) {
           {},
         );
         await BluetoothEscposPrinter.printText(
-          `Paid: ${currencyCode} ${numberWithCommas(receipt?.amount_paid)}\n`,
+          `Paid: ${currencyCode} ${numberWithCommas(totalAmountPaid)}\n`,
           {},
         );
-        receipt?.credit_amount &&
+        creditAmountLeft &&
           (await BluetoothEscposPrinter.printText(
-            `Balance: ${currencyCode} ${numberWithCommas(
-              receipt?.credit_amount,
-            )}\n`,
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmountLeft)}\n`,
             {},
           ));
 
@@ -304,8 +299,12 @@ export function ReceiptDetailsModal(props: Props) {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText('\n\r', {});
-        await BluetoothEscposPrinter.printText('\n\r', {});
-        await BluetoothEscposPrinter.printText('\n\r', {});
+        getAnalyticsService()
+          .logEvent('print', {
+            item_id: receipt?._id?.toString() ?? '',
+            content_type: 'receipt',
+          })
+          .then(() => {});
         handleClosePrinterModal();
       } catch (err) {
         ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
@@ -320,6 +319,8 @@ export function ReceiptDetailsModal(props: Props) {
       printer,
       receipt,
       user,
+      totalAmountPaid,
+      creditAmountLeft,
     ],
   );
 
@@ -385,7 +386,7 @@ export function ReceiptDetailsModal(props: Props) {
               Receipt for
             </Text>
             <View>
-              {receipt?.customer?.mobile ? (
+              {receipt?.customer?.name ? (
                 <Text
                   style={applyStyles('text-400', {
                     fontSize: 18,

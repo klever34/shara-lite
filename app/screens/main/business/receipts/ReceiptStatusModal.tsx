@@ -26,7 +26,11 @@ import {
 } from '../../../../helpers/utils';
 import {ICustomer} from '../../../../models';
 import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService, getStorageService} from '../../../../services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getStorageService,
+} from '../../../../services';
 import {colors} from '../../../../styles';
 
 type Props = {
@@ -138,7 +142,7 @@ export const ReceiptStatusModal = (props: Props) => {
 
   const handlePrintReceipt = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [12, 6, 14];
+      const productListColumnWidth = [22, 5, 15];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
@@ -216,20 +220,13 @@ export const ReceiptStatusModal = (props: Props) => {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
-          ['Description', 'QTY', 'Subtotal'],
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
+          ['Description', 'QTY', `SubTotal(${currencyCode})`],
+          receiptStyles.product,
         );
         for (const item of products) {
           const p = item.price;
           const q = item.quantity;
-          const total = Math.imul(q, p).toString();
+          const total = p * q;
           await BluetoothEscposPrinter.printColumn(
             productListColumnWidth,
             [
@@ -237,21 +234,17 @@ export const ReceiptStatusModal = (props: Props) => {
               BluetoothEscposPrinter.ALIGN.CENTER,
               BluetoothEscposPrinter.ALIGN.RIGHT,
             ],
-            [
-              `${item.product.name}`,
-              `${q}`,
-              `${currencyCode}${numberWithCommas(parseInt(total, 10))}`,
-            ],
-            {},
-          );
-          await BluetoothEscposPrinter.printerAlign(
-            BluetoothEscposPrinter.ALIGN.LEFT,
-          );
-          await BluetoothEscposPrinter.printText(
-            '--------------------------------\n',
-            {},
+            [`${item.product.name}`, `${q}`, `${numberWithCommas(total)}`],
+            receiptStyles.product,
           );
         }
+        await BluetoothEscposPrinter.printerAlign(
+          BluetoothEscposPrinter.ALIGN.LEFT,
+        );
+        await BluetoothEscposPrinter.printText(
+          '--------------------------------\n',
+          {},
+        );
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
@@ -291,8 +284,12 @@ export const ReceiptStatusModal = (props: Props) => {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText('\n\r', {});
-        await BluetoothEscposPrinter.printText('\n\r', {});
-        await BluetoothEscposPrinter.printText('\n\r', {});
+        getAnalyticsService()
+          .logEvent('print', {
+            item_id: '',
+            content_type: 'receipt',
+          })
+          .then(() => {});
         handleClosePrinterModal();
       } catch (err) {
         ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
@@ -365,7 +362,7 @@ export const ReceiptStatusModal = (props: Props) => {
         </View>
 
         <View style={applyStyles({marginBottom: 40, paddingHorizontal: 16})}>
-          {customer.mobile ? (
+          {customer.name ? (
             <>
               <Text
                 style={applyStyles(
@@ -392,12 +389,14 @@ export const ReceiptStatusModal = (props: Props) => {
                 )}>
                 {customer.name}
               </Text>
-              <Text
-                style={applyStyles('pb-md', 'text-400', 'text-center', {
-                  color: colors['gray-300'],
-                })}>
-                {customer.mobile}
-              </Text>
+              {customer.mobile && (
+                <Text
+                  style={applyStyles('pb-md', 'text-400', 'text-center', {
+                    color: colors['gray-300'],
+                  })}>
+                  {customer.mobile}
+                </Text>
+              )}
               <Touchable onPress={onOpenCustomerModal}>
                 <View
                   style={applyStyles(

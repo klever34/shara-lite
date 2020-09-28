@@ -1,13 +1,14 @@
 import Realm, {UpdateMode} from 'realm';
 import {ObjectId} from 'bson';
-import {ICustomer} from '../models';
-import {ICredit} from '../models/Credit';
-import {ICreditPayment, modelName} from '../models/CreditPayment';
+import {ICustomer} from '@/models';
+import {ICredit} from '@/models/Credit';
+import {ICreditPayment, modelName} from '@/models/CreditPayment';
 import {savePayment} from './PaymentService';
-import {getBaseModelValues} from '../helpers/models';
+import {getBaseModelValues} from '@/helpers/models';
 import {updateCredit} from './CreditService';
-import {IPayment} from '../models/Payment';
-import {getCustomer} from './CustomerService';
+import {IPayment} from '@/models/Payment';
+import {getCustomer} from './customer/service';
+import {getAnalyticsService} from '@/services';
 
 export const getCreditPayments = ({
   realm,
@@ -92,6 +93,14 @@ export const saveCreditPayment = ({
     });
 
     amountLeft = amountLeftFromDeduction <= 0 ? 0 : amountLeftFromDeduction;
+    getAnalyticsService()
+      .logEvent('creditPaid', {
+        method,
+        amount: amount.toString(),
+        remaining_balance: amountLeft.toString(),
+        item_id: credit?._id?.toString() ?? '',
+      })
+      .then(() => {});
   });
 };
 

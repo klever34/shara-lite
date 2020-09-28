@@ -2,7 +2,6 @@ import {useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {
-  Alert,
   FlatList,
   Modal as ReactNativeModal,
   SafeAreaView,
@@ -20,16 +19,16 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {IProduct} from '../../../../models/Product';
-import {IStockItem} from '../../../../models/StockItem';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+import {applyStyles} from '@/helpers/utils';
+import {IProduct} from '@/models/Product';
+import {IStockItem} from '@/models/StockItem';
+import {getProducts} from '@/services/ProductService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {MainStackParamList} from '../../index';
 import {ReceiveInventoryStockPreview} from './ReceiveInventoryStockPreview';
 import {ReceiveInventoryStockSummary} from './ReceiveInventoryStockSummary';
-import {useScreenRecord} from '../../../../services/analytics';
+import {getAnalyticsService} from '@/services';
 
 type RecentProductItemProps = {
   item: IProduct;
@@ -38,7 +37,6 @@ type RecentProductItemProps = {
 export const ReceiveInventoryStock = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ReceiveInventoryStock'>) => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const products = getProducts({realm});
@@ -46,6 +44,7 @@ export const ReceiveInventoryStock = ({
 
   const [price, setPrice] = useState<number | undefined>();
   const [quantity, setQuantity] = useState<string | undefined>('');
+  const [showQuantityError, setShowQuantityError] = useState(false);
   const [isSummaryModalOpen, setIsSummaryModalOpen] = useState(false);
   const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
@@ -59,7 +58,17 @@ export const ReceiveInventoryStock = ({
     });
   }, [navigation]);
 
+  const handleShowError = useCallback((string) => {
+    if (string?.trim() === '') {
+      setShowQuantityError(true);
+      return;
+    } else {
+      setShowQuantityError(false);
+    }
+  }, []);
+
   const handleAddItem = useCallback(() => {
+    handleShowError(quantity);
     if (quantity) {
       const itemPrice = price ? price : 0;
       const itemQuantity = parseInt(quantity, 10);
@@ -83,11 +92,11 @@ export const ReceiveInventoryStock = ({
         setInventoryStock(
           inventoryStock.map((item) => {
             if (
-              item.product._id?.toString() === stock.product._id?.toHexString()
+              item.product._id?.toString() === stock.product._id?.toString()
             ) {
               return {
                 ...item,
-                quantity: parseFloat(quantity),
+                ...stock,
               };
             }
             return item;
@@ -100,18 +109,30 @@ export const ReceiveInventoryStock = ({
       setPrice(undefined);
       setQuantity('');
     }
-  }, [price, quantity, inventoryStock, selectedProduct, supplier]);
+  }, [
+    handleShowError,
+    quantity,
+    price,
+    supplier,
+    selectedProduct,
+    inventoryStock,
+  ]);
 
   const handlePriceChange = useCallback((item) => {
     setPrice(item);
   }, []);
 
-  const handleQuantityChange = useCallback((item) => {
-    setQuantity(item);
-  }, []);
+  const handleQuantityChange = useCallback(
+    (item) => {
+      handleShowError(item);
+      setQuantity(item);
+    },
+    [handleShowError],
+  );
 
   const handleSelectProduct = useCallback(
     (product: IProduct) => {
+      setShowQuantityError(false);
       const stock = inventoryStock.find((item) => {
         return item.product._id?.toString() === product._id?.toString();
       });
@@ -123,6 +144,12 @@ export const ReceiveInventoryStock = ({
       } else {
         setSelectedProduct(product);
       }
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: product?._id?.toString() ?? '',
+          content_type: 'receiveInventory',
+        })
+        .then(() => {});
     },
     [inventoryStock],
   );
@@ -146,6 +173,7 @@ export const ReceiveInventoryStock = ({
   const handleCloseProductModal = useCallback(() => {
     setSelectedProduct(null);
     setQuantity('');
+    setShowQuantityError(false);
   }, []);
 
   const handleClearReceipt = useCallback(() => {
@@ -155,9 +183,10 @@ export const ReceiveInventoryStock = ({
 
   const handleDone = useCallback(() => {
     let items = inventoryStock;
+    handleShowError(quantity);
     if (selectedProduct && quantity) {
       const itemPrice = price ? price : 0;
-      const itemQuantity = parseInt(quantity, 10);
+      const itemQuantity = parseFloat(quantity);
       const stock = {
         supplier,
         cost_price: itemPrice,
@@ -175,15 +204,13 @@ export const ReceiveInventoryStock = ({
       if (
         inventoryStock
           .map((item) => item.product._id?.toString())
-          .includes(stock?.product._id?.toHexString())
+          .includes(stock?.product._id?.toString())
       ) {
         items = inventoryStock.map((item) => {
-          if (
-            item.product._id?.toString() === stock.product._id?.toHexString()
-          ) {
+          if (item.product._id?.toString() === stock.product._id?.toString()) {
             return {
               ...item,
-              quantity: parseFloat(quantity),
+              ...stock,
             };
           }
           return item;
@@ -196,17 +223,16 @@ export const ReceiveInventoryStock = ({
       setInventoryStock(items);
       setSelectedProduct(null);
       handleOpenSummaryModal();
-    } else {
-      Alert.alert('Error', 'Please select at least one product item');
     }
   }, [
     inventoryStock,
+    handleShowError,
     selectedProduct,
     quantity,
-    handleOpenSummaryModal,
-    supplier,
     price,
+    supplier,
     handleAddItem,
+    handleOpenSummaryModal,
   ]);
 
   const handleProductSearch = useCallback((item: IProduct, text: string) => {
@@ -234,8 +260,8 @@ export const ReceiveInventoryStock = ({
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
             <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
-              {product.sku} - {product.name}{' '}
-              {product.weight ? `(${product.weight}))` : ''}
+              {product.sku ? `${product.sku} - ` : ''}
+              {product.name} {product.weight ? `(${product.weight}))` : ''}
             </Text>
           </View>
         </Touchable>
@@ -377,7 +403,10 @@ export const ReceiveInventoryStock = ({
                     value={quantity}
                     label="Quantity"
                     keyboardType="numeric"
+                    isInvalid={showQuantityError}
                     onChangeText={handleQuantityChange}
+                    onBlur={() => handleShowError(quantity)}
+                    errorMessage="Product quantity is required"
                   />
                 </View>
                 <View

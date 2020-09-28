@@ -72,9 +72,10 @@ function SearchableDropdown<T>(props: Props<T>) {
 
   const searchedItems = (searchedText: string) => {
     setValue(searchedText);
+    const searchValue = searchedText.trim();
     let sort = setSort;
     var ac = items.filter((item: T) => {
-      return sort(item, searchedText);
+      return sort(item, searchValue);
     });
     setListItems(ac);
     const onTextChange = onChangeText || textInputProps?.onChangeText;

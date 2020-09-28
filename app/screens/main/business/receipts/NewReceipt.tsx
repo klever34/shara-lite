@@ -19,24 +19,23 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {IProduct} from '../../../../models/Product';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService} from '../../../../services';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+import {applyStyles, numberWithCommas} from '@/helpers/utils';
+import {IProduct} from '@/models/Product';
+import {IReceiptItem} from '@/models/ReceiptItem';
+import {getAnalyticsService, getAuthService} from '../../../../services';
+import {getProducts} from '@/services/ProductService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
-import {useScreenRecord} from '../../../../services/analytics';
 import {FormDefaults} from '@/services/FormDefaults';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type RecentProductItemProps = {
   item: IProduct;
 };
 
 export const NewReceipt = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   //@ts-ignore
@@ -71,10 +70,21 @@ export const NewReceipt = () => {
     setQuantity(item);
   }, []);
 
-  const handleSelectProduct = useCallback((item: IProduct) => {
-    setSelectedProduct(item);
-    setPrice(item?.price);
-  }, []);
+  const handleSelectProduct = useCallback(
+    (item: IProduct) => {
+      const addedItem = receipt.find(
+        (receiptItem) =>
+          receiptItem?.product &&
+          receiptItem?.product?._id?.toString() === item?._id?.toString(),
+      );
+      if (addedItem) {
+        setQuantity(addedItem.quantity.toString());
+      }
+      setSelectedProduct(item);
+      setPrice(item?.price);
+    },
+    [receipt],
+  );
 
   const handleOpenSummaryModal = useCallback(() => {
     setIsSummaryModalOpen(true);
@@ -101,9 +111,11 @@ export const NewReceipt = () => {
     setReceipt([]);
     handleCloseSummaryModal();
   }, [handleCloseSummaryModal]);
-
+  const handleError = useErrorHandler();
   const handleAddItem = useCallback(() => {
-    if (price && quantity) {
+    const priceCondition = price || price === 0 ? true : false;
+    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    if (priceCondition && quantityCondition && quantity) {
       const product = {
         ...selectedProduct,
         _id: selectedProduct?._id,
@@ -112,6 +124,9 @@ export const NewReceipt = () => {
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
+      getAnalyticsService()
+        .logEvent('productAddedToReceipt')
+        .catch(handleError);
       if (
         receipt
           .map((item) => item._id?.toString())
@@ -122,7 +137,7 @@ export const NewReceipt = () => {
             if (item._id?.toString() === product._id?.toString()) {
               return {
                 ...item,
-                quantity: item.quantity + parseFloat(quantity),
+                quantity: parseFloat(quantity),
               };
             }
             return item;
@@ -134,8 +149,10 @@ export const NewReceipt = () => {
       setSelectedProduct(null);
       setPrice(undefined);
       setQuantity('');
+    } else {
+      Alert.alert('Info', 'Please add product quantity');
     }
-  }, [price, quantity, receipt, selectedProduct]);
+  }, [handleError, price, quantity, receipt, selectedProduct]);
 
   const handleUpdateProductItem = useCallback(
     (item: IReceiptItem) => {
@@ -164,42 +181,19 @@ export const NewReceipt = () => {
 
   const handleDone = useCallback(() => {
     let items = receipt;
-    if (selectedProduct && quantity && price) {
-      const product = {
-        ...selectedProduct,
-        _id: selectedProduct._id,
-        price,
-        product: selectedProduct,
-        name: selectedProduct.name,
-        quantity: parseFloat(quantity),
-      } as IReceiptItem;
-
+    const priceCondition = price || price === 0 ? true : false;
+    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    if (selectedProduct && quantity && quantityCondition && priceCondition) {
       handleAddItem();
-
-      if (
-        receipt
-          .map((item) => item._id?.toString())
-          .includes(product?._id?.toString())
-      ) {
-        items = receipt.map((item) => {
-          if (item._id?.toString() === product._id?.toString()) {
-            return {
-              ...item,
-              quantity: item.quantity + parseFloat(quantity),
-            };
-          }
-          return item;
-        });
-      } else {
-        items = [product, ...receipt];
-      }
-    }
-    if ((selectedProduct && quantity && price) || items.length) {
-      setReceipt(items);
+      handleOpenSummaryModal();
+    } else if (items.length) {
       setSelectedProduct(null);
       handleOpenSummaryModal();
     } else {
-      Alert.alert('Info', 'Please select at least one product item');
+      Alert.alert(
+        'Info',
+        'Please select at least one product item with quantity',
+      );
     }
   }, [
     price,
@@ -216,6 +210,13 @@ export const NewReceipt = () => {
       -1
     );
   }, []);
+
+  const handleAddProduct = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('productStart')
+      .then(() => {});
+    navigation.navigate('AddProduct');
+  }, [navigation]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
     return (
@@ -235,8 +236,8 @@ export const NewReceipt = () => {
         <Touchable onPress={() => handleSelectProduct(product)}>
           <View style={styles.recentProductItem}>
             <Text style={applyStyles(styles.recentProductItemText, 'text-400')}>
-              {product.sku} - {product.name}{' '}
-              {product.weight ? `(${product.weight}))` : ''}
+              {product.sku ? `${product.sku} - ` : ''}
+              {product.name} {product.weight ? `(${product.weight}))` : ''}
             </Text>
           </View>
         </Touchable>
@@ -270,9 +271,9 @@ export const NewReceipt = () => {
         renderItem={renderSearchDropdownItem}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
-        noResultsAction={() => navigation.navigate('AddProduct')}
+        noResultsAction={handleAddProduct}
       />
-      <Touchable onPress={() => navigation.navigate('AddProduct')}>
+      <Touchable onPress={handleAddProduct}>
         <View
           style={applyStyles('flex-row px-lg py-lg items-center', {
             borderBottomWidth: 1,
@@ -314,7 +315,7 @@ export const NewReceipt = () => {
               title="Add Products"
               variantColor="clear"
               style={applyStyles('w-full')}
-              onPress={() => navigation.navigate('AddProduct')}
+              onPress={handleAddProduct}
             />
           </View>
         }

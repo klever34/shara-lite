@@ -1,3 +1,4 @@
+import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {FlatList, Image, StyleSheet, Text, View} from 'react-native';
@@ -146,6 +147,12 @@ export function MyInventory() {
   const handleProductItemClick = useCallback(
     (product) => {
       navigation.navigate('ViewProductDetails', {product: product._id});
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: product?._id?.toString() ?? '',
+          content_type: 'product',
+        })
+        .then(() => {});
     },
     [navigation],
   );
@@ -153,7 +160,18 @@ export function MyInventory() {
   const handleActionItemClick = useCallback(
     (name?: string) => {
       if (name) {
-        navigation.navigate(name);
+        switch (name) {
+          case 'AddProduct':
+            getAnalyticsService()
+              .logEvent('productStart')
+              .then(() => {});
+            navigation.navigate(name);
+            break;
+
+          default:
+            navigation.navigate(name);
+            break;
+        }
       }
     },
     [navigation],
@@ -189,7 +207,7 @@ export function MyInventory() {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                {product.quantity || 0}
+                {product.quantity?.toFixed(2) || 0}
               </Text>
             </View>
           </View>

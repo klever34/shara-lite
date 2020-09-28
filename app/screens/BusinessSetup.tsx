@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Image,
@@ -17,9 +17,11 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Button, FloatingLabelInput} from '../components';
 import Icon from '../components/Icon';
 import Touchable from '../components/Touchable';
-import {applyStyles} from '../helpers/utils';
-import {getApiService} from '../services';
-import {colors} from '../styles';
+import {applyStyles} from '@/helpers/utils';
+import {getAnalyticsService, getApiService} from '@/services';
+import {colors} from '@/styles';
+import {isEmpty} from 'lodash';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type Fields = {
   address: string;
@@ -35,11 +37,20 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   const ref = useRef<any>(null);
   const [loading, setLoading] = useState(false);
   const [signature, setSignature] = useState(false);
-  const [profileImage, setProfileImage] = useState<any | undefined>();
   const [fields, setFields] = useState<Fields>({} as Fields);
+  const [fieldErrors, setFieldErrors] = useState({
+    business_name: false,
+    address: false,
+  });
+  const [profileImage, setProfileImage] = useState<any | undefined>();
   const [isSignatureCaptureShown, setIsSignatureCaptureShown] = useState(false);
-
+  const handleError = useErrorHandler();
   const apiService = getApiService();
+  useEffect(() => {
+    if (visible) {
+      getAnalyticsService().logEvent('businessSetupStart').catch(handleError);
+    }
+  }, [handleError, visible]);
 
   const clearForm = useCallback(() => {
     setFields({} as Fields);
@@ -47,7 +58,20 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
     setSignature(false);
   }, []);
 
+  const handleShowError = useCallback(
+    (field: keyof Fields, value) => {
+      if (value.trim() === '') {
+        setFieldErrors({...fieldErrors, [field]: true});
+        return;
+      } else {
+        setFieldErrors({...fieldErrors, [field]: false});
+      }
+    },
+    [fieldErrors],
+  );
+
   const onChangeText = (value: string, field: keyof Fields) => {
+    handleShowError(field, value);
     setFields({
       ...fields,
       [field]: value,
@@ -55,10 +79,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   };
 
   const isButtonDisabled = useCallback(() => {
-    if (Object.keys(fields).length < 2) {
-      return true;
-    }
-    return false;
+    return Object.values(fields).some((value) => !value);
   }, [fields]);
 
   const handleShowSignatureCapture = useCallback(() => {
@@ -120,6 +141,28 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
     }
   }, []);
 
+  const handleFinalValidation = useCallback(() => {
+    if (isEmpty(fields)) {
+      setFieldErrors({business_name: true, address: true});
+      return;
+    }
+    if (!fields.business_name || fields.business_name.trim() === '') {
+      setFieldErrors({...fieldErrors, business_name: true});
+      return;
+    } else if (!fields.address || fields.address.trim() === '') {
+      setFieldErrors({...fieldErrors, address: true});
+      return;
+    } else if (
+      fields.business_name.trim() === '' &&
+      fields.address.trim() === ''
+    ) {
+      setFieldErrors({...fieldErrors, business_name: true, address: true});
+      return;
+    } else {
+      setFieldErrors({business_name: false, address: false});
+    }
+  }, [fieldErrors, fields]);
+
   const handleSubmit = useCallback(
     async (signatureFile?: any) => {
       const payload = new FormData();
@@ -128,6 +171,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
       profileImage && payload.append('profileImageFile', profileImage);
       signatureFile && payload.append('signatureImageFile', signatureFile);
 
+      handleFinalValidation();
       if (!isButtonDisabled()) {
         try {
           setLoading(true);
@@ -136,6 +180,9 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
           handleHideSignatureCapture();
           handleSkip();
           ToastAndroid.show('Business setup successful', ToastAndroid.SHORT);
+          getAnalyticsService()
+            .logEvent('businessSetupComplete')
+            .catch(handleError);
         } catch (error) {
           setLoading(false);
           Alert.alert('Error', error.message);
@@ -146,10 +193,12 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
       fields.business_name,
       fields.address,
       profileImage,
+      handleFinalValidation,
       isButtonDisabled,
       apiService,
       handleHideSignatureCapture,
       handleSkip,
+      handleError,
     ],
   );
 
@@ -266,6 +315,11 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
                   label="Business Name"
                   value={fields.business_name}
                   inputStyle={styles.inputField}
+                  isInvalid={fieldErrors.business_name}
+                  errorMessage="Business name is required"
+                  onBlur={() =>
+                    handleShowError('business_name', fields.business_name)
+                  }
                   onChangeText={(text) => onChangeText(text, 'business_name')}
                 />
               </View>
@@ -274,7 +328,10 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
                   label="Address"
                   value={fields.address}
                   inputStyle={styles.inputField}
+                  isInvalid={fieldErrors.address}
+                  errorMessage="Address is required"
                   onChangeText={(text) => onChangeText(text, 'address')}
+                  onBlur={() => handleShowError('address', fields.address)}
                 />
               </View>
               {isSignatureCaptureShown ? (
@@ -363,6 +420,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
             title="Done"
             variantColor="red"
             isLoading={loading}
+            // disabled={isButtonDisabled()}
             style={styles.actionButton}
             onPress={signature ? saveSign : onSaveWithoutSignature}
           />

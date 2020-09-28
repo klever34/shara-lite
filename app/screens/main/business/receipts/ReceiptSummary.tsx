@@ -1,7 +1,6 @@
 import {useNavigation} from '@react-navigation/native';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -33,7 +32,7 @@ import {
 } from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAnalyticsService, getAuthService} from '../../../../services';
+import {getAuthService} from '@/services';
 import {useRealm} from '@/services/realm';
 import {saveReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
@@ -41,7 +40,7 @@ import {EditProductModal} from './EditProductModal';
 import {PaymentMethodModal} from './PaymentMethodModal';
 import {ReceiptStatusModal} from './ReceiptStatusModal';
 import {ShareReceiptModal} from './ShareReceiptModal';
-import {getCustomers} from '@/services/CustomerService';
+import {getCustomers} from '@/services/customer/service';
 import AddCustomer from '../../customers/AddCustomer';
 import {addDays} from 'date-fns';
 
@@ -314,7 +313,9 @@ const ReceiptSummary = (props: Props) => {
     const shareOptions = {
       // @ts-ignore
       social: Share.Social.SMS,
-      message: `Hi ${customer.name}, thank you for your recent purchase of ${
+      message: `Hi${
+        customer.name ? ` ${customer.name}` : ''
+      }, thank you for your recent purchase of ${
         products.length
       } item(s) from ${
         user?.businesses[0].name
@@ -352,24 +353,22 @@ const ReceiptSummary = (props: Props) => {
   ]);
 
   const handleEmailShare = useCallback(
-    async (
-      {email, receiptImage}: {email: string; receiptImage: string},
-      callback: () => void,
-    ) => {
+    async ({receiptImage}: {receiptImage: string}, callback?: () => void) => {
       // TODO: use better copy for shara invite
       const shareOptions = {
-        email,
         title: 'Share receipt',
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
+        message: `Hi${
+          customer.name ? ` ${customer.name}` : ''
+        }, here is your receipt from ${businessInfo?.name}`,
         subject: customer.name ? `${customer.name}'s Receipt` : 'Your Receipt',
       };
 
       try {
         await Share.open(shareOptions);
-        callback();
+        callback && callback();
       } catch (e) {
-        Alert.alert('Error', e.error);
+        console.log('Error', e.error);
       }
     },
     [customer.name, businessInfo],
@@ -385,7 +384,9 @@ const ReceiptSummary = (props: Props) => {
         social: Share.Social.WHATSAPP,
         title: `Share receipt with ${customer.name}`,
         url: `data:image/png;base64,${receiptImage}`,
-        message: `Hi ${customer.name}, here is your receipt from ${businessInfo?.name}`,
+        message: `Hi${
+          customer.name ? ` ${customer.name}` : ''
+        }, here is your receipt from ${businessInfo?.name}`,
       };
       const errorMessages = {
         filename: 'Invalid file attached',
@@ -459,8 +460,6 @@ const ReceiptSummary = (props: Props) => {
     }
   };
 
-  const handleError = useErrorHandler();
-
   const handleSaveReceipt = useCallback(
     (callback: () => void, onSuccess?: () => void) => {
       setTimeout(() => {
@@ -477,7 +476,6 @@ const ReceiptSummary = (props: Props) => {
           receiptItems: products,
         });
         onClearReceipt();
-        getAnalyticsService().logEvent('receiptCreated').catch(handleError);
         onSuccess && onSuccess();
         ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       }, 500);
@@ -492,7 +490,6 @@ const ReceiptSummary = (props: Props) => {
       dueDate,
       products,
       onClearReceipt,
-      handleError,
     ],
   );
 

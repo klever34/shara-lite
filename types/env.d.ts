@@ -6,6 +6,8 @@ declare module 'react-native-config' {
 
   export const ATLAS_REALM_APP_ID: string;
 
+  export const IP_GEOLOCATION_KEY: string;
+
   export const SENTRY_DSN: string;
 
   export const SEGMENT_KEY: string;
@@ -22,4 +24,6 @@ declare module 'react-native-config' {
     | 'production'
     | 'local';
   export const API_BASE_URL: string;
+
+  export const GOOGLE_API_KEY: string;
 }

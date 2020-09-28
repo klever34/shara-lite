@@ -1,9 +1,7 @@
 import {ContactsListModal, FAButton} from '@/components';
-import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
 import {
   Alert,
   FlatList,
@@ -20,17 +18,16 @@ import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ISupplier} from '@/models/Supplier';
-import {useScreenRecord} from '@/services/analytics';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {colors} from '@/styles';
+import {getAnalyticsService} from '@/services';
 
 type SupplierItemProps = {
   item: ISupplier;
 };
 
 export const Suppliers = () => {
-  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const suppliers = getSuppliers({realm});
@@ -48,11 +45,10 @@ export const Suppliers = () => {
   }, [navigation]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       const suppliersData = getSuppliers({realm});
       setMySuppliers(suppliersData);
     });
-    return unsubscribe;
   }, [navigation, realm]);
 
   const handleOpenContactListModal = useCallback(() => {
@@ -67,16 +63,23 @@ export const Suppliers = () => {
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
+        const searchValue = searchedText.trim();
         const sort = (item: ISupplier, text: string) => {
           return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
         const ac = suppliers.filter((item: ISupplier) => {
-          return sort(item, searchedText);
+          return sort(item, searchValue);
         });
         setMySuppliers(ac);
       } else {
         setMySuppliers(suppliers);
       }
+      getAnalyticsService()
+        .logEvent('search', {
+          search_term: searchedText,
+          content_type: 'supplier',
+        })
+        .then(() => {});
     },
     [suppliers],
   );
@@ -84,8 +87,6 @@ export const Suppliers = () => {
   const handleAddSupplier = useCallback(() => {
     navigation.navigate('AddSupplier');
   }, [navigation]);
-
-  const handleError = useErrorHandler();
 
   const handleCreateSupplier = useCallback(
     (contact: Contact) => {
@@ -101,12 +102,11 @@ export const Suppliers = () => {
         } else {
           const supplier = {name, mobile};
           saveSupplier({realm, supplier});
-          getAnalyticsService().logEvent('supplierAdded').catch(handleError);
           ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
         }
       }
     },
-    [realm, suppliers, handleError],
+    [realm, suppliers],
   );
 
   const renderSupplierListItem = useCallback(
@@ -140,7 +140,7 @@ export const Suppliers = () => {
           />
           <TextInput
             value={searchInputValue}
-            style={styles.searchInput}
+            containerStyle={styles.searchInput}
             placeholder="Search Suppliers"
             onChangeText={handleSupplierSearch}
             placeholderTextColor={colors['gray-50']}

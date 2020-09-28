@@ -7,13 +7,16 @@ import {
   TextInputFocusEventData,
   TextInputProps,
   View,
+  Text,
 } from 'react-native';
 import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 
 export type FloatingLabelInputProps = {
   label?: string;
+  isInvalid?: boolean;
   containerStyle?: any;
+  errorMessage?: string;
   inputStyle?: {
     [key: string]: any;
   };
@@ -24,10 +27,12 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
   const {
     value,
     label,
-    onFocus,
     onBlur,
+    onFocus,
     leftIcon,
+    isInvalid,
     inputStyle,
+    errorMessage,
     containerStyle,
     ...rest
   } = props;
@@ -100,6 +105,15 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
         onFocus={handleFocus}
         style={applyStyles('text-400', inputFieldStyle, inputStyle)}
       />
+      {isInvalid && (
+        <Text
+          style={applyStyles('text-500 pt-xs', {
+            fontSize: 14,
+            color: colors['red-200'],
+          })}>
+          {errorMessage}
+        </Text>
+      )}
     </View>
   );
 };

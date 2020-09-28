@@ -4,7 +4,7 @@ import {IReceivedInventory} from './ReceivedInventory';
 
 export interface ISupplier extends BaseModelInterface {
   name: string;
-  mobile: string;
+  mobile?: string;
   address?: string;
   suppliedInventories?: IReceivedInventory[];
   suppliedStockItems?: IStockItem[];

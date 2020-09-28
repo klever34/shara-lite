@@ -1,7 +1,8 @@
 import Realm, {UpdateMode} from 'realm';
-import {ISupplier, modelName} from '../models/Supplier';
-import {getBaseModelValues} from '../helpers/models';
+import {ISupplier, modelName} from '@/models/Supplier';
+import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
+import {getAnalyticsService} from '@/services';
 
 export const getSuppliers = ({realm}: {realm: Realm}): ISupplier[] => {
   return (realm.objects<ISupplier>(modelName) as unknown) as ISupplier[];
@@ -12,7 +13,7 @@ export const getSupplierByMobile = ({
   mobile,
 }: {
   realm: Realm;
-  mobile: string;
+  mobile?: string;
 }): ISupplier | null => {
   const foundSuppliers = realm
     .objects<ISupplier>(modelName)
@@ -43,6 +44,10 @@ export const saveSupplier = ({
   realm.write(() => {
     realm.create<ISupplier>(modelName, supplierDetails, UpdateMode.Modified);
   });
+
+  getAnalyticsService()
+    .logEvent('supplierAdded')
+    .then(() => {});
 
   return supplierDetails;
 };

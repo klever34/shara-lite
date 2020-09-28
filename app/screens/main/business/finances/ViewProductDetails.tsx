@@ -2,20 +2,18 @@ import {useFocusEffect, useNavigation} from '@react-navigation/native';
 import {StackScreenProps} from '@react-navigation/stack';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {ScrollView, Text, View} from 'react-native';
-import {Button} from '../../../../components';
+import {Button} from '@/components';
 import HeaderRight from '../../../../components/HeaderRight';
-import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
-import {IProduct} from '../../../../models/Product';
-import {getProduct} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {IProduct} from '@/models/Product';
+import {getProduct} from '@/services/ProductService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {MainStackParamList} from '../../index';
-import {useScreenRecord} from '../../../../services/analytics';
 
 export const ViewProductDetails = ({
   route,
 }: StackScreenProps<MainStackParamList, 'ViewProductDetails'>) => {
-  useScreenRecord();
   const {product: productId} = route.params;
   const realm = useRealm();
   const navigation = useNavigation();
@@ -130,7 +128,7 @@ export const ViewProductDetails = ({
                 fontSize: 16,
                 color: colors['gray-300'],
               })}>
-              {product.quantity}
+              {product.quantity.toFixed(2)}
             </Text>
           </View>
         )}

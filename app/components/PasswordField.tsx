@@ -1,26 +1,36 @@
-import React from 'react';
-import {StyleSheet, TouchableOpacity, View} from 'react-native';
+import React, {useState} from 'react';
+import {StyleSheet, TouchableOpacity, View, ViewStyle} from 'react-native';
 import Icon from '../components/Icon';
-import {colors} from '../styles';
+import {colors} from '@/styles';
 import {FloatingLabelInput} from './FloatingLabelInput';
-import {applyStyles} from '../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 
-type Props = {
-  value: string;
+export type PasswordFieldProps = {
+  value?: string;
+  isInvalid?: boolean;
   placeholder?: string;
+  errorMessage?: string;
+  containerStyle?: ViewStyle;
   onChangeText(text: string): void;
 };
 
-export const PasswordField = (props: Props) => {
-  const {value, onChangeText, placeholder = 'Password', ...rest} = props;
+export const PasswordField = (props: PasswordFieldProps) => {
+  const {
+    value: initialValue = '',
+    onChangeText,
+    placeholder = 'Password',
+    containerStyle,
+    ...rest
+  } = props;
   const [secure, setSecure] = React.useState(true);
 
   const toggleSecure = () => {
     setSecure(!secure);
   };
+  const [value, setValue] = useState(initialValue);
 
   return (
-    <View style={styles.container}>
+    <View style={applyStyles(styles.container, containerStyle)}>
       <View style={styles.inputFieldContainer}>
         <FloatingLabelInput
           value={value}
@@ -29,7 +39,10 @@ export const PasswordField = (props: Props) => {
           label={placeholder}
           style={styles.inputField}
           placeholderTextColor={colors['gray-50']}
-          onChangeText={(text) => onChangeText(text)}
+          onChangeText={(text) => {
+            onChangeText(text);
+            setValue(text);
+          }}
           {...rest}
         />
       </View>

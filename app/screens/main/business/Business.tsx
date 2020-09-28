@@ -2,18 +2,16 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useState, useCallback} from 'react';
 import {Image, StyleSheet, Text, View} from 'react-native';
 import {FloatingAction} from 'react-native-floating-action';
-import {useRealm} from '../../../services/realm';
-import {getSummary, IFinanceSummary} from '../../../services/FinanceService';
-import {colors} from '../../../styles';
-import {applyStyles, amountWithCurrency} from '../../../helpers/utils';
+import {useRealm} from '@/services/realm';
+import {getSummary, IFinanceSummary} from '@/services/FinanceService';
+import {colors} from '@/styles';
+import {applyStyles, amountWithCurrency} from '@/helpers/utils';
 import {Button, ActionCard} from '../../../components';
 import Touchable from '../../../components/Touchable';
-import {getAuthService} from '../../../services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {BusinessSetup} from '../../BusinessSetup';
-import {useScreenRecord} from '../../../services/analytics';
 
 export const BusinessTab = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const authService = getAuthService();
@@ -116,6 +114,18 @@ export const BusinessTab = () => {
             break;
           case 'Inventory':
             navigation.navigate('Finances', {screen: 'Inventory'});
+            break;
+          case 'NewReceipt':
+            getAnalyticsService()
+              .logEvent('receiptStart')
+              .then(() => {});
+            navigation.navigate(name);
+            break;
+          case 'AddProduct':
+            getAnalyticsService()
+              .logEvent('productStart')
+              .then(() => {});
+            navigation.navigate(name);
             break;
 
           default:

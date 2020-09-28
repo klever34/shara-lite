@@ -2,6 +2,8 @@
 
 buildscript {
     ext {
+        supportLibVersion = "28.0.0"
+        androidMapsUtilsVersion = "+"
         googlePlayServicesVersion = "+"
         firebaseMessagingVersion = "+"
         buildToolsVersion = "28.0.3"
@@ -32,6 +34,10 @@ allprojects {
         maven {
             // Android JSC is installed from npm
             url("$rootDir/../node_modules/jsc-android/dist")
+        }
+        maven {
+            // react-native-background-fetch
+            url("${project(':react-native-background-fetch').projectDir}/libs")
         }
 
         google()

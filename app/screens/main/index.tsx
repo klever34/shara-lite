@@ -1,25 +1,30 @@
-import {createStackNavigator} from '@react-navigation/stack';
-import PubNub from 'pubnub';
-import {PubNubProvider} from 'pubnub-react';
-import React, {useCallback, useEffect, useState} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
-import {ActivityIndicator, View, BackHandler, ToastAndroid} from 'react-native';
-import Config from 'react-native-config';
-import {Results} from 'realm';
-import getUuidByString from 'uuid-by-string';
 import {FAButtonProps} from '@/components';
 import {applyStyles} from '@/helpers/utils';
-import {IContact, IConversation} from '../../models';
 import {ICredit} from '@/models/Credit';
 import {ICreditPayment} from '@/models/CreditPayment';
 import {IPayment} from '@/models/Payment';
 import {IProduct} from '@/models/Product';
+import {ISupplier} from '@/models/Supplier';
+import {useCreditReminder} from '@/services/credit-reminder';
+import {useErrorHandler} from '@/services/error-boundary';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
+import {useNavigationState} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
+import PubNub from 'pubnub';
+import {PubNubProvider} from 'pubnub-react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {ActivityIndicator, BackHandler, ToastAndroid, View} from 'react-native';
+import Config from 'react-native-config';
+import {Results} from 'realm';
+import getUuidByString from 'uuid-by-string';
+import {IContact, IConversation} from '../../models';
 import {
   getAnalyticsService,
   getAuthService,
   getPubNubService,
 } from '../../services';
-import {colors} from '@/styles';
+import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import {BusinessSetup} from '../BusinessSetup';
 import {
   AddProduct,
@@ -31,14 +36,16 @@ import {
   Finances,
   NewReceipt,
   OverdueCredit,
+  ReceivedInventoryList,
   ReceiveInventory,
+  ReceiveInventoryStock,
   RecordCreditPayment,
   Suppliers,
   TotalCredit,
   ViewProductDetails,
-  ReceiveInventoryStock,
-  ReceivedInventoryList,
 } from './business';
+import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
+import {Expenses} from './business/finances/Expenses';
 import ChatDetailsScreen from './chat/ChatDetailsScreen';
 import ChatScreen from './chat/ChatScreen';
 import ContactsScreen from './chat/ContactsScreen';
@@ -56,12 +63,6 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import {ISupplier} from '@/models/Supplier';
-import {AddDeliveryAgent} from './business/finances/AddDeliveryAgent';
-import {Expenses} from './business/finances/Expenses';
-import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
-import {useNavigationState} from '@react-navigation/native';
-import {useRealm} from '@/services/realm';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -95,8 +96,8 @@ export type MainStackParamList = {
     title: string;
     next: (groupName: string) => FAButtonProps;
   };
-  TotalCredit: {credits: ICredit[]};
-  OverdueCredit: {credits: ICredit[]};
+  TotalCredit: undefined;
+  OverdueCredit: undefined;
   RecordCreditPayment: undefined;
   CreditDetails: {creditDetails: ICredit};
   CreditPaymentDetails: {creditPaymentDetails: ICreditPayment};
@@ -157,13 +158,15 @@ const useRepeatBackToExit = () => {
 
 const MainScreens = () => {
   useRepeatBackToExit();
-  const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const realm = useRealm();
   const user = authService.getUser();
+
   useRealmSyncLoader();
-  // @ts-ignore
+  useCreditReminder();
+
+  const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
   const [isBusinessSetupModalOpen, setIsBusinessSetupModalOpen] = useState(
     !(user?.businesses && user?.businesses.length) || false,
   );

@@ -147,16 +147,6 @@ workflows:
             - checkout_code
       - fastlane:
           context: shara-qa
-          lane: play
-          track: internal
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - /^release.*/
-      - fastlane:
-          context: shara-qa
           lane: internal
           gradleTask: assembleQaRelease
           requires:
@@ -317,7 +307,6 @@ jobs:
             echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > android/app/shara.keystore
             echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
             echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> android/gradle.properties
-
       - persist_to_workspace:
           paths: .
           root: .
@@ -385,6 +374,7 @@ jobs:
             curl -sL https://firebase.tools | bash
       - run:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
+          no_output_timeout: 30m
           command: |
             NEW_VERSION=$(jq ".version" -r package.json)
             export NEW_VERSION=${NEW_VERSION}

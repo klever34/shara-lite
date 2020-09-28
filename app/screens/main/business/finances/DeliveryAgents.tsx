@@ -1,4 +1,5 @@
 import {ContactsListModal, FAButton} from '@/components';
+import {getAnalyticsService} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
@@ -16,24 +17,23 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import TextInput from '../../../../components/TextInput';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles} from '../../../../helpers/utils';
-import {IDeliveryAgent} from '../../../../models/DeliveryAgent';
-import {useScreenRecord} from '../../../../services/analytics';
+import {applyStyles} from '@/helpers/utils';
+import {IDeliveryAgent} from '@/models/DeliveryAgent';
 import {
   getDeliveryAgents,
   saveDeliveryAgent,
-} from '../../../../services/DeliveryAgentService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+} from '@/services/DeliveryAgentService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 
 type DeliveryAgentItemProps = {
   item: IDeliveryAgent;
 };
 
 export const DeliveryAgents = () => {
-  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
+  const analyticsService = getAnalyticsService();
   const deliveryAgents = getDeliveryAgents({realm});
 
   const [searchInputValue, setSearchInputValue] = useState('');
@@ -70,18 +70,25 @@ export const DeliveryAgents = () => {
     (searchedText: string) => {
       setSearchInputValue(searchedText);
       if (searchedText) {
+        const searchValue = searchedText.trim();
         const sort = (item: IDeliveryAgent, text: string) => {
           return item.full_name.toLowerCase().indexOf(text.toLowerCase()) > -1;
         };
         const ac = deliveryAgents.filter((item: IDeliveryAgent) => {
-          return sort(item, searchedText);
+          return sort(item, searchValue);
         });
         setMyDeliveryAgents(ac);
       } else {
         setMyDeliveryAgents(deliveryAgents);
       }
+      analyticsService
+        .logEvent('search', {
+          search_term: searchedText,
+          content_type: 'deliveryAgent',
+        })
+        .then(() => {});
     },
-    [deliveryAgents],
+    [deliveryAgents, analyticsService],
   );
 
   const handleAddDeliveryAgent = useCallback(() => {
@@ -142,7 +149,7 @@ export const DeliveryAgents = () => {
           />
           <TextInput
             value={searchInputValue}
-            style={styles.searchInput}
+            containerStyle={styles.searchInput}
             placeholder="Search Delivery Agents"
             onChangeText={handleDeliveryAgentSearch}
             placeholderTextColor={colors['gray-50']}

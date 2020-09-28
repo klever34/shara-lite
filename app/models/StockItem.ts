@@ -7,7 +7,7 @@ export interface IStockItem extends BaseModelInterface {
   supplier_name: string;
   batch_id?: string;
   name: string;
-  sku: string;
+  sku?: string;
   weight?: string;
   quantity: number;
   cost_price?: number;
@@ -29,7 +29,7 @@ export class StockItem extends BaseModel implements Partial<StockItem> {
       supplier_name: 'string?',
       name: 'string?',
       sku: 'string?',
-      quantity: 'int?',
+      quantity: 'double?',
       cost_price: 'double?',
       total_cost_price: 'double?',
       weight: 'string?',

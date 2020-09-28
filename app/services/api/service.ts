@@ -6,16 +6,17 @@ import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 import {
   ApiResponse,
-  User,
-  GroupChatMember,
-  GroupChat,
   Business,
+  GroupChat,
+  GroupChatMember,
+  User,
 } from 'types/app';
 
 export type Requester = {
   get: <T extends any = any>(
     url: string,
     params: {[key: string]: any},
+    isExternalDomain?: boolean,
   ) => Promise<ApiResponse<T>>;
   post: <T extends any = any>(
     url: string,
@@ -44,6 +45,12 @@ export interface IApiService {
   }): Promise<ApiResponse>;
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
+  forgotPassword(payload: {mobile: string}): Promise<ApiResponse>;
+  resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<ApiResponse>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -86,6 +93,10 @@ export interface IApiService {
   ): Promise<any>;
 
   businessSetup(payload: FormData): Promise<ApiResponse>;
+
+  backupData({data, type}: {data: any; type: string}): Promise<void>;
+
+  getUserIPDetails(): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -98,17 +109,23 @@ export class ApiService implements IApiService {
     get: <T extends any = any>(
       url: string,
       params: {[key: string]: string | number},
+      isExternalDomain?: boolean,
     ) => {
-      return fetch(
-        `${Config.API_BASE_URL}${url}?${queryString.stringify(params)}`,
-        {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
-            'Content-Type': 'application/json',
-          },
-        },
-      ).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      const fetchUrl = `${
+        isExternalDomain ? '' : Config.API_BASE_URL
+      }${url}?${queryString.stringify(params)}`;
+      const headers: {Authorization?: string; 'Content-Type'?: string} = {};
+
+      if (!isExternalDomain) {
+        headers.Authorization = `Bearer ${this.authService.getToken() ?? ''}`;
+        headers['Content-Type'] = 'application/json';
+      }
+
+      return fetch(fetchUrl, {
+        method: 'GET',
+        // @ts-ignore
+        headers,
+      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
     post: <T extends any = any>(
       url: string,
@@ -195,6 +212,26 @@ export class ApiService implements IApiService {
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  public async forgotPassword(payload: {mobile: string}): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/password-reset', payload);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<any> {
+    try {
+      return await this.requester.patch('/password-reset', payload);
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -318,6 +355,31 @@ export class ApiService implements IApiService {
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async backupData({data, type}: {data: any; type: 'string'}) {
+    try {
+      await this.requester.post('/backup', {
+        data,
+        type,
+      });
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getUserIPDetails() {
+    try {
+      return this.requester.get(
+        'https://api.ipgeolocation.io/ipgeo',
+        {
+          apiKey: Config.IP_GEOLOCATION_KEY,
+        },
+        true,
+      );
+    } catch (e) {
+      throw e;
     }
   }
 

@@ -1,14 +1,16 @@
 import {useCallback, useContext, useEffect} from 'react';
 // import NetInfo from '@react-native-community/netinfo';
 import {getAuthService, getRealmService} from '../index';
-import {RealmContext} from './provider';
 import {loginToRealm} from './index';
+import {RealmContext} from './provider';
 
 const syncInterval = 1000 * 20;
 
 const useRealmSyncLoader = () => {
   const authService = getAuthService();
+
   const {
+    realm,
     updateSyncRealm,
     isRealmSyncLoaderInitiated,
     setIsRealmSyncLoaderInitiated,
@@ -29,6 +31,10 @@ const useRealmSyncLoader = () => {
       }
 
       try {
+        if (!realm) {
+          retryUpdate();
+          return;
+        }
         const {jwt} = realmCredentials;
         const {realm: newRealm, realmUser, partitionValue} = await loginToRealm(
           {
