@@ -37,8 +37,6 @@ export interface IApiService {
   requester: Requester;
 
   register(payload: {
-    firstname: string;
-    lastname: string;
     country_code: string;
     mobile: string;
     password: string;
@@ -181,8 +179,7 @@ export class ApiService implements IApiService {
   };
 
   public async register(payload: {
-    firstname: string;
-    lastname: string;
+    country_code: string;
     mobile: string;
     password: string;
   }) {
