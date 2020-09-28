@@ -1,9 +1,10 @@
 import {User} from 'types/app';
-import analytics from '@segment/analytics-react-native';
+import segmentAnalytics from '@segment/analytics-react-native';
 import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
+import firebaseAnalytics from '@react-native-firebase/analytics';
 
 type SharaAppEventsProperties = {
   // Chat
@@ -63,7 +64,7 @@ export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
       if (process.env.NODE_ENV === 'production') {
-        await analytics.setup(Config.SEGMENT_KEY, {
+        await segmentAnalytics.setup(Config.SEGMENT_KEY, {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
@@ -102,8 +103,8 @@ export class AnalyticsService implements IAnalyticsService {
       }
       RNUxcam.setUserProperty('alias', alias);
 
-      await analytics.identify(String(user.id), userData);
-      await analytics.alias(alias);
+      await segmentAnalytics.identify(String(user.id), userData);
+      await segmentAnalytics.alias(alias);
     } catch (e) {
       throw e;
     }
@@ -118,7 +119,8 @@ export class AnalyticsService implements IAnalyticsService {
       nextEventData = castObjectValuesToString(eventData as any);
     }
     try {
-      await analytics.track(eventName, nextEventData);
+      await firebaseAnalytics().logEvent(eventName, eventData);
+      await segmentAnalytics.track(eventName, nextEventData);
       RNUxcam.logEvent(eventName, nextEventData);
     } catch (e) {
       throw e;
@@ -127,7 +129,11 @@ export class AnalyticsService implements IAnalyticsService {
 
   async tagScreenName(screenName: string): Promise<void> {
     RNUxcam.tagScreenName(screenName);
-    await analytics.screen(screenName);
+    await segmentAnalytics.screen(screenName);
+    await firebaseAnalytics().logScreenView({
+      screen_name: screenName,
+      screen_class: screenName,
+    });
     return Promise.resolve();
   }
 }

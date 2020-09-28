@@ -930,15 +930,16 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-firebase/app-types@6.7.2":
-  version "6.7.2"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app-types/-/app-types-6.7.2.tgz#d2e1530af5702e00578914b41468898c10d3289c"
+"@react-native-firebase/analytics@^7.6.4":
+  version "7.6.4"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/analytics/-/analytics-7.6.4.tgz#f119ff9532f71537d980df267b1431f179941c53"
+  integrity sha512-Frwx/rgCeq3aHOUBA25chewcsaNPnA41YzhiuXIVwBFGOjBu3vA9nCnE0JagzYZoHauxMFfuEj8b7NzDxG1hkw==
 
-"@react-native-firebase/app@^7.3.1":
-  version "7.3.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-7.3.1.tgz#432a93cae79295df7e881437029a5eeb522a1b79"
+"@react-native-firebase/app@^8.4.3":
+  version "8.4.3"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-8.4.3.tgz#7f5c0d16c8b56808a26625af34259c8c50e0307b"
+  integrity sha512-qkjY4gvX4B0x1PKwaZIxByxwtnSlpvRt6IAlygB4rkeUv9XTBvW2j2xCGprEbKYZswEgSeY4ZDWl5SXYe6FgCg==
   dependencies:
-    "@react-native-firebase/app-types" "6.7.2"
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
@@ -7213,8 +7214,9 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
 
 typescript@^3.8.3:
-  version "3.9.5"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.5.tgz#586f0dba300cde8be52dd1ac4f7e1009c1b13f36"
+  version "3.9.7"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.9.7.tgz#98d600a5ebdc38f40cb277522f12dc800e9e25fa"
+  integrity sha512-BLbiRkiBzAwsjut4x/dsibSTB6yWpwT5qWmC2OfuCg3GgVQCSgMs4vEctYPhsaGtd0AeuuHMkjZ2h2WG8MSzRw==
 
 typical@^2.6.0, typical@^2.6.1:
   version "2.6.1"
