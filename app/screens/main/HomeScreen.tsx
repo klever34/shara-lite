@@ -10,9 +10,12 @@ import {getAnalyticsService, getAuthService} from '@/services';
 import {colors} from '@/styles';
 import {RealmContext} from '@/services/realm/provider';
 import HeaderTitle from '@/components/HeaderTitle';
-import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 import {HomeMenu} from '@/components/HomeMenu';
+import {
+  HeaderBackButton,
+  StackHeaderLeftButtonProps,
+} from '@react-navigation/stack';
 
 const SalesTab = () => null;
 const ItemsTab = () => null;
@@ -51,22 +54,27 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
       headerStyle: applyStyles('border-b-1', {
         elevation: 0,
       }),
-      headerLeft: () => {
+      headerLeft: (props: StackHeaderLeftButtonProps) => {
         return (
-          <Touchable
+          <HeaderBackButton
+            {...props}
             onPress={() => {
               openModal('bottom-half', {renderContent: HomeMenu});
-            }}>
-            <View style={applyStyles('center ml-4 w-48 h-48')}>
-              <Icon
-                type="material-icons"
-                color={colors['gray-300']}
-                name="dehaze"
-                size={28}
-                borderRadius={12}
-              />
-            </View>
-          </Touchable>
+            }}
+            backImage={() => {
+              return (
+                <View style={applyStyles('center w-36 h-36')}>
+                  <Icon
+                    type="material-icons"
+                    color={colors['gray-300']}
+                    name="dehaze"
+                    size={28}
+                    borderRadius={12}
+                  />
+                </View>
+              );
+            }}
+          />
         );
       },
       // TODO: What should be displayed when the business setup is not done
