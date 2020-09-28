@@ -8,18 +8,18 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {colors} from '@/styles';
-import {BusinessTab} from './business';
-import CustomersTab from './customers';
 import {RealmContext} from '@/services/realm/provider';
 import HeaderTitle from '@/components/HeaderTitle';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 import {HomeMenu} from '@/components/HomeMenu';
 
+const SalesTab = () => null;
+const ItemsTab = () => null;
+
 type HomeTabParamList = {
-  ChatList: undefined;
-  Customers: undefined;
-  Business: undefined;
+  SalesTab: undefined;
+  ItemsTab: undefined;
 };
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
@@ -48,12 +48,9 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
   const user = getAuthService().getUser();
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerStyle: {
+      headerStyle: applyStyles('border-b-1', {
         elevation: 0,
-      },
-      headerTitleStyle: {
-        fontFamily: 'CocogoosePro-Regular',
-      },
+      }),
       headerLeft: () => {
         return (
           <Touchable
@@ -102,23 +99,23 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <HomeTab.Navigator
-        initialRouteName="Business"
+        initialRouteName="SalesTab"
         tabBarOptions={{
           indicatorContainerStyle: {backgroundColor: colors.white},
-          indicatorStyle: {backgroundColor: colors.primary},
+          indicatorStyle: applyStyles('bg-primary h-4 rounded-2'),
           labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: colors.primary,
           inactiveTintColor: colors['gray-300'],
         }}>
         <HomeTab.Screen
-          name="Business"
-          component={BusinessTab}
-          options={{title: 'My Business'}}
+          name="SalesTab"
+          component={SalesTab}
+          options={{title: 'Sales'}}
         />
         <HomeTab.Screen
-          name="Customers"
-          component={CustomersTab}
-          options={{title: 'My Customers'}}
+          name="ItemsTab"
+          component={ItemsTab}
+          options={{title: 'Items'}}
         />
       </HomeTab.Navigator>
     </SafeAreaView>

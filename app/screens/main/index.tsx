@@ -29,6 +29,7 @@ import {BusinessSetup} from '../BusinessSetup';
 import {
   AddProduct,
   AddSupplier,
+  BusinessTab,
   CreditDetails,
   CreditPaymentDetails,
   DeliveryAgents,
@@ -63,6 +64,7 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
+import CustomersTab from '@/screens/main/customers';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -111,6 +113,8 @@ export type MainStackParamList = {
   AddDeliveryAgent: undefined;
   ReceiveInventoryStock: {supplier: ISupplier};
   ReceivedInventoryList: undefined;
+  Reports: undefined;
+  Customers: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -436,6 +440,20 @@ const MainScreens = () => {
           component={Expenses}
           options={{
             title: 'Record Expenses',
+          }}
+        />
+        <MainStack.Screen
+          name="Reports"
+          component={BusinessTab}
+          options={{
+            title: 'Reports',
+          }}
+        />
+        <MainStack.Screen
+          name="Customers"
+          component={CustomersTab}
+          options={{
+            title: 'My Customers',
           }}
         />
       </MainStack.Navigator>

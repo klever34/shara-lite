@@ -41,6 +41,7 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
         icon: 'eye',
         onPress: () => {
           closeModal?.();
+          navigation.navigate('Reports');
         },
       },
     ],
