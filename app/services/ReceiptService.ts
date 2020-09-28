@@ -18,7 +18,9 @@ import {restockProduct} from '@/services/ProductService';
 import {convertToLocationString} from '@/services/geolocation';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
-  return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
+  return (realm
+    .objects<IReceipt>(modelName)
+    .filtered('is_deleted = false') as unknown) as IReceipt[];
 };
 
 export const saveReceipt = ({

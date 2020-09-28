@@ -8,7 +8,9 @@ import {getAnalyticsService} from '@/services';
 import {deleteCreditPayment} from '@/services/CreditPaymentService';
 
 export const getCredits = ({realm}: {realm: Realm}): ICredit[] => {
-  return (realm.objects<ICredit>(modelName) as unknown) as ICredit[];
+  return (realm
+    .objects<ICredit>(modelName)
+    .filtered('is_deleted = false') as unknown) as ICredit[];
 };
 
 export const saveCredit = ({
