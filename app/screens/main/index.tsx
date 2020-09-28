@@ -64,7 +64,7 @@ import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
 import StatusModal from './StatusModal';
-import CustomersTab from '@/screens/main/customers';
+import CustomersScreen from '@/screens/main/customers';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -451,7 +451,7 @@ const MainScreens = () => {
         />
         <MainStack.Screen
           name="Customers"
-          component={CustomersTab}
+          component={CustomersScreen}
           options={{
             title: 'My Customers',
           }}
