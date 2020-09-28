@@ -31,7 +31,7 @@ export const AuthView = ({
           </View>
         </Touchable>
       </View>
-      <View style={applyStyles('mb-48 px-32')}>
+      <View style={applyStyles('mb-24 px-32')}>
         <Text style={applyStyles('text-2xl pb-8 text-black heading-700')}>
           {title}
         </Text>

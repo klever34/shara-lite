@@ -49,6 +49,7 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
     },
     onSubmit: (payload) => onSubmit(payload),
   });
+
   const handleAddPicture = useCallback(() => {
     const options: ImagePickerOptions = {
       maxWidth: 256,
@@ -87,7 +88,7 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
       {page === 'settings' && (
         <Touchable onPress={handleAddPicture}>
           <View style={applyStyles('mb-xl items-center justify-center')}>
-            {values.profileImageFile ? (
+            {values.profileImageFile.uri ? (
               <Image
                 style={applyStyles('mb-lg items-center justify-center', {
                   width: 100,
@@ -128,7 +129,7 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                {values.profileImageFile ? 'Edit' : 'Upload Business logo'}
+                {values.profileImageFile.uri ? 'Edit' : 'Upload Business logo'}
               </Text>
             </View>
           </View>
@@ -143,8 +144,8 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
             fontSize: 18,
             width: '100%',
           })}
+          onChangeText={handleChange('name')}
           isInvalid={touched.name && !!errors.name}
-          onChangeText={handleChange('business_name')}
         />
       </View>
       <View style={applyStyles({paddingBottom: 18})}>
@@ -169,13 +170,11 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
               fontSize: 18,
               width: '100%',
             })}
-            errorMessage={errors.mobile}
             onChangeText={handleChange('mobile')}
-            isInvalid={touched.mobile && !!errors.mobile}
           />
         </View>
       )}
-      <View>
+      <View style={applyStyles('mt-xl')}>
         <Button
           variantColor="red"
           onPress={handleSubmit}
@@ -184,7 +183,17 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
           title={page === 'setup' ? 'Done' : 'save'}
         />
         {onSkip && (
-          <Button title="Skip" variantColor="clear" onPress={onSkip} />
+          <Touchable onPress={onSkip}>
+            <View
+              style={applyStyles('flex-row items-center justify-center', {
+                height: 48,
+              })}>
+              <Text
+                style={applyStyles('text-400', {color: colors['gray-100']})}>
+                Skip setup
+              </Text>
+            </View>
+          </Touchable>
         )}
       </View>
     </View>

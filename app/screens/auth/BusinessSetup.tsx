@@ -5,6 +5,7 @@ import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
 import {BusinessForm} from '@/components';
+import {applyStyles} from '@/helpers/utils';
 
 export const BusinessSetup = () => {
   const handleError = useErrorHandler();
@@ -29,20 +30,25 @@ export const BusinessSetup = () => {
       payload.append('address', data.address);
       try {
         await apiService.businessSetup(payload);
-        ToastAndroid.show('Business setup successful', ToastAndroid.SHORT);
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
         getAnalyticsService()
           .logEvent('businessSetupComplete')
           .catch(handleError);
+        ToastAndroid.show('Business setup successful', ToastAndroid.SHORT);
       } catch (error) {
         Alert.alert('Error', error.message);
       }
     },
-    [apiService, handleError],
+    [apiService, navigation, handleError],
   );
 
   return (
     <AuthView
       title="Business Setup"
+      style={applyStyles({marginBottom: 100})}
       description="Create an account to do business faster and better.">
       <BusinessForm page="setup" onSkip={handleSkip} onSubmit={handleSubmit} />
     </AuthView>

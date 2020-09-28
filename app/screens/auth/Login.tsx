@@ -6,6 +6,7 @@ import {
   getApiService,
   getRealmService,
   getAnalyticsService,
+  getAuthService,
 } from '../../services';
 import {colors} from '@/styles';
 import {initLocalRealm} from '@/services/realm';
@@ -23,6 +24,8 @@ type Fields = {
 };
 
 export const Login = () => {
+  const user = getAuthService().getUser();
+  const businessInfo = user?.businesses[0];
   const {updateLocalRealm} = useContext(RealmContext);
   const {callingCode} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
@@ -65,10 +68,12 @@ export const Login = () => {
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
         .catch(handleError);
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Main'}],
-      });
+      businessInfo
+        ? navigation.reset({
+            index: 0,
+            routes: [{name: 'Main'}],
+          })
+        : navigation.replace('BusinessSetup');
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);
