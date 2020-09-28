@@ -50,6 +50,9 @@ export const useCreditReminder = () => {
   }, [realm, creditDueTomorrow.length, notificationService]);
 
   useEffect(() => {
+    if (process.env.NODE_ENV === 'development') {
+      return;
+    }
     BackgroundFetch.configure(
       {
         stopOnTerminate: false,

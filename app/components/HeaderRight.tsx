@@ -51,7 +51,7 @@ const HeaderRight = ({
             }}>
             <Icon
               type="material-icons"
-              color={colors.white}
+              color={colors['gray-300']}
               name="more-vert"
               size={28}
               borderRadius={12}
