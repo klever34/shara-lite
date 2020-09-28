@@ -1,27 +1,73 @@
 import {User} from 'types/app';
-import segmentAnalytics from '@segment/analytics-react-native';
-import firebaseAnalytics from '@react-native-firebase/analytics';
+import analytics from '@segment/analytics-react-native';
 import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
 
+type SharaAppEventsProperties = {
+  // Chat
+  messageSent: undefined;
+  oneOnOneChatInitiated: undefined;
+  groupChatCreated: undefined;
+  // Onboarding
+  businessSetupComplete: undefined;
+  businessSetupStart: undefined;
+  login: {method: string};
+  logout: undefined;
+  signup: {method: string};
+  // Customer
+  customerLocationAdded: {user_id: string};
+  customerAdded: undefined;
+  // Receipts
+  creditPaid: {
+    item_id: string;
+    amount: string;
+    method: string;
+    remaining_balance: string;
+  };
+  receiptStart: undefined;
+  receiptCreated: {amount: string};
+  paymentMade: {item_id: string; method: string; amount: string};
+  productAddedToReceipt: undefined;
+  customerAddedToReceipt: undefined;
+  // Content
+  share: {item_id: string; content_type: string; method: string};
+  selectContent: {item_id: string; content_type: string};
+  search: {search_term: string; content_type: string};
+  print: {item_id: string; content_type: string};
+  // Credit Management
+  creditAdded: {item_id: string; amount: string};
+  // Inventory
+  supplierAdded: undefined;
+  productStart: undefined;
+  productAdded: undefined;
+  inventoryReceived: undefined;
+  deliveryAgentAdded: undefined;
+};
+
 export interface IAnalyticsService {
   initialize(): Promise<void>;
   setUser(user: User): Promise<void>;
-  logEvent(eventName: string, eventData?: {[key: string]: any}): Promise<void>;
+
+  logEvent<K extends keyof SharaAppEventsProperties>(
+    eventName: K,
+    eventData?: SharaAppEventsProperties[K],
+  ): Promise<void>;
+
+  tagScreenName(screenName: string): Promise<void>;
 }
 
 export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
-      await segmentAnalytics.setup(Config.SEGMENT_KEY, {
-        recordScreenViews: true,
-        trackAppLifecycleEvents: true,
-      });
-
-      if (Config.ENVIRONMENT !== 'local') {
+      if (process.env.NODE_ENV === 'production') {
+        await analytics.setup(Config.SEGMENT_KEY, {
+          recordScreenViews: true,
+          trackAppLifecycleEvents: true,
+        });
         RNUxcam.optIntoSchematicRecordings();
+        RNUxcam.setAutomaticScreenNameTagging(false);
         RNUxcam.startWithKey(Config.UXCAM_KEY);
       }
     } catch (e) {
@@ -55,26 +101,32 @@ export class AnalyticsService implements IAnalyticsService {
       }
       RNUxcam.setUserProperty('alias', alias);
 
-      await segmentAnalytics.identify(String(user.id), userData);
-      await segmentAnalytics.alias(alias);
+      await analytics.identify(String(user.id), userData);
+      await analytics.alias(alias);
     } catch (e) {
       throw e;
     }
   }
 
-  async logEvent(
-    eventName: string,
-    eventData?: {[p: string]: any},
+  async logEvent<K extends keyof SharaAppEventsProperties>(
+    eventName: K,
+    eventData?: SharaAppEventsProperties[K],
   ): Promise<void> {
+    let nextEventData;
     if (eventData) {
-      eventData = castObjectValuesToString(eventData);
+      nextEventData = castObjectValuesToString(eventData as any);
     }
     try {
-      await segmentAnalytics.track(eventName, eventData);
-      // RNUxcam.logEvent(eventName, eventData);
-      await firebaseAnalytics().logEvent(eventName, eventData);
+      await analytics.track(eventName, nextEventData);
+      RNUxcam.logEvent(eventName, nextEventData);
     } catch (e) {
       throw e;
     }
+  }
+
+  async tagScreenName(screenName: string): Promise<void> {
+    RNUxcam.tagScreenName(screenName);
+    await analytics.screen(screenName);
+    return Promise.resolve();
   }
 }

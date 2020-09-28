@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   Image,
@@ -17,10 +17,11 @@ import RNFetchBlob from 'rn-fetch-blob';
 import {Button, FloatingLabelInput} from '../components';
 import Icon from '../components/Icon';
 import Touchable from '../components/Touchable';
-import {applyStyles} from '../helpers/utils';
-import {getApiService} from '../services';
-import {colors} from '../styles';
+import {applyStyles} from '@/helpers/utils';
+import {getAnalyticsService, getApiService} from '@/services';
+import {colors} from '@/styles';
 import {isEmpty} from 'lodash';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type Fields = {
   address: string;
@@ -43,8 +44,13 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
   });
   const [profileImage, setProfileImage] = useState<any | undefined>();
   const [isSignatureCaptureShown, setIsSignatureCaptureShown] = useState(false);
-
+  const handleError = useErrorHandler();
   const apiService = getApiService();
+  useEffect(() => {
+    if (visible) {
+      getAnalyticsService().logEvent('businessSetupStart').catch(handleError);
+    }
+  }, [handleError, visible]);
 
   const clearForm = useCallback(() => {
     setFields({} as Fields);
@@ -174,6 +180,9 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
           handleHideSignatureCapture();
           handleSkip();
           ToastAndroid.show('Business setup successful', ToastAndroid.SHORT);
+          getAnalyticsService()
+            .logEvent('businessSetupComplete')
+            .catch(handleError);
         } catch (error) {
           setLoading(false);
           Alert.alert('Error', error.message);
@@ -189,6 +198,7 @@ export const BusinessSetup = ({visible, onClose}: Props) => {
       apiService,
       handleHideSignatureCapture,
       handleSkip,
+      handleError,
     ],
   );
 

@@ -1,7 +1,8 @@
 import Realm, {UpdateMode} from 'realm';
 import {omit} from 'lodash';
-import {IDeliveryAgent, modelName} from '../models/DeliveryAgent';
-import {getBaseModelValues} from '../helpers/models';
+import {IDeliveryAgent, modelName} from '@/models/DeliveryAgent';
+import {getBaseModelValues} from '@/helpers/models';
+import {getAnalyticsService} from '@/services/index';
 
 export const getDeliveryAgents = ({
   realm,
@@ -61,6 +62,9 @@ export const saveDeliveryAgent = ({
   } else {
     realm.write(saveDeliveryAgentInDb);
   }
+  getAnalyticsService()
+    .logEvent('deliveryAgentAdded')
+    .then(() => {});
 
   return deliveryAgentToCreate;
 };

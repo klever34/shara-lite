@@ -6,11 +6,10 @@ import {Alert, SafeAreaView} from 'react-native';
 import HeaderRight from '../../components/HeaderRight';
 import {withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {colors} from '@/styles';
 import {BusinessTab} from './business';
 import CustomersTab from './customers';
-import {useScreenRecord} from '@/services/analytics';
 import {RealmContext} from '@/services/realm/provider';
 
 type HomeTabParamList = {
@@ -22,7 +21,6 @@ type HomeTabParamList = {
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
 const HomeScreen = () => {
-  useScreenRecord();
   const {logoutFromRealm} = useContext(RealmContext);
   const navigation = useNavigation();
   const handleError = useErrorHandler();
@@ -31,6 +29,7 @@ const HomeScreen = () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
+      getAnalyticsService().logEvent('logout').catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],

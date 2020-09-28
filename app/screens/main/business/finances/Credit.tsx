@@ -120,12 +120,7 @@ export const MyCredit = () => {
             style={applyStyles('mb-lg', {width: '100%'})}
             disabled={!overdueCredit.length && !remainingCredit.length}
           />
-          <Touchable
-            onPress={() =>
-              handleNavigation('TotalCredit', {
-                credits: remainingCredit,
-              })
-            }>
+          <Touchable onPress={() => handleNavigation('TotalCredit')}>
             <View
               style={applyStyles('w-full p-lg mb-lg', {
                 elevation: 3,
@@ -153,12 +148,7 @@ export const MyCredit = () => {
               </Text>
             </View>
           </Touchable>
-          <Touchable
-            onPress={() =>
-              handleNavigation('OverdueCredit', {
-                credits: overdueCredit,
-              })
-            }>
+          <Touchable onPress={() => handleNavigation('OverdueCredit')}>
             <View
               style={applyStyles('w-full p-lg mb-lg', {
                 elevation: 3,

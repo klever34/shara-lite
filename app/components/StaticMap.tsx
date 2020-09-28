@@ -43,8 +43,8 @@ const StaticMap = ({
 
   const markerParams = useMemo(() => {
     const {latitude, longitude} = coordinate;
-    const markerParams = `markers=${latitude},${longitude}`;
-    return hasCenterMarker ? markerParams : '';
+    const params = `markers=${latitude},${longitude}`;
+    return hasCenterMarker ? params : '';
   }, [coordinate, hasCenterMarker]);
 
   const staticMapUrl = useMemo(() => {

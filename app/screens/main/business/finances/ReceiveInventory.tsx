@@ -1,48 +1,45 @@
-import React, {useState, useEffect, useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {applyStyles} from '@/helpers/utils';
 import {colors} from '@/styles';
 import EmptyState from '../../../../components/EmptyState';
 import {
-  StyleSheet,
-  View,
-  Text,
-  FlatList,
   Alert,
+  FlatList,
+  StyleSheet,
+  Text,
+  TextInput,
   ToastAndroid,
+  View,
 } from 'react-native';
 import Icon from '../../../../components/Icon';
-import TextInput from '../../../../components/TextInput';
 import {useNavigation} from '@react-navigation/native';
 import {useRealm} from '@/services/realm';
 import Touchable from '../../../../components/Touchable';
 import {ISupplier} from '@/models/Supplier';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
-import {useScreenRecord} from '@/services/analytics';
 import {ContactsListModal} from '@/components';
 import {Contact} from 'react-native-contacts';
 import {getAnalyticsService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
 
 type SupplierItemProps = {
   item: ISupplier;
 };
 
 export const ReceiveInventory = () => {
-  useScreenRecord();
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const suppliers = getSuppliers({realm});
+  const analyticsService = getAnalyticsService();
 
   const [searchInputValue, setSearchInputValue] = useState('');
   const [mySuppliers, setMySuppliers] = useState<ISupplier[]>(suppliers);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    return navigation.addListener('focus', () => {
       const suppliersData = getSuppliers({realm});
       setMySuppliers(suppliersData);
     });
-    return unsubscribe;
   }, [navigation, realm]);
 
   const handleOpenContactListModal = useCallback(() => {
@@ -58,8 +55,14 @@ export const ReceiveInventory = () => {
       navigation.navigate('ReceiveInventoryStock', {supplier: item});
       setSearchInputValue('');
       setMySuppliers(suppliers);
+      analyticsService
+        .logEvent('selectContent', {
+          item_id: item?._id?.toString() ?? '',
+          content_type: 'supplier',
+        })
+        .then(() => {});
     },
-    [navigation, suppliers],
+    [navigation, suppliers, analyticsService],
   );
 
   const handleSupplierSearch = useCallback(
@@ -76,8 +79,14 @@ export const ReceiveInventory = () => {
       } else {
         setMySuppliers(suppliers);
       }
+      analyticsService
+        .logEvent('search', {
+          search_term: searchedText,
+          content_type: 'supplier',
+        })
+        .then(() => {});
     },
-    [suppliers],
+    [suppliers, analyticsService],
   );
 
   const handleAddSupplier = useCallback(() => {
@@ -97,8 +106,6 @@ export const ReceiveInventory = () => {
     [handleSelectSupplier],
   );
 
-  const handleError = useErrorHandler();
-
   const handleCreateSupplier = useCallback(
     (contact: Contact) => {
       const mobile = contact.phoneNumbers[0].number;
@@ -113,12 +120,11 @@ export const ReceiveInventory = () => {
         } else {
           const supplier = {name, mobile};
           saveSupplier({realm, supplier});
-          getAnalyticsService().logEvent('supplierAdded').catch(handleError);
           ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
         }
       }
     },
-    [realm, suppliers, handleError],
+    [realm, suppliers],
   );
 
   const renderSupplierListHeader = useCallback(
@@ -139,7 +145,7 @@ export const ReceiveInventory = () => {
           />
           <TextInput
             value={searchInputValue}
-            containerStyle={styles.searchInput}
+            style={styles.searchInput}
             placeholder="Search Suppliers"
             onChangeText={handleSupplierSearch}
             placeholderTextColor={colors['gray-50']}

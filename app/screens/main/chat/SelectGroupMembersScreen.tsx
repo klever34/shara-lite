@@ -1,21 +1,19 @@
 import React, {useCallback, useLayoutEffect, useState} from 'react';
 import {SafeAreaView, ScrollView, View} from 'react-native';
 import ContactsList from '../../../components/ContactsList';
-import {IContact} from '../../../models/Contact';
+import {IContact} from '@/models';
 import PlaceholderImage from '../../../components/PlaceholderImage';
-import {applyStyles} from '../../../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import Touchable from '../../../components/Touchable';
-import {FAButton} from '../../../components';
+import {FAButton} from '@/components';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../index';
 import HeaderTitle from '../../../components/HeaderTitle';
-import {useScreenRecord} from '../../../services/analytics';
 
 const SelectGroupMembersScreen = ({
   navigation,
   route,
 }: StackScreenProps<MainStackParamList, 'SelectGroupMembers'>) => {
-  useScreenRecord();
   const {participants, title, next} = route.params;
   const [selectedContacts, setSelectedContacts] = useState<IContact[]>([]);
   useLayoutEffect(() => {

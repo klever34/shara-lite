@@ -230,7 +230,12 @@ export class ApiService implements IApiService {
 
   public async forgotPassword(payload: {mobile: string}): Promise<ApiResponse> {
     try {
-      return await this.requester.post('/password-reset', payload);
+      // Define & start a trace
+      const trace = await perf().startTrace('password-reset_trace');
+      const response = await this.requester.post('/password-reset', payload);
+      // Stop the trace
+      await trace.stop();
+      return response;
     } catch (e) {
       throw e;
     }

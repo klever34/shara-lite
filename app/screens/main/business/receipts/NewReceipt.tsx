@@ -19,24 +19,23 @@ import HeaderRight from '../../../../components/HeaderRight';
 import Icon from '../../../../components/Icon';
 import SearchableDropdown from '../../../../components/SearchableDropdown';
 import Touchable from '../../../../components/Touchable';
-import {applyStyles, numberWithCommas} from '../../../../helpers/utils';
-import {IProduct} from '../../../../models/Product';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService} from '../../../../services';
-import {getProducts} from '../../../../services/ProductService';
-import {useRealm} from '../../../../services/realm';
-import {colors} from '../../../../styles';
+import {applyStyles, numberWithCommas} from '@/helpers/utils';
+import {IProduct} from '@/models/Product';
+import {IReceiptItem} from '@/models/ReceiptItem';
+import {getAnalyticsService, getAuthService} from '../../../../services';
+import {getProducts} from '@/services/ProductService';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import {ProductsPreviewModal} from './ProductsPreviewModal';
 import ReceiptSummary from './ReceiptSummary';
-import {useScreenRecord} from '../../../../services/analytics';
 import {FormDefaults} from '@/services/FormDefaults';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type RecentProductItemProps = {
   item: IProduct;
 };
 
 export const NewReceipt = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   //@ts-ignore
@@ -112,7 +111,7 @@ export const NewReceipt = () => {
     setReceipt([]);
     handleCloseSummaryModal();
   }, [handleCloseSummaryModal]);
-
+  const handleError = useErrorHandler();
   const handleAddItem = useCallback(() => {
     const priceCondition = price || price === 0 ? true : false;
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
@@ -125,6 +124,9 @@ export const NewReceipt = () => {
         name: selectedProduct?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
+      getAnalyticsService()
+        .logEvent('productAddedToReceipt')
+        .catch(handleError);
       if (
         receipt
           .map((item) => item._id?.toString())
@@ -150,7 +152,7 @@ export const NewReceipt = () => {
     } else {
       Alert.alert('Info', 'Please add product quantity');
     }
-  }, [price, quantity, receipt, selectedProduct]);
+  }, [handleError, price, quantity, receipt, selectedProduct]);
 
   const handleUpdateProductItem = useCallback(
     (item: IReceiptItem) => {
@@ -209,6 +211,13 @@ export const NewReceipt = () => {
     );
   }, []);
 
+  const handleAddProduct = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('productStart')
+      .then(() => {});
+    navigation.navigate('AddProduct');
+  }, [navigation]);
+
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
     return (
       <Touchable onPress={() => onPress(item)}>
@@ -262,9 +271,9 @@ export const NewReceipt = () => {
         renderItem={renderSearchDropdownItem}
         noResultsActionButtonText="Add a product"
         textInputProps={{placeholder: 'Search Products'}}
-        noResultsAction={() => navigation.navigate('AddProduct')}
+        noResultsAction={handleAddProduct}
       />
-      <Touchable onPress={() => navigation.navigate('AddProduct')}>
+      <Touchable onPress={handleAddProduct}>
         <View
           style={applyStyles('flex-row px-lg py-lg items-center', {
             borderBottomWidth: 1,
@@ -306,7 +315,7 @@ export const NewReceipt = () => {
               title="Add Products"
               variantColor="clear"
               style={applyStyles('w-full')}
-              onPress={() => navigation.navigate('AddProduct')}
+              onPress={handleAddProduct}
             />
           </View>
         }

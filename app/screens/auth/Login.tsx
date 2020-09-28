@@ -2,7 +2,11 @@ import React, {useContext} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
 import {applyStyles} from '@/helpers/utils';
-import {getApiService, getRealmService} from '../../services';
+import {
+  getApiService,
+  getRealmService,
+  getAnalyticsService,
+} from '../../services';
 import {colors} from '@/styles';
 import {initLocalRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
@@ -10,6 +14,7 @@ import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {AuthView} from '@/components/AuthView';
 import {useAppNavigation} from '@/services/navigation';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type Fields = {
   mobile: string;
@@ -40,6 +45,7 @@ export const Login = () => {
       countryCode: code,
     });
   };
+  const handleError = useErrorHandler();
   const onSubmit = async () => {
     const {mobile, countryCode, ...rest} = fields;
     const payload = {
@@ -56,6 +62,9 @@ export const Login = () => {
       realmService.setInstance(createdLocalRealm);
 
       setLoading(false);
+      getAnalyticsService()
+        .logEvent('login', {method: 'mobile'})
+        .catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],

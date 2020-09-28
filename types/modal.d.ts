@@ -10,7 +10,7 @@ type ModalPropsList = {
     text: string;
   };
   'bottom-half': {
-    renderContent: (props: {closeModal: () => void}) => ReactNode;
+    renderContent: (props: {closeModal?: () => void}) => ReactNode;
   };
   options: {
     options: {text: string; onPress: () => void}[];
