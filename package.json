@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.44-feature.new-design-business-setup+build.2916",
+  "version": "0.2.45-shara-v2-designs",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
