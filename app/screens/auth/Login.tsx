@@ -1,21 +1,20 @@
+import {AuthView} from '@/components/AuthView';
+import {applyStyles} from '@/helpers/utils';
+import {useErrorHandler} from '@/services/error-boundary';
+import {FormDefaults} from '@/services/FormDefaults';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import {useAppNavigation} from '@/services/navigation';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
+import {colors} from '@/styles';
 import React, {useContext} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {Button, PasswordField, PhoneNumberField} from '../../components';
-import {applyStyles} from '@/helpers/utils';
 import {
+  getAnalyticsService,
   getApiService,
   getRealmService,
-  getAnalyticsService,
-  getAuthService,
 } from '../../services';
-import {colors} from '@/styles';
-import {initLocalRealm} from '@/services/realm';
-import {RealmContext} from '@/services/realm/provider';
-import {FormDefaults} from '@/services/FormDefaults';
-import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {AuthView} from '@/components/AuthView';
-import {useAppNavigation} from '@/services/navigation';
-import {useErrorHandler} from '@/services/error-boundary';
 
 type Fields = {
   mobile: string;
@@ -24,8 +23,6 @@ type Fields = {
 };
 
 export const Login = () => {
-  const user = getAuthService().getUser();
-  const businessInfo = user?.businesses[0];
   const {updateLocalRealm} = useContext(RealmContext);
   const {callingCode} = useIPGeolocation();
   const [loading, setLoading] = React.useState(false);
@@ -68,12 +65,10 @@ export const Login = () => {
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
         .catch(handleError);
-      businessInfo
-        ? navigation.reset({
-            index: 0,
-            routes: [{name: 'Main'}],
-          })
-        : navigation.replace('BusinessSetup');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Main'}],
+      });
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);

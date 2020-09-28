@@ -48,6 +48,7 @@ export const BusinessSetup = () => {
   return (
     <AuthView
       title="Business Setup"
+      showBackButton={false}
       style={applyStyles({marginBottom: 100})}
       description="Create an account to do business faster and better.">
       <BusinessForm page="setup" onSkip={handleSkip} onSubmit={handleSubmit} />

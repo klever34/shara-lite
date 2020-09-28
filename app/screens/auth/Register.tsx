@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
   Button,
@@ -7,13 +7,15 @@ import {
   PhoneNumberField,
 } from '../../components';
 import {applyStyles} from '@/helpers/utils';
-import {getAnalyticsService, getApiService} from '@/services';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 import {colors} from '@/styles';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {AuthView} from '@/components/AuthView';
 import {useErrorHandler} from '@/services/error-boundary';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
 
 type Fields = {
   firstname: string;
@@ -26,6 +28,7 @@ type Fields = {
 export const Register = () => {
   const navigation = useAppNavigation();
   const {callingCode} = useIPGeolocation();
+  const {updateLocalRealm} = useContext(RealmContext);
   const [loading, setLoading] = React.useState(false);
   const [fields, setFields] = React.useState<Fields>(
     FormDefaults.get('signup', {countryCode: callingCode}) as Fields,
@@ -58,11 +61,16 @@ export const Register = () => {
     try {
       setLoading(true);
       await apiService.register(payload);
+      const createdLocalRealm = await initLocalRealm();
+      updateLocalRealm && updateLocalRealm(createdLocalRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(createdLocalRealm);
+
       setLoading(false);
       getAnalyticsService()
         .logEvent('signup', {method: 'mobile'})
         .catch(handleError);
-      navigation.replace('Login');
+      navigation.replace('BusinessSetup');
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);
