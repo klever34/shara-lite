@@ -70,11 +70,11 @@ const HomeScreen = () => {
       <HomeTab.Navigator
         initialRouteName="Business"
         tabBarOptions={{
-          indicatorContainerStyle: {backgroundColor: colors.primary},
-          indicatorStyle: {backgroundColor: colors.white},
+          indicatorContainerStyle: {backgroundColor: colors.white},
+          indicatorStyle: {backgroundColor: colors.primary},
           labelStyle: {fontFamily: 'Rubik-Regular'},
-          activeTintColor: 'rgba(255,255,255, 1)',
-          inactiveTintColor: 'rgba(255,255,255, 0.75)',
+          activeTintColor: colors.primary,
+          inactiveTintColor: colors['gray-300'],
         }}>
         <HomeTab.Screen
           name="Business"

@@ -206,22 +206,19 @@ const MainScreens = () => {
     );
   }
 
-  const stackOptions = {
-    headerTitleStyle: {
-      fontSize: 16,
-      fontFamily: 'CocogoosePro-SemiLight',
-    },
-    headerTintColor: '#fff',
-  };
-
   return (
     <PubNubProvider client={pubNubClient}>
       <MainStack.Navigator
         initialRouteName="Home"
         screenOptions={{
           headerStyle: {
-            backgroundColor: colors.primary,
+            backgroundColor: colors.white,
           },
+          headerTitleStyle: {
+            fontSize: 16,
+            fontFamily: 'CocogoosePro-SemiLight',
+          },
+          headerTintColor: colors['gray-300'],
         }}>
         <MainStack.Screen
           name="Home"
@@ -230,12 +227,10 @@ const MainScreens = () => {
             title: Config.app_name,
             headerStyle: {
               elevation: 0,
-              backgroundColor: colors.primary,
             },
             headerTitleStyle: {
               fontFamily: 'CocogoosePro-Regular',
             },
-            headerTintColor: '#fff',
           }}
         />
         <MainStack.Screen
@@ -243,35 +238,23 @@ const MainScreens = () => {
           component={ContactsScreen}
           options={{
             title: 'Select Contact',
-            ...stackOptions,
           }}
         />
-        <MainStack.Screen
-          name="Chat"
-          component={ChatScreen}
-          options={stackOptions}
-        />
-        <MainStack.Screen
-          name="ChatDetails"
-          component={ChatDetailsScreen}
-          options={stackOptions}
-        />
+        <MainStack.Screen name="Chat" component={ChatScreen} />
+        <MainStack.Screen name="ChatDetails" component={ChatDetailsScreen} />
         <MainStack.Screen
           name="SelectGroupMembers"
           component={SelectGroupMembersScreen}
-          options={stackOptions}
         />
         <MainStack.Screen
           name="SetGroupDetails"
           component={SetGroupDetailsScreen}
-          options={stackOptions}
         />
         <MainStack.Screen
           name="NewReceipt"
           component={NewReceipt}
           options={{
             title: 'New Receipt',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -284,7 +267,6 @@ const MainScreens = () => {
           component={Finances}
           options={{
             title: 'My Finances',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -292,7 +274,6 @@ const MainScreens = () => {
           component={AddCustomer}
           options={{
             title: 'Add Customer',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -300,7 +281,6 @@ const MainScreens = () => {
           component={CustomerDetails}
           options={({route}) => ({
             title: route.params.customer.name,
-            ...stackOptions,
           })}
         />
         <MainStack.Screen
@@ -308,7 +288,6 @@ const MainScreens = () => {
           component={RecordPayment}
           options={{
             title: 'Record Payment',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -316,7 +295,6 @@ const MainScreens = () => {
           component={CreditPayment}
           options={{
             title: 'Credit Payment',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -324,7 +302,6 @@ const MainScreens = () => {
           component={PaymentDetails}
           options={{
             title: 'Payment Details',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -332,7 +309,6 @@ const MainScreens = () => {
           component={OrderDetails}
           options={{
             title: 'Order Details',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -340,7 +316,6 @@ const MainScreens = () => {
           component={CustomerTotalCredit}
           options={{
             title: 'Total Credit',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -348,7 +323,6 @@ const MainScreens = () => {
           component={CustomerOverdueCredit}
           options={{
             title: 'Overdue Credit',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -356,10 +330,6 @@ const MainScreens = () => {
           component={CustomerCreditDetails}
           options={{
             title: 'Credit Payment',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -367,7 +337,6 @@ const MainScreens = () => {
           component={CustomerCreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -375,7 +344,6 @@ const MainScreens = () => {
           component={TotalCredit}
           options={{
             title: 'Total Credit',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -383,7 +351,6 @@ const MainScreens = () => {
           component={OverdueCredit}
           options={{
             title: 'Overdue Credit',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -391,7 +358,6 @@ const MainScreens = () => {
           component={RecordCreditPayment}
           options={{
             title: 'Record Credit Payment',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -399,7 +365,6 @@ const MainScreens = () => {
           component={CreditDetails}
           options={{
             title: 'Credit Details',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -407,7 +372,6 @@ const MainScreens = () => {
           component={CreditPaymentDetails}
           options={{
             title: 'Credit Payment Details',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -415,10 +379,6 @@ const MainScreens = () => {
           component={AddProduct}
           options={{
             title: 'Add Product',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -426,10 +386,6 @@ const MainScreens = () => {
           component={EditProduct}
           options={{
             title: 'Edit Product',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -437,10 +393,6 @@ const MainScreens = () => {
           component={ViewProductDetails}
           options={{
             title: 'Product Details',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -448,10 +400,6 @@ const MainScreens = () => {
           component={Suppliers}
           options={{
             title: 'Suppliers',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -459,10 +407,6 @@ const MainScreens = () => {
           component={DeliveryAgents}
           options={{
             title: 'Delivery Agents',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -470,10 +414,6 @@ const MainScreens = () => {
           component={ReceiveInventory}
           options={{
             title: 'Receive Inventory',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -481,10 +421,6 @@ const MainScreens = () => {
           component={ReceiveInventoryStock}
           options={{
             title: 'Receive Inventory',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -492,10 +428,6 @@ const MainScreens = () => {
           component={AddSupplier}
           options={{
             title: 'Add Supplier',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -503,7 +435,6 @@ const MainScreens = () => {
           component={AddDeliveryAgent}
           options={{
             title: 'Add Delivery Agent',
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -511,10 +442,6 @@ const MainScreens = () => {
           component={ReceivedInventoryList}
           options={{
             title: 'Received Inventory',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
         <MainStack.Screen
@@ -522,10 +449,6 @@ const MainScreens = () => {
           component={Expenses}
           options={{
             title: 'Record Expenses',
-            headerStyle: {
-              backgroundColor: colors.primary,
-            },
-            ...stackOptions,
           }}
         />
       </MainStack.Navigator>
