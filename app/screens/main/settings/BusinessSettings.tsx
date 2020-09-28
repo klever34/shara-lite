@@ -25,7 +25,9 @@ export const BusinessSettings = () => {
       payload.append('name', data?.name);
       payload.append('mobile', data?.mobile);
       payload.append('address', data?.address);
-      payload.append('profileImageFile', data?.profileImageFile);
+      data?.profileImageFile &&
+        Object.keys(data?.profileImageFile).length > 1 &&
+        payload.append('profileImageFile', data?.profileImageFile);
 
       try {
         await apiService.businessSetupUpdate(payload, user?.id.toString());
