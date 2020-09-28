@@ -1,5 +1,5 @@
 import React from 'react';
-import {applyStyles} from '../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
 
@@ -33,12 +33,10 @@ const HeaderTitle = ({
 };
 
 const styles = StyleSheet.create({
-  headerTitleText: applyStyles('text-lg', {
-    color: 'white',
+  headerTitleText: applyStyles('text-lg text-gray-300', {
     fontFamily: 'Rubik-Medium',
   }),
-  headerTitleDesc: applyStyles('text-sm', {
-    color: 'white',
+  headerTitleDesc: applyStyles('text-sm text-gray-300', {
     fontFamily: 'Rubik-Regular',
   }),
 });

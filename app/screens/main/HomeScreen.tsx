@@ -2,15 +2,19 @@ import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {useErrorHandler} from '@/services/error-boundary';
-import {Alert, SafeAreaView} from 'react-native';
+import {Alert, SafeAreaView, View} from 'react-native';
 import HeaderRight from '../../components/HeaderRight';
-import {withModal} from '@/helpers/hocs';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {colors} from '@/styles';
 import {BusinessTab} from './business';
 import CustomersTab from './customers';
 import {RealmContext} from '@/services/realm/provider';
+import HeaderTitle from '@/components/HeaderTitle';
+import Touchable from '@/components/Touchable';
+import {Icon} from '@/components/Icon';
+import {HomeMenu} from '@/components/HomeMenu';
 
 type HomeTabParamList = {
   ChatList: undefined;
@@ -20,7 +24,9 @@ type HomeTabParamList = {
 
 const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
 
-const HomeScreen = () => {
+type HomeScreenProps = ModalWrapperFields & {};
+
+const HomeScreen = ({openModal}: HomeScreenProps) => {
   const {logoutFromRealm} = useContext(RealmContext);
   const navigation = useNavigation();
   const handleError = useErrorHandler();
@@ -39,9 +45,37 @@ const HomeScreen = () => {
       handleError(e);
     }
   }, [handleError, navigation, logoutFromRealm]);
-
+  const user = getAuthService().getUser();
   useLayoutEffect(() => {
     navigation.setOptions({
+      headerStyle: {
+        elevation: 0,
+      },
+      headerTitleStyle: {
+        fontFamily: 'CocogoosePro-Regular',
+      },
+      headerLeft: () => {
+        return (
+          <Touchable
+            onPress={() => {
+              openModal('bottom-half', {renderContent: HomeMenu});
+            }}>
+            <View style={applyStyles('center ml-4 w-48 h-48')}>
+              <Icon
+                type="material-icons"
+                color={colors['gray-300']}
+                name="dehaze"
+                size={28}
+                borderRadius={12}
+              />
+            </View>
+          </Touchable>
+        );
+      },
+      // TODO: What should be displayed when the business setup is not done
+      headerTitle: () => (
+        <HeaderTitle title={user?.businesses?.[0].name ?? 'Business Name'} />
+      ),
       headerRight: () => (
         <HeaderRight
           menuOptions={[
@@ -63,7 +97,7 @@ const HomeScreen = () => {
         />
       ),
     });
-  }, [handleLogout, navigation]);
+  }, [handleLogout, navigation, openModal, user]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

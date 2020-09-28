@@ -30,10 +30,7 @@ const CustomerDetails = ({route}: {route: any}) => {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <HeaderBackButton
-          tintColor={colors.white}
-          onPress={() => navigation.navigate('Customers')}
-        />
+        <HeaderBackButton onPress={() => navigation.navigate('Customers')} />
       ),
       headerRight: () => <HeaderRight menuOptions={[]} />,
     });

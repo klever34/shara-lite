@@ -159,9 +159,8 @@ const useRepeatBackToExit = () => {
 const MainScreens = () => {
   useRepeatBackToExit();
   const handleError = useErrorHandler();
-  const authService = getAuthService();
   const realm = useRealm();
-  const user = authService.getUser();
+  const user = getAuthService().getUser();
 
   useRealmSyncLoader();
   useCreditReminder();
@@ -220,19 +219,7 @@ const MainScreens = () => {
           },
           headerTintColor: colors['gray-300'],
         }}>
-        <MainStack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{
-            title: Config.app_name,
-            headerStyle: {
-              elevation: 0,
-            },
-            headerTitleStyle: {
-              fontFamily: 'CocogoosePro-Regular',
-            },
-          }}
-        />
+        <MainStack.Screen name="Home" component={HomeScreen} />
         <MainStack.Screen
           name="Contacts"
           component={ContactsScreen}
