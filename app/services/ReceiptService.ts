@@ -1,10 +1,10 @@
 import Realm, {UpdateMode} from 'realm';
 import {ICustomer} from '@/models';
 import {IReceipt, modelName} from '@/models/Receipt';
-import {saveReceiptItem} from './ReceiptItemService';
-import {savePayment, updatePayment} from './PaymentService';
+import {deleteReceiptItem, saveReceiptItem} from './ReceiptItemService';
+import {deletePayment, savePayment, updatePayment} from './PaymentService';
 import {getBaseModelValues} from '@/helpers/models';
-import {saveCredit, updateCredit} from './CreditService';
+import {deleteCredit, saveCredit, updateCredit} from './CreditService';
 import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
@@ -166,6 +166,63 @@ export const updateReceipt = ({
     ) {
       updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
+  });
+};
+
+export const cancelReceipt = ({
+  realm,
+  receipt,
+  cancellation_reason,
+}: {
+  realm: Realm;
+  receipt: IReceipt;
+  cancellation_reason: String;
+}): void => {
+  realm.write(() => {
+    const revertProduct = () => {
+      const updates = {
+        _id: receipt._id,
+        _partition: receipt._partition,
+        total_amount: 0,
+        credit_amount: 0,
+        is_cancelled: true,
+        cancellation_reason,
+      };
+      realm.create(modelName, updates, UpdateMode.Modified);
+    };
+
+    const revertStockAndItems = () => {
+      receipt.items?.forEach((item) => {
+        restockProduct({
+          realm,
+          product: item.product,
+          quantity: item.quantity,
+        });
+
+        deleteReceiptItem({realm, receiptItem: item});
+      });
+    };
+
+    const revertPayment = () => {
+      (receipt.payments || []).forEach((payment) => {
+        deletePayment({realm, payment});
+      });
+    };
+
+    const revertCredit = () => {
+      if (
+        receipt.credit_amount > 0 &&
+        receipt.credits &&
+        receipt.credits.length
+      ) {
+        deleteCredit({realm, credit: receipt.credits[0]});
+      }
+    };
+
+    revertProduct();
+    revertStockAndItems();
+    revertPayment();
+    revertCredit();
   });
 };
 

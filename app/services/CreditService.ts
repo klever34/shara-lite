@@ -5,6 +5,7 @@ import {IReceipt} from '@/models/Receipt';
 import {getBaseModelValues} from '@/helpers/models';
 import {Customer} from 'types/app';
 import {getAnalyticsService} from '@/services';
+import {deleteCreditPayment} from '@/services/CreditPaymentService';
 
 export const getCredits = ({realm}: {realm: Realm}): ICredit[] => {
   return (realm.objects<ICredit>(modelName) as unknown) as ICredit[];
@@ -68,4 +69,22 @@ export const updateCredit = ({
   };
 
   realm.create(modelName, updatedCredit, UpdateMode.Modified);
+};
+
+export const deleteCredit = ({
+  realm,
+  credit,
+}: {
+  realm: Realm;
+  credit: ICredit;
+}) => {
+  updateCredit({
+    realm,
+    credit,
+    updates: {is_deleted: true},
+  });
+
+  credit.payments?.forEach((creditPayment) => {
+    deleteCreditPayment({realm, creditPayment});
+  });
 };

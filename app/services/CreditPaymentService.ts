@@ -117,3 +117,34 @@ export const getPaymentsFromCredit = ({credits}: {credits?: ICredit[]}) => {
     [],
   );
 };
+
+export const updateCreditPayment = ({
+  realm,
+  creditPayment,
+  updates,
+}: {
+  realm: Realm;
+  creditPayment: ICreditPayment;
+  updates: object;
+}) => {
+  const updatedCreditPayment = {
+    _id: creditPayment._id,
+    ...updates,
+  };
+
+  realm.create(modelName, updatedCreditPayment, UpdateMode.Modified);
+};
+
+export const deleteCreditPayment = ({
+  realm,
+  creditPayment,
+}: {
+  realm: Realm;
+  creditPayment: ICreditPayment;
+}) => {
+  updateCreditPayment({
+    realm,
+    creditPayment,
+    updates: {is_deleted: true},
+  });
+};

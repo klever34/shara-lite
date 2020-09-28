@@ -67,3 +67,13 @@ export const updatePayment = ({
 
   realm.create(modelName, updatedPayment, UpdateMode.Modified);
 };
+
+export const deletePayment = ({
+  realm,
+  payment,
+}: {
+  realm: Realm;
+  payment: IPayment;
+}) => {
+  updatePayment({realm, payment, updates: {is_deleted: true}});
+};
