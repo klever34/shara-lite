@@ -76,9 +76,7 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
         );
       },
       // TODO: What should be displayed when the business setup is not done
-      headerTitle: () => (
-        <HeaderTitle title={user?.businesses?.[0].name ?? 'Business Name'} />
-      ),
+      headerTitle: () => <HeaderTitle title="Menu" />,
       headerRight: () => (
         <HeaderRight
           menuOptions={[

@@ -33,7 +33,7 @@ export const HeaderTitle = ({
 };
 
 const styles = StyleSheet.create({
-  headerTitleText: applyStyles('text-lg text-gray-300', {
+  headerTitleText: applyStyles('text-lg text-gray-300 text-uppercase', {
     fontFamily: 'Rubik-Medium',
   }),
   headerTitleDesc: applyStyles('text-sm text-gray-300', {
