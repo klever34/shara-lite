@@ -20,6 +20,7 @@ type Business = {
   name: string;
   user_id: string;
   address?: string;
+  mobile?: string;
   created_at: string;
   updated_at: string;
   profile_image_url?: string | null;

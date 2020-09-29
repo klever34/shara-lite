@@ -21,7 +21,7 @@ import {
   View,
 } from 'react-native';
 import {Contact} from 'react-native-contacts';
-import HeaderRight from '@/components/HeaderRight';
+import {HeaderRight} from '@/components/HeaderRight';
 
 type CustomerItemProps = {
   item: ICustomer;

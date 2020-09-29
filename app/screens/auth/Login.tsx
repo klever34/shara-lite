@@ -1,20 +1,17 @@
-import React, {useContext} from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {Button, PasswordField, PhoneNumberField} from '../../components';
+import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
 import {applyStyles} from '@/helpers/utils';
-import {
-  getApiService,
-  getRealmService,
-  getAnalyticsService,
-} from '../../services';
-import {colors} from '@/styles';
-import {initLocalRealm} from '@/services/realm';
-import {RealmContext} from '@/services/realm/provider';
+import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {AuthView} from '@/components/AuthView';
 import {useAppNavigation} from '@/services/navigation';
-import {useErrorHandler} from '@/services/error-boundary';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
+import {colors} from '@/styles';
+import {useFormik} from 'formik';
+import React, {useContext} from 'react';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import * as yup from 'yup';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 
 type Fields = {
   mobile: string;
@@ -22,46 +19,62 @@ type Fields = {
   countryCode: string;
 };
 
+const validationSchema = yup.object().shape({
+  mobile: yup
+    .string()
+    .matches(/^[1-9]/, {
+      message: "Number shouldn't start with 0",
+    })
+    .length(10, 'Number should be 10 digits')
+    .required('Number is required'),
+  password: yup
+    .string()
+    .strict(true)
+    .trim("Password shouldn't contain spaces")
+    .required('Password is required'),
+});
+
 export const Login = () => {
   const {updateLocalRealm} = useContext(RealmContext);
   const {callingCode} = useIPGeolocation();
-  const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('login', {countryCode: callingCode}) as Fields,
-  );
-
-  const onChangeText = (value: string, field: keyof Fields) => {
-    setFields({
-      ...fields,
-      [field]: value,
-    });
-  };
+  const {
+    errors,
+    values,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
+    validationSchema,
+    initialValues: FormDefaults.get('login', {
+      mobile: '',
+      password: '',
+      countryCode: callingCode,
+    }) as Fields,
+    onSubmit: (payload) => onSubmit(payload),
+  });
 
   const onChangeMobile = (value: {code: string; number: string}) => {
     const {code, number} = value;
-    setFields({
-      ...fields,
-      mobile: number,
-      countryCode: code,
-    });
+    setFieldValue('countryCode', code);
+    setFieldValue('mobile', number);
   };
   const handleError = useErrorHandler();
-  const onSubmit = async () => {
-    const {mobile, countryCode, ...rest} = fields;
+  const onSubmit = async (data: Fields) => {
+    const {mobile, countryCode, ...rest} = data;
     const payload = {
       ...rest,
-      mobile: `${countryCode}${mobile}`,
+      mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
     try {
-      setLoading(true);
       await apiService.logIn(payload);
       const createdLocalRealm = await initLocalRealm();
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
       const realmService = getRealmService();
       realmService.setInstance(createdLocalRealm);
 
-      setLoading(false);
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
         .catch(handleError);
@@ -70,38 +83,36 @@ export const Login = () => {
         routes: [{name: 'Main'}],
       });
     } catch (error) {
-      setLoading(false);
       Alert.alert('Error', error.message);
     }
   };
 
   const navigation = useAppNavigation();
 
-  const isButtonDisabled = () => {
-    return !fields.mobile || !fields.password;
-  };
-
   return (
     <AuthView title="Welcome Back!" description="Sign in to your account.">
       <View style={styles.form}>
         <View style={styles.inputField}>
           <PhoneNumberField
-            value={{number: fields.mobile, code: fields.countryCode}}
+            errorMessage={errors.mobile}
+            isInvalid={touched.mobile && !!errors.mobile}
             onChangeText={(data) => onChangeMobile(data)}
+            value={{number: values.mobile, code: values.countryCode}}
           />
         </View>
         <View style={styles.inputField}>
           <PasswordField
-            value={fields.password}
-            onChangeText={(text) => onChangeText(text, 'password')}
+            value={values.password}
+            errorMessage={errors.password}
+            onChangeText={handleChange('password')}
+            isInvalid={touched.password && !!errors.password}
           />
         </View>
         <Button
           title="Continue"
           variantColor="red"
-          onPress={onSubmit}
-          isLoading={loading}
-          disabled={isButtonDisabled()}
+          onPress={handleSubmit}
+          isLoading={isSubmitting}
         />
       </View>
       <View style={applyStyles('mb-16')}>
@@ -109,7 +120,7 @@ export const Login = () => {
           style={styles.helpSection}
           onPress={() =>
             navigation.navigate('ForgotPassword', {
-              mobile: {number: fields.mobile, code: fields.countryCode},
+              mobile: {number: values.mobile, code: values.countryCode},
             })
           }>
           <Text style={styles.helpSectionText}>Forgot your password? </Text>

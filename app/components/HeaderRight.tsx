@@ -20,7 +20,7 @@ type HeaderRightProps = {
   menuOptions?: HeaderRightMenuOption[];
 };
 
-const HeaderRight = ({
+export const HeaderRight = ({
   loading = false,
   options = [],
   menuOptions = [],
@@ -92,5 +92,3 @@ const HeaderRight = ({
     </View>
   );
 };
-
-export default HeaderRight;

@@ -1,76 +1,89 @@
-import React from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import {
-  Button,
-  FloatingLabelInput,
-  PasswordField,
-  PhoneNumberField,
-} from '../../components';
+import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
 import {applyStyles} from '@/helpers/utils';
-import {getAnalyticsService, getApiService} from '@/services';
-import {colors} from '@/styles';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
-import {AuthView} from '@/components/AuthView';
-import {useErrorHandler} from '@/services/error-boundary';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
+import {colors} from '@/styles';
+import {useFormik} from 'formik';
+import React, {useContext} from 'react';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import * as yup from 'yup';
 
 type Fields = {
-  firstname: string;
-  lastname: string;
   mobile: string;
   password: string;
   countryCode: string;
 };
 
+const validationSchema = yup.object().shape({
+  mobile: yup
+    .string()
+    .matches(/^[1-9]/, {
+      message: "Number shouldn't start with 0",
+    })
+    .length(10, 'Number should be 10 digits')
+    .required('Number is required'),
+  password: yup
+    .string()
+    .strict(true)
+    .trim("Password shouldn't contain spaces")
+    .required('Password is required'),
+});
+
 export const Register = () => {
   const navigation = useAppNavigation();
   const {callingCode} = useIPGeolocation();
-  const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('signup', {countryCode: callingCode}) as Fields,
-  );
-
-  const onChangeText = (value: string, field: keyof Fields) => {
-    setFields({
-      ...fields,
-      [field]: value,
-    });
-  };
+  const {updateLocalRealm} = useContext(RealmContext);
+  const {
+    errors,
+    values,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
+    validationSchema,
+    initialValues: FormDefaults.get('signup', {
+      mobile: '',
+      password: '',
+      countryCode: callingCode,
+    }) as Fields,
+    onSubmit: (payload) => onSubmit(payload),
+  });
 
   const onChangeMobile = (value: {code: string; number: string}) => {
     const {code, number} = value;
-    setFields({
-      ...fields,
-      mobile: number,
-      countryCode: code,
-    });
+    setFieldValue('countryCode', code);
+    setFieldValue('mobile', number);
   };
   const handleError = useErrorHandler();
-  const onSubmit = async () => {
-    const {mobile, countryCode, ...rest} = fields;
+  const onSubmit = async (data: Fields) => {
+    const {mobile, countryCode, ...rest} = data;
     const payload = {
       ...rest,
       country_code: countryCode,
-      mobile: `${countryCode}${mobile}`,
+      mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
     try {
-      setLoading(true);
       await apiService.register(payload);
-      setLoading(false);
+      const createdLocalRealm = await initLocalRealm();
+      updateLocalRealm && updateLocalRealm(createdLocalRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(createdLocalRealm);
+
       getAnalyticsService()
         .logEvent('signup', {method: 'mobile'})
         .catch(handleError);
-      navigation.replace('Login');
+      navigation.replace('BusinessSetup');
     } catch (error) {
-      setLoading(false);
       Alert.alert('Error', error.message);
     }
-  };
-
-  const isButtonDisabled = () => {
-    return Object.keys(fields).length < 5;
   };
 
   return (
@@ -79,32 +92,20 @@ export const Register = () => {
       description="Create an account to do business faster and better.">
       <View>
         <View style={applyStyles({marginBottom: 32})}>
-          <View style={styles.inputFieldSpacer}>
-            <FloatingLabelInput
-              label="First Name"
-              value={fields.firstname}
-              inputStyle={styles.inputField}
-              onChangeText={(text) => onChangeText(text, 'firstname')}
-            />
-          </View>
-          <View style={styles.inputFieldSpacer}>
-            <FloatingLabelInput
-              label="Last Name"
-              value={fields.lastname}
-              inputStyle={styles.inputField}
-              onChangeText={(text) => onChangeText(text, 'lastname')}
-            />
-          </View>
           <View style={applyStyles({paddingVertical: 18})}>
             <PhoneNumberField
-              value={{number: fields.mobile, code: fields.countryCode}}
+              errorMessage={errors.mobile}
               onChangeText={(data) => onChangeMobile(data)}
+              isInvalid={touched.mobile && !!errors.mobile}
+              value={{number: values.mobile, code: values.countryCode}}
             />
           </View>
           <View style={styles.inputFieldSpacer}>
             <PasswordField
-              value={fields.password}
-              onChangeText={(text) => onChangeText(text, 'password')}
+              value={values.password}
+              errorMessage={errors.password}
+              onChangeText={handleChange('password')}
+              isInvalid={touched.password && !!errors.password}
             />
           </View>
         </View>
@@ -112,13 +113,12 @@ export const Register = () => {
       <View>
         <Button
           variantColor="red"
-          onPress={onSubmit}
-          isLoading={loading}
+          isLoading={isSubmitting}
+          onPress={handleSubmit}
           title="Create an account"
           style={applyStyles({
             marginBottom: 24,
           })}
-          disabled={isButtonDisabled()}
         />
         <TouchableOpacity
           style={styles.helpSection}
