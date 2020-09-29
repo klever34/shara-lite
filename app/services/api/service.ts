@@ -107,7 +107,7 @@ export class ApiService implements IApiService {
   ) {}
 
   public requester: Requester = {
-    get: async <T extends any = any>  (
+    get: async <T extends any = any>(
       url: string,
       params: {[key: string]: string | number},
       isExternalDomain?: boolean,
@@ -127,9 +127,9 @@ export class ApiService implements IApiService {
         method: 'GET',
         // @ts-ignore
         headers,
-      })
+      });
       await trace.stop();
-      return await this.handleFetchErrors<T>(response) as T
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
     post: async <T extends any = any>(
       url: string,
@@ -147,9 +147,12 @@ export class ApiService implements IApiService {
         body: config ? data : JSON.stringify(data),
       });
       await trace.stop();
-      return await this.handleFetchErrors<T>(response) as T;
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
-    patch: async <T extends any = any>(url: string, data: {[key: string]: any}) => {
+    patch: async <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+    ) => {
       const trace = await perf().startTrace(url);
       const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'PATCH',
@@ -160,9 +163,12 @@ export class ApiService implements IApiService {
         body: JSON.stringify(data),
       });
       await trace.stop();
-      return await this.handleFetchErrors<T>(response) as T;
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
-    delete: async <T extends any = any>(url: string, data: {[key: string]: any}) => {
+    delete: async <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+    ) => {
       const trace = await perf().startTrace(url);
       const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'DELETE',
@@ -173,7 +179,7 @@ export class ApiService implements IApiService {
         body: JSON.stringify(data),
       });
       await trace.stop();
-      return await this.handleFetchErrors<T>(response) as T;
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
   };
 
