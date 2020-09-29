@@ -110,6 +110,9 @@ export class AnalyticsService implements IAnalyticsService {
 
       await segmentAnalytics.identify(String(user.id), userData);
       await segmentAnalytics.alias(alias);
+
+      await firebaseAnalytics().setUserId(String(user.id));
+      await firebaseAnalytics().setUserProperties(userData);
     } catch (e) {
       throw e;
     }
