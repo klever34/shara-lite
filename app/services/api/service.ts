@@ -107,7 +107,7 @@ export class ApiService implements IApiService {
   ) {}
 
   public requester: Requester = {
-    get: <T extends any = any>(
+    get: async <T extends any = any>  (
       url: string,
       params: {[key: string]: string | number},
       isExternalDomain?: boolean,
@@ -122,20 +122,22 @@ export class ApiService implements IApiService {
         headers['Content-Type'] = 'application/json';
       }
 
-      // TODO HTTP Request Tracing using Firebase Performance Monitoring https://rnfirebase.io/perf/usage
-
-      return fetch(fetchUrl, {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(fetchUrl, {
         method: 'GET',
         // @ts-ignore
         headers,
-      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      })
+      await trace.stop();
+      return await this.handleFetchErrors<T>(response) as T
     },
-    post: <T extends any = any>(
+    post: async <T extends any = any>(
       url: string,
       data: {[key: string]: any},
       config?: {[key: string]: any},
     ) => {
-      return fetch(`${Config.API_BASE_URL}${url}`, {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
@@ -143,27 +145,35 @@ export class ApiService implements IApiService {
           ...config?.headers,
         },
         body: config ? data : JSON.stringify(data),
-      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      });
+      await trace.stop();
+      return await this.handleFetchErrors<T>(response) as T;
     },
-    patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
-      return fetch(`${Config.API_BASE_URL}${url}`, {
+    patch: async <T extends any = any>(url: string, data: {[key: string]: any}) => {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      });
+      await trace.stop();
+      return await this.handleFetchErrors<T>(response) as T;
     },
-    delete: <T extends any = any>(url: string, data: {[key: string]: any}) => {
-      return fetch(`${Config.API_BASE_URL}${url}`, {
+    delete: async <T extends any = any>(url: string, data: {[key: string]: any}) => {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      }).then((...args) => this.handleFetchErrors<T>(...args));
+      });
+      await trace.stop();
+      return await this.handleFetchErrors<T>(response) as T;
     },
   };
 
@@ -198,9 +208,6 @@ export class ApiService implements IApiService {
 
   public async logIn(payload: {mobile: string; password: string}) {
     try {
-      // Define & start a trace
-      const trace = await perf().startTrace('login_trace');
-
       const fetchResponse = await this.requester.post('/login', payload);
       const {
         data: {
@@ -216,12 +223,6 @@ export class ApiService implements IApiService {
       this.authService.setUser(user);
       this.authService.setRealmCredentials(realmCredentials);
 
-      // Define trace meta details
-      // trace.putMetric('mobile', user.mobile);
-      trace.putAttribute('user_id', user.id);
-
-      // Stop the trace
-      await trace.stop();
       return fetchResponse;
     } catch (error) {
       throw error;
@@ -230,12 +231,7 @@ export class ApiService implements IApiService {
 
   public async forgotPassword(payload: {mobile: string}): Promise<ApiResponse> {
     try {
-      // Define & start a trace
-      const trace = await perf().startTrace('password-reset_trace');
-      const response = await this.requester.post('/password-reset', payload);
-      // Stop the trace
-      await trace.stop();
-      return response;
+      return await this.requester.post('/password-reset', payload);
     } catch (e) {
       throw e;
     }
