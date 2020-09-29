@@ -85,6 +85,7 @@ export class AnalyticsService implements IAnalyticsService {
     try {
       const userFields: (keyof User)[] = [
         'firstname',
+        'lastname',
         'id',
         'country_code',
         'currency_code',
@@ -99,7 +100,7 @@ export class AnalyticsService implements IAnalyticsService {
         {},
       );
       userData.environment = Config.ENVIRONMENT;
-      const alias = `${user.firstname}`;
+      const alias = `${user.firstname} ${user?.lastname}`;
 
       RNUxcam.setUserIdentity(alias);
       for (let prop in userData) {
