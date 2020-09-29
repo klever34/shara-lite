@@ -31,7 +31,7 @@ workflows:
           testBuild: false
           requires:
             - checkout_code
-            - test
+#            - test
           filters:
             branches:
               ignore:
