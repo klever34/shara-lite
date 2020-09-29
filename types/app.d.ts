@@ -8,6 +8,7 @@ type User = {
   firstname: string;
   lastname: string;
   mobile: string;
+  email?: string;
   country_code: string;
   created_at: string;
   updated_at: string;
