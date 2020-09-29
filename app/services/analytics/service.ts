@@ -1,9 +1,11 @@
 import {User} from 'types/app';
-import analytics from '@segment/analytics-react-native';
+import segmentAnalytics from '@segment/analytics-react-native';
 import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
+import firebaseAnalytics from '@react-native-firebase/analytics';
+import {utils as firebaseUtils} from '@react-native-firebase/app';
 
 type SharaAppEventsProperties = {
   // Chat
@@ -61,8 +63,11 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   async initialize(): Promise<void> {
     try {
-      if (process.env.NODE_ENV === 'production') {
-        await analytics.setup(Config.SEGMENT_KEY, {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        !firebaseUtils().isRunningInTestLab
+      ) {
+        await segmentAnalytics.setup(Config.SEGMENT_KEY, {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
@@ -79,6 +84,7 @@ export class AnalyticsService implements IAnalyticsService {
     try {
       const userFields: (keyof User)[] = [
         'firstname',
+        'lastname',
         'id',
         'country_code',
         'currency_code',
@@ -93,7 +99,7 @@ export class AnalyticsService implements IAnalyticsService {
         {},
       );
       userData.environment = Config.ENVIRONMENT;
-      const alias = `${user.firstname}`;
+      const alias = `${user.firstname} ${user?.lastname}`;
 
       RNUxcam.setUserIdentity(alias);
       for (let prop in userData) {
@@ -101,8 +107,11 @@ export class AnalyticsService implements IAnalyticsService {
       }
       RNUxcam.setUserProperty('alias', alias);
 
-      await analytics.identify(String(user.id), userData);
-      await analytics.alias(alias);
+      await segmentAnalytics.identify(String(user.id), userData);
+      await segmentAnalytics.alias(alias);
+
+      await firebaseAnalytics().setUserId(String(user.id));
+      await firebaseAnalytics().setUserProperties(userData);
     } catch (e) {
       throw e;
     }
@@ -117,7 +126,8 @@ export class AnalyticsService implements IAnalyticsService {
       nextEventData = castObjectValuesToString(eventData as any);
     }
     try {
-      await analytics.track(eventName, nextEventData);
+      await firebaseAnalytics().logEvent(eventName, eventData);
+      await segmentAnalytics.track(eventName, nextEventData);
       RNUxcam.logEvent(eventName, nextEventData);
     } catch (e) {
       throw e;
@@ -126,7 +136,11 @@ export class AnalyticsService implements IAnalyticsService {
 
   async tagScreenName(screenName: string): Promise<void> {
     RNUxcam.tagScreenName(screenName);
-    await analytics.screen(screenName);
+    await segmentAnalytics.screen(screenName);
+    await firebaseAnalytics().logScreenView({
+      screen_name: screenName,
+      screen_class: screenName,
+    });
     return Promise.resolve();
   }
 }
