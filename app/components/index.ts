@@ -12,3 +12,4 @@ export * from './ContactsListModal';
 export * from './FloatingLabelInput';
 export * from './FormBuilder';
 export * from './ShareModal';
+export * from './BusinessForm';

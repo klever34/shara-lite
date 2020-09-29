@@ -68,7 +68,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
   };
 
   const pickerStyles = isEmpty(country) ? {top: 6} : {top: 3};
-  const inputContainerStyle = isInvalid ? {top: 10} : {};
+  const inputContainerStyle = isInvalid ? {top: 14.5} : {top: 3.5};
 
   return (
     <View style={applyStyles(styles.container, containerStyle)}>
