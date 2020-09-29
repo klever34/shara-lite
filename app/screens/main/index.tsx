@@ -17,12 +17,17 @@ import {
   getPubNubService,
 } from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
+import {ReportsScreen} from './reports';
 import HomeScreen from './HomeScreen';
+import {CustomersScreen, AddCustomer} from '@/screens/main/customers';
 import {BusinessSettings} from './settings';
 
 export type MainStackParamList = {
   Home: undefined;
   BusinessSettings: undefined;
+  Reports: undefined;
+  Customers: undefined;
+  AddCustomer: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -133,6 +138,27 @@ const MainScreens = () => {
           name="BusinessSettings"
           component={BusinessSettings}
           options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Customers"
+          component={CustomersScreen}
+          options={{
+            title: 'My Customers',
+          }}
+        />
+        <MainStack.Screen
+          name="Reports"
+          component={ReportsScreen}
+          options={{
+            title: 'Reports',
+          }}
+        />
+        <MainStack.Screen
+          name="AddCustomer"
+          component={AddCustomer}
+          options={{
+            title: 'Add Customer',
+          }}
         />
       </MainStack.Navigator>
     </PubNubProvider>

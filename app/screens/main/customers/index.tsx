@@ -27,7 +27,7 @@ type CustomerItemProps = {
   item: ICustomer;
 };
 
-const CustomersScreen = () => {
+export const CustomersScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
@@ -219,7 +219,7 @@ const CustomersScreen = () => {
             color={colors.primary}
           />
           <Text style={applyStyles('text-sm text-primary uppercase')}>
-            {'Create Customer'}
+            Create Customer
           </Text>
         </View>
       </Touchable>
@@ -309,4 +309,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default CustomersScreen;
+export * from './AddCustomer';
