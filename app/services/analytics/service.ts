@@ -4,7 +4,7 @@ import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
-import firebaseAnalytics from '@react-native-firebase/analytics';
+import getFirebaseAnalytics from '@react-native-firebase/analytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 
 type SharaAppEventsProperties = {
@@ -61,6 +61,7 @@ export interface IAnalyticsService {
 }
 
 export class AnalyticsService implements IAnalyticsService {
+  private firebaseAnalytics = getFirebaseAnalytics();
   async initialize(): Promise<void> {
     try {
       if (
@@ -110,8 +111,8 @@ export class AnalyticsService implements IAnalyticsService {
       await segmentAnalytics.identify(String(user.id), userData);
       await segmentAnalytics.alias(alias);
 
-      await firebaseAnalytics().setUserId(String(user.id));
-      await firebaseAnalytics().setUserProperties(userData);
+      await this.firebaseAnalytics.setUserId(String(user.id));
+      await this.firebaseAnalytics.setUserProperties(userData);
     } catch (e) {
       throw e;
     }
@@ -126,7 +127,7 @@ export class AnalyticsService implements IAnalyticsService {
       nextEventData = castObjectValuesToString(eventData as any);
     }
     try {
-      await firebaseAnalytics().logEvent(eventName, eventData);
+      await this.firebaseAnalytics.logEvent(eventName, eventData);
       await segmentAnalytics.track(eventName, nextEventData);
       RNUxcam.logEvent(eventName, nextEventData);
     } catch (e) {
@@ -137,7 +138,7 @@ export class AnalyticsService implements IAnalyticsService {
   async tagScreenName(screenName: string): Promise<void> {
     RNUxcam.tagScreenName(screenName);
     await segmentAnalytics.screen(screenName);
-    await firebaseAnalytics().logScreenView({
+    await this.firebaseAnalytics.logScreenView({
       screen_name: screenName,
       screen_class: screenName,
     });
