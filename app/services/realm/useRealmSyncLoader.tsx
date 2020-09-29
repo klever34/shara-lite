@@ -48,11 +48,11 @@ const useRealmSyncLoader = () => {
         }
 
         updateSyncRealm &&
-          updateSyncRealm({
+          (await updateSyncRealm({
             newRealm,
             realmUser,
             partitionValue: partitionValue || '',
-          });
+          }));
         const realmService = getRealmService();
         realmService.setInstance(newRealm);
       } catch (e) {
