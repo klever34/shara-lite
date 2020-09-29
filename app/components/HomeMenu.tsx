@@ -23,6 +23,14 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
       },
     },
     {
+      title: 'User Profile',
+      icon: 'user',
+      onPress: () => {
+        closeModal?.();
+        navigation.navigate('UserProfileSettings');
+      },
+    },
+    {
       title: 'My Customers',
       icon: 'users',
       onPress: () => {

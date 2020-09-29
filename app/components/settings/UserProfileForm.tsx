@@ -67,7 +67,7 @@ export const UserProfileForm = ({onSubmit, initalValues}: Props) => {
         <FloatingLabelInput
           editable={false}
           label="Phone Number"
-          value={`${values.country_code}${values.mobile}`}
+          value={`${values.mobile}`}
           inputStyle={applyStyles({
             fontSize: 18,
             width: '100%',
