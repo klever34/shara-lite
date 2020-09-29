@@ -1,4 +1,4 @@
-import {AuthView} from '@/components/AuthView';
+import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -12,7 +12,6 @@ import {useFormik} from 'formik';
 import React, {useContext} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
-import {Button, PasswordField, PhoneNumberField} from '../../components';
 
 type Fields = {
   mobile: string;

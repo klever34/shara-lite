@@ -26,6 +26,7 @@ export type Requester = {
   patch: <T extends any = any>(
     url: string,
     data: {[key: string]: any},
+    config?: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
   delete: <T extends any = any>(
     url: string,
@@ -92,6 +93,11 @@ export interface IApiService {
 
   businessSetup(payload: FormData): Promise<ApiResponse>;
 
+  businessSetupUpdate(
+    payload: FormData,
+    businessId?: string,
+  ): Promise<ApiResponse>;
+
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
   getUserIPDetails(): Promise<any>;
@@ -140,14 +146,19 @@ export class ApiService implements IApiService {
         body: config ? data : JSON.stringify(data),
       }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
-    patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+    patch: <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+      config?: {[key: string]: any},
+    ) => {
       return fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
+          ...config?.headers,
         },
-        body: JSON.stringify(data),
+        body: config ? data : JSON.stringify(data),
       }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
     delete: <T extends any = any>(url: string, data: {[key: string]: any}) => {
@@ -361,6 +372,39 @@ export class ApiService implements IApiService {
 
       let user = this.authService.getUser() as User;
       user = {...user, businesses: [business]};
+      this.authService.setUser(user);
+      await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async businessSetupUpdate(payload: FormData, businessId?: string) {
+    try {
+      const fetchResponse = await this.requester.patch(
+        `/business/${businessId}`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+      const {
+        data: {business},
+      }: {data: {business: Business}} = fetchResponse;
+
+      let user = this.authService.getUser() as User;
+      user = {
+        ...user,
+        businesses: user.businesses.map((item) => {
+          if (item.id === business.id) {
+            return business;
+          }
+          return item;
+        }),
+      };
       this.authService.setUser(user);
       await this.storageService.setItem('user', user);
       return fetchResponse;

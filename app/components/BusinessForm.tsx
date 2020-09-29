@@ -13,16 +13,18 @@ import {FloatingLabelInput} from './FloatingLabelInput';
 import {Icon} from './Icon';
 import Touchable from './Touchable';
 
-type Payload = {
+export type BusinessFormPayload = {
   name: string;
   address?: string;
+  mobile?: string;
   profileImageFile?: ImagePickerResponse;
 };
 
 type Props = {
   onSkip?(): void;
   page?: 'setup' | 'settings';
-  onSubmit(payload: Payload): void;
+  initalValues?: BusinessFormPayload;
+  onSubmit(payload: BusinessFormPayload): void;
 };
 
 const validationSchema = yup.object().shape({
@@ -30,7 +32,7 @@ const validationSchema = yup.object().shape({
   address: yup.string().required('Business address is required'),
 });
 
-export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
+export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
   const {
     errors,
     values,
@@ -41,7 +43,7 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
     setFieldValue,
   } = useFormik({
     validationSchema,
-    initialValues: {
+    initialValues: initalValues || {
       name: '',
       address: '',
       mobile: '',
@@ -88,7 +90,7 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
       {page === 'settings' && (
         <Touchable onPress={handleAddPicture}>
           <View style={applyStyles('mb-xl items-center justify-center')}>
-            {values.profileImageFile.uri ? (
+            {values?.profileImageFile?.uri ? (
               <Image
                 style={applyStyles('mb-lg items-center justify-center', {
                   width: 100,
@@ -129,7 +131,9 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
                   fontSize: 16,
                   color: colors.primary,
                 })}>
-                {values.profileImageFile.uri ? 'Edit' : 'Upload Business logo'}
+                {values?.profileImageFile?.uri
+                  ? 'Edit'
+                  : 'Upload Business logo'}
               </Text>
             </View>
           </View>
@@ -166,6 +170,8 @@ export const BusinessForm = ({page, onSubmit, onSkip}: Props) => {
           <FloatingLabelInput
             label="Phone Number"
             value={values.mobile}
+            autoCompleteType="tel"
+            keyboardType="phone-pad"
             inputStyle={applyStyles({
               fontSize: 18,
               width: '100%',
