@@ -93,7 +93,10 @@ export interface IApiService {
 
   businessSetup(payload: FormData): Promise<ApiResponse>;
 
-  businessSetupUpdate(payload: FormData, userId?: string): Promise<ApiResponse>;
+  businessSetupUpdate(
+    payload: FormData,
+    businessId?: string,
+  ): Promise<ApiResponse>;
 
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
@@ -377,10 +380,10 @@ export class ApiService implements IApiService {
     }
   }
 
-  async businessSetupUpdate(payload: FormData, userId?: string) {
+  async businessSetupUpdate(payload: FormData, businessId?: string) {
     try {
       const fetchResponse = await this.requester.patch(
-        `/business/${userId}`,
+        `/business/${businessId}`,
         payload,
         {
           headers: {
