@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.47-shara-v2-designs",
+  "version": "0.2.47-feature.new-design-user-profile+build.3081",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -41,7 +41,7 @@
     "react-native-bluetooth-escpos-printer": "^0.0.5",
     "react-native-config": "^1.2.1",
     "react-native-contacts": "^5.2.3",
-    "react-native-country-picker-modal": "^1.11.0",
+    "react-native-country-picker-modal": "^2.0.0",
     "react-native-device-info": "^5.6.1",
     "react-native-emoji-selector": "^0.1.8",
     "react-native-floating-action": "^1.20.0",

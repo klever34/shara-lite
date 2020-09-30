@@ -18,11 +18,12 @@ import {
 } from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import HomeScreen from './HomeScreen';
-import {BusinessSettings} from './settings';
+import {BusinessSettings, UserProfileSettings} from './settings';
 
 export type MainStackParamList = {
   Home: undefined;
   BusinessSettings: undefined;
+  UserProfileSettings: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -132,6 +133,11 @@ const MainScreens = () => {
         <MainStack.Screen
           name="BusinessSettings"
           component={BusinessSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
           options={{headerShown: false}}
         />
       </MainStack.Navigator>

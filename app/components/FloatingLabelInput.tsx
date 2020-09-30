@@ -71,6 +71,10 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
 
   let inputFieldStyle = styles.inputField;
 
+  if (rest.editable === false) {
+    inputFieldStyle = {...styles.inputField, ...styles.inputFieldDisabled};
+  }
+
   if (leftIcon) {
     inputFieldStyle = {...styles.inputField, ...withLeftIconStyle};
   }
@@ -130,5 +134,8 @@ const styles = StyleSheet.create({
   inputIcon: {
     top: 33,
     position: 'absolute',
+  },
+  inputFieldDisabled: {
+    opacity: 0.5,
   },
 });

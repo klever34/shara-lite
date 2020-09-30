@@ -8,10 +8,10 @@ import ImagePicker, {
   ImagePickerResponse,
 } from 'react-native-image-picker';
 import * as yup from 'yup';
-import {Button} from './Button';
-import {FloatingLabelInput} from './FloatingLabelInput';
-import {Icon} from './Icon';
-import Touchable from './Touchable';
+import {Button} from '../Button';
+import {FloatingLabelInput} from '../FloatingLabelInput';
+import {Icon} from '../Icon';
+import Touchable from '../Touchable';
 
 export type BusinessFormPayload = {
   name: string;
