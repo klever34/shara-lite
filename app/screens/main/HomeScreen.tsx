@@ -1,19 +1,19 @@
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useContext, useLayoutEffect} from 'react';
-import {useErrorHandler} from '@/services/error-boundary';
-import {Alert, SafeAreaView, View} from 'react-native';
+import {HeaderRight, HomeMenu} from '@/components';
+import {Icon} from '@/components/Icon';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getAuthService} from '@/services';
-import {colors} from '@/styles';
+import {useErrorHandler} from '@/services/error-boundary';
 import {RealmContext} from '@/services/realm/provider';
-import {Icon} from '@/components/Icon';
-import {HomeMenu, HeaderTitle, HeaderRight} from '@/components';
+import {colors} from '@/styles';
+import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
+import {useNavigation} from '@react-navigation/native';
 import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
+import React, {useCallback, useContext, useLayoutEffect} from 'react';
+import {Alert, SafeAreaView, Text, View} from 'react-native';
 
 const SalesTab = () => null;
 const ItemsTab = () => null;
@@ -61,7 +61,7 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
             }}
             backImage={() => {
               return (
-                <View style={applyStyles('center w-36 h-36')}>
+                <View style={applyStyles('flex-row center')}>
                   <Icon
                     type="material-icons"
                     color={colors['gray-300']}
@@ -69,14 +69,23 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
                     size={28}
                     borderRadius={12}
                   />
+                  <Text
+                    style={applyStyles(
+                      'pl-sm text-md text-gray-300 text-uppercase',
+                      {
+                        fontFamily: 'Rubik-Medium',
+                      },
+                    )}
+                    numberOfLines={1}>
+                    Menu
+                  </Text>
                 </View>
               );
             }}
           />
         );
       },
-      // TODO: What should be displayed when the business setup is not done
-      headerTitle: () => <HeaderTitle title="Menu" />,
+      headerTitle: () => null,
       headerRight: () => (
         <HeaderRight
           menuOptions={[
