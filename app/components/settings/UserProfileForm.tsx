@@ -61,6 +61,7 @@ export const UserProfileForm = ({onSubmit, initalValues}: Props) => {
         <FloatingLabelInput
           label="Email (optional)"
           value={values.email}
+          keyboardType="email-address"
           inputStyle={applyStyles({
             fontSize: 18,
             width: '100%',
