@@ -11,13 +11,12 @@ export const BusinessSettings = () => {
   const apiService = getApiService();
 
   const user = authService.getUser();
-  const {name, id, mobile, address, profile_image_url} =
-    user?.businesses[0] || {};
+  const {name, id, mobile, address, profile_image} = user?.businesses[0] || {};
   const businessFormIntialValues = {
     name,
     mobile,
     address,
-    profileImageFile: {uri: profile_image_url},
+    profileImageFile: {uri: profile_image?.url},
   } as BusinessFormPayload;
 
   const handleSubmit = useCallback(

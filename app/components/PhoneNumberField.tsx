@@ -74,11 +74,6 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
   const pickerStyles = isEmpty(country) ? {top: 6} : {top: 3};
   const inputContainerStyle = isInvalid ? {top: 14.5} : {top: 3.5};
 
-  const inputStyle =
-    rest.editable === false
-      ? {...styles.inputField, ...styles.inputFieldDisabled}
-      : styles.inputField;
-
   return (
     <View style={applyStyles(styles.container, containerStyle)}>
       <View style={applyStyles(styles.picker, pickerStyles)}>
@@ -112,7 +107,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
           value={phoneNumber.number}
           autoCompleteType="tel"
           keyboardType="phone-pad"
-          style={inputStyle}
+          style={styles.inputField}
           placeholder="Phone Number"
           placeholderTextColor={colors['gray-50']}
           onChangeText={(text) => onInputChangeText(text)}
@@ -160,8 +155,5 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 8,
     right: 12,
-  },
-  inputFieldDisabled: {
-    opacity: 0.5,
   },
 });

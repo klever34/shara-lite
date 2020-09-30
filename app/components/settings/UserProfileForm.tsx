@@ -82,12 +82,16 @@ export const UserProfileForm = ({onSubmit, initalValues}: Props) => {
           renderFlagButton={() => (
             <View
               style={applyStyles({
-                opacity: 0.5,
                 paddingBottom: 21,
                 borderBottomWidth: 1,
                 borderColor: colors['gray-300'],
               })}>
-              <Text style={applyStyles('text-400', {top: 8, fontSize: 16})}>
+              <Text
+                style={applyStyles('text-400', {
+                  top: 8,
+                  opacity: 0.3,
+                  fontSize: 16,
+                })}>
                 +{values.country_code}
               </Text>
             </View>
