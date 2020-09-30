@@ -190,6 +190,7 @@ export const cancelReceipt = ({
         is_cancelled: true,
         cancellation_reason,
       };
+
       realm.create(modelName, updates, UpdateMode.Modified);
     };
 
