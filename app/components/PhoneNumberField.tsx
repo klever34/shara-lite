@@ -22,7 +22,7 @@ export type PhoneNumber = {
 };
 
 export type PhoneNumberFieldProps = {
-  disabled?: boolean;
+  editable?: boolean;
   value?: PhoneNumber;
   containerStyle?: ViewStyle;
   onChangeText?(number: PhoneNumber): void;
@@ -34,7 +34,6 @@ export type PhoneNumberFieldProps = {
 export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
   const {
     value,
-    disabled,
     isInvalid,
     onChangeText,
     errorMessage,
@@ -75,9 +74,10 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
   const pickerStyles = isEmpty(country) ? {top: 6} : {top: 3};
   const inputContainerStyle = isInvalid ? {top: 14.5} : {top: 3.5};
 
-  const inputStyle = disabled
-    ? {...styles.inputField, ...styles.inputFieldDisabled}
-    : styles.inputField;
+  const inputStyle =
+    rest.editable === false
+      ? {...styles.inputField, ...styles.inputFieldDisabled}
+      : styles.inputField;
 
   return (
     <View style={applyStyles(styles.container, containerStyle)}>

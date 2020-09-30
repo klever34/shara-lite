@@ -78,7 +78,7 @@ export const UserProfileForm = ({onSubmit, initalValues}: Props) => {
           Phone Number
         </Text>
         <PhoneNumberField
-          disabled={true}
+          editable={false}
           renderFlagButton={() => (
             <View
               style={applyStyles({
