@@ -428,21 +428,16 @@ export class ApiService implements IApiService {
     try {
       const fetchResponse = await this.requester.patch('/users/me', payload);
       const {
-        data: {business},
-      }: {data: {business: Business}} = fetchResponse;
+        data: {user},
+      }: {data: {user: User}} = fetchResponse;
 
-      let user = this.authService.getUser() as User;
-      user = {
+      let updatedUser = this.authService.getUser() as User;
+      updatedUser = {
+        ...updatedUser,
         ...user,
-        businesses: user.businesses.map((item) => {
-          if (item.id === business.id) {
-            return business;
-          }
-          return item;
-        }),
       };
-      this.authService.setUser(user);
-      await this.storageService.setItem('user', user);
+      this.authService.setUser(updatedUser);
+      await this.storageService.setItem('user', updatedUser);
       return fetchResponse;
     } catch (error) {
       throw error;
