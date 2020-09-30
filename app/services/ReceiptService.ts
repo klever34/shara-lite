@@ -212,11 +212,7 @@ export const cancelReceipt = ({
     };
 
     const revertCredit = () => {
-      if (
-        receipt.credit_amount > 0 &&
-        receipt.credits &&
-        receipt.credits.length
-      ) {
+      if (receipt.credits && receipt.credits.length) {
         deleteCredit({realm, credit: receipt.credits[0]});
       }
     };
