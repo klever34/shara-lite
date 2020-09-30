@@ -1,10 +1,12 @@
 import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import {useFormik} from 'formik';
 import React from 'react';
-import {View} from 'react-native';
+import {Text, View} from 'react-native';
 import {User} from 'types/app';
 import {Button} from '../Button';
 import {FloatingLabelInput} from '../FloatingLabelInput';
+import {PhoneNumberField} from '../PhoneNumberField';
 
 export type UserProfileFormPayload = Pick<
   User,
@@ -27,6 +29,9 @@ export const UserProfileForm = ({onSubmit, initalValues}: Props) => {
     },
     onSubmit: (payload) => onSubmit(payload),
   });
+  const mobileNumber = values.mobile.startsWith(values.country_code)
+    ? values.mobile.replace(values.country_code, '')
+    : values.mobile;
 
   return (
     <View>
@@ -64,14 +69,29 @@ export const UserProfileForm = ({onSubmit, initalValues}: Props) => {
         />
       </View>
       <View style={applyStyles({paddingBottom: 18})}>
-        <FloatingLabelInput
-          editable={false}
-          label="Phone Number"
-          value={`${values.mobile}`}
-          inputStyle={applyStyles({
-            fontSize: 18,
-            width: '100%',
-          })}
+        <Text
+          style={applyStyles('text-400', {
+            fontSize: 14,
+            color: colors['gray-100'],
+          })}>
+          Phone Number
+        </Text>
+        <PhoneNumberField
+          disabled={true}
+          renderFlagButton={() => (
+            <View
+              style={applyStyles({
+                opacity: 0.5,
+                paddingBottom: 21,
+                borderBottomWidth: 1,
+                borderColor: colors['gray-300'],
+              })}>
+              <Text style={applyStyles('text-400', {top: 8, fontSize: 16})}>
+                +{values.country_code}
+              </Text>
+            </View>
+          )}
+          value={{number: mobileNumber, code: values.country_code}}
         />
       </View>
       <View style={applyStyles('mt-xl')}>
