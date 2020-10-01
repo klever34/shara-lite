@@ -24,8 +24,8 @@ type Business = {
   mobile?: string;
   created_at: string;
   updated_at: string;
-  profile_image_url?: string | null;
-  signature_image_url?: string | null;
+  profile_image?: {url: string};
+  signature_image?: {url: string};
 };
 
 type GroupChat = {
