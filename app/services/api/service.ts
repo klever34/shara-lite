@@ -98,6 +98,13 @@ export interface IApiService {
     businessId?: string,
   ): Promise<ApiResponse>;
 
+  userProfileUpdate(
+    payload: Pick<
+      User,
+      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+    >,
+  ): Promise<ApiResponse>;
+
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
   getUserIPDetails(): Promise<any>;
@@ -407,6 +414,30 @@ export class ApiService implements IApiService {
       };
       this.authService.setUser(user);
       await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async userProfileUpdate(
+    payload: Pick<
+      User,
+      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+    >,
+  ) {
+    try {
+      const fetchResponse = await this.requester.patch('/users/me', payload);
+      const {
+        data: {user},
+      }: {data: {user: User}} = fetchResponse;
+
+      let updatedUser = this.authService.getUser() as User;
+      updatedUser = {
+        ...updatedUser,
+        ...user,
+      };
+      this.authService.setUser(updatedUser);
+      await this.storageService.setItem('user', updatedUser);
       return fetchResponse;
     } catch (error) {
       throw error;

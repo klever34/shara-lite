@@ -30,8 +30,8 @@ import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
 import HomeScreen from './HomeScreen';
-import {CustomersScreen, AddCustomer} from '@/screens/main/customers';
-import {BusinessSettings} from './settings';
+import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
+import {BusinessSettings, UserProfileSettings} from './settings';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -48,6 +48,7 @@ export type MainStackParamList = {
   Reports: undefined;
   Customers: undefined;
   AddCustomer: undefined;
+  UserProfileSettings: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -242,6 +243,11 @@ const MainScreens = () => {
           options={{
             title: 'Reports',
           }}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
+          options={{headerShown: false}}
         />
       </MainStack.Navigator>
     </PubNubProvider>

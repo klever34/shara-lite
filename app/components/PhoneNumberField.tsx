@@ -1,19 +1,20 @@
+import {applyStyles} from '@/helpers/utils';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import {colors} from '@/styles';
 import isEmpty from 'lodash/isEmpty';
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {
   StyleSheet,
-  TextInput,
-  View,
   Text,
+  TextInput,
   TextInputProps,
+  View,
   ViewStyle,
 } from 'react-native';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
-import Icon from './Icon';
+import {FlagButtonProps} from 'react-native-country-picker-modal/lib/FlagButton';
 import {FloatingLabelInputProps} from './FloatingLabelInput';
-import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import Icon from './Icon';
 
 export type PhoneNumber = {
   code: string;
@@ -21,11 +22,13 @@ export type PhoneNumber = {
 };
 
 export type PhoneNumberFieldProps = {
+  editable?: boolean;
   value?: PhoneNumber;
-  onChangeText?: (number: PhoneNumber) => void;
-  isInvalid?: FloatingLabelInputProps['isInvalid'];
-  errorMessage?: FloatingLabelInputProps['errorMessage'];
   containerStyle?: ViewStyle;
+  onChangeText?(number: PhoneNumber): void;
+  isInvalid?: FloatingLabelInputProps['isInvalid'];
+  renderFlagButton?(props: FlagButtonProps): ReactNode;
+  errorMessage?: FloatingLabelInputProps['errorMessage'];
 } & Omit<TextInputProps, 'onChangeText' | 'value'>;
 
 export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
@@ -35,6 +38,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     onChangeText,
     errorMessage,
     containerStyle,
+    renderFlagButton,
     ...rest
   } = props;
   const {countryCode2} = useIPGeolocation();
@@ -83,16 +87,20 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
           withCallingCodeButton
           // @ts-ignore
           placeholder="Country"
+          renderFlagButton={renderFlagButton}
           countryCode={country.cca2 || countryCode2}
           containerButtonStyle={styles.pickerButton}
+          preferredCountries={['NG', 'KE', 'ZA', 'ZW']}
         />
-        <Icon
-          size={16}
-          type="feathericons"
-          name="chevron-down"
-          color={colors['gray-50']}
-          style={styles.arrowDownIcon}
-        />
+        {!renderFlagButton && (
+          <Icon
+            size={16}
+            type="feathericons"
+            name="chevron-down"
+            color={colors['gray-50']}
+            style={styles.arrowDownIcon}
+          />
+        )}
       </View>
       <View style={applyStyles('flex-1', inputContainerStyle)}>
         <TextInput
