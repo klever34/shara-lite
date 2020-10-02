@@ -17,15 +17,7 @@ import React, {
   useState,
   useMemo,
 } from 'react';
-import {
-  Alert,
-  SectionList,
-  StyleSheet,
-  Text,
-  // TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {SectionList, StyleSheet, Text, ToastAndroid, View} from 'react-native';
 import {HeaderRight} from '@/components/HeaderRight';
 import {PhoneContact} from '@/services/contact';
 
@@ -40,7 +32,7 @@ type CustomerListItem =
     >
   | {
       name: string;
-      mobile: string;
+      mobile?: string;
     };
 
 type CustomerListItemProps = {
@@ -50,11 +42,8 @@ type CustomerListItemProps = {
 export const CustomersScreen = () => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
+  const myCustomers = getCustomers({realm});
   const analyticsService = getAnalyticsService();
-
-  // const [searchInputValue, setSearchInputValue] = useState('');
-  const [myCustomers, setMyCustomers] = useState<CustomerListItem[]>(customers);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
   useEffect(() => {
@@ -90,13 +79,6 @@ export const CustomersScreen = () => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      const customersData = getCustomers({realm});
-      setMyCustomers(customersData);
-    });
-  }, [navigation, realm]);
-
   const handleOpenContactListModal = useCallback(() => {
     setIsContactListModalOpen(true);
   }, []);
@@ -114,58 +96,23 @@ export const CustomersScreen = () => {
         })
         .then(() => {});
       navigation.navigate('CustomerDetails', {customer: item});
-      // setSearchInputValue('');
-      setMyCustomers(customers);
     },
-    [navigation, customers, analyticsService],
+    [navigation, analyticsService],
   );
 
   const handleCreateCustomer = useCallback(
-    (contact: PhoneContact) => {
-      const mobile = contact.phoneNumber.number;
-      const name = `${contact.givenName} ${contact.familyName}`;
-
-      if (customers.map((item) => item.mobile).includes(mobile)) {
-        Alert.alert(
-          'Info',
-          'Customer with the same phone number has been created.',
-        );
-      } else {
-        const customer = {
-          name,
-          mobile,
-        };
-        saveCustomer({realm, customer});
-        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
-      }
+    (contact: CustomerListItem) => {
+      const mobile = contact.mobile;
+      const name = contact.name;
+      const customer = {
+        name,
+        mobile,
+      };
+      saveCustomer({realm, customer});
+      ToastAndroid.show('Customer added', ToastAndroid.SHORT);
     },
-    [customers, realm],
+    [realm],
   );
-
-  // const handleCustomerSearch = useCallback(
-  //   (searchedText: string) => {
-  //     setSearchInputValue(searchedText);
-  //     if (searchedText) {
-  //       const searchValue = searchedText.trim();
-  //       const sort = (item: ICustomer, text: string) => {
-  //         return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-  //       };
-  //       const ac = customers.filter((item: ICustomer) => {
-  //         return sort(item, searchValue);
-  //       });
-  //       setMyCustomers(ac);
-  //     } else {
-  //       setMyCustomers(customers);
-  //     }
-  //     analyticsService
-  //       .logEvent('search', {
-  //         search_term: searchedText,
-  //         content_type: 'customer',
-  //       })
-  //       .then(() => {});
-  //   },
-  //   [analyticsService, customers],
-  // );
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: CustomerListItemProps) => {
@@ -203,7 +150,7 @@ export const CustomersScreen = () => {
             ) : (
               <Touchable
                 onPress={() => {
-                  console.log('adding');
+                  handleCreateCustomer(customer);
                 }}>
                 <View
                   style={applyStyles(
@@ -223,7 +170,7 @@ export const CustomersScreen = () => {
         </Touchable>
       );
     },
-    [handleSelectCustomer],
+    [handleCreateCustomer, handleSelectCustomer],
   );
 
   const renderCustomerListSectionHeader = useCallback(({section: {title}}) => {
@@ -250,7 +197,16 @@ export const CustomersScreen = () => {
     ],
     [myCustomers, phoneContacts],
   );
-  if (!customers.length) {
+  const onContactSelect = useCallback(
+    (contact: PhoneContact) =>
+      handleCreateCustomer({
+        name: `${contact.givenName} ${contact.familyName}`,
+        mobile: contact.phoneNumber.number,
+      }),
+    [handleCreateCustomer],
+  );
+
+  if (!myCustomers.length) {
     return (
       <>
         <EmptyState
@@ -271,11 +227,11 @@ export const CustomersScreen = () => {
         </FAButton>
         <ContactsListModal<ICustomer>
           entity="Customer"
-          createdData={customers}
+          createdData={myCustomers}
           visible={isContactListModalOpen}
           onClose={handleCloseContactListModal}
           onAddNew={() => navigation.navigate('AddCustomer')}
-          onContactSelect={(contact) => handleCreateCustomer(contact)}
+          onContactSelect={onContactSelect}
         />
       </>
     );
@@ -327,7 +283,6 @@ export const CustomersScreen = () => {
               `${'_id' in item ? item._id + '-' : ''}${item.mobile}`
             }
             sections={sections}
-            // ListHeaderComponent={renderCustomerListHeader}
           />
         </>
       ) : (
@@ -336,25 +291,13 @@ export const CustomersScreen = () => {
           text="Click the button below to add a new customer"
         />
       )}
-      {/*<FAButton*/}
-      {/*  style={applyStyles(*/}
-      {/*    'h-48 w-auto rounded-16 px-12 flex-row items-center',*/}
-      {/*  )}*/}
-      {/*  onPress={handleOpenContactListModal}>*/}
-      {/*  <Icon size={18} name="plus" color="white" type="feathericons" />*/}
-      {/*  <Text*/}
-      {/*    style={applyStyles('text-400 text-base ml-8 text-white uppercase')}>*/}
-      {/*    Add Customer*/}
-      {/*  </Text>*/}
-      {/*</FAButton>*/}
-
       <ContactsListModal<ICustomer>
         entity="Customer"
-        createdData={customers}
+        createdData={myCustomers}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={() => navigation.navigate('AddCustomer')}
-        onContactSelect={(contact) => handleCreateCustomer(contact)}
+        onContactSelect={onContactSelect}
       />
     </View>
   );
