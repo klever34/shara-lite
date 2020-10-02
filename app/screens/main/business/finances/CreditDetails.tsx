@@ -6,7 +6,7 @@ import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {ICredit} from '@/models/Credit';
 import {IReceipt} from '@/models/Receipt';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {saveCreditPayment} from '@/services/CreditPaymentService';
 import {getCustomers, saveCustomer} from '@/services/CustomerService';
 import {useRealm} from '@/services/realm';
@@ -32,6 +32,7 @@ export const CreditDetails = ({route}: any) => {
   const authService = getAuthService();
   const user = authService.getUser();
   const navigation = useNavigation();
+  const analyticsService = getAnalyticsService();
 
   const [isLoading, setIsLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState('');
@@ -78,6 +79,39 @@ export const CreditDetails = ({route}: any) => {
   const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
     shareProps,
   );
+
+  const onSmsShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'sms',
+        content_type: 'debit-reminder',
+        item_id: creditDetails?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleSmsShare();
+  }, [analyticsService, creditDetails, handleSmsShare]);
+
+  const onEmailShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'email',
+        content_type: 'debit-reminder',
+        item_id: creditDetails?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleEmailShare();
+  }, [analyticsService, creditDetails, handleEmailShare]);
+
+  const onWhatsappShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'whatsapp',
+        content_type: 'debit-reminder',
+        item_id: creditDetails?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleWhatsappShare();
+  }, [analyticsService, creditDetails, handleWhatsappShare]);
 
   const handleOpenCustomersList = useCallback(() => {
     setIsCustomersListModalOpen(true);
@@ -224,7 +258,7 @@ export const CreditDetails = ({route}: any) => {
             style={applyStyles('flex-row items-center justify-space-between')}>
             {(creditDetails?.customer?.mobile || customer.mobile) && (
               <View style={applyStyles({width: '33%'})}>
-                <Touchable onPress={handleWhatsappShare}>
+                <Touchable onPress={onWhatsappShare}>
                   <View
                     style={applyStyles(
                       'flex-row',
@@ -257,7 +291,7 @@ export const CreditDetails = ({route}: any) => {
             )}
             {(creditDetails?.customer?.mobile || customer.mobile) && (
               <View style={applyStyles({width: '33%'})}>
-                <Touchable onPress={handleSmsShare}>
+                <Touchable onPress={onSmsShare}>
                   <View
                     style={applyStyles(
                       'flex-row',
@@ -289,7 +323,7 @@ export const CreditDetails = ({route}: any) => {
               </View>
             )}
             <View style={applyStyles({width: '33%'})}>
-              <Touchable onPress={handleEmailShare}>
+              <Touchable onPress={onEmailShare}>
                 <View
                   style={applyStyles(
                     'flex-row',

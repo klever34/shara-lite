@@ -1,19 +1,25 @@
 {
   "name": "shara",
-  "version": "0.2.44-discovery",
+  "version": "0.2.44-feature.firebase-integrations+build.3096",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "tsc && eslint app --ext .js,.jsx,.ts,.tsx --fix"
+    "lint": "tsc && eslint app --ext .js,.jsx,.ts,.tsx --fix",
+    "clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.6.5",
-    "@react-native-firebase/app": "^7.3.1",
+    "@react-native-firebase/analytics": "^7.6.3",
+    "@react-native-firebase/app": "^8.4.3",
+    "@react-native-firebase/crashlytics": "^8.4.5",
+    "@react-native-firebase/messaging": "^7.8.5",
+    "@react-native-firebase/perf": "^7.4.3",
+    "@react-native-firebase/remote-config": "^9.0.5",
     "@react-navigation/material-top-tabs": "^5.2.12",
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.5.1",
