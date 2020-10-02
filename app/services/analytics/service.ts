@@ -100,6 +100,7 @@ export class AnalyticsService implements IAnalyticsService {
         {},
       );
       userData.environment = Config.ENVIRONMENT;
+      userData.businessName = user.businesses?.[0]?.name;
       const alias = `${user.firstname} ${user?.lastname}`;
 
       RNUxcam.setUserIdentity(alias);
