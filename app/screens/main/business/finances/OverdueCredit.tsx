@@ -24,6 +24,7 @@ export const OverdueCredit = () => {
   const user = getAuthService().getUser();
   const businessInfo = user?.businesses[0];
   const allCredits = getCredits({realm});
+  const analyticsService = getAnalyticsService();
   const credits = allCredits.filter(
     ({fulfilled, due_date}) =>
       !fulfilled && due_date && due_date.getTime() < today.getTime(),
@@ -76,6 +77,39 @@ export const OverdueCredit = () => {
   const {handleEmailShare, handleSmsShare, handleWhatsappShare} = useShare(
     shareProps,
   );
+
+  const onSmsShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'sms',
+        content_type: 'debit-reminder',
+        item_id: selectedCredit?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleSmsShare();
+  }, [analyticsService, selectedCredit, handleSmsShare]);
+
+  const onEmailShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'email',
+        content_type: 'debit-reminder',
+        item_id: selectedCredit?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleEmailShare();
+  }, [analyticsService, selectedCredit, handleEmailShare]);
+
+  const onWhatsappShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'whatsapp',
+        content_type: 'debit-reminder',
+        item_id: selectedCredit?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleWhatsappShare();
+  }, [analyticsService, selectedCredit, handleWhatsappShare]);
 
   const handleViewDetails = (creditDetails: ICredit) => {
     getAnalyticsService()
@@ -209,9 +243,9 @@ export const OverdueCredit = () => {
       <ShareModal
         title="Send reminder via"
         visible={isShareModalOpen}
-        onSmsShare={handleSmsShare}
-        onEmailShare={handleEmailShare}
-        onWhatsappShare={handleWhatsappShare}
+        onSmsShare={onSmsShare}
+        onEmailShare={onEmailShare}
+        onWhatsappShare={onWhatsappShare}
         onClose={() => setIsShareModalOpen(false)}
       />
       <View style={applyStyles({opacity: 0, height: 0})}>
