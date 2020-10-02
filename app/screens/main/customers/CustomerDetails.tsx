@@ -32,7 +32,19 @@ const CustomerDetails = ({route}: {route: any}) => {
       headerLeft: () => (
         <HeaderBackButton onPress={() => navigation.navigate('Customers')} />
       ),
-      headerRight: () => <HeaderRight menuOptions={[]} />,
+      headerRight: () => (
+        <HeaderRight
+          options={[
+            {
+              icon: 'search',
+              onPress: () => {
+                //TODO: Implement search
+              },
+            },
+          ]}
+          menuOptions={[]}
+        />
+      ),
     });
   }, [navigation]);
 

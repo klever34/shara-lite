@@ -14,24 +14,9 @@ import {getPaymentsFromCredit} from '@/services/CreditPaymentService';
 import {colors} from '@/styles';
 
 const CreditsTab = ({customer}: {customer: ICustomer}) => {
-  const today = new Date();
   const navigation = useNavigation();
   const credits = customer.credits || [];
   const creditPayments = getPaymentsFromCredit({credits: customer.credits});
-  const overdueCredit = credits.filter(
-    ({fulfilled, due_date}) =>
-      !fulfilled && due_date && due_date.getTime() < today.getTime(),
-  );
-  const overdueCreditAmount = overdueCredit.reduce(
-    (total, {amount_left}) => total + amount_left,
-    0,
-  );
-  const remainingCredit = credits.filter((item) => item.amount_left > 0);
-  const remainingCreditAmount = remainingCredit.reduce(
-    (acc, item) => acc + item.amount_left,
-    0,
-  );
-
   const handleViewDetails = useCallback(
     (creditPaymentDetails: IPayment) => {
       navigation.navigate('CustomerCreditPaymentDetails', {
@@ -108,7 +93,10 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
         <Button
           title="record credit payment"
           style={applyStyles('mb-lg', {width: '100%'})}
-          disabled={!overdueCredit.length && !remainingCredit.length}
+          disabled={
+            !(customer.overdueCredit ?? []).length &&
+            !(customer.remainingCredit ?? []).length
+          }
           onPress={() =>
             handleNavigation('CustomerRecordCreditPayment', {customer})
           }
@@ -116,7 +104,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
         <Touchable
           onPress={() =>
             handleNavigation('CustomerTotalCredit', {
-              credits: remainingCredit,
+              credits: customer.remainingCredit,
             })
           }>
           <View
@@ -136,7 +124,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors['gray-300'],
               })}>
-              {amountWithCurrency(remainingCreditAmount)}
+              {amountWithCurrency(customer.remainingCreditAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {
@@ -149,7 +137,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
         <Touchable
           onPress={() =>
             handleNavigation('CustomerOverdueCredit', {
-              credits: overdueCredit,
+              credits: customer.overdueCredit,
             })
           }>
           <View
@@ -169,7 +157,7 @@ const CreditsTab = ({customer}: {customer: ICustomer}) => {
                 fontSize: 24,
                 color: colors.primary,
               })}>
-              {amountWithCurrency(overdueCreditAmount)}
+              {amountWithCurrency(customer.overdueCreditAmount)}
             </Text>
             <Text
               style={applyStyles('text-400 text-uppercase', {

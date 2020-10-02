@@ -136,13 +136,31 @@ export const CustomersScreen = () => {
     ({item: customer}: CustomerItemProps) => {
       return (
         <Touchable onPress={() => handleSelectCustomer(customer)}>
-          <View style={styles.customerListItem}>
-            <Text style={applyStyles('text-sm text-700 text-gray-300')}>
-              {customer.name}
-            </Text>
-            <Text style={applyStyles('text-sm text-400 text-gray-300')}>
-              {customer.mobile}
-            </Text>
+          <View
+            style={applyStyles(
+              'flex-row items-center border-b-1 border-gray-20 p-16',
+            )}>
+            <View style={applyStyles('flex-1')}>
+              <Text style={applyStyles('text-sm text-700 text-gray-300')}>
+                {customer.name}
+              </Text>
+              <Text style={applyStyles('text-sm text-400 text-gray-300')}>
+                {customer.mobile}
+              </Text>
+            </View>
+            {!!customer.remainingCreditAmount && (
+              <View>
+                <Text
+                  style={applyStyles(
+                    'text-sm text-700',
+                    customer.overdueCreditAmount
+                      ? 'text-primary'
+                      : 'text-gray-300',
+                  )}>
+                  {customer.remainingCreditAmount}
+                </Text>
+              </View>
+            )}
           </View>
         </Touchable>
       );
@@ -299,12 +317,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-    borderBottomColor: colors['gray-20'],
-  },
-  customerListItem: {
-    fontSize: 16,
-    padding: 16,
-    borderBottomWidth: 1,
     borderBottomColor: colors['gray-20'],
   },
 });
