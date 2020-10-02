@@ -25,12 +25,18 @@ type SharaAppEventsProperties = {
   creditPaid: {
     item_id: string;
     amount: string;
+    currency_code: string;
     method: string;
     remaining_balance: string;
   };
   receiptStart: undefined;
-  receiptCreated: {amount: string};
-  paymentMade: {item_id: string; method: string; amount: string};
+  receiptCreated: {amount: string; currency_code: string};
+  paymentMade: {
+    item_id: string;
+    method: string;
+    amount: string;
+    currency_code: string;
+  };
   productAddedToReceipt: undefined;
   customerAddedToReceipt: undefined;
   // Content
@@ -39,7 +45,7 @@ type SharaAppEventsProperties = {
   search: {search_term: string; content_type: string};
   print: {item_id: string; content_type: string};
   // Credit Management
-  creditAdded: {item_id: string; amount: string};
+  creditAdded: {item_id: string; amount: string; currency_code: string};
   // Inventory
   supplierAdded: undefined;
   productStart: undefined;
