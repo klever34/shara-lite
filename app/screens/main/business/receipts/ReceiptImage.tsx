@@ -68,7 +68,7 @@ export const ReceiptImage = (props: Props) => {
           })}>
           <View style={applyStyles('py-lg items-center justify-center')}>
             <View style={applyStyles('mb-md')}>
-              {businessInfo?.profile_image_url ? (
+              {businessInfo?.profile_image ? (
                 <Image
                   style={applyStyles('mb-lg items-center justify-center', {
                     width: 100,
@@ -76,7 +76,7 @@ export const ReceiptImage = (props: Props) => {
                     borderRadius: 16,
                     backgroundColor: colors['gray-20'],
                   })}
-                  source={{uri: businessInfo?.profile_image_url}}
+                  source={{uri: businessInfo.profile_image.url}}
                 />
               ) : (
                 <View
