@@ -247,7 +247,11 @@ export const CustomersScreen = () => {
           <FlatList
             renderItem={renderCustomerListItem}
             keyExtractor={(item) => `${item._id}`}
-            data={orderBy(myCustomers, 'name', 'asc')}
+            data={orderBy(
+              myCustomers,
+              ['debtLevel', 'name'] as (keyof ICustomer)[],
+              ['desc', 'asc'],
+            )}
             // ListHeaderComponent={renderCustomerListHeader}
           />
         </>

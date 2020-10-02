@@ -4,6 +4,12 @@ import {ICredit} from './Credit';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IAddress} from '@/models/Address';
 
+export enum DEBT_LEVEL {
+  NO_DEBT = 0,
+  IN_DEBT = 1,
+  OVERDUE = 2,
+}
+
 export interface ICustomer extends BaseModelInterface {
   name: string;
   mobile?: string;
@@ -17,6 +23,7 @@ export interface ICustomer extends BaseModelInterface {
   overdueCreditAmount?: number;
   remainingCredit?: ICredit[];
   remainingCreditAmount?: number;
+  debtLevel?: DEBT_LEVEL;
 }
 
 export const modelName = 'Customer';
@@ -76,5 +83,15 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       (acc, item) => acc + item.amount_left,
       0,
     );
+  }
+
+  public get debtLevel() {
+    if (this.overdueCreditAmount) {
+      return DEBT_LEVEL.OVERDUE;
+    }
+    if (this.remainingCreditAmount) {
+      return DEBT_LEVEL.IN_DEBT;
+    }
+    return DEBT_LEVEL.NO_DEBT;
   }
 }
