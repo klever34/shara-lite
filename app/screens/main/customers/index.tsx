@@ -4,27 +4,47 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getContactService} from '@/services';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useState,
+  useMemo,
+} from 'react';
 import {
   Alert,
-  FlatList,
+  SectionList,
   StyleSheet,
   Text,
   // TextInput,
   ToastAndroid,
   View,
 } from 'react-native';
-import {Contact} from 'react-native-contacts';
 import {HeaderRight} from '@/components/HeaderRight';
+import {PhoneContact} from '@/services/contact';
 
-type CustomerItemProps = {
-  item: ICustomer;
+type CustomerListItem =
+  | Pick<
+      ICustomer,
+      | 'name'
+      | 'mobile'
+      | 'remainingCreditAmount'
+      | 'overdueCreditAmount'
+      | '_id'
+    >
+  | {
+      name: string;
+      mobile: string;
+    };
+
+type CustomerListItemProps = {
+  item: CustomerListItem;
 };
 
 export const CustomersScreen = () => {
@@ -34,8 +54,23 @@ export const CustomersScreen = () => {
   const analyticsService = getAnalyticsService();
 
   // const [searchInputValue, setSearchInputValue] = useState('');
-  const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
+  const [myCustomers, setMyCustomers] = useState<CustomerListItem[]>(customers);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
+  useEffect(() => {
+    getContactService()
+      .getPhoneContacts()
+      .then((contacts) => {
+        setPhoneContacts(
+          contacts.map(({givenName, familyName, phoneNumber}) => {
+            return {
+              name: `${givenName} ${familyName}`,
+              mobile: phoneNumber.number,
+            };
+          }),
+        );
+      });
+  }, []);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -86,8 +121,8 @@ export const CustomersScreen = () => {
   );
 
   const handleCreateCustomer = useCallback(
-    (contact: Contact) => {
-      const mobile = contact.phoneNumbers[0].number;
+    (contact: PhoneContact) => {
+      const mobile = contact.phoneNumber.number;
       const name = `${contact.givenName} ${contact.familyName}`;
 
       if (customers.map((item) => item.mobile).includes(mobile)) {
@@ -133,9 +168,12 @@ export const CustomersScreen = () => {
   // );
 
   const renderCustomerListItem = useCallback(
-    ({item: customer}: CustomerItemProps) => {
+    ({item: customer}: CustomerListItemProps) => {
       return (
-        <Touchable onPress={() => handleSelectCustomer(customer)}>
+        <Touchable
+          onPress={
+            '_id' in customer ? () => handleSelectCustomer(customer) : undefined
+          }>
           <View
             style={applyStyles(
               'flex-row items-center border-b-1 border-gray-20 p-16',
@@ -148,18 +186,38 @@ export const CustomersScreen = () => {
                 {customer.mobile}
               </Text>
             </View>
-            {!!customer.remainingCreditAmount && (
-              <View>
-                <Text
+            {'_id' in customer ? (
+              !!customer.remainingCreditAmount && (
+                <View>
+                  <Text
+                    style={applyStyles(
+                      'text-sm text-700',
+                      customer.overdueCreditAmount
+                        ? 'text-primary'
+                        : 'text-gray-300',
+                    )}>
+                    {customer.remainingCreditAmount}
+                  </Text>
+                </View>
+              )
+            ) : (
+              <Touchable
+                onPress={() => {
+                  console.log('adding');
+                }}>
+                <View
                   style={applyStyles(
-                    'text-sm text-700',
-                    customer.overdueCreditAmount
-                      ? 'text-primary'
-                      : 'text-gray-300',
+                    'flex-row items-center bg-red-200 rounded-4 py-4 px-8',
                   )}>
-                  {customer.remainingCreditAmount}
-                </Text>
-              </View>
+                  <Icon
+                    type="feathericons"
+                    name="plus"
+                    style={applyStyles('text-white mr-4')}
+                    size={14}
+                  />
+                  <Text style={applyStyles('text-white text-400')}>Add</Text>
+                </View>
+              </Touchable>
             )}
           </View>
         </Touchable>
@@ -168,11 +226,30 @@ export const CustomersScreen = () => {
     [handleSelectCustomer],
   );
 
-  // const renderCustomerListHeader = useCallback(
-  //   () => <Text style={styles.customerListHeader}>Select a customer</Text>,
-  //   [],
-  // );
-
+  const renderCustomerListSectionHeader = useCallback(({section: {title}}) => {
+    if (!title) {
+      return null;
+    }
+    return <Text style={styles.customerListHeader}>{title}</Text>;
+  }, []);
+  const sections = useMemo(
+    () => [
+      {
+        data: orderBy(
+          myCustomers,
+          ['debtLevel', 'name'] as (keyof ICustomer)[],
+          ['desc', 'asc'],
+        ),
+      },
+      {
+        title: 'Add from your phonebook',
+        data: orderBy(phoneContacts, ['name'] as (keyof CustomerListItem)[], [
+          'asc',
+        ]),
+      },
+    ],
+    [myCustomers, phoneContacts],
+  );
   if (!customers.length) {
     return (
       <>
@@ -203,7 +280,6 @@ export const CustomersScreen = () => {
       </>
     );
   }
-
   return (
     <View style={styles.container}>
       {/*<View style={styles.searchContainer}>*/}
@@ -244,14 +320,13 @@ export const CustomersScreen = () => {
 
       {myCustomers.length ? (
         <>
-          <FlatList
+          <SectionList
             renderItem={renderCustomerListItem}
-            keyExtractor={(item) => `${item._id}`}
-            data={orderBy(
-              myCustomers,
-              ['debtLevel', 'name'] as (keyof ICustomer)[],
-              ['desc', 'asc'],
-            )}
+            renderSectionHeader={renderCustomerListSectionHeader}
+            keyExtractor={(item) =>
+              `${'_id' in item ? item._id + '-' : ''}${item.mobile}`
+            }
+            sections={sections}
             // ListHeaderComponent={renderCustomerListHeader}
           />
         </>
@@ -312,17 +387,17 @@ const styles = StyleSheet.create({
     paddingLeft: 36,
     backgroundColor: colors.white,
   },
-  customerListHeader: {
+  customerListHeader: applyStyles('text-center bg-gray-10', {
     fontSize: 12,
     fontWeight: 'bold',
-    paddingVertical: 4,
-    paddingHorizontal: 16,
+    paddingVertical: 16,
+    paddingHorizontal: 4,
     borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-20'],
-  },
+  }),
 });
 
 export * from './AddCustomer';

@@ -12,7 +12,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import {Contact} from 'react-native-contacts';
 import {TextInput} from 'react-native-gesture-handler';
 import {applyStyles} from '@/helpers/utils';
 import {getContactService} from '@/services';
@@ -20,6 +19,7 @@ import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
+import {PhoneContact} from '@/services/contact';
 
 type Props<T> = {
   visible: boolean;
@@ -27,7 +27,7 @@ type Props<T> = {
   onClose: () => void;
   createdData?: T[];
   onAddNew?: () => void;
-  onContactSelect?: (contact: Contact) => void;
+  onContactSelect?: (contact: PhoneContact) => void;
 };
 
 export function ContactsListModal<T>({
@@ -40,8 +40,8 @@ export function ContactsListModal<T>({
 }: Props<T>) {
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
-  const ref = useRef<{contacts: Contact[]}>({contacts: []});
-  const [contacts, setContacts] = useState<Contact[]>([]);
+  const ref = useRef<{contacts: PhoneContact[]}>({contacts: []});
+  const [contacts, setContacts] = useState<PhoneContact[]>([]);
   const [searchInputValue, setSearchInputValue] = useState('');
 
   useEffect(() => {
@@ -52,20 +52,10 @@ export function ContactsListModal<T>({
     setTimeout(() => {
       getContactService()
         .getPhoneContacts()
-        .then((nextContacts: Contact[]) => {
+        .then((nextContacts) => {
           setIsLoading(false);
-          const data = nextContacts.filter((contact) => {
-            if (contact.phoneNumbers.length) {
-              return {
-                firstname: contact.givenName,
-                lastname: contact.familyName,
-                mobile: contact.phoneNumbers[0].number,
-                fullName: `${contact.givenName} ${contact.familyName}`,
-              };
-            }
-          });
-          ref.current.contacts = data;
-          setContacts(data);
+          ref.current.contacts = nextContacts;
+          setContacts(nextContacts);
         })
         .catch((error: Error) => {
           setIsLoading(false);
@@ -94,18 +84,15 @@ export function ContactsListModal<T>({
     setSearchInputValue(searchedText);
     if (searchedText) {
       const searchValue = searchedText.trim();
-      const sort = (item: Contact, text: string) => {
+      const sort = (item: PhoneContact, text: string) => {
         const name = `${item.givenName} ${item.familyName}`;
-        const mobile =
-          item.phoneNumbers &&
-          item.phoneNumbers[0] &&
-          item.phoneNumbers[0].number;
+        const mobile = item.phoneNumber.number;
         return (
           name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
           mobile.replace(/[\s-]+/g, '').indexOf(text) > -1
         );
       };
-      const results = ref.current.contacts.filter((item: Contact) => {
+      const results = ref.current.contacts.filter((item: PhoneContact) => {
         return sort(item, searchValue);
       });
       setContacts(results);
@@ -115,7 +102,7 @@ export function ContactsListModal<T>({
   }, []);
 
   const handleContactSelect = useCallback(
-    (contact: Contact) => {
+    (contact: PhoneContact) => {
       onContactSelect && onContactSelect(contact);
       handleClose();
     },
@@ -128,11 +115,8 @@ export function ContactsListModal<T>({
   }, [onAddNew, handleClose]);
 
   const renderContactItem = useCallback(
-    ({item: contact}: ListRenderItemInfo<Contact>) => {
-      const contactMobile =
-        contact.phoneNumbers && contact.phoneNumbers[0]
-          ? contact.phoneNumbers[0].number
-          : '';
+    ({item: contact}: ListRenderItemInfo<PhoneContact>) => {
+      const contactMobile = contact.phoneNumber.number;
       const isAdded =
         createdData &&
         createdData.map((item: any) => item.mobile).includes(contactMobile);
@@ -265,7 +249,9 @@ export function ContactsListModal<T>({
           renderItem={renderContactItem}
           data={orderBy(contacts, 'givenName', 'asc')}
           ListHeaderComponent={renderContactListHeader}
-          keyExtractor={(item: Contact, index) => `${item.recordID}-${index}`}
+          keyExtractor={(item: PhoneContact, index) =>
+            `${item.recordID}-${index}`
+          }
           ListEmptyComponent={
             <View
               style={applyStyles('flex-1', 'items-center', 'justify-center', {

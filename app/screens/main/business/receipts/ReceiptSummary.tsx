@@ -917,10 +917,10 @@ const ReceiptSummary = (props: Props) => {
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={handleOpenAddCustomerModal}
-        onContactSelect={({givenName, familyName, phoneNumbers}) =>
+        onContactSelect={({givenName, familyName, phoneNumber}) =>
           handleSetCustomer({
             name: `${givenName} ${familyName}`,
-            mobile: phoneNumbers[0].number,
+            mobile: phoneNumber.number,
           })
         }
       />
