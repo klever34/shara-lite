@@ -126,7 +126,8 @@ export const SalesTab = () => {
 
   const handleDateFilter = useCallback(
     (date?: Date) => {
-      const filtered = receipts.filter(
+      // TODO: filter by date and not datetime
+      const filtered = allReceipts.filter(
         (receipt) => receipt.created_at?.getTime() === date?.getTime(),
       );
       handleFilterChange('date', date);
@@ -134,7 +135,7 @@ export const SalesTab = () => {
       setReceipts(filtered);
       setTotalAmount(getTotalAmount(filtered));
     },
-    [getTotalAmount, handleFilterChange, receipts],
+    [getTotalAmount, handleFilterChange, allReceipts],
   );
 
   const handleStatusFilter = useCallback(
