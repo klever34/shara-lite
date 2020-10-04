@@ -14,9 +14,7 @@ import {
 } from '@react-navigation/stack';
 import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {Alert, SafeAreaView, Text, View} from 'react-native';
-
-const SalesTab = () => null;
-const ItemsTab = () => null;
+import {ItemsTab, SalesTab} from './home';
 
 type HomeTabParamList = {
   SalesTab: undefined;
