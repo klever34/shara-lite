@@ -12,7 +12,7 @@ import {IReceipt} from '@/models/Receipt';
 import {useRealm} from '@/services/realm';
 import {getReceipts} from '@/services/ReceiptService';
 import {colors} from '@/styles';
-import {format, isToday} from 'date-fns';
+import {format, isEqual, isToday} from 'date-fns';
 import {sortBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {KeyboardAvoidingView, Text, View} from 'react-native';
@@ -126,10 +126,14 @@ export const SalesTab = () => {
 
   const handleDateFilter = useCallback(
     (date?: Date) => {
-      // TODO: filter by date and not datetime
-      const filtered = allReceipts.filter(
-        (receipt) => receipt.created_at?.getTime() === date?.getTime(),
-      );
+      const filtered = allReceipts.filter((receipt) => {
+        if (date && receipt.created_at) {
+          return isEqual(
+            new Date(format(receipt.created_at, 'MMM dd, yyyy')),
+            new Date(format(date, 'MMM dd, yyyy')),
+          );
+        }
+      });
       handleFilterChange('date', date);
 
       setReceipts(filtered);
