@@ -17,8 +17,8 @@ export const DatePicker = (props: Props) => {
 
   const handleChange = useCallback(
     (e: AndroidEvent, date?: Date) => {
-      onChange && onChange(e, date);
       setShow(false);
+      onChange && onChange(e, date);
     },
     [onChange],
   );

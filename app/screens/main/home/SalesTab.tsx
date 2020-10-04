@@ -1,4 +1,10 @@
-import {DatePicker, FilterButton, FilterButtonGroup} from '@/components';
+import {
+  Button,
+  DatePicker,
+  FilterButton,
+  FilterButtonGroup,
+} from '@/components';
+import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
@@ -20,6 +26,53 @@ const statusFilters = [
   {label: 'Cancelled', value: 'cancelled'},
 ];
 
+const renderReceiptItem = ({item}: {item: IReceipt}) => {
+  const isPaid = item.total_amount === item.amount_paid;
+  const hasCustomer = !!item?.customer?._id;
+
+  let amountTextStyle = applyStyles('text-700', {
+    fontSize: 16,
+    color: colors['gray-300'],
+  });
+  let customerTextStyle = applyStyles('text-400', {
+    fontSize: 16,
+    color: colors['gray-300'],
+  });
+
+  if (!isPaid) {
+    amountTextStyle = {...amountTextStyle, color: colors['red-200']};
+    customerTextStyle = {...customerTextStyle, ...applyStyles('text-700')};
+  }
+
+  if (!hasCustomer) {
+    customerTextStyle = {
+      ...customerTextStyle,
+      ...applyStyles('text-400'),
+      color: colors['gray-100'],
+    };
+  }
+
+  return (
+    <View
+      style={applyStyles('px-md flex-row center justify-space-between', {
+        height: 50,
+        borderBottomWidth: 1,
+        borderBottomColor: colors['gray-20'],
+      })}>
+      <View>
+        <Text style={customerTextStyle}>
+          {item?.customer?.name ?? 'No Customer'}
+        </Text>
+      </View>
+      <View>
+        <Text style={amountTextStyle}>
+          {amountWithCurrency(item.total_amount)}
+        </Text>
+      </View>
+    </View>
+  );
+};
+
 export const SalesTab = () => {
   const realm = useRealm();
   const allReceipts = getReceipts({realm});
@@ -40,13 +93,29 @@ export const SalesTab = () => {
     [],
   );
 
-  const [totalAmount, setTotalAmount] = useState(
-    getTotalAmount(sortReceipts(allReceipts)) || 0,
-  );
   const [filter, setFilter] = useState(
     {status: statusFilters[0].value, date: new Date()} || {},
   );
-  const [receipts, setReceipts] = useState(sortReceipts(allReceipts) || []);
+  const [totalAmount, setTotalAmount] = useState(
+    getTotalAmount(
+      sortReceipts(
+        allReceipts.filter(
+          (receipt) => receipt.created_at?.getTime() === filter.date.getTime(),
+        ),
+      ),
+    ) || 0,
+  );
+  const [receipts, setReceipts] = useState(
+    sortReceipts(
+      allReceipts.filter(
+        (receipt) => receipt.created_at?.getTime() === filter.date.getTime(),
+      ),
+    ) || [],
+  );
+
+  const emptyStateText = isToday(filter.date)
+    ? "You've made no sales today."
+    : 'You made no sales on this day.';
 
   const handleFilterChange = useCallback(
     (key, value) => {
@@ -102,53 +171,6 @@ export const SalesTab = () => {
     [allReceipts, getTotalAmount, handleFilterChange, sortReceipts],
   );
 
-  const renderReceipt = useCallback(({item}: {item: IReceipt}) => {
-    const isPaid = item.total_amount === item.amount_paid;
-    const hasCustomer = !!item?.customer?._id;
-
-    let amountTextStyle = applyStyles('text-700', {
-      fontSize: 16,
-      color: colors['gray-300'],
-    });
-    let customerTextStyle = applyStyles('text-400', {
-      fontSize: 16,
-      color: colors['gray-300'],
-    });
-
-    if (!isPaid) {
-      amountTextStyle = {...amountTextStyle, color: colors['red-200']};
-      customerTextStyle = {...customerTextStyle, ...applyStyles('text-700')};
-    }
-
-    if (!hasCustomer) {
-      customerTextStyle = {
-        ...customerTextStyle,
-        ...applyStyles('text-400'),
-        color: colors['gray-100'],
-      };
-    }
-
-    return (
-      <View
-        style={applyStyles('px-md flex-row center justify-space-between', {
-          height: 50,
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <View>
-          <Text style={customerTextStyle}>
-            {item?.customer?.name ?? 'No Customer'}
-          </Text>
-        </View>
-        <View>
-          <Text style={amountTextStyle}>
-            {amountWithCurrency(item.total_amount)}
-          </Text>
-        </View>
-      </View>
-    );
-  }, []);
-
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
@@ -174,7 +196,8 @@ export const SalesTab = () => {
         })}>
         <View>
           <DatePicker
-            value={new Date()}
+            value={filter.date}
+            maximumDate={new Date()}
             onChange={(e: Event, date?: Date) => handleDateFilter(date)}>
             {(toggleShow) => (
               <Touchable onPress={toggleShow}>
@@ -225,9 +248,64 @@ export const SalesTab = () => {
 
       <FlatList
         data={receipts}
-        renderItem={renderReceipt}
+        initialNumToRender={10}
+        renderItem={renderReceiptItem}
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+        ListEmptyComponent={
+          <EmptyState
+            heading="No Sales"
+            text={emptyStateText}
+            style={applyStyles({paddingTop: 100})}
+          />
+        }
       />
+      <View
+        style={applyStyles('flex-row center justify-space-between px-md', {
+          height: 80,
+          elevation: 100,
+          borderTopWidth: 1,
+          backgroundColor: colors.white,
+          borderTopColor: colors['gray-20'],
+        })}>
+        <View style={applyStyles({width: '48%'})}>
+          <Button onPress={() => {}}>
+            <View style={applyStyles('flex-row center')}>
+              <Icon
+                size={24}
+                name="plus"
+                type="feathericons"
+                color={colors.white}
+              />
+              <Text
+                style={applyStyles('text-400 text-uppercase pl-sm', {
+                  fontSize: 16,
+                  color: colors.white,
+                })}>
+                Create receipt
+              </Text>
+            </View>
+          </Button>
+        </View>
+        <View style={applyStyles({width: '48%'})}>
+          <Button onPress={() => {}} variantColor="clear">
+            <View style={applyStyles('flex-row center')}>
+              <Icon
+                size={24}
+                name="camera"
+                type="feathericons"
+                color={colors['gray-300']}
+              />
+              <Text
+                style={applyStyles('text-400 text-uppercase pl-sm', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                snap receipt
+              </Text>
+            </View>
+          </Button>
+        </View>
+      </View>
     </KeyboardAvoidingView>
   );
 };
