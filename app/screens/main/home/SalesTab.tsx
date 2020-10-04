@@ -1,11 +1,19 @@
-import {FilterButton, FilterButtonGroup} from '@/components';
-import {applyStyles} from '@/helpers/utils';
+import {DatePicker, FilterButton, FilterButtonGroup} from '@/components';
+import {Icon} from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {IReceipt} from '@/models/Receipt';
+import {useRealm} from '@/services/realm';
+import {getReceipts} from '@/services/ReceiptService';
 import {colors} from '@/styles';
+import {format, isToday} from 'date-fns';
+import {sortBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {KeyboardAvoidingView, Text, View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 
-const filters = [
-  {label: 'All Sales', value: 'all'},
+const statusFilters = [
+  {label: 'All', value: 'all'},
   {label: 'Unpaid', value: 'unpaid'},
   {label: 'Paid', value: 'paid'},
   {label: 'Pending', value: 'pending'},
@@ -13,40 +21,213 @@ const filters = [
 ];
 
 export const SalesTab = () => {
-  const [filter, setFilter] = useState(filters[0].value || '');
+  const realm = useRealm();
+  const allReceipts = getReceipts({realm});
 
-  const handleFilterChange = useCallback((value) => {
-    setFilter(value);
+  const getTotalAmount = useCallback(
+    (receiptsData: IReceipt[]) =>
+      receiptsData.reduce((acc, receipt) => acc + receipt.total_amount, 0),
+    [],
+  );
+
+  const sortReceipts = useCallback(
+    (receiptsData: IReceipt[]) =>
+      sortBy(receiptsData, [
+        function (o) {
+          return o.total_amount === o.amount_paid;
+        },
+      ]),
+    [],
+  );
+
+  const [totalAmount, setTotalAmount] = useState(
+    getTotalAmount(sortReceipts(allReceipts)) || 0,
+  );
+  const [filter, setFilter] = useState(
+    {status: statusFilters[0].value, date: new Date()} || {},
+  );
+  const [receipts, setReceipts] = useState(sortReceipts(allReceipts) || []);
+
+  const handleFilterChange = useCallback(
+    (key, value) => {
+      setFilter({...filter, [key]: value});
+    },
+    [filter],
+  );
+
+  const handleDateFilter = useCallback(
+    (date?: Date) => {
+      const filtered = receipts.filter(
+        (receipt) => receipt.created_at?.getTime() === date?.getTime(),
+      );
+      handleFilterChange('date', date);
+
+      setReceipts(filtered);
+      setTotalAmount(getTotalAmount(filtered));
+    },
+    [getTotalAmount, handleFilterChange, receipts],
+  );
+
+  const handleStatusFilter = useCallback(
+    (status: string) => {
+      handleFilterChange('status', status);
+
+      switch (status) {
+        case 'all':
+          const allSales = sortReceipts(allReceipts);
+          setReceipts(allSales);
+          setTotalAmount(getTotalAmount(allSales));
+          break;
+        case 'paid':
+          const paidReceipts = allReceipts.filter(
+            (receipt) => receipt.total_amount === receipt.amount_paid,
+          );
+          setReceipts(paidReceipts);
+          setTotalAmount(getTotalAmount(paidReceipts));
+          break;
+        case 'unpaid':
+          const unPaidReceipts = allReceipts.filter(
+            (receipt) => receipt.total_amount !== receipt.amount_paid,
+          );
+          setReceipts(unPaidReceipts);
+          setTotalAmount(getTotalAmount(unPaidReceipts));
+          break;
+        default:
+          const all = sortReceipts(allReceipts);
+          setReceipts(all);
+          setTotalAmount(getTotalAmount(all));
+          break;
+      }
+    },
+    [allReceipts, getTotalAmount, handleFilterChange, sortReceipts],
+  );
+
+  const renderReceipt = useCallback(({item}: {item: IReceipt}) => {
+    const isPaid = item.total_amount === item.amount_paid;
+    const hasCustomer = !!item?.customer?._id;
+
+    let amountTextStyle = applyStyles('text-700', {
+      fontSize: 16,
+      color: colors['gray-300'],
+    });
+    let customerTextStyle = applyStyles('text-400', {
+      fontSize: 16,
+      color: colors['gray-300'],
+    });
+
+    if (!isPaid) {
+      amountTextStyle = {...amountTextStyle, color: colors['red-200']};
+      customerTextStyle = {...customerTextStyle, ...applyStyles('text-700')};
+    }
+
+    if (!hasCustomer) {
+      customerTextStyle = {
+        ...customerTextStyle,
+        ...applyStyles('text-400'),
+        color: colors['gray-100'],
+      };
+    }
+
+    return (
+      <View
+        style={applyStyles('px-md flex-row center justify-space-between', {
+          height: 50,
+          borderBottomWidth: 1,
+          borderBottomColor: colors['gray-20'],
+        })}>
+        <View>
+          <Text style={customerTextStyle}>
+            {item?.customer?.name ?? 'No Customer'}
+          </Text>
+        </View>
+        <View>
+          <Text style={amountTextStyle}>
+            {amountWithCurrency(item.total_amount)}
+          </Text>
+        </View>
+      </View>
+    );
   }, []);
 
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <FilterButtonGroup value={filter} onChange={handleFilterChange}>
+      <FilterButtonGroup
+        value={filter.status}
+        onChange={(status) => handleStatusFilter(status)}>
         <View
           style={applyStyles(
             'py-xl px-sm flex-row center justify-space-between',
           )}>
-          {filters.map((filterItem, index) => (
+          {statusFilters.map((filterItem, index) => (
             <FilterButton
               {...filterItem}
               key={`${filterItem.value}-${index}`}
-              isChecked={filter === filterItem.value}
+              isChecked={filter.status === filterItem.value}
             />
           ))}
         </View>
       </FilterButtonGroup>
       <View
-        style={applyStyles('p-xl center flex-row justify-space-between', {
+        style={applyStyles('p-md center flex-row justify-space-between', {
           backgroundColor: colors['gray-300'],
         })}>
-        <View />
         <View>
-          <Text style={applyStyles('text-400', {color: colors.white})}>
+          <DatePicker
+            value={new Date()}
+            onChange={(e: Event, date?: Date) => handleDateFilter(date)}>
+            {(toggleShow) => (
+              <Touchable onPress={toggleShow}>
+                <View style={applyStyles('flex-row center', {height: 40})}>
+                  <Icon
+                    size={24}
+                    name="calendar"
+                    type="feathericons"
+                    color={colors.white}
+                  />
+                  <Text
+                    style={applyStyles('text-700 px-md', {
+                      fontSize: 16,
+                      color: colors.white,
+                    })}>
+                    {isToday(filter.date)
+                      ? 'Today'
+                      : `${format(filter.date, 'MMM dd, yyyy')}`}
+                  </Text>
+                  <Icon
+                    size={24}
+                    type="feathericons"
+                    name="chevron-down"
+                    color={colors.white}
+                  />
+                </View>
+              </Touchable>
+            )}
+          </DatePicker>
+        </View>
+        <View style={applyStyles('items-end')}>
+          <Text
+            style={applyStyles('text-400 text-uppercase', {
+              fontSize: 14,
+              color: colors.white,
+            })}>
             You sold
+          </Text>
+          <Text
+            style={applyStyles('text-700 text-uppercase', {
+              fontSize: 16,
+              color: colors.white,
+            })}>
+            {amountWithCurrency(totalAmount)}
           </Text>
         </View>
       </View>
+
+      <FlatList
+        data={receipts}
+        renderItem={renderReceipt}
+        keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+      />
     </KeyboardAvoidingView>
   );
 };
