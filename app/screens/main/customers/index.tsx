@@ -47,19 +47,32 @@ export const CustomersScreen = () => {
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
   useEffect(() => {
+    const customers = getCustomers({realm});
     getContactService()
       .getPhoneContacts()
       .then((contacts) => {
         setPhoneContacts(
-          contacts.map(({givenName, familyName, phoneNumber}) => {
-            return {
-              name: `${givenName} ${familyName}`,
-              mobile: phoneNumber.number,
-            };
-          }),
+          contacts.reduce<CustomerListItem[]>(
+            (acc, {givenName, familyName, phoneNumber}) => {
+              const existing = customers.filtered(
+                `mobile = "${phoneNumber.number}"`,
+              );
+              if (existing.length) {
+                return acc;
+              }
+              return [
+                ...acc,
+                {
+                  name: `${givenName} ${familyName}`,
+                  mobile: phoneNumber.number,
+                },
+              ];
+            },
+            [],
+          ),
         );
       });
-  }, []);
+  }, [realm]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -227,7 +240,7 @@ export const CustomersScreen = () => {
         </FAButton>
         <ContactsListModal<ICustomer>
           entity="Customer"
-          createdData={myCustomers}
+          createdData={(myCustomers as unknown) as ICustomer[]}
           visible={isContactListModalOpen}
           onClose={handleCloseContactListModal}
           onAddNew={() => navigation.navigate('AddCustomer')}
@@ -293,7 +306,7 @@ export const CustomersScreen = () => {
       )}
       <ContactsListModal<ICustomer>
         entity="Customer"
-        createdData={myCustomers}
+        createdData={(myCustomers as unknown) as ICustomer[]}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={() => navigation.navigate('AddCustomer')}

@@ -913,7 +913,7 @@ const ReceiptSummary = (props: Props) => {
       />
       <ContactsListModal<ICustomer>
         entity="Customer"
-        createdData={customers}
+        createdData={(customers as unknown) as ICustomer[]}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={handleOpenAddCustomerModal}

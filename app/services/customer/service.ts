@@ -5,8 +5,8 @@ import {omit} from 'lodash';
 import {ObjectId} from 'bson';
 import {getAnalyticsService} from '@/services/index';
 
-export const getCustomers = ({realm}: {realm: Realm}): ICustomer[] => {
-  return (realm.objects<ICustomer>(modelName) as unknown) as ICustomer[];
+export const getCustomers = ({realm}: {realm: Realm}) => {
+  return realm.objects<ICustomer>(modelName);
 };
 
 export const saveCustomer = ({

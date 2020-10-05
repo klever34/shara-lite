@@ -89,10 +89,10 @@ export class ContactService implements IContactService {
             reject(err);
           }
           const nextPhoneContacts: PhoneContact[] = [];
-          phoneContacts.forEach((phoneContact) => {
+          phoneContacts.forEach(({phoneNumbers, ...phoneContact}) => {
             const numbersMap: {
               [key: string]: RNContacts.PhoneNumber;
-            } = phoneContact.phoneNumbers.reduce((acc, curr) => {
+            } = phoneNumbers.reduce((acc, curr) => {
               const numberWithoutWhitespace = curr.number.replace(/\s/g, '');
               return {
                 ...acc,
