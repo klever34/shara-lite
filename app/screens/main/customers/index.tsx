@@ -121,6 +121,11 @@ export const CustomersScreen = () => {
         mobile,
       };
       saveCustomer({realm, customer});
+      setPhoneContacts((prevPhoneContacts) => {
+        return prevPhoneContacts.filter(
+          (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
+        );
+      });
       ToastAndroid.show('Customer added', ToastAndroid.SHORT);
     },
     [realm],
@@ -203,7 +208,7 @@ export const CustomersScreen = () => {
   const sections = useMemo(
     () => [
       {
-        data: !myCustomers.length
+        data: myCustomers.length
           ? orderBy(myCustomers, ['debtLevel', 'name'] as (keyof ICustomer)[], [
               'desc',
               'asc',

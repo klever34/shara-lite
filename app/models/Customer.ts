@@ -35,7 +35,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
     properties: {
       ...baseModelSchema,
       name: 'string?',
-      mobile: 'string?',
+      mobile: {type: 'string?', indexed: true},
       receipts: {
         type: 'linkingObjects',
         objectType: 'Receipt',
