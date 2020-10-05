@@ -7,6 +7,7 @@ import {
   applyStyles,
   numberWithCommas,
 } from '@/helpers/utils';
+import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {
   getAnalyticsService,
@@ -14,23 +15,22 @@ import {
   getStorageService,
 } from '@/services';
 import {saveCreditPayment} from '@/services/CreditPaymentService';
+import {getCustomers, saveCustomer} from '@/services/customer';
+import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {colors} from '@/styles';
 import {format} from 'date-fns';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Alert, Text, ToastAndroid, View} from 'react-native';
 import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Text, ToastAndroid, View} from 'react-native';
 import {BluetoothModal} from '../BluetoothModal';
-import {PreviewActionButton} from './PreviewActionButton';
-import {getCustomers, saveCustomer} from '@/services/customer';
 import {ContactsListModal} from '../ContactsListModal';
-import {useAppNavigation} from '@/services/navigation';
-import {ICustomer} from '@/models';
+import {PreviewActionButton} from './PreviewActionButton';
 
 export const ReceiptPreview = ({
   isNew,
