@@ -15,7 +15,7 @@ import {
 } from '@/services';
 import {saveCreditPayment} from '@/services/CreditPaymentService';
 import {useRealm} from '@/services/realm';
-import {getAllPayments} from '@/services/ReceiptService';
+import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {colors} from '@/styles';
 import {format} from 'date-fns';
@@ -27,12 +27,18 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, Text, ToastAndroid, View} from 'react-native';
 import {BluetoothModal} from '../BluetoothModal';
 import {PreviewActionButton} from './PreviewActionButton';
-import {getCustomers} from '@/services/customer';
+import {getCustomers, saveCustomer} from '@/services/customer';
 import {ContactsListModal} from '../ContactsListModal';
 import {useAppNavigation} from '@/services/navigation';
 import {ICustomer} from '@/models';
 
-export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
+export const ReceiptPreview = ({
+  isNew,
+  receipt,
+}: {
+  isNew: boolean;
+  receipt?: IReceipt;
+}) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const customers = getCustomers({realm});
@@ -41,6 +47,7 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
   const analyticsService = getAnalyticsService();
   const currencyCode = getAuthService().getUserCurrencyCode();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState('');
   const [printer, setPrinter] = useState<{address: string}>(
     {} as {address: string},
@@ -53,13 +60,11 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
   const hasCustomer = customer?.name;
-  const hasCustomerMobile = customer?.mobile;
-  const isFulfilled = receipt?.total_amount === receipt?.amount_paid;
-
   const businessInfo = user?.businesses[0];
+  const hasCustomerMobile = customer?.mobile;
+  const allPayments = receipt ? getAllPayments({receipt}) : [];
   const creditDueDate =
     receipt?.credits && receipt?.credits[0] && receipt?.credits[0]?.due_date;
-  const allPayments = receipt ? getAllPayments({receipt}) : [];
   const totalAmountPaid = allPayments.reduce(
     (total, payment) => total + payment.amount_paid,
     0,
@@ -68,6 +73,8 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
     (acc, item) => acc + item.amount_left,
     0,
   );
+  const isFulfilled = receipt?.total_amount === totalAmountPaid;
+
   const paymentReminderMessage = `Hello, you purchased some items from ${
     businessInfo?.name
   } for ${amountWithCurrency(
@@ -78,12 +85,25 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
     creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
   }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
 
+  const receiptShareMessage = `Hi${
+    customer?.name ?? ''
+  }, thank you for your recent purchase of ${
+    receipt?.items?.length
+  } item(s) from ${user?.businesses[0].name}.  You paid ${amountWithCurrency(
+    totalAmountPaid,
+  )} and owe ${amountWithCurrency(creditAmountLeft)} ${
+    creditDueDate
+      ? `(which is due on ${format(new Date(creditDueDate), 'MMM dd, yyyy')})`
+      : ''
+  }. Thank you.\n\nPowered by Shara for free.\nhttp://shara.co`;
+
   const shareProps: ShareHookProps = {
     image: receiptImage,
-    title: 'Payment Reminder',
-    subject: 'Payment Reminder',
-    message: paymentReminderMessage,
     recipient: receipt?.customer?.mobile,
+    title: isFulfilled || isNew ? 'Share Receipt' : 'Payment Reminder',
+    subject: isFulfilled || isNew ? 'Share Receipt' : 'Payment Reminder',
+    message:
+      isFulfilled || isNew ? receiptShareMessage : paymentReminderMessage,
   };
 
   const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
@@ -140,13 +160,32 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
   }, []);
 
   const handleCreditPaymentSubmit = useCallback(() => {
-    saveCreditPayment({
-      realm,
-      method: '',
-      amount: creditPaymentAmount,
-      customer: receipt?.customer ?? ({} as ICustomer),
-    });
-  }, [creditPaymentAmount, realm, receipt]);
+    if (customer?.name) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        const newCustomer = customer._id
+          ? customer
+          : saveCustomer({realm, customer});
+        receipt &&
+          updateReceipt({
+            realm,
+            receipt,
+            customer: newCustomer,
+          });
+        saveCreditPayment({
+          realm,
+          method: '',
+          amount: creditPaymentAmount,
+          customer: newCustomer,
+        });
+        setCreditPaymentAmount(0);
+        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
+      }, 300);
+    } else {
+      Alert.alert('Info', 'Please select a customer');
+    }
+  }, [creditPaymentAmount, customer, realm, receipt]);
 
   const handleOpenPrinterModal = useCallback(() => {
     setIsPrintingModalOpen(true);
@@ -289,7 +328,7 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          'Powered by Shara. www.shara.co\n',
+          'Free receipting by Shara. www.shara.co\n',
           receiptStyles.product,
         );
         await BluetoothEscposPrinter.printText(
@@ -437,7 +476,11 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
               onChange={(value) => handleCreditPaymentAmountChange(value)}
             />
           </View>
-          <Button title="confirm payment" onPress={handleCreditPaymentSubmit} />
+          <Button
+            isLoading={isLoading}
+            title="confirm payment"
+            onPress={handleCreditPaymentSubmit}
+          />
         </View>
       )}
 
@@ -460,7 +503,7 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
                 style={applyStyles('text-400 text-uppercase', {
                   color: colors['gray-300'],
                 })}>
-                {isFulfilled ? 'Send via' : 'Send reminder'}
+                {isFulfilled || isNew ? 'Send via' : 'Send reminder'}
               </Text>
             </View>
             <View
@@ -574,7 +617,6 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
         onPrintReceipt={handlePrint}
         onClose={handleClosePrinterModal}
       />
-
       <ContactsListModal<ICustomer>
         entity="Customer"
         createdData={customers}

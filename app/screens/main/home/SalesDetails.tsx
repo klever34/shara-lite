@@ -41,7 +41,7 @@ export const SalesDetails = ({route}: any) => {
           </View>
         </Touchable>
       </View>
-      <ReceiptPreview receipt={receipt} />
+      <ReceiptPreview isNew={false} receipt={receipt} />
     </ScrollView>
   );
 };
