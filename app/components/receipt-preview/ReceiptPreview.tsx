@@ -46,13 +46,15 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
     {} as {address: string},
   );
   const [creditPaymentAmount, setCreditPaymentAmount] = useState(0);
-  const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
+  const [customer, setCustomer] = useState<ICustomer | undefined>(
+    receipt?.customer,
+  );
   const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
 
-  const hasCustomer = receipt?.customer?.name || customer.name;
+  const hasCustomer = customer?.name;
+  const hasCustomerMobile = customer?.mobile;
   const isFulfilled = receipt?.total_amount === receipt?.amount_paid;
-  const hasCustomerMobile = receipt?.customer?.mobile || customer.mobile;
 
   const businessInfo = user?.businesses[0];
   const creditDueDate =
@@ -360,6 +362,10 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
     fetchPrinter();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isPrintingModalOpen]);
+
+  useEffect(() => {
+    setCustomer(receipt?.customer);
+  }, [receipt]);
 
   return (
     <View
