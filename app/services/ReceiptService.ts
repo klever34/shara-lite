@@ -1,6 +1,10 @@
 import {getBaseModelValues} from '@/helpers/models';
 import {ICustomer} from '@/models';
 import {IReceipt, modelName} from '@/models/Receipt';
+import {deleteReceiptItem, saveReceiptItem} from './ReceiptItemService';
+import {deletePayment, savePayment, updatePayment} from './PaymentService';
+import {deleteCredit, saveCredit, updateCredit} from './CreditService';
+import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {
   getAnalyticsService,
@@ -11,15 +15,13 @@ import {convertToLocationString} from '@/services/geolocation';
 import {restockProduct} from '@/services/ProductService';
 import {ObjectId} from 'bson';
 import Realm, {UpdateMode} from 'realm';
-import {Customer, Payment} from 'types/app';
 import {getPaymentsFromCredit} from './CreditPaymentService';
-import {saveCredit, updateCredit} from './CreditService';
 import {saveCustomer} from './customer/service';
-import {savePayment, updatePayment} from './PaymentService';
-import {saveReceiptItem} from './ReceiptItemService';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
-  return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
+  return (realm
+    .objects<IReceipt>(modelName)
+    .filtered('is_deleted = false') as unknown) as IReceipt[];
 };
 
 export const saveReceipt = ({
@@ -167,6 +169,60 @@ export const updateReceipt = ({
     ) {
       updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
     }
+  });
+};
+
+export const cancelReceipt = ({
+  realm,
+  receipt,
+  cancellation_reason,
+}: {
+  realm: Realm;
+  receipt: IReceipt;
+  cancellation_reason: String;
+}): void => {
+  realm.write(() => {
+    const revertProduct = () => {
+      const updates = {
+        _id: receipt._id,
+        _partition: receipt._partition,
+        total_amount: 0,
+        credit_amount: 0,
+        is_cancelled: true,
+        cancellation_reason,
+      };
+
+      realm.create(modelName, updates, UpdateMode.Modified);
+    };
+
+    const revertStockAndItems = () => {
+      receipt.items?.forEach((item) => {
+        restockProduct({
+          realm,
+          product: item.product,
+          quantity: item.quantity,
+        });
+
+        deleteReceiptItem({realm, receiptItem: item});
+      });
+    };
+
+    const revertPayment = () => {
+      (receipt.payments || []).forEach((payment) => {
+        deletePayment({realm, payment});
+      });
+    };
+
+    const revertCredit = () => {
+      if (receipt.credits && receipt.credits.length) {
+        deleteCredit({realm, credit: receipt.credits[0]});
+      }
+    };
+
+    revertProduct();
+    revertStockAndItems();
+    revertPayment();
+    revertCredit();
   });
 };
 

@@ -6,7 +6,9 @@ import {ObjectId} from 'bson';
 import {getAnalyticsService} from '@/services/index';
 
 export const getCustomers = ({realm}: {realm: Realm}): ICustomer[] => {
-  return (realm.objects<ICustomer>(modelName) as unknown) as ICustomer[];
+  return (realm
+    .objects<ICustomer>(modelName)
+    .filtered('is_deleted = false') as unknown) as ICustomer[];
 };
 
 export const saveCustomer = ({
