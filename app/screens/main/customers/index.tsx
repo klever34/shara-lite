@@ -1,4 +1,4 @@
-import {ContactsListModal, FAButton} from '@/components';
+import {ContactsListModal} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -17,7 +17,14 @@ import React, {
   useState,
   useMemo,
 } from 'react';
-import {SectionList, StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {
+  ListRenderItemInfo,
+  SectionList,
+  StyleSheet,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {HeaderRight} from '@/components/HeaderRight';
 import {PhoneContact} from '@/services/contact';
 
@@ -34,10 +41,6 @@ type CustomerListItem =
       name: string;
       mobile?: string;
     };
-
-type CustomerListItemProps = {
-  item: CustomerListItem;
-};
 
 export const CustomersScreen = () => {
   const navigation = useNavigation();
@@ -92,10 +95,6 @@ export const CustomersScreen = () => {
     });
   }, [navigation]);
 
-  const handleOpenContactListModal = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
   const handleCloseContactListModal = useCallback(() => {
     setIsContactListModalOpen(false);
   }, []);
@@ -128,7 +127,16 @@ export const CustomersScreen = () => {
   );
 
   const renderCustomerListItem = useCallback(
-    ({item: customer}: CustomerListItemProps) => {
+    ({item: customer}: ListRenderItemInfo<CustomerListItem | null>) => {
+      if (!customer) {
+        return (
+          <EmptyState
+            heading="You don't have any customers on Shara yet"
+            text="Add a new customer from the list below"
+            source={require('../../../assets/images/coming-soon.png')}
+          />
+        );
+      }
       return (
         <Touchable
           onPress={
@@ -195,11 +203,12 @@ export const CustomersScreen = () => {
   const sections = useMemo(
     () => [
       {
-        data: orderBy(
-          myCustomers,
-          ['debtLevel', 'name'] as (keyof ICustomer)[],
-          ['desc', 'asc'],
-        ),
+        data: !myCustomers.length
+          ? orderBy(myCustomers, ['debtLevel', 'name'] as (keyof ICustomer)[], [
+              'desc',
+              'asc',
+            ])
+          : [null],
       },
       {
         title: 'Add from your phonebook',
@@ -218,57 +227,15 @@ export const CustomersScreen = () => {
       }),
     [handleCreateCustomer],
   );
+  const keyExtractor = useCallback((item) => {
+    if (!item) {
+      return '';
+    }
+    return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
+  }, []);
 
-  if (!myCustomers.length) {
-    return (
-      <>
-        <EmptyState
-          heading="Add a customer"
-          source={require('../../../assets/images/coming-soon.png')}
-          text="Click the button below to add a new customer"
-        />
-        <FAButton
-          style={applyStyles(
-            'h-48 w-auto rounded-16 px-12 flex-row items-center',
-          )}
-          onPress={handleOpenContactListModal}>
-          <Icon size={18} name="plus" color="white" type="feathericons" />
-          <Text
-            style={applyStyles('text-400 text-base ml-8 text-white uppercase')}>
-            Add Customer
-          </Text>
-        </FAButton>
-        <ContactsListModal<ICustomer>
-          entity="Customer"
-          createdData={(myCustomers as unknown) as ICustomer[]}
-          visible={isContactListModalOpen}
-          onClose={handleCloseContactListModal}
-          onAddNew={() => navigation.navigate('AddCustomer')}
-          onContactSelect={onContactSelect}
-        />
-      </>
-    );
-  }
   return (
     <View style={styles.container}>
-      {/*<View style={styles.searchContainer}>*/}
-      {/*  <View style={styles.searchInputContainer}>*/}
-      {/*    <Icon*/}
-      {/*      size={24}*/}
-      {/*      name="search"*/}
-      {/*      type="feathericons"*/}
-      {/*      style={styles.searchInputIcon}*/}
-      {/*      color={colors.primary}*/}
-      {/*    />*/}
-      {/*    <TextInput*/}
-      {/*      value={searchInputValue}*/}
-      {/*      style={styles.searchInput}*/}
-      {/*      placeholder="Search Customer"*/}
-      {/*      onChangeText={handleCustomerSearch}*/}
-      {/*      placeholderTextColor={colors['gray-50']}*/}
-      {/*    />*/}
-      {/*  </View>*/}
-      {/*</View>*/}
       <Touchable onPress={() => navigation.navigate('AddCustomer')}>
         <View
           style={applyStyles(
@@ -286,24 +253,12 @@ export const CustomersScreen = () => {
           </Text>
         </View>
       </Touchable>
-
-      {myCustomers.length ? (
-        <>
-          <SectionList
-            renderItem={renderCustomerListItem}
-            renderSectionHeader={renderCustomerListSectionHeader}
-            keyExtractor={(item) =>
-              `${'_id' in item ? item._id + '-' : ''}${item.mobile}`
-            }
-            sections={sections}
-          />
-        </>
-      ) : (
-        <EmptyState
-          heading="No results found"
-          text="Click the button below to add a new customer"
-        />
-      )}
+      <SectionList
+        renderItem={renderCustomerListItem}
+        renderSectionHeader={renderCustomerListSectionHeader}
+        keyExtractor={keyExtractor}
+        sections={sections}
+      />
       <ContactsListModal<ICustomer>
         entity="Customer"
         createdData={(myCustomers as unknown) as ICustomer[]}
