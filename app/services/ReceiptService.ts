@@ -1,21 +1,22 @@
-import Realm, {UpdateMode} from 'realm';
+import {getBaseModelValues} from '@/helpers/models';
 import {ICustomer} from '@/models';
 import {IReceipt, modelName} from '@/models/Receipt';
-import {saveReceiptItem} from './ReceiptItemService';
-import {savePayment, updatePayment} from './PaymentService';
-import {getBaseModelValues} from '@/helpers/models';
-import {saveCredit, updateCredit} from './CreditService';
-import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getPaymentsFromCredit} from './CreditPaymentService';
-import {saveCustomer} from './customer/service';
 import {
   getAnalyticsService,
   getAuthService,
   getGeolocationService,
 } from '@/services';
-import {restockProduct} from '@/services/ProductService';
 import {convertToLocationString} from '@/services/geolocation';
+import {restockProduct} from '@/services/ProductService';
+import {ObjectId} from 'bson';
+import Realm, {UpdateMode} from 'realm';
+import {Customer, Payment} from 'types/app';
+import {getPaymentsFromCredit} from './CreditPaymentService';
+import {saveCredit, updateCredit} from './CreditService';
+import {saveCustomer} from './customer/service';
+import {savePayment, updatePayment} from './PaymentService';
+import {saveReceiptItem} from './ReceiptItemService';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -174,4 +175,15 @@ export const getAllPayments = ({receipt}: {receipt: IReceipt}) => {
     ...(receipt.payments || []),
     ...getPaymentsFromCredit({credits: receipt.credits}),
   ];
+};
+
+export const getReceipt = ({
+  realm,
+  receiptId,
+}: {
+  realm: Realm;
+  receiptId: ObjectId;
+}) => {
+  // @ts-ignore
+  return realm.objectForPrimaryKey(modelName, receiptId) as IReceipt;
 };

@@ -20,3 +20,4 @@ export * from './settings';
 export * from './FilterButton';
 export * from './FilterButtonGroup';
 export * from './DatePicker';
+export * from './receipt-preview';

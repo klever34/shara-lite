@@ -1,4 +1,5 @@
 import {applyStyles} from '@/helpers/utils';
+import {IReceipt} from '@/models/Receipt';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useRealm} from '@/services/realm';
@@ -17,6 +18,7 @@ import {
   getPubNubService,
 } from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
+import {SalesDetails} from './home';
 import HomeScreen from './HomeScreen';
 import {BusinessSettings, UserProfileSettings} from './settings';
 
@@ -24,6 +26,7 @@ export type MainStackParamList = {
   Home: undefined;
   BusinessSettings: undefined;
   UserProfileSettings: undefined;
+  SalesDetails: {id: IReceipt['_id']};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -138,6 +141,11 @@ const MainScreens = () => {
         <MainStack.Screen
           name="UserProfileSettings"
           component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="SalesDetails"
+          component={SalesDetails}
           options={{headerShown: false}}
         />
       </MainStack.Navigator>

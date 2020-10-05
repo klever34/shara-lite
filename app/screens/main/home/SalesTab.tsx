@@ -9,6 +9,8 @@ import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {getAnalyticsService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {getReceipts} from '@/services/ReceiptService';
 import {colors} from '@/styles';
@@ -26,56 +28,10 @@ const statusFilters = [
   {label: 'Cancelled', value: 'cancelled'},
 ];
 
-const renderReceiptItem = ({item}: {item: IReceipt}) => {
-  const isPaid = item.total_amount === item.amount_paid;
-  const hasCustomer = !!item?.customer?._id;
-
-  let amountTextStyle = applyStyles('text-700', {
-    fontSize: 16,
-    color: colors['gray-300'],
-  });
-  let customerTextStyle = applyStyles('text-400', {
-    fontSize: 16,
-    color: colors['gray-300'],
-  });
-
-  if (!isPaid) {
-    amountTextStyle = {...amountTextStyle, color: colors['red-200']};
-    customerTextStyle = {...customerTextStyle, ...applyStyles('text-700')};
-  }
-
-  if (!hasCustomer) {
-    customerTextStyle = {
-      ...customerTextStyle,
-      ...applyStyles('text-400'),
-      color: colors['gray-100'],
-    };
-  }
-
-  return (
-    <View
-      style={applyStyles('px-md flex-row center justify-space-between', {
-        height: 50,
-        borderBottomWidth: 1,
-        borderBottomColor: colors['gray-20'],
-      })}>
-      <View>
-        <Text style={customerTextStyle}>
-          {item?.customer?.name ?? 'No Customer'}
-        </Text>
-      </View>
-      <View>
-        <Text style={amountTextStyle}>
-          {amountWithCurrency(item.total_amount)}
-        </Text>
-      </View>
-    </View>
-  );
-};
-
 export const SalesTab = () => {
   const realm = useRealm();
   const allReceipts = getReceipts({realm});
+  const navigation = useAppNavigation();
 
   const getTotalAmount = useCallback(
     (receiptsData: IReceipt[]) =>
@@ -175,6 +131,66 @@ export const SalesTab = () => {
     },
     [allReceipts, getTotalAmount, handleFilterChange, sortReceipts],
   );
+
+  const handleListItemSelect = useCallback(
+    (id: IReceipt['_id']) => {
+      getAnalyticsService().logEvent('selectContent', {
+        content_type: 'receipt',
+        item_id: id?.toString() ?? '',
+      });
+      navigation.navigate('SalesDetails', {id});
+    },
+    [navigation],
+  );
+
+  const renderReceiptItem = ({item}: {item: IReceipt}) => {
+    const isPaid = item.total_amount === item.amount_paid;
+    const hasCustomer = !!item?.customer?._id;
+
+    let amountTextStyle = applyStyles('text-700', {
+      fontSize: 16,
+      color: colors['gray-300'],
+    });
+    let customerTextStyle = applyStyles('text-400', {
+      fontSize: 16,
+      color: colors['gray-300'],
+    });
+
+    if (!isPaid) {
+      amountTextStyle = {...amountTextStyle, color: colors['red-200']};
+      customerTextStyle = {...customerTextStyle, ...applyStyles('text-700')};
+    }
+
+    if (!hasCustomer) {
+      customerTextStyle = {
+        ...customerTextStyle,
+        ...applyStyles('text-400'),
+        color: colors['gray-100'],
+      };
+    }
+
+    return (
+      <Touchable onPress={() => handleListItemSelect(item._id)}>
+        <View
+          style={applyStyles('px-md flex-row center justify-space-between', {
+            height: 50,
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
+          <View>
+            <Text style={customerTextStyle}>
+              {item?.customer?.name ?? 'No Customer'}
+            </Text>
+          </View>
+          <View>
+            <Text style={amountTextStyle}>
+              {amountWithCurrency(item.total_amount)}
+            </Text>
+          </View>
+        </View>
+      </Touchable>
+    );
+  };
 
   return (
     <KeyboardAvoidingView
