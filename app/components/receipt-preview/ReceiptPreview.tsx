@@ -18,7 +18,11 @@ import {saveCreditPayment} from '@/services/CreditPaymentService';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
+import {
+  cancelReceipt,
+  getAllPayments,
+  updateReceipt,
+} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {colors} from '@/styles';
 import {format} from 'date-fns';
@@ -30,6 +34,7 @@ import {
 } from 'react-native-bluetooth-escpos-printer';
 import {BluetoothModal} from '../BluetoothModal';
 import {ContactsListModal} from '../ContactsListModal';
+import {CancelReceiptModal} from './CancelReceiptModal';
 import {PreviewActionButton} from './PreviewActionButton';
 
 export const ReceiptPreview = ({
@@ -58,6 +63,9 @@ export const ReceiptPreview = ({
   );
   const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+  const [isCancelReceiptModalOpen, setIsCancelReceiptModalOpen] = useState(
+    false,
+  );
 
   const hasCustomer = customer?.name;
   const businessInfo = user?.businesses[0];
@@ -376,16 +384,28 @@ export const ReceiptPreview = ({
     Alert.alert('Coming Soon', 'This feature is coming in the next PR');
   }, []);
 
-  const handleCancelReceipt = useCallback(() => {
-    Alert.alert('Coming Soon', 'This feature is coming in the next PR');
-  }, []);
+  const handleCancelReceipt = useCallback(
+    (note) => {
+      setTimeout(() => {
+        receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
+        setIsCancelReceiptModalOpen(false);
+        navigation.goBack();
+        ToastAndroid.show('Receipt cancelled', ToastAndroid.SHORT);
+      }, 300);
+    },
+    [realm, receipt, navigation],
+  );
 
   const handleEditReceipt = useCallback(() => {
     Alert.alert('Coming Soon', 'This feature is coming in the next sprint');
   }, []);
 
   const receiptActions = [
-    {label: 'Cancel', icon: 'x-circle', onPress: handleCancelReceipt},
+    {
+      label: 'Cancel',
+      icon: 'x-circle',
+      onPress: () => setIsCancelReceiptModalOpen(true),
+    },
     {label: 'Reissue', icon: 'refresh-cw', onPress: handleReissueReceipt},
     {label: 'Edit', icon: 'edit', onPress: handleEditReceipt},
     {label: 'Print', icon: 'printer', onPress: handlePrintReceipt},
@@ -629,6 +649,11 @@ export const ReceiptPreview = ({
             mobile: phoneNumbers[0].number,
           })
         }
+      />
+      <CancelReceiptModal
+        isVisible={isCancelReceiptModalOpen}
+        onCancelReceipt={handleCancelReceipt}
+        closeModal={() => setIsCancelReceiptModalOpen(false)}
       />
     </View>
   );

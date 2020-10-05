@@ -169,6 +169,23 @@ export const SalesTab = () => {
       };
     }
 
+    if (item.is_cancelled) {
+      amountTextStyle = {
+        ...amountTextStyle,
+        ...applyStyles('text-400'),
+        fontStyle: 'italic',
+        color: colors['gray-100'],
+        textDecorationLine: 'line-through',
+      };
+      customerTextStyle = {
+        ...customerTextStyle,
+        ...applyStyles('text-400'),
+        fontStyle: 'italic',
+        color: colors['gray-100'],
+        textDecorationLine: 'line-through',
+      };
+    }
+
     return (
       <Touchable onPress={() => handleListItemSelect(item._id)}>
         <View
