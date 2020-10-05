@@ -269,16 +269,16 @@ export const ReceiptPreview = ({receipt}: {receipt?: IReceipt}) => {
           BluetoothEscposPrinter.ALIGN.RIGHT,
         );
         await BluetoothEscposPrinter.printText(
-          `Total: ${amountWithCurrency(receipt?.total_amount)}\n`,
+          `Total: ${currencyCode} ${numberWithCommas(receipt?.total_amount)}\n`,
           {},
         );
         await BluetoothEscposPrinter.printText(
-          `Paid: ${amountWithCurrency(totalAmountPaid)}\n`,
+          `Paid: ${currencyCode} ${numberWithCommas(totalAmountPaid)}\n`,
           {},
         );
         creditAmountLeft &&
           (await BluetoothEscposPrinter.printText(
-            `Balance: ${amountWithCurrency(creditAmountLeft)}\n`,
+            `Balance: ${currencyCode} ${numberWithCommas(creditAmountLeft)}\n`,
             {},
           ));
         await BluetoothEscposPrinter.printText(
