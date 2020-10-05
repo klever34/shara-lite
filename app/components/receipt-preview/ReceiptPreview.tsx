@@ -432,7 +432,7 @@ export const ReceiptPreview = ({
         backgroundColor: colors.white,
       })}>
       <View style={applyStyles('mb-md')}>
-        {!hasCustomer && (
+        {!receipt?.is_cancelled && !hasCustomer && (
           <Touchable onPress={handleOpenContactListModal}>
             <View
               style={applyStyles('center px-lg', {
@@ -481,11 +481,13 @@ export const ReceiptPreview = ({
         </View>
       </View>
 
-      <View style={applyStyles('mb-lg flex-row justify-space-between')}>
-        {receiptActions.map((item, index) => (
-          <PreviewActionButton key={index.toString()} {...item} />
-        ))}
-      </View>
+      {!receipt?.is_cancelled && (
+        <View style={applyStyles('mb-lg flex-row justify-space-between')}>
+          {receiptActions.map((item, index) => (
+            <PreviewActionButton key={index.toString()} {...item} />
+          ))}
+        </View>
+      )}
 
       {!isFulfilled && (
         <View style={applyStyles('mb-xl')}>
@@ -504,7 +506,7 @@ export const ReceiptPreview = ({
         </View>
       )}
 
-      {hasCustomer && (
+      {!receipt?.is_cancelled && hasCustomer && (
         <View
           style={applyStyles({
             paddingBottom: 100,
