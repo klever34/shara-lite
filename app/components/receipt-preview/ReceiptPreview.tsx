@@ -501,6 +501,7 @@ export const ReceiptPreview = ({
           <Button
             isLoading={isLoading}
             title="confirm payment"
+            disabled={!creditPaymentAmount}
             onPress={handleCreditPaymentSubmit}
           />
         </View>

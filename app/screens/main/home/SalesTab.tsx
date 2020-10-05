@@ -80,47 +80,69 @@ export const SalesTab = () => {
     [filter],
   );
 
-  const handleDateFilter = useCallback(
-    (date?: Date) => {
-      const filtered = allReceipts.filter((receipt) => {
-        if (date && receipt.created_at) {
-          return isEqual(
-            new Date(format(receipt.created_at, 'MMM dd, yyyy')),
-            new Date(format(date, 'MMM dd, yyyy')),
-          );
-        }
-      });
-      handleFilterChange('date', date);
-
-      setReceipts(filtered);
-      setTotalAmount(getTotalAmount(filtered));
-    },
-    [getTotalAmount, handleFilterChange, allReceipts],
-  );
-
   const handleStatusFilter = useCallback(
-    (status: string) => {
+    (status: string, date?: Date) => {
+      const dateFilter = date || filter.date;
       handleFilterChange('status', status);
+      if (date) {
+        handleFilterChange('date', date);
+      }
 
       switch (status) {
         case 'all':
-          const allSales = sortReceipts(allReceipts);
+          const filteredReceipts = allReceipts.filter((item) => {
+            if (dateFilter && item.created_at) {
+              return isEqual(
+                new Date(format(item.created_at, 'MMM dd, yyyy')),
+                new Date(format(dateFilter, 'MMM dd, yyyy')),
+              );
+            }
+          });
+          const allSales = sortReceipts(filteredReceipts);
           setReceipts(allSales);
           setTotalAmount(getTotalAmount(allSales));
           break;
         case 'paid':
-          const paidReceipts = allReceipts.filter(
-            (receipt) => receipt.total_amount === receipt.amount_paid,
-          );
+          const paidReceipts = allReceipts
+            .filter((receipt) => receipt.total_amount === receipt.amount_paid)
+            .filter((item) => {
+              if (dateFilter && item.created_at) {
+                return isEqual(
+                  new Date(format(item.created_at, 'MMM dd, yyyy')),
+                  new Date(format(dateFilter, 'MMM dd, yyyy')),
+                );
+              }
+            });
           setReceipts(paidReceipts);
           setTotalAmount(getTotalAmount(paidReceipts));
           break;
         case 'unpaid':
-          const unPaidReceipts = allReceipts.filter(
-            (receipt) => receipt.total_amount !== receipt.amount_paid,
-          );
+          const unPaidReceipts = allReceipts
+            .filter((receipt) => receipt.total_amount !== receipt.amount_paid)
+            .filter((item) => {
+              if (dateFilter && item.created_at) {
+                return isEqual(
+                  new Date(format(item.created_at, 'MMM dd, yyyy')),
+                  new Date(format(dateFilter, 'MMM dd, yyyy')),
+                );
+              }
+            });
           setReceipts(unPaidReceipts);
           setTotalAmount(getTotalAmount(unPaidReceipts));
+          break;
+        case 'cancelled':
+          const cancelledReceipts = allReceipts
+            .filter((receipt) => receipt.is_cancelled)
+            .filter((item) => {
+              if (dateFilter && item.created_at) {
+                return isEqual(
+                  new Date(format(item.created_at, 'MMM dd, yyyy')),
+                  new Date(format(dateFilter, 'MMM dd, yyyy')),
+                );
+              }
+            });
+          setReceipts(cancelledReceipts);
+          setTotalAmount(getTotalAmount(cancelledReceipts));
           break;
         default:
           const all = sortReceipts(allReceipts);
@@ -129,7 +151,41 @@ export const SalesTab = () => {
           break;
       }
     },
-    [allReceipts, getTotalAmount, handleFilterChange, sortReceipts],
+    [
+      allReceipts,
+      filter.date,
+      getTotalAmount,
+      handleFilterChange,
+      sortReceipts,
+    ],
+  );
+
+  const handleDateFilter = useCallback(
+    (date?: Date) => {
+      if (filter.status) {
+        handleStatusFilter(filter.status, date);
+        return;
+      }
+      handleFilterChange('date', date);
+      const filtered = allReceipts.filter((receipt) => {
+        if (date && receipt.created_at) {
+          return isEqual(
+            new Date(format(receipt.created_at, 'MMM dd, yyyy')),
+            new Date(format(date, 'MMM dd, yyyy')),
+          );
+        }
+      });
+
+      setReceipts(filtered);
+      setTotalAmount(getTotalAmount(filtered));
+    },
+    [
+      filter.status,
+      allReceipts,
+      handleFilterChange,
+      getTotalAmount,
+      handleStatusFilter,
+    ],
   );
 
   const handleListItemSelect = useCallback(
