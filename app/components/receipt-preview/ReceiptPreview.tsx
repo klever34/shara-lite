@@ -159,9 +159,33 @@ export const ReceiptPreview = ({
     setIsContactListModalOpen(false);
   }, []);
 
-  const handleSetCustomer = useCallback((value: ICustomer) => {
-    setCustomer(value);
-  }, []);
+  const handleSetCustomer = useCallback(
+    (value: ICustomer) => {
+      if (customers.map((item) => item.mobile).includes(value.mobile)) {
+        const newCustomer = customers.find(
+          (item) => item.mobile === value.mobile,
+        );
+        setCustomer(newCustomer);
+        receipt &&
+          newCustomer &&
+          updateReceipt({
+            realm,
+            receipt,
+            customer: newCustomer,
+          });
+      } else {
+        const newCustomer = saveCustomer({realm, customer: value});
+        setCustomer(newCustomer);
+        receipt &&
+          updateReceipt({
+            realm,
+            receipt,
+            customer: newCustomer,
+          });
+      }
+    },
+    [customers, realm, receipt],
+  );
 
   const handleCreditPaymentAmountChange = useCallback((amount) => {
     setCreditPaymentAmount(amount);
@@ -183,9 +207,9 @@ export const ReceiptPreview = ({
           });
         saveCreditPayment({
           realm,
+          customer,
           method: '',
           amount: creditPaymentAmount,
-          customer: newCustomer,
         });
         setCreditPaymentAmount(0);
         ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
@@ -469,8 +493,8 @@ export const ReceiptPreview = ({
           <ReceiptImage
             user={user}
             tax={receipt?.tax}
+            customer={customer}
             products={receipt?.items}
-            customer={receipt?.customer}
             amountPaid={totalAmountPaid}
             creditDueDate={creditDueDate}
             creditAmount={creditAmountLeft}

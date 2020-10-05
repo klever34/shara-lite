@@ -118,7 +118,7 @@ export const ReceiptImage = (props: Props) => {
                 Receipt For:
               </Text>
               <Text style={applyStyles('pl-sm text-500')}>
-                {customer?.name}
+                {customer?.name ?? 'No Customer'}
               </Text>
             </View>
             <View style={applyStyles('pb-sm flex-row items-center')}>
@@ -154,7 +154,7 @@ export const ReceiptImage = (props: Props) => {
               })}>
               <View
                 style={applyStyles('px-xs items-end justify-center', {
-                  width: '75%',
+                  width: '70%',
                   borderRightWidth: 1,
                   borderRightColor: colors['gray-20'],
                 })}>
@@ -165,7 +165,7 @@ export const ReceiptImage = (props: Props) => {
               </View>
               <View
                 style={applyStyles('pl-xs items-end  justify-center', {
-                  width: '25%',
+                  width: '30%',
                 })}>
                 <Text
                   style={applyStyles('text-400', {color: colors['gray-300']})}>
@@ -181,7 +181,7 @@ export const ReceiptImage = (props: Props) => {
               })}>
               <View
                 style={applyStyles('px-xs items-end justify-center', {
-                  width: '75%',
+                  width: '70%',
                   borderRightWidth: 1,
                   borderRightColor: colors['gray-20'],
                 })}>
@@ -192,7 +192,7 @@ export const ReceiptImage = (props: Props) => {
               </View>
               <View
                 style={applyStyles('px-xs items-end  justify-center', {
-                  width: '25%',
+                  width: '30%',
                 })}>
                 <Text
                   style={applyStyles('text-400', {color: colors['gray-300']})}>
@@ -208,7 +208,7 @@ export const ReceiptImage = (props: Props) => {
               })}>
               <View
                 style={applyStyles('px-xs items-end justify-center', {
-                  width: '75%',
+                  width: '70%',
                   borderRightWidth: 1,
                   borderRightColor: colors['gray-20'],
                 })}>
@@ -221,7 +221,7 @@ export const ReceiptImage = (props: Props) => {
               </View>
               <View
                 style={applyStyles('px-xs items-end  justify-center', {
-                  width: '25%',
+                  width: '30%',
                 })}>
                 <Text
                   style={applyStyles('text-400', {color: colors['gray-300']})}>

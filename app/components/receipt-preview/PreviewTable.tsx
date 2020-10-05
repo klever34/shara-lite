@@ -31,6 +31,9 @@ export const summaryTableStyles = StyleSheet.create({
   'column-40': {
     width: '40%',
   },
+  'column-30': {
+    width: '30%',
+  },
 });
 
 export const summaryTableHeaderStyles = StyleSheet.create({
@@ -69,14 +72,14 @@ export const SummaryTableHeader = () => {
       <View
         style={applyStyles(
           summaryTableStyles.column,
-          summaryTableStyles['column-40'],
+          summaryTableStyles['column-30'],
         )}>
         <Text style={summaryTableHeaderStyles.text}>Product</Text>
       </View>
       <View
         style={applyStyles(
           summaryTableStyles.column,
-          summaryTableStyles['column-25'],
+          summaryTableStyles['column-30'],
           {
             alignItems: 'flex-end',
           },
@@ -94,7 +97,7 @@ export const SummaryTableHeader = () => {
         <Text style={summaryTableHeaderStyles.text}>QTY</Text>
       </View>
       <View
-        style={applyStyles('justify-center', summaryTableStyles['column-25'], {
+        style={applyStyles('justify-center', summaryTableStyles['column-30'], {
           alignItems: 'flex-end',
         })}>
         <Text style={summaryTableHeaderStyles.text}>Price</Text>
@@ -113,7 +116,7 @@ export const SummaryTableFooter = () => {
       <View
         style={applyStyles(
           summaryTableStyles.column,
-          summaryTableStyles['column-40'],
+          summaryTableStyles['column-30'],
           {
             height: 30,
           },
@@ -122,7 +125,7 @@ export const SummaryTableFooter = () => {
       <View
         style={applyStyles(
           summaryTableStyles.column,
-          summaryTableStyles['column-25'],
+          summaryTableStyles['column-30'],
           {
             height: 30,
             alignItems: 'flex-end',
@@ -140,7 +143,7 @@ export const SummaryTableFooter = () => {
         )}
       />
       <View
-        style={applyStyles(summaryTableStyles['column-25'], {
+        style={applyStyles(summaryTableStyles['column-30'], {
           height: 30,
           alignItems: 'flex-end',
         })}
@@ -162,13 +165,13 @@ export const SummaryTableItem = ({
       <View
         style={applyStyles(
           summaryTableStyles.column,
-          summaryTableStyles['column-40'],
+          summaryTableStyles['column-30'],
         )}>
         <Text style={summaryTableItemStyles.text}>{item.product.name}</Text>
       </View>
       <View
         style={applyStyles(
-          summaryTableStyles['column-25'],
+          summaryTableStyles['column-30'],
           summaryTableStyles.column,
           {
             alignItems: 'flex-end',
@@ -189,7 +192,7 @@ export const SummaryTableItem = ({
         <Text style={summaryTableItemStyles.text}>{quantity}</Text>
       </View>
       <View
-        style={applyStyles('justify-center', summaryTableStyles['column-25'], {
+        style={applyStyles('justify-center', summaryTableStyles['column-30'], {
           alignItems: 'flex-end',
         })}>
         <Text style={summaryTableItemStyles.text}>
