@@ -1,10 +1,9 @@
 import {
-  Button,
   DatePicker,
   FilterButton,
   FilterButtonGroup,
+  ReceiptingContainer,
 } from '@/components';
-import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
@@ -17,8 +16,8 @@ import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
 import {sortBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
-import {KeyboardAvoidingView, Text, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
+import {useErrorHandler} from '@/services/error-boundary';
 
 const statusFilters = [
   {label: 'All', value: 'all'},
@@ -73,12 +72,9 @@ export const SalesTab = () => {
     ? "You've made no sales today."
     : 'You made no sales on this day.';
 
-  const handleFilterChange = useCallback(
-    (key, value) => {
-      setFilter({...filter, [key]: value});
-    },
-    [filter],
-  );
+  const handleFilterChange = useCallback((key, value) => {
+    setFilter((prevFilter) => ({...prevFilter, [key]: value}));
+  }, []);
 
   const handleStatusFilter = useCallback(
     (status: string, date?: Date) => {
@@ -195,219 +191,130 @@ export const SalesTab = () => {
       handleStatusFilter,
     ],
   );
-
+  const handleError = useErrorHandler();
   const handleListItemSelect = useCallback(
     (id: IReceipt['_id']) => {
-      getAnalyticsService().logEvent('selectContent', {
-        content_type: 'receipt',
-        item_id: id?.toString() ?? '',
-      });
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          content_type: 'receipt',
+          item_id: id?.toString() ?? '',
+        })
+        .catch(handleError);
       navigation.navigate('SalesDetails', {id});
     },
-    [navigation],
+    [handleError, navigation],
   );
-
-  const renderReceiptItem = ({item}: {item: IReceipt}) => {
-    const isPaid = item.total_amount === item.amount_paid;
-    const hasCustomer = !!item?.customer?._id;
-
-    let amountTextStyle = applyStyles('text-700', {
-      fontSize: 16,
-      color: colors['gray-300'],
-    });
-    let customerTextStyle = applyStyles('text-400', {
-      fontSize: 16,
-      color: colors['gray-300'],
-    });
-
-    if (!isPaid) {
-      amountTextStyle = {...amountTextStyle, color: colors['red-200']};
-      customerTextStyle = {...customerTextStyle, ...applyStyles('text-700')};
-    }
-
-    if (!hasCustomer) {
-      customerTextStyle = {
-        ...customerTextStyle,
-        ...applyStyles('text-400'),
-        color: colors['gray-100'],
+  const getCustomerText = useCallback(
+    (receipt: IReceipt, customerTextStyle: TextStyle) => {
+      if (!receipt.isPaid) {
+        customerTextStyle = {
+          ...customerTextStyle,
+          ...applyStyles('text-700'),
+        };
+      }
+      if (!receipt.hasCustomer) {
+        customerTextStyle = {
+          ...customerTextStyle,
+          ...applyStyles('text-400'),
+          color: colors['gray-100'],
+        };
+      }
+      if (receipt.is_cancelled) {
+        customerTextStyle = {
+          ...customerTextStyle,
+          ...applyStyles('text-400'),
+          fontStyle: 'italic',
+          color: colors['gray-100'],
+          textDecorationLine: 'line-through',
+        };
+      }
+      return {
+        style: customerTextStyle,
+        children: receipt?.customer?.name ?? 'No Customer',
       };
-    }
-
-    if (item.is_cancelled) {
-      amountTextStyle = {
-        ...amountTextStyle,
-        ...applyStyles('text-400'),
-        fontStyle: 'italic',
-        color: colors['gray-100'],
-        textDecorationLine: 'line-through',
-      };
-      customerTextStyle = {
-        ...customerTextStyle,
-        ...applyStyles('text-400'),
-        fontStyle: 'italic',
-        color: colors['gray-100'],
-        textDecorationLine: 'line-through',
-      };
-    }
-
-    return (
-      <Touchable onPress={() => handleListItemSelect(item._id)}>
-        <View
-          style={applyStyles('px-md flex-row center justify-space-between', {
-            height: 50,
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-20'],
-          })}>
-          <View>
-            <Text style={customerTextStyle}>
-              {item?.customer?.name ?? 'No Customer'}
-            </Text>
-          </View>
-          <View>
-            <Text style={amountTextStyle}>
-              {amountWithCurrency(item.total_amount)}
-            </Text>
-          </View>
-        </View>
-      </Touchable>
-    );
-  };
-
+    },
+    [],
+  );
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <FilterButtonGroup
-        value={filter.status}
-        onChange={(status) => handleStatusFilter(status)}>
+      <ReceiptingContainer
+        receipts={receipts}
+        emptyStateText={emptyStateText}
+        handleListItemSelect={handleListItemSelect}
+        getReceiptItemLeftText={getCustomerText}>
+        <FilterButtonGroup
+          value={filter.status}
+          onChange={(status: string) => handleStatusFilter(status)}>
+          <View
+            style={applyStyles(
+              'py-xl px-sm flex-row center justify-space-between',
+            )}>
+            {statusFilters.map((filterItem) => (
+              <FilterButton
+                {...filterItem}
+                key={filterItem.value}
+                isChecked={filter.status === filterItem.value}
+              />
+            ))}
+          </View>
+        </FilterButtonGroup>
         <View
-          style={applyStyles(
-            'py-xl px-sm flex-row center justify-space-between',
-          )}>
-          {statusFilters.map((filterItem, index) => (
-            <FilterButton
-              {...filterItem}
-              key={`${filterItem.value}-${index}`}
-              isChecked={filter.status === filterItem.value}
-            />
-          ))}
+          style={applyStyles('p-md center flex-row justify-space-between', {
+            backgroundColor: colors['gray-300'],
+          })}>
+          <View>
+            <DatePicker
+              value={filter.date}
+              maximumDate={new Date()}
+              onChange={(e: Event, date?: Date) => handleDateFilter(date)}>
+              {(toggleShow) => (
+                <Touchable onPress={toggleShow}>
+                  <View style={applyStyles('flex-row center', {height: 40})}>
+                    <Icon
+                      size={24}
+                      name="calendar"
+                      type="feathericons"
+                      color={colors.white}
+                    />
+                    <Text
+                      style={applyStyles('text-700 px-md', {
+                        fontSize: 16,
+                        color: colors.white,
+                      })}>
+                      {isToday(filter.date)
+                        ? 'Today'
+                        : `${format(filter.date, 'MMM dd, yyyy')}`}
+                    </Text>
+                    <Icon
+                      size={24}
+                      type="feathericons"
+                      name="chevron-down"
+                      color={colors.white}
+                    />
+                  </View>
+                </Touchable>
+              )}
+            </DatePicker>
+          </View>
+          <View style={applyStyles('items-end')}>
+            <Text
+              style={applyStyles('text-400 text-uppercase', {
+                fontSize: 14,
+                color: colors.white,
+              })}>
+              You sold
+            </Text>
+            <Text
+              style={applyStyles('text-700 text-uppercase', {
+                fontSize: 16,
+                color: colors.white,
+              })}>
+              {amountWithCurrency(totalAmount)}
+            </Text>
+          </View>
         </View>
-      </FilterButtonGroup>
-      <View
-        style={applyStyles('p-md center flex-row justify-space-between', {
-          backgroundColor: colors['gray-300'],
-        })}>
-        <View>
-          <DatePicker
-            value={filter.date}
-            maximumDate={new Date()}
-            onChange={(e: Event, date?: Date) => handleDateFilter(date)}>
-            {(toggleShow) => (
-              <Touchable onPress={toggleShow}>
-                <View style={applyStyles('flex-row center', {height: 40})}>
-                  <Icon
-                    size={24}
-                    name="calendar"
-                    type="feathericons"
-                    color={colors.white}
-                  />
-                  <Text
-                    style={applyStyles('text-700 px-md', {
-                      fontSize: 16,
-                      color: colors.white,
-                    })}>
-                    {isToday(filter.date)
-                      ? 'Today'
-                      : `${format(filter.date, 'MMM dd, yyyy')}`}
-                  </Text>
-                  <Icon
-                    size={24}
-                    type="feathericons"
-                    name="chevron-down"
-                    color={colors.white}
-                  />
-                </View>
-              </Touchable>
-            )}
-          </DatePicker>
-        </View>
-        <View style={applyStyles('items-end')}>
-          <Text
-            style={applyStyles('text-400 text-uppercase', {
-              fontSize: 14,
-              color: colors.white,
-            })}>
-            You sold
-          </Text>
-          <Text
-            style={applyStyles('text-700 text-uppercase', {
-              fontSize: 16,
-              color: colors.white,
-            })}>
-            {amountWithCurrency(totalAmount)}
-          </Text>
-        </View>
-      </View>
-
-      <FlatList
-        data={receipts}
-        initialNumToRender={10}
-        renderItem={renderReceiptItem}
-        keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
-        ListEmptyComponent={
-          <EmptyState
-            heading="No Sales"
-            text={emptyStateText}
-            style={applyStyles({paddingTop: 100})}
-          />
-        }
-      />
-      <View
-        style={applyStyles('flex-row center justify-space-between px-md', {
-          height: 80,
-          elevation: 100,
-          borderTopWidth: 1,
-          backgroundColor: colors.white,
-          borderTopColor: colors['gray-20'],
-        })}>
-        <View style={applyStyles({width: '48%'})}>
-          <Button onPress={() => {}}>
-            <View style={applyStyles('flex-row center')}>
-              <Icon
-                size={24}
-                name="plus"
-                type="feathericons"
-                color={colors.white}
-              />
-              <Text
-                style={applyStyles('text-400 text-uppercase pl-sm', {
-                  fontSize: 16,
-                  color: colors.white,
-                })}>
-                Create receipt
-              </Text>
-            </View>
-          </Button>
-        </View>
-        <View style={applyStyles({width: '48%'})}>
-          <Button onPress={() => {}} variantColor="clear">
-            <View style={applyStyles('flex-row center')}>
-              <Icon
-                size={24}
-                name="camera"
-                type="feathericons"
-                color={colors['gray-300']}
-              />
-              <Text
-                style={applyStyles('text-400 text-uppercase pl-sm', {
-                  fontSize: 16,
-                  color: colors['gray-300'],
-                })}>
-                snap receipt
-              </Text>
-            </View>
-          </Button>
-        </View>
-      </View>
+      </ReceiptingContainer>
     </KeyboardAvoidingView>
   );
 };

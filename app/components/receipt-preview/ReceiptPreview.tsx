@@ -666,14 +666,14 @@ export const ReceiptPreview = ({
       />
       <ContactsListModal<ICustomer>
         entity="Customer"
-        createdData={customers}
+        createdData={(customers as unknown) as ICustomer[]}
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={() => navigation.navigate('AddCustomer')}
-        onContactSelect={({givenName, familyName, phoneNumbers}) =>
+        onContactSelect={({givenName, familyName, phoneNumber}) =>
           handleSetCustomer({
             name: `${givenName} ${familyName}`,
-            mobile: phoneNumbers[0].number,
+            mobile: phoneNumber.number,
           })
         }
       />

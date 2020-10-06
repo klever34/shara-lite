@@ -1,5 +1,5 @@
 import capitalize from 'lodash/capitalize';
-import {User} from '@/../types/app';
+import {User} from 'types/app';
 import {BaseModel, baseModelSchema} from './baseSchema';
 
 export interface IContact

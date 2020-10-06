@@ -48,7 +48,8 @@ export const FilterButton = (props: Props) => {
           stateStyle,
           style,
         )}>
-        <Text style={applyStyles('text-400 text-uppercase', labelStyle)}>
+        <Text
+          style={applyStyles('text-400 text-uppercase text-xs', labelStyle)}>
           {label}
         </Text>
       </View>
@@ -58,10 +59,10 @@ export const FilterButton = (props: Props) => {
 
 const styles = StyleSheet.create({
   base: {
-    height: 40,
     borderWidth: 1,
     borderRadius: 4,
     paddingHorizontal: 8,
+    paddingVertical: 2,
   },
   checked: {
     borderColor: colors.primary,
