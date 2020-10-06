@@ -19,6 +19,7 @@ export interface ICustomer extends BaseModelInterface {
   addresses?: IAddress[];
 
   // Getters
+  totalAmount?: number;
   overdueCredit?: ICredit[];
   overdueCreditAmount?: number;
   remainingCredit?: ICredit[];
@@ -58,12 +59,20 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       },
     },
   };
+  public receipts: IReceipt[] | undefined;
   public credits: ICredit[] | undefined;
   public get overdueCredit() {
     const today = new Date();
     return (this.credits || []).filter(
       ({fulfilled, due_date}) =>
         !fulfilled && due_date && due_date.getTime() < today.getTime(),
+    );
+  }
+
+  public get totalAmount() {
+    return (this.receipts || []).reduce(
+      (acc, receipt) => acc + receipt.total_amount,
+      0,
     );
   }
 

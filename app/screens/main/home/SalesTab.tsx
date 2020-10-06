@@ -4,7 +4,6 @@ import {
   FilterButtonGroup,
   ReceiptingContainer,
 } from '@/components';
-import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
@@ -17,8 +16,7 @@ import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
 import {sortBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
-import {KeyboardAvoidingView, Text, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
 
 const statusFilters = [
@@ -198,77 +196,45 @@ export const SalesTab = () => {
     },
     [handleError, navigation],
   );
-
-  const renderReceiptItem = ({item}: {item: IReceipt}) => {
-    const isPaid = item.total_amount === item.amount_paid;
-    const hasCustomer = !!item?.customer?._id;
-
-    let amountTextStyle = applyStyles('text-700', {
-      fontSize: 16,
-      color: colors['gray-300'],
-    });
-    let customerTextStyle = applyStyles('text-400', {
-      fontSize: 16,
-      color: colors['gray-300'],
-    });
-
-    if (!isPaid) {
-      amountTextStyle = {...amountTextStyle, color: colors['red-200']};
-      customerTextStyle = {...customerTextStyle, ...applyStyles('text-700')};
-    }
-
-    if (!hasCustomer) {
-      customerTextStyle = {
-        ...customerTextStyle,
-        ...applyStyles('text-400'),
-        color: colors['gray-100'],
+  const getCustomerText = useCallback(
+    (receipt: IReceipt, customerTextStyle: TextStyle) => {
+      if (!receipt.isPaid) {
+        customerTextStyle = {
+          ...customerTextStyle,
+          ...applyStyles('text-700'),
+        };
+      }
+      if (!receipt.hasCustomer) {
+        customerTextStyle = {
+          ...customerTextStyle,
+          ...applyStyles('text-400'),
+          color: colors['gray-100'],
+        };
+      }
+      if (receipt.is_cancelled) {
+        customerTextStyle = {
+          ...customerTextStyle,
+          ...applyStyles('text-400'),
+          fontStyle: 'italic',
+          color: colors['gray-100'],
+          textDecorationLine: 'line-through',
+        };
+      }
+      return {
+        style: customerTextStyle,
+        children: receipt?.customer?.name ?? 'No Customer',
       };
-    }
-
-    if (item.is_cancelled) {
-      amountTextStyle = {
-        ...amountTextStyle,
-        ...applyStyles('text-400'),
-        fontStyle: 'italic',
-        color: colors['gray-100'],
-        textDecorationLine: 'line-through',
-      };
-      customerTextStyle = {
-        ...customerTextStyle,
-        ...applyStyles('text-400'),
-        fontStyle: 'italic',
-        color: colors['gray-100'],
-        textDecorationLine: 'line-through',
-      };
-    }
-
-    return (
-      <Touchable onPress={() => handleListItemSelect(item._id)}>
-        <View
-          style={applyStyles('px-md flex-row center justify-space-between', {
-            height: 50,
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-20'],
-          })}>
-          <View>
-            <Text style={customerTextStyle}>
-              {item?.customer?.name ?? 'No Customer'}
-            </Text>
-          </View>
-          <View>
-            <Text style={amountTextStyle}>
-              {amountWithCurrency(item.total_amount)}
-            </Text>
-          </View>
-        </View>
-      </Touchable>
-    );
-  };
-
+    },
+    [],
+  );
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <ReceiptingContainer>
+      <ReceiptingContainer
+        receipts={receipts}
+        emptyStateText={emptyStateText}
+        handleListItemSelect={handleListItemSelect}
+        getReceiptItemLeftText={getCustomerText}>
         <FilterButtonGroup
           value={filter.status}
           onChange={(status: string) => handleStatusFilter(status)}>
@@ -340,20 +306,6 @@ export const SalesTab = () => {
             </Text>
           </View>
         </View>
-
-        <FlatList
-          data={receipts}
-          initialNumToRender={10}
-          renderItem={renderReceiptItem}
-          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
-          ListEmptyComponent={
-            <EmptyState
-              heading="No Sales"
-              text={emptyStateText}
-              style={applyStyles({paddingTop: 100})}
-            />
-          }
-        />
       </ReceiptingContainer>
     </KeyboardAvoidingView>
   );

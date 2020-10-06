@@ -1,7 +1,7 @@
-import {useNavigation} from '@react-navigation/native';
+import {useNavigation, RouteProp} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
 import React, {useCallback, useLayoutEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text, TextStyle, View} from 'react-native';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {
   FilterButton,
@@ -12,6 +12,8 @@ import {
 import {CustomerContext} from '@/services/customer';
 import {Icon} from '@/components/Icon';
 import {colors} from '@/styles';
+import {MainStackParamList} from '@/screens/main';
+import {IReceipt} from '@/models/Receipt';
 
 const statusFilters = [
   {label: 'All Sales', value: 'all'},
@@ -20,7 +22,11 @@ const statusFilters = [
   {label: 'Pending', value: 'pending'},
 ];
 
-const CustomerDetails = ({route}: {route: any}) => {
+type CustomerDetailsProps = {
+  route: RouteProp<MainStackParamList, 'CustomerDetails'>;
+};
+
+const CustomerDetails = ({route}: CustomerDetailsProps) => {
   const navigation = useNavigation();
   const {customer} = route.params;
 
@@ -51,9 +57,22 @@ const CustomerDetails = ({route}: {route: any}) => {
     setFilter(status);
   }, []);
 
+  const getReceiptItemLeftText = useCallback(
+    (receipt: IReceipt, baseStyle: TextStyle) => {
+      return {
+        style: baseStyle,
+        children: '',
+      };
+    },
+    [],
+  );
+
   return (
     <CustomerContext.Provider value={customer}>
-      <ReceiptingContainer>
+      <ReceiptingContainer
+        receipts={customer.receipts}
+        emptyStateText="You have not created any receipt for this customer"
+        getReceiptItemLeftText={getReceiptItemLeftText}>
         <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
           <View
             style={applyStyles(
@@ -100,7 +119,7 @@ const CustomerDetails = ({route}: {route: any}) => {
                 fontSize: 16,
                 color: colors.white,
               })}>
-              {amountWithCurrency(0)}
+              {amountWithCurrency(customer.totalAmount)}
             </Text>
           </View>
         </View>
