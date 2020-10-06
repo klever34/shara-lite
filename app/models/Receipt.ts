@@ -20,6 +20,10 @@ export interface IReceipt extends BaseModelInterface {
   local_image_url?: string;
   is_cancelled?: boolean;
   cancellation_reason?: string;
+
+  //Getters
+  isPaid?: boolean;
+  hasCustomer?: boolean;
 }
 
 export const modelName = 'Receipt';
@@ -59,4 +63,15 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       },
     },
   };
+  public total_amount: number | undefined;
+  public amount_paid: number | undefined;
+  public customer: ICustomer | undefined;
+
+  public get isPaid() {
+    return this.total_amount === this.amount_paid;
+  }
+
+  public get hasCustomer() {
+    return !!this?.customer?._id;
+  }
 }
