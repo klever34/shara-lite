@@ -84,7 +84,8 @@ export const ReceiptingContainer = ({
     [getReceiptItemLeftText, handleListItemSelect],
   );
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView
+      style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <View style={applyStyles('flex-1')}>
         {children}
         <FlatList
