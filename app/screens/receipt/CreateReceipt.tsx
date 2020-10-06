@@ -19,7 +19,6 @@ import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService} from '@/services';
-import {PhoneContact} from '@/services/contact';
 import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useRealm} from '@/services/realm';
@@ -59,13 +58,6 @@ export const CreateReceipt = withModal((props: Props) => {
   const tax = 0;
   const creditAmount = totalAmount - amountPaid;
 
-  const handleSetCustomer = useCallback((value: PhoneContact) => {
-    setCustomer({
-      mobile: value.phoneNumber.number,
-      name: `${value.givenName.trim()} ${value.familyName.trim()}`,
-    });
-  }, []);
-
   const handleNoteChange = useCallback((text: string) => {
     setNote(text);
   }, []);
@@ -93,6 +85,11 @@ export const CreateReceipt = withModal((props: Props) => {
     },
     [handleCloseAddCustomerModal],
   );
+
+  const handleContactSelect = useCallback((newCustomer) => {
+    setCustomer(newCustomer);
+    setIsContactListModalOpen(false);
+  }, []);
 
   const handleAddReceiptItem = useCallback(
     (item: IReceiptItem) => {
@@ -189,9 +186,9 @@ export const CreateReceipt = withModal((props: Props) => {
         receiptItems,
         payments: [{method: '', amount: amountPaid}],
       });
-      setIsSaving(false);
       handleClearReceipt();
       ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
+      setIsSaving(false);
       handleOpenReceiptPreviewModal(createdReceipt);
     }, 500);
   }, [
@@ -485,8 +482,8 @@ export const CreateReceipt = withModal((props: Props) => {
       <ContactsListModal<ICustomer>
         entity="Customer"
         visible={isContactListModalOpen}
-        onContactSelect={handleSetCustomer}
         onAddNew={handleOpenAddCustomerModal}
+        onContactSelect={handleContactSelect}
         onClose={() => setIsContactListModalOpen(false)}
         createdData={(myCustomers as unknown) as ICustomer[]}
       />

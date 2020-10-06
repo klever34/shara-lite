@@ -162,10 +162,10 @@ export const ReceiptPreview = ({
   }, []);
 
   const handleSetCustomer = useCallback(
-    (value: ICustomer) => {
-      if (customers.map((item) => item.mobile).includes(value.mobile)) {
+    (value?: ICustomer) => {
+      if (customers.map((item) => item.mobile).includes(value?.mobile)) {
         const newCustomer = customers.find(
-          (item) => item.mobile === value.mobile,
+          (item) => item.mobile === value?.mobile,
         );
         setCustomer(newCustomer);
         receipt &&
@@ -176,9 +176,10 @@ export const ReceiptPreview = ({
             customer: newCustomer,
           });
       } else {
-        const newCustomer = saveCustomer({realm, customer: value});
+        const newCustomer = value && saveCustomer({realm, customer: value});
         setCustomer(newCustomer);
         receipt &&
+          newCustomer &&
           updateReceipt({
             realm,
             receipt,
@@ -672,12 +673,7 @@ export const ReceiptPreview = ({
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={() => navigation.navigate('AddCustomer')}
-        onContactSelect={({givenName, familyName, phoneNumber}) =>
-          handleSetCustomer({
-            name: `${givenName} ${familyName}`,
-            mobile: phoneNumber.number,
-          })
-        }
+        onContactSelect={(data) => handleSetCustomer(data)}
       />
       <CancelReceiptModal
         isVisible={isCancelReceiptModalOpen}

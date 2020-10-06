@@ -1,5 +1,6 @@
 import {ContactsListModal} from '@/components';
 import EmptyState from '@/components/EmptyState';
+import {HeaderRight} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
@@ -14,8 +15,8 @@ import React, {
   useCallback,
   useEffect,
   useLayoutEffect,
-  useState,
   useMemo,
+  useState,
 } from 'react';
 import {
   ListRenderItemInfo,
@@ -25,8 +26,6 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {HeaderRight} from '@/components/HeaderRight';
-import {PhoneContact} from '@/services/contact';
 
 type CustomerListItem =
   | Pick<
@@ -225,11 +224,7 @@ export const CustomersScreen = () => {
     [myCustomers, phoneContacts],
   );
   const onContactSelect = useCallback(
-    (contact: PhoneContact) =>
-      handleCreateCustomer({
-        name: `${contact.givenName} ${contact.familyName}`,
-        mobile: contact.phoneNumber.number,
-      }),
+    (contact?: ICustomer) => contact && handleCreateCustomer(contact),
     [handleCreateCustomer],
   );
   const keyExtractor = useCallback((item) => {

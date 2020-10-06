@@ -97,7 +97,7 @@ export const AddCustomer = (props: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: 16,
+    paddingHorizontal: 24,
     backgroundColor: colors.white,
   },
   formInputs: {
