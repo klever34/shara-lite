@@ -20,15 +20,7 @@ import {
 } from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import {ReportsScreen} from './reports';
-import CreditPayment from './customers/CreditPayment';
-import {CustomerCreditPaymentDetails} from './customers/CreditPaymentDetails';
-import {CustomerCreditDetails} from './customers/CustomerCreditDetails';
 import CustomerDetails from './customers/CustomerDetails';
-import {CustomerOverdueCredit} from './customers/CustomerOverdueCredit';
-import {CustomerTotalCredit} from './customers/CustomerTotalCredit';
-import OrderDetails from './customers/OrderDetails';
-import PaymentDetails from './customers/PaymentDetails';
-import RecordPayment from './customers/RecordPayment';
 import {SalesDetails} from './home';
 import HomeScreen from './HomeScreen';
 import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
@@ -138,66 +130,10 @@ const MainScreens = () => {
           })}
         />
         <MainStack.Screen
-          name="CustomerRecordCreditPayment"
-          component={RecordPayment}
-          options={{
-            title: 'Record Payment',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerCreditPayment"
-          component={CreditPayment}
-          options={{
-            title: 'Credit Payment',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerPaymentDetails"
-          component={PaymentDetails}
-          options={{
-            title: 'Payment Details',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerOrderDetails"
-          component={OrderDetails}
-          options={{
-            title: 'Order Details',
-          }}
-        />
-        <MainStack.Screen
           name="Customers"
           component={CustomersScreen}
           options={{
             title: 'My Customers',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerTotalCredit"
-          component={CustomerTotalCredit}
-          options={{
-            title: 'Total Credit',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerOverdueCredit"
-          component={CustomerOverdueCredit}
-          options={{
-            title: 'Overdue Credit',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerCreditDetails"
-          component={CustomerCreditDetails}
-          options={{
-            title: 'Credit Payment',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerCreditPaymentDetails"
-          component={CustomerCreditPaymentDetails}
-          options={{
-            title: 'Credit Payment Details',
           }}
         />
         <MainStack.Screen
