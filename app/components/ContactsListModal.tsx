@@ -260,6 +260,7 @@ export function ContactsListModal<T>({
           ) : (
             <SectionList
               sections={sections}
+              persistentScrollbar
               initialNumToRender={10}
               keyExtractor={keyExtractor}
               renderItem={renderCustomerListItem}

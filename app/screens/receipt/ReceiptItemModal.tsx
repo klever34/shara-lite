@@ -153,25 +153,30 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
   return (
     <View>
       <View style={applyStyles('pt-16 pb-96')}>
-        <TextInput
-          value={name}
-          onChangeText={(text) => handleNameChange(text)}
-          style={applyStyles('px-12 py-0 text-400', {
-            fontSize: 16,
-          })}
-          placeholder="Enter item name here..."
+        <FlatList
+          data={products}
+          persistentScrollbar
+          renderItem={renderProductItem}
+          keyExtractor={(item) => `${item._id}`}
+          ListHeaderComponent={
+            <>
+              <TextInput
+                value={name}
+                onChangeText={(text) => handleNameChange(text)}
+                style={applyStyles('px-12 py-0 mb-96 text-400', {
+                  fontSize: 16,
+                })}
+                placeholder="Enter item name here..."
+              />
+              <SectionButtons
+                nextButtonText="Unit Price"
+                nextButtonDisabled={!name}
+                onNext={() => onNext(name, 'name')}
+              />
+            </>
+          }
         />
       </View>
-      <SectionButtons
-        nextButtonText="Unit Price"
-        nextButtonDisabled={!name}
-        onNext={() => onNext(name, 'name')}
-      />
-      <FlatList
-        data={products}
-        renderItem={renderProductItem}
-        keyExtractor={(item) => `${item._id}`}
-      />
     </View>
   );
 };
