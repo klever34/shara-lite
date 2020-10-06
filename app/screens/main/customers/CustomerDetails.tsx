@@ -1,27 +1,24 @@
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
-import React, {useCallback, useLayoutEffect} from 'react';
-import {SafeAreaView} from 'react-native';
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
-import CreditsTab from './CreditsTab';
-import DetailsTab from './DetailsTab';
-import OrdersTab from './OrdersTab';
-import PaymentsTab from './PaymentsTab';
-import {HeaderRight} from '@/components';
+import React, {useCallback, useLayoutEffect, useState} from 'react';
+import {Text, View} from 'react-native';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {
+  FilterButton,
+  FilterButtonGroup,
+  ReceiptingContainer,
+  HeaderRight,
+} from '@/components';
 import {CustomerContext} from '@/services/customer';
+import {Icon} from '@/components/Icon';
+import {colors} from '@/styles';
 
-type CustomerDetailsParamList = {
-  Details: undefined;
-  Orders: undefined;
-  Payments: undefined;
-  CreditsTab: undefined;
-};
-
-const CustomerDetailsTab = createMaterialTopTabNavigator<
-  CustomerDetailsParamList
->();
+const statusFilters = [
+  {label: 'All Sales', value: 'all'},
+  {label: 'All Unpaid', value: 'unpaid'},
+  {label: 'Paid', value: 'paid'},
+  {label: 'Pending', value: 'pending'},
+];
 
 const CustomerDetails = ({route}: {route: any}) => {
   const navigation = useNavigation();
@@ -48,45 +45,66 @@ const CustomerDetails = ({route}: {route: any}) => {
     });
   }, [navigation]);
 
-  const addCustomerToComponent = useCallback(
-    (Component) => (props: any) => <Component {...props} customer={customer} />,
-    [customer],
-  );
+  const [filter, setFilter] = useState(statusFilters[0].value);
+
+  const handleStatusFilter = useCallback((status) => {
+    setFilter(status);
+  }, []);
 
   return (
     <CustomerContext.Provider value={customer}>
-      <SafeAreaView style={applyStyles('flex-1')}>
-        <CustomerDetailsTab.Navigator
-          initialRouteName="CreditsTab"
-          tabBarOptions={{
-            indicatorContainerStyle: {backgroundColor: colors.primary},
-            indicatorStyle: {backgroundColor: colors.white},
-            labelStyle: {fontFamily: 'Rubik-Regular'},
-            activeTintColor: 'rgba(255,255,255, 1)',
-            inactiveTintColor: 'rgba(255,255,255, 0.75)',
-          }}>
-          <CustomerDetailsTab.Screen
-            name="CreditsTab"
-            options={{title: 'Credit'}}>
-            {addCustomerToComponent(CreditsTab)}
-          </CustomerDetailsTab.Screen>
-          <CustomerDetailsTab.Screen
-            name="Payments"
-            options={{title: 'Payments'}}>
-            {addCustomerToComponent(PaymentsTab)}
-          </CustomerDetailsTab.Screen>
-          <CustomerDetailsTab.Screen
-            name="Orders"
-            options={{title: 'Orders'}}
-            component={OrdersTab}
-          />
-          <CustomerDetailsTab.Screen
-            name="Details"
-            options={{title: 'Details'}}
-            component={DetailsTab}
-          />
-        </CustomerDetailsTab.Navigator>
-      </SafeAreaView>
+      <ReceiptingContainer>
+        <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
+          <View
+            style={applyStyles(
+              'py-xl px-sm flex-row center justify-space-between',
+            )}>
+            {statusFilters.map((filterItem) => (
+              <FilterButton
+                {...filterItem}
+                key={filterItem.value}
+                isChecked={filter === filterItem.value}
+              />
+            ))}
+          </View>
+        </FilterButtonGroup>
+        <View
+          style={applyStyles('p-md center flex-row justify-space-between', {
+            backgroundColor: colors['gray-300'],
+          })}>
+          <View style={applyStyles('flex-row center', {height: 40})}>
+            <Icon
+              size={24}
+              name="truck"
+              type="feathericons"
+              color={colors.white}
+            />
+            <Text
+              style={applyStyles('text-700 px-md', {
+                fontSize: 16,
+                color: colors.white,
+              })}>
+              All Sales
+            </Text>
+          </View>
+          <View style={applyStyles('items-end')}>
+            <Text
+              style={applyStyles('text-400 text-uppercase', {
+                fontSize: 14,
+                color: colors.white,
+              })}>
+              You sold
+            </Text>
+            <Text
+              style={applyStyles('text-700 text-uppercase', {
+                fontSize: 16,
+                color: colors.white,
+              })}>
+              {amountWithCurrency(0)}
+            </Text>
+          </View>
+        </View>
+      </ReceiptingContainer>
     </CustomerContext.Provider>
   );
 };

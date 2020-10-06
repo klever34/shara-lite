@@ -21,3 +21,4 @@ export * from './FilterButton';
 export * from './FilterButtonGroup';
 export * from './DatePicker';
 export * from './receipt-preview';
+export * from './ReceiptingContainer';
