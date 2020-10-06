@@ -1,9 +1,9 @@
-import React from 'react';
-import {Modal, View, Text, Platform} from 'react-native';
-import Touchable from './Touchable';
-import Icon from './Icon';
-import {colors} from '@/styles';
 import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
+import React from 'react';
+import {Modal, Text, View} from 'react-native';
+import Icon from './Icon';
+import Touchable from './Touchable';
 
 type Props = {
   title: string;
@@ -18,32 +18,22 @@ export const PageModal = (props: Props) => {
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View
-        style={applyStyles('flex-row px-lg items-center', {
-          top: 0,
-          height: 64,
-          backgroundColor: colors.primary,
-        })}>
-        <Touchable onPress={onClose}>
-          <View style={applyStyles('p-lg items-center justify-center')}>
-            <Icon
-              size={24}
-              color={colors.white}
-              type="ionicons"
-              name={Platform.select({
-                android: 'md-arrow-back',
-                ios: 'ios-checkmark',
-              })}
-            />
-          </View>
-        </Touchable>
+        style={applyStyles(
+          'pt-32 flex-row items-center justify-space-between',
+        )}>
         <Text
-          style={applyStyles('heading-500 text-capitalize', {
+          style={applyStyles('text-500 text-uppercase', {
             fontSize: 18,
             paddingLeft: 16,
-            color: colors.white,
+            color: colors['gray-200'],
           })}>
           {title}
         </Text>
+        <Touchable onPress={onClose}>
+          <View style={applyStyles('p-lg items-center justify-center')}>
+            <Icon name="x" size={24} type="feathericons" />
+          </View>
+        </Touchable>
       </View>
       {children}
     </Modal>

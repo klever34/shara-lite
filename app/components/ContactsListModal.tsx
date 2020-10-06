@@ -1,3 +1,8 @@
+import {applyStyles} from '@/helpers/utils';
+import BottomHalfModal from '@/modals/BottomHalfModal';
+import {getContactService} from '@/services';
+import {PhoneContact} from '@/services/contact';
+import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
@@ -7,19 +12,14 @@ import {
   FlatList,
   Image,
   ListRenderItemInfo,
-  Modal,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
 import {TextInput} from 'react-native-gesture-handler';
-import {applyStyles} from '@/helpers/utils';
-import {getContactService} from '@/services';
-import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
-import {PhoneContact} from '@/services/contact';
 
 type Props<T> = {
   visible: boolean;
@@ -182,117 +182,124 @@ export function ContactsListModal<T>({
     [createdData, handleContactSelect],
   );
 
-  const renderContactListHeader = useCallback(
-    () => (
-      <Text style={applyStyles(styles.customerListHeader, 'text-500')}>
-        Select a contact
-      </Text>
-    ),
-    [],
-  );
-
   return (
-    <Modal
-      animationType="slide"
+    <BottomHalfModal
       visible={visible}
-      onDismiss={handleClose}
-      onRequestClose={handleClose}>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon
-            size={24}
-            style={styles.searchInputIcon}
-            type="feathericons"
-            name="search"
-            color={colors.primary}
-          />
-          <TextInput
-            value={searchInputValue}
-            onChangeText={handleSearch}
-            placeholder="Search Contacts"
-            placeholderTextColor={colors['gray-50']}
-            style={applyStyles(styles.searchInput, 'text-400')}
-          />
-        </View>
-      </View>
-      {onAddNew && (
-        <Touchable onPress={handleAddNew}>
-          <View
-            style={applyStyles('flex-row px-lg py-lg items-center', {
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
-            })}>
-            <Icon
-              size={24}
-              name="user-plus"
-              type="feathericons"
-              color={colors.primary}
+      closeModal={handleClose}
+      renderContent={({closeModal}) => (
+        <View>
+          {isLoading && !contacts.length ? (
+            <View style={applyStyles('items-center justify-center')}>
+              <ActivityIndicator color={colors.primary} />
+            </View>
+          ) : (
+            <FlatList
+              renderItem={renderContactItem}
+              data={orderBy(contacts, 'givenName', 'asc')}
+              keyExtractor={(item: PhoneContact, index) =>
+                `${item.recordID}-${index}`
+              }
+              ListHeaderComponent={
+                <>
+                  <View
+                    style={applyStyles(
+                      'py-md px-lg flex-row items-center justify-space-between',
+                      {
+                        borderBottomWidth: 1,
+                        borderBottomColor: colors['gray-20'],
+                      },
+                    )}>
+                    <View style={applyStyles({width: '48%'})}>
+                      <Text style={applyStyles('text-700 text-uppercase')}>
+                        Select a Customer
+                      </Text>
+                    </View>
+                    <View style={applyStyles({width: '48%'})}>
+                      {onAddNew && (
+                        <Button onPress={handleAddNew}>
+                          <View
+                            style={applyStyles('flex-row px-sm items-center')}>
+                            <Icon
+                              size={16}
+                              name="plus"
+                              type="feathericons"
+                              color={colors.white}
+                            />
+                            <Text
+                              style={applyStyles('text-400 text-uppercase ', {
+                                color: colors.white,
+                              })}>
+                              Create {entity}
+                            </Text>
+                          </View>
+                        </Button>
+                      )}
+                    </View>
+                  </View>
+                  <View style={styles.searchContainer}>
+                    <View style={styles.searchInputContainer}>
+                      <Icon
+                        size={24}
+                        style={styles.searchInputIcon}
+                        type="feathericons"
+                        name="search"
+                        color={colors.primary}
+                      />
+                      <TextInput
+                        value={searchInputValue}
+                        onChangeText={handleSearch}
+                        placeholder="Search for customer here..."
+                        placeholderTextColor={colors['gray-50']}
+                        style={applyStyles(styles.searchInput, 'text-400')}
+                      />
+                    </View>
+                  </View>
+                </>
+              }
+              ListEmptyComponent={
+                <View
+                  style={applyStyles('items-center', 'justify-center', {
+                    paddingVertical: 40,
+                  })}>
+                  <Text
+                    style={applyStyles('heading-700', 'text-center', {
+                      color: colors['gray-300'],
+                    })}>
+                    No results found
+                  </Text>
+                </View>
+              }
             />
-            <Text
-              style={applyStyles('text-400 pl-md', {
-                fontSize: 16,
-                color: colors['gray-300'],
-              })}>
-              Add New {entity}
-            </Text>
-          </View>
-        </Touchable>
-      )}
-
-      {isLoading && !contacts.length ? (
-        <View style={applyStyles('flex-1 items-center justify-center')}>
-          <ActivityIndicator color={colors.primary} />
-        </View>
-      ) : (
-        <FlatList
-          style={applyStyles('flex-1')}
-          renderItem={renderContactItem}
-          data={orderBy(contacts, 'givenName', 'asc')}
-          ListHeaderComponent={renderContactListHeader}
-          keyExtractor={(item: PhoneContact, index) =>
-            `${item.recordID}-${index}`
-          }
-          ListEmptyComponent={
-            <View
-              style={applyStyles('flex-1', 'items-center', 'justify-center', {
-                paddingVertical: 40,
+          )}
+          <View>
+            <Button
+              onPress={closeModal}
+              variantColor="clear"
+              style={applyStyles({
+                width: '100%',
+                borderTopWidth: 1,
+                borderTopColor: colors['gray-20'],
               })}>
               <Text
-                style={applyStyles('heading-700', 'text-center', {
-                  color: colors['gray-300'],
+                style={applyStyles('text-400', 'text-uppercase', {
+                  color: colors.primary,
                 })}>
-                No results found
+                Close
               </Text>
-            </View>
-          }
-        />
+            </Button>
+          </View>
+        </View>
       )}
-      <View>
-        <Button
-          onPress={handleClose}
-          variantColor="clear"
-          style={applyStyles({
-            width: '100%',
-            borderTopWidth: 1,
-            borderTopColor: colors['gray-20'],
-          })}>
-          <Text
-            style={applyStyles('text-400', 'text-uppercase', {
-              color: colors.primary,
-            })}>
-            Close
-          </Text>
-        </Button>
-      </View>
-    </Modal>
+    />
   );
 }
 
 const styles = StyleSheet.create({
   searchContainer: {
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: colors.primary,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors['gray-20'],
   },
   searchInputContainer: {
     position: 'relative',
@@ -305,7 +312,6 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 48,
-    elevation: 2,
     fontSize: 16,
     borderRadius: 8,
     paddingLeft: 36,

@@ -260,9 +260,18 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   useEffect(() => {
     return navigation.addListener('focus', () => {
       const allReceiptsData = getReceipts({realm});
-      setReceipts(allReceiptsData);
+      setReceipts(
+        allReceiptsData.filter((receipt) => {
+          if (filter.date && receipt.created_at) {
+            return isEqual(
+              new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+              new Date(format(filter.date, 'MMM dd, yyyy')),
+            );
+          }
+        }),
+      );
     });
-  }, [navigation, realm]);
+  }, [filter.date, navigation, realm]);
 
   return (
     <KeyboardAvoidingView

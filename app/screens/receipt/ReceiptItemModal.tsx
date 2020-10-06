@@ -156,7 +156,9 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
         <TextInput
           value={name}
           onChangeText={(text) => handleNameChange(text)}
-          style={applyStyles('px-12 py-0', {fontSize: 16})}
+          style={applyStyles('px-12 py-0 text-400', {
+            fontSize: 16,
+          })}
           placeholder="Enter item name here..."
         />
       </View>
@@ -228,7 +230,7 @@ const ItemQuantitySection = ({
           value={quantity}
           keyboardType="numeric"
           onChangeText={(text) => handleQuantityChange(text)}
-          style={applyStyles('px-12 py-0', {fontSize: 16})}
+          style={applyStyles('px-12 py-0 text-400', {fontSize: 16})}
           placeholder="Enter quantity here..."
         />
       </View>
