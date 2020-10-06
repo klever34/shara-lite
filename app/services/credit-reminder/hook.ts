@@ -39,8 +39,8 @@ export const useCreditReminder = () => {
     if (realm && creditNumber) {
       const message =
         creditNumber > 1
-          ? `You have ${creditDueTomorrow.length} credits due tomorrow. Do you want to send reminders?`
-          : `You have ${creditDueTomorrow.length} credit due tomorrow. Do you want to send a reminder?`;
+          ? `You have ${creditNumber} credits due tomorrow. Do you want to send reminders?`
+          : `You have ${creditNumber} credit due tomorrow. Do you want to send a reminder?`;
       notificationService.localNotification({
         id: 1,
         message,

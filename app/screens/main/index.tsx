@@ -1,6 +1,7 @@
 import {applyStyles} from '@/helpers/utils';
 import {ICredit} from '@/models/Credit';
 import {IPayment} from '@/models/Payment';
+import {IReceipt} from '@/models/Receipt';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useRealm} from '@/services/realm';
@@ -29,6 +30,7 @@ import {CustomerTotalCredit} from './customers/CustomerTotalCredit';
 import OrderDetails from './customers/OrderDetails';
 import PaymentDetails from './customers/PaymentDetails';
 import RecordPayment from './customers/RecordPayment';
+import {SalesDetails} from './home';
 import HomeScreen from './HomeScreen';
 import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
 import {BusinessSettings, UserProfileSettings} from './settings';
@@ -49,6 +51,7 @@ export type MainStackParamList = {
   Customers: undefined;
   AddCustomer: undefined;
   UserProfileSettings: undefined;
+  SalesDetails: {id: IReceipt['_id']};
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -247,6 +250,11 @@ const MainScreens = () => {
         <MainStack.Screen
           name="UserProfileSettings"
           component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="SalesDetails"
+          component={SalesDetails}
           options={{headerShown: false}}
         />
       </MainStack.Navigator>

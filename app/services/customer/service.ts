@@ -3,10 +3,10 @@ import Realm, {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
 import {ObjectId} from 'bson';
-import {getAnalyticsService} from '@/services/index';
+import {getAnalyticsService} from '@/services';
 
 export const getCustomers = ({realm}: {realm: Realm}) => {
-  return realm.objects<ICustomer>(modelName);
+  return realm.objects<ICustomer>(modelName).filtered('is_deleted = false');
 };
 
 export const saveCustomer = ({

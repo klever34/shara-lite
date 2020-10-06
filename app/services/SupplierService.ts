@@ -5,7 +5,9 @@ import {omit} from 'lodash';
 import {getAnalyticsService} from '@/services';
 
 export const getSuppliers = ({realm}: {realm: Realm}): ISupplier[] => {
-  return (realm.objects<ISupplier>(modelName) as unknown) as ISupplier[];
+  return (realm
+    .objects<ISupplier>(modelName)
+    .filtered('is_deleted = false') as unknown) as ISupplier[];
 };
 
 export const getSupplierByMobile = ({

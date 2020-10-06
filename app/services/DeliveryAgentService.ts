@@ -9,9 +9,9 @@ export const getDeliveryAgents = ({
 }: {
   realm: Realm;
 }): IDeliveryAgent[] => {
-  return (realm.objects<IDeliveryAgent>(
-    modelName,
-  ) as unknown) as IDeliveryAgent[];
+  return (realm
+    .objects<IDeliveryAgent>(modelName)
+    .filtered('is_deleted = false') as unknown) as IDeliveryAgent[];
 };
 
 export const getDeliveryAgentByMobile = ({
