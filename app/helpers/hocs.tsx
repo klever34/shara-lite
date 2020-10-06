@@ -9,6 +9,7 @@ import LoadingModal from '../modals/LoadingModal';
 import {ModalPropsList, ModalVisibilityList} from 'types/modal';
 import BottomHalfModal from '../modals/BottomHalfModal';
 import OptionsModal from '../modals/OptionsModal';
+import FullModal from '@/modals/FullModal';
 
 type OpenModal = <K extends keyof ModalPropsList>(
   modalType: K,
@@ -22,6 +23,9 @@ export type ModalWrapperFields = {
 const defaultModalPropsList: ModalPropsList = {
   loading: {text: ''},
   'bottom-half': {
+    renderContent: () => null,
+  },
+  full: {
     renderContent: () => null,
   },
   options: {
@@ -92,6 +96,11 @@ export const withModal = (Component: ElementType) => (
         visible={modalVisibility['bottom-half']}
         closeModal={closeModal}
         {...modalPropsList['bottom-half']}
+      />
+      <FullModal
+        visible={modalVisibility.full}
+        closeModal={closeModal}
+        {...modalPropsList.full}
       />
       <OptionsModal
         visible={modalVisibility.options}

@@ -1,0 +1,453 @@
+import {
+  Button,
+  CurrencyInput,
+  DatePicker,
+  SummaryTableFooter,
+  SummaryTableHeader,
+  summaryTableHeaderStyles,
+  SummaryTableItem,
+  SummaryTableItemProps,
+  summaryTableStyles,
+} from '@/components';
+import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IReceiptItem} from '@/models/ReceiptItem';
+import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
+import {saveReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
+import {useRealm} from 'app-v1/services/realm';
+import {addDays} from 'date-fns';
+import {format} from 'date-fns/esm';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Text, TextInput, View, FlatList, ToastAndroid} from 'react-native';
+import {ReceiptItemModalContent} from './ReceiptItemModal';
+
+type Props = {
+  closeModal: () => void;
+} & ModalWrapperFields;
+
+export const CreateReceipt = withModal((props: Props) => {
+  const {openModal} = props;
+
+  const realm = useRealm();
+  const handleError = useErrorHandler();
+
+  const [note, setNote] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+  const [amountPaid, setAmountPaid] = useState(totalAmount || 0);
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    addDays(new Date(), 7),
+  );
+  const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>([]);
+  const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
+
+  const tax = 0;
+  const creditAmount = totalAmount - amountPaid;
+
+  const handleSetCustomer = useCallback((value: ICustomer) => {
+    setCustomer(value);
+  }, []);
+
+  const handleNoteChange = useCallback((text: string) => {
+    setNote(text);
+  }, []);
+
+  const handleAmountPaidChange = useCallback((text) => {
+    setAmountPaid(text);
+  }, []);
+
+  const handleDueDateChange = useCallback((date?: Date) => {
+    setDueDate(date);
+  }, []);
+
+  const handleAddReceiptItem = useCallback(
+    (item: IReceiptItem) => {
+      getAnalyticsService()
+        .logEvent('productAddedToReceipt')
+        .catch(handleError);
+
+      setReceiptItems([item, ...receiptItems]);
+    },
+    [handleError, receiptItems],
+  );
+
+  const handleUpdateReceiptItem = useCallback(
+    (item: IReceiptItem) => {
+      setReceiptItems(
+        receiptItems.map((receiptItem) => {
+          if (receiptItem._id?.toString() === item._id?.toString()) {
+            return item;
+          }
+          return receiptItem;
+        }),
+      );
+    },
+    [receiptItems],
+  );
+
+  const handleRemoveReceiptItem = useCallback(
+    (item: IReceiptItem) => {
+      setReceiptItems(
+        receiptItems.filter(
+          (receiptItem) => receiptItem._id?.toString() !== item._id?.toString(),
+        ),
+      );
+    },
+    [receiptItems],
+  );
+
+  const handleClearReceipt = useCallback(() => {
+    setReceiptItems([]);
+  }, []);
+
+  const handleSaveReceipt = useCallback(() => {
+    setIsSaving(true);
+    setTimeout(() => {
+      saveReceipt({
+        tax,
+        realm,
+        dueDate,
+        customer,
+        amountPaid,
+        totalAmount,
+        payments: [],
+        creditAmount,
+        receiptItems,
+      });
+      setIsSaving(false);
+      handleClearReceipt();
+      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
+    }, 500);
+  }, [
+    realm,
+    dueDate,
+    customer,
+    totalAmount,
+    creditAmount,
+    receiptItems,
+    amountPaid,
+    handleClearReceipt,
+  ]);
+
+  const handleOpenReceiptItemModal = useCallback(() => {
+    const closeReceiptItemModal = openModal('full', {
+      renderContent: () => (
+        <ReceiptItemModalContent
+          onDone={handleAddReceiptItem}
+          closeModal={closeReceiptItemModal}
+        />
+      ),
+    });
+  }, [openModal, handleAddReceiptItem]);
+
+  const handleOpenEditReceiptItemModal = useCallback(
+    (item: IReceiptItem) => {
+      const closeReceiptItemModal = openModal('full', {
+        renderContent: () => (
+          <ReceiptItemModalContent
+            item={item}
+            onDone={handleUpdateReceiptItem}
+            closeModal={closeReceiptItemModal}
+            onDelete={() => {
+              handleRemoveReceiptItem(item);
+              closeReceiptItemModal();
+            }}
+          />
+        ),
+      });
+    },
+    [openModal, handleUpdateReceiptItem, handleRemoveReceiptItem],
+  );
+
+  const renderReceiptItem = useCallback(
+    ({item}: SummaryTableItemProps) => (
+      <SummaryTableItem
+        item={item}
+        onPress={() => handleOpenEditReceiptItemModal(item)}
+      />
+    ),
+    [handleOpenEditReceiptItemModal],
+  );
+
+  useEffect(() => {
+    const total = receiptItems
+      .map(({quantity, price}) => {
+        const itemPrice = price ? price : 0;
+        const itemQuantity = quantity ? quantity : 0;
+        return itemPrice * itemQuantity;
+      })
+      .reduce((acc, curr) => acc + curr, 0);
+
+    setTotalAmount(total);
+    setAmountPaid(total);
+  }, [receiptItems]);
+
+  return (
+    <View>
+      <View
+        style={applyStyles({
+          paddingTop: 18,
+          paddingBottom: 32,
+          borderTopLeftRadius: 16,
+          borderTopRightRadius: 16,
+          backgroundColor: colors.white,
+        })}>
+        <FlatList
+          data={receiptItems}
+          persistentScrollbar
+          renderItem={renderReceiptItem}
+          keyExtractor={(item) => `${item?._id?.toString()}`}
+          ListHeaderComponent={
+            <>
+              <View
+                style={applyStyles('px-lg flex-row items-center', {
+                  paddingBottom: 32,
+                })}>
+                <View style={applyStyles({width: '48%'})}>
+                  <Text style={applyStyles('text-700 text-uppercase')}>
+                    Create a receipt
+                  </Text>
+                </View>
+                <View style={applyStyles('items-end', {width: '48%'})}>
+                  <Touchable>
+                    <View style={applyStyles('flex-row items-center')}>
+                      <Icon
+                        size={24}
+                        name="camera"
+                        type="feathericons"
+                        color={colors.primary}
+                      />
+                      <Text
+                        style={applyStyles('pl-sm text-400 text-uppercase', {
+                          color: colors.primary,
+                        })}>
+                        Snap receipt
+                      </Text>
+                    </View>
+                  </Touchable>
+                </View>
+              </View>
+
+              <View style={applyStyles('px-lg ', {paddingBottom: 32})}>
+                <Touchable onPress={() => handleSetCustomer({} as ICustomer)}>
+                  <View style={applyStyles('pb-lg flex-row items-center')}>
+                    <Text
+                      style={applyStyles('text-400', {
+                        color: colors['gray-200'],
+                      })}>
+                      Receipt for:
+                    </Text>
+                    <Text
+                      style={applyStyles('text-500 pl-sm', {
+                        color: colors.primary,
+                        textDecorationLine: 'underline',
+                        textDecorationColor: colors.primary,
+                      })}>
+                      Add Customer Details
+                    </Text>
+                  </View>
+                </Touchable>
+                <View style={applyStyles('pb-md')}>
+                  <Text
+                    style={applyStyles('text-400', {
+                      color: colors['gray-200'],
+                    })}>
+                    Date: {format(new Date(), 'dd/MM/yyyy, hh:mm:a')}
+                  </Text>
+                </View>
+              </View>
+              <SummaryTableHeader />
+
+              <View
+                style={applyStyles(
+                  summaryTableStyles.row,
+                  summaryTableHeaderStyles.row,
+                  {
+                    borderTopWidth: 0,
+                  },
+                )}>
+                <View
+                  style={applyStyles(
+                    summaryTableStyles.column,
+                    summaryTableStyles['column-30'],
+                    {
+                      height: 48,
+                    },
+                  )}>
+                  <Touchable onPress={handleOpenReceiptItemModal}>
+                    <View
+                      style={applyStyles(
+                        'px-xs flex-row items-center h-full w-full',
+                      )}>
+                      <Icon
+                        name="plus"
+                        type="feathericons"
+                        color={colors.primary}
+                      />
+                      <Text
+                        style={applyStyles('text-500', {
+                          color: colors.primary,
+                        })}>
+                        Add Product
+                      </Text>
+                    </View>
+                  </Touchable>
+                </View>
+                <View
+                  style={applyStyles(
+                    summaryTableStyles.column,
+                    summaryTableStyles['column-30'],
+                    {
+                      height: 48,
+                      alignItems: 'flex-end',
+                    },
+                  )}
+                />
+                <View
+                  style={applyStyles(
+                    summaryTableStyles['column-10'],
+                    summaryTableStyles.column,
+                    {
+                      height: 48,
+                      alignItems: 'flex-end',
+                    },
+                  )}
+                />
+                <View
+                  style={applyStyles(summaryTableStyles['column-30'], {
+                    height: 48,
+                    alignItems: 'flex-end',
+                  })}
+                />
+              </View>
+            </>
+          }
+          ListFooterComponent={
+            <>
+              <View style={applyStyles('pb-32')}>
+                <SummaryTableFooter tax={tax} totalAmount={totalAmount} />
+              </View>
+              <View style={applyStyles('px-xl', {paddingBottom: 40})}>
+                <View style={applyStyles('pb-xl flex-row items-center')}>
+                  <Text style={applyStyles('text-400')}>Paid:</Text>
+                  <View style={applyStyles('ml-sm')}>
+                    <CurrencyInput
+                      value={amountPaid.toString()}
+                      inputStyle={applyStyles({
+                        height: 48,
+                        width: 200,
+                        borderWidth: 1,
+                        paddingTop: 14,
+                        paddingLeft: 20,
+                        fontFamily: 'Rubik-Regular',
+                        borderColor: colors['gray-50'],
+                        borderBottomColor: colors['gray-50'],
+                      })}
+                      iconStyle={applyStyles('px-xs')}
+                      placeholder="How much was paid?"
+                      onChange={(value) => handleAmountPaidChange(value)}
+                    />
+                  </View>
+                </View>
+                <View style={applyStyles('flex-row')}>
+                  <Text style={applyStyles('text-400')}>Note:</Text>
+                  <View style={applyStyles('ml-sm')}>
+                    <TextInput
+                      multiline
+                      value={note}
+                      style={applyStyles('px-lg py-0', {
+                        width: 320,
+                        height: 100,
+                        borderWidth: 1,
+                        fontFamily: 'Rubik-Regular',
+                        borderColor: colors['gray-50'],
+                      })}
+                      onChangeText={handleNoteChange}
+                      placeholder="Add extra info here e.g Driver details, vehicle number etc."
+                    />
+                  </View>
+                </View>
+              </View>
+              {!!creditAmount && (
+                <View
+                  style={applyStyles('px-xl', {
+                    borderTopWidth: 1,
+                    paddingBottom: 40,
+                    borderTopColor: colors['gray-20'],
+                  })}>
+                  <View style={applyStyles('pt-md pb-xl center')}>
+                    <Text
+                      style={applyStyles('text-500', {
+                        fontSize: 16,
+                        color: colors['gray-200'],
+                      })}>
+                      Credit Details
+                    </Text>
+                  </View>
+                  <View
+                    style={applyStyles(
+                      'flex-row items-center, justify-space-between',
+                    )}>
+                    <View style={applyStyles('flex-row items-center')}>
+                      <View style={applyStyles('pr-sm')}>
+                        <Text style={applyStyles('text-400')}>Balance:</Text>
+                      </View>
+                      <View>
+                        <Text style={applyStyles('text-500')}>
+                          {amountWithCurrency(creditAmount)}
+                        </Text>
+                      </View>
+                    </View>
+                    {dueDate && (
+                      <DatePicker
+                        value={dueDate}
+                        minimumDate={new Date()}
+                        onChange={(e: Event, date?: Date) =>
+                          handleDueDateChange(date)
+                        }>
+                        {(toggleShow) => (
+                          <Touchable onPress={toggleShow}>
+                            <View style={applyStyles('flex-row items-center')}>
+                              <View style={applyStyles('pr-sm')}>
+                                <Text style={applyStyles('text-400')}>
+                                  Collect on:
+                                </Text>
+                              </View>
+                              <View
+                                style={applyStyles('p-sm', {
+                                  borderWidth: 1,
+                                  borderColor: colors['gray-900'],
+                                })}>
+                                <Text style={applyStyles('text-500')}>
+                                  {format(dueDate, 'dd/MM/yyyy')}
+                                </Text>
+                              </View>
+                            </View>
+                          </Touchable>
+                        )}
+                      </DatePicker>
+                    )}
+                  </View>
+                </View>
+              )}
+              <View style={applyStyles('px-xl pb-md')}>
+                <Button
+                  title="create"
+                  variantColor="red"
+                  isLoading={isSaving}
+                  onPress={handleSaveReceipt}
+                  disabled={!receiptItems.length}
+                />
+              </View>
+            </>
+          }
+        />
+      </View>
+    </View>
+  );
+});

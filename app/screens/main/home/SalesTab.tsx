@@ -18,6 +18,8 @@ import {sortBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {CreateReceipt} from '@/screens/receipt';
 
 const statusFilters = [
   {label: 'All', value: 'all'},
@@ -27,10 +29,13 @@ const statusFilters = [
   {label: 'Cancelled', value: 'cancelled'},
 ];
 
-export const SalesTab = () => {
+type SalesTabProps = ModalWrapperFields & {};
+
+export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   const realm = useRealm();
-  const allReceipts = getReceipts({realm});
   const navigation = useAppNavigation();
+  const handleError = useErrorHandler();
+  const allReceipts = getReceipts({realm});
 
   const getTotalAmount = useCallback(
     (receiptsData: IReceipt[]) =>
@@ -67,7 +72,6 @@ export const SalesTab = () => {
       ),
     ) || [],
   );
-
   const emptyStateText = isToday(filter.date)
     ? "You've made no sales today."
     : 'You made no sales on this day.';
@@ -191,7 +195,7 @@ export const SalesTab = () => {
       handleStatusFilter,
     ],
   );
-  const handleError = useErrorHandler();
+
   const handleListItemSelect = useCallback(
     (id: IReceipt['_id']) => {
       getAnalyticsService()
@@ -204,6 +208,13 @@ export const SalesTab = () => {
     },
     [handleError, navigation],
   );
+
+  const handleOpenModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => <CreateReceipt closeModal={closeModal} />,
+    });
+  }, [openModal]);
+
   const getCustomerText = useCallback(
     (receipt: IReceipt, customerTextStyle: TextStyle) => {
       if (!receipt.isPaid) {
@@ -235,12 +246,14 @@ export const SalesTab = () => {
     },
     [],
   );
+
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <ReceiptingContainer
         receipts={receipts}
         emptyStateText={emptyStateText}
+        onCreateReceipt={handleOpenModal}
         handleListItemSelect={handleListItemSelect}
         getReceiptItemLeftText={getCustomerText}>
         <FilterButtonGroup
@@ -317,4 +330,4 @@ export const SalesTab = () => {
       </ReceiptingContainer>
     </KeyboardAvoidingView>
   );
-};
+});
