@@ -421,7 +421,7 @@ export const ReceiptPreview = ({
   );
 
   const handleEditReceipt = useCallback(() => {
-    Alert.alert('Coming Soon', 'This feature is coming in the next sprint');
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, []);
 
   const receiptActions = [

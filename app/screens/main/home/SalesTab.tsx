@@ -104,7 +104,11 @@ export const SalesTab = () => {
           break;
         case 'paid':
           const paidReceipts = allReceipts
-            .filter((receipt) => receipt.total_amount === receipt.amount_paid)
+            .filter(
+              (receipt) =>
+                receipt.total_amount === receipt.amount_paid &&
+                !receipt.is_cancelled,
+            )
             .filter((item) => {
               if (dateFilter && item.created_at) {
                 return isEqual(
@@ -118,7 +122,11 @@ export const SalesTab = () => {
           break;
         case 'unpaid':
           const unPaidReceipts = allReceipts
-            .filter((receipt) => receipt.total_amount !== receipt.amount_paid)
+            .filter(
+              (receipt) =>
+                receipt.total_amount !== receipt.amount_paid &&
+                !receipt.is_cancelled,
+            )
             .filter((item) => {
               if (dateFilter && item.created_at) {
                 return isEqual(
