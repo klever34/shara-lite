@@ -40,8 +40,10 @@ import {PreviewActionButton} from './PreviewActionButton';
 export const ReceiptPreview = ({
   isNew,
   receipt,
+  onClose,
 }: {
   isNew: boolean;
+  onClose?(): void;
   receipt?: IReceipt;
 }) => {
   const realm = useRealm();
@@ -413,11 +415,11 @@ export const ReceiptPreview = ({
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
-        navigation.goBack();
+        onClose && onClose();
         ToastAndroid.show('Receipt cancelled', ToastAndroid.SHORT);
       }, 300);
     },
-    [realm, receipt, navigation],
+    [realm, receipt, onClose],
   );
 
   const handleEditReceipt = useCallback(() => {
@@ -513,7 +515,7 @@ export const ReceiptPreview = ({
         </View>
       )}
 
-      {!isFulfilled && (
+      {!isFulfilled && !isNew && (
         <View style={applyStyles('mb-xl')}>
           <View style={applyStyles('mb-md')}>
             <CurrencyInput

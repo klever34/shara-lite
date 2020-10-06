@@ -1,12 +1,16 @@
 import {Button, CurrencyInput} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/helpers/utils';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {IProduct} from '@/models/Product';
 import {IReceiptItem} from '@/models/ReceiptItem';
+import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
+import {getProducts, saveProduct} from '@/services/ProductService';
+import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import React, {useCallback, useState} from 'react';
-import {Text, View} from 'react-native';
-import {TextInput} from 'react-native-gesture-handler';
+import {Text, View, TextInput, FlatList} from 'react-native';
 
 type Props = {
   item?: IReceiptItem;
@@ -96,11 +100,55 @@ const SectionButtons = ({
 };
 
 const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
+  const realm = useRealm();
+  const products = getProducts({realm});
   const [name, setName] = useState(receiptItem.name || '');
 
   const handleNameChange = useCallback((value) => {
     setName(value);
   }, []);
+
+  const handleProductSelect = useCallback((product: IProduct) => {
+    setName(product.name);
+  }, []);
+
+  const renderProductItem = useCallback(
+    ({item}: {item: IProduct}) => {
+      return (
+        <Touchable onPress={() => handleProductSelect(item)}>
+          <View
+            style={applyStyles(
+              'px-lg flex-row items-center justify-space-between',
+              {
+                height: 60,
+                borderBottomWidth: 1,
+                borderColor: colors['gray-20'],
+              },
+            )}>
+            <View>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                {item.name}
+              </Text>
+            </View>
+            <View>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                {amountWithCurrency(item.price)}
+              </Text>
+            </View>
+          </View>
+        </Touchable>
+      );
+    },
+    [handleProductSelect],
+  );
 
   return (
     <View>
@@ -116,6 +164,11 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
         nextButtonText="Unit Price"
         nextButtonDisabled={!name}
         onNext={() => onNext(name, 'name')}
+      />
+      <FlatList
+        data={products}
+        renderItem={renderProductItem}
+        keyExtractor={(item) => `${item._id}`}
       />
     </View>
   );
@@ -185,7 +238,7 @@ const ItemQuantitySection = ({
         onPrevious={onPrevious}
         nextButtonDisabled={!quantity}
         previousButtonText="Unit Price"
-        onNext={() => onNext(quantity, 'quantity')}
+        onNext={() => onNext(parseFloat(quantity), 'quantity')}
       />
     </View>
   );
@@ -193,6 +246,10 @@ const ItemQuantitySection = ({
 
 export const ReceiptItemModalContent = (props: Props) => {
   const {item, closeModal, onDone, onDelete} = props;
+
+  const realm = useRealm();
+  const handleError = useErrorHandler();
+
   const [section, setSection] = useState(0);
   const [receiptItem, setReceiptItem] = useState<IReceiptItem>(
     item || ({} as IReceiptItem),
@@ -206,10 +263,10 @@ export const ReceiptItemModalContent = (props: Props) => {
 
   const handleNext = useCallback(
     (data: string | number, key: string) => {
-      const payload = {
+      let payload = {
         ...receiptItem,
         product: {
-          ...receiptItem,
+          ...receiptItem.product,
           [key]: data,
         },
         [key]: data,
@@ -218,12 +275,20 @@ export const ReceiptItemModalContent = (props: Props) => {
         setReceiptItem(payload);
         setSection(section + 1);
       } else {
+        if (!receiptItem.product._id) {
+          const createdProduct = saveProduct({
+            realm,
+            product: receiptItem.product,
+          });
+          payload = {...payload, product: createdProduct};
+          getAnalyticsService().logEvent('productAdded').catch(handleError);
+        }
         setReceiptItem(payload);
         onDone(payload);
         closeModal();
       }
     },
-    [section, onDone, closeModal, receiptItem],
+    [receiptItem, section, onDone, closeModal, realm, handleError],
   );
 
   return (

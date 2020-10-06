@@ -14,24 +14,26 @@ import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
+import {useRealm} from '@/services/realm';
 import {saveReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
-import {useRealm} from 'app-v1/services/realm';
 import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text, TextInput, View, FlatList, ToastAndroid} from 'react-native';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
+import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 
 type Props = {
   closeModal: () => void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {openModal} = props;
+  const {openModal, closeModal} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -105,35 +107,6 @@ export const CreateReceipt = withModal((props: Props) => {
     setReceiptItems([]);
   }, []);
 
-  const handleSaveReceipt = useCallback(() => {
-    setIsSaving(true);
-    setTimeout(() => {
-      saveReceipt({
-        tax,
-        realm,
-        dueDate,
-        customer,
-        amountPaid,
-        totalAmount,
-        payments: [],
-        creditAmount,
-        receiptItems,
-      });
-      setIsSaving(false);
-      handleClearReceipt();
-      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
-    }, 500);
-  }, [
-    realm,
-    dueDate,
-    customer,
-    totalAmount,
-    creditAmount,
-    receiptItems,
-    amountPaid,
-    handleClearReceipt,
-  ]);
-
   const handleOpenReceiptItemModal = useCallback(() => {
     const closeReceiptItemModal = openModal('full', {
       renderContent: () => (
@@ -163,6 +136,48 @@ export const CreateReceipt = withModal((props: Props) => {
     },
     [openModal, handleUpdateReceiptItem, handleRemoveReceiptItem],
   );
+
+  const handleOpenReceiptPreviewModal = useCallback(
+    (item: IReceipt) => {
+      openModal('full', {
+        renderContent: () => (
+          <ReceiptPreviewModal receiptId={item._id} closeModal={closeModal} />
+        ),
+      });
+    },
+    [openModal, closeModal],
+  );
+
+  const handleSaveReceipt = useCallback(() => {
+    setIsSaving(true);
+    setTimeout(() => {
+      const createdReceipt = saveReceipt({
+        tax,
+        realm,
+        dueDate,
+        customer,
+        amountPaid,
+        totalAmount,
+        creditAmount,
+        receiptItems,
+        payments: [{method: '', amount: amountPaid}],
+      });
+      setIsSaving(false);
+      handleClearReceipt();
+      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
+      handleOpenReceiptPreviewModal(createdReceipt);
+    }, 500);
+  }, [
+    realm,
+    dueDate,
+    customer,
+    amountPaid,
+    totalAmount,
+    creditAmount,
+    receiptItems,
+    handleClearReceipt,
+    handleOpenReceiptPreviewModal,
+  ]);
 
   const renderReceiptItem = useCallback(
     ({item}: SummaryTableItemProps) => (

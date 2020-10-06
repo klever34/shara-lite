@@ -10,10 +10,8 @@ const FullModal = ({visible, closeModal, renderContent}: FullModalProps) => {
   return (
     <Modal
       isVisible={visible}
-      onSwipeComplete={closeModal}
       onBackdropPress={closeModal}
       onBackButtonPress={closeModal}
-      swipeDirection={['down']}
       style={applyStyles('justify-end m-0')}>
       <View style={styles.content}>{renderContent({closeModal})}</View>
     </Modal>

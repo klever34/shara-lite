@@ -15,7 +15,7 @@ import {getReceipts} from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
 import {sortBy} from 'lodash';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
@@ -59,17 +59,27 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   const [totalAmount, setTotalAmount] = useState(
     getTotalAmount(
       sortReceipts(
-        allReceipts.filter(
-          (receipt) => receipt.created_at?.getTime() === filter.date.getTime(),
-        ),
+        allReceipts.filter((receipt) => {
+          if (filter.date && receipt.created_at) {
+            return isEqual(
+              new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+              new Date(format(filter.date, 'MMM dd, yyyy')),
+            );
+          }
+        }),
       ),
     ) || 0,
   );
   const [receipts, setReceipts] = useState(
     sortReceipts(
-      allReceipts.filter(
-        (receipt) => receipt.created_at?.getTime() === filter.date.getTime(),
-      ),
+      allReceipts.filter((receipt) => {
+        if (filter.date && receipt.created_at) {
+          return isEqual(
+            new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+            new Date(format(filter.date, 'MMM dd, yyyy')),
+          );
+        }
+      }),
     ) || [],
   );
   const emptyStateText = isToday(filter.date)
@@ -246,6 +256,13 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     },
     [],
   );
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      const allReceiptsData = getReceipts({realm});
+      setReceipts(allReceiptsData);
+    });
+  }, [navigation, realm]);
 
   return (
     <KeyboardAvoidingView
