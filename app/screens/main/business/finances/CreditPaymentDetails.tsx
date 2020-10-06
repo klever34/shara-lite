@@ -3,13 +3,11 @@ import {format} from 'date-fns';
 import React, {useLayoutEffect} from 'react';
 import {ScrollView, StyleSheet, Text, View} from 'react-native';
 import HeaderRight from '../../../../components/HeaderRight';
-import {amountWithCurrency, applyStyles} from '../../../../helpers/utils';
-import {ICreditPayment} from '../../../../models/CreditPayment';
-import {colors} from '../../../../styles';
-import {useScreenRecord} from '../../../../services/analytics';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICreditPayment} from '@/models/CreditPayment';
+import {colors} from '@/styles';
 
 export const CreditPaymentDetails = ({route}: any) => {
-  useScreenRecord();
   const navigation = useNavigation();
   const {
     creditPaymentDetails,

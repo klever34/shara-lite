@@ -1,6 +1,7 @@
 apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
+import groovy.json.JsonSlurper
 
 /**
  * The react.gradle file registers a task for each build variant (e.g. bundleDebugJsAndAssets
@@ -78,7 +79,7 @@ import com.android.build.OutputFile
  */
 
 project.ext.react = [
-    enableHermes: false,  // clean and rebuild if changing
+        enableHermes: false,  // clean and rebuild if changing
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
@@ -120,6 +121,23 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  */
 def enableHermes = project.ext.react.get("enableHermes", false);
 
+/**
+ * Backup version code
+ */
+def vcode = (int) (((new Date().getTime() / 1000) - 1451606400) / 10)
+
+/**
+ * Get version from package.json
+ * @return
+ */
+def getVersionFromPackageJson() {
+    //  Read and parse package.json file from project root
+    def inputFile = new File("$rootDir/../package.json")
+    def packageJson = new JsonSlurper().parseText(inputFile.text)
+
+    // Return the version, you can get any value this way
+    return packageJson["version"]
+}
 
 /**
  * Versioning from environment variables
@@ -127,8 +145,8 @@ def enableHermes = project.ext.react.get("enableHermes", false);
  * This is used by CircleCI to set the build num as version code and to get the
  * version from package.json and set it as the version name
  */
-def appVersionCode = Integer.valueOf(System.getenv('SHARA_VERSION_CODE') ?: 10000).toInteger()
-def appVersionName = System.getenv('SHARA_VERSION_NAME') ?: "0.1.0-default"
+def appVersionCode = Integer.valueOf(System.getenv('SHARA_VERSION_CODE') ?: vcode).toInteger()
+def appVersionName = System.getenv('SHARA_VERSION_NAME') ?: getVersionFromPackageJson()
 
 /**
  * Keystore credentials from environment variables
@@ -137,7 +155,6 @@ def sharaKeyAlias = System.getenv('SHARA_UPLOAD_KEY_ALIAS') ?: "keyAlias"
 def sharaKeyPassword = System.getenv('SHARA_UPLOAD_KEY_PASSWORD') ?: "keyPassword"
 def sharaStoreFile = System.getenv('SHARA_UPLOAD_STORE_FILE') ?: "storeFile"
 def sharaStorePassword = System.getenv('SHARA_UPLOAD_STORE_PASSWORD') ?: "storePassword"
-
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -254,17 +271,19 @@ dependencies {
     implementation "com.facebook.react:react-native:+"  // From node_modules
     implementation 'com.google.firebase:firebase-analytics:17.2.2'
     implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    implementation "com.google.android.gms:play-services-base:16.0.1"
+    implementation "com.google.android.gms:play-services-location:16.0.0"
 
     debugImplementation("com.facebook.flipper:flipper:${FLIPPER_VERSION}") {
-      exclude group:'com.facebook.fbjni'
+        exclude group: 'com.facebook.fbjni'
     }
 
     debugImplementation("com.facebook.flipper:flipper-network-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
+        exclude group: 'com.facebook.flipper'
     }
 
     debugImplementation("com.facebook.flipper:flipper-fresco-plugin:${FLIPPER_VERSION}") {
-        exclude group:'com.facebook.flipper'
+        exclude group: 'com.facebook.flipper'
     }
 
     if (enableHermes) {
@@ -285,6 +304,9 @@ task copyDownloadableDepsToLibs(type: Copy) {
 
 apply plugin: 'com.android.application'
 apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.firebase.firebase-perf'
+apply plugin: 'com.google.firebase.crashlytics'
 apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
 apply from: "../../node_modules/react-native-vector-icons/fonts.gradle"
 apply from: project(':react-native-config').projectDir.getPath() + "/dotenv.gradle"

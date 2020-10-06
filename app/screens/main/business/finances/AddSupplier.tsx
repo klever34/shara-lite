@@ -1,8 +1,5 @@
 import {applyStyles} from '@/helpers/utils';
 import {ISupplier} from '@/models/Supplier';
-import {getAnalyticsService} from '@/services';
-import {useScreenRecord} from '@/services/analytics';
-import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useRealm} from '@/services/realm';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
@@ -22,7 +19,6 @@ const formValidation = yup.object().shape({
 });
 
 export const AddSupplier = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const suppliers = getSuppliers({realm});
@@ -36,8 +32,6 @@ export const AddSupplier = () => {
     });
   }, [navigation]);
 
-  const handleError = useErrorHandler();
-
   const onFormSubmit = useCallback(
     (values: Payload, {resetForm}: FormikHelpers<Payload>) => {
       if (suppliers.map((item) => item.mobile).includes(values.mobile)) {
@@ -48,14 +42,13 @@ export const AddSupplier = () => {
       } else {
         setIsLoading(true);
         saveSupplier({realm, supplier: values});
-        getAnalyticsService().logEvent('supplierAdded').catch(handleError);
         setIsLoading(false);
         resetForm();
         navigation.goBack();
         ToastAndroid.show('Supplier added', ToastAndroid.SHORT);
       }
     },
-    [realm, suppliers, navigation, handleError],
+    [realm, suppliers, navigation],
   );
 
   return (

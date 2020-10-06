@@ -12,6 +12,7 @@ export interface IReceivedInventory extends BaseModelInterface {
   supplier: ISupplier;
   suppliedStockItems?: IStockItem[];
   delivery_agent?: IDeliveryAgent;
+  coordinates?: string;
 }
 
 export const modelName = 'ReceivedInventory';
@@ -34,6 +35,7 @@ export class ReceivedInventory implements Partial<ReceivedInventory> {
         objectType: 'StockItem',
         property: 'receivedInventory',
       },
+      coordinates: 'string?',
     },
   };
 }

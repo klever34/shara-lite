@@ -1,16 +1,21 @@
 import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models';
-import {IReceipt, modelName} from '../models/Receipt';
+import {ICustomer} from '@/models';
+import {IReceipt, modelName} from '@/models/Receipt';
 import {saveReceiptItem} from './ReceiptItemService';
 import {savePayment, updatePayment} from './PaymentService';
-import {getBaseModelValues} from '../helpers/models';
+import {getBaseModelValues} from '@/helpers/models';
 import {saveCredit, updateCredit} from './CreditService';
-import {Customer, Payment} from '../../types/app';
-import {IReceiptItem} from '../models/ReceiptItem';
+import {Customer, Payment} from 'types/app';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {getPaymentsFromCredit} from './CreditPaymentService';
-import {saveCustomer} from './CustomerService';
-import {getAnalyticsService} from './index';
+import {saveCustomer} from './customer/service';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getGeolocationService,
+} from '@/services';
 import {restockProduct} from '@/services/ProductService';
+import {convertToLocationString} from '@/services/geolocation';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
@@ -57,6 +62,9 @@ export const saveReceipt = ({
   }
   if (customer._id) {
     receiptCustomer = customer;
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
   }
 
   //@ts-ignore
@@ -79,6 +87,24 @@ export const saveReceipt = ({
       });
     });
   });
+  getAnalyticsService()
+    .logEvent('receiptCreated', {
+      amount: String(receipt.total_amount),
+      currency_code: getAuthService().getUser()?.currency_code ?? '',
+    })
+    .then(() => {});
+
+  getGeolocationService()
+    .getCurrentPosition()
+    .then((location) => {
+      realm.write(() => {
+        realm.create<Partial<IReceipt>>(
+          modelName,
+          {_id: receipt._id, coordinates: convertToLocationString(location)},
+          UpdateMode.Modified,
+        );
+      });
+    });
 
   payments.forEach((payment) => {
     savePayment({
@@ -87,6 +113,12 @@ export const saveReceipt = ({
       receipt,
       type: 'receipt',
       ...payment,
+    });
+    getAnalyticsService().logEvent('paymentMade', {
+      method: payment.method,
+      amount: payment.amount.toString(),
+      currency_code: getAuthService().getUser()?.currency_code ?? '',
+      item_id: receipt?._id?.toString() ?? '',
     });
   });
 
@@ -99,10 +131,6 @@ export const saveReceipt = ({
       receipt,
       realm,
     });
-
-    getAnalyticsService()
-      .logEvent('creditAdded')
-      .then(() => {});
   }
 };
 
@@ -115,6 +143,11 @@ export const updateReceipt = ({
   customer: ICustomer;
   receipt: IReceipt;
 }): void => {
+  if (!receipt.customer) {
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
+  }
   realm.write(() => {
     const updates = {
       customer,

@@ -1,6 +1,7 @@
 import {useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
 import Config from 'react-native-config';
+import perf from '@react-native-firebase/perf';
 import {Contact, Message, Conversation, Customer} from '../../models';
 import {Payment} from '@/models/Payment';
 import {Credit} from '@/models/Credit';
@@ -18,8 +19,10 @@ import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
+import {Address} from '@/models/Address';
 
 export const schema = [
+  Address,
   Contact,
   Conversation,
   Customer,
@@ -84,6 +87,7 @@ export const loginToRealm = async ({
   partitionValue?: string;
 }> => {
   try {
+    const trace = await perf().startTrace('loginToRealm');
     const partitionValue = await getRealmPartitionKey();
     // @ts-ignore
     const credentials = Realm.Credentials.custom(jwt);
@@ -95,6 +99,7 @@ export const loginToRealm = async ({
     const app = new Realm.App(appConfig);
     const realmUser = await app.logIn(credentials);
     const realm = await createRealm({realmUser});
+    await trace.stop();
     return {
       realmUser,
       realm,
@@ -113,8 +118,10 @@ export const loginToRealm = async ({
 
 export const initLocalRealm = async (): Promise<Realm> => {
   try {
+    const trace = await perf().startTrace('initLocalRealm');
     const {schemaVersion} = runMigration({currentSchema: schema});
     const realm = await createRealm({schemaVersion});
+    await trace.stop();
     return realm;
   } catch (e) {
     throw e;

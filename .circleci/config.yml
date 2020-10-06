@@ -210,6 +210,8 @@ jobs:
         default: true
     steps:
       - checkout
+      - android/install-ndk:
+          ndk-version: android-ndk-r19c
       - run:
           name: Yarn Install Dependencies
           command: |
@@ -375,5 +377,5 @@ jobs:
           path: fastlane/report.xml
           destination: test-results
 orbs:
-  android: circleci/android@0.2.0
+  android: circleci/android@0.2.1
   react-native: react-native-community/react-native@4.4.2

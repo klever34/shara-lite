@@ -13,7 +13,7 @@ import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {Customer} from '../../../../../types/app';
+import {Customer} from 'types/app';
 import {
   BluetoothModal,
   Button,
@@ -22,23 +22,27 @@ import {
 } from '../../../../components';
 import Icon from '../../../../components/Icon';
 import Touchable from '../../../../components/Touchable';
-import {PAYMENT_METHOD_LABEL} from '../../../../helpers/constants';
+import {PAYMENT_METHOD_LABEL} from '@/helpers/constants';
 import {
   amountWithCurrency,
   applyStyles,
   numberWithCommas,
-} from '../../../../helpers/utils';
-import {ICustomer} from '../../../../models';
-import {IReceipt} from '../../../../models/Receipt';
-import {IReceiptItem} from '../../../../models/ReceiptItem';
-import {getAuthService, getStorageService} from '../../../../services';
-import {getCustomers, saveCustomer} from '../../../../services/CustomerService';
-import {useRealm} from '../../../../services/realm';
+} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IReceipt} from '@/models/Receipt';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {
-  getAllPayments,
-  updateReceipt,
-} from '../../../../services/ReceiptService';
-import {colors} from '../../../../styles';
+  getAnalyticsService,
+  getAuthService,
+  getStorageService,
+} from '../../../../services';
+import {
+  getCustomers,
+  saveCustomer,
+} from '../../../../services/customer/service';
+import {useRealm} from '@/services/realm';
+import {getAllPayments, updateReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
 import AddCustomer from '../../customers/AddCustomer';
 import {
   SummaryTableHeader,
@@ -228,7 +232,7 @@ export function ReceiptDetailsModal(props: Props) {
             BluetoothEscposPrinter.ALIGN.CENTER,
             BluetoothEscposPrinter.ALIGN.RIGHT,
           ],
-          ['Description', 'QTY', 'SubTotal(NGN)'],
+          ['Description', 'QTY', `SubTotal(${currencyCode})`],
           receiptStyles.product,
         );
         if (receipt && receipt.items) {
@@ -295,6 +299,12 @@ export function ReceiptDetailsModal(props: Props) {
           BluetoothEscposPrinter.ALIGN.LEFT,
         );
         await BluetoothEscposPrinter.printText('\n\r', {});
+        getAnalyticsService()
+          .logEvent('print', {
+            item_id: receipt?._id?.toString() ?? '',
+            content_type: 'receipt',
+          })
+          .then(() => {});
         handleClosePrinterModal();
       } catch (err) {
         ToastAndroid.show(err.toString(), ToastAndroid.SHORT);

@@ -1,19 +1,25 @@
 {
   "name": "shara",
-  "version": "0.2.36",
+  "version": "0.2.45",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "tsc && eslint app --ext .js,.jsx,.ts,.tsx --fix"
+    "lint": "tsc && eslint app --ext .js,.jsx,.ts,.tsx --fix",
+    "clean": "cd android && ./gradlew clean"
   },
   "dependencies": {
     "@react-native-community/async-storage": "^1.11.0",
     "@react-native-community/masked-view": "^0.1.10",
     "@react-native-community/picker": "^1.6.5",
-    "@react-native-firebase/app": "^7.3.1",
+    "@react-native-firebase/analytics": "^7.6.3",
+    "@react-native-firebase/app": "^8.4.3",
+    "@react-native-firebase/crashlytics": "^8.4.5",
+    "@react-native-firebase/messaging": "^7.8.5",
+    "@react-native-firebase/perf": "^7.4.3",
+    "@react-native-firebase/remote-config": "^9.0.5",
     "@react-navigation/material-top-tabs": "^5.2.12",
     "@react-navigation/native": "^5.5.1",
     "@react-navigation/stack": "^5.5.1",
@@ -26,8 +32,8 @@
     "country-currency-map": "^2.1.7",
     "crypto-js": "^3.3.0",
     "date-fns": "^2.14.0",
-    "formik": "^2.1.5",
     "faker": "^5.1.0",
+    "formik": "^2.1.5",
     "intl": "^1.2.5",
     "lodash": "^4.17.15",
     "promise-retry": "^2.0.1",
@@ -37,6 +43,7 @@
     "react": "16.11.0",
     "react-error-boundary": "^2.3.1",
     "react-native": "0.62.2",
+    "react-native-background-fetch": "^3.1.0",
     "react-native-bluetooth-escpos-printer": "^0.0.5",
     "react-native-config": "^1.2.1",
     "react-native-contacts": "^5.2.3",
@@ -48,9 +55,10 @@
     "react-native-gesture-handler": "^1.6.1",
     "react-native-get-random-values": "^1.4.0",
     "react-native-image-picker": "^2.3.3",
+    "react-native-location": "^2.5.0",
     "react-native-modal": "^11.5.6",
     "react-native-popup-menu": "^0.15.8",
-    "react-native-push-notification": "^3.5.2",
+    "react-native-push-notification": "^5.1.1",
     "react-native-randombytes": "^3.5.3",
     "react-native-reanimated": "^1.9.0",
     "react-native-safe-area-context": "^3.0.5",
@@ -78,6 +86,7 @@
     "@types/cryptr": "^4.0.1",
     "@types/date-fns": "^2.6.0",
     "@types/faker": "^4.1.12",
+    "@types/geojson": "^7946.0.7",
     "@types/jest": "^24.0.24",
     "@types/lodash": "^4.14.157",
     "@types/node": "^12.12.54",
@@ -85,7 +94,7 @@
     "@types/pubnub": "^4.28.1",
     "@types/query-string": "^6.3.0",
     "@types/react-native": "^0.62.0",
-    "@types/react-native-push-notification": "^3.0.9",
+    "@types/react-native-push-notification": "^5.0.2",
     "@types/react-native-share": "^3.3.0",
     "@types/react-native-vector-icons": "^6.4.5",
     "@types/react-test-renderer": "16.9.2",
@@ -97,6 +106,7 @@
     "eslint": "^6.5.1",
     "husky": "^4.2.5",
     "jest": "^24.9.0",
+    "jest-transform-stub": "^2.0.0",
     "lint-staged": "^10.2.11",
     "metro-react-native-babel-preset": "^0.58.0",
     "prettier": "^2.0.4",
@@ -118,7 +128,10 @@
     ],
     "setupFiles": [
       "./node_modules/react-native-gesture-handler/jestSetup.js"
-    ]
+    ],
+    "moduleNameMapper": {
+      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
+    }
   },
   "lint-staged": {
     "app/**": "yarn lint"

@@ -1,20 +1,19 @@
 import React, {useState, useCallback, useLayoutEffect} from 'react';
 import {ScrollView, Text, View, StyleSheet, ToastAndroid} from 'react-native';
-import {applyStyles} from '../../../../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import {
   CurrencyInput,
   FloatingLabelInput,
   Button,
 } from '../../../../components';
-import {IProduct} from '../../../../models/Product';
-import {colors} from '../../../../styles';
-import {useRealm} from '../../../../services/realm';
-import {updateProduct} from '../../../../services/ProductService';
+import {IProduct} from '@/models/Product';
+import {colors} from '@/styles';
+import {useRealm} from '@/services/realm';
+import {updateProduct} from '@/services/ProductService';
 import {useNavigation} from '@react-navigation/native';
 import HeaderRight from '../../../../components/HeaderRight';
 import {StackScreenProps} from '@react-navigation/stack';
 import {MainStackParamList} from '../..';
-import {useScreenRecord} from '../../../../services/analytics';
 import {Formik} from 'formik';
 import * as yup from 'yup';
 
@@ -28,7 +27,6 @@ const formValidation = yup.object().shape({
 export const EditProduct = ({
   route,
 }: StackScreenProps<MainStackParamList, 'EditProduct'>) => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const {product: productProps} = route.params;

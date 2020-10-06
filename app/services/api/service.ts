@@ -4,12 +4,13 @@ import Config from 'react-native-config';
 import queryString from 'query-string';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
+import perf from '@react-native-firebase/perf';
 import {
   ApiResponse,
-  User,
-  GroupChatMember,
-  GroupChat,
   Business,
+  GroupChat,
+  GroupChatMember,
+  User,
 } from 'types/app';
 
 export type Requester = {
@@ -45,6 +46,12 @@ export interface IApiService {
   }): Promise<ApiResponse>;
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
+  forgotPassword(payload: {mobile: string}): Promise<ApiResponse>;
+  resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<ApiResponse>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -100,7 +107,7 @@ export class ApiService implements IApiService {
   ) {}
 
   public requester: Requester = {
-    get: <T extends any = any>(
+    get: async <T extends any = any>(
       url: string,
       params: {[key: string]: string | number},
       isExternalDomain?: boolean,
@@ -115,18 +122,22 @@ export class ApiService implements IApiService {
         headers['Content-Type'] = 'application/json';
       }
 
-      return fetch(fetchUrl, {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(fetchUrl, {
         method: 'GET',
         // @ts-ignore
         headers,
-      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      });
+      await trace.stop();
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
-    post: <T extends any = any>(
+    post: async <T extends any = any>(
       url: string,
       data: {[key: string]: any},
       config?: {[key: string]: any},
     ) => {
-      return fetch(`${Config.API_BASE_URL}${url}`, {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
@@ -134,27 +145,41 @@ export class ApiService implements IApiService {
           ...config?.headers,
         },
         body: config ? data : JSON.stringify(data),
-      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      });
+      await trace.stop();
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
-    patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
-      return fetch(`${Config.API_BASE_URL}${url}`, {
+    patch: async <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+    ) => {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      }).then((...args) => this.handleFetchErrors<T>(...args) as T);
+      });
+      await trace.stop();
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
-    delete: <T extends any = any>(url: string, data: {[key: string]: any}) => {
-      return fetch(`${Config.API_BASE_URL}${url}`, {
+    delete: async <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+    ) => {
+      const trace = await perf().startTrace(url);
+      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'DELETE',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify(data),
-      }).then((...args) => this.handleFetchErrors<T>(...args));
+      });
+      await trace.stop();
+      return (await this.handleFetchErrors<T>(response)) as T;
     },
   };
 
@@ -203,9 +228,30 @@ export class ApiService implements IApiService {
       this.authService.setToken(token);
       this.authService.setUser(user);
       this.authService.setRealmCredentials(realmCredentials);
+
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  public async forgotPassword(payload: {mobile: string}): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/password-reset', payload);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<any> {
+    try {
+      return await this.requester.patch('/password-reset', payload);
+    } catch (e) {
+      throw e;
     }
   }
 

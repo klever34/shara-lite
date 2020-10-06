@@ -1,13 +1,11 @@
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useState} from 'react';
 import {SafeAreaView, StyleSheet, ToastAndroid} from 'react-native';
-import {CreditPaymentForm} from '../../../components';
-import {saveCreditPayment} from '../../../services/CreditPaymentService';
-import {useRealm} from '../../../services/realm';
-import {useScreenRecord} from '../../../services/analytics';
+import {CreditPaymentForm} from '@/components';
+import {saveCreditPayment} from '@/services/CreditPaymentService';
+import {useRealm} from '@/services/realm';
 
 const RecordPayment = ({route}: any) => {
-  useScreenRecord();
   const realm = useRealm();
   const {customer} = route.params;
   const navigation = useNavigation();

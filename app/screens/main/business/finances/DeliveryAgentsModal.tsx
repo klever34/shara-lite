@@ -103,7 +103,7 @@ export const DeliveryAgentsModal = (props: Props) => {
             />
             <TextInput
               value={searchInputValue}
-              style={styles.searchInput}
+              containerStyle={styles.searchInput}
               placeholder="Search Delivery Agents"
               onChangeText={handleDeliveryAgentSearch}
               placeholderTextColor={colors['gray-50']}

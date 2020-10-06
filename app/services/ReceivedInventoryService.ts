@@ -1,16 +1,14 @@
 import Realm, {UpdateMode} from 'realm';
-import {getBaseModelValues} from '../helpers/models';
-import {generateUniqueId} from '../helpers/utils';
-import {IDeliveryAgent} from '../models/DeliveryAgent';
-import {
-  IReceivedInventory,
-  modelName,
-  ReceivedInventory,
-} from '../models/ReceivedInventory';
-import {IStockItem} from '../models/StockItem';
-import {ISupplier} from '../models/Supplier';
+import {getBaseModelValues} from '@/helpers/models';
+import {generateUniqueId} from '@/helpers/utils';
+import {IDeliveryAgent} from '@/models/DeliveryAgent';
+import {IReceivedInventory, modelName} from '@/models/ReceivedInventory';
+import {IStockItem} from '@/models/StockItem';
+import {ISupplier} from '@/models/Supplier';
 import {saveDeliveryAgent} from './DeliveryAgentService';
 import {addNewStockItem} from './StockItemService';
+import {getGeolocationService} from '@/services';
+import {convertToLocationString} from '@/services/geolocation';
 
 export const getReceivedInventories = ({
   realm,
@@ -63,12 +61,26 @@ export const addNewInventory = ({
   }
 
   realm.write(() => {
-    realm.create<ReceivedInventory>(
+    realm.create<IReceivedInventory>(
       modelName,
       receivedInventory,
       UpdateMode.Modified,
     );
   });
+  getGeolocationService()
+    .getCurrentPosition()
+    .then((location) => {
+      realm.write(() => {
+        realm.create<Partial<IReceivedInventory>>(
+          modelName,
+          {
+            _id: receivedInventory._id,
+            coordinates: convertToLocationString(location),
+          },
+          UpdateMode.Modified,
+        );
+      });
+    });
 
   stockItems.forEach((stockItem) => {
     const quantity = stockItem.quantity;

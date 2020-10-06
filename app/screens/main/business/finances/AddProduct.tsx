@@ -1,7 +1,6 @@
 import {applyStyles} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {getAnalyticsService} from '@/services';
-import {useScreenRecord} from '@/services/analytics';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {saveProduct} from '@/services/ProductService';
@@ -27,7 +26,6 @@ const formValidation = yup.object().shape({
 });
 
 export const AddProduct = () => {
-  useScreenRecord();
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
