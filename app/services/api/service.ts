@@ -6,10 +6,10 @@ import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 import {
   ApiResponse,
-  User,
-  GroupChatMember,
-  GroupChat,
   Business,
+  GroupChat,
+  GroupChatMember,
+  User,
 } from 'types/app';
 
 export type Requester = {
@@ -26,6 +26,7 @@ export type Requester = {
   patch: <T extends any = any>(
     url: string,
     data: {[key: string]: any},
+    config?: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
   delete: <T extends any = any>(
     url: string,
@@ -37,14 +38,18 @@ export interface IApiService {
   requester: Requester;
 
   register(payload: {
-    firstname: string;
-    lastname: string;
     country_code: string;
     mobile: string;
     password: string;
   }): Promise<ApiResponse>;
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
+  forgotPassword(payload: {mobile: string}): Promise<ApiResponse>;
+  resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<ApiResponse>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -87,6 +92,18 @@ export interface IApiService {
   ): Promise<any>;
 
   businessSetup(payload: FormData): Promise<ApiResponse>;
+
+  businessSetupUpdate(
+    payload: FormData,
+    businessId?: string,
+  ): Promise<ApiResponse>;
+
+  userProfileUpdate(
+    payload: Pick<
+      User,
+      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+    >,
+  ): Promise<ApiResponse>;
 
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
@@ -136,14 +153,19 @@ export class ApiService implements IApiService {
         body: config ? data : JSON.stringify(data),
       }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
-    patch: <T extends any = any>(url: string, data: {[key: string]: any}) => {
+    patch: <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+      config?: {[key: string]: any},
+    ) => {
       return fetch(`${Config.API_BASE_URL}${url}`, {
         method: 'PATCH',
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
+          ...config?.headers,
         },
-        body: JSON.stringify(data),
+        body: config ? data : JSON.stringify(data),
       }).then((...args) => this.handleFetchErrors<T>(...args) as T);
     },
     delete: <T extends any = any>(url: string, data: {[key: string]: any}) => {
@@ -175,13 +197,26 @@ export class ApiService implements IApiService {
   };
 
   public async register(payload: {
-    firstname: string;
-    lastname: string;
+    country_code: string;
     mobile: string;
     password: string;
   }) {
     try {
-      return await this.requester.post('/signup', payload);
+      const fetchResponse = await this.requester.post('/signup', payload);
+      const {
+        data: {
+          credentials: {token},
+          realmCredentials,
+          user,
+        },
+      } = fetchResponse;
+      await this.storageService.setItem('token', token);
+      await this.storageService.setItem('user', user);
+      await this.storageService.setItem('realmCredentials', realmCredentials);
+      this.authService.setToken(token);
+      this.authService.setUser(user);
+      this.authService.setRealmCredentials(realmCredentials);
+      return fetchResponse;
     } catch (error) {
       throw error;
     }
@@ -206,6 +241,26 @@ export class ApiService implements IApiService {
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  public async forgotPassword(payload: {mobile: string}): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/password-reset', payload);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  public async resetPassword(payload: {
+    mobile: string;
+    otp: string;
+    password: string;
+  }): Promise<any> {
+    try {
+      return await this.requester.patch('/password-reset', payload);
+    } catch (e) {
+      throw e;
     }
   }
 
@@ -326,6 +381,63 @@ export class ApiService implements IApiService {
       user = {...user, businesses: [business]};
       this.authService.setUser(user);
       await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async businessSetupUpdate(payload: FormData, businessId?: string) {
+    try {
+      const fetchResponse = await this.requester.patch(
+        `/business/${businessId}`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+      const {
+        data: {business},
+      }: {data: {business: Business}} = fetchResponse;
+
+      let user = this.authService.getUser() as User;
+      user = {
+        ...user,
+        businesses: user.businesses.map((item) => {
+          if (item.id === business.id) {
+            return business;
+          }
+          return item;
+        }),
+      };
+      this.authService.setUser(user);
+      await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async userProfileUpdate(
+    payload: Pick<
+      User,
+      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+    >,
+  ) {
+    try {
+      const fetchResponse = await this.requester.patch('/users/me', payload);
+      const {
+        data: {user},
+      }: {data: {user: User}} = fetchResponse;
+
+      let updatedUser = this.authService.getUser() as User;
+      updatedUser = {
+        ...updatedUser,
+        ...user,
+      };
+      this.authService.setUser(updatedUser);
+      await this.storageService.setItem('user', updatedUser);
       return fetchResponse;
     } catch (error) {
       throw error;

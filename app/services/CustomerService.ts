@@ -5,7 +5,9 @@ import {omit} from 'lodash';
 import {ObjectId} from 'bson';
 
 export const getCustomers = ({realm}: {realm: Realm}): ICustomer[] => {
-  return (realm.objects<ICustomer>(modelName) as unknown) as ICustomer[];
+  return (realm
+    .objects<ICustomer>(modelName)
+    .filtered('is_deleted = false') as unknown) as ICustomer[];
 };
 
 export const saveCustomer = ({

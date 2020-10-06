@@ -1,138 +1,140 @@
-import React, {useContext} from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {Button, PasswordField, PhoneNumberField} from '../../components';
-import Icon from '../../components/Icon';
-import Touchable from '../../components/Touchable';
-import {applyStyles} from '../../helpers/utils';
-import {getApiService, getRealmService} from '../../services';
-import {colors} from '../../styles';
-import {initLocalRealm} from '../../services/realm';
-import {RealmContext} from '../../services/realm/provider';
+import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
+import {applyStyles} from '@/helpers/utils';
+import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import {useAppNavigation} from '@/services/navigation';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
+import {colors} from '@/styles';
+import {useFormik} from 'formik';
+import React, {useContext} from 'react';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import * as yup from 'yup';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 
 type Fields = {
   mobile: string;
   password: string;
-  countryCode: string | null;
+  countryCode: string;
 };
 
-export const Login = ({navigation}: any) => {
-  // @ts-ignore
-  const {updateLocalRealm} = useContext(RealmContext);
-  const {callingCode, countryCode2} = useIPGeolocation();
-  const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('login', {countryCode: callingCode}) as Fields,
-  );
+const validationSchema = yup.object().shape({
+  mobile: yup
+    .string()
+    .matches(/^[1-9]/, {
+      message: "Number shouldn't start with 0",
+    })
+    .length(10, 'Number should be 10 digits')
+    .required('Number is required'),
+  password: yup
+    .string()
+    .strict(true)
+    .trim("Password shouldn't contain spaces")
+    .required('Password is required'),
+});
 
-  const onChangeText = (value: string, field: keyof Fields) => {
-    setFields({
-      ...fields,
-      [field]: value,
-    });
-  };
+export const Login = () => {
+  const {updateLocalRealm} = useContext(RealmContext);
+  const {callingCode} = useIPGeolocation();
+  const {
+    errors,
+    values,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
+    validationSchema,
+    initialValues: FormDefaults.get('login', {
+      mobile: '',
+      password: '',
+      countryCode: callingCode,
+    }) as Fields,
+    onSubmit: (payload) => onSubmit(payload),
+  });
 
   const onChangeMobile = (value: {code: string; number: string}) => {
     const {code, number} = value;
-    setFields({
-      ...fields,
-      mobile: number,
-      countryCode: code,
-    });
+    setFieldValue('countryCode', code);
+    setFieldValue('mobile', number);
   };
-  const onSubmit = async () => {
-    const {mobile, countryCode, ...rest} = fields;
+  const handleError = useErrorHandler();
+  const onSubmit = async (data: Fields) => {
+    const {mobile, countryCode, ...rest} = data;
     const payload = {
       ...rest,
-      mobile: `${countryCode}${mobile}`,
+      mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
     try {
-      setLoading(true);
       await apiService.logIn(payload);
       const createdLocalRealm = await initLocalRealm();
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
       const realmService = getRealmService();
       realmService.setInstance(createdLocalRealm);
 
-      setLoading(false);
+      getAnalyticsService()
+        .logEvent('login', {method: 'mobile'})
+        .catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
       });
     } catch (error) {
-      setLoading(false);
       Alert.alert('Error', error.message);
     }
   };
 
-  const handleNavigate = (route: string) => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: route}],
-    });
-  };
-
-  const isButtonDisabled = () => {
-    return !fields.mobile || !fields.password;
-  };
+  const navigation = useAppNavigation();
 
   return (
-    <ScrollView
-      style={styles.container}
-      keyboardShouldPersistTaps="always"
-      persistentScrollbar={true}>
-      <View style={styles.backButton}>
-        <Touchable onPress={() => handleNavigate('Welcome')}>
-          <View style={applyStyles({height: 40, width: 40})}>
-            <Icon size={24} type="feathericons" name="arrow-left" />
-          </View>
-        </Touchable>
-      </View>
-      <View style={styles.headerSection}>
-        <Text style={styles.heading}>Welcome Back!</Text>
-        <Text style={styles.description}>Sign in to your account.</Text>
-      </View>
+    <AuthView title="Welcome Back!" description="Sign in to your account.">
       <View style={styles.form}>
         <View style={styles.inputField}>
           <PhoneNumberField
-            value={fields.mobile}
-            countryCode={fields.countryCode}
-            countryCode2={countryCode2}
+            errorMessage={errors.mobile}
+            isInvalid={touched.mobile && !!errors.mobile}
             onChangeText={(data) => onChangeMobile(data)}
+            value={{number: values.mobile, code: values.countryCode}}
           />
         </View>
         <View style={styles.inputField}>
           <PasswordField
-            value={fields.password}
-            onChangeText={(text) => onChangeText(text, 'password')}
+            value={values.password}
+            errorMessage={errors.password}
+            onChangeText={handleChange('password')}
+            isInvalid={touched.password && !!errors.password}
           />
         </View>
         <Button
           title="Continue"
           variantColor="red"
-          onPress={onSubmit}
-          isLoading={loading}
-          disabled={isButtonDisabled()}
+          onPress={handleSubmit}
+          isLoading={isSubmitting}
         />
+      </View>
+      <View style={applyStyles('mb-16')}>
+        <TouchableOpacity
+          style={styles.helpSection}
+          onPress={() =>
+            navigation.navigate('ForgotPassword', {
+              mobile: {number: values.mobile, code: values.countryCode},
+            })
+          }>
+          <Text style={styles.helpSectionText}>Forgot your password? </Text>
+        </TouchableOpacity>
       </View>
       <View>
         <TouchableOpacity
           style={styles.helpSection}
-          onPress={() => handleNavigate('Register')}>
+          onPress={() => navigation.replace('Register')}>
           <Text style={styles.helpSectionText}>Don’t have an account? </Text>
           <Text style={styles.helpSectionButtonText}>Sign Up</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </AuthView>
   );
 };
 

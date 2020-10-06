@@ -5,12 +5,14 @@ type BaseModalProps = {
   closeModal: () => void;
 };
 
+type BottomHalfContentProps = {closeModal?: () => void};
+
 type ModalPropsList = {
   loading: {
     text: string;
   };
   'bottom-half': {
-    renderContent: (props: {closeModal: () => void}) => ReactNode;
+    renderContent: (props: BottomHalfContentProps) => ReactNode;
   };
   options: {
     options: {text: string; onPress: () => void}[];

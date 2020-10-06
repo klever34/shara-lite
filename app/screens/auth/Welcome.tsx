@@ -1,15 +1,10 @@
 import React from 'react';
 import {Text, View, TouchableHighlight, StyleSheet} from 'react-native';
-import {colors} from '../../styles';
+import {colors} from '@/styles';
+import {useAppNavigation} from '@/services/navigation';
 
-export const Welcome = ({navigation}: any) => {
-  const handleNavigate = (route: string) => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: route}],
-    });
-  };
-
+export const Welcome = () => {
+  const navigation = useAppNavigation();
   return (
     <View style={styles.container}>
       <View style={styles.textSection}>
@@ -21,14 +16,14 @@ export const Welcome = ({navigation}: any) => {
           activeOpacity={0}
           underlayColor="white"
           style={{...styles.button, ...styles.loginButton}}
-          onPress={() => handleNavigate('Login')}>
+          onPress={() => navigation.navigate('Login')}>
           <Text style={styles.buttonText}>Login</Text>
         </TouchableHighlight>
         <TouchableHighlight
           activeOpacity={0}
           underlayColor="white"
           style={styles.button}
-          onPress={() => handleNavigate('Register')}>
+          onPress={() => navigation.navigate('Register')}>
           <Text style={styles.buttonText}>Sign Up</Text>
         </TouchableHighlight>
       </View>

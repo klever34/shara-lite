@@ -1,13 +1,12 @@
 import {Button, PaymentMethodSelect} from '@/components';
 import Icon from '@/components/Icon';
-import TextInput from '@/components/TextInput';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/helpers/utils';
 import BottomHalfModal from '@/modals/BottomHalfModal';
 import {colors} from '@/styles';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, TextInput} from 'react-native';
 
 type Props = {
   visible: boolean;

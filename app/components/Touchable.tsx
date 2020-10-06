@@ -15,7 +15,11 @@ type TouchableProps = (
   children: ReactElement;
 };
 
-const Touchable = ({onPress, children, ...restProps}: TouchableProps) => {
+export const Touchable = ({
+  onPress,
+  children,
+  ...restProps
+}: TouchableProps) => {
   onPress = useMemo(() => {
     if (onPress) {
       return throttle(onPress, 1000);

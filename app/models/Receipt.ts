@@ -15,6 +15,11 @@ export interface IReceipt extends BaseModelInterface {
   payments?: IPayment[];
   items?: IReceiptItem[];
   credits?: ICredit[];
+  coordinates?: string;
+  image_url?: string;
+  local_image_url?: string;
+  is_cancelled?: boolean;
+  cancellation_reason?: string;
 }
 
 export const modelName = 'Receipt';
@@ -32,6 +37,11 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       customer_name: 'string?',
       customer_mobile: 'string?',
       customer: 'Customer?',
+      coordinates: 'string?',
+      image_url: 'string?',
+      local_image_url: 'string?',
+      is_cancelled: {type: 'bool', default: false, optional: true},
+      cancellation_reason: 'string?',
       items: {
         type: 'linkingObjects',
         objectType: 'ReceiptItem',

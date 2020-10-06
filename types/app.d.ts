@@ -8,6 +8,7 @@ type User = {
   firstname: string;
   lastname: string;
   mobile: string;
+  email?: string;
   country_code: string;
   created_at: string;
   updated_at: string;
@@ -20,10 +21,11 @@ type Business = {
   name: string;
   user_id: string;
   address?: string;
+  mobile?: string;
   created_at: string;
   updated_at: string;
-  profile_image_url?: string | null;
-  signature_image_url?: string | null;
+  profile_image?: {url: string};
+  signature_image?: {url: string};
 };
 
 type GroupChat = {

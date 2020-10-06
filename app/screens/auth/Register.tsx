@@ -1,141 +1,111 @@
-import {StackScreenProps} from '@react-navigation/stack';
-import React from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
-import {
-  Button,
-  FloatingLabelInput,
-  PasswordField,
-  PhoneNumberField,
-} from '../../components';
-import Icon from '../../components/Icon';
-import Touchable from '../../components/Touchable';
-import {applyStyles} from '../../helpers/utils';
-import {RootStackParamList} from '../../index';
-import {getApiService} from '../../services';
-import {colors} from '../../styles';
+import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
+import {applyStyles} from '@/helpers/utils';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
+import {useAppNavigation} from '@/services/navigation';
+import {initLocalRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
+import {colors} from '@/styles';
+import {useFormik} from 'formik';
+import React, {useContext} from 'react';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import * as yup from 'yup';
 
 type Fields = {
-  firstname: string;
-  lastname: string;
   mobile: string;
   password: string;
   countryCode: string;
 };
 
-export const Register = ({
-  navigation,
-}: StackScreenProps<RootStackParamList>) => {
-  const {callingCode, countryCode2} = useIPGeolocation();
-  const [loading, setLoading] = React.useState(false);
-  const [fields, setFields] = React.useState<Fields>(
-    FormDefaults.get('signup', {countryCode: callingCode}) as Fields,
-  );
+const validationSchema = yup.object().shape({
+  mobile: yup
+    .string()
+    .matches(/^[1-9]/, {
+      message: "Number shouldn't start with 0",
+    })
+    .length(10, 'Number should be 10 digits')
+    .required('Number is required'),
+  password: yup
+    .string()
+    .strict(true)
+    .trim("Password shouldn't contain spaces")
+    .required('Password is required'),
+});
 
-  const onChangeText = (value: string, field: keyof Fields) => {
-    setFields({
-      ...fields,
-      [field]: value,
-    });
-  };
+export const Register = () => {
+  const navigation = useAppNavigation();
+  const {callingCode} = useIPGeolocation();
+  const {updateLocalRealm} = useContext(RealmContext);
+  const {
+    errors,
+    values,
+    touched,
+    isSubmitting,
+    handleChange,
+    handleSubmit,
+    setFieldValue,
+  } = useFormik({
+    validationSchema,
+    initialValues: FormDefaults.get('signup', {
+      mobile: '',
+      password: '',
+      countryCode: callingCode,
+    }) as Fields,
+    onSubmit: (payload) => onSubmit(payload),
+  });
 
   const onChangeMobile = (value: {code: string; number: string}) => {
     const {code, number} = value;
-    setFields({
-      ...fields,
-      mobile: number,
-      countryCode: code,
-    });
+    setFieldValue('countryCode', code);
+    setFieldValue('mobile', number);
   };
-  const onSubmit = async () => {
-    const {mobile, countryCode, ...rest} = fields;
+  const handleError = useErrorHandler();
+  const onSubmit = async (data: Fields) => {
+    const {mobile, countryCode, ...rest} = data;
     const payload = {
       ...rest,
       country_code: countryCode,
-      mobile: `${countryCode}${mobile}`,
+      mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
     try {
-      setLoading(true);
       await apiService.register(payload);
-      setLoading(false);
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Login'}],
-      });
+      const createdLocalRealm = await initLocalRealm();
+      updateLocalRealm && updateLocalRealm(createdLocalRealm);
+      const realmService = getRealmService();
+      realmService.setInstance(createdLocalRealm);
+
+      getAnalyticsService()
+        .logEvent('signup', {method: 'mobile'})
+        .catch(handleError);
+      navigation.replace('BusinessSetup');
     } catch (error) {
-      setLoading(false);
       Alert.alert('Error', error.message);
     }
   };
 
-  const handleNavigate = (route: string) => {
-    navigation.reset({
-      index: 0,
-      routes: [{name: route}],
-    });
-  };
-
-  const isButtonDisabled = () => {
-    return Object.keys(fields).length < 5;
-  };
-
   return (
-    <ScrollView
-      style={styles.container}
-      keyboardShouldPersistTaps="always"
-      persistentScrollbar={true}>
-      <View style={styles.backButton}>
-        <Touchable onPress={() => handleNavigate('Welcome')}>
-          <View style={applyStyles({height: 40, width: 40})}>
-            <Icon size={24} type="feathericons" name="arrow-left" />
-          </View>
-        </Touchable>
-      </View>
-      <View style={applyStyles({marginBottom: 16})}>
-        <Text style={styles.heading}>Sign Up</Text>
-        <Text style={styles.description}>
-          Create an account to do business faster and better.
-        </Text>
-      </View>
+    <AuthView
+      title="Sign Up"
+      description="Create an account to do business faster and better.">
       <View>
         <View style={applyStyles({marginBottom: 32})}>
-          <View style={styles.inputFieldSpacer}>
-            <FloatingLabelInput
-              label="First Name"
-              value={fields.firstname}
-              inputStyle={styles.inputField}
-              onChangeText={(text) => onChangeText(text, 'firstname')}
-            />
-          </View>
-          <View style={styles.inputFieldSpacer}>
-            <FloatingLabelInput
-              label="Last Name"
-              value={fields.lastname}
-              inputStyle={styles.inputField}
-              onChangeText={(text) => onChangeText(text, 'lastname')}
-            />
-          </View>
           <View style={applyStyles({paddingVertical: 18})}>
             <PhoneNumberField
-              value={fields.mobile}
-              countryCode2={countryCode2}
-              countryCode={fields.countryCode}
+              errorMessage={errors.mobile}
               onChangeText={(data) => onChangeMobile(data)}
+              isInvalid={touched.mobile && !!errors.mobile}
+              value={{number: values.mobile, code: values.countryCode}}
             />
           </View>
           <View style={styles.inputFieldSpacer}>
             <PasswordField
-              value={fields.password}
-              onChangeText={(text) => onChangeText(text, 'password')}
+              value={values.password}
+              errorMessage={errors.password}
+              onChangeText={handleChange('password')}
+              isInvalid={touched.password && !!errors.password}
             />
           </View>
         </View>
@@ -143,22 +113,21 @@ export const Register = ({
       <View>
         <Button
           variantColor="red"
-          onPress={onSubmit}
-          isLoading={loading}
+          isLoading={isSubmitting}
+          onPress={handleSubmit}
           title="Create an account"
           style={applyStyles({
             marginBottom: 24,
           })}
-          disabled={isButtonDisabled()}
         />
         <TouchableOpacity
           style={styles.helpSection}
-          onPress={() => handleNavigate('Login')}>
+          onPress={() => navigation.replace('Login')}>
           <Text style={styles.helpSectionText}>Already have an account? </Text>
           <Text style={styles.helpSectionButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
-    </ScrollView>
+    </AuthView>
   );
 };
 

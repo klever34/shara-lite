@@ -6,9 +6,9 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {colors} from '../styles';
+import {colors} from '@/styles';
 import Touchable from './Touchable';
-import {applyStyles} from '../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 
 interface variantColorStylesOptions {
   [key: string]: any;
@@ -18,44 +18,13 @@ interface variantColorHexColorOptions {
   [key: string]: string;
 }
 
-interface ButtonProps extends BaseButtonProps {
+export type ButtonProps = BaseButtonProps & {
   style?: ViewStyle;
   isLoading?: boolean;
   children?: React.ReactNode;
   variant?: 'filled' | 'clear';
   variantColor?: 'red' | 'white' | 'clear';
-}
-
-const styles = StyleSheet.create({
-  button: {
-    height: 56,
-    borderRadius: 8,
-    alignItems: 'center',
-    paddingHorizontal: 10,
-    justifyContent: 'center',
-  },
-  whiteButton: {
-    backgroundColor: colors.white,
-  },
-  redButton: {
-    backgroundColor: colors.primary,
-  },
-  clearButton: {
-    elevation: 0,
-    backgroundColor: colors.white,
-  },
-  text: {
-    fontSize: 16,
-    fontFamily: 'Rubik-Regular',
-    textTransform: 'uppercase',
-  },
-  whiteButtonText: {
-    color: colors.primary,
-  },
-  redButtonText: {
-    color: colors.white,
-  },
-});
+};
 
 export const Button = ({
   title,
@@ -121,12 +90,60 @@ export const Button = ({
   );
 };
 
+const styles = StyleSheet.create({
+  button: {
+    height: 56,
+    borderRadius: 8,
+    alignItems: 'center',
+    paddingHorizontal: 10,
+    justifyContent: 'center',
+  },
+  whiteButton: {
+    backgroundColor: colors.white,
+  },
+  redButton: {
+    backgroundColor: colors.primary,
+  },
+  clearButton: {
+    elevation: 0,
+    backgroundColor: colors.white,
+  },
+  text: {
+    fontSize: 16,
+    fontFamily: 'Rubik-Regular',
+    textTransform: 'uppercase',
+  },
+  whiteButtonText: {
+    color: colors.primary,
+  },
+  redButtonText: {
+    color: colors.white,
+  },
+});
+
 type BaseButtonProps = {
   title?: string;
   style?: ViewStyle;
-  onPress: () => void;
+  onPress?: () => void;
   children?: ReactNode;
   disabled?: boolean;
+};
+
+export const BaseButton = ({
+  title = '',
+  onPress,
+  style = {},
+  children,
+  disabled,
+}: BaseButtonProps) => {
+  const disabledStyle = disabled ? baseButtonStyles.disabled : {};
+  return (
+    <Touchable onPress={onPress} disabled={disabled}>
+      <View style={{...baseButtonStyles.container, ...style, ...disabledStyle}}>
+        {children || <Text style={baseButtonStyles.text}>{title}</Text>}
+      </View>
+    </Touchable>
+  );
 };
 
 export const baseButtonStyles = StyleSheet.create({
@@ -154,20 +171,3 @@ export const baseButtonStyles = StyleSheet.create({
     opacity: 0.5,
   },
 });
-
-export const BaseButton = ({
-  title = '',
-  onPress,
-  style = {},
-  children,
-  disabled,
-}: BaseButtonProps) => {
-  const disabledStyle = disabled ? baseButtonStyles.disabled : {};
-  return (
-    <Touchable onPress={onPress} disabled={disabled}>
-      <View style={{...baseButtonStyles.container, ...style, ...disabledStyle}}>
-        {children || <Text style={baseButtonStyles.text}>{title}</Text>}
-      </View>
-    </Touchable>
-  );
-};

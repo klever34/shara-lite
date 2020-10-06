@@ -1,19 +1,27 @@
-import Realm, {UpdateMode} from 'realm';
-import {ICustomer} from '../models';
-import {IReceipt, modelName} from '../models/Receipt';
-import {saveReceiptItem} from './ReceiptItemService';
-import {savePayment, updatePayment} from './PaymentService';
-import {getBaseModelValues} from '../helpers/models';
-import {saveCredit, updateCredit} from './CreditService';
-import {Customer, Payment} from '../../types/app';
-import {IReceiptItem} from '../models/ReceiptItem';
-import {getPaymentsFromCredit} from './CreditPaymentService';
-import {saveCustomer} from './CustomerService';
-import {getAnalyticsService} from './index';
+import {getBaseModelValues} from '@/helpers/models';
+import {ICustomer} from '@/models';
+import {IReceipt, modelName} from '@/models/Receipt';
+import {deleteReceiptItem, saveReceiptItem} from './ReceiptItemService';
+import {deletePayment, savePayment, updatePayment} from './PaymentService';
+import {deleteCredit, saveCredit, updateCredit} from './CreditService';
+import {Customer, Payment} from 'types/app';
+import {IReceiptItem} from '@/models/ReceiptItem';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getGeolocationService,
+} from '@/services';
+import {convertToLocationString} from '@/services/geolocation';
 import {restockProduct} from '@/services/ProductService';
+import {ObjectId} from 'bson';
+import Realm, {UpdateMode} from 'realm';
+import {getPaymentsFromCredit} from './CreditPaymentService';
+import {saveCustomer} from './customer/service';
 
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
-  return (realm.objects<IReceipt>(modelName) as unknown) as IReceipt[];
+  return (realm
+    .objects<IReceipt>(modelName)
+    .filtered('is_deleted = false') as unknown) as IReceipt[];
 };
 
 export const saveReceipt = ({
@@ -57,6 +65,9 @@ export const saveReceipt = ({
   }
   if (customer._id) {
     receiptCustomer = customer;
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
   }
 
   //@ts-ignore
@@ -79,6 +90,25 @@ export const saveReceipt = ({
       });
     });
   });
+  getAnalyticsService()
+    .logEvent('receiptCreated', {
+      amount:
+        (getAuthService().getUser()?.currency_code ?? '') +
+        String(receipt.total_amount),
+    })
+    .then(() => {});
+
+  getGeolocationService()
+    .getCurrentPosition()
+    .then((location) => {
+      realm.write(() => {
+        realm.create<Partial<IReceipt>>(
+          modelName,
+          {_id: receipt._id, coordinates: convertToLocationString(location)},
+          UpdateMode.Modified,
+        );
+      });
+    });
 
   payments.forEach((payment) => {
     savePayment({
@@ -87,6 +117,11 @@ export const saveReceipt = ({
       receipt,
       type: 'receipt',
       ...payment,
+    });
+    getAnalyticsService().logEvent('paymentMade', {
+      method: payment.method,
+      amount: payment.amount.toString(),
+      item_id: receipt?._id?.toString() ?? '',
     });
   });
 
@@ -99,10 +134,6 @@ export const saveReceipt = ({
       receipt,
       realm,
     });
-
-    getAnalyticsService()
-      .logEvent('creditAdded')
-      .then(() => {});
   }
 };
 
@@ -115,6 +146,11 @@ export const updateReceipt = ({
   customer: ICustomer;
   receipt: IReceipt;
 }): void => {
+  if (!receipt.customer) {
+    getAnalyticsService()
+      .logEvent('customerAddedToReceipt')
+      .then(() => {});
+  }
   realm.write(() => {
     const updates = {
       customer,
@@ -136,9 +172,74 @@ export const updateReceipt = ({
   });
 };
 
+export const cancelReceipt = ({
+  realm,
+  receipt,
+  cancellation_reason,
+}: {
+  realm: Realm;
+  receipt: IReceipt;
+  cancellation_reason: String;
+}): void => {
+  realm.write(() => {
+    const revertProduct = () => {
+      const updates = {
+        _id: receipt._id,
+        _partition: receipt._partition,
+        total_amount: 0,
+        credit_amount: 0,
+        is_cancelled: true,
+        cancellation_reason,
+      };
+
+      realm.create(modelName, updates, UpdateMode.Modified);
+    };
+
+    const revertStockAndItems = () => {
+      receipt.items?.forEach((item) => {
+        restockProduct({
+          realm,
+          product: item.product,
+          quantity: item.quantity,
+        });
+
+        deleteReceiptItem({realm, receiptItem: item});
+      });
+    };
+
+    const revertPayment = () => {
+      (receipt.payments || []).forEach((payment) => {
+        deletePayment({realm, payment});
+      });
+    };
+
+    const revertCredit = () => {
+      if (receipt.credits && receipt.credits.length) {
+        deleteCredit({realm, credit: receipt.credits[0]});
+      }
+    };
+
+    revertProduct();
+    revertStockAndItems();
+    revertPayment();
+    revertCredit();
+  });
+};
+
 export const getAllPayments = ({receipt}: {receipt: IReceipt}) => {
   return [
     ...(receipt.payments || []),
     ...getPaymentsFromCredit({credits: receipt.credits}),
   ];
+};
+
+export const getReceipt = ({
+  realm,
+  receiptId,
+}: {
+  realm: Realm;
+  receiptId: ObjectId;
+}) => {
+  // @ts-ignore
+  return realm.objectForPrimaryKey(modelName, receiptId) as IReceipt;
 };

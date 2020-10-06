@@ -1,5 +1,5 @@
 import React from 'react';
-import {applyStyles} from '../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
 
@@ -10,7 +10,7 @@ type HeaderTitleProps = {
   style?: ViewStyle;
 };
 
-const HeaderTitle = ({
+export const HeaderTitle = ({
   title,
   description = '',
   onPress,
@@ -33,14 +33,10 @@ const HeaderTitle = ({
 };
 
 const styles = StyleSheet.create({
-  headerTitleText: applyStyles('text-lg', {
-    color: 'white',
+  headerTitleText: applyStyles('text-lg text-gray-300 text-uppercase', {
     fontFamily: 'Rubik-Medium',
   }),
-  headerTitleDesc: applyStyles('text-sm', {
-    color: 'white',
+  headerTitleDesc: applyStyles('text-sm text-gray-300', {
     fontFamily: 'Rubik-Regular',
   }),
 });
-
-export default HeaderTitle;

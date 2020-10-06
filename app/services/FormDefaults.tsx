@@ -15,8 +15,6 @@ export class FormDefaults {
         countryCode: '234',
       },
       signup: {
-        firstname: faker.name.firstName(),
-        lastname: faker.name.lastName(),
         mobile: '8056636694',
         password: 'some-password',
         countryCode: '234',

@@ -24,4 +24,6 @@ declare module 'react-native-config' {
     | 'production'
     | 'local';
   export const API_BASE_URL: string;
+
+  export const GOOGLE_API_KEY: string;
 }
