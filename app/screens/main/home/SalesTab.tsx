@@ -269,9 +269,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           value={filter.status}
           onChange={(status: any) => handleStatusFilter(status)}>
           <View
-            style={applyStyles(
-              'py-xl px-sm flex-row center justify-space-between',
-            )}>
+            style={applyStyles('py-xl px-sm flex-row center justify-between')}>
             {statusFilters.map((filterItem) => (
               <FilterButton
                 {...filterItem}
@@ -282,7 +280,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           </View>
         </FilterButtonGroup>
         <View
-          style={applyStyles('p-md center flex-row justify-space-between', {
+          style={applyStyles('p-md center flex-row justify-between', {
             backgroundColor: colors['gray-300'],
           })}>
           <View>

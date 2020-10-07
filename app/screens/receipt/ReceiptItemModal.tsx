@@ -48,7 +48,7 @@ const SectionButtons = ({
   previousButtonText?: string;
   nextButtonDisabled?: boolean;
 }) => {
-  const positionStyle = onPrevious ? 'justify-space-between' : 'justify-end';
+  const positionStyle = onPrevious ? 'justify-between' : 'justify-end';
   return (
     <View
       style={applyStyles('px-md py-sm flex-row', positionStyle, {
@@ -172,14 +172,11 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
       return (
         <Touchable onPress={() => handleProductSelect(item)}>
           <View
-            style={applyStyles(
-              'px-lg flex-row items-center justify-space-between',
-              {
-                height: 60,
-                borderBottomWidth: 1,
-                borderColor: colors['gray-20'],
-              },
-            )}>
+            style={applyStyles('px-lg flex-row items-center justify-between', {
+              height: 60,
+              borderBottomWidth: 1,
+              borderColor: colors['gray-20'],
+            })}>
             <View>
               <Text
                 style={applyStyles('text-400', {
@@ -403,7 +400,7 @@ export const ReceiptItemModalContent = (props: Props) => {
     <View>
       <View
         style={applyStyles(
-          'px-xs bg-white flex-row items-center justify-space-between',
+          'px-xs bg-white flex-row items-center justify-between',
           {
             height: 80,
             elevation: 3,

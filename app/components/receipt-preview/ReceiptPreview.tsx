@@ -1,4 +1,12 @@
-import {Button, CurrencyInput} from '@/components';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Alert, Text, ToastAndroid, View} from 'react-native';
+import {
+  Button,
+  CurrencyInput,
+  BluetoothModal,
+  ContactsListModal,
+  PreviewActionButton,
+} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
@@ -26,16 +34,11 @@ import {
 import {ShareHookProps, useShare} from '@/services/share';
 import {colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Text, ToastAndroid, View} from 'react-native';
 import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {BluetoothModal} from '../BluetoothModal';
-import {ContactsListModal} from '../ContactsListModal';
 import {CancelReceiptModal} from './CancelReceiptModal';
-import {PreviewActionButton} from './PreviewActionButton';
 
 export const ReceiptPreview = ({
   isNew,
@@ -509,7 +512,7 @@ export const ReceiptPreview = ({
       </View>
 
       {!receipt?.is_cancelled && (
-        <View style={applyStyles('mb-lg flex-row justify-space-between')}>
+        <View style={applyStyles('mb-lg flex-row justify-between')}>
           {receiptActions.map((item, index) => (
             <PreviewActionButton key={index.toString()} {...item} />
           ))}
@@ -539,7 +542,7 @@ export const ReceiptPreview = ({
           style={applyStyles({
             paddingBottom: 100,
           })}>
-          <View style={applyStyles('mb-md flex-row justify-space-between')}>
+          <View style={applyStyles('mb-md flex-row justify-between')}>
             <View
               style={applyStyles({
                 height: 10,
@@ -565,8 +568,7 @@ export const ReceiptPreview = ({
               })}
             />
           </View>
-          <View
-            style={applyStyles('flex-row items-center justify-space-between')}>
+          <View style={applyStyles('flex-row items-center justify-between')}>
             {hasCustomerMobile && (
               <View style={applyStyles({width: '33%'})}>
                 <Touchable onPress={onWhatsappShare}>

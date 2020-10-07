@@ -446,9 +446,7 @@ export const CreateReceipt = withModal((props: CreateReceiptProps) => {
                   </Text>
                 </View>
                 <View
-                  style={applyStyles(
-                    'flex-row items-center, justify-space-between',
-                  )}>
+                  style={applyStyles('flex-row items-center, justify-between')}>
                   <View style={applyStyles('flex-row items-center')}>
                     <View style={applyStyles('pr-sm')}>
                       <Text style={applyStyles('text-400')}>Balance:</Text>

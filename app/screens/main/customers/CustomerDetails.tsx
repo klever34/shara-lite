@@ -8,6 +8,7 @@ import {
   FilterButtonGroup,
   ReceiptingContainer,
   HeaderRight,
+  ReceiptListItem,
 } from '@/components';
 import {CustomerContext} from '@/services/customer';
 import {Icon} from '@/components/Icon';
@@ -36,27 +37,6 @@ type CustomerDetailsProps = ModalWrapperFields & {
 const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   const navigation = useNavigation();
   const {customer} = route.params;
-
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <HeaderBackButton onPress={() => navigation.navigate('Customers')} />
-      ),
-      headerRight: () => (
-        <HeaderRight
-          options={[
-            {
-              icon: 'search',
-              onPress: () => {
-                //TODO: Implement search
-              },
-            },
-          ]}
-          menuOptions={[]}
-        />
-      ),
-    });
-  }, [navigation]);
 
   const [filter, setFilter] = useState(statusFilters[0].value);
 
@@ -114,6 +94,46 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     [handleError, navigation],
   );
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <HeaderBackButton onPress={() => navigation.navigate('Customers')} />
+      ),
+      headerRight: () => (
+        <HeaderRight
+          options={[
+            {
+              icon: 'search',
+              onPress: () => {
+                openModal('search', {
+                  items: customer.receipts ?? [],
+                  renderItem: ({item}) => {
+                    return (
+                      <ReceiptListItem
+                        receipt={item}
+                        handleListItemSelect={handleListItemSelect}
+                        getReceiptItemLeftText={getReceiptItemLeftText}
+                      />
+                    );
+                  },
+                  setSort: () => {},
+                  textInputProps: {placeholder: 'Search Receipts'},
+                });
+              },
+            },
+          ]}
+          menuOptions={[]}
+        />
+      ),
+    });
+  }, [
+    customer.receipts,
+    getReceiptItemLeftText,
+    handleListItemSelect,
+    navigation,
+    openModal,
+  ]);
+
   const filterQuery = useMemo(() => {
     switch (filter) {
       case 'all':
@@ -159,9 +179,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         handleListItemSelect={handleListItemSelect}>
         <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
           <View
-            style={applyStyles(
-              'py-xl px-sm flex-row center justify-space-between',
-            )}>
+            style={applyStyles('py-xl px-sm flex-row center justify-between')}>
             {statusFilters.map((filterItem) => (
               <FilterButton
                 {...filterItem}
@@ -172,7 +190,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
           </View>
         </FilterButtonGroup>
         <View
-          style={applyStyles('p-md center flex-row justify-space-between', {
+          style={applyStyles('p-md center flex-row justify-between', {
             backgroundColor: colors['gray-300'],
           })}>
           <View style={applyStyles('flex-row center', {height: 40})}>

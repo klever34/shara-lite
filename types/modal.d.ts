@@ -1,4 +1,5 @@
 import {ReactNode} from 'react';
+import {SearchableDropdownProps} from '@/components/SearchableDropdown';
 
 type BaseModalProps = {
   visible?: boolean;
@@ -21,6 +22,7 @@ type ModalPropsList = {
   options: {
     options: {text: string; onPress: () => void}[];
   };
+  search: SearchableDropdownProps;
 };
 
 type ModalVisibilityList = Record<keyof ModalPropsList, boolean>;

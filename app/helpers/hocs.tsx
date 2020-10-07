@@ -10,6 +10,7 @@ import {ModalPropsList, ModalVisibilityList} from 'types/modal';
 import BottomHalfModal from '../modals/BottomHalfModal';
 import OptionsModal from '../modals/OptionsModal';
 import FullModal from '@/modals/FullModal';
+import SearchModal from '@/modals/SearchModal';
 
 type OpenModal = <K extends keyof ModalPropsList>(
   modalType: K,
@@ -30,6 +31,11 @@ const defaultModalPropsList: ModalPropsList = {
   },
   options: {
     options: [],
+  },
+  search: {
+    items: [],
+    renderItem: () => null,
+    setSort: () => {},
   },
 };
 
@@ -106,6 +112,11 @@ export const withModal = (Component: ElementType) => (
         visible={modalVisibility.options}
         closeModal={closeModal}
         {...modalPropsList.options}
+      />
+      <SearchModal
+        visible={modalVisibility.search}
+        closeModal={closeModal}
+        {...modalPropsList.search}
       />
     </ModalContext.Provider>
   );

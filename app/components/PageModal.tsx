@@ -19,7 +19,7 @@ export const PageModal = (props: Props) => {
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View
         style={applyStyles(
-          'pt-32 px-sm flex-row items-center justify-space-between',
+          'pt-32 px-sm flex-row items-center justify-between',
         )}>
         <Text
           style={applyStyles('text-500 text-uppercase', {
