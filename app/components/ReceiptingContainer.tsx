@@ -105,13 +105,15 @@ export const ReceiptingContainer = ({
         />
       </View>
       <View
-        style={applyStyles('flex-row center justify-space-between px-md', {
-          height: 80,
-          elevation: 100,
-          borderTopWidth: 1,
-          backgroundColor: colors.white,
-          borderTopColor: colors['gray-20'],
-        })}>
+        style={applyStyles(
+          'flex-row center justify-space-between px-md py-lg',
+          {
+            elevation: 100,
+            borderTopWidth: 1,
+            backgroundColor: colors.white,
+            borderTopColor: colors['gray-20'],
+          },
+        )}>
         <View style={applyStyles({width: '48%'})}>
           <Button onPress={onCreateReceipt}>
             <View style={applyStyles('flex-row center')}>
@@ -123,7 +125,7 @@ export const ReceiptingContainer = ({
               />
               <Text
                 style={applyStyles(
-                  'text-400 text-uppercase pl-sm text-sm text-white',
+                  'text-400 text-uppercase pl-sm text-xs text-white',
                 )}>
                 Create receipt
               </Text>
@@ -141,7 +143,7 @@ export const ReceiptingContainer = ({
               />
               <Text
                 style={applyStyles(
-                  'text-400 text-uppercase pl-sm text-sm text-gray-300',
+                  'text-400 text-uppercase pl-sm text-xs text-gray-300',
                 )}>
                 snap receipt
               </Text>
