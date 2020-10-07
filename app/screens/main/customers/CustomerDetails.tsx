@@ -105,18 +105,30 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
             {
               icon: 'search',
               onPress: () => {
-                openModal('search', {
+                const closeModal = openModal('search', {
                   items: customer.receipts ?? [],
-                  renderItem: ({item}) => {
+                  renderItem: ({item, onPress}) => {
                     return (
                       <ReceiptListItem
                         receipt={item}
                         handleListItemSelect={handleListItemSelect}
                         getReceiptItemLeftText={getReceiptItemLeftText}
+                        onPress={() => {
+                          onPress('');
+                          closeModal();
+                        }}
                       />
                     );
                   },
-                  setSort: () => {},
+                  setFilter: (item: IReceipt, query) => {
+                    // TODO: Improve search algorithm
+                    return (
+                      item.customer_name?.search(query) !== -1 ||
+                      String(item.total_amount)?.search(query) !== -1 ||
+                      String(item.amount_paid)?.search(query) !== -1 ||
+                      String(item.credit_amount)?.search(query) !== -1
+                    );
+                  },
                   textInputProps: {
                     placeholder: 'Search Receipts',
                     autoFocus: true,

@@ -1,5 +1,4 @@
 import React from 'react';
-import {View} from 'react-native';
 import {BaseModalProps, ModalPropsList} from 'types/modal';
 import Modal from 'react-native-modal';
 import {applyStyles} from '@/helpers/utils';
@@ -18,9 +17,7 @@ const SearchModal = ({visible, closeModal, ...restProps}: SearchModalProps) => {
       animationIn="slideInDown"
       animationOut="slideOutUp"
       style={applyStyles('justify-start m-0')}>
-      <View>
-        <SearchableDropdown {...restProps} />
-      </View>
+      <SearchableDropdown {...restProps} />
     </Modal>
   );
 };

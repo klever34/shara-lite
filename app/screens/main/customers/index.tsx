@@ -125,7 +125,10 @@ export const CustomersScreen = withModal(
     const renderCustomerListItem = useCallback(
       ({
         item: customer,
-      }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'>) => {
+        onPress,
+      }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'> & {
+        onPress?: () => void;
+      }) => {
         if (!customer) {
           return (
             <EmptyState
@@ -139,7 +142,10 @@ export const CustomersScreen = withModal(
           <Touchable
             onPress={
               '_id' in customer
-                ? () => handleSelectCustomer(customer)
+                ? () => {
+                    onPress?.();
+                    handleSelectCustomer(customer);
+                  }
                 : undefined
             }>
             <View
@@ -202,14 +208,26 @@ export const CustomersScreen = withModal(
               {
                 icon: 'search',
                 onPress: () => {
-                  openModal('search', {
+                  const closeModal = openModal('search', {
                     items: (myCustomers as unknown) as ICustomer[],
-                    renderItem: ({item}) => {
+                    renderItem: ({item, onPress}) => {
                       return renderCustomerListItem({
                         item: item as CustomerListItem,
+                        onPress: () => {
+                          onPress('');
+                          closeModal();
+                        },
                       });
                     },
-                    setSort: () => {},
+                    setFilter: (item: ICustomer, query) => {
+                      // TODO: Improve search algorithm
+                      return (
+                        item.name?.search(query) !== -1 ||
+                        item.mobile?.search(query) !== -1 ||
+                        String(item.totalAmount)?.search(query) !== -1 ||
+                        String(item.overdueCreditAmount)?.search(query) !== -1
+                      );
+                    },
                     textInputProps: {
                       placeholder: 'Search Customers',
                       autoFocus: true,

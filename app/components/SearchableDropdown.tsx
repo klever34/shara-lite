@@ -21,7 +21,7 @@ export type SearchableDropdownProps<T extends any = any> = {
   textInputProps?: TextInputProps;
   onItemSelect?: (item: T) => void;
   noResultsActionButtonText?: string;
-  setSort: (item: T, text: string) => void;
+  setFilter: (item: T, text: string) => boolean;
   onChangeText?: TextInputProps['onChangeText'];
   renderItem: ({
     item,
@@ -32,19 +32,18 @@ export type SearchableDropdownProps<T extends any = any> = {
   }) => React.ReactNode;
 };
 
-function SearchableDropdown<T>(props: SearchableDropdownProps<T>) {
-  const {
-    items,
-    setSort,
-    onFocus,
-    renderItem,
-    onChangeText,
-    onItemSelect,
-    textInputProps,
-    emptyStateText,
-    noResultsAction,
-    noResultsActionButtonText,
-  } = props;
+function SearchableDropdown<T>({
+  items,
+  setFilter,
+  onFocus,
+  renderItem,
+  onChangeText,
+  onItemSelect,
+  textInputProps,
+  emptyStateText,
+  noResultsAction,
+  noResultsActionButtonText,
+}: SearchableDropdownProps<T>) {
   const [value, setValue] = useState('');
   const [focus, setFocus] = useState(false);
   const [listItems, setListItems] = useState(items || []);
@@ -73,8 +72,8 @@ function SearchableDropdown<T>(props: SearchableDropdownProps<T>) {
   const searchedItems = (searchedText: string) => {
     setValue(searchedText);
     const searchValue = searchedText.trim();
-    let sort = setSort;
-    var ac = items.filter((item: T) => {
+    let sort = setFilter;
+    const ac = items.filter((item: T) => {
       return sort(item, searchValue);
     });
     setListItems(ac);
