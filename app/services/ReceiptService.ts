@@ -251,3 +251,6 @@ export const getReceipt = ({
   // @ts-ignore
   return realm.objectForPrimaryKey(modelName, receiptId) as IReceipt;
 };
+
+export const getReceiptsTotalAmount = (receiptsData: IReceipt[]) =>
+  receiptsData.reduce((acc, receipt) => acc + receipt.total_amount, 0);

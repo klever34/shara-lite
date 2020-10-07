@@ -6,7 +6,7 @@ import {Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import * as yup from 'yup';
 import {Button} from '../Button';
-import {FloatingLabelInput} from '../FloatingLabelInput';
+import {FloatingLabelInput} from '@/components';
 
 type Props = {
   isVisible: boolean;
@@ -56,7 +56,7 @@ export const CancelReceiptModal = (props: Props) => {
             isInvalid={touched.note && !!errors.note}
           />
         </View>
-        <View style={applyStyles('flex-row justify-space-between')}>
+        <View style={applyStyles('flex-row justify-between')}>
           <View style={applyStyles({width: '48%'})}>
             <Button
               title="Confirm"

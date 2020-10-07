@@ -4,7 +4,7 @@ import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
-import {ActionCard} from '../../../components';
+import {ActionCard} from '@/components';
 
 export const ReportsScreen = () => {
   const realm = useRealm();
@@ -24,7 +24,7 @@ export const ReportsScreen = () => {
           </Text>
         </ActionCard>
       </View>
-      <View style={applyStyles('flex-row', 'mb-lg', 'justify-space-between')}>
+      <View style={applyStyles('flex-row', 'mb-lg', 'justify-between')}>
         <ActionCard
           style={applyStyles(styles.card, {
             backgroundColor: colors.white,

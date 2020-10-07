@@ -180,9 +180,9 @@ export const ReceiptImage = (props: Props) => {
               </View>
               <View
                 style={applyStyles(
-                  'flex-row items-center, justify-space-between',
+                  'flex-row items-center, justify-between  flex-wrap',
                 )}>
-                <View style={applyStyles('flex-row items-center')}>
+                <View style={applyStyles('flex-row items-center mb-md')}>
                   <View style={applyStyles('pr-sm')}>
                     <Text style={applyStyles('text-400')}>Balance:</Text>
                   </View>
@@ -193,7 +193,7 @@ export const ReceiptImage = (props: Props) => {
                   </View>
                 </View>
                 {creditDueDate && (
-                  <View style={applyStyles('flex-row items-center')}>
+                  <View style={applyStyles('flex-row items-center mb-md')}>
                     <View style={applyStyles('pr-sm')}>
                       <Text style={applyStyles('text-400')}>Collect on:</Text>
                     </View>

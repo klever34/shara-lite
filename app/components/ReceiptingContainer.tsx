@@ -33,65 +33,12 @@ export const ReceiptingContainer = ({
 }: ReceiptingContainerProps) => {
   const renderReceiptItem = useCallback(
     ({item}: {item: IReceipt}) => {
-      let amountTextStyle = applyStyles('text-700', {
-        fontSize: 16,
-        color: colors['gray-300'],
-      });
-
-      if (!item.isPaid) {
-        amountTextStyle = {...amountTextStyle, color: colors['red-200']};
-      }
-
-      if (item.is_cancelled) {
-        amountTextStyle = {
-          ...amountTextStyle,
-          ...applyStyles('text-400'),
-          fontStyle: 'italic',
-          color: colors['gray-100'],
-          textDecorationLine: 'line-through',
-        };
-      }
-
-      if (item.isPending) {
-        amountTextStyle = {
-          ...amountTextStyle,
-          ...applyStyles('text-400'),
-          fontStyle: 'italic',
-          color: colors['gray-100'],
-        };
-      }
-
       return (
-        <Touchable
-          onPress={
-            handleListItemSelect
-              ? () => handleListItemSelect(item._id)
-              : undefined
-          }>
-          <View
-            style={applyStyles('px-md flex-row center justify-space-between', {
-              height: 50,
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
-            })}>
-            <View>
-              <Text
-                {...getReceiptItemLeftText(
-                  item,
-                  applyStyles('text-400', {
-                    fontSize: 16,
-                    color: colors['gray-300'],
-                  }),
-                )}
-              />
-            </View>
-            <View>
-              <Text style={amountTextStyle}>
-                {amountWithCurrency(item.total_amount)}
-              </Text>
-            </View>
-          </View>
-        </Touchable>
+        <ReceiptListItem
+          receipt={item}
+          handleListItemSelect={handleListItemSelect}
+          getReceiptItemLeftText={getReceiptItemLeftText}
+        />
       );
     },
     [getReceiptItemLeftText, handleListItemSelect],
@@ -116,8 +63,7 @@ export const ReceiptingContainer = ({
         />
       </View>
       <View
-        style={applyStyles('flex-row center justify-space-between px-md', {
-          height: 80,
+        style={applyStyles('flex-row center justify-between px-md py-lg', {
           elevation: 100,
           borderTopWidth: 1,
           backgroundColor: colors.white,
@@ -134,7 +80,7 @@ export const ReceiptingContainer = ({
               />
               <Text
                 style={applyStyles(
-                  'text-400 text-uppercase pl-sm text-sm text-white',
+                  'text-400 text-uppercase pl-sm text-xs text-white',
                 )}>
                 Create receipt
               </Text>
@@ -152,7 +98,7 @@ export const ReceiptingContainer = ({
               />
               <Text
                 style={applyStyles(
-                  'text-400 text-uppercase pl-sm text-sm text-gray-300',
+                  'text-400 text-uppercase pl-sm text-xs text-gray-300',
                 )}>
                 snap receipt
               </Text>
@@ -161,5 +107,80 @@ export const ReceiptingContainer = ({
         </View>
       </View>
     </SafeAreaView>
+  );
+};
+
+type ReceiptListItemProps = {
+  receipt: IReceipt;
+  handleListItemSelect?: (receiptId: IReceipt['_id']) => void;
+  getReceiptItemLeftText: (
+    receipt: IReceipt,
+    baseStyle: TextStyle,
+  ) => {style: TextStyle; children: ReactNode};
+};
+
+export const ReceiptListItem = ({
+  receipt,
+  handleListItemSelect,
+  getReceiptItemLeftText,
+}: ReceiptListItemProps) => {
+  let amountTextStyle = applyStyles('text-700', {
+    fontSize: 16,
+    color: colors['gray-300'],
+  });
+
+  if (!receipt.isPaid) {
+    amountTextStyle = {...amountTextStyle, color: colors['red-200']};
+  }
+
+  if (receipt.is_cancelled) {
+    amountTextStyle = {
+      ...amountTextStyle,
+      ...applyStyles('text-400'),
+      fontStyle: 'italic',
+      color: colors['gray-100'],
+      textDecorationLine: 'line-through',
+    };
+  }
+
+  if (receipt.isPending) {
+    amountTextStyle = {
+      ...amountTextStyle,
+      ...applyStyles('text-400'),
+      fontStyle: 'italic',
+      color: colors['gray-100'],
+    };
+  }
+  return (
+    <Touchable
+      onPress={
+        handleListItemSelect
+          ? () => handleListItemSelect(receipt._id)
+          : undefined
+      }>
+      <View
+        style={applyStyles('px-md flex-row center justify-between', {
+          height: 50,
+          borderBottomWidth: 1,
+          borderBottomColor: colors['gray-20'],
+        })}>
+        <View>
+          <Text
+            {...getReceiptItemLeftText(
+              receipt,
+              applyStyles('text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              }),
+            )}
+          />
+        </View>
+        <View>
+          <Text style={amountTextStyle}>
+            {amountWithCurrency(receipt.total_amount)}
+          </Text>
+        </View>
+      </View>
+    </Touchable>
   );
 };

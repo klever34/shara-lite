@@ -15,7 +15,7 @@ export const PreviewActionButton = (props: Props) => {
   const {icon, label, onPress} = props;
   return (
     <Touchable onPress={onPress}>
-      <View style={applyStyles('p-lg center')}>
+      <View style={applyStyles('p-md center')}>
         <View
           style={applyStyles('mb-sm center', {
             width: 40,

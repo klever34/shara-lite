@@ -36,10 +36,17 @@ type Props = {
   receipt?: IReceipt;
   closeModal: () => void;
   onSnapReceipt?: () => void;
+  initialCustomer?: ICustomer;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {receipt, openModal, onSnapReceipt, closeModal} = props;
+  const {
+    receipt,
+    openModal,
+    onSnapReceipt,
+    closeModal,
+    initialCustomer,
+  } = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -63,6 +70,12 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const tax = 0;
   const creditAmount = totalAmount - amountPaid;
+
+  useEffect(() => {
+    if (initialCustomer) {
+      setCustomer(initialCustomer);
+    }
+  }, [initialCustomer]);
 
   const handleNoteChange = useCallback((text: string) => {
     setNote(text);
@@ -290,7 +303,12 @@ export const CreateReceipt = withModal((props: Props) => {
             </View>
 
             <View style={applyStyles({paddingBottom: 32})}>
-              <Touchable onPress={() => setIsContactListModalOpen(true)}>
+              <Touchable
+                onPress={
+                  initialCustomer
+                    ? undefined
+                    : () => setIsContactListModalOpen(true)
+                }>
                 <View style={applyStyles('px-lg py-lg flex-row items-center')}>
                   <Text
                     style={applyStyles('text-400', {
@@ -299,11 +317,16 @@ export const CreateReceipt = withModal((props: Props) => {
                     Receipt for:
                   </Text>
                   <Text
-                    style={applyStyles('text-500 pl-sm', {
-                      color: colors.primary,
-                      textDecorationLine: 'underline',
-                      textDecorationColor: colors.primary,
-                    })}>
+                    style={applyStyles(
+                      'text-500 pl-sm',
+                      initialCustomer
+                        ? undefined
+                        : {
+                            color: colors.primary,
+                            textDecorationLine: 'underline',
+                            textDecorationColor: colors.primary,
+                          },
+                    )}>
                     {customer.name ? customer.name : 'Add Customer Details'}
                   </Text>
                 </View>
@@ -343,6 +366,7 @@ export const CreateReceipt = withModal((props: Props) => {
                     />
                     <Text
                       style={applyStyles('text-500', {
+                        fontSize: 12,
                         color: colors.primary,
                       })}>
                       Add Product
@@ -381,7 +405,7 @@ export const CreateReceipt = withModal((props: Props) => {
             <View style={applyStyles('pb-32')}>
               <SummaryTableFooter tax={tax} totalAmount={totalAmount} />
             </View>
-            <View style={applyStyles('px-xl', {paddingBottom: 40})}>
+            <View style={applyStyles('px-lg', {paddingBottom: 40})}>
               <View style={applyStyles('pb-xl flex-row items-center')}>
                 <Text style={applyStyles('text-400')}>Paid:</Text>
                 <View style={applyStyles('ml-sm')}>
@@ -410,7 +434,7 @@ export const CreateReceipt = withModal((props: Props) => {
                     multiline
                     value={note}
                     style={applyStyles('px-lg py-0', {
-                      width: 320,
+                      width: '55%',
                       height: 100,
                       borderWidth: 1,
                       fontFamily: 'Rubik-Regular',
@@ -440,9 +464,9 @@ export const CreateReceipt = withModal((props: Props) => {
                 </View>
                 <View
                   style={applyStyles(
-                    'flex-row items-center, justify-space-between',
+                    'flex-row items-center, justify-between flex-wrap',
                   )}>
-                  <View style={applyStyles('flex-row items-center')}>
+                  <View style={applyStyles('flex-row items-center mb-md')}>
                     <View style={applyStyles('pr-sm')}>
                       <Text style={applyStyles('text-400')}>Balance:</Text>
                     </View>
@@ -453,33 +477,35 @@ export const CreateReceipt = withModal((props: Props) => {
                     </View>
                   </View>
                   {dueDate && (
-                    <DatePicker
-                      value={dueDate}
-                      minimumDate={new Date()}
-                      onChange={(e: Event, date?: Date) =>
-                        handleDueDateChange(date)
-                      }>
-                      {(toggleShow) => (
-                        <Touchable onPress={toggleShow}>
-                          <View style={applyStyles('flex-row items-center')}>
-                            <View style={applyStyles('pr-sm')}>
-                              <Text style={applyStyles('text-400')}>
-                                Collect on:
-                              </Text>
+                    <View style={applyStyles(' mb-md')}>
+                      <DatePicker
+                        value={dueDate}
+                        minimumDate={new Date()}
+                        onChange={(e: Event, date?: Date) =>
+                          handleDueDateChange(date)
+                        }>
+                        {(toggleShow) => (
+                          <Touchable onPress={toggleShow}>
+                            <View style={applyStyles('flex-row items-center')}>
+                              <View style={applyStyles('pr-sm')}>
+                                <Text style={applyStyles('text-400')}>
+                                  Collect on:
+                                </Text>
+                              </View>
+                              <View
+                                style={applyStyles('p-sm', {
+                                  borderWidth: 1,
+                                  borderColor: colors['gray-900'],
+                                })}>
+                                <Text style={applyStyles('text-500')}>
+                                  {format(dueDate, 'dd/MM/yyyy')}
+                                </Text>
+                              </View>
                             </View>
-                            <View
-                              style={applyStyles('p-sm', {
-                                borderWidth: 1,
-                                borderColor: colors['gray-900'],
-                              })}>
-                              <Text style={applyStyles('text-500')}>
-                                {format(dueDate, 'dd/MM/yyyy')}
-                              </Text>
-                            </View>
-                          </View>
-                        </Touchable>
-                      )}
-                    </DatePicker>
+                          </Touchable>
+                        )}
+                      </DatePicker>
+                    </View>
                   )}
                 </View>
               </View>

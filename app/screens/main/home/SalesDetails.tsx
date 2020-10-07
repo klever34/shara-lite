@@ -26,7 +26,7 @@ export const SalesDetails = ({route}: any) => {
     <ScrollView
       persistentScrollbar
       keyboardShouldPersistTaps="always"
-      style={applyStyles('py-sm px-xl flex-1', {
+      style={applyStyles('py-sm px-lg flex-1', {
         backgroundColor: colors.white,
       })}>
       <View style={applyStyles('mb-xl flex-row justify-end w-full')}>

@@ -1,4 +1,12 @@
-import {Button, CurrencyInput} from '@/components';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Alert, Text, ToastAndroid, View, Image} from 'react-native';
+import {
+  Button,
+  CurrencyInput,
+  BluetoothModal,
+  ContactsListModal,
+  PreviewActionButton,
+} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
@@ -28,16 +36,11 @@ import {
 import {ShareHookProps, useShare} from '@/services/share';
 import {colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Image, Text, ToastAndroid, View} from 'react-native';
 import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {BluetoothModal} from '../BluetoothModal';
-import {ContactsListModal} from '../ContactsListModal';
 import {CancelReceiptModal} from './CancelReceiptModal';
-import {PreviewActionButton} from './PreviewActionButton';
 
 type Props = {
   isNew: boolean;
@@ -466,9 +469,9 @@ export const ReceiptPreview = withModal(
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
         })}>
-        <View style={applyStyles('mb-md')}>
-          {(!receipt?.is_cancelled && !hasCustomer) ||
-            (!receipt?.isPending && (
+        {!receipt?.isPending && (
+          <View style={applyStyles('mb-md')}>
+            {!receipt?.is_cancelled && !hasCustomer && (
               <Touchable onPress={handleOpenContactListModal}>
                 <View
                   style={applyStyles('center px-lg', {
@@ -493,8 +496,9 @@ export const ReceiptPreview = withModal(
                   </View>
                 </View>
               </Touchable>
-            ))}
-        </View>
+            )}
+          </View>
+        )}
         <View style={applyStyles('flex-row center')}>
           <View
             style={applyStyles('mb-lg', {
@@ -524,33 +528,42 @@ export const ReceiptPreview = withModal(
           </View>
         </View>
 
-        {!receipt?.is_cancelled ||
-          (!receipt.isPending && (
-            <View style={applyStyles('mb-lg flex-row justify-space-between')}>
-              {receiptActions.map((item, index) => (
-                <PreviewActionButton key={index.toString()} {...item} />
-              ))}
-            </View>
-          ))}
+        {!receipt?.isPending && (
+          <View>
+            {!receipt?.is_cancelled && (
+              <View
+                style={applyStyles(
+                  'mb-lg flex-row w-full justify-space-between',
+                )}>
+                {receiptActions.map((item, index) => (
+                  <PreviewActionButton key={index.toString()} {...item} />
+                ))}
+              </View>
+            )}
+          </View>
+        )}
 
-        {(!isFulfilled && !isNew) ||
-          (!receipt?.isPending && (
-            <View style={applyStyles('mb-xl')}>
-              <View style={applyStyles('mb-md')}>
-                <CurrencyInput
-                  label="Amount Paid"
-                  value={creditPaymentAmount.toString()}
-                  onChange={(value) => handleCreditPaymentAmountChange(value)}
+        {!receipt?.isPending && (
+          <View>
+            {!isFulfilled && !isNew && (
+              <View style={applyStyles('mb-xl')}>
+                <View style={applyStyles('mb-md')}>
+                  <CurrencyInput
+                    label="Amount Paid"
+                    value={creditPaymentAmount.toString()}
+                    onChange={(value) => handleCreditPaymentAmountChange(value)}
+                  />
+                </View>
+                <Button
+                  isLoading={isLoading}
+                  title="confirm payment"
+                  disabled={!creditPaymentAmount}
+                  onPress={handleCreditPaymentSubmit}
                 />
               </View>
-              <Button
-                isLoading={isLoading}
-                title="confirm payment"
-                disabled={!creditPaymentAmount}
-                onPress={handleCreditPaymentSubmit}
-              />
-            </View>
-          ))}
+            )}
+          </View>
+        )}
 
         {!receipt?.is_cancelled && hasCustomer && (
           <View
@@ -566,9 +579,12 @@ export const ReceiptPreview = withModal(
                   borderBottomColor: colors['gray-50'],
                 })}
               />
-              <View>
+              <View
+                style={applyStyles({
+                  width: '33%',
+                })}>
                 <Text
-                  style={applyStyles('text-400 text-uppercase', {
+                  style={applyStyles('text-400 text-center text-uppercase', {
                     color: colors['gray-300'],
                   })}>
                   {isFulfilled || isNew ? 'Send via' : 'Send reminder'}
@@ -585,10 +601,10 @@ export const ReceiptPreview = withModal(
             </View>
             <View
               style={applyStyles(
-                'flex-row items-center justify-space-between',
+                'flex-row items-center justify-space-between flex-wrap',
               )}>
               {hasCustomerMobile && (
-                <View style={applyStyles({width: '33%'})}>
+                <View style={applyStyles('pr-md')}>
                   <Touchable onPress={onWhatsappShare}>
                     <View
                       style={applyStyles(
@@ -621,7 +637,7 @@ export const ReceiptPreview = withModal(
                 </View>
               )}
               {hasCustomerMobile && (
-                <View style={applyStyles({width: '33%'})}>
+                <View style={applyStyles('pr-md')}>
                   <Touchable onPress={onSmsShare}>
                     <View
                       style={applyStyles(

@@ -276,7 +276,7 @@ export function ContactsListModal<T>({
                 <View style={applyStyles('bg-white')}>
                   <View
                     style={applyStyles(
-                      'py-md px-lg flex-row items-center justify-space-between',
+                      'py-md px-lg flex-row items-center justify-between',
                       {
                         borderBottomWidth: 1,
                         borderBottomColor: colors['gray-20'],
