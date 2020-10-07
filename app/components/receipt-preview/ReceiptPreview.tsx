@@ -501,18 +501,26 @@ export const ReceiptPreview = withModal(
           </View>
         )}
         <View style={applyStyles('flex-row center')}>
-          <View
-            style={applyStyles('mb-lg', {
-              elevation: 3,
-              width: '100%',
-              backgroundColor: colors.white,
-            })}>
-            {receipt?.isPending ? (
+          {receipt?.isPending ? (
+            <View
+              style={applyStyles('mb-lg', {
+                elevation: 3,
+                width: '100%',
+                backgroundColor: colors.white,
+              })}>
               <Image
                 style={applyStyles({height: 480})}
                 source={{uri: receipt.local_image_url || receipt.image_url}}
               />
-            ) : (
+            </View>
+          ) : (
+            <View
+              style={applyStyles('mb-lg', {
+                elevation: 3,
+                width: '100%',
+                transform: [{scale: 0.95}],
+                backgroundColor: colors.white,
+              })}>
               <ReceiptImage
                 user={user}
                 tax={receipt?.tax}
@@ -525,8 +533,8 @@ export const ReceiptPreview = withModal(
                 totalAmount={receipt?.total_amount}
                 getImageUri={(data) => setReceiptImage(data)}
               />
-            )}
-          </View>
+            </View>
+          )}
         </View>
 
         {!receipt?.isPending && (
@@ -534,10 +542,14 @@ export const ReceiptPreview = withModal(
             {!receipt?.is_cancelled && (
               <View
                 style={applyStyles(
-                  'mb-lg flex-row w-full justify-space-between',
+                  'mb-lg flex-row w-full justify-space-between flex-wrap',
                 )}>
                 {receiptActions.map((item, index) => (
-                  <PreviewActionButton key={index.toString()} {...item} />
+                  <View
+                    key={index.toString()}
+                    style={applyStyles('center', {width: '25%'})}>
+                    <PreviewActionButton {...item} />
+                  </View>
                 ))}
               </View>
             )}

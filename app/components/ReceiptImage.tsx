@@ -4,7 +4,7 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {colors} from '@/styles';
 import format from 'date-fns/format';
 import React, {useCallback} from 'react';
-import {FlatList, Image, ScrollView, Text, View} from 'react-native';
+import {FlatList, Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {User} from 'types/app';
@@ -25,6 +25,7 @@ type Props = {
   creditDueDate?: Date;
   creditAmount?: number;
   products?: IReceiptItem[];
+  containerStyle?: ViewStyle;
   getImageUri: (base64: string) => void;
   captureMode?: ViewShotProperties['captureMode'];
 };
@@ -41,6 +42,7 @@ export const ReceiptImage = (props: Props) => {
     getImageUri,
     creditAmount,
     creditDueDate,
+    containerStyle,
     captureMode = 'mount',
   } = props;
   const businessInfo = user?.businesses[0];
@@ -68,6 +70,7 @@ export const ReceiptImage = (props: Props) => {
         <View
           style={applyStyles('flex-1', {
             backgroundColor: colors.white,
+            ...containerStyle,
           })}>
           <View style={applyStyles('py-lg items-center justify-center')}>
             <View style={applyStyles('mb-md')}>
@@ -111,7 +114,7 @@ export const ReceiptImage = (props: Props) => {
               </Text>
             )}
           </View>
-          <View style={applyStyles('py-sm')}>
+          <View style={applyStyles('py-sm  px-lg')}>
             <View style={applyStyles('pb-sm flex-row items-center')}>
               <Text
                 style={applyStyles('text-400', {color: colors['gray-200']})}>
@@ -150,7 +153,7 @@ export const ReceiptImage = (props: Props) => {
             />
           </View>
           <View>
-            <View style={applyStyles('mb-xl mx-xl flex-row items-center')}>
+            <View style={applyStyles('mb-xl px-lg flex-row items-center')}>
               <View style={applyStyles('pr-sm')}>
                 <Text style={applyStyles('text-400')}>Paid:</Text>
               </View>
