@@ -8,6 +8,7 @@ import {IReceipt} from '@/models/Receipt';
 import EmptyState from '@/components/EmptyState';
 import {FlatList} from 'react-native-gesture-handler';
 import Touchable from '@/components/Touchable';
+import {getAllPayments} from '@/services/ReceiptService';
 
 type ReceiptingContainerProps = {
   handleListItemSelect?: (receiptId: IReceipt['_id']) => void;
@@ -126,12 +127,17 @@ export const ReceiptListItem = ({
   getReceiptItemLeftText,
   onPress,
 }: ReceiptListItemProps) => {
+  const allPayments = receipt ? getAllPayments({receipt}) : [];
+  const totalAmountPaid = allPayments.reduce(
+    (total, payment) => total + payment.amount_paid,
+    0,
+  );
   let amountTextStyle = applyStyles('text-700', {
     fontSize: 16,
     color: colors['gray-300'],
   });
 
-  if (!receipt.isPaid) {
+  if (receipt.total_amount !== totalAmountPaid) {
     amountTextStyle = {...amountTextStyle, color: colors['red-200']};
   }
 

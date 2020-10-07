@@ -518,7 +518,6 @@ export const ReceiptPreview = withModal(
               style={applyStyles('mb-lg', {
                 elevation: 3,
                 width: '100%',
-                transform: [{scale: 0.95}],
                 backgroundColor: colors.white,
               })}>
               <ReceiptImage

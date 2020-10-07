@@ -15,6 +15,7 @@ import {
   getReceipts,
   saveReceipt,
   getReceiptsTotalAmount,
+  getAllPayments,
 } from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
@@ -115,12 +116,18 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           break;
         case 'paid':
           const paidReceipts = allReceipts
-            .filter(
-              (receipt) =>
-                receipt.total_amount === receipt.amount_paid &&
+            .filter((receipt) => {
+              const allPayments = receipt ? getAllPayments({receipt}) : [];
+              const totalAmountPaid = allPayments.reduce(
+                (total, payment) => total + payment.amount_paid,
+                0,
+              );
+              return (
+                receipt.total_amount === totalAmountPaid &&
                 !receipt.is_cancelled &&
-                !receipt.isPending,
-            )
+                !receipt.isPending
+              );
+            })
             .filter((item) => {
               if (dateFilter && item.created_at) {
                 return isEqual(
@@ -134,12 +141,18 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           break;
         case 'unpaid':
           const unPaidReceipts = allReceipts
-            .filter(
-              (receipt) =>
-                receipt.total_amount !== receipt.amount_paid &&
+            .filter((receipt) => {
+              const allPayments = receipt ? getAllPayments({receipt}) : [];
+              const totalAmountPaid = allPayments.reduce(
+                (total, payment) => total + payment.amount_paid,
+                0,
+              );
+              return (
+                receipt.total_amount !== totalAmountPaid &&
                 !receipt.is_cancelled &&
-                !receipt.isPending,
-            )
+                !receipt.isPending
+              );
+            })
             .filter((item) => {
               if (dateFilter && item.created_at) {
                 return isEqual(
@@ -274,7 +287,12 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
 
   const getCustomerText = useCallback(
     (receipt: IReceipt, customerTextStyle: TextStyle) => {
-      if (!receipt.isPaid) {
+      const allPayments = receipt ? getAllPayments({receipt}) : [];
+      const totalAmountPaid = allPayments.reduce(
+        (total, payment) => total + payment.amount_paid,
+        0,
+      );
+      if (receipt.total_amount !== totalAmountPaid) {
         customerTextStyle = {
           ...customerTextStyle,
           ...applyStyles('text-700'),
