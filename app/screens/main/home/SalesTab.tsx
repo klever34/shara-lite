@@ -11,15 +11,17 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {getReceipts} from '@/services/ReceiptService';
+import {getReceipts, saveReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
 import {sortBy} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
+import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
+import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 import {useErrorHandler} from '@/services/error-boundary';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {CreateReceipt} from '@/screens/receipt';
+import {ICustomer} from '@/models';
 
 const statusFilters = [
   {label: 'All', value: 'all'},
@@ -117,7 +119,8 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
             .filter(
               (receipt) =>
                 receipt.total_amount === receipt.amount_paid &&
-                !receipt.is_cancelled,
+                !receipt.is_cancelled &&
+                !receipt.isPending,
             )
             .filter((item) => {
               if (dateFilter && item.created_at) {
@@ -135,7 +138,8 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
             .filter(
               (receipt) =>
                 receipt.total_amount !== receipt.amount_paid &&
-                !receipt.is_cancelled,
+                !receipt.is_cancelled &&
+                !receipt.isPending,
             )
             .filter((item) => {
               if (dateFilter && item.created_at) {
@@ -161,6 +165,20 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
             });
           setReceipts(cancelledReceipts);
           setTotalAmount(getTotalAmount(cancelledReceipts));
+          break;
+        case 'pending':
+          const pendingReceipts = allReceipts
+            .filter((receipt) => receipt.isPending)
+            .filter((item) => {
+              if (dateFilter && item.created_at) {
+                return isEqual(
+                  new Date(format(item.created_at, 'MMM dd, yyyy')),
+                  new Date(format(dateFilter, 'MMM dd, yyyy')),
+                );
+              }
+            });
+          setReceipts(pendingReceipts);
+          setTotalAmount(getTotalAmount(pendingReceipts));
           break;
         default:
           const all = sortReceipts(allReceipts);
@@ -219,11 +237,47 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     [handleError, navigation],
   );
 
-  const handleOpenModal = useCallback(() => {
+  const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => <CreateReceipt closeModal={closeModal} />,
     });
   }, [openModal]);
+
+  const handleSnapReceipt = useCallback(() => {
+    const options: ImagePickerOptions = {
+      noData: true,
+      maxWidth: 256,
+      maxHeight: 256,
+      mediaType: 'photo',
+      allowsEditing: true,
+    };
+    ImagePicker.launchCamera(options, (response) => {
+      if (response.didCancel) {
+        // do nothing
+      } else if (response.error) {
+        Alert.alert('Error', response.error);
+      } else {
+        const {uri} = response;
+        const extensionIndex = uri.lastIndexOf('.');
+        const extension = uri.slice(extensionIndex + 1);
+        const allowedExtensions = ['jpg', 'jpeg', 'png'];
+        if (!allowedExtensions.includes(extension)) {
+          return Alert.alert('Error', 'That file type is not allowed.');
+        }
+        saveReceipt({
+          realm,
+          tax: 0,
+          payments: [],
+          amountPaid: 0,
+          totalAmount: 0,
+          creditAmount: 0,
+          receiptItems: [],
+          customer: {} as ICustomer,
+          local_image_url: uri,
+        });
+      }
+    });
+  }, [realm]);
 
   const getCustomerText = useCallback(
     (receipt: IReceipt, customerTextStyle: TextStyle) => {
@@ -247,6 +301,14 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           fontStyle: 'italic',
           color: colors['gray-100'],
           textDecorationLine: 'line-through',
+        };
+      }
+      if (receipt.isPending) {
+        customerTextStyle = {
+          ...customerTextStyle,
+          ...applyStyles('text-400'),
+          fontStyle: 'italic',
+          color: colors['gray-100'],
         };
       }
       return {
@@ -279,7 +341,8 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
       <ReceiptingContainer
         receipts={receipts}
         emptyStateText={emptyStateText}
-        onCreateReceipt={handleOpenModal}
+        onSnapReceipt={handleSnapReceipt}
+        onCreateReceipt={handleOpenCreateReciptModal}
         handleListItemSelect={handleListItemSelect}
         getReceiptItemLeftText={getCustomerText}>
         <FilterButtonGroup

@@ -29,7 +29,7 @@ import {ShareHookProps, useShare} from '@/services/share';
 import {colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Text, ToastAndroid, View} from 'react-native';
+import {Alert, Image, Text, ToastAndroid, View} from 'react-native';
 import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
@@ -467,32 +467,33 @@ export const ReceiptPreview = withModal(
           backgroundColor: colors.white,
         })}>
         <View style={applyStyles('mb-md')}>
-          {!receipt?.is_cancelled && !hasCustomer && (
-            <Touchable onPress={handleOpenContactListModal}>
-              <View
-                style={applyStyles('center px-lg', {
-                  height: 40,
-                  borderRadius: 4,
-                  alignSelf: 'flex-start',
-                  backgroundColor: colors['red-50'],
-                })}>
-                <View style={applyStyles('flex-row items-center')}>
-                  <Icon
-                    size={18}
-                    name="plus"
-                    type="feathericons"
-                    color={colors['red-200']}
-                  />
-                  <Text
-                    style={applyStyles('pl-sm text-400', {
-                      color: colors['red-200'],
-                    })}>
-                    Add Customer
-                  </Text>
+          {(!receipt?.is_cancelled && !hasCustomer) ||
+            (!receipt?.isPending && (
+              <Touchable onPress={handleOpenContactListModal}>
+                <View
+                  style={applyStyles('center px-lg', {
+                    height: 40,
+                    borderRadius: 4,
+                    alignSelf: 'flex-start',
+                    backgroundColor: colors['red-50'],
+                  })}>
+                  <View style={applyStyles('flex-row items-center')}>
+                    <Icon
+                      size={18}
+                      name="plus"
+                      type="feathericons"
+                      color={colors['red-200']}
+                    />
+                    <Text
+                      style={applyStyles('pl-sm text-400', {
+                        color: colors['red-200'],
+                      })}>
+                      Add Customer
+                    </Text>
+                  </View>
                 </View>
-              </View>
-            </Touchable>
-          )}
+              </Touchable>
+            ))}
         </View>
         <View style={applyStyles('flex-row center')}>
           <View
@@ -501,46 +502,55 @@ export const ReceiptPreview = withModal(
               width: '100%',
               backgroundColor: colors.white,
             })}>
-            <ReceiptImage
-              user={user}
-              tax={receipt?.tax}
-              customer={customer}
-              products={receipt?.items}
-              amountPaid={totalAmountPaid}
-              creditDueDate={creditDueDate}
-              creditAmount={creditAmountLeft}
-              createdAt={receipt?.created_at}
-              totalAmount={receipt?.total_amount}
-              getImageUri={(data) => setReceiptImage(data)}
-            />
+            {receipt?.isPending ? (
+              <Image
+                style={applyStyles({height: 480})}
+                source={{uri: receipt.local_image_url || receipt.image_url}}
+              />
+            ) : (
+              <ReceiptImage
+                user={user}
+                tax={receipt?.tax}
+                customer={customer}
+                products={receipt?.items}
+                amountPaid={totalAmountPaid}
+                creditDueDate={creditDueDate}
+                creditAmount={creditAmountLeft}
+                createdAt={receipt?.created_at}
+                totalAmount={receipt?.total_amount}
+                getImageUri={(data) => setReceiptImage(data)}
+              />
+            )}
           </View>
         </View>
 
-        {!receipt?.is_cancelled && (
-          <View style={applyStyles('mb-lg flex-row justify-space-between')}>
-            {receiptActions.map((item, index) => (
-              <PreviewActionButton key={index.toString()} {...item} />
-            ))}
-          </View>
-        )}
+        {!receipt?.is_cancelled ||
+          (!receipt.isPending && (
+            <View style={applyStyles('mb-lg flex-row justify-space-between')}>
+              {receiptActions.map((item, index) => (
+                <PreviewActionButton key={index.toString()} {...item} />
+              ))}
+            </View>
+          ))}
 
-        {!isFulfilled && !isNew && (
-          <View style={applyStyles('mb-xl')}>
-            <View style={applyStyles('mb-md')}>
-              <CurrencyInput
-                label="Amount Paid"
-                value={creditPaymentAmount.toString()}
-                onChange={(value) => handleCreditPaymentAmountChange(value)}
+        {(!isFulfilled && !isNew) ||
+          (!receipt?.isPending && (
+            <View style={applyStyles('mb-xl')}>
+              <View style={applyStyles('mb-md')}>
+                <CurrencyInput
+                  label="Amount Paid"
+                  value={creditPaymentAmount.toString()}
+                  onChange={(value) => handleCreditPaymentAmountChange(value)}
+                />
+              </View>
+              <Button
+                isLoading={isLoading}
+                title="confirm payment"
+                disabled={!creditPaymentAmount}
+                onPress={handleCreditPaymentSubmit}
               />
             </View>
-            <Button
-              isLoading={isLoading}
-              title="confirm payment"
-              disabled={!creditPaymentAmount}
-              onPress={handleCreditPaymentSubmit}
-            />
-          </View>
-        )}
+          ))}
 
         {!receipt?.is_cancelled && hasCustomer && (
           <View

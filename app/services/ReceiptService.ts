@@ -34,6 +34,8 @@ export const saveReceipt = ({
   creditAmount,
   payments,
   receiptItems,
+  local_image_url,
+  image_url,
 }: {
   realm: Realm;
   dueDate?: Date;
@@ -44,12 +46,16 @@ export const saveReceipt = ({
   tax: number;
   payments: Payment[];
   receiptItems: IReceiptItem[];
+  image_url?: string;
+  local_image_url?: string;
 }) => {
   const receipt: IReceipt = {
     tax,
     amount_paid: amountPaid,
     total_amount: totalAmount,
     credit_amount: creditAmount,
+    local_image_url,
+    image_url,
     ...getBaseModelValues(),
   };
 

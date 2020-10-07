@@ -18,16 +18,18 @@ type ReceiptingContainerProps = {
   ) => {style: TextStyle; children: ReactNode};
   receipts?: IReceipt[];
   children: ReactNode;
+  onSnapReceipt?(): void;
   onCreateReceipt?(): void;
 };
 
 export const ReceiptingContainer = ({
   receipts,
+  children,
+  onSnapReceipt,
+  emptyStateText,
+  onCreateReceipt,
   handleListItemSelect,
   getReceiptItemLeftText,
-  emptyStateText,
-  children,
-  onCreateReceipt,
 }: ReceiptingContainerProps) => {
   const renderReceiptItem = useCallback(
     ({item}: {item: IReceipt}) => {
@@ -47,6 +49,15 @@ export const ReceiptingContainer = ({
           fontStyle: 'italic',
           color: colors['gray-100'],
           textDecorationLine: 'line-through',
+        };
+      }
+
+      if (item.isPending) {
+        amountTextStyle = {
+          ...amountTextStyle,
+          ...applyStyles('text-400'),
+          fontStyle: 'italic',
+          color: colors['gray-100'],
         };
       }
 
@@ -131,7 +142,7 @@ export const ReceiptingContainer = ({
           </Button>
         </View>
         <View style={applyStyles({width: '48%'})}>
-          <Button onPress={() => {}} variantColor="clear">
+          <Button onPress={onSnapReceipt} variantColor="clear">
             <View style={applyStyles('flex-row center')}>
               <Icon
                 size={24}
