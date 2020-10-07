@@ -35,7 +35,7 @@ const defaultModalPropsList: ModalPropsList = {
   search: {
     items: [],
     renderItem: () => null,
-    setSort: () => {},
+    setFilter: () => false,
   },
 };
 

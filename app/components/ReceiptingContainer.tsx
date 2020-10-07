@@ -117,12 +117,14 @@ type ReceiptListItemProps = {
     receipt: IReceipt,
     baseStyle: TextStyle,
   ) => {style: TextStyle; children: ReactNode};
+  onPress?: () => void;
 };
 
 export const ReceiptListItem = ({
   receipt,
   handleListItemSelect,
   getReceiptItemLeftText,
+  onPress,
 }: ReceiptListItemProps) => {
   let amountTextStyle = applyStyles('text-700', {
     fontSize: 16,
@@ -155,7 +157,10 @@ export const ReceiptListItem = ({
     <Touchable
       onPress={
         handleListItemSelect
-          ? () => handleListItemSelect(receipt._id)
+          ? () => {
+              onPress?.();
+              handleListItemSelect(receipt._id);
+            }
           : undefined
       }>
       <View

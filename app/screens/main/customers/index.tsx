@@ -19,6 +19,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  ActivityIndicator,
   ListRenderItemInfo,
   SectionList,
   StyleSheet,
@@ -27,6 +28,7 @@ import {
   View,
 } from 'react-native';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {useAsync} from '@/services/api';
 
 type CustomerListItem =
   | Pick<
@@ -43,7 +45,7 @@ type CustomerListItem =
     };
 
 type CustomersScreenProps = ModalWrapperFields & {};
-
+const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
 export const CustomersScreen = withModal(
   ({openModal}: CustomersScreenProps) => {
     const navigation = useNavigation();
@@ -52,33 +54,37 @@ export const CustomersScreen = withModal(
     const analyticsService = getAnalyticsService();
     const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
     const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
+    const {run: runGetPhoneContacts, loading} = useAsync(
+      getPhoneContactsPromiseFn,
+      {
+        defer: true,
+      },
+    );
     useEffect(() => {
       const customers = getCustomers({realm});
-      getContactService()
-        .getPhoneContacts()
-        .then((contacts) => {
-          setPhoneContacts(
-            contacts.reduce<CustomerListItem[]>(
-              (acc, {givenName, familyName, phoneNumber}) => {
-                const existing = customers.filtered(
-                  `mobile = "${phoneNumber.number}"`,
-                );
-                if (existing.length) {
-                  return acc;
-                }
-                return [
-                  ...acc,
-                  {
-                    name: `${givenName} ${familyName}`,
-                    mobile: phoneNumber.number,
-                  },
-                ];
-              },
-              [],
-            ),
-          );
-        });
-    }, [realm]);
+      runGetPhoneContacts().then((contacts) => {
+        setPhoneContacts(
+          contacts.reduce<CustomerListItem[]>(
+            (acc, {givenName, familyName, phoneNumber}) => {
+              const existing = customers.filtered(
+                `mobile = "${phoneNumber.number}"`,
+              );
+              if (existing.length) {
+                return acc;
+              }
+              return [
+                ...acc,
+                {
+                  name: `${givenName} ${familyName}`,
+                  mobile: phoneNumber.number,
+                },
+              ];
+            },
+            [],
+          ),
+        );
+      });
+    }, [runGetPhoneContacts, realm]);
 
     const handleCloseContactListModal = useCallback(() => {
       setIsContactListModalOpen(false);
@@ -119,7 +125,10 @@ export const CustomersScreen = withModal(
     const renderCustomerListItem = useCallback(
       ({
         item: customer,
-      }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'>) => {
+        onPress,
+      }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'> & {
+        onPress?: () => void;
+      }) => {
         if (!customer) {
           return (
             <EmptyState
@@ -133,7 +142,10 @@ export const CustomersScreen = withModal(
           <Touchable
             onPress={
               '_id' in customer
-                ? () => handleSelectCustomer(customer)
+                ? () => {
+                    onPress?.();
+                    handleSelectCustomer(customer);
+                  }
                 : undefined
             }>
             <View
@@ -196,14 +208,26 @@ export const CustomersScreen = withModal(
               {
                 icon: 'search',
                 onPress: () => {
-                  openModal('search', {
+                  const closeModal = openModal('search', {
                     items: (myCustomers as unknown) as ICustomer[],
-                    renderItem: ({item}) => {
+                    renderItem: ({item, onPress}) => {
                       return renderCustomerListItem({
                         item: item as CustomerListItem,
+                        onPress: () => {
+                          onPress('');
+                          closeModal();
+                        },
                       });
                     },
-                    setSort: () => {},
+                    setFilter: (item: ICustomer, query) => {
+                      // TODO: Improve search algorithm
+                      return (
+                        item.name?.search(query) !== -1 ||
+                        item.mobile?.search(query) !== -1 ||
+                        String(item.totalAmount)?.search(query) !== -1 ||
+                        String(item.overdueCreditAmount)?.search(query) !== -1
+                      );
+                    },
                     textInputProps: {
                       placeholder: 'Search Customers',
                       autoFocus: true,
@@ -223,9 +247,20 @@ export const CustomersScreen = withModal(
         if (!title) {
           return null;
         }
-        return <Text style={styles.customerListHeader}>{title}</Text>;
+        if (loading) {
+          return (
+            <View style={styles.customerListHeader}>
+              <ActivityIndicator size={24} color={colors.primary} />
+            </View>
+          );
+        }
+        return (
+          <View style={styles.customerListHeader}>
+            <Text style={styles.customerListHeaderText}>{title}</Text>
+          </View>
+        );
       },
-      [],
+      [loading],
     );
     const sections = useMemo(
       () => [
@@ -324,15 +359,17 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   customerListHeader: applyStyles('text-center bg-gray-10', {
-    fontSize: 12,
-    fontWeight: 'bold',
     paddingVertical: 16,
     paddingHorizontal: 4,
     borderBottomWidth: 1,
+    borderBottomColor: colors['gray-20'],
+  }),
+  customerListHeaderText: applyStyles('text-center bg-gray-10', {
+    fontSize: 12,
+    fontWeight: 'bold',
     textTransform: 'uppercase',
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-    borderBottomColor: colors['gray-20'],
   }),
 });
 

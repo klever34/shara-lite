@@ -262,6 +262,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
 
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
+      swipeDirection: [],
       renderContent: () => (
         <CreateReceipt
           closeModal={closeModal}
@@ -360,7 +361,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
               value={filter.date}
               maximumDate={new Date()}
               onChange={(e: Event, date?: Date) => handleDateFilter(date)}>
-              {(toggleShow) => (
+              {(toggleShow: any) => (
                 <Touchable onPress={toggleShow}>
                   <View style={applyStyles('flex-row center', {height: 40})}>
                     <Icon
