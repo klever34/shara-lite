@@ -154,15 +154,16 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   ]);
 
   const filterQuery = useMemo(() => {
+    const isNotPending = 'local_image_url = null OR image_url = null';
     switch (filter) {
       case 'all':
         return '';
       case 'paid':
-        return 'total_amount = amount_paid AND is_cancelled = false';
+        return `total_amount = amount_paid AND (${isNotPending})`;
       case 'unpaid':
-        return 'total_amount != amount_paid AND is_cancelled = false';
-      case 'cancelled':
-        return 'is_cancelled = true';
+        return `total_amount != amount_paid AND (${isNotPending})`;
+      case 'pending':
+        return `!(${isNotPending})`;
       default:
         return '';
     }
