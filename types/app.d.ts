@@ -1,4 +1,4 @@
-import {IProduct} from '../app/models/Product';
+import {IProduct} from '@/models/Product';
 import {ObjectId} from 'bson';
 
 type Falsy = undefined | null | false;
@@ -148,6 +148,11 @@ type IPGeolocationResponse = {
     is_dst: boolean;
     dst_savings: number;
   };
+};
+
+type StatusFilter = {
+  label: string;
+  value: 'all' | 'unpaid' | 'paid' | 'pending' | 'cancelled';
 };
 
 // @ts-ignore

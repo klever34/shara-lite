@@ -10,8 +10,12 @@ import {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {User} from 'types/app';
 
+export type PhoneContact = Omit<RNContacts.Contact, 'phoneNumbers'> & {
+  phoneNumber: RNContacts.PhoneNumber;
+};
+
 export interface IContactService {
-  getPhoneContacts(): Promise<RNContacts.Contact[]>;
+  getPhoneContacts(): Promise<PhoneContact[]>;
   syncPhoneContacts(): Promise<void>;
   syncMobiles(
     mobiles: string[],
@@ -79,12 +83,33 @@ export class ContactService implements IContactService {
 
   public async getPhoneContacts() {
     if (await this.checkPermission()) {
-      return new Promise<RNContacts.Contact[]>((resolve, reject) => {
-        RNContacts.getAll((err, contacts) => {
+      return new Promise<PhoneContact[]>((resolve, reject) => {
+        RNContacts.getAll((err, phoneContacts) => {
           if (err) {
             reject(err);
           }
-          resolve(contacts);
+          const nextPhoneContacts: PhoneContact[] = [];
+          phoneContacts.forEach(({phoneNumbers, ...phoneContact}) => {
+            const numbersMap: {
+              [key: string]: RNContacts.PhoneNumber;
+            } = phoneNumbers.reduce((acc, curr) => {
+              const numberWithoutWhitespace = curr.number.replace(/\s/g, '');
+              return {
+                ...acc,
+                [numberWithoutWhitespace]: curr,
+              };
+            }, {});
+            const uniquePhoneNumbers = Object.keys(numbersMap).map(
+              (number) => numbersMap[number],
+            );
+            nextPhoneContacts.push(
+              ...uniquePhoneNumbers.map((phoneNumber) => ({
+                ...phoneContact,
+                phoneNumber,
+              })),
+            );
+          });
+          resolve(nextPhoneContacts);
         });
       });
     }
@@ -94,13 +119,7 @@ export class ContactService implements IContactService {
   public async syncPhoneContacts() {
     try {
       const contacts = await this.getPhoneContacts();
-      const numbers = flatten(
-        contacts.map((contact) =>
-          contact.phoneNumbers.map((phoneNumber) =>
-            phoneNumber.number.replace(' ', ''),
-          ),
-        ),
-      );
+      const numbers = contacts.map(({phoneNumber}) => phoneNumber.number);
       await this.syncMobiles(numbers, (_, index) => {
         return {
           recordId: contacts[index]?.recordID,

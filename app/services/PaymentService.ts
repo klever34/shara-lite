@@ -6,7 +6,9 @@ import {getBaseModelValues} from '../helpers/models';
 import {Customer} from '../../types/app';
 
 export const getPayments = ({realm}: {realm: Realm}): IPayment[] => {
-  return (realm.objects<IPayment>(modelName) as unknown) as IPayment[];
+  return (realm
+    .objects<IPayment>(modelName)
+    .filtered('is_deleted = false') as unknown) as IPayment[];
 };
 
 export const savePayment = ({
@@ -66,4 +68,14 @@ export const updatePayment = ({
   };
 
   realm.create(modelName, updatedPayment, UpdateMode.Modified);
+};
+
+export const deletePayment = ({
+  realm,
+  payment,
+}: {
+  realm: Realm;
+  payment: IPayment;
+}) => {
+  updatePayment({realm, payment, updates: {is_deleted: true}});
 };

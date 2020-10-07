@@ -9,7 +9,7 @@ import {initLocalRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
 import {colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
 
@@ -42,7 +42,6 @@ export const Register = () => {
     errors,
     values,
     touched,
-    isSubmitting,
     handleChange,
     handleSubmit,
     setFieldValue,
@@ -55,6 +54,7 @@ export const Register = () => {
     }) as Fields,
     onSubmit: (payload) => onSubmit(payload),
   });
+  const [loading, setLoading] = useState(false);
 
   const onChangeMobile = (value: {code: string; number: string}) => {
     const {code, number} = value;
@@ -70,6 +70,7 @@ export const Register = () => {
       mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
+    setLoading(true);
     try {
       await apiService.register(payload);
       const createdLocalRealm = await initLocalRealm();
@@ -80,8 +81,10 @@ export const Register = () => {
       getAnalyticsService()
         .logEvent('signup', {method: 'mobile'})
         .catch(handleError);
+      setLoading(false);
       navigation.replace('BusinessSetup');
     } catch (error) {
+      setLoading(false);
       Alert.alert('Error', error.message);
     }
   };
@@ -113,7 +116,7 @@ export const Register = () => {
       <View>
         <Button
           variantColor="red"
-          isLoading={isSubmitting}
+          isLoading={loading}
           onPress={handleSubmit}
           title="Create an account"
           style={applyStyles({

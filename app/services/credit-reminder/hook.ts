@@ -39,8 +39,8 @@ export const useCreditReminder = () => {
     if (realm && creditNumber) {
       const message =
         creditNumber > 1
-          ? `You have ${creditDueTomorrow.length} credits due tomorrow. Do you want to send reminders?`
-          : `You have ${creditDueTomorrow.length} credit due tomorrow. Do you want to send a reminder?`;
+          ? `You have ${creditNumber} credits due tomorrow. Do you want to send reminders?`
+          : `You have ${creditNumber} credit due tomorrow. Do you want to send a reminder?`;
       notificationService.localNotification({
         id: 1,
         message,
@@ -77,11 +77,11 @@ export const useCreditReminder = () => {
   useEffect(() => {
     return notificationService.addEventListener((notification: any) => {
       if (notification.id === '0') {
-        navigation.navigate('OverdueCredit');
+        navigation.navigate('SalesTab');
         notificationService.cancelAllLocalNotifications();
       }
       if (notification.id === '1') {
-        navigation.navigate('TotalCredit');
+        navigation.navigate('SalesTab');
         notificationService.cancelAllLocalNotifications();
       }
     });

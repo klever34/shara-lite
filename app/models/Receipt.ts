@@ -16,6 +16,16 @@ export interface IReceipt extends BaseModelInterface {
   items?: IReceiptItem[];
   credits?: ICredit[];
   coordinates?: string;
+  image_url?: string;
+  local_image_url?: string;
+  is_cancelled?: boolean;
+  cancellation_reason?: string;
+
+  //Getters
+  isPaid?: boolean;
+  hasCustomer?: boolean;
+  dueDate?: Date;
+  isPending?: boolean;
 }
 
 export const modelName = 'Receipt';
@@ -34,6 +44,10 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       customer_mobile: 'string?',
       customer: 'Customer?',
       coordinates: 'string?',
+      image_url: 'string?',
+      local_image_url: 'string?',
+      is_cancelled: {type: 'bool', default: false, optional: true},
+      cancellation_reason: 'string?',
       items: {
         type: 'linkingObjects',
         objectType: 'ReceiptItem',
@@ -51,4 +65,26 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       },
     },
   };
+  public total_amount: number | undefined;
+  public amount_paid: number | undefined;
+  public customer: ICustomer | undefined;
+  public credits: ICredit[] | undefined;
+  public local_image_url: IReceipt['local_image_url'] | undefined;
+  public image_url: IReceipt['image_url'] | undefined;
+
+  public get isPaid() {
+    return this.total_amount === this.amount_paid;
+  }
+
+  public get hasCustomer() {
+    return !!this?.customer?._id;
+  }
+
+  public get dueDate() {
+    return this.credits && this?.credits[0] && this?.credits[0].due_date;
+  }
+
+  public get isPending() {
+    return !!(this.local_image_url || this.image_url);
+  }
 }

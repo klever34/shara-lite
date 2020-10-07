@@ -8,12 +8,12 @@ import {
   View,
   TextInputProps,
 } from 'react-native';
-import {applyStyles} from '../helpers/utils';
-import {colors} from '../styles';
+import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 
-type Props<T> = {
+export type SearchableDropdownProps<T extends any = any> = {
   items: T[];
   onFocus?: () => void;
   emptyStateText?: string;
@@ -21,7 +21,7 @@ type Props<T> = {
   textInputProps?: TextInputProps;
   onItemSelect?: (item: T) => void;
   noResultsActionButtonText?: string;
-  setSort: (item: T, text: string) => void;
+  setFilter: (item: T, text: string) => boolean;
   onChangeText?: TextInputProps['onChangeText'];
   renderItem: ({
     item,
@@ -32,19 +32,18 @@ type Props<T> = {
   }) => React.ReactNode;
 };
 
-function SearchableDropdown<T>(props: Props<T>) {
-  const {
-    items,
-    setSort,
-    onFocus,
-    renderItem,
-    onChangeText,
-    onItemSelect,
-    textInputProps,
-    emptyStateText,
-    noResultsAction,
-    noResultsActionButtonText,
-  } = props;
+function SearchableDropdown<T>({
+  items,
+  setFilter,
+  onFocus,
+  renderItem,
+  onChangeText,
+  onItemSelect,
+  textInputProps,
+  emptyStateText,
+  noResultsAction,
+  noResultsActionButtonText,
+}: SearchableDropdownProps<T>) {
   const [value, setValue] = useState('');
   const [focus, setFocus] = useState(false);
   const [listItems, setListItems] = useState(items || []);
@@ -73,8 +72,8 @@ function SearchableDropdown<T>(props: Props<T>) {
   const searchedItems = (searchedText: string) => {
     setValue(searchedText);
     const searchValue = searchedText.trim();
-    let sort = setSort;
-    var ac = items.filter((item: T) => {
+    let sort = setFilter;
+    const ac = items.filter((item: T) => {
       return sort(item, searchValue);
     });
     setListItems(ac);
@@ -165,7 +164,7 @@ function SearchableDropdown<T>(props: Props<T>) {
             style={styles.searchInputIcon}
             type="feathericons"
             name="search"
-            color={colors.primary}
+            color={colors['gray-200']}
           />
           <TextInput
             value={value}
@@ -190,8 +189,6 @@ function SearchableDropdown<T>(props: Props<T>) {
 
 const styles = StyleSheet.create({
   searchContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
     backgroundColor: colors.primary,
   },
   searchInputContainer: {
@@ -207,8 +204,7 @@ const styles = StyleSheet.create({
     height: 48,
     elevation: 2,
     fontSize: 16,
-    borderRadius: 8,
-    paddingLeft: 36,
+    paddingLeft: 48,
     backgroundColor: colors.white,
   },
   emptyState: {
