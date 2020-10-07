@@ -8,7 +8,6 @@ import {
 import {Icon} from '@/components/Icon';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {MainStackParamList} from '@/screens/main';
 import {CreateReceipt} from '@/screens/receipt';
@@ -213,17 +212,17 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         saveReceipt({
           realm,
           tax: 0,
+          customer,
           payments: [],
           amountPaid: 0,
           totalAmount: 0,
           creditAmount: 0,
           receiptItems: [],
-          customer: {} as ICustomer,
           local_image_url: uri,
         });
       }
     });
-  }, [realm]);
+  }, [realm, customer]);
 
   return (
     <CustomerContext.Provider value={customer}>
