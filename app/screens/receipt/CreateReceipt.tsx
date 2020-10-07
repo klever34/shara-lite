@@ -32,12 +32,13 @@ import {AddCustomer} from '../main/customers';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
 import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 
-type Props = {
+type CreateReceiptProps = {
   closeModal: () => void;
+  initialCustomer?: ICustomer;
 } & ModalWrapperFields;
 
-export const CreateReceipt = withModal((props: Props) => {
-  const {openModal, closeModal} = props;
+export const CreateReceipt = withModal((props: CreateReceiptProps) => {
+  const {openModal, closeModal, initialCustomer} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -52,6 +53,11 @@ export const CreateReceipt = withModal((props: Props) => {
   );
   const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>([]);
   const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
+  useEffect(() => {
+    if (initialCustomer) {
+      setCustomer(initialCustomer);
+    }
+  }, [initialCustomer]);
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
@@ -274,7 +280,12 @@ export const CreateReceipt = withModal((props: Props) => {
             </View>
 
             <View style={applyStyles({paddingBottom: 32})}>
-              <Touchable onPress={() => setIsContactListModalOpen(true)}>
+              <Touchable
+                onPress={
+                  initialCustomer
+                    ? undefined
+                    : () => setIsContactListModalOpen(true)
+                }>
                 <View style={applyStyles('px-lg py-lg flex-row items-center')}>
                   <Text
                     style={applyStyles('text-400', {

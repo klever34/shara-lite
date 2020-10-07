@@ -14,6 +14,8 @@ import {Icon} from '@/components/Icon';
 import {colors} from '@/styles';
 import {MainStackParamList} from '@/screens/main';
 import {IReceipt} from '@/models/Receipt';
+import {CreateReceipt} from '@/screens/receipt';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 
 const statusFilters = [
   {label: 'All Sales', value: 'all'},
@@ -22,11 +24,11 @@ const statusFilters = [
   {label: 'Pending', value: 'pending'},
 ];
 
-type CustomerDetailsProps = {
+type CustomerDetailsProps = ModalWrapperFields & {
   route: RouteProp<MainStackParamList, 'CustomerDetails'>;
 };
 
-const CustomerDetails = ({route}: CustomerDetailsProps) => {
+const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   const navigation = useNavigation();
   const {customer} = route.params;
 
@@ -67,12 +69,21 @@ const CustomerDetails = ({route}: CustomerDetailsProps) => {
     [],
   );
 
+  const handleOpenModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <CreateReceipt closeModal={closeModal} initialCustomer={customer} />
+      ),
+    });
+  }, [customer, openModal]);
+
   return (
     <CustomerContext.Provider value={customer}>
       <ReceiptingContainer
         receipts={customer.receipts}
         emptyStateText="You have not created any receipt for this customer"
-        getReceiptItemLeftText={getReceiptItemLeftText}>
+        getReceiptItemLeftText={getReceiptItemLeftText}
+        onCreateReceipt={handleOpenModal}>
         <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
           <View
             style={applyStyles(
@@ -128,4 +139,4 @@ const CustomerDetails = ({route}: CustomerDetailsProps) => {
   );
 };
 
-export default CustomerDetails;
+export default withModal(CustomerDetails);
