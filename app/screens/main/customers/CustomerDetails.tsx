@@ -1,27 +1,30 @@
-import {useNavigation, RouteProp} from '@react-navigation/native';
-import {HeaderBackButton} from '@react-navigation/stack';
-import React, {useCallback, useLayoutEffect, useState, useMemo} from 'react';
-import {Text, TextStyle, View} from 'react-native';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {
   FilterButton,
   FilterButtonGroup,
-  ReceiptingContainer,
   HeaderRight,
+  ReceiptingContainer,
   ReceiptListItem,
 } from '@/components';
-import {CustomerContext} from '@/services/customer';
 import {Icon} from '@/components/Icon';
-import {colors} from '@/styles';
-import {MainStackParamList} from '@/screens/main';
-import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/receipt';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IReceipt} from '@/models/Receipt';
+import {MainStackParamList} from '@/screens/main';
+import {CreateReceipt} from '@/screens/receipt';
 import {getAnalyticsService} from '@/services';
+import {CustomerContext} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
-import {format, isToday, isYesterday, isThisWeek, addWeeks} from 'date-fns';
+import {useRealm} from '@/services/realm';
+import {getReceiptsTotalAmount, saveReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
+import {RouteProp, useNavigation} from '@react-navigation/native';
+import {HeaderBackButton} from '@react-navigation/stack';
+import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
+import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
+import {Alert, Text, TextStyle, View} from 'react-native';
+import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 import {StatusFilter} from 'types/app';
-import {getReceiptsTotalAmount} from '@/services/ReceiptService';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
@@ -36,6 +39,7 @@ type CustomerDetailsProps = ModalWrapperFields & {
 
 const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   const navigation = useNavigation();
+  const realm = useRealm();
   const {customer} = route.params;
 
   const [filter, setFilter] = useState(statusFilters[0].value);
@@ -185,10 +189,47 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     return customer.totalAmount;
   }, [customer.totalAmount, filterQuery, filteredReceipts]);
 
+  const handleSnapReceipt = useCallback(() => {
+    const options: ImagePickerOptions = {
+      noData: true,
+      maxWidth: 256,
+      maxHeight: 256,
+      mediaType: 'photo',
+      allowsEditing: true,
+    };
+    ImagePicker.launchCamera(options, (response) => {
+      if (response.didCancel) {
+        // do nothing
+      } else if (response.error) {
+        Alert.alert('Error', response.error);
+      } else {
+        const {uri} = response;
+        const extensionIndex = uri.lastIndexOf('.');
+        const extension = uri.slice(extensionIndex + 1);
+        const allowedExtensions = ['jpg', 'jpeg', 'png'];
+        if (!allowedExtensions.includes(extension)) {
+          return Alert.alert('Error', 'That file type is not allowed.');
+        }
+        saveReceipt({
+          realm,
+          tax: 0,
+          payments: [],
+          amountPaid: 0,
+          totalAmount: 0,
+          creditAmount: 0,
+          receiptItems: [],
+          customer: {} as ICustomer,
+          local_image_url: uri,
+        });
+      }
+    });
+  }, [realm]);
+
   return (
     <CustomerContext.Provider value={customer}>
       <ReceiptingContainer
         receipts={filteredReceipts}
+        onSnapReceipt={handleSnapReceipt}
         emptyStateText="You have not created any receipt for this customer"
         getReceiptItemLeftText={getReceiptItemLeftText}
         onCreateReceipt={handleOpenModal}
