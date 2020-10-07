@@ -111,7 +111,9 @@ export const CreateReceipt = withModal((props: Props) => {
     (item: IReceiptItem) => {
       setReceiptItems(
         receiptItems.filter(
-          (receiptItem) => receiptItem._id?.toString() !== item._id?.toString(),
+          (receiptItem) =>
+            receiptItem.product._id?.toString() !==
+            item.product._id?.toString(),
         ),
       );
     },
