@@ -614,20 +614,15 @@ export const ReceiptPreview = withModal(
             </View>
             <View
               style={applyStyles(
-                'flex-row items-center justify-space-between flex-wrap',
+                'flex-row w-full items-center justify-space-between flex-wrap',
               )}>
               {hasCustomerMobile && (
-                <View style={applyStyles('pr-md')}>
+                <View style={applyStyles('center', {width: '33%'})}>
                   <Touchable onPress={onWhatsappShare}>
                     <View
-                      style={applyStyles(
-                        'flex-row',
-                        'items-center',
-                        'justify-center',
-                        {
-                          height: 48,
-                        },
-                      )}>
+                      style={applyStyles('w-full', 'flex-row', 'center', {
+                        height: 48,
+                      })}>
                       <Icon
                         size={24}
                         type="ionicons"
@@ -650,17 +645,12 @@ export const ReceiptPreview = withModal(
                 </View>
               )}
               {hasCustomerMobile && (
-                <View style={applyStyles('pr-md')}>
+                <View style={applyStyles('center', {width: '33%'})}>
                   <Touchable onPress={onSmsShare}>
                     <View
-                      style={applyStyles(
-                        'flex-row',
-                        'items-center',
-                        'justify-center',
-                        {
-                          height: 48,
-                        },
-                      )}>
+                      style={applyStyles('w-full', 'flex-row', 'center', {
+                        height: 48,
+                      })}>
                       <Icon
                         size={24}
                         name="message-circle"
@@ -682,17 +672,12 @@ export const ReceiptPreview = withModal(
                   </Touchable>
                 </View>
               )}
-              <View style={applyStyles({width: '33%'})}>
+              <View style={applyStyles('center', {width: '33%'})}>
                 <Touchable onPress={onEmailShare}>
                   <View
-                    style={applyStyles(
-                      'flex-row',
-                      'items-center',
-                      'justify-center',
-                      {
-                        height: 48,
-                      },
-                    )}>
+                    style={applyStyles('w-full', 'flex-row', 'center', {
+                      height: 48,
+                    })}>
                     <Icon
                       size={24}
                       name="mail"
