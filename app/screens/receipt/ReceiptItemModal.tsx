@@ -115,19 +115,22 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
   );
   const [products, setProducts] = useState<IProduct[]>(myProducts || []);
 
-  const handleAddProduct = useCallback(() => {
-    getAnalyticsService()
-      .logEvent('productStart')
-      .then(() => {});
-    const createdProduct = saveProduct({
-      realm,
-      product: {name},
-    });
-    getAnalyticsService().logEvent('productAdded').catch(handleError);
-    setName(createdProduct.name);
-    setProduct(createdProduct);
-    setProductIsNew(false);
-  }, [handleError, name, realm]);
+  const handleAddProduct = useCallback(
+    (productName: string) => {
+      getAnalyticsService()
+        .logEvent('productStart')
+        .then(() => {});
+      const createdProduct = saveProduct({
+        realm,
+        product: {name: productName},
+      });
+      getAnalyticsService().logEvent('productAdded').catch(handleError);
+      setName(createdProduct.name);
+      setProduct(createdProduct);
+      setProductIsNew(false);
+    },
+    [handleError, realm],
+  );
 
   const handleSearch = useCallback(
     (searchedText: string) => {
@@ -148,10 +151,11 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
         } else {
           setProductIsNew(true);
           setProducts(myProducts);
+          handleAddProduct(searchedText);
         }
       }
     },
-    [myProducts, products],
+    [handleAddProduct, myProducts, products],
   );
 
   const handleNameChange = useCallback(
@@ -228,7 +232,7 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
                 onNext={() => onNext(product, 'product')}
               />
               {productIsNew && (
-                <Touchable onPress={handleAddProduct}>
+                <Touchable onPress={() => handleAddProduct(name)}>
                   <View
                     style={applyStyles('px-lg flex-row items-center', {
                       height: 60,

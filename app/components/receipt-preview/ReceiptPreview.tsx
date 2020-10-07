@@ -98,7 +98,7 @@ export const ReceiptPreview = withModal(
       creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
     }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
 
-    const receiptShareMessage = `Hi${
+    const receiptShareMessage = `Hi ${
       customer?.name ?? ''
     }, thank you for your recent purchase of ${
       receipt?.items?.length
@@ -189,8 +189,9 @@ export const ReceiptPreview = withModal(
               customer: newCustomer,
             });
         }
+        handleCloseContactListModal();
       },
-      [customers, realm, receipt],
+      [customers, realm, receipt, handleCloseContactListModal],
     );
 
     const handleCreditPaymentAmountChange = useCallback((amount) => {

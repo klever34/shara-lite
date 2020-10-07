@@ -42,7 +42,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const handleError = useErrorHandler();
-  const allReceipts = getReceipts({realm});
+  const allReceipts = realm ? getReceipts({realm}) : [];
 
   const sortReceipts = useCallback(
     (receiptsData: IReceipt[]) =>

@@ -108,6 +108,7 @@ export const CreateReceipt = withModal((props: Props) => {
   );
 
   const handleContactSelect = useCallback((newCustomer) => {
+    console.log(newCustomer);
     setCustomer(newCustomer);
     setIsContactListModalOpen(false);
   }, []);
@@ -274,7 +275,7 @@ export const CreateReceipt = withModal((props: Props) => {
           <>
             <View
               style={applyStyles('pt-lg px-lg flex-row items-center', {
-                paddingBottom: 32,
+                paddingBottom: 8,
               })}>
               <View style={applyStyles({width: '48%'})}>
                 <Text style={applyStyles('text-700 text-uppercase')}>
@@ -510,7 +511,7 @@ export const CreateReceipt = withModal((props: Props) => {
                 </View>
               </View>
             )}
-            <View style={applyStyles('px-xl pb-md')}>
+            <View style={applyStyles('px-xl', {paddingBottom: 100})}>
               <Button
                 title="create"
                 variantColor="red"

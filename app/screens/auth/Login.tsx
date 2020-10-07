@@ -52,7 +52,10 @@ export const Login = () => {
       password: '',
       countryCode: callingCode,
     }) as Fields,
-    onSubmit: (payload) => onSubmit(payload),
+    onSubmit: (payload) => {
+      console.log(payload);
+      onSubmit(payload);
+    },
   });
 
   const onChangeMobile = (value: {code: string; number: string}) => {
