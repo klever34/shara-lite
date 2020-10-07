@@ -183,7 +183,7 @@ export const ReceiptImage = (props: Props) => {
               </View>
               <View
                 style={applyStyles(
-                  'flex-row items-center, justify-between  flex-wrap',
+                  'px-lg flex-row items-center, justify-between  flex-wrap',
                 )}>
                 <View style={applyStyles('flex-row items-center mb-md')}>
                   <View style={applyStyles('pr-sm')}>

@@ -8,7 +8,7 @@ import {initLocalRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
 import {colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useContext} from 'react';
+import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
 import {getAnalyticsService, getApiService, getRealmService} from '@/services';
@@ -41,7 +41,6 @@ export const Login = () => {
     errors,
     values,
     touched,
-    isSubmitting,
     handleChange,
     handleSubmit,
     setFieldValue,
@@ -52,11 +51,9 @@ export const Login = () => {
       password: '',
       countryCode: callingCode,
     }) as Fields,
-    onSubmit: (payload) => {
-      console.log(payload);
-      onSubmit(payload);
-    },
+    onSubmit: (payload) => onSubmit(payload),
   });
+  const [loading, setLoading] = useState(false);
 
   const onChangeMobile = (value: {code: string; number: string}) => {
     const {code, number} = value;
@@ -71,6 +68,7 @@ export const Login = () => {
       mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
+    setLoading(true);
     try {
       await apiService.logIn(payload);
       const createdLocalRealm = await initLocalRealm();
@@ -81,11 +79,13 @@ export const Login = () => {
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
         .catch(handleError);
+      setLoading(false);
       navigation.reset({
         index: 0,
         routes: [{name: 'Main'}],
       });
     } catch (error) {
+      setLoading(false);
       Alert.alert('Error', error.message);
     }
   };
@@ -115,7 +115,7 @@ export const Login = () => {
           title="Continue"
           variantColor="red"
           onPress={handleSubmit}
-          isLoading={isSubmitting}
+          isLoading={loading}
         />
       </View>
       <View style={applyStyles('mb-16')}>
