@@ -10,7 +10,7 @@ const BottomHalfModal = ({
   visible,
   closeModal,
   renderContent,
-  swipeDirection = ['up'],
+  swipeDirection = ['down'],
 }: BottomHalfModalProps) => {
   return (
     <Modal
