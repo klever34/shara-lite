@@ -33,11 +33,12 @@ import {ReceiptItemModalContent} from './ReceiptItemModal';
 import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 
 type Props = {
+  receipt?: IReceipt;
   closeModal: () => void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {openModal, closeModal} = props;
+  const {receipt, openModal, closeModal} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -45,13 +46,17 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const [note, setNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
-  const [totalAmount, setTotalAmount] = useState(0);
-  const [amountPaid, setAmountPaid] = useState(totalAmount || 0);
+  const [totalAmount, setTotalAmount] = useState(receipt?.total_amount || 0);
+  const [amountPaid, setAmountPaid] = useState(0);
   const [dueDate, setDueDate] = useState<Date | undefined>(
-    addDays(new Date(), 7),
+    receipt?.dueDate || addDays(new Date(), 7),
   );
-  const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>([]);
-  const [customer, setCustomer] = useState<ICustomer>({} as ICustomer);
+  const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>(
+    receipt?.items || [],
+  );
+  const [customer, setCustomer] = useState<ICustomer>(
+    receipt?.customer || ({} as ICustomer),
+  );
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
@@ -307,27 +312,23 @@ export const CreateReceipt = withModal((props: Props) => {
             </View>
             <SummaryTableHeader />
 
-            <View
-              style={applyStyles(
-                summaryTableStyles.row,
-                summaryTableHeaderStyles.row,
-                {
-                  borderTopWidth: 0,
-                },
-              )}>
+            <Touchable onPress={handleOpenReceiptItemModal}>
               <View
                 style={applyStyles(
-                  summaryTableStyles.column,
-                  summaryTableStyles['column-30'],
+                  summaryTableStyles.row,
+                  summaryTableHeaderStyles.row,
                   {
                     height: 48,
+                    borderTopWidth: 0,
                   },
                 )}>
-                <Touchable onPress={handleOpenReceiptItemModal}>
+                <View
+                  style={applyStyles(
+                    summaryTableStyles.column,
+                    summaryTableStyles['column-30'],
+                  )}>
                   <View
-                    style={applyStyles(
-                      'px-xs flex-row items-center h-full w-full',
-                    )}>
+                    style={applyStyles('flex-row items-center h-full w-full')}>
                     <Icon
                       name="plus"
                       type="feathericons"
@@ -340,35 +341,32 @@ export const CreateReceipt = withModal((props: Props) => {
                       Add Product
                     </Text>
                   </View>
-                </Touchable>
+                </View>
+                <View
+                  style={applyStyles(
+                    summaryTableStyles.column,
+                    summaryTableStyles['column-30'],
+                    {
+                      alignItems: 'flex-end',
+                    },
+                  )}
+                />
+                <View
+                  style={applyStyles(
+                    summaryTableStyles['column-10'],
+                    summaryTableStyles.column,
+                    {
+                      alignItems: 'flex-end',
+                    },
+                  )}
+                />
+                <View
+                  style={applyStyles(summaryTableStyles['column-30'], {
+                    alignItems: 'flex-end',
+                  })}
+                />
               </View>
-              <View
-                style={applyStyles(
-                  summaryTableStyles.column,
-                  summaryTableStyles['column-30'],
-                  {
-                    height: 48,
-                    alignItems: 'flex-end',
-                  },
-                )}
-              />
-              <View
-                style={applyStyles(
-                  summaryTableStyles['column-10'],
-                  summaryTableStyles.column,
-                  {
-                    height: 48,
-                    alignItems: 'flex-end',
-                  },
-                )}
-              />
-              <View
-                style={applyStyles(summaryTableStyles['column-30'], {
-                  height: 48,
-                  alignItems: 'flex-end',
-                })}
-              />
-            </View>
+            </Touchable>
           </>
         }
         ListFooterComponent={

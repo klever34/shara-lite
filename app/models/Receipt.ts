@@ -24,6 +24,7 @@ export interface IReceipt extends BaseModelInterface {
   //Getters
   isPaid?: boolean;
   hasCustomer?: boolean;
+  dueDate?: Date;
 }
 
 export const modelName = 'Receipt';
@@ -66,6 +67,7 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
   public total_amount: number | undefined;
   public amount_paid: number | undefined;
   public customer: ICustomer | undefined;
+  public credits: ICredit[] | undefined;
 
   public get isPaid() {
     return this.total_amount === this.amount_paid;
@@ -73,5 +75,9 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
 
   public get hasCustomer() {
     return !!this?.customer?._id;
+  }
+
+  public get dueDate() {
+    return this.credits && this?.credits[0] && this?.credits[0].due_date;
   }
 }
