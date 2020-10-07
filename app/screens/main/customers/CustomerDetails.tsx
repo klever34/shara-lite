@@ -1,6 +1,6 @@
 import {useNavigation, RouteProp} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
-import React, {useCallback, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useLayoutEffect, useState, useMemo} from 'react';
 import {Text, TextStyle, View} from 'react-native';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {
@@ -19,10 +19,12 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {format, isToday, isYesterday, isThisWeek, addWeeks} from 'date-fns';
+import {StatusFilter} from 'types/app';
+import {getReceiptsTotalAmount} from '@/services/ReceiptService';
 
-const statusFilters = [
+const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
-  {label: 'All Unpaid', value: 'unpaid'},
+  {label: 'Unpaid', value: 'unpaid'},
   {label: 'Paid', value: 'paid'},
   {label: 'Pending', value: 'pending'},
 ];
@@ -58,7 +60,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const [filter, setFilter] = useState(statusFilters[0].value);
 
-  const handleStatusFilter = useCallback((status) => {
+  const handleStatusFilter = useCallback((status: any) => {
     setFilter(status);
   }, []);
 
@@ -112,14 +114,45 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     [handleError, navigation],
   );
 
+  const filterQuery = useMemo(() => {
+    switch (filter) {
+      case 'all':
+        return '';
+      case 'paid':
+        return 'total_amount = amount_paid AND is_cancelled = false';
+      case 'unpaid':
+        return 'total_amount != amount_paid AND is_cancelled = false';
+      case 'cancelled':
+        return 'is_cancelled = true';
+      default:
+        return '';
+    }
+  }, [filter]);
+
+  const filteredReceipts = useMemo(() => {
+    let customerReceipts = (customer.receipts as unknown) as Realm.Results<
+      IReceipt & Realm.Object
+    >;
+    if (filterQuery) {
+      customerReceipts = customerReceipts.filtered(filterQuery);
+    }
+    return (customerReceipts.sorted(
+      'created_at',
+      true,
+    ) as unknown) as IReceipt[];
+  }, [customer.receipts, filterQuery]);
+
+  const totalAmount = useMemo(() => {
+    if (filterQuery) {
+      return getReceiptsTotalAmount(filteredReceipts);
+    }
+    return customer.totalAmount;
+  }, [customer.totalAmount, filterQuery, filteredReceipts]);
+
   return (
     <CustomerContext.Provider value={customer}>
       <ReceiptingContainer
-        receipts={
-          (((customer.receipts as unknown) as Realm.Results<
-            IReceipt & Realm.Object
-          >).sorted('created_at', true) as unknown) as IReceipt[]
-        }
+        receipts={filteredReceipts}
         emptyStateText="You have not created any receipt for this customer"
         getReceiptItemLeftText={getReceiptItemLeftText}
         onCreateReceipt={handleOpenModal}
@@ -170,7 +203,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                 fontSize: 16,
                 color: colors.white,
               })}>
-              {amountWithCurrency(customer.totalAmount)}
+              {amountWithCurrency(totalAmount)}
             </Text>
           </View>
         </View>

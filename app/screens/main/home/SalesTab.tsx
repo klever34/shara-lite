@@ -11,7 +11,7 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {getReceipts} from '@/services/ReceiptService';
+import {getReceipts, getReceiptsTotalAmount} from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
 import {sortBy} from 'lodash';
@@ -20,8 +20,9 @@ import {KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {CreateReceipt} from '@/screens/receipt';
+import {StatusFilter} from 'types/app';
 
-const statusFilters = [
+const statusFilters: StatusFilter[] = [
   {label: 'All', value: 'all'},
   {label: 'Unpaid', value: 'unpaid'},
   {label: 'Paid', value: 'paid'},
@@ -37,12 +38,6 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   const handleError = useErrorHandler();
   const allReceipts = getReceipts({realm});
 
-  const getTotalAmount = useCallback(
-    (receiptsData: IReceipt[]) =>
-      receiptsData.reduce((acc, receipt) => acc + receipt.total_amount, 0),
-    [],
-  );
-
   const sortReceipts = useCallback(
     (receiptsData: IReceipt[]) =>
       sortBy(receiptsData, [
@@ -57,7 +52,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     {status: statusFilters[0].value, date: new Date()} || {},
   );
   const [totalAmount, setTotalAmount] = useState(
-    getTotalAmount(
+    getReceiptsTotalAmount(
       sortReceipts(
         allReceipts.filter((receipt) => {
           if (filter.date && receipt.created_at) {
@@ -91,7 +86,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   }, []);
 
   const handleStatusFilter = useCallback(
-    (status: string, date?: Date) => {
+    (status: StatusFilter['value'], date?: Date) => {
       const dateFilter = date || filter.date;
       handleFilterChange('status', status);
       if (date) {
@@ -110,7 +105,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           });
           const allSales = sortReceipts(filteredReceipts);
           setReceipts(allSales);
-          setTotalAmount(getTotalAmount(allSales));
+          setTotalAmount(getReceiptsTotalAmount(allSales));
           break;
         case 'paid':
           const paidReceipts = allReceipts
@@ -128,7 +123,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
               }
             });
           setReceipts(paidReceipts);
-          setTotalAmount(getTotalAmount(paidReceipts));
+          setTotalAmount(getReceiptsTotalAmount(paidReceipts));
           break;
         case 'unpaid':
           const unPaidReceipts = allReceipts
@@ -146,7 +141,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
               }
             });
           setReceipts(unPaidReceipts);
-          setTotalAmount(getTotalAmount(unPaidReceipts));
+          setTotalAmount(getReceiptsTotalAmount(unPaidReceipts));
           break;
         case 'cancelled':
           const cancelledReceipts = allReceipts
@@ -160,22 +155,16 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
               }
             });
           setReceipts(cancelledReceipts);
-          setTotalAmount(getTotalAmount(cancelledReceipts));
+          setTotalAmount(getReceiptsTotalAmount(cancelledReceipts));
           break;
         default:
           const all = sortReceipts(allReceipts);
           setReceipts(all);
-          setTotalAmount(getTotalAmount(all));
+          setTotalAmount(getReceiptsTotalAmount(all));
           break;
       }
     },
-    [
-      allReceipts,
-      filter.date,
-      getTotalAmount,
-      handleFilterChange,
-      sortReceipts,
-    ],
+    [allReceipts, filter.date, handleFilterChange, sortReceipts],
   );
 
   const handleDateFilter = useCallback(
@@ -195,15 +184,9 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
       });
 
       setReceipts(filtered);
-      setTotalAmount(getTotalAmount(filtered));
+      setTotalAmount(getReceiptsTotalAmount(filtered));
     },
-    [
-      filter.status,
-      allReceipts,
-      handleFilterChange,
-      getTotalAmount,
-      handleStatusFilter,
-    ],
+    [filter.status, allReceipts, handleFilterChange, handleStatusFilter],
   );
 
   const handleListItemSelect = useCallback(
@@ -284,7 +267,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
         getReceiptItemLeftText={getCustomerText}>
         <FilterButtonGroup
           value={filter.status}
-          onChange={(status: string) => handleStatusFilter(status)}>
+          onChange={(status: any) => handleStatusFilter(status)}>
           <View
             style={applyStyles(
               'py-xl px-sm flex-row center justify-space-between',
