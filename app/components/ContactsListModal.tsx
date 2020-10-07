@@ -15,8 +15,8 @@ import {
   Text,
   ToastAndroid,
   View,
+  TextInput,
 } from 'react-native';
-import {TextInput} from 'react-native-gesture-handler';
 import {Button} from './Button';
 import EmptyState from './EmptyState';
 import Icon from './Icon';
@@ -65,7 +65,7 @@ export function ContactsListModal<T>({
     () => [
       {
         data: myCustomers.length
-          ? orderBy(myCustomers, ['debtLevel', 'name'] as (keyof ICustomer)[], [
+          ? orderBy(myCustomers, ['name'] as (keyof ICustomer)[], [
               'desc',
               'asc',
             ])
@@ -138,26 +138,32 @@ export function ContactsListModal<T>({
     onAddNew && onAddNew();
   }, [onAddNew, handleClose]);
 
-  const handleSearch = useCallback((searchedText: string) => {
-    setSearchInputValue(searchedText);
-    if (searchedText) {
-      const searchValue = searchedText.trim();
-      const sort = (item: ICustomer, text: string) => {
-        const name = item.name;
-        const mobile = item.mobile;
-        return (
-          name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
-          (mobile && mobile.replace(/[\s-]+/g, '').indexOf(text) > -1)
+  const handleSearch = useCallback(
+    (searchedText: string) => {
+      setSearchInputValue(searchedText);
+      if (searchedText) {
+        const searchValue = searchedText.trim();
+        const sort = (item: ICustomer, text: string) => {
+          const name = item.name;
+          const mobile = item.mobile;
+          return (
+            name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
+            (mobile && mobile.replace(/[\s-]+/g, '').indexOf(text) > -1)
+          );
+        };
+        const results = [...ref.current.contacts, ...myCustomers].filter(
+          (item: ICustomer) => {
+            return sort(item, searchValue);
+          },
         );
-      };
-      const results = ref.current.contacts.filter((item: ICustomer) => {
-        return sort(item, searchValue);
-      });
-      setPhoneContacts(results);
-    } else {
-      setPhoneContacts(ref.current.contacts);
-    }
-  }, []);
+
+        setPhoneContacts(results);
+      } else {
+        setPhoneContacts(ref.current.contacts);
+      }
+    },
+    [myCustomers],
+  );
 
   const renderCustomerListItem = useCallback(
     ({item: customer}: ListRenderItemInfo<CustomerListItem | null>) => {
@@ -224,26 +230,27 @@ export function ContactsListModal<T>({
       .getPhoneContacts()
       .then((contacts) => {
         setIsLoading(false);
-        setPhoneContacts(
-          contacts.reduce<CustomerListItem[]>(
-            (acc, {givenName, familyName, phoneNumber}) => {
-              const existing = customers.filtered(
-                `mobile = "${phoneNumber.number}"`,
-              );
-              if (existing.length) {
-                return acc;
-              }
-              return [
-                ...acc,
-                {
-                  name: `${givenName} ${familyName}`,
-                  mobile: phoneNumber.number,
-                },
-              ];
-            },
-            [],
-          ),
+        const data = contacts.reduce<CustomerListItem[]>(
+          (acc, {givenName, familyName, phoneNumber}) => {
+            const existing = customers.filtered(
+              `mobile = "${phoneNumber.number}"`,
+            );
+            if (existing.length) {
+              return acc;
+            }
+            return [
+              ...acc,
+              {
+                name: `${givenName} ${familyName}`,
+                mobile: phoneNumber.number,
+              },
+            ];
+          },
+          [],
         );
+
+        ref.current.contacts = data;
+        setPhoneContacts(data);
       });
   }, [realm]);
 
@@ -266,7 +273,7 @@ export function ContactsListModal<T>({
               renderItem={renderCustomerListItem}
               renderSectionHeader={renderCustomerListSectionHeader}
               ListHeaderComponent={
-                <>
+                <View style={applyStyles('bg-white')}>
                   <View
                     style={applyStyles(
                       'py-md px-lg flex-row items-center justify-space-between',
@@ -320,7 +327,7 @@ export function ContactsListModal<T>({
                       />
                     </View>
                   </View>
-                </>
+                </View>
               }
               ListEmptyComponent={
                 <View
@@ -335,25 +342,27 @@ export function ContactsListModal<T>({
                   </Text>
                 </View>
               }
+              ListFooterComponent={
+                <View>
+                  <Button
+                    onPress={closeModal}
+                    variantColor="clear"
+                    style={applyStyles({
+                      width: '100%',
+                      borderTopWidth: 1,
+                      borderTopColor: colors['gray-20'],
+                    })}>
+                    <Text
+                      style={applyStyles('text-400', 'text-uppercase', {
+                        color: colors.primary,
+                      })}>
+                      Close
+                    </Text>
+                  </Button>
+                </View>
+              }
             />
           )}
-          <View>
-            <Button
-              onPress={closeModal}
-              variantColor="clear"
-              style={applyStyles({
-                width: '100%',
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-20'],
-              })}>
-              <Text
-                style={applyStyles('text-400', 'text-uppercase', {
-                  color: colors.primary,
-                })}>
-                Close
-              </Text>
-            </Button>
-          </View>
         </View>
       )}
     />

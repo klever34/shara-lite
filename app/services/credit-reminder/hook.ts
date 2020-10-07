@@ -77,11 +77,11 @@ export const useCreditReminder = () => {
   useEffect(() => {
     return notificationService.addEventListener((notification: any) => {
       if (notification.id === '0') {
-        navigation.navigate('OverdueCredit');
+        navigation.navigate('SalesTab');
         notificationService.cancelAllLocalNotifications();
       }
       if (notification.id === '1') {
-        navigation.navigate('TotalCredit');
+        navigation.navigate('SalesTab');
         notificationService.cancelAllLocalNotifications();
       }
     });
