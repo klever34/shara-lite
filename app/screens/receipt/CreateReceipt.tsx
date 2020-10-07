@@ -294,11 +294,16 @@ export const CreateReceipt = withModal((props: CreateReceiptProps) => {
                     Receipt for:
                   </Text>
                   <Text
-                    style={applyStyles('text-500 pl-sm', {
-                      color: colors.primary,
-                      textDecorationLine: 'underline',
-                      textDecorationColor: colors.primary,
-                    })}>
+                    style={applyStyles(
+                      'text-500 pl-sm',
+                      initialCustomer
+                        ? undefined
+                        : {
+                            color: colors.primary,
+                            textDecorationLine: 'underline',
+                            textDecorationColor: colors.primary,
+                          },
+                    )}>
                     {customer.name ? customer.name : 'Add Customer Details'}
                   </Text>
                 </View>

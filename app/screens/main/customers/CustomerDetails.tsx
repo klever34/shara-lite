@@ -18,6 +18,7 @@ import {CreateReceipt} from '@/screens/receipt';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
+import {format, isToday, isYesterday, isThisWeek, addWeeks} from 'date-fns';
 
 const statusFilters = [
   {label: 'All Sales', value: 'all'},
@@ -63,9 +64,26 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const getReceiptItemLeftText = useCallback(
     (receipt: IReceipt, baseStyle: TextStyle) => {
+      let children = '';
+      if (receipt.created_at) {
+        const createdDate = new Date(
+          format(receipt.created_at, 'MMM dd, yyyy'),
+        );
+        if (isToday(createdDate)) {
+          children = 'Today';
+        } else if (isYesterday(createdDate)) {
+          children = 'Yesterday';
+        } else if (isThisWeek(createdDate)) {
+          children = format(createdDate, 'iiii');
+        } else if (isThisWeek(addWeeks(createdDate, 1))) {
+          children = 'Last week ' + format(createdDate, 'iiii');
+        } else {
+          children = format(createdDate, 'dd MMMM, yyyy');
+        }
+      }
       return {
         style: baseStyle,
-        children: '',
+        children,
       };
     },
     [],
@@ -97,7 +115,11 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   return (
     <CustomerContext.Provider value={customer}>
       <ReceiptingContainer
-        receipts={customer.receipts}
+        receipts={
+          (((customer.receipts as unknown) as Realm.Results<
+            IReceipt & Realm.Object
+          >).sorted('created_at', true) as unknown) as IReceipt[]
+        }
         emptyStateText="You have not created any receipt for this customer"
         getReceiptItemLeftText={getReceiptItemLeftText}
         onCreateReceipt={handleOpenModal}
