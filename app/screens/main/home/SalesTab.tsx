@@ -237,12 +237,6 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     [handleError, navigation],
   );
 
-  const handleOpenCreateReciptModal = useCallback(() => {
-    const closeModal = openModal('bottom-half', {
-      renderContent: () => <CreateReceipt closeModal={closeModal} />,
-    });
-  }, [openModal]);
-
   const handleSnapReceipt = useCallback(() => {
     const options: ImagePickerOptions = {
       noData: true,
@@ -278,6 +272,17 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
       }
     });
   }, [realm]);
+
+  const handleOpenCreateReciptModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <CreateReceipt
+          closeModal={closeModal}
+          onSnapReceipt={handleSnapReceipt}
+        />
+      ),
+    });
+  }, [openModal, handleSnapReceipt]);
 
   const getCustomerText = useCallback(
     (receipt: IReceipt, customerTextStyle: TextStyle) => {

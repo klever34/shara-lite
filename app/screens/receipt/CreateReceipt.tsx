@@ -35,10 +35,11 @@ import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 type Props = {
   receipt?: IReceipt;
   closeModal: () => void;
+  onSnapReceipt?: () => void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {receipt, openModal, closeModal} = props;
+  const {receipt, openModal, onSnapReceipt, closeModal} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -190,6 +191,11 @@ export const CreateReceipt = withModal((props: Props) => {
     [openModal, closeModal],
   );
 
+  const handleSnapReceipt = useCallback(() => {
+    onSnapReceipt && onSnapReceipt();
+    closeModal();
+  }, [closeModal, onSnapReceipt]);
+
   const handleSaveReceipt = useCallback(() => {
     setIsSaving(true);
     setTimeout(() => {
@@ -263,8 +269,9 @@ export const CreateReceipt = withModal((props: Props) => {
                 </Text>
               </View>
               <View style={applyStyles('items-end', {width: '48%'})}>
-                <Touchable>
-                  <View style={applyStyles('flex-row items-center')}>
+                <Touchable onPress={handleSnapReceipt}>
+                  <View
+                    style={applyStyles('flex-row items-center', {height: 48})}>
                     <Icon
                       size={24}
                       name="camera"
