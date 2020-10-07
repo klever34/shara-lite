@@ -204,6 +204,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
 
   const handleOpenModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
+      swipeDirection: [],
       renderContent: () => <CreateReceipt closeModal={closeModal} />,
     });
   }, [openModal]);

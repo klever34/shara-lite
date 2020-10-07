@@ -1,5 +1,6 @@
 import {ReactNode} from 'react';
 import {SearchableDropdownProps} from '@/components/SearchableDropdown';
+import {Direction} from 'react-native-modal';
 
 type BaseModalProps = {
   visible?: boolean;
@@ -14,6 +15,7 @@ type ModalPropsList = {
     text: string;
   };
   'bottom-half': {
+    swipeDirection?: Direction | Array<Direction>;
     renderContent: (props: BottomHalfContentProps) => ReactNode;
   };
   full: {

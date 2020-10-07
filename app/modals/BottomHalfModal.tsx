@@ -10,14 +10,15 @@ const BottomHalfModal = ({
   visible,
   closeModal,
   renderContent,
+  swipeDirection = ['up'],
 }: BottomHalfModalProps) => {
   return (
     <Modal
       isVisible={visible}
-      // onSwipeComplete={closeModal}
+      onSwipeComplete={closeModal}
       onBackdropPress={closeModal}
       onBackButtonPress={closeModal}
-      // swipeDirection={['down']}
+      swipeDirection={swipeDirection}
       style={applyStyles('justify-end m-0')}>
       <View style={styles.content}>
         <View

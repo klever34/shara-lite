@@ -73,6 +73,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const handleOpenModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
+      swipeDirection: [],
       renderContent: () => (
         <CreateReceipt closeModal={closeModal} initialCustomer={customer} />
       ),

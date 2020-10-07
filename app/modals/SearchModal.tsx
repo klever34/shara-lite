@@ -10,10 +10,8 @@ const SearchModal = ({visible, closeModal, ...restProps}: SearchModalProps) => {
   return (
     <Modal
       isVisible={visible}
-      // onSwipeComplete={closeModal}
       onBackdropPress={closeModal}
       onBackButtonPress={closeModal}
-      // swipeDirection={['down']}
       animationIn="slideInDown"
       animationOut="slideOutUp"
       style={applyStyles('justify-start m-0')}>
