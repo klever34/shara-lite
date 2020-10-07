@@ -67,7 +67,9 @@ export const CreateReceipt = withModal((props: Props) => {
   }, []);
 
   const handleDueDateChange = useCallback((date?: Date) => {
-    setDueDate(date);
+    if (date) {
+      setDueDate(date);
+    }
   }, []);
 
   const handleOpenAddCustomerModal = useCallback(() => {
