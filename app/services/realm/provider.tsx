@@ -56,6 +56,9 @@ const RealmProvider = (props: any) => {
   };
 
   const logoutFromRealm = () => {
+    setIsRealmSyncLoaderInitiated(false);
+    setRealm(undefined);
+
     if (localRealm.current) {
       localRealm.current?.removeAllListeners();
 
@@ -73,9 +76,6 @@ const RealmProvider = (props: any) => {
         setRealmUser(undefined);
       }
     }
-
-    setIsRealmSyncLoaderInitiated(false);
-    setRealm(undefined);
   };
 
   return (
