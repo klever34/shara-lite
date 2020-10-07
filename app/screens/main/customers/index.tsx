@@ -204,7 +204,10 @@ export const CustomersScreen = withModal(
                       });
                     },
                     setSort: () => {},
-                    textInputProps: {placeholder: 'Search Customers'},
+                    textInputProps: {
+                      placeholder: 'Search Customers',
+                      autoFocus: true,
+                    },
                   });
                 },
               },

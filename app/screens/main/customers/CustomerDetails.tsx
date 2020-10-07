@@ -117,7 +117,10 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                     );
                   },
                   setSort: () => {},
-                  textInputProps: {placeholder: 'Search Receipts'},
+                  textInputProps: {
+                    placeholder: 'Search Receipts',
+                    autoFocus: true,
+                  },
                 });
               },
             },
