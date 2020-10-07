@@ -3,7 +3,7 @@ import EmptyState from '@/components/EmptyState';
 import {HeaderRight} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles, amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
@@ -170,7 +170,7 @@ export const CustomersScreen = withModal(
                           ? 'text-primary'
                           : 'text-gray-300',
                       )}>
-                      {customer.remainingCreditAmount}
+                      {amountWithCurrency(customer.remainingCreditAmount)}
                     </Text>
                   </View>
                 )
