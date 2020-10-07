@@ -115,25 +115,23 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
   );
   const [products, setProducts] = useState<IProduct[]>(myProducts || []);
 
-  const handleAddProduct = useCallback(
-    (productName: string) => {
-      getAnalyticsService()
-        .logEvent('productStart')
-        .then(() => {});
-      const createdProduct = saveProduct({
-        realm,
-        product: {name: productName},
-      });
-      getAnalyticsService().logEvent('productAdded').catch(handleError);
-      setName(createdProduct.name);
-      setProduct(createdProduct);
-      setProductIsNew(false);
-    },
-    [handleError, realm],
-  );
+  const handleAddProduct = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('productStart')
+      .then(() => {});
+    const createdProduct = saveProduct({
+      realm,
+      product: {name},
+    });
+    getAnalyticsService().logEvent('productAdded').catch(handleError);
+    setName(createdProduct.name);
+    setProduct(createdProduct);
+    setProductIsNew(false);
+  }, [handleError, name, realm]);
 
   const handleSearch = useCallback(
     (searchedText: string) => {
+      setProductIsNew(false);
       if (searchedText) {
         const searchValue = searchedText.trim();
         const sort = (item: IProduct, text: string) => {
@@ -146,16 +144,14 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
           return sort(item, searchValue);
         });
         if (results.length) {
-          setProductIsNew(false);
           setProducts(results);
         } else {
           setProductIsNew(true);
           setProducts(myProducts);
-          handleAddProduct(searchedText);
         }
       }
     },
-    [handleAddProduct, myProducts, products],
+    [myProducts, products],
   );
 
   const handleNameChange = useCallback(
@@ -170,6 +166,11 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
     setName(selectedProduct.name);
     setProduct(selectedProduct);
   }, []);
+
+  const handleNextClick = useCallback(() => {
+    setProductIsNew(false);
+    onNext(product, 'product');
+  }, [onNext, product]);
 
   const renderProductItem = useCallback(
     ({item}: {item: IProduct}) => {
@@ -227,12 +228,12 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
                 placeholder="Enter item name here..."
               />
               <SectionButtons
+                onNext={handleNextClick}
                 nextButtonText="Unit Price"
-                nextButtonDisabled={!name}
-                onNext={() => onNext(product, 'product')}
+                nextButtonDisabled={!product._id}
               />
               {productIsNew && (
-                <Touchable onPress={() => handleAddProduct(name)}>
+                <Touchable onPress={() => handleAddProduct()}>
                   <View
                     style={applyStyles('px-lg flex-row items-center', {
                       height: 60,
