@@ -6,11 +6,15 @@ import {IProduct} from '@/models/Product';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
-import {getProducts, saveProduct} from '@/services/ProductService';
+import {
+  getProducts,
+  saveProduct,
+  updateProduct,
+} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import React, {useCallback, useState} from 'react';
-import {Text, View, TextInput, FlatList} from 'react-native';
+import {FlatList, Text, TextInput, View} from 'react-native';
 
 type Props = {
   item?: IReceiptItem;
@@ -22,7 +26,7 @@ type Props = {
 type SectionProps = {
   onPrevious?(): void;
   receiptItem: IReceiptItem;
-  onNext(data: string | number, key: string): void;
+  onNext(data: string | number | IProduct, key: string): void;
 };
 
 const sectionTitle = {
@@ -101,15 +105,66 @@ const SectionButtons = ({
 
 const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
   const realm = useRealm();
-  const products = getProducts({realm});
+  const handleError = useErrorHandler();
+  const myProducts = getProducts({realm});
+
+  const [productIsNew, setProductIsNew] = useState(false);
   const [name, setName] = useState(receiptItem.name || '');
+  const [product, setProduct] = useState<IProduct>(
+    receiptItem.product || ({} as IProduct),
+  );
+  const [products, setProducts] = useState<IProduct[]>(myProducts || []);
 
-  const handleNameChange = useCallback((value) => {
-    setName(value);
-  }, []);
+  const handleAddProduct = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('productStart')
+      .then(() => {});
+    const createdProduct = saveProduct({
+      realm,
+      product: {name},
+    });
+    getAnalyticsService().logEvent('productAdded').catch(handleError);
+    setName(createdProduct.name);
+    setProduct(createdProduct);
+    setProductIsNew(false);
+  }, [handleError, name, realm]);
 
-  const handleProductSelect = useCallback((product: IProduct) => {
-    setName(product.name);
+  const handleSearch = useCallback(
+    (searchedText: string) => {
+      if (searchedText) {
+        const searchValue = searchedText.trim();
+        const sort = (item: IProduct, text: string) => {
+          return (
+            item.name &&
+            item.name.toLowerCase().indexOf(text.toLowerCase()) > -1
+          );
+        };
+        const results = products.filter((item: IProduct) => {
+          return sort(item, searchValue);
+        });
+        if (results.length) {
+          setProductIsNew(false);
+          setProducts(results);
+        } else {
+          setProductIsNew(true);
+          setProducts(myProducts);
+        }
+      }
+    },
+    [myProducts, products],
+  );
+
+  const handleNameChange = useCallback(
+    (value) => {
+      setName(value);
+      handleSearch(value);
+    },
+    [handleSearch],
+  );
+
+  const handleProductSelect = useCallback((selectedProduct: IProduct) => {
+    setName(selectedProduct.name);
+    setProduct(selectedProduct);
   }, []);
 
   const renderProductItem = useCallback(
@@ -153,25 +208,59 @@ const ItemNameSection = ({onNext, receiptItem}: SectionProps) => {
   return (
     <View>
       <View style={applyStyles('pt-16 pb-96')}>
-        <TextInput
-          value={name}
-          onChangeText={(text) => handleNameChange(text)}
-          style={applyStyles('px-12 py-0 text-400', {
-            fontSize: 16,
-          })}
-          placeholder="Enter item name here..."
+        <FlatList
+          data={products}
+          persistentScrollbar
+          initialNumToRender={10}
+          stickyHeaderIndices={[0]}
+          renderItem={renderProductItem}
+          keyExtractor={(item) => `${item._id}`}
+          ListHeaderComponent={
+            <View style={applyStyles('bg-white')}>
+              <TextInput
+                value={name}
+                onChangeText={(text) => handleNameChange(text)}
+                style={applyStyles('px-12 py-0 mb-96 text-400', {
+                  fontSize: 16,
+                })}
+                placeholder="Enter item name here..."
+              />
+              <SectionButtons
+                nextButtonText="Unit Price"
+                nextButtonDisabled={!name}
+                onNext={() => onNext(product, 'product')}
+              />
+              {productIsNew && (
+                <Touchable onPress={handleAddProduct}>
+                  <View
+                    style={applyStyles('px-lg flex-row items-center', {
+                      height: 60,
+                      borderBottomWidth: 1,
+                      backgroundColor: colors['gray-10'],
+                      borderBottomColor: colors['gray-20'],
+                    })}>
+                    <View style={applyStyles('flex-row items-center')}>
+                      <Icon
+                        name="plus"
+                        size={14}
+                        type="feathericons"
+                        color={colors.primary}
+                      />
+                      <Text
+                        style={applyStyles('pl-xl text-400', {
+                          color: colors.primary,
+                        })}>
+                        Add
+                      </Text>
+                    </View>
+                    <Text style={applyStyles('pl-xs text-500')}>{name}</Text>
+                  </View>
+                </Touchable>
+              )}
+            </View>
+          }
         />
       </View>
-      <SectionButtons
-        nextButtonText="Unit Price"
-        nextButtonDisabled={!name}
-        onNext={() => onNext(name, 'name')}
-      />
-      <FlatList
-        data={products}
-        renderItem={renderProductItem}
-        keyExtractor={(item) => `${item._id}`}
-      />
     </View>
   );
 };
@@ -202,7 +291,6 @@ const ItemUnitPriceSection = ({
       <SectionButtons
         onPrevious={onPrevious}
         nextButtonText="Quantity"
-        nextButtonDisabled={!price}
         previousButtonText="Item Name"
         onNext={() => onNext(price, 'price')}
       />
@@ -250,11 +338,30 @@ export const ReceiptItemModalContent = (props: Props) => {
   const {item, closeModal, onDone, onDelete} = props;
 
   const realm = useRealm();
-  const handleError = useErrorHandler();
 
   const [section, setSection] = useState(0);
   const [receiptItem, setReceiptItem] = useState<IReceiptItem>(
     item || ({} as IReceiptItem),
+  );
+
+  const addReceiptItemPrice = useCallback(
+    (payload: IReceiptItem) => {
+      let result;
+      if ('product' in payload) {
+        if (!payload.product.price && payload.price !== 0) {
+          updateProduct({
+            realm,
+            product: payload.product,
+            updates: {price: payload.price},
+          });
+        }
+        result = {...payload, total_price: payload.price * payload.quantity};
+        return result;
+      } else {
+        return payload;
+      }
+    },
+    [realm],
   );
 
   const handlePrevious = useCallback(() => {
@@ -264,40 +371,39 @@ export const ReceiptItemModalContent = (props: Props) => {
   }, [section]);
 
   const handleNext = useCallback(
-    (data: string | number, key: string) => {
+    (data: string | number | IProduct, key: string) => {
       let payload = {
         ...receiptItem,
-        product: {
-          ...receiptItem.product,
-          [key]: data,
-        },
         [key]: data,
       };
+
+      if (key === 'product' && !item) {
+        payload = {
+          ...payload,
+          //@ts-ignore
+          name: data.name,
+          //@ts-ignore
+          price: data.price,
+        };
+      }
       if (section < 2) {
         setReceiptItem(payload);
         setSection(section + 1);
       } else {
-        if (!receiptItem.product._id) {
-          const createdProduct = saveProduct({
-            realm,
-            product: receiptItem.product,
-          });
-          payload = {...payload, product: createdProduct};
-          getAnalyticsService().logEvent('productAdded').catch(handleError);
-        }
+        payload = addReceiptItemPrice(payload);
         setReceiptItem(payload);
         onDone(payload);
         closeModal();
       }
     },
-    [receiptItem, section, onDone, closeModal, realm, handleError],
+    [item, receiptItem, section, addReceiptItemPrice, onDone, closeModal],
   );
 
   return (
     <View>
       <View
         style={applyStyles(
-          'bg-white flex-row items-center justify-space-between',
+          'px-xs bg-white flex-row items-center justify-space-between',
           {
             height: 80,
             elevation: 3,
@@ -305,7 +411,7 @@ export const ReceiptItemModalContent = (props: Props) => {
         )}>
         <Touchable onPress={closeModal}>
           <View
-            style={applyStyles('px-md flex-row items-center', {height: 48})}>
+            style={applyStyles('px-sm flex-row items-center', {height: 48})}>
             <Icon type="feathericons" name="arrow-left" size={24} />
             <Text
               style={applyStyles('pl-sm text-500', {

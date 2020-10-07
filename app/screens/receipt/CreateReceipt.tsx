@@ -91,22 +91,13 @@ export const CreateReceipt = withModal((props: Props) => {
     setIsContactListModalOpen(false);
   }, []);
 
-  const handleAddReceiptItem = useCallback(
-    (item: IReceiptItem) => {
-      getAnalyticsService()
-        .logEvent('productAddedToReceipt')
-        .catch(handleError);
-
-      setReceiptItems([item, ...receiptItems]);
-    },
-    [handleError, receiptItems],
-  );
-
   const handleUpdateReceiptItem = useCallback(
     (item: IReceiptItem) => {
       setReceiptItems(
         receiptItems.map((receiptItem) => {
-          if (receiptItem._id?.toString() === item._id?.toString()) {
+          if (
+            receiptItem.product._id?.toString() === item.product._id?.toString()
+          ) {
             return item;
           }
           return receiptItem;
@@ -125,6 +116,24 @@ export const CreateReceipt = withModal((props: Props) => {
       );
     },
     [receiptItems],
+  );
+
+  const handleAddReceiptItem = useCallback(
+    (item: IReceiptItem) => {
+      if (
+        receiptItems
+          .map((receiptItem) => receiptItem.product._id?.toString())
+          .includes(item?.product._id?.toString())
+      ) {
+        handleUpdateReceiptItem(item);
+      } else {
+        getAnalyticsService()
+          .logEvent('productAddedToReceipt')
+          .catch(handleError);
+        setReceiptItems([item, ...receiptItems]);
+      }
+    },
+    [handleError, receiptItems, handleUpdateReceiptItem],
   );
 
   const handleClearReceipt = useCallback(() => {
@@ -232,7 +241,7 @@ export const CreateReceipt = withModal((props: Props) => {
         data={receiptItems}
         persistentScrollbar
         renderItem={renderReceiptItem}
-        keyExtractor={(item) => `${item?._id?.toString()}`}
+        keyExtractor={(item) => `${item?.product._id?.toString()}`}
         ListHeaderComponent={
           <>
             <View
