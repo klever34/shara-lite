@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.48-feature.new-design-create-receipt+build.3337",
+  "version": "0.2.48-feature.new-design-create-receipt+build.3342",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
