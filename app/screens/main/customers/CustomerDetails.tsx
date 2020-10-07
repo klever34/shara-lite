@@ -16,6 +16,8 @@ import {MainStackParamList} from '@/screens/main';
 import {IReceipt} from '@/models/Receipt';
 import {CreateReceipt} from '@/screens/receipt';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 
 const statusFilters = [
   {label: 'All Sales', value: 'all'},
@@ -77,13 +79,29 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     });
   }, [customer, openModal]);
 
+  const handleError = useErrorHandler();
+
+  const handleListItemSelect = useCallback(
+    (id: IReceipt['_id']) => {
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          content_type: 'receipt',
+          item_id: id?.toString() ?? '',
+        })
+        .catch(handleError);
+      navigation.navigate('SalesDetails', {id});
+    },
+    [handleError, navigation],
+  );
+
   return (
     <CustomerContext.Provider value={customer}>
       <ReceiptingContainer
         receipts={customer.receipts}
         emptyStateText="You have not created any receipt for this customer"
         getReceiptItemLeftText={getReceiptItemLeftText}
-        onCreateReceipt={handleOpenModal}>
+        onCreateReceipt={handleOpenModal}
+        handleListItemSelect={handleListItemSelect}>
         <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
           <View
             style={applyStyles(
