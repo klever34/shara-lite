@@ -31,7 +31,7 @@ export const ReceiptPreviewModal = ({receiptId, closeModal}: Props) => {
       style={applyStyles('py-sm px-xl flex-1', {
         backgroundColor: colors.white,
       })}>
-      <View style={applyStyles('mb-xl flex-row justify-end w-full')}>
+      <View style={applyStyles('mb-xs flex-row justify-end w-full')}>
         <Touchable onPress={closeModal}>
           <View style={applyStyles('center', {height: 48, width: 48})}>
             <Icon

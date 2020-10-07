@@ -29,7 +29,7 @@ export const SalesDetails = ({route}: any) => {
       style={applyStyles('py-sm px-lg flex-1', {
         backgroundColor: colors.white,
       })}>
-      <View style={applyStyles('mb-sm flex-row justify-end w-full')}>
+      <View style={applyStyles('mb-xs flex-row justify-end w-full')}>
         <Touchable onPress={() => navigation.goBack()}>
           <View style={applyStyles('center', {height: 48, width: 48})}>
             <Icon
