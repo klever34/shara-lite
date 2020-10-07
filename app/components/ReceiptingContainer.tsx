@@ -18,6 +18,7 @@ type ReceiptingContainerProps = {
   ) => {style: TextStyle; children: ReactNode};
   receipts?: IReceipt[];
   children: ReactNode;
+  onCreateReceipt?(): void;
 };
 
 export const ReceiptingContainer = ({
@@ -26,6 +27,7 @@ export const ReceiptingContainer = ({
   getReceiptItemLeftText,
   emptyStateText,
   children,
+  onCreateReceipt,
 }: ReceiptingContainerProps) => {
   const renderReceiptItem = useCallback(
     ({item}: {item: IReceipt}) => {
@@ -84,7 +86,8 @@ export const ReceiptingContainer = ({
     [getReceiptItemLeftText, handleListItemSelect],
   );
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView
+      style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <View style={applyStyles('flex-1')}>
         {children}
         <FlatList
@@ -110,7 +113,7 @@ export const ReceiptingContainer = ({
           borderTopColor: colors['gray-20'],
         })}>
         <View style={applyStyles({width: '48%'})}>
-          <Button onPress={() => {}}>
+          <Button onPress={onCreateReceipt}>
             <View style={applyStyles('flex-row center')}>
               <Icon
                 size={24}

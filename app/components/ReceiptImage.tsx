@@ -144,91 +144,10 @@ export const ReceiptImage = (props: Props) => {
               renderItem={renderSummaryItem}
               keyExtractor={(item) => `${item._id}`}
               ListHeaderComponent={SummaryTableHeader}
-              ListFooterComponent={SummaryTableFooter}
+              ListFooterComponent={
+                <SummaryTableFooter tax={tax} totalAmount={totalAmount} />
+              }
             />
-            <View
-              style={applyStyles('flex-row', {
-                height: 30,
-                borderBottomWidth: 1,
-                borderBottomColor: colors['gray-20'],
-              })}>
-              <View
-                style={applyStyles('px-xs items-end justify-center', {
-                  width: '70%',
-                  borderRightWidth: 1,
-                  borderRightColor: colors['gray-20'],
-                })}>
-                <Text
-                  style={applyStyles('text-400', {color: colors['gray-300']})}>
-                  Subtotal
-                </Text>
-              </View>
-              <View
-                style={applyStyles('pl-xs items-end  justify-center', {
-                  width: '30%',
-                })}>
-                <Text
-                  style={applyStyles('text-400', {color: colors['gray-300']})}>
-                  {amountWithCurrency(totalAmount)}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={applyStyles('flex-row', {
-                height: 30,
-                borderBottomWidth: 1,
-                borderBottomColor: colors['gray-20'],
-              })}>
-              <View
-                style={applyStyles('px-xs items-end justify-center', {
-                  width: '70%',
-                  borderRightWidth: 1,
-                  borderRightColor: colors['gray-20'],
-                })}>
-                <Text
-                  style={applyStyles('text-400', {color: colors['gray-300']})}>
-                  Tax
-                </Text>
-              </View>
-              <View
-                style={applyStyles('px-xs items-end  justify-center', {
-                  width: '30%',
-                })}>
-                <Text
-                  style={applyStyles('text-400', {color: colors['gray-300']})}>
-                  {amountWithCurrency(tax)}
-                </Text>
-              </View>
-            </View>
-            <View
-              style={applyStyles('flex-row', {
-                height: 30,
-                borderBottomWidth: 1,
-                borderBottomColor: colors['gray-20'],
-              })}>
-              <View
-                style={applyStyles('px-xs items-end justify-center', {
-                  width: '70%',
-                  borderRightWidth: 1,
-                  borderRightColor: colors['gray-20'],
-                })}>
-                <Text
-                  style={applyStyles('text-500 text-uppercase', {
-                    color: colors['gray-300'],
-                  })}>
-                  Total
-                </Text>
-              </View>
-              <View
-                style={applyStyles('px-xs items-end  justify-center', {
-                  width: '30%',
-                })}>
-                <Text
-                  style={applyStyles('text-400', {color: colors['gray-300']})}>
-                  {amountWithCurrency((totalAmount ?? 0) + (tax ?? 0))}
-                </Text>
-              </View>
-            </View>
           </View>
           <View>
             <View style={applyStyles('mb-xl mx-xl flex-row items-center')}>

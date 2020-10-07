@@ -40,8 +40,10 @@ import {PreviewActionButton} from './PreviewActionButton';
 export const ReceiptPreview = ({
   isNew,
   receipt,
+  onClose,
 }: {
   isNew: boolean;
+  onClose?(): void;
   receipt?: IReceipt;
 }) => {
   const realm = useRealm();
@@ -160,10 +162,10 @@ export const ReceiptPreview = ({
   }, []);
 
   const handleSetCustomer = useCallback(
-    (value: ICustomer) => {
-      if (customers.map((item) => item.mobile).includes(value.mobile)) {
+    (value?: ICustomer) => {
+      if (customers.map((item) => item.mobile).includes(value?.mobile)) {
         const newCustomer = customers.find(
-          (item) => item.mobile === value.mobile,
+          (item) => item.mobile === value?.mobile,
         );
         setCustomer(newCustomer);
         receipt &&
@@ -174,9 +176,10 @@ export const ReceiptPreview = ({
             customer: newCustomer,
           });
       } else {
-        const newCustomer = saveCustomer({realm, customer: value});
+        const newCustomer = value && saveCustomer({realm, customer: value});
         setCustomer(newCustomer);
         receipt &&
+          newCustomer &&
           updateReceipt({
             realm,
             receipt,
@@ -413,11 +416,11 @@ export const ReceiptPreview = ({
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
-        navigation.goBack();
+        onClose && onClose();
         ToastAndroid.show('Receipt cancelled', ToastAndroid.SHORT);
       }, 300);
     },
-    [realm, receipt, navigation],
+    [realm, receipt, onClose],
   );
 
   const handleEditReceipt = useCallback(() => {
@@ -513,7 +516,7 @@ export const ReceiptPreview = ({
         </View>
       )}
 
-      {!isFulfilled && (
+      {!isFulfilled && !isNew && (
         <View style={applyStyles('mb-xl')}>
           <View style={applyStyles('mb-md')}>
             <CurrencyInput
@@ -670,12 +673,7 @@ export const ReceiptPreview = ({
         visible={isContactListModalOpen}
         onClose={handleCloseContactListModal}
         onAddNew={() => navigation.navigate('AddCustomer')}
-        onContactSelect={({givenName, familyName, phoneNumber}) =>
-          handleSetCustomer({
-            name: `${givenName} ${familyName}`,
-            mobile: phoneNumber.number,
-          })
-        }
+        onContactSelect={(data) => handleSetCustomer(data)}
       />
       <CancelReceiptModal
         isVisible={isCancelReceiptModalOpen}

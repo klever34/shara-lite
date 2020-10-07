@@ -21,4 +21,6 @@ export * from './FilterButton';
 export * from './FilterButtonGroup';
 export * from './DatePicker';
 export * from './receipt-preview';
+export * from './PaymentMethodOption';
+export * from './PaymentMethodSelect';
 export * from './ReceiptingContainer';

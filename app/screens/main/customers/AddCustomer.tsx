@@ -6,15 +6,8 @@ import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import {Formik, FormikHelpers} from 'formik';
-import React, {useCallback, useState} from 'react';
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import React, {useCallback} from 'react';
+import {Alert, ScrollView, StyleSheet, ToastAndroid, View} from 'react-native';
 import * as yup from 'yup';
 import {Button, FloatingLabelInput} from '../../../components';
 
@@ -33,7 +26,6 @@ export const AddCustomer = (props: Props) => {
   const navigation = useNavigation();
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
-  const [isLoading, setIsLoading] = useState(false);
 
   const onFormSubmit = useCallback(
     (values: FormValues, {resetForm}: FormikHelpers<FormValues>) => {
@@ -44,8 +36,6 @@ export const AddCustomer = (props: Props) => {
         );
       } else {
         saveCustomer({realm, customer: values});
-        setIsLoading(true);
-        setIsLoading(false);
         onSubmit ? onSubmit(values) : navigation.goBack();
         resetForm();
         ToastAndroid.show('Customer added', ToastAndroid.SHORT);
@@ -59,12 +49,18 @@ export const AddCustomer = (props: Props) => {
       persistentScrollbar={true}
       style={styles.container}
       keyboardShouldPersistTaps="always">
-      <Text style={styles.title}>Customer Details</Text>
       <Formik
         onSubmit={onFormSubmit}
         validationSchema={formValidation}
         initialValues={{name: ''} || FormDefaults.get('newCustomerMobile', '')}>
-        {({values, errors, touched, handleChange, handleSubmit}) => (
+        {({
+          values,
+          errors,
+          touched,
+          isSubmitting,
+          handleChange,
+          handleSubmit,
+        }) => (
           <View>
             <View style={styles.formInputs}>
               <FloatingLabelInput
@@ -87,9 +83,9 @@ export const AddCustomer = (props: Props) => {
             <Button
               title="Save"
               variantColor="red"
-              isLoading={isLoading}
               style={styles.button}
               onPress={handleSubmit}
+              isLoading={isSubmitting}
             />
           </View>
         )}
@@ -101,8 +97,7 @@ export const AddCustomer = (props: Props) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 40,
-    paddingHorizontal: 32,
+    paddingHorizontal: 24,
     backgroundColor: colors.white,
   },
   formInputs: {
@@ -110,12 +105,6 @@ const styles = StyleSheet.create({
   },
   input: {
     marginBottom: 24,
-  },
-  title: {
-    fontSize: 18,
-    paddingBottom: 40,
-    color: colors.primary,
-    fontFamily: 'Rubik-Regular',
   },
   button: {
     marginBottom: 40,

@@ -135,6 +135,8 @@ export const saveReceipt = ({
       realm,
     });
   }
+
+  return receipt;
 };
 
 export const updateReceipt = ({
