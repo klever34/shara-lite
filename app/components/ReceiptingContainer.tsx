@@ -8,7 +8,9 @@ import {IReceipt} from '@/models/Receipt';
 import EmptyState from '@/components/EmptyState';
 import {FlatList} from 'react-native-gesture-handler';
 import Touchable from '@/components/Touchable';
-import {getAllPayments} from '@/services/ReceiptService';
+import {getAllPayments, saveReceipt} from '@/services/ReceiptService';
+import {ICustomer} from '@/models';
+import {useRealm} from '@/services/realm';
 
 type ReceiptingContainerProps = {
   handleListItemSelect?: (receiptId: IReceipt['_id']) => void;
@@ -19,8 +21,8 @@ type ReceiptingContainerProps = {
   ) => {style: TextStyle; children: ReactNode};
   receipts?: IReceipt[];
   children: ReactNode;
-  onSnapReceipt?(): void;
   onCreateReceipt?(): void;
+  onSnapReceipt?(callback: (imageUri: string) => void): void;
 };
 
 export const ReceiptingContainer = ({
@@ -32,6 +34,8 @@ export const ReceiptingContainer = ({
   handleListItemSelect,
   getReceiptItemLeftText,
 }: ReceiptingContainerProps) => {
+  const realm = useRealm();
+
   const renderReceiptItem = useCallback(
     ({item}: {item: IReceipt}) => {
       return (
@@ -44,6 +48,24 @@ export const ReceiptingContainer = ({
     },
     [getReceiptItemLeftText, handleListItemSelect],
   );
+
+  const handleSnapReceipt = useCallback(() => {
+    onSnapReceipt &&
+      onSnapReceipt((uri) =>
+        saveReceipt({
+          realm,
+          tax: 0,
+          payments: [],
+          amountPaid: 0,
+          totalAmount: 0,
+          creditAmount: 0,
+          receiptItems: [],
+          local_image_url: uri,
+          customer: {} as ICustomer,
+        }),
+      );
+  }, [onSnapReceipt, realm]);
+
   return (
     <SafeAreaView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
@@ -89,7 +111,7 @@ export const ReceiptingContainer = ({
           </Button>
         </View>
         <View style={applyStyles({width: '48%'})}>
-          <Button onPress={onSnapReceipt} variantColor="clear">
+          <Button onPress={handleSnapReceipt} variantColor="clear">
             <View style={applyStyles('flex-row center')}>
               <Icon
                 size={24}

@@ -13,6 +13,7 @@ import {
 } from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
+import {omit} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {FlatList, Text, TextInput, View} from 'react-native';
 
@@ -284,7 +285,8 @@ const ItemUnitPriceSection = ({
         <View style={applyStyles('mx-12 py-0', {fontSize: 16})}>
           <CurrencyInput
             value={price.toString()}
-            inputStyle={applyStyles({borderBottomWidth: 0, paddingTop: 12})}
+            iconStyle={applyStyles({top: -12})}
+            inputStyle={applyStyles({borderBottomWidth: 0, paddingTop: 0})}
             onChange={(text) => handlePriceChange(text)}
             placeholder="Enter item unit price here..."
           />
@@ -375,7 +377,7 @@ export const ReceiptItemModalContent = (props: Props) => {
   const handleNext = useCallback(
     (data: string | number | IProduct, key: string) => {
       let payload = {
-        ...receiptItem,
+        ...omit(receiptItem),
         [key]: data,
       };
 
