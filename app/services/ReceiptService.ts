@@ -257,6 +257,7 @@ export const getReceiptsTotalAmount = (receiptsData: IReceipt[]) =>
 
 export const getReceiptsTotalProductQuantity = (receiptsData: IReceipt[]) =>
   receiptsData
+    .filter((receipt) => !receipt.is_cancelled)
     .reduce(
       (acc, receipt) => [...acc, ...(receipt.items ?? [])],
       [] as IReceiptItem[],

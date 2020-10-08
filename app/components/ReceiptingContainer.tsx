@@ -80,6 +80,7 @@ export const ReceiptingContainer = ({
           data={receipts}
           initialNumToRender={10}
           renderItem={renderReceiptItem}
+          keyboardShouldPersistTaps="always"
           keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
           ListEmptyComponent={
             <EmptyState

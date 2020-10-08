@@ -8,7 +8,7 @@ import {ICustomer} from '@/models';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {CreateReceipt, ReceiptItemModalContent} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {getProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
@@ -52,7 +52,9 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
 
   const itemSoldToday = useCallback(
     (item: IProduct) => {
-      const filteredReceipts = allReceipts.filter(dateFilterFunc);
+      const filteredReceipts = allReceipts
+        .filter((receipt) => !receipt.is_cancelled)
+        .filter(dateFilterFunc);
       const receiptProducts = filteredReceipts
         .reduce(
           (acc, receipt) => [...acc, ...(receipt.items ?? [])],
@@ -95,17 +97,6 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
     },
     [allReceipts, handleFilterChange],
   );
-
-  const handleOpenReceiptItemModal = useCallback(() => {
-    const closeReceiptItemModal = openModal('full', {
-      renderContent: () => (
-        <ReceiptItemModalContent
-          onDone={() => {}}
-          closeModal={closeReceiptItemModal}
-        />
-      ),
-    });
-  }, [openModal]);
 
   const handleSnapReceipt = useCallback(
     (callback: (imageUri: string) => void) => {
@@ -296,6 +287,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
           data={allProducts}
           initialNumToRender={10}
           renderItem={renderListItem}
+          keyboardShouldPersistTaps="always"
           keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
           ListEmptyComponent={
             <EmptyState
@@ -331,7 +323,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
             </Text>
           </View>
           <View>
-            <Touchable onPress={handleOpenReceiptItemModal}>
+            <Touchable onPress={() => navigation.navigate('ManageItems')}>
               <View style={applyStyles('px-md py-md flex-row items-center')}>
                 <Icon
                   size={16}

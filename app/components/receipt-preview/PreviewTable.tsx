@@ -24,6 +24,9 @@ export const summaryTableStyles = StyleSheet.create({
   'column-20': {
     width: '20%',
   },
+  'column-50': {
+    width: '50%',
+  },
   'column-25': {
     width: '25%',
   },

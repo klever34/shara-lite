@@ -168,6 +168,7 @@ export const CreateReceipt = withModal((props: Props) => {
     const closeReceiptItemModal = openModal('full', {
       renderContent: () => (
         <ReceiptItemModalContent
+          //@ts-ignore
           onDone={handleAddReceiptItem}
           closeModal={closeReceiptItemModal}
         />
@@ -181,6 +182,7 @@ export const CreateReceipt = withModal((props: Props) => {
         renderContent: () => (
           <ReceiptItemModalContent
             item={item}
+            //@ts-ignore
             onDone={handleUpdateReceiptItem}
             closeModal={closeReceiptItemModal}
             onDelete={() => {
@@ -276,6 +278,7 @@ export const CreateReceipt = withModal((props: Props) => {
         data={receiptItems}
         persistentScrollbar
         renderItem={renderReceiptItem}
+        keyboardShouldPersistTaps="always"
         keyExtractor={(item) => `${item?.product._id?.toString()}`}
         ListHeaderComponent={
           <>
@@ -384,25 +387,15 @@ export const CreateReceipt = withModal((props: Props) => {
                   style={applyStyles(
                     summaryTableStyles.column,
                     summaryTableStyles['column-30'],
-                    {
-                      alignItems: 'flex-end',
-                    },
                   )}
                 />
                 <View
                   style={applyStyles(
                     summaryTableStyles['column-10'],
                     summaryTableStyles.column,
-                    {
-                      alignItems: 'flex-end',
-                    },
                   )}
                 />
-                <View
-                  style={applyStyles(summaryTableStyles['column-30'], {
-                    alignItems: 'flex-end',
-                  })}
-                />
+                <View style={applyStyles(summaryTableStyles['column-30'])} />
               </View>
             </Touchable>
           </>

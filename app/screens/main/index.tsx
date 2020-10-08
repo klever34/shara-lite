@@ -27,6 +27,7 @@ import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
 import {BusinessSettings, UserProfileSettings} from './settings';
 import {ICustomer} from '@/models';
 import {useRepeatBackToExit} from '@/services/navigation';
+import {ManageItems} from './items';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -45,6 +46,7 @@ export type MainStackParamList = {
   AddCustomer: undefined;
   UserProfileSettings: undefined;
   SalesDetails: {id: IReceipt['_id']};
+  ManageItems: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -152,6 +154,11 @@ const MainScreens = () => {
           name="SalesDetails"
           component={SalesDetails}
           options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="ManageItems"
+          component={ManageItems}
+          options={{title: 'Manage Items'}}
         />
       </MainStack.Navigator>
     </PubNubProvider>
