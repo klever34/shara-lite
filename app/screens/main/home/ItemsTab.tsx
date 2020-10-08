@@ -8,7 +8,7 @@ import {ICustomer} from '@/models';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt, ReceiptItemModalContent} from '@/screens/receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {getProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
@@ -95,6 +95,17 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
     },
     [allReceipts, handleFilterChange],
   );
+
+  const handleOpenReceiptItemModal = useCallback(() => {
+    const closeReceiptItemModal = openModal('full', {
+      renderContent: () => (
+        <ReceiptItemModalContent
+          onDone={() => {}}
+          closeModal={closeReceiptItemModal}
+        />
+      ),
+    });
+  }, [openModal]);
 
   const handleSnapReceipt = useCallback(
     (callback: (imageUri: string) => void) => {
@@ -273,11 +284,11 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
               You sold
             </Text>
             <Text
-              style={applyStyles('text-700 text-uppercase', {
+              style={applyStyles('text-700', {
                 fontSize: 16,
                 color: colors.white,
               })}>
-              {totalItems}
+              {totalItems} Items
             </Text>
           </View>
         </View>
@@ -320,7 +331,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
             </Text>
           </View>
           <View>
-            <Touchable onPress={() => {}}>
+            <Touchable onPress={handleOpenReceiptItemModal}>
               <View style={applyStyles('px-md py-md flex-row items-center')}>
                 <Icon
                   size={16}
