@@ -322,6 +322,22 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   useEffect(() => {
+    const newReceipts = sortReceipts(
+      allReceipts.filter((receipt) => {
+        if (filter.date && receipt.created_at) {
+          return isEqual(
+            new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+            new Date(format(filter.date, 'MMM dd, yyyy')),
+          );
+        }
+      }),
+    );
+    setTotalAmount(getReceiptsTotalAmount(newReceipts));
+    setReceipts(newReceipts);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allReceipts.length]);
+
+  useEffect(() => {
     return navigation.addListener('focus', () => {
       const allReceiptsData = getReceipts({realm});
       setReceipts(
