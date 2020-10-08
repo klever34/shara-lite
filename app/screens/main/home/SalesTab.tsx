@@ -6,16 +6,18 @@ import {
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {CreateReceipt} from '@/screens/receipt';
 import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {
-  getReceipts,
-  saveReceipt,
-  getReceiptsTotalAmount,
   getAllPayments,
+  getReceipts,
+  getReceiptsTotalAmount,
 } from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
@@ -23,10 +25,6 @@ import {sortBy} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
-import {useErrorHandler} from '@/services/error-boundary';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {CreateReceipt} from '@/screens/receipt';
-import {ICustomer} from '@/models';
 import {StatusFilter} from 'types/app';
 
 const statusFilters: StatusFilter[] = [
@@ -237,41 +235,34 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     [handleError, navigation],
   );
 
-  const handleSnapReceipt = useCallback(() => {
-    const options: ImagePickerOptions = {
-      noData: true,
-      maxWidth: 256,
-      maxHeight: 256,
-      mediaType: 'photo',
-      allowsEditing: true,
-    };
-    ImagePicker.launchCamera(options, (response) => {
-      if (response.didCancel) {
-        // do nothing
-      } else if (response.error) {
-        Alert.alert('Error', response.error);
-      } else {
-        const {uri} = response;
-        const extensionIndex = uri.lastIndexOf('.');
-        const extension = uri.slice(extensionIndex + 1);
-        const allowedExtensions = ['jpg', 'jpeg', 'png'];
-        if (!allowedExtensions.includes(extension)) {
-          return Alert.alert('Error', 'That file type is not allowed.');
+  const handleSnapReceipt = useCallback(
+    (callback: (imageUri: string) => void) => {
+      const options: ImagePickerOptions = {
+        noData: true,
+        maxWidth: 256,
+        maxHeight: 256,
+        mediaType: 'photo',
+        allowsEditing: true,
+      };
+      ImagePicker.launchCamera(options, (response) => {
+        if (response.didCancel) {
+          // do nothing
+        } else if (response.error) {
+          Alert.alert('Error', response.error);
+        } else {
+          const {uri} = response;
+          const extensionIndex = uri.lastIndexOf('.');
+          const extension = uri.slice(extensionIndex + 1);
+          const allowedExtensions = ['jpg', 'jpeg', 'png'];
+          if (!allowedExtensions.includes(extension)) {
+            return Alert.alert('Error', 'That file type is not allowed.');
+          }
+          callback(uri);
         }
-        saveReceipt({
-          realm,
-          tax: 0,
-          payments: [],
-          amountPaid: 0,
-          totalAmount: 0,
-          creditAmount: 0,
-          receiptItems: [],
-          customer: {} as ICustomer,
-          local_image_url: uri,
-        });
-      }
-    });
-  }, [realm]);
+      });
+    },
+    [],
+  );
 
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {

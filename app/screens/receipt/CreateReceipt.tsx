@@ -35,16 +35,16 @@ import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 type Props = {
   receipt?: IReceipt;
   closeModal: () => void;
-  onSnapReceipt?: () => void;
   initialCustomer?: ICustomer;
+  onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
   const {
     receipt,
     openModal,
-    onSnapReceipt,
     closeModal,
+    onSnapReceipt,
     initialCustomer,
   } = props;
 
@@ -65,6 +65,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const [customer, setCustomer] = useState<ICustomer>(
     receipt?.customer || ({} as ICustomer),
   );
+  const [snappedReceipt, setSnappedReceipt] = useState('');
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
@@ -205,14 +206,13 @@ export const CreateReceipt = withModal((props: Props) => {
   );
 
   const handleSnapReceipt = useCallback(() => {
-    onSnapReceipt && onSnapReceipt();
-    closeModal();
-  }, [closeModal, onSnapReceipt]);
+    onSnapReceipt && onSnapReceipt((uri) => setSnappedReceipt(uri));
+  }, [onSnapReceipt]);
 
   const handleSaveReceipt = useCallback(() => {
     setIsSaving(true);
     setTimeout(() => {
-      const createdReceipt = saveReceipt({
+      let receiptToCreate: any = {
         tax,
         realm,
         dueDate,
@@ -222,7 +222,13 @@ export const CreateReceipt = withModal((props: Props) => {
         creditAmount,
         receiptItems,
         payments: [{method: '', amount: amountPaid}],
-      });
+      };
+
+      if (snappedReceipt) {
+        receiptToCreate = {...receiptToCreate, local_image_url: snappedReceipt};
+      }
+
+      const createdReceipt = saveReceipt(receiptToCreate);
       handleClearReceipt();
       ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       setIsSaving(false);
@@ -236,6 +242,7 @@ export const CreateReceipt = withModal((props: Props) => {
     totalAmount,
     creditAmount,
     receiptItems,
+    snappedReceipt,
     handleClearReceipt,
     handleOpenReceiptPreviewModal,
   ]);

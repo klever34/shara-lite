@@ -285,7 +285,8 @@ const ItemUnitPriceSection = ({
         <View style={applyStyles('mx-12 py-0', {fontSize: 16})}>
           <CurrencyInput
             value={price.toString()}
-            inputStyle={applyStyles({borderBottomWidth: 0, paddingTop: 12})}
+            iconStyle={applyStyles({top: -12})}
+            inputStyle={applyStyles({borderBottomWidth: 0, paddingTop: 0})}
             onChange={(text) => handlePriceChange(text)}
             placeholder="Enter item unit price here..."
           />
