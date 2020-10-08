@@ -2,13 +2,24 @@ import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {getSummary, IFinanceSummary} from '@/services/FinanceService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
-import {ActionCard} from '@/components';
+import React, {useCallback} from 'react';
+import {Alert, StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {ActionCard, Button} from '@/components';
+import {useReports} from '@/services/reports';
 
 export const ReportsScreen = () => {
   const realm = useRealm();
+  const {exportReportsToExcel} = useReports();
   const financeSummary: IFinanceSummary = getSummary({realm});
+
+  const handleExport = useCallback(async () => {
+    try {
+      await exportReportsToExcel();
+      ToastAndroid.show('Report exported successfully', ToastAndroid.SHORT);
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  }, [exportReportsToExcel]);
 
   return (
     <View style={styles.container}>
@@ -55,6 +66,16 @@ export const ReportsScreen = () => {
             {amountWithCurrency(financeSummary.overdueCredit)}
           </Text>
         </ActionCard>
+      </View>
+      <View style={applyStyles('mb-lg')}>
+        <Button
+          variantColor="red"
+          onPress={handleExport}
+          title="Export to xlsx"
+          style={applyStyles({
+            marginBottom: 24,
+          })}
+        />
       </View>
     </View>
   );
