@@ -108,7 +108,6 @@ export const CreateReceipt = withModal((props: Props) => {
   );
 
   const handleContactSelect = useCallback((newCustomer) => {
-    console.log(newCustomer);
     setCustomer(newCustomer);
     setIsContactListModalOpen(false);
   }, []);
