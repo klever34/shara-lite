@@ -1,16 +1,15 @@
-import React, {ReactNode, useCallback} from 'react';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
-import {SafeAreaView, Text, TextStyle, View} from 'react-native';
-import {Button} from '@/components/Button';
-import {Icon} from '@/components/Icon';
-import {IReceipt} from '@/models/Receipt';
 import EmptyState from '@/components/EmptyState';
-import {FlatList} from 'react-native-gesture-handler';
 import Touchable from '@/components/Touchable';
-import {getAllPayments, saveReceipt} from '@/services/ReceiptService';
+import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {IReceipt} from '@/models/Receipt';
 import {useRealm} from '@/services/realm';
+import {getAllPayments, saveReceipt} from '@/services/ReceiptService';
+import {colors} from '@/styles';
+import React, {ReactNode, useCallback} from 'react';
+import {SafeAreaView, Text, TextStyle, View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
+import {HomeContainer} from './HomeContainer';
 
 type ReceiptingContainerProps = {
   handleListItemSelect?: (receiptId: IReceipt['_id']) => void;
@@ -49,6 +48,10 @@ export const ReceiptingContainer = ({
     [getReceiptItemLeftText, handleListItemSelect],
   );
 
+  const handleCreateReceipt = useCallback(() => {
+    onCreateReceipt && onCreateReceipt();
+  }, [onCreateReceipt]);
+
   const handleSnapReceipt = useCallback(() => {
     onSnapReceipt &&
       onSnapReceipt((uri) =>
@@ -69,7 +72,9 @@ export const ReceiptingContainer = ({
   return (
     <SafeAreaView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <View style={applyStyles('flex-1')}>
+      <HomeContainer
+        onSnapReceipt={handleSnapReceipt}
+        onCreateReceipt={handleCreateReceipt}>
         {children}
         <FlatList
           data={receipts}
@@ -84,51 +89,7 @@ export const ReceiptingContainer = ({
             />
           }
         />
-      </View>
-      <View
-        style={applyStyles('flex-row center justify-between px-md py-lg', {
-          elevation: 100,
-          borderTopWidth: 1,
-          backgroundColor: colors.white,
-          borderTopColor: colors['gray-20'],
-        })}>
-        <View style={applyStyles({width: '48%'})}>
-          <Button onPress={onCreateReceipt}>
-            <View style={applyStyles('flex-row center')}>
-              <Icon
-                size={24}
-                name="plus"
-                type="feathericons"
-                color={colors.white}
-              />
-              <Text
-                style={applyStyles(
-                  'text-400 text-uppercase pl-sm text-xs text-white',
-                )}>
-                Create receipt
-              </Text>
-            </View>
-          </Button>
-        </View>
-        <View style={applyStyles({width: '48%'})}>
-          <Button onPress={handleSnapReceipt} variantColor="clear">
-            <View style={applyStyles('flex-row center')}>
-              <Icon
-                size={24}
-                name="camera"
-                type="feathericons"
-                color={colors['gray-300']}
-              />
-              <Text
-                style={applyStyles(
-                  'text-400 text-uppercase pl-sm text-xs text-gray-300',
-                )}>
-                snap receipt
-              </Text>
-            </View>
-          </Button>
-        </View>
-      </View>
+      </HomeContainer>
     </SafeAreaView>
   );
 };

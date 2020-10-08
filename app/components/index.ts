@@ -24,3 +24,4 @@ export * from './receipt-preview';
 export * from './PaymentMethodOption';
 export * from './PaymentMethodSelect';
 export * from './ReceiptingContainer';
+export * from './HomeContainer';

@@ -254,3 +254,11 @@ export const getReceipt = ({
 
 export const getReceiptsTotalAmount = (receiptsData: IReceipt[]) =>
   receiptsData.reduce((acc, receipt) => acc + receipt.total_amount, 0);
+
+export const getReceiptsTotalProductQuantity = (receiptsData: IReceipt[]) =>
+  receiptsData
+    .reduce(
+      (acc, receipt) => [...acc, ...(receipt.items ?? [])],
+      [] as IReceiptItem[],
+    )
+    .reduce((acc, recepitItem) => acc + recepitItem.quantity, 0);

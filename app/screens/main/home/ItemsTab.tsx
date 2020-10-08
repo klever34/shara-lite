@@ -1,22 +1,27 @@
-import {DatePicker, ReceiptingContainer} from '@/components';
+import {DatePicker, HomeContainer} from '@/components';
+import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {applyStyles} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
+import {IReceiptItem} from '@/models/ReceiptItem';
 import {CreateReceipt} from '@/screens/receipt';
 import {useAppNavigation} from '@/services/navigation';
+import {getProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {
-  getAllPayments,
   getReceipts,
-  getReceiptsTotalAmount,
+  getReceiptsTotalProductQuantity,
+  saveReceipt,
 } from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
-import {sortBy} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
+import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
+import {FlatList} from 'react-native-gesture-handler';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 
 type ItemsTabProps = ModalWrapperFields & {};
@@ -25,47 +30,50 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const allReceipts = realm ? getReceipts({realm}) : [];
-
-  const sortReceipts = useCallback(
-    (receiptsData: IReceipt[]) =>
-      sortBy(receiptsData, [
-        function (o) {
-          return o.total_amount === o.amount_paid;
-        },
-      ]),
-    [],
-  );
+  const allProducts = realm ? getProducts({realm}) : [];
 
   const [filter, setFilter] = useState({date: new Date()} || {});
-  const [totalAmount, setTotalAmount] = useState(
-    getReceiptsTotalAmount(
-      sortReceipts(
-        allReceipts.filter((receipt) => {
-          if (filter.date && receipt.created_at) {
-            return isEqual(
-              new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-              new Date(format(filter.date, 'MMM dd, yyyy')),
-            );
-          }
-        }),
-      ),
-    ) || 0,
+
+  const dateFilterFunc = useCallback(
+    (receipt: IReceipt) => {
+      if (filter.date && receipt.created_at) {
+        return isEqual(
+          new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+          new Date(format(filter.date, 'MMM dd, yyyy')),
+        );
+      }
+    },
+    [filter.date],
   );
-  const [receipts, setReceipts] = useState(
-    sortReceipts(
-      allReceipts.filter((receipt) => {
-        if (filter.date && receipt.created_at) {
-          return isEqual(
-            new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-            new Date(format(filter.date, 'MMM dd, yyyy')),
-          );
-        }
-      }),
-    ) || [],
+
+  const [totalItems, setTotalItems] = useState(
+    getReceiptsTotalProductQuantity(allReceipts.filter(dateFilterFunc)) || 0,
   );
-  const emptyStateText = isToday(filter.date)
-    ? "You've made no sales today."
-    : 'You made no sales on this day.';
+
+  const itemSoldToday = useCallback(
+    (item: IProduct) => {
+      const filteredReceipts = allReceipts.filter(dateFilterFunc);
+      const receiptProducts = filteredReceipts
+        .reduce(
+          (acc, receipt) => [...acc, ...(receipt.items ?? [])],
+          [] as IReceiptItem[],
+        )
+        .map((receiptItem) => receiptItem.product);
+      const receiptProductNames = receiptProducts.map(
+        (product) => product.name,
+      );
+      const wasSold = receiptProductNames.includes(item.name);
+      const quantitySold = filteredReceipts
+        .reduce(
+          (acc, receipt) => [...acc, ...(receipt.items ?? [])],
+          [] as IReceiptItem[],
+        )
+        .filter((receiptItem) => receiptItem.product.name === item.name)
+        .reduce((acc, receiptItem) => acc + receiptItem.quantity, 0);
+      return {wasSold, quantitySold};
+    },
+    [allReceipts, dateFilterFunc],
+  );
 
   const handleFilterChange = useCallback((key, value) => {
     setFilter((prevFilter) => ({...prevFilter, [key]: value}));
@@ -83,8 +91,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
         }
       });
 
-      setReceipts(filtered);
-      setTotalAmount(getReceiptsTotalAmount(filtered));
+      setTotalItems(getReceiptsTotalProductQuantity(filtered));
     },
     [allReceipts, handleFilterChange],
   );
@@ -118,6 +125,22 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
     [],
   );
 
+  const onSnapReceipt = useCallback(() => {
+    handleSnapReceipt((uri) =>
+      saveReceipt({
+        realm,
+        tax: 0,
+        payments: [],
+        amountPaid: 0,
+        totalAmount: 0,
+        creditAmount: 0,
+        receiptItems: [],
+        local_image_url: uri,
+        customer: {} as ICustomer,
+      }),
+    );
+  }, [handleSnapReceipt, realm]);
+
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       swipeDirection: [],
@@ -130,77 +153,79 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
     });
   }, [openModal, handleSnapReceipt]);
 
-  const getCustomerText = useCallback(
-    (receipt: IReceipt, customerTextStyle: TextStyle) => {
-      const allPayments = receipt ? getAllPayments({receipt}) : [];
-      const totalAmountPaid = allPayments.reduce(
-        (total, payment) => total + payment.amount_paid,
-        0,
+  const renderListItem = useCallback(
+    ({item}: {item: IProduct}) => {
+      return (
+        <View
+          style={applyStyles('px-md flex-row center justify-between', {
+            height: 50,
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
+          <View>
+            <Text
+              style={applyStyles('text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              {item.name}
+            </Text>
+          </View>
+          <View style={applyStyles('items-end')}>
+            <View style={applyStyles('flex-row items-center')}>
+              <Text
+                style={applyStyles('text-500 pr-xs', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                {item.quantity}
+              </Text>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 16,
+                  color: colors['gray-300'],
+                })}>
+                left
+              </Text>
+            </View>
+            {itemSoldToday(item).wasSold && (
+              <View>
+                <Text
+                  style={applyStyles('text-400', {
+                    fontSize: 10,
+                    color: colors['gray-100'],
+                  })}>
+                  {itemSoldToday(item).quantitySold} sold today
+                </Text>
+              </View>
+            )}
+          </View>
+        </View>
       );
-      if (receipt.total_amount !== totalAmountPaid) {
-        customerTextStyle = {
-          ...customerTextStyle,
-          ...applyStyles('text-700'),
-        };
-      }
-      if (!receipt.hasCustomer) {
-        customerTextStyle = {
-          ...customerTextStyle,
-          ...applyStyles('text-400'),
-          color: colors['gray-100'],
-        };
-      }
-      if (receipt.is_cancelled) {
-        customerTextStyle = {
-          ...customerTextStyle,
-          ...applyStyles('text-400'),
-          fontStyle: 'italic',
-          color: colors['gray-100'],
-          textDecorationLine: 'line-through',
-        };
-      }
-      if (receipt.isPending) {
-        customerTextStyle = {
-          ...customerTextStyle,
-          ...applyStyles('text-400'),
-          fontStyle: 'italic',
-          color: colors['gray-100'],
-        };
-      }
-      return {
-        style: customerTextStyle,
-        children: receipt?.customer?.name ?? 'No Customer',
-      };
     },
-    [],
+    [itemSoldToday],
   );
+
+  useEffect(() => {
+    const filtered = allReceipts.filter(dateFilterFunc);
+    setTotalItems(getReceiptsTotalProductQuantity(filtered));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allReceipts.length]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
       const allReceiptsData = getReceipts({realm});
-      setReceipts(
-        allReceiptsData.filter((receipt) => {
-          if (filter.date && receipt.created_at) {
-            return isEqual(
-              new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-              new Date(format(filter.date, 'MMM dd, yyyy')),
-            );
-          }
-        }),
-      );
+      const filtered = allReceiptsData.filter(dateFilterFunc);
+      setTotalItems(getReceiptsTotalProductQuantity(filtered));
     });
-  }, [filter.date, navigation, realm]);
+  }, [dateFilterFunc, navigation, realm]);
 
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <ReceiptingContainer
-        receipts={receipts}
-        emptyStateText={emptyStateText}
-        handleListItemSelect={undefined}
-        onSnapReceipt={handleSnapReceipt}
-        onCreateReceipt={handleOpenCreateReciptModal}
-        getReceiptItemLeftText={getCustomerText}>
+      <HomeContainer
+        onSnapReceipt={onSnapReceipt}
+        onCreateReceipt={handleOpenCreateReciptModal}>
         <View
           style={applyStyles('p-md center flex-row justify-between', {
             backgroundColor: colors['gray-300'],
@@ -252,11 +277,70 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
                 fontSize: 16,
                 color: colors.white,
               })}>
-              {amountWithCurrency(totalAmount)}
+              {totalItems}
             </Text>
           </View>
         </View>
-      </ReceiptingContainer>
+        <FlatList
+          data={allProducts}
+          initialNumToRender={10}
+          renderItem={renderListItem}
+          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+          ListEmptyComponent={
+            <EmptyState
+              heading="No items"
+              style={applyStyles({paddingTop: 100})}
+            />
+          }
+        />
+        <View
+          style={applyStyles(
+            'px-md py-md w-full flex-row items-center justify-between',
+            {
+              elevation: 2,
+              borderTopWidth: 1,
+              borderTopColor: colors['gray-20'],
+              backgroundColor: colors['gray-10'],
+            },
+          )}>
+          <View>
+            <Text
+              style={applyStyles('text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              Current items
+            </Text>
+            <Text
+              style={applyStyles('text-500', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              {format(filter.date, 'MMM dd, yyyy')}
+            </Text>
+          </View>
+          <View>
+            <Touchable onPress={() => {}}>
+              <View style={applyStyles('px-md py-md flex-row items-center')}>
+                <Icon
+                  size={16}
+                  name="sliders"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+                <Text
+                  style={applyStyles('pl-sm text-500 text-uppercase', {
+                    fontSize: 12,
+                    color: colors.primary,
+                    textDecorationLine: 'underline',
+                  })}>
+                  Manage items
+                </Text>
+              </View>
+            </Touchable>
+          </View>
+        </View>
+      </HomeContainer>
     </KeyboardAvoidingView>
   );
 });
