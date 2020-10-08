@@ -13,6 +13,7 @@ import {
 } from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
+import {omit} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {FlatList, Text, TextInput, View} from 'react-native';
 
@@ -375,7 +376,7 @@ export const ReceiptItemModalContent = (props: Props) => {
   const handleNext = useCallback(
     (data: string | number | IProduct, key: string) => {
       let payload = {
-        ...receiptItem,
+        ...omit(receiptItem),
         [key]: data,
       };
 
