@@ -198,9 +198,15 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
-      openModal('full', {
+      const closeReceiptPreviewModal = openModal('full', {
         renderContent: () => (
-          <ReceiptPreviewModal receiptId={item._id} closeModal={closeModal} />
+          <ReceiptPreviewModal
+            receiptId={item._id}
+            closeModal={() => {
+              closeReceiptPreviewModal();
+              closeModal();
+            }}
+          />
         ),
       });
     },
