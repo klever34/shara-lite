@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.49-shara-v2-designs",
+  "version": "0.2.49-feature.report-exporting+build.3437",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -71,6 +71,7 @@
     "rsdi": "^1.0.5",
     "uuid": "^8.2.0",
     "uuid-by-string": "^3.0.2",
+    "xlsx": "^0.16.8",
     "yup": "^0.29.3"
   },
   "devDependencies": {
