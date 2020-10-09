@@ -16,6 +16,7 @@ import {
   ToastAndroid,
   View,
   TextInput,
+  SectionListProps,
 } from 'react-native';
 import {Button} from './Button';
 import EmptyState from './EmptyState';
@@ -32,14 +33,7 @@ type Props<T> = {
 };
 
 type CustomerListItem =
-  | Pick<
-      ICustomer,
-      | 'name'
-      | 'mobile'
-      | 'remainingCreditAmount'
-      | 'overdueCreditAmount'
-      | '_id'
-    >
+  | Pick<ICustomer, 'name' | 'mobile' | '_id'>
   | {
       name: string;
       mobile?: string;
@@ -61,7 +55,7 @@ export function ContactsListModal<T>({
   const [searchInputValue, setSearchInputValue] = useState('');
   const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
 
-  const sections = useMemo(
+  const sections: SectionListProps<any>['sections'] = useMemo(
     () => [
       {
         data: myCustomers.length
@@ -69,7 +63,7 @@ export function ContactsListModal<T>({
               'desc',
               'asc',
             ])
-          : [null],
+          : [],
       },
       {
         title: 'Add from your phonebook',
@@ -80,6 +74,8 @@ export function ContactsListModal<T>({
     ],
     [myCustomers, phoneContacts],
   );
+
+  const [list, setList] = useState(sections);
 
   const keyExtractor = useCallback((item) => {
     if (!item) {
@@ -151,18 +147,19 @@ export function ContactsListModal<T>({
             (mobile && mobile.replace(/[\s-]+/g, '').indexOf(text) > -1)
           );
         };
-        const results = [...ref.current.contacts, ...myCustomers].filter(
-          (item: ICustomer) => {
-            return sort(item, searchValue);
-          },
-        );
+        const listToSearch = list
+          .map((item) => item.data)
+          .reduce((acc, arr) => [...acc, ...arr], []);
+        const results = listToSearch.filter((item) => {
+          return sort(item, searchValue);
+        });
 
-        setPhoneContacts(results);
+        setList([{data: results}]);
       } else {
-        setPhoneContacts(ref.current.contacts);
+        setList(sections);
       }
     },
-    [myCustomers],
+    [list, sections],
   );
 
   const renderCustomerListItem = useCallback(
@@ -266,7 +263,7 @@ export function ContactsListModal<T>({
             </View>
           ) : (
             <SectionList
-              sections={sections}
+              sections={list}
               persistentScrollbar
               initialNumToRender={10}
               keyExtractor={keyExtractor}
