@@ -14,9 +14,11 @@ const useRealmSyncLoader = () => {
     updateSyncRealm,
     isRealmSyncLoaderInitiated,
     setIsRealmSyncLoaderInitiated,
+    setIsSyncCompleted,
   } = useContext(RealmContext);
 
   const retryUpdate = () => {
+    setIsSyncCompleted && setIsSyncCompleted(true);
     setTimeout(() => {
       updateRealm();
     }, syncInterval);
@@ -35,6 +37,7 @@ const useRealmSyncLoader = () => {
           retryUpdate();
           return;
         }
+
         const {jwt} = realmCredentials;
         const {realm: newRealm, realmUser, partitionValue} = await loginToRealm(
           {
