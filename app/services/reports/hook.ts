@@ -69,11 +69,12 @@ export const useReports = () => {
 
   const exportReportsToExcel = useCallback(async () => {
     const {data, columns} = getReceiptsData();
+    const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
 
     await exportToExcel({
       data,
       columns,
-      filename: `Shara Receipts - ${new Date()}`,
+      filename: `Shara Receipts - ${date}`,
       notificationTitle: 'Report exported successfully',
     });
   }, [getReceiptsData]);
