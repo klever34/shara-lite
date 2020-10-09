@@ -44,15 +44,21 @@ const RealmProvider = (props: any) => {
     partitionValue: string;
   }) => {
     setRealmUser(user);
+
+    const syncStart = Date.now();
+
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
       partitionValue,
     });
 
+    const syncEnd = Date.now();
+    const syncDuration = syncEnd - syncStart;
+
     setTimeout(() => {
       setIsSyncCompleted(true);
-    }, 3000);
+    }, syncDuration + 2000);
     syncRealm.current = newRealm;
   };
 
