@@ -24,6 +24,7 @@ type Props = {
   totalAmount?: number;
   creditDueDate?: Date;
   creditAmount?: number;
+  isCancelled?: boolean;
   products?: IReceiptItem[];
   containerStyle?: ViewStyle;
   getImageUri: (base64: string) => void;
@@ -40,6 +41,7 @@ export const ReceiptImage = (props: Props) => {
     amountPaid,
     totalAmount,
     getImageUri,
+    isCancelled,
     creditAmount,
     creditDueDate,
     containerStyle,
@@ -212,6 +214,17 @@ export const ReceiptImage = (props: Props) => {
                   </View>
                 )}
               </View>
+            </View>
+          )}
+          {isCancelled && (
+            <View style={applyStyles('py-xl flex-row center')}>
+              <Text
+                style={applyStyles('text-700 text-uppercase text-center', {
+                  fontSize: 24,
+                  color: colors['red-200'],
+                })}>
+                Cancelled
+              </Text>
             </View>
           )}
           <View style={applyStyles({paddingVertical: 40})}>

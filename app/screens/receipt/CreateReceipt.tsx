@@ -385,7 +385,7 @@ export const CreateReceipt = withModal((props: Props) => {
                         fontSize: 12,
                         color: colors.primary,
                       })}>
-                      Add Product
+                      Add Item
                     </Text>
                   </View>
                 </View>

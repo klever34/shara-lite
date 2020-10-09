@@ -530,6 +530,7 @@ export const ReceiptPreview = withModal(
                 creditAmount={creditAmountLeft}
                 createdAt={receipt?.created_at}
                 totalAmount={receipt?.total_amount}
+                isCancelled={receipt?.is_cancelled}
                 customer={customer || receipt?.customer}
                 getImageUri={(data) => setReceiptImage(data)}
               />
