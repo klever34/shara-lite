@@ -61,6 +61,8 @@ export const ReceiptImage = (props: Props) => {
     [],
   );
 
+  console.log(customer?.name ?? '');
+
   return (
     <ScrollView>
       <ViewShot
