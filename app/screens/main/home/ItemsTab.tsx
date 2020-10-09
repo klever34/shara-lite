@@ -300,6 +300,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
           ListEmptyComponent={
             <EmptyState
               heading="No items"
+              text="No items sold today"
               style={applyStyles({paddingTop: 100})}
             />
           }
