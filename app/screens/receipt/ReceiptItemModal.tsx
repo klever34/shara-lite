@@ -422,7 +422,6 @@ export const ReceiptItemModalContent = (props: Props) => {
         [key]: data,
       };
 
-      //TODO: there is a bug here, set the product quantity to zero
       if (key === 'product' && !item) {
         payload = {
           ...payload,

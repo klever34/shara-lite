@@ -160,55 +160,61 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
     });
   }, [openModal, handleSnapReceipt]);
 
-  const renderListItem = useCallback(({item}: {item: FilteredProduct}) => {
-    return (
-      <View
-        style={applyStyles('px-md flex-row center justify-between', {
-          height: 50,
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <View>
-          <Text
-            style={applyStyles('text-400', {
-              fontSize: 16,
-              color: colors['gray-300'],
-            })}>
-            {item.name}
-          </Text>
-        </View>
-        <View style={applyStyles('items-end')}>
-          {item && item.quantity && item.quantity >= 0 && (
-            <View style={applyStyles('flex-row items-center')}>
-              <Text
-                style={applyStyles('text-500 pr-xs', {
-                  fontSize: 16,
-                  color: colors['gray-300'],
-                })}>
-                {item.quantity}
-              </Text>
-              <Text
-                style={applyStyles('text-400', {
-                  fontSize: 16,
-                  color: colors['gray-300'],
-                })}>
-                left
-              </Text>
-            </View>
-          )}
+  const renderListItem = useCallback(
+    ({item}: {item: FilteredProduct}) => {
+      return (
+        <View
+          style={applyStyles('px-md flex-row center justify-between', {
+            height: 50,
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
           <View>
             <Text
               style={applyStyles('text-400', {
-                fontSize: 10,
-                color: colors['gray-100'],
+                fontSize: 16,
+                color: colors['gray-300'],
               })}>
-              {item.quantitySold} sold today
+              {item.name}
             </Text>
           </View>
+          <View style={applyStyles('items-end')}>
+            <View>
+              <Text
+                style={applyStyles('text-400', {
+                  fontSize: 10,
+                  color: colors['gray-100'],
+                })}>
+                {item.quantitySold} sold today
+              </Text>
+            </View>
+            {item &&
+              item.quantity &&
+              item.quantity >= 0 &&
+              isToday(filter.date) && (
+                <View style={applyStyles('flex-row items-center')}>
+                  <Text
+                    style={applyStyles('text-500 pr-xs', {
+                      fontSize: 16,
+                      color: colors['gray-300'],
+                    })}>
+                    {item.quantity}
+                  </Text>
+                  <Text
+                    style={applyStyles('text-400', {
+                      fontSize: 16,
+                      color: colors['gray-300'],
+                    })}>
+                    left
+                  </Text>
+                </View>
+              )}
+          </View>
         </View>
-      </View>
-    );
-  }, []);
+      );
+    },
+    [filter.date],
+  );
 
   useEffect(() => {
     const filtered = allReceipts
