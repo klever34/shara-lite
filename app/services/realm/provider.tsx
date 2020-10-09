@@ -6,6 +6,7 @@ import {normalizeDb} from '@/services/realm/normalizations';
 
 type RealmObject = {
   realm?: Realm;
+  isSyncCompleted?: Boolean;
   isRealmSyncLoaderInitiated?: Boolean;
   updateLocalRealm?: (realm: Realm) => void;
   updateSyncRealm?: ({
@@ -27,6 +28,7 @@ const RealmProvider = (props: any) => {
   const [isRealmSyncLoaderInitiated, setIsRealmSyncLoaderInitiated] = useState<
     Boolean
   >(false);
+  const [isSyncCompleted, setIsSyncCompleted] = useState<Boolean>(false);
   const [realm, setRealm] = useState<Realm>();
   const [realmUser, setRealmUser] = useState<any>(false);
   const syncRealm = useRef<Realm>();
@@ -42,11 +44,21 @@ const RealmProvider = (props: any) => {
     partitionValue: string;
   }) => {
     setRealmUser(user);
+
+    const syncStart = Date.now();
+
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
       partitionValue,
     });
+
+    const syncEnd = Date.now();
+    const syncDuration = syncEnd - syncStart;
+
+    setTimeout(() => {
+      setIsSyncCompleted(true);
+    }, syncDuration + 2000);
     syncRealm.current = newRealm;
   };
 
@@ -58,6 +70,7 @@ const RealmProvider = (props: any) => {
   const logoutFromRealm = () => {
     setIsRealmSyncLoaderInitiated(false);
     setRealm(undefined);
+    setIsSyncCompleted(false);
 
     if (localRealm.current) {
       localRealm.current?.removeAllListeners();
@@ -82,6 +95,7 @@ const RealmProvider = (props: any) => {
     <RealmContext.Provider
       value={{
         realm,
+        isSyncCompleted,
         isRealmSyncLoaderInitiated,
         logoutFromRealm,
         updateLocalRealm,
