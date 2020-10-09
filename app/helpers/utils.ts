@@ -111,3 +111,10 @@ export const renderList = <T extends {}>(
     return list.map((...args) => renderItem(...args));
   }
 };
+
+export const prepareValueForSearch = (text: any): string => {
+  if (!text) {
+    return '';
+  }
+  return String(text).toLowerCase();
+};

@@ -19,6 +19,7 @@ type OpenModal = <K extends keyof ModalPropsList>(
 
 export type ModalWrapperFields = {
   openModal: OpenModal;
+  closeModal: () => void;
 };
 
 const defaultModalPropsList: ModalPropsList = {
@@ -49,7 +50,7 @@ const defaultModalVisibility = Object.keys(defaultModalPropsList).reduce(
   {},
 ) as ModalVisibilityList;
 
-const ModalContext = React.createContext<{openModal?: OpenModal}>({});
+const ModalContext = React.createContext<Partial<ModalWrapperFields>>({});
 
 export const useModal = () => {
   return useContext(ModalContext);
@@ -91,8 +92,8 @@ export const withModal = (Component: ElementType) => (
     [closeModal],
   );
   return (
-    <ModalContext.Provider value={{openModal}}>
-      <Component {...props} openModal={openModal} />
+    <ModalContext.Provider value={{openModal, closeModal}}>
+      <Component {...props} openModal={openModal} closeModal={closeModal} />
       <LoadingModal
         visible={modalVisibility.loading}
         closeModal={closeModal}

@@ -69,7 +69,7 @@ function SearchableDropdown<T>({
 
   const searchedItems = useCallback(
     debounce((searchedText: string) => {
-      const searchValue = searchedText.trim();
+      const searchValue = searchedText.trim().toLowerCase();
       const ac = items.filter((item: T) => {
         return setFilter(item, searchValue);
       });

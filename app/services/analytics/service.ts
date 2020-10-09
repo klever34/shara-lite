@@ -111,7 +111,7 @@ export class AnalyticsService implements IAnalyticsService {
 
   async logEvent<K extends keyof SharaAppEventsProperties>(
     eventName: K,
-    eventData?: SharaAppEventsProperties[K],
+    eventData: SharaAppEventsProperties[K],
   ): Promise<void> {
     let nextEventData;
     if (eventData) {

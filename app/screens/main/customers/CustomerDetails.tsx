@@ -7,7 +7,11 @@ import {
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {
+  amountWithCurrency,
+  applyStyles,
+  prepareValueForSearch,
+} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {MainStackParamList} from '@/screens/main';
 import {CreateReceipt} from '@/screens/receipt';
@@ -158,9 +162,13 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                   setFilter: (item: IReceipt, query) => {
                     // TODO: Improve search algorithm
                     return (
-                      (String(item.total_amount)?.search(query) ?? -1) !== -1 ||
-                      (String(item.amount_paid)?.search(query) ?? -1) !== -1 ||
-                      (String(item.credit_amount)?.search(query) ?? -1) !== -1
+                      (prepareValueForSearch(item.total_amount).search(query) ??
+                        -1) !== -1 ||
+                      (prepareValueForSearch(item.amount_paid).search(query) ??
+                        -1) !== -1 ||
+                      (prepareValueForSearch(item.credit_amount).search(
+                        query,
+                      ) ?? -1) !== -1
                     );
                   },
                   textInputProps: {
