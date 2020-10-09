@@ -107,7 +107,9 @@ const SectionButtons = ({
   );
 };
 
-function isTypeA(value?: IReceiptItem | IProduct): value is IReceiptItem {
+function isTypeReceiptItem(
+  value?: IReceiptItem | IProduct,
+): value is IReceiptItem {
   return value ? value.hasOwnProperty('product') : false;
 }
 
@@ -119,7 +121,9 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
   const [productIsNew, setProductIsNew] = useState(false);
   const [name, setName] = useState(receiptItem?.name || '');
   const [product, setProduct] = useState<IProduct | undefined>(
-    isTypeA(receiptItem) ? receiptItem?.product || ({} as IProduct) : undefined,
+    isTypeReceiptItem(receiptItem)
+      ? receiptItem?.product || ({} as IProduct)
+      : undefined,
   );
   const [products, setProducts] = useState<IProduct[]>(myProducts || []);
 

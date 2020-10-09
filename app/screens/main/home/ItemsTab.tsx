@@ -10,7 +10,6 @@ import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {CreateReceipt} from '@/screens/receipt';
 import {useAppNavigation} from '@/services/navigation';
-import {getProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {
   getReceipts,
@@ -19,6 +18,7 @@ import {
 } from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
+import {omit, uniqBy} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
@@ -26,13 +26,15 @@ import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 
 type ItemsTabProps = ModalWrapperFields & {};
 
+type FilteredProduct = IProduct & {quantitySold: number};
+
 export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const allReceipts = realm ? getReceipts({realm}) : [];
-  const allProducts = realm ? getProducts({realm}) : [];
 
   const [filter, setFilter] = useState({date: new Date()} || {});
+  const [products, setProducts] = useState<FilteredProduct[]>([]);
 
   const dateFilterFunc = useCallback(
     (receipt: IReceipt) => {
@@ -46,35 +48,33 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
     [filter.date],
   );
 
+  const getFilteredProducts = useCallback((filteredReceipts: IReceipt[]) => {
+    const receiptProducts = filteredReceipts
+      .reduce(
+        (acc, receipt) => [...acc, ...(receipt.items ?? [])],
+        [] as IReceiptItem[],
+      )
+      .map((receiptItem) => receiptItem.product);
+    const quantitySold = (product: IProduct) =>
+      filteredReceipts
+        .reduce(
+          (acc, receipt) => [...acc, ...(receipt.items ?? [])],
+          [] as IReceiptItem[],
+        )
+        .filter((receiptItem) => receiptItem.product.name === product.name)
+        .reduce((acc, receiptItem) => acc + receiptItem.quantity, 0);
+
+    return uniqBy(
+      receiptProducts.map((item) => ({
+        ...omit(item),
+        quantitySold: quantitySold(item),
+      })),
+      'name',
+    );
+  }, []);
+
   const [totalItems, setTotalItems] = useState(
     getReceiptsTotalProductQuantity(allReceipts.filter(dateFilterFunc)) || 0,
-  );
-
-  const itemSoldToday = useCallback(
-    (item: IProduct) => {
-      const filteredReceipts = allReceipts
-        .filter((receipt) => !receipt.is_cancelled)
-        .filter(dateFilterFunc);
-      const receiptProducts = filteredReceipts
-        .reduce(
-          (acc, receipt) => [...acc, ...(receipt.items ?? [])],
-          [] as IReceiptItem[],
-        )
-        .map((receiptItem) => receiptItem.product);
-      const receiptProductNames = receiptProducts.map(
-        (product) => product.name,
-      );
-      const wasSold = receiptProductNames.includes(item.name);
-      const quantitySold = filteredReceipts
-        .reduce(
-          (acc, receipt) => [...acc, ...(receipt.items ?? [])],
-          [] as IReceiptItem[],
-        )
-        .filter((receiptItem) => receiptItem.product.name === item.name)
-        .reduce((acc, receiptItem) => acc + receiptItem.quantity, 0);
-      return {wasSold, quantitySold};
-    },
-    [allReceipts, dateFilterFunc],
   );
 
   const handleFilterChange = useCallback((key, value) => {
@@ -84,18 +84,21 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   const handleDateFilter = useCallback(
     (date?: Date) => {
       handleFilterChange('date', date);
-      const filtered = allReceipts.filter((receipt) => {
-        if (date && receipt.created_at) {
-          return isEqual(
-            new Date(format(receipt.created_at, 'MMM dd, yyyy')),
-            new Date(format(date, 'MMM dd, yyyy')),
-          );
-        }
-      });
+      const filtered = allReceipts
+        .filter((receipt) => !receipt.is_cancelled)
+        .filter((receipt) => {
+          if (date && receipt.created_at) {
+            return isEqual(
+              new Date(format(receipt.created_at, 'MMM dd, yyyy')),
+              new Date(format(date, 'MMM dd, yyyy')),
+            );
+          }
+        });
 
+      setProducts(getFilteredProducts(filtered));
       setTotalItems(getReceiptsTotalProductQuantity(filtered));
     },
-    [allReceipts, handleFilterChange],
+    [allReceipts, getFilteredProducts, handleFilterChange],
   );
 
   const handleSnapReceipt = useCallback(
@@ -155,25 +158,25 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
     });
   }, [openModal, handleSnapReceipt]);
 
-  const renderListItem = useCallback(
-    ({item}: {item: IProduct}) => {
-      return (
-        <View
-          style={applyStyles('px-md flex-row center justify-between', {
-            height: 50,
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-20'],
-          })}>
-          <View>
-            <Text
-              style={applyStyles('text-400', {
-                fontSize: 16,
-                color: colors['gray-300'],
-              })}>
-              {item.name}
-            </Text>
-          </View>
-          <View style={applyStyles('items-end')}>
+  const renderListItem = useCallback(({item}: {item: FilteredProduct}) => {
+    return (
+      <View
+        style={applyStyles('px-md flex-row center justify-between', {
+          height: 50,
+          borderBottomWidth: 1,
+          borderBottomColor: colors['gray-20'],
+        })}>
+        <View>
+          <Text
+            style={applyStyles('text-400', {
+              fontSize: 16,
+              color: colors['gray-300'],
+            })}>
+            {item.name}
+          </Text>
+        </View>
+        <View style={applyStyles('items-end')}>
+          {item && item.quantity && item.quantity >= 0 && (
             <View style={applyStyles('flex-row items-center')}>
               <Text
                 style={applyStyles('text-500 pr-xs', {
@@ -190,26 +193,27 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
                 left
               </Text>
             </View>
-            {itemSoldToday(item).wasSold && (
-              <View>
-                <Text
-                  style={applyStyles('text-400', {
-                    fontSize: 10,
-                    color: colors['gray-100'],
-                  })}>
-                  {itemSoldToday(item).quantitySold} sold today
-                </Text>
-              </View>
-            )}
+          )}
+          <View>
+            <Text
+              style={applyStyles('text-400', {
+                fontSize: 10,
+                color: colors['gray-100'],
+              })}>
+              {item.quantitySold} sold today
+            </Text>
           </View>
         </View>
-      );
-    },
-    [itemSoldToday],
-  );
+      </View>
+    );
+  }, []);
 
   useEffect(() => {
-    const filtered = allReceipts.filter(dateFilterFunc);
+    const filtered = allReceipts
+      .filter((receipt) => !receipt.is_cancelled)
+      .filter(dateFilterFunc);
+
+    setProducts(getFilteredProducts(filtered));
     setTotalItems(getReceiptsTotalProductQuantity(filtered));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allReceipts.length]);
@@ -217,10 +221,14 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   useEffect(() => {
     return navigation.addListener('focus', () => {
       const allReceiptsData = getReceipts({realm});
-      const filtered = allReceiptsData.filter(dateFilterFunc);
+      const filtered = allReceiptsData
+        .filter((receipt) => !receipt.is_cancelled)
+        .filter(dateFilterFunc);
+
+      setProducts(getFilteredProducts(filtered));
       setTotalItems(getReceiptsTotalProductQuantity(filtered));
     });
-  }, [dateFilterFunc, navigation, realm]);
+  }, [dateFilterFunc, getFilteredProducts, navigation, realm]);
 
   return (
     <KeyboardAvoidingView
@@ -284,7 +292,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
           </View>
         </View>
         <FlatList
-          data={allProducts}
+          data={products}
           initialNumToRender={10}
           renderItem={renderListItem}
           keyboardShouldPersistTaps="always"

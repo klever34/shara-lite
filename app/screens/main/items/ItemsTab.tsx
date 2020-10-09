@@ -44,6 +44,7 @@ export const ItemsTab = withModal(({openModal}: Props) => {
       ) {
         handleUpdateItem(item);
       } else {
+        getAnalyticsService().logEvent('productStart').catch(handleError);
         getAnalyticsService()
           .logEvent('productAddedToReceipt')
           .catch(handleError);
