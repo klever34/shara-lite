@@ -158,10 +158,9 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                   setFilter: (item: IReceipt, query) => {
                     // TODO: Improve search algorithm
                     return (
-                      item.customer_name?.search(query) !== -1 ||
-                      String(item.total_amount)?.search(query) !== -1 ||
-                      String(item.amount_paid)?.search(query) !== -1 ||
-                      String(item.credit_amount)?.search(query) !== -1
+                      (String(item.total_amount)?.search(query) ?? -1) !== -1 ||
+                      (String(item.amount_paid)?.search(query) ?? -1) !== -1 ||
+                      (String(item.credit_amount)?.search(query) ?? -1) !== -1
                     );
                   },
                   textInputProps: {
