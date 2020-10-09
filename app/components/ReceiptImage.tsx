@@ -135,7 +135,7 @@ export const ReceiptImage = (props: Props) => {
                 })}>
                 {format(
                   createdAt ? new Date(createdAt) : new Date(),
-                  'dd/MM/yyyy',
+                  'dd/MM/yyyy, hh:mm a',
                 )}
               </Text>
             </View>

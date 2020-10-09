@@ -556,7 +556,7 @@ export const ReceiptPreview = withModal(
           </View>
         )}
 
-        {!receipt?.isPending && (
+        {!(receipt?.isPending || receipt?.is_cancelled) && (
           <View style={applyStyles('px-xl')}>
             {!isFulfilled && !isNew && (
               <View style={applyStyles('mb-xl')}>
