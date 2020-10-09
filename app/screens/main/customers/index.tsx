@@ -3,7 +3,11 @@ import EmptyState from '@/components/EmptyState';
 import {HeaderRight} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {applyStyles, amountWithCurrency} from '@/helpers/utils';
+import {
+  applyStyles,
+  amountWithCurrency,
+  prepareValueForSearch,
+} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
@@ -47,7 +51,7 @@ type CustomerListItem =
 type CustomersScreenProps = ModalWrapperFields & {};
 const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
 export const CustomersScreen = withModal(
-  ({openModal}: CustomersScreenProps) => {
+  ({openModal, closeModal}: CustomersScreenProps) => {
     const navigation = useNavigation();
     const realm = useRealm() as Realm;
     const myCustomers = getCustomers({realm});
@@ -144,6 +148,10 @@ export const CustomersScreen = withModal(
               '_id' in customer
                 ? () => {
                     onPress?.();
+                    getAnalyticsService().logEvent('selectContent', {
+                      item_id: String(customer._id),
+                      content_type: 'customer',
+                    });
                     handleSelectCustomer(customer);
                   }
                 : undefined
@@ -177,6 +185,8 @@ export const CustomersScreen = withModal(
               ) : (
                 <Touchable
                   onPress={() => {
+                    closeModal();
+                    getAnalyticsService().logEvent('customerAdded');
                     handleCreateCustomer(customer);
                   }}>
                   <View
@@ -197,7 +207,7 @@ export const CustomersScreen = withModal(
           </Touchable>
         );
       },
-      [handleCreateCustomer, handleSelectCustomer],
+      [closeModal, handleCreateCustomer, handleSelectCustomer],
     );
 
     useLayoutEffect(() => {
@@ -209,7 +219,10 @@ export const CustomersScreen = withModal(
                 icon: 'search',
                 onPress: () => {
                   const closeModal = openModal('search', {
-                    items: (myCustomers as unknown) as ICustomer[],
+                    items: [
+                      ...((myCustomers as unknown) as CustomerListItem[]),
+                      ...phoneContacts,
+                    ],
                     renderItem: ({item, onPress}) => {
                       return renderCustomerListItem({
                         item: item as CustomerListItem,
@@ -222,10 +235,13 @@ export const CustomersScreen = withModal(
                     setFilter: (item: ICustomer, query) => {
                       // TODO: Improve search algorithm
                       return (
-                        item.name?.search(query) !== -1 ||
-                        item.mobile?.search(query) !== -1 ||
-                        String(item.totalAmount)?.search(query) !== -1 ||
-                        String(item.overdueCreditAmount)?.search(query) !== -1
+                        (prepareValueForSearch(item.name).search(query) ??
+                          -1) !== -1 ||
+                        (prepareValueForSearch(item.mobile).search(query) ??
+                          -1) !== -1 ||
+                        (prepareValueForSearch(
+                          item.remainingCreditAmount,
+                        ).search(query) ?? -1) !== -1
                       );
                     },
                     textInputProps: {
@@ -240,7 +256,13 @@ export const CustomersScreen = withModal(
           />
         ),
       });
-    }, [myCustomers, navigation, openModal, renderCustomerListItem]);
+    }, [
+      myCustomers,
+      navigation,
+      openModal,
+      phoneContacts,
+      renderCustomerListItem,
+    ]);
 
     const renderCustomerListSectionHeader = useCallback(
       ({section: {title}}) => {

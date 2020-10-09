@@ -6,16 +6,18 @@ import {
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {CreateReceipt} from '@/screens/receipt';
 import {getAnalyticsService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {
-  getReceipts,
-  saveReceipt,
-  getReceiptsTotalAmount,
   getAllPayments,
+  getReceipts,
+  getReceiptsTotalAmount,
 } from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
@@ -23,10 +25,6 @@ import {sortBy} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
-import {useErrorHandler} from '@/services/error-boundary';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {CreateReceipt} from '@/screens/receipt';
-import {ICustomer} from '@/models';
 import {StatusFilter} from 'types/app';
 
 const statusFilters: StatusFilter[] = [
@@ -204,22 +202,24 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
 
   const handleDateFilter = useCallback(
     (date?: Date) => {
-      if (filter.status) {
-        handleStatusFilter(filter.status, date);
-        return;
-      }
-      handleFilterChange('date', date);
-      const filtered = allReceipts.filter((receipt) => {
-        if (date && receipt.created_at) {
-          return isEqual(
-            new Date(format(receipt.created_at, 'MMM dd, yyyy')),
-            new Date(format(date, 'MMM dd, yyyy')),
-          );
+      if (date) {
+        if (filter.status) {
+          handleStatusFilter(filter.status, date);
+          return;
         }
-      });
+        handleFilterChange('date', date);
+        const filtered = allReceipts.filter((receipt) => {
+          if (date && receipt.created_at) {
+            return isEqual(
+              new Date(format(receipt.created_at, 'MMM dd, yyyy')),
+              new Date(format(date, 'MMM dd, yyyy')),
+            );
+          }
+        });
 
-      setReceipts(filtered);
-      setTotalAmount(getReceiptsTotalAmount(filtered));
+        setReceipts(filtered);
+        setTotalAmount(getReceiptsTotalAmount(filtered));
+      }
     },
     [filter.status, allReceipts, handleFilterChange, handleStatusFilter],
   );
@@ -237,45 +237,38 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     [handleError, navigation],
   );
 
-  const handleSnapReceipt = useCallback(() => {
-    const options: ImagePickerOptions = {
-      noData: true,
-      maxWidth: 256,
-      maxHeight: 256,
-      mediaType: 'photo',
-      allowsEditing: true,
-    };
-    ImagePicker.launchCamera(options, (response) => {
-      if (response.didCancel) {
-        // do nothing
-      } else if (response.error) {
-        Alert.alert('Error', response.error);
-      } else {
-        const {uri} = response;
-        const extensionIndex = uri.lastIndexOf('.');
-        const extension = uri.slice(extensionIndex + 1);
-        const allowedExtensions = ['jpg', 'jpeg', 'png'];
-        if (!allowedExtensions.includes(extension)) {
-          return Alert.alert('Error', 'That file type is not allowed.');
+  const handleSnapReceipt = useCallback(
+    (callback: (imageUri: string) => void) => {
+      const options: ImagePickerOptions = {
+        noData: true,
+        maxWidth: 256,
+        maxHeight: 256,
+        mediaType: 'photo',
+        allowsEditing: true,
+      };
+      ImagePicker.launchCamera(options, (response) => {
+        if (response.didCancel) {
+          // do nothing
+        } else if (response.error) {
+          Alert.alert('Error', response.error);
+        } else {
+          const {uri} = response;
+          const extensionIndex = uri.lastIndexOf('.');
+          const extension = uri.slice(extensionIndex + 1);
+          const allowedExtensions = ['jpg', 'jpeg', 'png'];
+          if (!allowedExtensions.includes(extension)) {
+            return Alert.alert('Error', 'That file type is not allowed.');
+          }
+          callback(uri);
         }
-        saveReceipt({
-          realm,
-          tax: 0,
-          payments: [],
-          amountPaid: 0,
-          totalAmount: 0,
-          creditAmount: 0,
-          receiptItems: [],
-          customer: {} as ICustomer,
-          local_image_url: uri,
-        });
-      }
-    });
-  }, [realm]);
+      });
+    },
+    [],
+  );
 
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
-      swipeDirection: [],
+      swipeDirection: ['down'],
       renderContent: () => (
         <CreateReceipt
           closeModal={closeModal}
@@ -331,20 +324,9 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   useEffect(() => {
-    return navigation.addListener('focus', () => {
-      const allReceiptsData = getReceipts({realm});
-      setReceipts(
-        allReceiptsData.filter((receipt) => {
-          if (filter.date && receipt.created_at) {
-            return isEqual(
-              new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-              new Date(format(filter.date, 'MMM dd, yyyy')),
-            );
-          }
-        }),
-      );
-    });
-  }, [filter.date, navigation, realm]);
+    handleStatusFilter(filter.status, filter.date);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allReceipts.length]);
 
   return (
     <KeyboardAvoidingView
@@ -356,20 +338,6 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
         onCreateReceipt={handleOpenCreateReciptModal}
         handleListItemSelect={handleListItemSelect}
         getReceiptItemLeftText={getCustomerText}>
-        <FilterButtonGroup
-          value={filter.status}
-          onChange={(status: any) => handleStatusFilter(status)}>
-          <View
-            style={applyStyles('py-xl px-sm flex-row center justify-between')}>
-            {statusFilters.map((filterItem) => (
-              <FilterButton
-                {...filterItem}
-                key={filterItem.value}
-                isChecked={filter.status === filterItem.value}
-              />
-            ))}
-          </View>
-        </FilterButtonGroup>
         <View
           style={applyStyles('p-md center flex-row justify-between', {
             backgroundColor: colors['gray-300'],
@@ -423,6 +391,30 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
               })}>
               {amountWithCurrency(totalAmount)}
             </Text>
+          </View>
+        </View>
+        <View>
+          <View
+            style={applyStyles({
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-20'],
+            })}>
+            <FilterButtonGroup
+              value={filter.status}
+              onChange={(status: any) => handleStatusFilter(status)}>
+              <View
+                style={applyStyles(
+                  'py-xl px-sm flex-row center justify-between',
+                )}>
+                {statusFilters.map((filterItem) => (
+                  <FilterButton
+                    {...filterItem}
+                    key={filterItem.value}
+                    isChecked={filter.status === filterItem.value}
+                  />
+                ))}
+              </View>
+            </FilterButtonGroup>
           </View>
         </View>
       </ReceiptingContainer>

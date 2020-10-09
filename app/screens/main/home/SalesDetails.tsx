@@ -26,10 +26,10 @@ export const SalesDetails = ({route}: any) => {
     <ScrollView
       persistentScrollbar
       keyboardShouldPersistTaps="always"
-      style={applyStyles('py-sm px-lg flex-1', {
+      style={applyStyles('py-sm flex-1', {
         backgroundColor: colors.white,
       })}>
-      <View style={applyStyles('mb-xs flex-row justify-end w-full')}>
+      <View style={applyStyles('px-xl mb-xs flex-row justify-end w-full')}>
         <Touchable onPress={() => navigation.goBack()}>
           <View style={applyStyles('center', {height: 48, width: 48})}>
             <Icon

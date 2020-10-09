@@ -35,16 +35,16 @@ import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 type Props = {
   receipt?: IReceipt;
   closeModal: () => void;
-  onSnapReceipt?: () => void;
   initialCustomer?: ICustomer;
+  onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
   const {
     receipt,
     openModal,
-    onSnapReceipt,
     closeModal,
+    onSnapReceipt,
     initialCustomer,
   } = props;
 
@@ -65,6 +65,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const [customer, setCustomer] = useState<ICustomer>(
     receipt?.customer || ({} as ICustomer),
   );
+  const [snappedReceipt, setSnappedReceipt] = useState('');
   const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
@@ -108,7 +109,6 @@ export const CreateReceipt = withModal((props: Props) => {
   );
 
   const handleContactSelect = useCallback((newCustomer) => {
-    console.log(newCustomer);
     setCustomer(newCustomer);
     setIsContactListModalOpen(false);
   }, []);
@@ -168,6 +168,7 @@ export const CreateReceipt = withModal((props: Props) => {
     const closeReceiptItemModal = openModal('full', {
       renderContent: () => (
         <ReceiptItemModalContent
+          //@ts-ignore
           onDone={handleAddReceiptItem}
           closeModal={closeReceiptItemModal}
         />
@@ -181,6 +182,7 @@ export const CreateReceipt = withModal((props: Props) => {
         renderContent: () => (
           <ReceiptItemModalContent
             item={item}
+            //@ts-ignore
             onDone={handleUpdateReceiptItem}
             closeModal={closeReceiptItemModal}
             onDelete={() => {
@@ -196,9 +198,15 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
-      openModal('full', {
+      const closeReceiptPreviewModal = openModal('full', {
         renderContent: () => (
-          <ReceiptPreviewModal receiptId={item._id} closeModal={closeModal} />
+          <ReceiptPreviewModal
+            receiptId={item._id}
+            closeModal={() => {
+              closeReceiptPreviewModal();
+              closeModal();
+            }}
+          />
         ),
       });
     },
@@ -206,14 +214,13 @@ export const CreateReceipt = withModal((props: Props) => {
   );
 
   const handleSnapReceipt = useCallback(() => {
-    onSnapReceipt && onSnapReceipt();
-    closeModal();
-  }, [closeModal, onSnapReceipt]);
+    onSnapReceipt && onSnapReceipt((uri) => setSnappedReceipt(uri));
+  }, [onSnapReceipt]);
 
   const handleSaveReceipt = useCallback(() => {
     setIsSaving(true);
     setTimeout(() => {
-      const createdReceipt = saveReceipt({
+      let receiptToCreate: any = {
         tax,
         realm,
         dueDate,
@@ -223,7 +230,13 @@ export const CreateReceipt = withModal((props: Props) => {
         creditAmount,
         receiptItems,
         payments: [{method: '', amount: amountPaid}],
-      });
+      };
+
+      if (snappedReceipt) {
+        receiptToCreate = {...receiptToCreate, local_image_url: snappedReceipt};
+      }
+
+      const createdReceipt = saveReceipt(receiptToCreate);
       handleClearReceipt();
       ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       setIsSaving(false);
@@ -237,6 +250,7 @@ export const CreateReceipt = withModal((props: Props) => {
     totalAmount,
     creditAmount,
     receiptItems,
+    snappedReceipt,
     handleClearReceipt,
     handleOpenReceiptPreviewModal,
   ]);
@@ -270,6 +284,7 @@ export const CreateReceipt = withModal((props: Props) => {
         data={receiptItems}
         persistentScrollbar
         renderItem={renderReceiptItem}
+        keyboardShouldPersistTaps="always"
         keyExtractor={(item) => `${item?.product._id?.toString()}`}
         ListHeaderComponent={
           <>
@@ -370,7 +385,7 @@ export const CreateReceipt = withModal((props: Props) => {
                         fontSize: 12,
                         color: colors.primary,
                       })}>
-                      Add Product
+                      Add Item
                     </Text>
                   </View>
                 </View>
@@ -378,25 +393,15 @@ export const CreateReceipt = withModal((props: Props) => {
                   style={applyStyles(
                     summaryTableStyles.column,
                     summaryTableStyles['column-30'],
-                    {
-                      alignItems: 'flex-end',
-                    },
                   )}
                 />
                 <View
                   style={applyStyles(
                     summaryTableStyles['column-10'],
                     summaryTableStyles.column,
-                    {
-                      alignItems: 'flex-end',
-                    },
                   )}
                 />
-                <View
-                  style={applyStyles(summaryTableStyles['column-30'], {
-                    alignItems: 'flex-end',
-                  })}
-                />
+                <View style={applyStyles(summaryTableStyles['column-30'])} />
               </View>
             </Touchable>
           </>

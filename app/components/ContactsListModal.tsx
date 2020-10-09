@@ -1,21 +1,22 @@
 import {applyStyles} from '@/helpers/utils';
 import BottomHalfModal from '@/modals/BottomHalfModal';
 import {ICustomer} from '@/models';
-import {getAnalyticsService, getContactService} from '@/services';
+import {getAnalyticsService} from '@/services';
+import {useContacts} from '@/services/contact/provider';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
-  ActivityIndicator,
   ListRenderItemInfo,
   SectionList,
+  SectionListProps,
   StyleSheet,
   Text,
+  TextInput,
   ToastAndroid,
   View,
-  TextInput,
 } from 'react-native';
 import {Button} from './Button';
 import EmptyState from './EmptyState';
@@ -32,14 +33,7 @@ type Props<T> = {
 };
 
 type CustomerListItem =
-  | Pick<
-      ICustomer,
-      | 'name'
-      | 'mobile'
-      | 'remainingCreditAmount'
-      | 'overdueCreditAmount'
-      | '_id'
-    >
+  | Pick<ICustomer, 'name' | 'mobile' | '_id'>
   | {
       name: string;
       mobile?: string;
@@ -53,15 +47,16 @@ export function ContactsListModal<T>({
   onContactSelect,
 }: Props<T>) {
   const realm = useRealm() as Realm;
+  const {contacts} = useContacts();
   const myCustomers = getCustomers({realm});
   const analyticsService = getAnalyticsService();
 
-  const ref = useRef<{contacts: ICustomer[]}>({contacts: []});
-  const [isLoading, setIsLoading] = useState(false);
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
+  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>(
+    contacts || [],
+  );
 
-  const sections = useMemo(
+  const sections: SectionListProps<any>['sections'] = useMemo(
     () => [
       {
         data: myCustomers.length
@@ -69,7 +64,7 @@ export function ContactsListModal<T>({
               'desc',
               'asc',
             ])
-          : [null],
+          : [],
       },
       {
         title: 'Add from your phonebook',
@@ -80,6 +75,8 @@ export function ContactsListModal<T>({
     ],
     [myCustomers, phoneContacts],
   );
+
+  const [list, setList] = useState(sections);
 
   const keyExtractor = useCallback((item) => {
     if (!item) {
@@ -151,18 +148,19 @@ export function ContactsListModal<T>({
             (mobile && mobile.replace(/[\s-]+/g, '').indexOf(text) > -1)
           );
         };
-        const results = [...ref.current.contacts, ...myCustomers].filter(
-          (item: ICustomer) => {
-            return sort(item, searchValue);
-          },
-        );
+        const listToSearch = list
+          .map((item) => item.data)
+          .reduce((acc, arr) => [...acc, ...arr], []);
+        const results = listToSearch.filter((item) => {
+          return sort(item, searchValue);
+        });
 
-        setPhoneContacts(results);
+        setList([{data: results}]);
       } else {
-        setPhoneContacts(ref.current.contacts);
+        setList(sections);
       }
     },
-    [myCustomers],
+    [list, sections],
   );
 
   const renderCustomerListItem = useCallback(
@@ -223,146 +221,109 @@ export function ContactsListModal<T>({
     return <Text style={styles.customerListHeader}>{title}</Text>;
   }, []);
 
-  useEffect(() => {
-    setIsLoading(true);
-    const customers = getCustomers({realm});
-    getContactService()
-      .getPhoneContacts()
-      .then((contacts) => {
-        setIsLoading(false);
-        const data = contacts.reduce<CustomerListItem[]>(
-          (acc, {givenName, familyName, phoneNumber}) => {
-            const existing = customers.filtered(
-              `mobile = "${phoneNumber.number}"`,
-            );
-            if (existing.length) {
-              return acc;
-            }
-            return [
-              ...acc,
-              {
-                name: `${givenName} ${familyName}`,
-                mobile: phoneNumber.number,
-              },
-            ];
-          },
-          [],
-        );
-
-        ref.current.contacts = data;
-        setPhoneContacts(data);
-      });
-  }, [realm]);
-
   return (
     <BottomHalfModal
       visible={visible}
       closeModal={handleClose}
       renderContent={({closeModal}) => (
         <View>
-          {isLoading ? (
-            <View style={applyStyles('py-96 items-center justify-center')}>
-              <ActivityIndicator color={colors.primary} />
-            </View>
-          ) : (
-            <SectionList
-              sections={sections}
-              persistentScrollbar
-              initialNumToRender={10}
-              keyExtractor={keyExtractor}
-              renderItem={renderCustomerListItem}
-              renderSectionHeader={renderCustomerListSectionHeader}
-              ListHeaderComponent={
-                <View style={applyStyles('bg-white')}>
-                  <View
-                    style={applyStyles(
-                      'py-md px-lg flex-row items-center justify-between',
-                      {
-                        borderBottomWidth: 1,
-                        borderBottomColor: colors['gray-20'],
-                      },
-                    )}>
-                    <View style={applyStyles({width: '48%'})}>
-                      <Text style={applyStyles('text-700 text-uppercase')}>
-                        Select a Customer
-                      </Text>
-                    </View>
-                    <View style={applyStyles({width: '48%'})}>
-                      {onAddNew && (
-                        <Button onPress={handleAddNew}>
-                          <View
-                            style={applyStyles('flex-row px-sm items-center')}>
-                            <Icon
-                              size={16}
-                              name="plus"
-                              type="feathericons"
-                              color={colors.white}
-                            />
-                            <Text
-                              style={applyStyles('text-400 text-uppercase ', {
-                                color: colors.white,
-                              })}>
-                              Create {entity}
-                            </Text>
-                          </View>
-                        </Button>
-                      )}
-                    </View>
+          <SectionList
+            sections={list}
+            persistentScrollbar
+            initialNumToRender={10}
+            keyExtractor={keyExtractor}
+            renderItem={renderCustomerListItem}
+            renderSectionHeader={renderCustomerListSectionHeader}
+            ListHeaderComponent={
+              <View style={applyStyles('bg-white')}>
+                <View
+                  style={applyStyles(
+                    'py-md px-lg flex-row items-center justify-between',
+                    {
+                      borderBottomWidth: 1,
+                      borderBottomColor: colors['gray-20'],
+                    },
+                  )}>
+                  <View style={applyStyles({width: '48%'})}>
+                    <Text style={applyStyles('text-700 text-uppercase')}>
+                      Select a Customer
+                    </Text>
                   </View>
-                  <View style={styles.searchContainer}>
-                    <View style={styles.searchInputContainer}>
-                      <Icon
-                        size={24}
-                        style={styles.searchInputIcon}
-                        type="feathericons"
-                        name="search"
-                        color={colors.primary}
-                      />
-                      <TextInput
-                        value={searchInputValue}
-                        onChangeText={handleSearch}
-                        placeholder="Search for customer here..."
-                        placeholderTextColor={colors['gray-50']}
-                        style={applyStyles(styles.searchInput, 'text-400')}
-                      />
-                    </View>
+                  <View style={applyStyles({width: '48%'})}>
+                    {onAddNew && (
+                      <Button onPress={handleAddNew}>
+                        <View
+                          style={applyStyles('flex-row px-sm items-center')}>
+                          <Icon
+                            size={16}
+                            name="plus"
+                            type="feathericons"
+                            color={colors.white}
+                          />
+                          <Text
+                            style={applyStyles('text-400 text-uppercase ', {
+                              color: colors.white,
+                            })}>
+                            Create {entity}
+                          </Text>
+                        </View>
+                      </Button>
+                    )}
                   </View>
                 </View>
-              }
-              ListEmptyComponent={
-                <View
-                  style={applyStyles('items-center', 'justify-center', {
-                    paddingVertical: 40,
+                <View style={styles.searchContainer}>
+                  <View style={styles.searchInputContainer}>
+                    <Icon
+                      size={24}
+                      style={styles.searchInputIcon}
+                      type="feathericons"
+                      name="search"
+                      color={colors.primary}
+                    />
+                    <TextInput
+                      value={searchInputValue}
+                      onChangeText={handleSearch}
+                      placeholder="Search for customer here..."
+                      placeholderTextColor={colors['gray-50']}
+                      style={applyStyles(styles.searchInput, 'text-400')}
+                    />
+                  </View>
+                </View>
+              </View>
+            }
+            ListEmptyComponent={
+              <View
+                style={applyStyles('items-center', 'justify-center', {
+                  paddingVertical: 40,
+                })}>
+                <Text
+                  style={applyStyles('heading-700', 'text-center', {
+                    color: colors['gray-300'],
+                  })}>
+                  No results found
+                </Text>
+              </View>
+            }
+            ListFooterComponent={
+              <View>
+                <Button
+                  onPress={closeModal}
+                  variantColor="clear"
+                  style={applyStyles({
+                    width: '100%',
+                    borderTopWidth: 1,
+                    borderTopColor: colors['gray-20'],
                   })}>
                   <Text
-                    style={applyStyles('heading-700', 'text-center', {
-                      color: colors['gray-300'],
+                    style={applyStyles('text-400', 'text-uppercase', {
+                      color: colors.primary,
                     })}>
-                    No results found
+                    Close
                   </Text>
-                </View>
-              }
-              ListFooterComponent={
-                <View>
-                  <Button
-                    onPress={closeModal}
-                    variantColor="clear"
-                    style={applyStyles({
-                      width: '100%',
-                      borderTopWidth: 1,
-                      borderTopColor: colors['gray-20'],
-                    })}>
-                    <Text
-                      style={applyStyles('text-400', 'text-uppercase', {
-                        color: colors.primary,
-                      })}>
-                      Close
-                    </Text>
-                  </Button>
-                </View>
-              }
-            />
-          )}
+                </Button>
+              </View>
+            }
+          />
         </View>
       )}
     />

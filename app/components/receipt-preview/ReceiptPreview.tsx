@@ -471,7 +471,7 @@ export const ReceiptPreview = withModal(
           backgroundColor: colors.white,
         })}>
         {!receipt?.isPending && (
-          <View style={applyStyles('mb-md')}>
+          <View style={applyStyles('px-xl mb-md')}>
             {!receipt?.is_cancelled && !hasCustomer && (
               <Touchable onPress={handleOpenContactListModal}>
                 <View
@@ -523,13 +523,15 @@ export const ReceiptPreview = withModal(
               <ReceiptImage
                 user={user}
                 tax={receipt?.tax}
-                customer={customer}
+                captureMode="continuous"
                 products={receipt?.items}
                 amountPaid={totalAmountPaid}
                 creditDueDate={creditDueDate}
                 creditAmount={creditAmountLeft}
                 createdAt={receipt?.created_at}
                 totalAmount={receipt?.total_amount}
+                isCancelled={receipt?.is_cancelled}
+                customer={customer || receipt?.customer}
                 getImageUri={(data) => setReceiptImage(data)}
               />
             </View>
@@ -555,8 +557,8 @@ export const ReceiptPreview = withModal(
           </View>
         )}
 
-        {!receipt?.isPending && (
-          <View>
+        {!(receipt?.isPending || receipt?.is_cancelled) && (
+          <View style={applyStyles('px-xl')}>
             {!isFulfilled && !isNew && (
               <View style={applyStyles('mb-xl')}>
                 <View style={applyStyles('mb-md')}>
@@ -579,7 +581,7 @@ export const ReceiptPreview = withModal(
 
         {!receipt?.is_cancelled && hasCustomer && (
           <View
-            style={applyStyles({
+            style={applyStyles('px-xl', {
               paddingBottom: 100,
             })}>
             <View style={applyStyles('mb-md flex-row justify-space-between')}>
