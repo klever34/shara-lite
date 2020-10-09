@@ -222,10 +222,10 @@ export const CustomersScreen = withModal(
                     setFilter: (item: ICustomer, query) => {
                       // TODO: Improve search algorithm
                       return (
-                        item.name?.search(query) !== -1 ||
-                        item.mobile?.search(query) !== -1 ||
-                        String(item.totalAmount)?.search(query) !== -1 ||
-                        String(item.overdueCreditAmount)?.search(query) !== -1
+                        (item.name?.search(query) ?? -1) !== -1 ||
+                        (item.mobile?.search(query) ?? -1) !== -1 ||
+                        (String(item.remainingCreditAmount)?.search(query) ??
+                          -1) !== -1
                       );
                     },
                     textInputProps: {

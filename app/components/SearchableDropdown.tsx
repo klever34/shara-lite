@@ -12,6 +12,7 @@ import {applyStyles} from '@/helpers/utils';
 import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
+import debounce from 'lodash/debounce';
 
 export type SearchableDropdownProps<T extends any = any> = {
   items: T[];
@@ -44,13 +45,11 @@ function SearchableDropdown<T>({
   noResultsAction,
   noResultsActionButtonText,
 }: SearchableDropdownProps<T>) {
-  const [value, setValue] = useState('');
   const [focus, setFocus] = useState(false);
   const [listItems, setListItems] = useState(items || []);
 
   const handleItemSelect = useCallback(
     (item) => {
-      setValue(item);
       Keyboard.dismiss();
       setFocus(false);
       if (onItemSelect) {
@@ -64,28 +63,28 @@ function SearchableDropdown<T>({
 
   const handleInputFocus = useCallback(() => {
     onFocus && onFocus();
-    setValue('');
     setFocus(true);
     setListItems(items);
   }, [onFocus, items]);
 
-  const searchedItems = (searchedText: string) => {
-    setValue(searchedText);
-    const searchValue = searchedText.trim();
-    let sort = setFilter;
-    const ac = items.filter((item: T) => {
-      return sort(item, searchValue);
-    });
-    setListItems(ac);
-    const onTextChange = onChangeText || textInputProps?.onChangeText;
-    if (onTextChange && typeof onTextChange === 'function') {
-      setTimeout(() => {
-        onTextChange(searchedText);
-      }, 0);
-    }
-  };
+  const searchedItems = useCallback(
+    debounce((searchedText: string) => {
+      const searchValue = searchedText.trim();
+      const ac = items.filter((item: T) => {
+        return setFilter(item, searchValue);
+      });
+      setListItems(ac);
+      const onTextChange = onChangeText || textInputProps?.onChangeText;
+      if (onTextChange && typeof onTextChange === 'function') {
+        setTimeout(() => {
+          onTextChange(searchedText);
+        }, 0);
+      }
+    }, 750),
+    [items, onChangeText, setFilter, textInputProps],
+  );
 
-  const renderFlatList = () => {
+  const renderFlatList = useCallback(() => {
     if (focus) {
       return (
         <View
@@ -153,9 +152,17 @@ function SearchableDropdown<T>({
         </View>
       );
     }
-  };
+  }, [
+    emptyStateText,
+    focus,
+    handleItemSelect,
+    listItems,
+    noResultsAction,
+    noResultsActionButtonText,
+    renderItem,
+  ]);
 
-  const renderTextInput = () => {
+  const renderTextInput = useCallback(() => {
     return (
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
@@ -167,7 +174,6 @@ function SearchableDropdown<T>({
             color={colors['gray-200']}
           />
           <TextInput
-            value={value}
             onFocus={handleInputFocus}
             onChangeText={searchedItems}
             placeholderTextColor={colors['gray-50']}
@@ -177,7 +183,7 @@ function SearchableDropdown<T>({
         </View>
       </View>
     );
-  };
+  }, [handleInputFocus, searchedItems, textInputProps]);
 
   return (
     <View>
