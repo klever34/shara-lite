@@ -6,7 +6,11 @@ import {
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {
+  amountWithCurrency,
+  applyStyles,
+  numberWithCommas,
+} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {ReceiptItemModalContent} from '@/screens/receipt';
 import {getAnalyticsService} from '@/services';
@@ -121,7 +125,9 @@ export const ItemsTab = withModal(({openModal}: Props) => {
                   alignItems: 'flex-end',
                 },
               )}>
-              <Text style={summaryTableItemStyles.text}>{item.quantity}</Text>
+              <Text style={summaryTableItemStyles.text}>
+                {numberWithCommas(item.quantity)}
+              </Text>
             </View>
           </View>
         </Touchable>

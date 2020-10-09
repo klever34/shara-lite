@@ -83,20 +83,22 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
 
   const handleDateFilter = useCallback(
     (date?: Date) => {
-      handleFilterChange('date', date);
-      const filtered = allReceipts
-        .filter((receipt) => !receipt.is_cancelled)
-        .filter((receipt) => {
-          if (date && receipt.created_at) {
-            return isEqual(
-              new Date(format(receipt.created_at, 'MMM dd, yyyy')),
-              new Date(format(date, 'MMM dd, yyyy')),
-            );
-          }
-        });
+      if (date) {
+        handleFilterChange('date', date);
+        const filtered = allReceipts
+          .filter((receipt) => !receipt.is_cancelled)
+          .filter((receipt) => {
+            if (date && receipt.created_at) {
+              return isEqual(
+                new Date(format(receipt.created_at, 'MMM dd, yyyy')),
+                new Date(format(date, 'MMM dd, yyyy')),
+              );
+            }
+          });
 
-      setProducts(getFilteredProducts(filtered));
-      setTotalItems(getReceiptsTotalProductQuantity(filtered));
+        setProducts(getFilteredProducts(filtered));
+        setTotalItems(getReceiptsTotalProductQuantity(filtered));
+      }
     },
     [allReceipts, getFilteredProducts, handleFilterChange],
   );

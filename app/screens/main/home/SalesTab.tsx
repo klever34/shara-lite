@@ -202,22 +202,24 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
 
   const handleDateFilter = useCallback(
     (date?: Date) => {
-      if (filter.status) {
-        handleStatusFilter(filter.status, date);
-        return;
-      }
-      handleFilterChange('date', date);
-      const filtered = allReceipts.filter((receipt) => {
-        if (date && receipt.created_at) {
-          return isEqual(
-            new Date(format(receipt.created_at, 'MMM dd, yyyy')),
-            new Date(format(date, 'MMM dd, yyyy')),
-          );
+      if (date) {
+        if (filter.status) {
+          handleStatusFilter(filter.status, date);
+          return;
         }
-      });
+        handleFilterChange('date', date);
+        const filtered = allReceipts.filter((receipt) => {
+          if (date && receipt.created_at) {
+            return isEqual(
+              new Date(format(receipt.created_at, 'MMM dd, yyyy')),
+              new Date(format(date, 'MMM dd, yyyy')),
+            );
+          }
+        });
 
-      setReceipts(filtered);
-      setTotalAmount(getReceiptsTotalAmount(filtered));
+        setReceipts(filtered);
+        setTotalAmount(getReceiptsTotalAmount(filtered));
+      }
     },
     [filter.status, allReceipts, handleFilterChange, handleStatusFilter],
   );
