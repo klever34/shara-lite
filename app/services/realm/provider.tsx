@@ -20,6 +20,7 @@ type RealmObject = {
   }) => void;
   logoutFromRealm?: () => void;
   setIsRealmSyncLoaderInitiated?: (isLoaded: Boolean) => void;
+  setIsSyncCompleted?: (isLoaded: Boolean) => void;
 };
 
 export const RealmContext = createContext<RealmObject>({});
@@ -44,6 +45,7 @@ const RealmProvider = (props: any) => {
     partitionValue: string;
   }) => {
     setRealmUser(user);
+    setIsSyncCompleted(false);
 
     const syncStart = Date.now();
 
@@ -70,7 +72,7 @@ const RealmProvider = (props: any) => {
   const logoutFromRealm = () => {
     setIsRealmSyncLoaderInitiated(false);
     setRealm(undefined);
-    setIsSyncCompleted(false);
+    setIsSyncCompleted(true);
 
     if (localRealm.current) {
       localRealm.current?.removeAllListeners();
@@ -101,6 +103,7 @@ const RealmProvider = (props: any) => {
         updateLocalRealm,
         updateSyncRealm,
         setIsRealmSyncLoaderInitiated,
+        setIsSyncCompleted,
       }}>
       {props.children}
     </RealmContext.Provider>
