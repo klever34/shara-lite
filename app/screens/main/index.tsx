@@ -13,7 +13,7 @@ import {colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
@@ -29,6 +29,8 @@ import HomeScreen from './HomeScreen';
 import {ManageItems} from './items';
 import {ReportsScreen} from './reports';
 import {BusinessSettings, UserProfileSettings} from './settings';
+import {RealmContext} from '@/services/realm/provider';
+import EmptyState from '@/components/EmptyState';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -57,6 +59,7 @@ const MainScreens = () => {
   const handleError = useErrorHandler();
   const realm = useRealm();
   const user = getAuthService().getUser();
+  const {isSyncCompleted} = useContext(RealmContext);
 
   useRealmSyncLoader();
   useCreditReminder();
@@ -87,6 +90,21 @@ const MainScreens = () => {
       <View style={applyStyles('flex-1 center')}>
         <ActivityIndicator color={colors.primary} size={40} />
       </View>
+    );
+  }
+
+  if (!isSyncCompleted) {
+    return (
+      <EmptyState
+        heading={'Sync in progress'}
+        text={
+          'We are syncing your data across the Shara app. This might take a few seconds.'
+        }
+        source={require('../../assets/images/coming-soon.png')}>
+        <View style={applyStyles('mt-lg')}>
+          <ActivityIndicator color={colors.primary} size={40} />
+        </View>
+      </EmptyState>
     );
   }
 
