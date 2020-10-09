@@ -185,7 +185,8 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
                   fontSize: 10,
                   color: colors['gray-100'],
                 })}>
-                {item.quantitySold} sold today
+                {item.quantitySold}{' '}
+                {isToday(filter.date) ? 'sold today' : 'sold'}
               </Text>
             </View>
             {item &&

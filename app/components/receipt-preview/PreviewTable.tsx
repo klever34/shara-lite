@@ -80,7 +80,7 @@ export const SummaryTableHeader = () => {
           summaryTableStyles.column,
           summaryTableStyles['column-30'],
         )}>
-        <Text style={summaryTableHeaderStyles.text}>Product</Text>
+        <Text style={summaryTableHeaderStyles.text}>Item</Text>
       </View>
       <View
         style={applyStyles(
