@@ -18,7 +18,7 @@ import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useRealm} from '@/services/realm';
@@ -51,6 +51,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const realm = useRealm();
   const handleError = useErrorHandler();
   const myCustomers = getCustomers({realm});
+  const currency = getAuthService().getUserCurrency();
 
   const [note, setNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -422,10 +423,10 @@ export const CreateReceipt = withModal((props: Props) => {
                       width: 200,
                       borderWidth: 1,
                       paddingTop: 14,
-                      paddingLeft: 20,
                       fontFamily: 'Rubik-Regular',
                       borderColor: colors['gray-50'],
                       borderBottomColor: colors['gray-50'],
+                      paddingLeft: currency.length > 1 ? 40 : 20,
                     })}
                     iconStyle={applyStyles('px-xs')}
                     placeholder="How much was paid?"

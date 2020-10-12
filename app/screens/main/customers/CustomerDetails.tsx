@@ -106,12 +106,11 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   );
 
   const handleOpenModal = useCallback(() => {
-    const closeModal = openModal('bottom-half', {
-      swipeDirection: [],
+    const closeModal = openModal('full', {
       renderContent: () => (
         <CreateReceipt
-          closeModal={closeModal}
           initialCustomer={customer}
+          closeReceiptModal={closeModal}
           onSnapReceipt={handleSnapReceipt}
         />
       ),

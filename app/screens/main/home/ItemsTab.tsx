@@ -149,11 +149,10 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   }, [handleSnapReceipt, realm]);
 
   const handleOpenCreateReciptModal = useCallback(() => {
-    const closeModal = openModal('bottom-half', {
-      swipeDirection: [],
+    const closeModal = openModal('full', {
       renderContent: () => (
         <CreateReceipt
-          closeModal={closeModal}
+          closeReceiptModal={closeModal}
           onSnapReceipt={handleSnapReceipt}
         />
       ),
