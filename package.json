@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.53-bugfix.recceipt-scrolling+build.3512",
+  "version": "0.2.53-bugfix.recceipt-scrolling+build.3522",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
