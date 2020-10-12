@@ -239,10 +239,10 @@ export const CreateReceipt = withModal((props: Props) => {
 
       const createdReceipt = saveReceipt(receiptToCreate);
       handleClearReceipt();
-      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       setIsSaving(false);
+      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       handleOpenReceiptPreviewModal(createdReceipt);
-    }, 500);
+    }, 300);
   }, [
     realm,
     dueDate,
