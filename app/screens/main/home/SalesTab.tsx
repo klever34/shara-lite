@@ -270,7 +270,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     const closeModal = openModal('full', {
       renderContent: () => (
         <CreateReceipt
-          closeModal={closeModal}
+          closeReceiptModal={closeModal}
           onSnapReceipt={handleSnapReceipt}
         />
       ),

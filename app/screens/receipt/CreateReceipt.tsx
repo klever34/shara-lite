@@ -34,7 +34,7 @@ import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 
 type Props = {
   receipt?: IReceipt;
-  closeModal: () => void;
+  closeReceiptModal: () => void;
   initialCustomer?: ICustomer;
   onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
@@ -43,7 +43,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const {
     receipt,
     openModal,
-    closeModal,
+    closeReceiptModal,
     onSnapReceipt,
     initialCustomer,
   } = props;
@@ -204,13 +204,13 @@ export const CreateReceipt = withModal((props: Props) => {
             receiptId={item._id}
             closeModal={() => {
               closeReceiptPreviewModal();
-              closeModal();
+              closeReceiptModal();
             }}
           />
         ),
       });
     },
-    [openModal, closeModal],
+    [openModal, closeReceiptModal],
   );
 
   const handleSnapReceipt = useCallback(() => {
