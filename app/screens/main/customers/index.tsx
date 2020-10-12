@@ -218,7 +218,7 @@ export const CustomersScreen = withModal(
               {
                 icon: 'search',
                 onPress: () => {
-                  const closeModal = openModal('search', {
+                  const closeSearchModal = openModal('search', {
                     items: [
                       ...((myCustomers as unknown) as CustomerListItem[]),
                       ...phoneContacts,
@@ -228,7 +228,7 @@ export const CustomersScreen = withModal(
                         item: item as CustomerListItem,
                         onPress: () => {
                           onPress('');
-                          closeModal();
+                          closeSearchModal();
                         },
                       });
                     },
