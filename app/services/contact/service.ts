@@ -9,6 +9,7 @@ import omit from 'lodash/omit';
 import {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {User} from 'types/app';
+import {uniqBy} from 'lodash';
 
 export type PhoneContact = Omit<RNContacts.Contact, 'phoneNumbers'> & {
   phoneNumber: RNContacts.PhoneNumber;
@@ -88,19 +89,10 @@ export class ContactService implements IContactService {
           if (err) {
             reject(err);
           }
-          const nextPhoneContacts: PhoneContact[] = [];
+          let nextPhoneContacts: PhoneContact[] = [];
           phoneContacts.forEach(({phoneNumbers, ...phoneContact}) => {
-            const numbersMap: {
-              [key: string]: RNContacts.PhoneNumber;
-            } = phoneNumbers.reduce((acc, curr) => {
-              const numberWithoutWhitespace = curr.number.replace(/\s/g, '');
-              return {
-                ...acc,
-                [numberWithoutWhitespace]: curr,
-              };
-            }, {});
-            const uniquePhoneNumbers = Object.keys(numbersMap).map(
-              (number) => numbersMap[number],
+            const uniquePhoneNumbers = uniqBy(phoneNumbers, (item) =>
+              item.number.replace(/\D/g, ''),
             );
             nextPhoneContacts.push(
               ...uniquePhoneNumbers.map((phoneNumber) => ({
@@ -109,6 +101,9 @@ export class ContactService implements IContactService {
               })),
             );
           });
+          nextPhoneContacts = uniqBy(nextPhoneContacts, (item) =>
+            item.phoneNumber.number.replace(/\D/g, ''),
+          );
           resolve(nextPhoneContacts);
         });
       });
