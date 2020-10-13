@@ -38,8 +38,8 @@ export const updateProduct = ({
 }) => {
   const updatedProduct = {
     _id: product._id,
-    updated_at: new Date(),
     ...updates,
+    updated_at: new Date(),
   };
 
   const updateProductInDb = () => {

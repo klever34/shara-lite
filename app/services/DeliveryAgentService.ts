@@ -80,8 +80,8 @@ export const updateDeliveryAgent = ({
 }) => {
   const updatedDeliveryAgent = {
     _id: deliveryAgent._id,
-    updated_at: new Date(),
     ...updates,
+    updated_at: new Date(),
   };
 
   const updateDeliveryAgentInDb = () => {
