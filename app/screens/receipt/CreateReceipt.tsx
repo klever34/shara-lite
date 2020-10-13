@@ -73,6 +73,10 @@ export const CreateReceipt = withModal((props: Props) => {
   const creditAmount = totalAmount - amountPaid;
 
   useEffect(() => {
+    getAnalyticsService().logEvent('receiptStart').catch(handleError);
+  }, [handleError, receipt]);
+
+  useEffect(() => {
     if (initialCustomer) {
       setCustomer(initialCustomer);
     }

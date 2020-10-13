@@ -186,7 +186,6 @@ export const CustomersScreen = withModal(
                 <Touchable
                   onPress={() => {
                     closeModal();
-                    getAnalyticsService().logEvent('customerAdded');
                     handleCreateCustomer(customer);
                   }}>
                   <View
