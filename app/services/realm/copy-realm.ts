@@ -22,15 +22,20 @@ export const copyRealm = ({
   sourceRealm,
   targetRealm,
   partitionValue,
+  syncDate,
 }: {
   sourceRealm: Realm;
   targetRealm: Realm;
   partitionValue: string;
+  syncDate: Date;
 }) => {
+  console.log(syncDate);
   const sourceRealmSchema = sourceRealm.schema;
   targetRealm.write(() => {
     sourceRealmSchema.forEach((objSchema) => {
       const allObjects = sourceRealm.objects(objSchema.name);
+      // .filtered('updated_at >= $0', syncDate);
+      // console.log('******* All object length', allObjects.length);
 
       allObjects.forEach((obj: any) => {
         if (obj._partition && obj._partition === partitionValue) {

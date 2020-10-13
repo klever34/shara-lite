@@ -57,6 +57,7 @@ const RealmProvider = (props: any) => {
 
     const syncEnd = Date.now();
     const syncDuration = syncEnd - syncStart;
+    console.log('*******', syncDuration / 1000);
 
     setTimeout(() => {
       setIsSyncCompleted(true);
@@ -123,10 +124,24 @@ const syncLocalData = ({
     return;
   }
 
+  const syncDate = new Date(
+    'Tue Oct 11 2020 09:26:43 GMT+0100 (West Africa Standard Time)',
+  );
+
   normalizeDb({partitionKey: partitionValue, realm: localRealm});
 
-  copyRealm({sourceRealm: localRealm, targetRealm: syncRealm, partitionValue});
-  copyRealm({sourceRealm: syncRealm, targetRealm: localRealm, partitionValue});
+  copyRealm({
+    sourceRealm: localRealm,
+    targetRealm: syncRealm,
+    partitionValue,
+    syncDate,
+  });
+  copyRealm({
+    sourceRealm: syncRealm,
+    targetRealm: localRealm,
+    partitionValue,
+    syncDate,
+  });
   syncRealmDbs({
     sourceRealm: localRealm,
     targetRealm: syncRealm,
