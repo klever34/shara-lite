@@ -226,7 +226,6 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
           data={products}
           persistentScrollbar
           initialNumToRender={10}
-          stickyHeaderIndices={[0]}
           keyboardShouldPersistTaps="always"
           renderItem={type === 'receipt' ? renderProductItem : undefined}
           keyExtractor={(item) => `${item._id}`}
