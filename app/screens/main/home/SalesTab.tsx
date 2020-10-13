@@ -228,7 +228,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     (id: IReceipt['_id']) => {
       getAnalyticsService()
         .logEvent('selectContent', {
-          content_type: 'receipt',
+          content_type: 'Receipt',
           item_id: id?.toString() ?? '',
         })
         .catch(handleError);

@@ -150,7 +150,7 @@ export const CustomersScreen = withModal(
                     onPress?.();
                     getAnalyticsService().logEvent('selectContent', {
                       item_id: String(customer._id),
-                      content_type: 'customer',
+                      content_type: 'Customer',
                     });
                     handleSelectCustomer(customer);
                   }

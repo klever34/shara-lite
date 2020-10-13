@@ -177,7 +177,15 @@ export function ContactsListModal<T>({
       return (
         <Touchable
           onPress={
-            '_id' in customer ? () => handleSelectCustomer(customer) : undefined
+            '_id' in customer
+              ? () => {
+                  getAnalyticsService().logEvent('selectContent', {
+                    item_id: String(customer._id),
+                    content_type: 'Customer',
+                  });
+                  return handleSelectCustomer(customer);
+                }
+              : undefined
           }>
           <View
             style={applyStyles(

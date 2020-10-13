@@ -178,6 +178,12 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenEditReceiptItemModal = useCallback(
     (item: IReceiptItem) => {
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: String(item._id),
+          content_type: 'ReceiptItem',
+        })
+        .catch(handleError);
       const closeReceiptItemModal = openModal('full', {
         renderContent: () => (
           <ReceiptItemModalContent
@@ -193,7 +199,7 @@ export const CreateReceipt = withModal((props: Props) => {
         ),
       });
     },
-    [openModal, handleUpdateReceiptItem, handleRemoveReceiptItem],
+    [handleError, openModal, handleUpdateReceiptItem, handleRemoveReceiptItem],
   );
 
   const handleOpenReceiptPreviewModal = useCallback(
@@ -259,10 +265,18 @@ export const CreateReceipt = withModal((props: Props) => {
     ({item}: SummaryTableItemProps) => (
       <SummaryTableItem
         item={item}
-        onPress={() => handleOpenEditReceiptItemModal(item)}
+        onPress={() => {
+          getAnalyticsService()
+            .logEvent('selectContent', {
+              item_id: String(item._id),
+              content_type: 'ReceiptItem',
+            })
+            .catch(handleError);
+          return handleOpenEditReceiptItemModal(item);
+        }}
       />
     ),
-    [handleOpenEditReceiptItemModal],
+    [handleError, handleOpenEditReceiptItemModal],
   );
 
   useEffect(() => {

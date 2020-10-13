@@ -172,10 +172,19 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
     [handleSearch, type],
   );
 
-  const handleProductSelect = useCallback((selectedProduct: IProduct) => {
-    setName(selectedProduct.name);
-    setProduct(selectedProduct);
-  }, []);
+  const handleProductSelect = useCallback(
+    (selectedProduct: IProduct) => {
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: String(selectedProduct._id),
+          content_type: 'Product',
+        })
+        .catch(handleError);
+      setName(selectedProduct.name);
+      setProduct(selectedProduct);
+    },
+    [handleError],
+  );
 
   const handleNextClick = useCallback(() => {
     setProductIsNew(false);
