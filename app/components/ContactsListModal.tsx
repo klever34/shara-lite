@@ -1,14 +1,15 @@
 import {applyStyles} from '@/helpers/utils';
 import BottomHalfModal from '@/modals/BottomHalfModal';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
-import {useContacts} from '@/services/contact/provider';
+import {getAnalyticsService, getContactService} from '@/services';
+import {useAsync} from '@/services/api';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
-import React, {memo, useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
+  ActivityIndicator,
   ListRenderItemInfo,
   SectionList,
   SectionListProps,
@@ -84,6 +85,8 @@ const ContactListItem = memo(
   ),
 );
 
+const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
+
 export function ContactsListModal<T>({
   visible,
   onClose,
@@ -92,16 +95,13 @@ export function ContactsListModal<T>({
   onContactSelect,
 }: Props<T>) {
   const realm = useRealm() as Realm;
-  const {contacts} = useContacts();
   const myCustomers = getCustomers({realm});
   const analyticsService = getAnalyticsService();
 
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>(
-    contacts || [],
-  );
+  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
 
-  const sections: SectionListProps<any>['sections'] = useMemo(
+  const sectionData = useMemo(
     () => [
       {
         data: myCustomers.length
@@ -120,8 +120,16 @@ export function ContactsListModal<T>({
     ],
     [myCustomers, phoneContacts],
   );
+  const [sections, setSections] = useState<SectionListProps<any>['sections']>(
+    sectionData,
+  );
 
-  const [list, setList] = useState(sections);
+  const {run: runGetPhoneContacts, loading} = useAsync(
+    getPhoneContactsPromiseFn,
+    {
+      defer: true,
+    },
+  );
 
   const keyExtractor = useCallback((item) => {
     if (!item) {
@@ -193,19 +201,19 @@ export function ContactsListModal<T>({
             (mobile && mobile.replace(/[\s-]+/g, '').indexOf(text) > -1)
           );
         };
-        const listToSearch = list
+        const listToSearch = sectionData
           .map((item) => item.data)
           .reduce((acc, arr) => [...acc, ...arr], []);
         const results = listToSearch.filter((item) => {
           return sort(item, searchValue);
         });
 
-        setList([{data: results}]);
+        setSections([{data: results}]);
       } else {
-        setList(sections);
+        setSections(sectionData);
       }
     },
-    [list, sections],
+    [sectionData],
   );
 
   const renderCustomerListItem = useCallback(
@@ -230,21 +238,72 @@ export function ContactsListModal<T>({
     [handleContactSelect, handleSelectCustomer],
   );
 
-  const renderCustomerListSectionHeader = useCallback(({section: {title}}) => {
-    if (!title) {
-      return null;
-    }
-    return <Text style={styles.customerListHeader}>{title}</Text>;
+  const renderCustomerListSectionHeader = useCallback(
+    ({section: {title}}) => {
+      if (!title) {
+        return null;
+      }
+      if (loading) {
+        return (
+          <View style={styles.customerListHeader}>
+            <ActivityIndicator size={24} color={colors.primary} />
+          </View>
+        );
+      }
+      return <Text style={styles.customerListHeader}>{title}</Text>;
+    },
+    [loading],
+  );
+
+  useEffect(() => {
+    const customers = getCustomers({realm});
+    runGetPhoneContacts().then((contacts) => {
+      const data = contacts.reduce<CustomerListItem[]>(
+        (acc, {givenName, familyName, phoneNumber}) => {
+          const existing = customers.filtered(
+            `mobile = "${phoneNumber.number}"`,
+          );
+          if (existing.length) {
+            return acc;
+          }
+          return [
+            ...acc,
+            {
+              name: `${givenName} ${familyName}`,
+              mobile: phoneNumber.number,
+            },
+          ];
+        },
+        [],
+      );
+      setPhoneContacts(data);
+      setSections([
+        {
+          data: myCustomers.length
+            ? orderBy(myCustomers, ['name'] as (keyof ICustomer)[], [
+                'desc',
+                'asc',
+              ])
+            : [],
+        },
+        {
+          title: 'Add from your phonebook',
+          data: orderBy(data, ['name'] as (keyof CustomerListItem)[], ['asc']),
+        },
+      ]);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <BottomHalfModal
       visible={visible}
+      swipeDirection={[]}
       closeModal={handleClose}
       renderContent={({closeModal}) => (
         <View>
           <SectionList
-            sections={list}
+            sections={sections}
             persistentScrollbar
             initialNumToRender={10}
             keyExtractor={keyExtractor}
