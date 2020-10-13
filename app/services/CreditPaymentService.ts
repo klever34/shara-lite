@@ -129,6 +129,7 @@ export const updateCreditPayment = ({
 }) => {
   const updatedCreditPayment = {
     _id: creditPayment._id,
+    updated_at: new Date(),
     ...updates,
   };
 

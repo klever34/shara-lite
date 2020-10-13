@@ -64,6 +64,7 @@ export const updatePayment = ({
 }) => {
   const updatedPayment = {
     _id: payment._id,
+    updated_at: new Date(),
     ...updates,
   };
 

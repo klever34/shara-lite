@@ -39,6 +39,7 @@ export const updateReceiptItem = ({
 }) => {
   const updatedReceiptItem = {
     _id: receiptItem._id,
+    updated_at: new Date(),
     ...updates,
   };
 

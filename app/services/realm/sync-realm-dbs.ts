@@ -45,6 +45,7 @@ export const syncRealmDbs = ({
             targetRealm,
             modelName,
           });
+          console.log(updateRealmObject, modifiedRecord.updated_at);
 
           if (
             modifiedRecord._partition &&
