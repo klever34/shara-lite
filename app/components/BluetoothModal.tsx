@@ -10,6 +10,7 @@ import {
   ToastAndroid,
   View,
   ScrollView,
+  ListRenderItemInfo,
 } from 'react-native';
 // @ts-ignore
 import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
@@ -19,11 +20,10 @@ import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
-import {getStorageService} from '../services';
+import {getAnalyticsService, getStorageService} from '../services';
 
 type BluetoothDevice = {address: string; name?: string};
-type BluetoothDeviceItem = {item: BluetoothDevice};
-type Props = {
+type BluetoothModalProps = {
   print?: boolean;
   error?: boolean;
   visible?: boolean;
@@ -32,7 +32,11 @@ type Props = {
   onPrintReceipt?: (address?: string) => void;
 };
 
-export const BluetoothModal = ({onClose, visible, onPrintReceipt}: Props) => {
+export const BluetoothModal = ({
+  onClose,
+  visible,
+  onPrintReceipt,
+}: BluetoothModalProps) => {
   const [section, setSection] = useState(0);
   const [isScanning, setIsScanning] = useState(false);
   const [foundDevices, setFoundDevices] = useState<BluetoothDevice[]>([]);
@@ -114,7 +118,11 @@ export const BluetoothModal = ({onClose, visible, onPrintReceipt}: Props) => {
   }, [handleBluetoothScan, handlePrintReceipt, storageService]);
 
   const handleConnect = useCallback(
-    (rowData) => {
+    (rowData: BluetoothDevice) => {
+      getAnalyticsService().logEvent('selectContent', {
+        item_id: String(rowData.name),
+        content_type: 'BluetoothDevice',
+      });
       BluetoothManager.connect(rowData.address).then(
         async () => {
           await storageService.setItem('printer', {
@@ -196,7 +204,7 @@ export const BluetoothModal = ({onClose, visible, onPrintReceipt}: Props) => {
   );
 
   const renderBluetoothDevice = useCallback(
-    ({item: device}: BluetoothDeviceItem) => {
+    ({item: device}: ListRenderItemInfo<BluetoothDevice>) => {
       return (
         <Touchable onPress={() => handleConnect(device)}>
           <View
