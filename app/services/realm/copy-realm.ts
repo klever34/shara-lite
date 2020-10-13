@@ -1,5 +1,8 @@
 import Realm from 'realm';
-import {getRealmObjectCopy} from '@/services/realm/utils';
+import {
+  getRealmObjectCopy,
+  shouldUpdateRealmObject,
+} from '@/services/realm/utils';
 
 const copyObject = ({
   obj,
@@ -11,6 +14,16 @@ const copyObject = ({
   targetRealm: Realm;
 }) => {
   const copy = getRealmObjectCopy({obj, objSchema});
+  const updateRealmObject = shouldUpdateRealmObject({
+    sourceObject: obj,
+    targetRealm,
+    modelName: objSchema.name,
+  });
+
+  if (!updateRealmObject) {
+    return;
+  }
+
   try {
     targetRealm.create(objSchema.name, copy, Realm.UpdateMode.Modified);
   } catch (e) {

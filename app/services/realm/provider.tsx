@@ -61,7 +61,7 @@ const RealmProvider = (props: any) => {
 
     setTimeout(() => {
       setIsSyncCompleted(true);
-    }, syncDuration + 2000);
+    }, 2000);
     syncRealm.current = newRealm;
   };
 
