@@ -9,6 +9,7 @@ import {saveDeliveryAgent} from './DeliveryAgentService';
 import {addNewStockItem} from './StockItemService';
 import {getGeolocationService} from '@/services';
 import {convertToLocationString} from '@/services/geolocation';
+import {getAnalyticsService} from '@/services';
 
 export const getReceivedInventories = ({
   realm,
@@ -104,4 +105,5 @@ export const addNewInventory = ({
 
     addNewStockItem({realm, stockItem: newStockItem});
   });
+  getAnalyticsService().logEvent('inventoryReceived').catch();
 };

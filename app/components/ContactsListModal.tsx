@@ -51,7 +51,17 @@ const ContactListItem = memo(
     onContactSelect: (item: CustomerListItem) => void;
   }) => (
     <Touchable
-      onPress={'_id' in customer ? () => onItemSelect(customer) : undefined}>
+      onPress={
+        '_id' in customer
+          ? () => {
+              getAnalyticsService().logEvent('selectContent', {
+                item_id: String(customer._id),
+                content_type: 'Customer',
+              });
+              return onItemSelect(customer);
+            }
+          : undefined
+      }>
       <View
         style={applyStyles(
           'flex-row items-center border-b-1 border-gray-20 p-16',
