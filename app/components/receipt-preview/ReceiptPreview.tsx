@@ -467,10 +467,6 @@ export const ReceiptPreview = withModal(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isPrintingModalOpen]);
 
-    useEffect(() => {
-      setCustomer(receipt?.customer);
-    }, [receipt]);
-
     return (
       <View
         style={applyStyles('flex-1', {
