@@ -106,12 +106,11 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   );
 
   const handleOpenModal = useCallback(() => {
-    const closeModal = openModal('bottom-half', {
-      swipeDirection: [],
+    const closeModal = openModal('full', {
       renderContent: () => (
         <CreateReceipt
-          closeModal={closeModal}
           initialCustomer={customer}
+          closeReceiptModal={closeModal}
           onSnapReceipt={handleSnapReceipt}
         />
       ),
@@ -124,7 +123,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     (id: IReceipt['_id']) => {
       getAnalyticsService()
         .logEvent('selectContent', {
-          content_type: 'receipt',
+          content_type: 'Receipt',
           item_id: id?.toString() ?? '',
         })
         .catch(handleError);
@@ -153,7 +152,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                         handleListItemSelect={handleListItemSelect}
                         getReceiptItemLeftText={getReceiptItemLeftText}
                         onPress={() => {
-                          onPress('');
+                          onPress(item);
                           closeModal();
                         }}
                       />

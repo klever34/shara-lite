@@ -1,14 +1,15 @@
 import {applyStyles} from '@/helpers/utils';
 import BottomHalfModal from '@/modals/BottomHalfModal';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
-import {useContacts} from '@/services/contact/provider';
+import {getAnalyticsService, getContactService} from '@/services';
+import {useAsync} from '@/services/api';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
+  ActivityIndicator,
   ListRenderItemInfo,
   SectionList,
   SectionListProps,
@@ -39,6 +40,63 @@ type CustomerListItem =
       mobile?: string;
     };
 
+const ContactListItem = memo(
+  ({
+    customer,
+    onItemSelect,
+    onContactSelect,
+  }: {
+    customer: CustomerListItem;
+    onItemSelect: (item: CustomerListItem) => void;
+    onContactSelect: (item: CustomerListItem) => void;
+  }) => (
+    <Touchable
+      onPress={
+        '_id' in customer
+          ? () => {
+              getAnalyticsService().logEvent('selectContent', {
+                item_id: String(customer._id),
+                content_type: 'Customer',
+              });
+              return onItemSelect(customer);
+            }
+          : undefined
+      }>
+      <View
+        style={applyStyles(
+          'flex-row items-center border-b-1 border-gray-20 p-16',
+        )}>
+        <View style={applyStyles('flex-1')}>
+          <Text style={applyStyles('text-sm text-700 text-gray-300')}>
+            {customer.name}
+          </Text>
+          <Text style={applyStyles('text-sm text-400 text-gray-300')}>
+            {customer.mobile}
+          </Text>
+        </View>
+        {'_id' in customer ? null : (
+          <Touchable onPress={() => onContactSelect(customer)}>
+            <View
+              style={applyStyles(
+                'flex-row items-center bg-red-200 rounded-4 py-4 px-8',
+              )}>
+              <Icon
+                type="feathericons"
+                name="plus"
+                style={applyStyles('text-white mr-4')}
+                size={14}
+              />
+              <Text style={applyStyles('text-white text-400')}>Add</Text>
+            </View>
+          </Touchable>
+        )}
+      </View>
+    </Touchable>
+  ),
+);
+
+const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
+
 export function ContactsListModal<T>({
   visible,
   onClose,
@@ -47,16 +105,13 @@ export function ContactsListModal<T>({
   onContactSelect,
 }: Props<T>) {
   const realm = useRealm() as Realm;
-  const {contacts} = useContacts();
   const myCustomers = getCustomers({realm});
   const analyticsService = getAnalyticsService();
 
   const [searchInputValue, setSearchInputValue] = useState('');
-  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>(
-    contacts || [],
-  );
+  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
 
-  const sections: SectionListProps<any>['sections'] = useMemo(
+  const sectionData = useMemo(
     () => [
       {
         data: myCustomers.length
@@ -75,8 +130,16 @@ export function ContactsListModal<T>({
     ],
     [myCustomers, phoneContacts],
   );
+  const [sections, setSections] = useState<SectionListProps<any>['sections']>(
+    sectionData,
+  );
 
-  const [list, setList] = useState(sections);
+  const {run: runGetPhoneContacts, loading} = useAsync(
+    getPhoneContactsPromiseFn,
+    {
+      defer: true,
+    },
+  );
 
   const keyExtractor = useCallback((item) => {
     if (!item) {
@@ -148,19 +211,19 @@ export function ContactsListModal<T>({
             (mobile && mobile.replace(/[\s-]+/g, '').indexOf(text) > -1)
           );
         };
-        const listToSearch = list
+        const listToSearch = sectionData
           .map((item) => item.data)
           .reduce((acc, arr) => [...acc, ...arr], []);
         const results = listToSearch.filter((item) => {
           return sort(item, searchValue);
         });
 
-        setList([{data: results}]);
+        setSections([{data: results}]);
       } else {
-        setList(sections);
+        setSections(sectionData);
       }
     },
-    [list, sections],
+    [sectionData],
   );
 
   const renderCustomerListItem = useCallback(
@@ -175,60 +238,82 @@ export function ContactsListModal<T>({
         );
       }
       return (
-        <Touchable
-          onPress={
-            '_id' in customer ? () => handleSelectCustomer(customer) : undefined
-          }>
-          <View
-            style={applyStyles(
-              'flex-row items-center border-b-1 border-gray-20 p-16',
-            )}>
-            <View style={applyStyles('flex-1')}>
-              <Text style={applyStyles('text-sm text-700 text-gray-300')}>
-                {customer.name}
-              </Text>
-              <Text style={applyStyles('text-sm text-400 text-gray-300')}>
-                {customer.mobile}
-              </Text>
-            </View>
-            {'_id' in customer ? null : (
-              <Touchable onPress={() => handleContactSelect(customer)}>
-                <View
-                  style={applyStyles(
-                    'flex-row items-center bg-red-200 rounded-4 py-4 px-8',
-                  )}>
-                  <Icon
-                    type="feathericons"
-                    name="plus"
-                    style={applyStyles('text-white mr-4')}
-                    size={14}
-                  />
-                  <Text style={applyStyles('text-white text-400')}>Add</Text>
-                </View>
-              </Touchable>
-            )}
-          </View>
-        </Touchable>
+        <ContactListItem
+          customer={customer}
+          onItemSelect={handleSelectCustomer}
+          onContactSelect={handleContactSelect}
+        />
       );
     },
     [handleContactSelect, handleSelectCustomer],
   );
 
-  const renderCustomerListSectionHeader = useCallback(({section: {title}}) => {
-    if (!title) {
-      return null;
-    }
-    return <Text style={styles.customerListHeader}>{title}</Text>;
+  const renderCustomerListSectionHeader = useCallback(
+    ({section: {title}}) => {
+      if (!title) {
+        return null;
+      }
+      if (loading) {
+        return (
+          <View style={styles.customerListHeader}>
+            <ActivityIndicator size={24} color={colors.primary} />
+          </View>
+        );
+      }
+      return <Text style={styles.customerListHeader}>{title}</Text>;
+    },
+    [loading],
+  );
+
+  useEffect(() => {
+    const customers = getCustomers({realm});
+    runGetPhoneContacts().then((contacts) => {
+      const data = contacts.reduce<CustomerListItem[]>(
+        (acc, {givenName, familyName, phoneNumber}) => {
+          const existing = customers.filtered(
+            `mobile = "${phoneNumber.number}"`,
+          );
+          if (existing.length) {
+            return acc;
+          }
+          return [
+            ...acc,
+            {
+              name: `${givenName} ${familyName}`,
+              mobile: phoneNumber.number,
+            },
+          ];
+        },
+        [],
+      );
+      setPhoneContacts(data);
+      setSections([
+        {
+          data: myCustomers.length
+            ? orderBy(myCustomers, ['name'] as (keyof ICustomer)[], [
+                'desc',
+                'asc',
+              ])
+            : [],
+        },
+        {
+          title: 'Add from your phonebook',
+          data: orderBy(data, ['name'] as (keyof CustomerListItem)[], ['asc']),
+        },
+      ]);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <BottomHalfModal
       visible={visible}
+      swipeDirection={[]}
       closeModal={handleClose}
       renderContent={({closeModal}) => (
         <View>
           <SectionList
-            sections={list}
+            sections={sections}
             persistentScrollbar
             initialNumToRender={10}
             keyExtractor={keyExtractor}
@@ -245,7 +330,8 @@ export function ContactsListModal<T>({
                     },
                   )}>
                   <View style={applyStyles({width: '48%'})}>
-                    <Text style={applyStyles('text-700 text-uppercase')}>
+                    <Text
+                      style={applyStyles('text-700 text-xs text-uppercase')}>
                       Select a Customer
                     </Text>
                   </View>
@@ -261,9 +347,12 @@ export function ContactsListModal<T>({
                             color={colors.white}
                           />
                           <Text
-                            style={applyStyles('text-400 text-uppercase ', {
-                              color: colors.white,
-                            })}>
+                            style={applyStyles(
+                              'text-400 text-xs text-uppercase ',
+                              {
+                                color: colors.white,
+                              },
+                            )}>
                             Create {entity}
                           </Text>
                         </View>

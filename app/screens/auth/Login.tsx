@@ -22,10 +22,7 @@ type Fields = {
 const validationSchema = yup.object().shape({
   mobile: yup
     .string()
-    .matches(/^[1-9]/, {
-      message: "Number shouldn't start with 0",
-    })
-    .length(10, 'Number should be 10 digits')
+    .length(5, 'Number should be 5 digits')
     .required('Number is required'),
   password: yup
     .string()

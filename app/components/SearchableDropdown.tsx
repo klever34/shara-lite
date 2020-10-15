@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Keyboard,
@@ -17,6 +17,7 @@ import debounce from 'lodash/debounce';
 export type SearchableDropdownProps<T extends any = any> = {
   items: T[];
   onFocus?: () => void;
+  onBlur?: (query: string) => void;
   emptyStateText?: string;
   noResultsAction?: () => void;
   textInputProps?: TextInputProps;
@@ -37,6 +38,7 @@ function SearchableDropdown<T>({
   items,
   setFilter,
   onFocus,
+  onBlur,
   renderItem,
   onChangeText,
   onItemSelect,
@@ -45,6 +47,7 @@ function SearchableDropdown<T>({
   noResultsAction,
   noResultsActionButtonText,
 }: SearchableDropdownProps<T>) {
+  const queryRef = useRef<string>('');
   const [focus, setFocus] = useState(false);
   const [listItems, setListItems] = useState(items || []);
 
@@ -60,20 +63,27 @@ function SearchableDropdown<T>({
     },
     [onItemSelect],
   );
+  useEffect(() => {
+    if (focus) {
+      onFocus?.();
+    } else {
+      onBlur?.(queryRef.current);
+    }
+  }, [focus, onBlur, onFocus]);
 
   const handleInputFocus = useCallback(() => {
-    onFocus && onFocus();
     setFocus(true);
     setListItems(items);
-  }, [onFocus, items]);
+  }, [items]);
 
-  const searchedItems = useCallback(
+  const handleChangeText = useCallback(
     debounce((searchedText: string) => {
+      queryRef.current = searchedText;
       const searchValue = searchedText.trim().toLowerCase();
-      const ac = items.filter((item: T) => {
+      const results = items.filter((item: T) => {
         return setFilter(item, searchValue);
       });
-      setListItems(ac);
+      setListItems(results);
       const onTextChange = onChangeText || textInputProps?.onChangeText;
       if (onTextChange && typeof onTextChange === 'function') {
         setTimeout(() => {
@@ -175,7 +185,7 @@ function SearchableDropdown<T>({
           />
           <TextInput
             onFocus={handleInputFocus}
-            onChangeText={searchedItems}
+            onChangeText={handleChangeText}
             placeholderTextColor={colors['gray-50']}
             style={applyStyles(styles.searchInput, 'text-400')}
             {...textInputProps}
@@ -183,7 +193,7 @@ function SearchableDropdown<T>({
         </View>
       </View>
     );
-  }, [handleInputFocus, searchedItems, textInputProps]);
+  }, [handleInputFocus, handleChangeText, textInputProps]);
 
   return (
     <View>

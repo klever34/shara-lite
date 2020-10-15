@@ -416,12 +416,18 @@ export const ReceiptPreview = withModal(
     }, [handleOpenPrinterModal, handlePrint, printer]);
 
     const handleReissueReceipt = useCallback(() => {
-      const closeModal = openModal('bottom-half', {
+      const closeModal = openModal('full', {
         renderContent: () => (
-          <CreateReceipt receipt={receipt} closeModal={closeModal} />
+          <CreateReceipt
+            receipt={receipt}
+            closeReceiptModal={() => {
+              closeModal();
+              onClose && onClose();
+            }}
+          />
         ),
       });
-    }, [openModal, receipt]);
+    }, [openModal, onClose, receipt]);
 
     const handleCancelReceipt = useCallback(
       (note) => {
@@ -523,7 +529,7 @@ export const ReceiptPreview = withModal(
               <ReceiptImage
                 user={user}
                 tax={receipt?.tax}
-                captureMode="continuous"
+                captureMode="update"
                 products={receipt?.items}
                 amountPaid={totalAmountPaid}
                 creditDueDate={creditDueDate}

@@ -18,7 +18,7 @@ import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useRealm} from '@/services/realm';
@@ -34,7 +34,7 @@ import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 
 type Props = {
   receipt?: IReceipt;
-  closeModal: () => void;
+  closeReceiptModal: () => void;
   initialCustomer?: ICustomer;
   onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
@@ -43,7 +43,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const {
     receipt,
     openModal,
-    closeModal,
+    closeReceiptModal,
     onSnapReceipt,
     initialCustomer,
   } = props;
@@ -51,6 +51,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const realm = useRealm();
   const handleError = useErrorHandler();
   const myCustomers = getCustomers({realm});
+  const currency = getAuthService().getUserCurrency();
 
   const [note, setNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -71,6 +72,10 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const tax = 0;
   const creditAmount = totalAmount - amountPaid;
+
+  useEffect(() => {
+    getAnalyticsService().logEvent('receiptStart').catch(handleError);
+  }, [handleError, receipt]);
 
   useEffect(() => {
     if (initialCustomer) {
@@ -178,6 +183,12 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenEditReceiptItemModal = useCallback(
     (item: IReceiptItem) => {
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: String(item._id),
+          content_type: 'ReceiptItem',
+        })
+        .catch(handleError);
       const closeReceiptItemModal = openModal('full', {
         renderContent: () => (
           <ReceiptItemModalContent
@@ -193,7 +204,7 @@ export const CreateReceipt = withModal((props: Props) => {
         ),
       });
     },
-    [openModal, handleUpdateReceiptItem, handleRemoveReceiptItem],
+    [handleError, openModal, handleUpdateReceiptItem, handleRemoveReceiptItem],
   );
 
   const handleOpenReceiptPreviewModal = useCallback(
@@ -204,13 +215,13 @@ export const CreateReceipt = withModal((props: Props) => {
             receiptId={item._id}
             closeModal={() => {
               closeReceiptPreviewModal();
-              closeModal();
+              closeReceiptModal();
             }}
           />
         ),
       });
     },
-    [openModal, closeModal],
+    [openModal, closeReceiptModal],
   );
 
   const handleSnapReceipt = useCallback(() => {
@@ -238,10 +249,10 @@ export const CreateReceipt = withModal((props: Props) => {
 
       const createdReceipt = saveReceipt(receiptToCreate);
       handleClearReceipt();
-      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       setIsSaving(false);
+      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       handleOpenReceiptPreviewModal(createdReceipt);
-    }, 500);
+    }, 300);
   }, [
     realm,
     dueDate,
@@ -259,10 +270,18 @@ export const CreateReceipt = withModal((props: Props) => {
     ({item}: SummaryTableItemProps) => (
       <SummaryTableItem
         item={item}
-        onPress={() => handleOpenEditReceiptItemModal(item)}
+        onPress={() => {
+          getAnalyticsService()
+            .logEvent('selectContent', {
+              item_id: String(item._id),
+              content_type: 'ReceiptItem',
+            })
+            .catch(handleError);
+          return handleOpenEditReceiptItemModal(item);
+        }}
       />
     ),
-    [handleOpenEditReceiptItemModal],
+    [handleError, handleOpenEditReceiptItemModal],
   );
 
   useEffect(() => {
@@ -422,10 +441,10 @@ export const CreateReceipt = withModal((props: Props) => {
                       width: 200,
                       borderWidth: 1,
                       paddingTop: 14,
-                      paddingLeft: 20,
                       fontFamily: 'Rubik-Regular',
                       borderColor: colors['gray-50'],
                       borderBottomColor: colors['gray-50'],
+                      paddingLeft: currency.length > 1 ? 40 : 20,
                     })}
                     iconStyle={applyStyles('px-xs')}
                     placeholder="How much was paid?"
