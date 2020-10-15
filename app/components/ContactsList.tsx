@@ -12,7 +12,8 @@ import Touchable from './Touchable';
 import {applyStyles} from '@/helpers/utils';
 import PlaceholderImage, {PlaceholderImageProps} from './PlaceholderImage';
 import {Collection} from 'realm';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
 
 type ContactsListProps = Omit<
   FlatListProps<IContact>,
@@ -48,6 +49,7 @@ const ContactsList = ({
         }" && recordId != null`,
       )
       .sorted('firstname');
+  const handleError = useErrorHandler();
   const renderContactItem = useCallback(
     ({item}: ListRenderItemInfo<IContact>) => {
       const title = getContactItemTitle(item);
@@ -58,6 +60,12 @@ const ContactsList = ({
           onPress={
             itemClickable
               ? () => {
+                  getAnalyticsService()
+                    .logEvent('selectContent', {
+                      item_id: String(item._id),
+                      content_type: 'Contact',
+                    })
+                    .catch(handleError);
                   onContactItemClick(item);
                 }
               : undefined
@@ -90,6 +98,7 @@ const ContactsList = ({
       getContactItemImageProps,
       getContactItemRight,
       getContactItemTitle,
+      handleError,
       onContactItemClick,
       shouldClickContactItem,
     ],

@@ -1,14 +1,15 @@
+import EmptyState from '@/components/EmptyState';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {ICredit} from '@/models/Credit';
 import {IPayment} from '@/models/Payment';
 import {IReceipt} from '@/models/Receipt';
 import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
-import ContactsProvider from '@/services/contact/provider';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useRepeatBackToExit} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
+import {RealmContext} from '@/services/realm/provider';
 import {colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
@@ -29,8 +30,6 @@ import HomeScreen from './HomeScreen';
 import {ManageItems} from './items';
 import {ReportsScreen} from './reports';
 import {BusinessSettings, UserProfileSettings} from './settings';
-import {RealmContext} from '@/services/realm/provider';
-import EmptyState from '@/components/EmptyState';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -118,70 +117,68 @@ const MainScreens = () => {
 
   return (
     <PubNubProvider client={pubNubClient}>
-      <ContactsProvider>
-        <MainStack.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: colors.white,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'CocogoosePro-SemiLight',
-            },
-            headerTintColor: colors['gray-300'],
-          }}>
-          <MainStack.Screen name="Home" component={HomeScreen} />
-          <MainStack.Screen
-            name="BusinessSettings"
-            component={BusinessSettings}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="AddCustomer"
-            component={AddCustomer}
-            options={{
-              title: 'Add Customer',
-            }}
-          />
-          <MainStack.Screen
-            name="CustomerDetails"
-            component={CustomerDetails}
-            options={({route}) => ({
-              title: route.params.customer.name,
-            })}
-          />
-          <MainStack.Screen
-            name="Customers"
-            component={CustomersScreen}
-            options={{
-              title: 'My Customers',
-            }}
-          />
-          <MainStack.Screen
-            name="Reports"
-            component={ReportsScreen}
-            options={{
-              title: 'Reports',
-            }}
-          />
-          <MainStack.Screen
-            name="UserProfileSettings"
-            component={UserProfileSettings}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="SalesDetails"
-            component={SalesDetails}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="ManageItems"
-            component={ManageItems}
-            options={{title: 'Manage Items'}}
-          />
-        </MainStack.Navigator>
-      </ContactsProvider>
+      <MainStack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.white,
+          },
+          headerTitleStyle: {
+            fontSize: 16,
+            fontFamily: 'CocogoosePro-SemiLight',
+          },
+          headerTintColor: colors['gray-300'],
+        }}>
+        <MainStack.Screen name="Home" component={HomeScreen} />
+        <MainStack.Screen
+          name="BusinessSettings"
+          component={BusinessSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="AddCustomer"
+          component={AddCustomer}
+          options={{
+            title: 'Add Customer',
+          }}
+        />
+        <MainStack.Screen
+          name="CustomerDetails"
+          component={CustomerDetails}
+          options={({route}) => ({
+            title: route.params.customer.name,
+          })}
+        />
+        <MainStack.Screen
+          name="Customers"
+          component={CustomersScreen}
+          options={{
+            title: 'My Customers',
+          }}
+        />
+        <MainStack.Screen
+          name="Reports"
+          component={ReportsScreen}
+          options={{
+            title: 'Reports',
+          }}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="SalesDetails"
+          component={SalesDetails}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="ManageItems"
+          component={ManageItems}
+          options={{title: 'Manage Items'}}
+        />
+      </MainStack.Navigator>
     </PubNubProvider>
   );
 };

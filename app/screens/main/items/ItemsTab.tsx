@@ -75,6 +75,12 @@ export const ItemsTab = withModal(({openModal}: Props) => {
 
   const handleOpenEditReceiptItemModal = useCallback(
     (item: IProduct) => {
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: String(item._id),
+          content_type: 'Product',
+        })
+        .catch(handleError);
       const closeReceiptItemModal = openModal('full', {
         renderContent: () => (
           <ReceiptItemModalContent
@@ -86,7 +92,7 @@ export const ItemsTab = withModal(({openModal}: Props) => {
         ),
       });
     },
-    [openModal, handleUpdateItem],
+    [handleError, openModal, handleUpdateItem],
   );
 
   const renderListItem = useCallback(

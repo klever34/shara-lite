@@ -228,7 +228,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     (id: IReceipt['_id']) => {
       getAnalyticsService()
         .logEvent('selectContent', {
-          content_type: 'receipt',
+          content_type: 'Receipt',
           item_id: id?.toString() ?? '',
         })
         .catch(handleError);
@@ -267,11 +267,10 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   const handleOpenCreateReciptModal = useCallback(() => {
-    const closeModal = openModal('bottom-half', {
-      swipeDirection: ['down'],
+    const closeModal = openModal('full', {
       renderContent: () => (
         <CreateReceipt
-          closeModal={closeModal}
+          closeReceiptModal={closeModal}
           onSnapReceipt={handleSnapReceipt}
         />
       ),

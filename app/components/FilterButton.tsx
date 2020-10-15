@@ -30,7 +30,7 @@ export const FilterButton = (props: Props) => {
 
   const onPress = useCallback(() => {
     if (checked) {
-      onChange && onChange('');
+      onChange && onChange(value);
     } else {
       onChange && onChange(value);
     }

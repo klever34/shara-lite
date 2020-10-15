@@ -11,7 +11,9 @@ export const BusinessSettings = () => {
   const apiService = getApiService();
 
   const user = authService.getUser();
-  const {name, id, mobile, address, profile_image} = user?.businesses[0] || {};
+  const {name, id, mobile, address, profile_image} = user?.businesses
+    ? user?.businesses[0]
+    : {name: '', mobile: '', address: '', profile_image: {url: ''}, id: ''};
   const businessFormIntialValues = {
     name,
     mobile,
@@ -30,7 +32,9 @@ export const BusinessSettings = () => {
         payload.append('profileImageFile', data?.profileImageFile);
 
       try {
-        await apiService.businessSetupUpdate(payload, id);
+        user?.businesses
+          ? await apiService.businessSetupUpdate(payload, id)
+          : await apiService.businessSetup(payload);
         getAnalyticsService()
           .logEvent('businessSetupComplete')
           .catch(handleError);
@@ -42,7 +46,7 @@ export const BusinessSettings = () => {
         Alert.alert('Error', error.message);
       }
     },
-    [apiService, id, handleError],
+    [user, apiService, id, handleError],
   );
 
   return (
