@@ -3,6 +3,7 @@ import React, {createContext, useRef, useState} from 'react';
 import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
 import {normalizeDb} from '@/services/realm/normalizations';
+import perf from '@react-native-firebase/perf';
 
 type RealmObject = {
   realm?: Realm;
@@ -35,7 +36,7 @@ const RealmProvider = (props: any) => {
   const syncRealm = useRef<Realm>();
   const localRealm = useRef<Realm>();
 
-  const updateSyncRealm = ({
+  const updateSyncRealm = async ({
     newRealm,
     realmUser: user,
     partitionValue,
@@ -44,6 +45,8 @@ const RealmProvider = (props: any) => {
     realmUser: any;
     partitionValue: string;
   }) => {
+    // TODO Sync trace
+    const trace = await perf().startTrace('updateSyncRealm');
     setRealmUser(user);
     setIsSyncCompleted(false);
 
@@ -63,6 +66,7 @@ const RealmProvider = (props: any) => {
       setIsSyncCompleted(true);
     }, 2000);
     syncRealm.current = newRealm;
+    await trace.stop();
   };
 
   const updateLocalRealm = (newRealm: Realm) => {

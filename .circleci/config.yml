@@ -184,15 +184,6 @@ workflows:
           context: shara-beta
           lane: play
           track: beta
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - master
-      - fastlane:
-          context: shara-beta
-          lane: internal
           gradleTask: assembleProductionRelease
           requires:
             - test
@@ -202,8 +193,7 @@ workflows:
                 - master
       - fastlane:
           context: shara-beta
-          lane: testlab
-          testBuild: true
+          lane: internal
           gradleTask: assembleProductionRelease
           requires:
             - test
@@ -227,6 +217,8 @@ jobs:
         default: true
     steps:
       - checkout
+      - android/install-ndk:
+          ndk-version: android-ndk-r19c
       - run:
           name: Yarn Install Dependencies
           command: |
@@ -392,5 +384,5 @@ jobs:
           path: fastlane/report.xml
           destination: test-results
 orbs:
-  android: circleci/android@0.2.0
+  android: circleci/android@0.2.1
   react-native: react-native-community/react-native@4.4.2

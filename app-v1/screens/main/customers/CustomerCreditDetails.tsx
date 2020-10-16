@@ -1,6 +1,6 @@
 import Icon from 'app-v1/components/Icon';
 import Touchable from 'app-v1/components/Touchable';
-import {getAuthService} from 'app-v1/services';
+import {getAuthService, getAnalyticsService} from 'app-v1/services';
 import {getAllPayments} from 'app-v1/services/ReceiptService';
 import {ShareHookProps, useShare} from 'app-v1/services/share';
 import {useNavigation} from '@react-navigation/native';
@@ -25,6 +25,7 @@ export const CustomerCreditDetails = ({
   const authService = getAuthService();
   const user = authService.getUser();
   const navigation = useNavigation();
+  const analyticsService = getAnalyticsService();
 
   const [isLoading, setIsLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState('');
@@ -65,6 +66,39 @@ export const CustomerCreditDetails = ({
   const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
     shareProps,
   );
+
+  const onSmsShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'sms',
+        content_type: 'debit-reminder',
+        item_id: creditDetails?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleSmsShare();
+  }, [analyticsService, creditDetails, handleSmsShare]);
+
+  const onEmailShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'email',
+        content_type: 'debit-reminder',
+        item_id: creditDetails?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleEmailShare();
+  }, [analyticsService, creditDetails, handleEmailShare]);
+
+  const onWhatsappShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'whatsapp',
+        content_type: 'debit-reminder',
+        item_id: creditDetails?.receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleWhatsappShare();
+  }, [analyticsService, creditDetails, handleWhatsappShare]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -178,7 +212,7 @@ export const CustomerCreditDetails = ({
             style={applyStyles('flex-row items-center justify-space-between')}>
             {creditDetails.customer.mobile && (
               <View style={applyStyles({width: '33%'})}>
-                <Touchable onPress={handleWhatsappShare}>
+                <Touchable onPress={onWhatsappShare}>
                   <View
                     style={applyStyles(
                       'flex-row',
@@ -211,7 +245,7 @@ export const CustomerCreditDetails = ({
             )}
             {creditDetails.customer.mobile && (
               <View style={applyStyles({width: '33%'})}>
-                <Touchable onPress={handleSmsShare}>
+                <Touchable onPress={onSmsShare}>
                   <View
                     style={applyStyles(
                       'flex-row',
@@ -243,7 +277,7 @@ export const CustomerCreditDetails = ({
               </View>
             )}
             <View style={applyStyles({width: '33%'})}>
-              <Touchable onPress={handleEmailShare}>
+              <Touchable onPress={onEmailShare}>
                 <View
                   style={applyStyles(
                     'flex-row',

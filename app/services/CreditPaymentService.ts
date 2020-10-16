@@ -8,7 +8,7 @@ import {getBaseModelValues} from '@/helpers/models';
 import {updateCredit} from './CreditService';
 import {IPayment} from '@/models/Payment';
 import {getCustomer} from './customer/service';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 
 export const getCreditPayments = ({
   realm,
@@ -97,6 +97,7 @@ export const saveCreditPayment = ({
       .logEvent('creditPaid', {
         method,
         amount: amount.toString(),
+        currency_code: getAuthService().getUser()?.currency_code ?? '',
         remaining_balance: amountLeft.toString(),
         item_id: credit?._id?.toString() ?? '',
       })

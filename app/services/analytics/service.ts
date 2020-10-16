@@ -1,9 +1,11 @@
 import {User} from 'types/app';
-import analytics from '@segment/analytics-react-native';
+import segmentAnalytics from '@segment/analytics-react-native';
 import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
+import getFirebaseAnalytics from '@react-native-firebase/analytics';
+import {utils as firebaseUtils} from '@react-native-firebase/app';
 
 type SharaAppEventsProperties = {
   // Chat
@@ -23,12 +25,18 @@ type SharaAppEventsProperties = {
   creditPaid: {
     item_id: string;
     amount: string;
+    currency_code: string;
     method: string;
     remaining_balance: string;
   };
   receiptStart: undefined;
-  receiptCreated: {amount: string};
-  paymentMade: {item_id: string; method: string; amount: string};
+  receiptCreated: {amount: string; currency_code: string};
+  paymentMade: {
+    item_id: string;
+    method: string;
+    amount: string;
+    currency_code: string;
+  };
   productAddedToReceipt: undefined;
   customerAddedToReceipt: undefined;
   // Content
@@ -37,7 +45,7 @@ type SharaAppEventsProperties = {
   search: {search_term: string; content_type: string};
   print: {item_id: string; content_type: string};
   // Credit Management
-  creditAdded: {item_id: string; amount: string};
+  creditAdded: {item_id: string; amount: string; currency_code: string};
   // Inventory
   supplierAdded: undefined;
   productStart: undefined;
@@ -48,7 +56,6 @@ type SharaAppEventsProperties = {
 
 export interface IAnalyticsService {
   initialize(): Promise<void>;
-
   setUser(user: User): Promise<void>;
 
   logEvent<K extends keyof SharaAppEventsProperties>(
@@ -60,10 +67,14 @@ export interface IAnalyticsService {
 }
 
 export class AnalyticsService implements IAnalyticsService {
+  private firebaseAnalytics = getFirebaseAnalytics();
   async initialize(): Promise<void> {
     try {
-      if (process.env.NODE_ENV === 'production') {
-        await analytics.setup(Config.SEGMENT_KEY, {
+      if (
+        process.env.NODE_ENV === 'production' &&
+        !firebaseUtils().isRunningInTestLab
+      ) {
+        await segmentAnalytics.setup(Config.SEGMENT_KEY, {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
@@ -80,6 +91,7 @@ export class AnalyticsService implements IAnalyticsService {
     try {
       const userFields: (keyof User)[] = [
         'firstname',
+        'lastname',
         'id',
         'country_code',
         'currency_code',
@@ -94,7 +106,8 @@ export class AnalyticsService implements IAnalyticsService {
         {},
       );
       userData.environment = Config.ENVIRONMENT;
-      const alias = `${user.firstname}`;
+      userData.businessName = user.businesses?.[0]?.name;
+      const alias = `${user.firstname} ${user?.lastname}`;
 
       RNUxcam.setUserIdentity(alias);
       for (let prop in userData) {
@@ -102,8 +115,11 @@ export class AnalyticsService implements IAnalyticsService {
       }
       RNUxcam.setUserProperty('alias', alias);
 
-      await analytics.identify(String(user.id), userData);
-      await analytics.alias(alias);
+      await segmentAnalytics.identify(String(user.id), userData);
+      await segmentAnalytics.alias(alias);
+
+      await this.firebaseAnalytics.setUserId(String(user.id));
+      await this.firebaseAnalytics.setUserProperties(userData);
     } catch (e) {
       throw e;
     }
@@ -118,7 +134,8 @@ export class AnalyticsService implements IAnalyticsService {
       nextEventData = castObjectValuesToString(eventData as any);
     }
     try {
-      await analytics.track(eventName, nextEventData);
+      await this.firebaseAnalytics.logEvent(eventName, eventData);
+      await segmentAnalytics.track(eventName, nextEventData);
       RNUxcam.logEvent(eventName, nextEventData);
     } catch (e) {
       throw e;
@@ -127,7 +144,11 @@ export class AnalyticsService implements IAnalyticsService {
 
   async tagScreenName(screenName: string): Promise<void> {
     RNUxcam.tagScreenName(screenName);
-    await analytics.screen(screenName);
+    await segmentAnalytics.screen(screenName);
+    await this.firebaseAnalytics.logScreenView({
+      screen_name: screenName,
+      screen_class: screenName,
+    });
     return Promise.resolve();
   }
 }

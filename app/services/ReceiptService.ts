@@ -98,9 +98,8 @@ export const saveReceipt = ({
   });
   getAnalyticsService()
     .logEvent('receiptCreated', {
-      amount:
-        (getAuthService().getUser()?.currency_code ?? '') +
-        String(receipt.total_amount),
+      amount: String(receipt.total_amount),
+      currency_code: getAuthService().getUser()?.currency_code ?? '',
     })
     .then(() => {});
 
@@ -127,6 +126,7 @@ export const saveReceipt = ({
     getAnalyticsService().logEvent('paymentMade', {
       method: payment.method,
       amount: payment.amount.toString(),
+      currency_code: getAuthService().getUser()?.currency_code ?? '',
       item_id: receipt?._id?.toString() ?? '',
     });
   });
