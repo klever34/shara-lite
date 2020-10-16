@@ -7,7 +7,7 @@ import React, {useCallback} from 'react';
 import {FlatList, Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
-import {User} from 'types/app';
+import {Business, User} from 'types/app';
 import {
   SummaryTableFooter,
   SummaryTableHeader,
@@ -47,7 +47,9 @@ export const ReceiptImage = (props: Props) => {
     containerStyle,
     captureMode = 'mount',
   } = props;
-  const businessInfo = user?.businesses[0];
+  const businessInfo = user?.businesses
+    ? user?.businesses[0]
+    : ({} as Business);
 
   const onCapture = useCallback(
     async (uri: any) => {
@@ -88,25 +90,34 @@ export const ReceiptImage = (props: Props) => {
                 />
               )}
             </View>
-            <Text
-              style={applyStyles('pb-xs text-700 text-center text-uppercase', {
-                fontSize: 18,
-                color: colors['gray-300'],
-              })}>
-              {businessInfo?.name}
-            </Text>
-            <Text
-              style={applyStyles('text-400 pb-xs text-center', {
-                color: colors['gray-200'],
-              })}>
-              {businessInfo?.address}
-            </Text>
-            <Text
-              style={applyStyles('text-400 pb-xs text-center', {
-                color: colors['gray-200'],
-              })}>
-              Tel: +{businessInfo?.mobile || user?.mobile}
-            </Text>
+            {businessInfo.name && (
+              <Text
+                style={applyStyles(
+                  'pb-xs text-700 text-center text-uppercase',
+                  {
+                    fontSize: 18,
+                    color: colors['gray-300'],
+                  },
+                )}>
+                {businessInfo?.name}
+              </Text>
+            )}
+            {businessInfo.address && (
+              <Text
+                style={applyStyles('text-400 pb-xs text-center', {
+                  color: colors['gray-200'],
+                })}>
+                {businessInfo?.address}
+              </Text>
+            )}
+            {businessInfo.name && (
+              <Text
+                style={applyStyles('text-400 pb-xs text-center', {
+                  color: colors['gray-200'],
+                })}>
+                Tel: +{businessInfo?.mobile || user?.mobile}
+              </Text>
+            )}
             {user?.email && (
               <Text
                 style={applyStyles('text-400 pb-xs text-center', {

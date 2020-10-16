@@ -41,6 +41,7 @@ import {
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
 import {CancelReceiptModal} from './CancelReceiptModal';
+import {Business} from 'types/app';
 
 type Props = {
   isNew: boolean;
@@ -75,7 +76,9 @@ export const ReceiptPreview = withModal(
 
     const hasCustomer = customer?.name;
     const creditDueDate = receipt?.dueDate;
-    const businessInfo = user?.businesses[0];
+    const businessInfo = user?.businesses
+      ? user?.businesses[0]
+      : ({} as Business);
     const hasCustomerMobile = customer?.mobile;
     const allPayments = receipt ? getAllPayments({receipt}) : [];
     const totalAmountPaid = allPayments.reduce(
@@ -102,7 +105,7 @@ export const ReceiptPreview = withModal(
       customer?.name ?? ''
     }, thank you for your recent purchase of ${
       receipt?.items?.length
-    } item(s) from ${user?.businesses[0].name}.  You paid ${amountWithCurrency(
+    } item(s) from ${businessInfo.name}.  You paid ${amountWithCurrency(
       totalAmountPaid,
     )} and owe ${amountWithCurrency(creditAmountLeft)} ${
       creditDueDate
@@ -273,21 +276,27 @@ export const ReceiptPreview = withModal(
           await BluetoothEscposPrinter.printerAlign(
             BluetoothEscposPrinter.ALIGN.CENTER,
           );
-          await BluetoothEscposPrinter.printText(
-            `${user?.businesses[0].name}\n`,
-            receiptStyles.header,
-          );
+          businessInfo.name &&
+            (await BluetoothEscposPrinter.printText(
+              `${businessInfo.name}\n`,
+              receiptStyles.header,
+            ));
           await BluetoothEscposPrinter.printerAlign(
             BluetoothEscposPrinter.ALIGN.CENTER,
           );
-          await BluetoothEscposPrinter.printText(
-            `${user?.businesses[0].address}\n`,
-            {},
-          );
+          businessInfo.address &&
+            (await BluetoothEscposPrinter.printText(
+              `${businessInfo.address}\n`,
+              {},
+            ));
           await BluetoothEscposPrinter.printerAlign(
             BluetoothEscposPrinter.ALIGN.CENTER,
           );
-          await BluetoothEscposPrinter.printText(`Tel: ${user?.mobile}\n`, {});
+          businessInfo.name &&
+            (await BluetoothEscposPrinter.printText(
+              `Tel: ${businessInfo.mobile || user?.mobile}\n`,
+              {},
+            ));
           await BluetoothEscposPrinter.printerAlign(
             BluetoothEscposPrinter.ALIGN.LEFT,
           );
@@ -397,6 +406,9 @@ export const ReceiptPreview = withModal(
       [
         printer,
         customer,
+        businessInfo.name,
+        businessInfo.address,
+        businessInfo.mobile,
         user,
         currencyCode,
         receipt,

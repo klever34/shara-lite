@@ -50,17 +50,11 @@ const RealmProvider = (props: any) => {
     setRealmUser(user);
     setIsSyncCompleted(false);
 
-    const syncStart = Date.now();
-
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
       partitionValue,
     });
-
-    const syncEnd = Date.now();
-    const syncDuration = syncEnd - syncStart;
-    console.log('*******', syncDuration / 1000);
 
     setTimeout(() => {
       setIsSyncCompleted(true);
