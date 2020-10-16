@@ -145,6 +145,24 @@ export const saveReceipt = ({
   return receipt;
 };
 
+export const updateReceiptRecord = ({
+  realm,
+  receipt,
+  updates,
+}: {
+  realm: Realm;
+  receipt: IReceipt;
+  updates: object;
+}) => {
+  const updatedReceipt = {
+    _id: receipt._id,
+    ...updates,
+    updated_at: new Date(),
+  };
+
+  realm.create(modelName, updatedReceipt, UpdateMode.Modified);
+};
+
 export const updateReceipt = ({
   realm,
   customer,
@@ -165,7 +183,13 @@ export const updateReceipt = ({
       _id: receipt._id,
       _partition: receipt._partition,
     };
-    realm.create(modelName, updates, UpdateMode.Modified);
+
+    updateReceiptRecord({
+      realm,
+      receipt,
+      updates,
+    });
+
     (receipt.payments || []).forEach((payment) => {
       updatePayment({realm, payment, updates: {customer}});
     });
@@ -200,7 +224,11 @@ export const cancelReceipt = ({
         cancellation_reason,
       };
 
-      realm.create(modelName, updates, UpdateMode.Modified);
+      updateReceiptRecord({
+        realm,
+        receipt,
+        updates,
+      });
     };
 
     const revertStockAndItems = () => {

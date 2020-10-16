@@ -40,6 +40,7 @@ export const updateReceiptItem = ({
   const updatedReceiptItem = {
     _id: receiptItem._id,
     ...updates,
+    updated_at: new Date(),
   };
 
   realm.create(modelName, updatedReceiptItem, UpdateMode.Modified);

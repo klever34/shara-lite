@@ -68,6 +68,7 @@ export const updateCredit = ({
   const updatedCredit = {
     _id: credit._id,
     ...updates,
+    updated_at: new Date(),
   };
 
   realm.create(modelName, updatedCredit, UpdateMode.Modified);

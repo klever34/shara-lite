@@ -65,6 +65,7 @@ export const updatePayment = ({
   const updatedPayment = {
     _id: payment._id,
     ...updates,
+    updated_at: new Date(),
   };
 
   realm.create(modelName, updatedPayment, UpdateMode.Modified);

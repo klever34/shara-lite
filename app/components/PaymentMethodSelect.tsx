@@ -34,7 +34,6 @@ export const PaymentMethodSelect = (props: Props) => {
   const handleChange = useCallback(
     (text, label) => {
       const methods = paymentMethod.map((item) => item.label);
-      console.log({text, label});
       if (methods.includes(label)) {
         const result = paymentMethod.map((item) => {
           if (item.label === label) {

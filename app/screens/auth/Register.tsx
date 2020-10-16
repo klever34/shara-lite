@@ -22,7 +22,7 @@ type Fields = {
 const validationSchema = yup.object().shape({
   mobile: yup
     .string()
-    .length(5, 'Number should be 5 digits')
+    .min(5, 'Number should be minimum of 5 digits')
     .required('Number is required'),
   password: yup
     .string()

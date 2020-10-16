@@ -81,6 +81,7 @@ export const updateDeliveryAgent = ({
   const updatedDeliveryAgent = {
     _id: deliveryAgent._id,
     ...updates,
+    updated_at: new Date(),
   };
 
   const updateDeliveryAgentInDb = () => {
