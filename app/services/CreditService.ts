@@ -5,9 +5,12 @@ import {IReceipt} from '@/models/Receipt';
 import {getBaseModelValues} from '@/helpers/models';
 import {Customer} from 'types/app';
 import {getAnalyticsService, getAuthService} from '@/services';
+import {deleteCreditPayment} from '@/services/CreditPaymentService';
 
 export const getCredits = ({realm}: {realm: Realm}): ICredit[] => {
-  return (realm.objects<ICredit>(modelName) as unknown) as ICredit[];
+  return (realm
+    .objects<ICredit>(modelName)
+    .filtered('is_deleted = false') as unknown) as ICredit[];
 };
 
 export const saveCredit = ({
@@ -66,7 +69,26 @@ export const updateCredit = ({
   const updatedCredit = {
     _id: credit._id,
     ...updates,
+    updated_at: new Date(),
   };
 
   realm.create(modelName, updatedCredit, UpdateMode.Modified);
+};
+
+export const deleteCredit = ({
+  realm,
+  credit,
+}: {
+  realm: Realm;
+  credit: ICredit;
+}) => {
+  updateCredit({
+    realm,
+    credit,
+    updates: {is_deleted: true},
+  });
+
+  credit.payments?.forEach((creditPayment) => {
+    deleteCreditPayment({realm, creditPayment});
+  });
 };

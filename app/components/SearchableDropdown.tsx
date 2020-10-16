@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Keyboard,
@@ -8,20 +8,22 @@ import {
   View,
   TextInputProps,
 } from 'react-native';
-import {applyStyles} from '../helpers/utils';
-import {colors} from '../styles';
+import {applyStyles} from '@/helpers/utils';
+import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
+import debounce from 'lodash/debounce';
 
-type Props<T> = {
+export type SearchableDropdownProps<T extends any = any> = {
   items: T[];
   onFocus?: () => void;
+  onBlur?: (query: string) => void;
   emptyStateText?: string;
   noResultsAction?: () => void;
   textInputProps?: TextInputProps;
   onItemSelect?: (item: T) => void;
   noResultsActionButtonText?: string;
-  setSort: (item: T, text: string) => void;
+  setFilter: (item: T, text: string) => boolean;
   onChangeText?: TextInputProps['onChangeText'];
   renderItem: ({
     item,
@@ -32,26 +34,25 @@ type Props<T> = {
   }) => React.ReactNode;
 };
 
-function SearchableDropdown<T>(props: Props<T>) {
-  const {
-    items,
-    setSort,
-    onFocus,
-    renderItem,
-    onChangeText,
-    onItemSelect,
-    textInputProps,
-    emptyStateText,
-    noResultsAction,
-    noResultsActionButtonText,
-  } = props;
-  const [value, setValue] = useState('');
+function SearchableDropdown<T>({
+  items,
+  setFilter,
+  onFocus,
+  onBlur,
+  renderItem,
+  onChangeText,
+  onItemSelect,
+  textInputProps,
+  emptyStateText,
+  noResultsAction,
+  noResultsActionButtonText,
+}: SearchableDropdownProps<T>) {
+  const queryRef = useRef<string>('');
   const [focus, setFocus] = useState(false);
   const [listItems, setListItems] = useState(items || []);
 
   const handleItemSelect = useCallback(
     (item) => {
-      setValue(item);
       Keyboard.dismiss();
       setFocus(false);
       if (onItemSelect) {
@@ -62,31 +63,38 @@ function SearchableDropdown<T>(props: Props<T>) {
     },
     [onItemSelect],
   );
+  useEffect(() => {
+    if (focus) {
+      onFocus?.();
+    } else {
+      onBlur?.(queryRef.current);
+    }
+  }, [focus, onBlur, onFocus]);
 
   const handleInputFocus = useCallback(() => {
-    onFocus && onFocus();
-    setValue('');
     setFocus(true);
     setListItems(items);
-  }, [onFocus, items]);
+  }, [items]);
 
-  const searchedItems = (searchedText: string) => {
-    setValue(searchedText);
-    const searchValue = searchedText.trim();
-    let sort = setSort;
-    var ac = items.filter((item: T) => {
-      return sort(item, searchValue);
-    });
-    setListItems(ac);
-    const onTextChange = onChangeText || textInputProps?.onChangeText;
-    if (onTextChange && typeof onTextChange === 'function') {
-      setTimeout(() => {
-        onTextChange(searchedText);
-      }, 0);
-    }
-  };
+  const handleChangeText = useCallback(
+    debounce((searchedText: string) => {
+      queryRef.current = searchedText;
+      const searchValue = searchedText.trim().toLowerCase();
+      const results = items.filter((item: T) => {
+        return setFilter(item, searchValue);
+      });
+      setListItems(results);
+      const onTextChange = onChangeText || textInputProps?.onChangeText;
+      if (onTextChange && typeof onTextChange === 'function') {
+        setTimeout(() => {
+          onTextChange(searchedText);
+        }, 0);
+      }
+    }, 750),
+    [items, onChangeText, setFilter, textInputProps],
+  );
 
-  const renderFlatList = () => {
+  const renderFlatList = useCallback(() => {
     if (focus) {
       return (
         <View
@@ -154,9 +162,17 @@ function SearchableDropdown<T>(props: Props<T>) {
         </View>
       );
     }
-  };
+  }, [
+    emptyStateText,
+    focus,
+    handleItemSelect,
+    listItems,
+    noResultsAction,
+    noResultsActionButtonText,
+    renderItem,
+  ]);
 
-  const renderTextInput = () => {
+  const renderTextInput = useCallback(() => {
     return (
       <View style={styles.searchContainer}>
         <View style={styles.searchInputContainer}>
@@ -165,12 +181,11 @@ function SearchableDropdown<T>(props: Props<T>) {
             style={styles.searchInputIcon}
             type="feathericons"
             name="search"
-            color={colors.primary}
+            color={colors['gray-200']}
           />
           <TextInput
-            value={value}
             onFocus={handleInputFocus}
-            onChangeText={searchedItems}
+            onChangeText={handleChangeText}
             placeholderTextColor={colors['gray-50']}
             style={applyStyles(styles.searchInput, 'text-400')}
             {...textInputProps}
@@ -178,7 +193,7 @@ function SearchableDropdown<T>(props: Props<T>) {
         </View>
       </View>
     );
-  };
+  }, [handleInputFocus, handleChangeText, textInputProps]);
 
   return (
     <View>
@@ -190,8 +205,6 @@ function SearchableDropdown<T>(props: Props<T>) {
 
 const styles = StyleSheet.create({
   searchContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
     backgroundColor: colors.primary,
   },
   searchInputContainer: {
@@ -207,8 +220,7 @@ const styles = StyleSheet.create({
     height: 48,
     elevation: 2,
     fontSize: 16,
-    borderRadius: 8,
-    paddingLeft: 36,
+    paddingLeft: 48,
     backgroundColor: colors.white,
   },
   emptyState: {

@@ -9,15 +9,16 @@ import {saveDeliveryAgent} from './DeliveryAgentService';
 import {addNewStockItem} from './StockItemService';
 import {getGeolocationService} from '@/services';
 import {convertToLocationString} from '@/services/geolocation';
+import {getAnalyticsService} from '@/services';
 
 export const getReceivedInventories = ({
   realm,
 }: {
   realm: Realm;
 }): IReceivedInventory[] => {
-  return (realm.objects<IReceivedInventory>(
-    modelName,
-  ) as unknown) as IReceivedInventory[];
+  return (realm
+    .objects<IReceivedInventory>(modelName)
+    .filtered('is_deleted = false') as unknown) as IReceivedInventory[];
 };
 
 export const addNewInventory = ({
@@ -104,4 +105,5 @@ export const addNewInventory = ({
 
     addNewStockItem({realm, stockItem: newStockItem});
   });
+  getAnalyticsService().logEvent('inventoryReceived').catch();
 };

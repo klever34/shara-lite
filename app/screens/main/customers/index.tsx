@@ -1,226 +1,356 @@
-import {ContactsListModal, FAButton} from '@/components';
+import {ContactsListModal} from '@/components';
 import EmptyState from '@/components/EmptyState';
+import {HeaderRight} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/helpers/utils';
+import {
+  applyStyles,
+  amountWithCurrency,
+  prepareValueForSearch,
+} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getContactService} from '@/services';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
-  Alert,
-  FlatList,
+  ActivityIndicator,
+  ListRenderItemInfo,
+  SectionList,
   StyleSheet,
   Text,
-  TextInput,
   ToastAndroid,
   View,
 } from 'react-native';
-import {Contact} from 'react-native-contacts';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {useAsync} from '@/services/api';
 
-type CustomerItemProps = {
-  item: ICustomer;
-};
+type CustomerListItem =
+  | Pick<
+      ICustomer,
+      | 'name'
+      | 'mobile'
+      | 'remainingCreditAmount'
+      | 'overdueCreditAmount'
+      | '_id'
+    >
+  | {
+      name: string;
+      mobile?: string;
+    };
 
-const CustomersTab = () => {
-  const navigation = useNavigation();
-  const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
-  const analyticsService = getAnalyticsService();
-
-  const [searchInputValue, setSearchInputValue] = useState('');
-  const [myCustomers, setMyCustomers] = useState<ICustomer[]>(customers);
-  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
-
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      const customersData = getCustomers({realm});
-      setMyCustomers(customersData);
-    });
-  }, [navigation, realm]);
-
-  const handleOpenContactListModal = useCallback(() => {
-    setIsContactListModalOpen(true);
-  }, []);
-
-  const handleCloseContactListModal = useCallback(() => {
-    setIsContactListModalOpen(false);
-  }, []);
-
-  const handleSelectCustomer = useCallback(
-    (item?: ICustomer) => {
-      analyticsService
-        .logEvent('selectContent', {
-          item_id: item?._id?.toString() ?? '',
-          content_type: 'customer',
-        })
-        .then(() => {});
-      navigation.navigate('CustomerDetails', {customer: item});
-      setSearchInputValue('');
-      setMyCustomers(customers);
-    },
-    [navigation, customers, analyticsService],
-  );
-
-  const handleCreateCustomer = useCallback(
-    (contact: Contact) => {
-      const mobile = contact.phoneNumbers[0].number;
-      const name = `${contact.givenName} ${contact.familyName}`;
-
-      if (customers.map((item) => item.mobile).includes(mobile)) {
-        Alert.alert(
-          'Info',
-          'Customer with the same phone number has been created.',
+type CustomersScreenProps = ModalWrapperFields & {};
+const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
+export const CustomersScreen = withModal(
+  ({openModal, closeModal}: CustomersScreenProps) => {
+    const navigation = useNavigation();
+    const realm = useRealm() as Realm;
+    const myCustomers = getCustomers({realm});
+    const analyticsService = getAnalyticsService();
+    const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
+    const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
+    const {run: runGetPhoneContacts, loading} = useAsync(
+      getPhoneContactsPromiseFn,
+      {
+        defer: true,
+      },
+    );
+    useEffect(() => {
+      const customers = getCustomers({realm});
+      runGetPhoneContacts().then((contacts) => {
+        setPhoneContacts(
+          contacts.reduce<CustomerListItem[]>(
+            (acc, {givenName, familyName, phoneNumber}) => {
+              const existing = customers.filtered(
+                `mobile = "${phoneNumber.number}"`,
+              );
+              if (existing.length) {
+                return acc;
+              }
+              return [
+                ...acc,
+                {
+                  name: `${givenName} ${familyName}`,
+                  mobile: phoneNumber.number,
+                },
+              ];
+            },
+            [],
+          ),
         );
-      } else {
+      });
+    }, [runGetPhoneContacts, realm]);
+
+    const handleCloseContactListModal = useCallback(() => {
+      setIsContactListModalOpen(false);
+    }, []);
+
+    const handleSelectCustomer = useCallback(
+      (item?: ICustomer) => {
+        analyticsService
+          .logEvent('selectContent', {
+            item_id: item?._id?.toString() ?? '',
+            content_type: 'customer',
+          })
+          .then(() => {});
+        navigation.navigate('CustomerDetails', {customer: item});
+      },
+      [navigation, analyticsService],
+    );
+
+    const handleCreateCustomer = useCallback(
+      (contact: CustomerListItem) => {
+        const mobile = contact.mobile;
+        const name = contact.name;
         const customer = {
           name,
           mobile,
         };
         saveCustomer({realm, customer});
-        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
-      }
-    },
-    [customers, realm],
-  );
-
-  const handleCustomerSearch = useCallback(
-    (searchedText: string) => {
-      setSearchInputValue(searchedText);
-      if (searchedText) {
-        const searchValue = searchedText.trim();
-        const sort = (item: ICustomer, text: string) => {
-          return item.name.toLowerCase().indexOf(text.toLowerCase()) > -1;
-        };
-        const ac = customers.filter((item: ICustomer) => {
-          return sort(item, searchValue);
+        setPhoneContacts((prevPhoneContacts) => {
+          return prevPhoneContacts.filter(
+            (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
+          );
         });
-        setMyCustomers(ac);
-      } else {
-        setMyCustomers(customers);
-      }
-      analyticsService
-        .logEvent('search', {
-          search_term: searchedText,
-          content_type: 'customer',
-        })
-        .then(() => {});
-    },
-    [analyticsService, customers],
-  );
+        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
+      },
+      [realm],
+    );
 
-  const renderCustomerListItem = useCallback(
-    ({item: customer}: CustomerItemProps) => {
-      return (
-        <Touchable onPress={() => handleSelectCustomer(customer)}>
-          <View style={styles.customerListItem}>
-            <Text style={styles.customerListItemText}>{customer.name}</Text>
+    const renderCustomerListItem = useCallback(
+      ({
+        item: customer,
+        onPress,
+      }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'> & {
+        onPress?: () => void;
+      }) => {
+        if (!customer) {
+          return (
+            <EmptyState
+              heading="You don't have any customers on Shara yet"
+              text="Add a new customer from the list below"
+              source={require('../../../assets/images/coming-soon.png')}
+            />
+          );
+        }
+        return (
+          <Touchable
+            onPress={
+              '_id' in customer
+                ? () => {
+                    onPress?.();
+                    getAnalyticsService().logEvent('selectContent', {
+                      item_id: String(customer._id),
+                      content_type: 'Customer',
+                    });
+                    handleSelectCustomer(customer);
+                  }
+                : undefined
+            }>
+            <View
+              style={applyStyles(
+                'flex-row items-center border-b-1 border-gray-20 p-16',
+              )}>
+              <View style={applyStyles('flex-1')}>
+                <Text style={applyStyles('text-sm text-700 text-gray-300')}>
+                  {customer.name}
+                </Text>
+                <Text style={applyStyles('text-sm text-400 text-gray-300')}>
+                  {customer.mobile}
+                </Text>
+              </View>
+              {'_id' in customer ? (
+                !!customer.remainingCreditAmount && (
+                  <View>
+                    <Text
+                      style={applyStyles(
+                        'text-sm text-700',
+                        customer.overdueCreditAmount
+                          ? 'text-primary'
+                          : 'text-gray-300',
+                      )}>
+                      {amountWithCurrency(customer.remainingCreditAmount)}
+                    </Text>
+                  </View>
+                )
+              ) : (
+                <Touchable
+                  onPress={() => {
+                    closeModal();
+                    handleCreateCustomer(customer);
+                  }}>
+                  <View
+                    style={applyStyles(
+                      'flex-row items-center bg-red-200 rounded-4 py-4 px-8',
+                    )}>
+                    <Icon
+                      type="feathericons"
+                      name="plus"
+                      style={applyStyles('text-white mr-4')}
+                      size={14}
+                    />
+                    <Text style={applyStyles('text-white text-400')}>Add</Text>
+                  </View>
+                </Touchable>
+              )}
+            </View>
+          </Touchable>
+        );
+      },
+      [closeModal, handleCreateCustomer, handleSelectCustomer],
+    );
+
+    useLayoutEffect(() => {
+      navigation.setOptions({
+        headerRight: () => (
+          <HeaderRight
+            options={[
+              {
+                icon: 'search',
+                onPress: () => {
+                  const closeSearchModal = openModal('search', {
+                    items: [
+                      ...((myCustomers as unknown) as CustomerListItem[]),
+                      ...phoneContacts,
+                    ],
+                    renderItem: ({item, onPress}) => {
+                      return renderCustomerListItem({
+                        item: item as CustomerListItem,
+                        onPress: () => {
+                          onPress('');
+                          closeSearchModal();
+                        },
+                      });
+                    },
+                    setFilter: (item: ICustomer, query) => {
+                      // TODO: Improve search algorithm
+                      return (
+                        (prepareValueForSearch(item.name).search(query) ??
+                          -1) !== -1 ||
+                        (prepareValueForSearch(item.mobile).search(query) ??
+                          -1) !== -1 ||
+                        (prepareValueForSearch(
+                          item.remainingCreditAmount,
+                        ).search(query) ?? -1) !== -1
+                      );
+                    },
+                    textInputProps: {
+                      placeholder: 'Search Customers',
+                      autoFocus: true,
+                    },
+                  });
+                },
+              },
+            ]}
+            menuOptions={[]}
+          />
+        ),
+      });
+    }, [
+      myCustomers,
+      navigation,
+      openModal,
+      phoneContacts,
+      renderCustomerListItem,
+    ]);
+
+    const renderCustomerListSectionHeader = useCallback(
+      ({section: {title}}) => {
+        if (!title) {
+          return null;
+        }
+        if (loading) {
+          return (
+            <View style={styles.customerListHeader}>
+              <ActivityIndicator size={24} color={colors.primary} />
+            </View>
+          );
+        }
+        return (
+          <View style={styles.customerListHeader}>
+            <Text style={styles.customerListHeaderText}>{title}</Text>
+          </View>
+        );
+      },
+      [loading],
+    );
+    const sections = useMemo(
+      () => [
+        {
+          data: myCustomers.length
+            ? orderBy(
+                myCustomers,
+                ['debtLevel', 'name'] as (keyof ICustomer)[],
+                ['desc', 'asc'],
+              )
+            : [null],
+        },
+        {
+          title: 'Add from your phonebook',
+          data: orderBy(phoneContacts, ['name'] as (keyof CustomerListItem)[], [
+            'asc',
+          ]),
+        },
+      ],
+      [myCustomers, phoneContacts],
+    );
+    const onContactSelect = useCallback(
+      (contact?: ICustomer) => contact && handleCreateCustomer(contact),
+      [handleCreateCustomer],
+    );
+    const keyExtractor = useCallback((item) => {
+      if (!item) {
+        return '';
+      }
+      return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
+    }, []);
+
+    return (
+      <View style={styles.container}>
+        <Touchable onPress={() => navigation.navigate('AddCustomer')}>
+          <View
+            style={applyStyles(
+              'flex-row items-center py-16 px-16 border-b-1 border-gray-20',
+            )}>
+            <Icon
+              size={24}
+              name="plus"
+              type="feathericons"
+              style={applyStyles('mr-8')}
+              color={colors.primary}
+            />
+            <Text style={applyStyles('text-sm text-primary uppercase')}>
+              Create Customer
+            </Text>
           </View>
         </Touchable>
-      );
-    },
-    [handleSelectCustomer],
-  );
-
-  const renderCustomerListHeader = useCallback(
-    () => <Text style={styles.customerListHeader}>Select a customer</Text>,
-    [],
-  );
-
-  if (!customers.length) {
-    return (
-      <>
-        <EmptyState
-          heading="Add a customer"
-          source={require('../../../assets/images/coming-soon.png')}
-          text="Click the button below to add a new customer"
+        <SectionList
+          renderItem={renderCustomerListItem}
+          renderSectionHeader={renderCustomerListSectionHeader}
+          keyExtractor={keyExtractor}
+          sections={sections}
         />
-        <FAButton
-          style={applyStyles(
-            'h-48 w-auto rounded-16 px-12 flex-row items-center',
-          )}
-          onPress={handleOpenContactListModal}>
-          <Icon size={18} name="plus" color="white" type="feathericons" />
-          <Text
-            style={applyStyles('text-400 text-base ml-8 text-white uppercase')}>
-            Add Customer
-          </Text>
-        </FAButton>
         <ContactsListModal<ICustomer>
           entity="Customer"
-          createdData={customers}
+          createdData={(myCustomers as unknown) as ICustomer[]}
           visible={isContactListModalOpen}
           onClose={handleCloseContactListModal}
           onAddNew={() => navigation.navigate('AddCustomer')}
-          onContactSelect={(contact) => handleCreateCustomer(contact)}
+          onContactSelect={onContactSelect}
         />
-      </>
-    );
-  }
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon
-            size={24}
-            name="search"
-            type="feathericons"
-            style={styles.searchInputIcon}
-            color={colors.primary}
-          />
-          <TextInput
-            value={searchInputValue}
-            style={styles.searchInput}
-            placeholder="Search Customer"
-            onChangeText={handleCustomerSearch}
-            placeholderTextColor={colors['gray-50']}
-          />
-        </View>
       </View>
-
-      {myCustomers.length ? (
-        <>
-          <FlatList
-            renderItem={renderCustomerListItem}
-            keyExtractor={(item) => `${item._id}`}
-            data={orderBy(myCustomers, 'name', 'asc')}
-            ListHeaderComponent={renderCustomerListHeader}
-          />
-        </>
-      ) : (
-        <EmptyState
-          heading="No results found"
-          text="Click the button below to add a new customer"
-        />
-      )}
-      <FAButton
-        style={applyStyles(
-          'h-48 w-auto rounded-16 px-12 flex-row items-center',
-        )}
-        onPress={handleOpenContactListModal}>
-        <Icon size={18} name="plus" color="white" type="feathericons" />
-        <Text
-          style={applyStyles('text-400 text-base ml-8 text-white uppercase')}>
-          Add Customer
-        </Text>
-      </FAButton>
-
-      <ContactsListModal<ICustomer>
-        entity="Customer"
-        createdData={customers}
-        visible={isContactListModalOpen}
-        onClose={handleCloseContactListModal}
-        onAddNew={() => navigation.navigate('AddCustomer')}
-        onContactSelect={(contact) => handleCreateCustomer(contact)}
-      />
-    </View>
-  );
-};
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   container: {
@@ -249,28 +379,19 @@ const styles = StyleSheet.create({
     paddingLeft: 36,
     backgroundColor: colors.white,
   },
-  customerListHeader: {
+  customerListHeader: applyStyles('text-center bg-gray-10', {
+    paddingVertical: 16,
+    paddingHorizontal: 4,
+    borderBottomWidth: 1,
+    borderBottomColor: colors['gray-20'],
+  }),
+  customerListHeaderText: applyStyles('text-center bg-gray-10', {
     fontSize: 12,
     fontWeight: 'bold',
-    paddingVertical: 4,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
     fontFamily: 'Rubik-Regular',
-    borderBottomColor: colors['gray-20'],
-  },
-  customerListItem: {
-    fontSize: 16,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-20'],
-  },
-  customerListItemText: {
-    fontSize: 16,
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-  },
+  }),
 });
 
-export default CustomersTab;
+export * from './AddCustomer';

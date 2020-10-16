@@ -1,15 +1,15 @@
 import React from 'react';
-import {applyStyles} from '../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import {ActivityIndicator, View} from 'react-native';
 import Icon from './Icon';
-import Touchable from './Touchable';
 import {
   Menu,
   MenuOption,
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {colors} from '../styles';
+import {colors} from '@/styles';
+import {HeaderBackButton} from '@react-navigation/stack';
 
 export type HeaderRightOption = {icon: string; onPress: () => void};
 export type HeaderRightMenuOption = {text: string; onSelect: () => void};
@@ -20,7 +20,7 @@ type HeaderRightProps = {
   menuOptions?: HeaderRightMenuOption[];
 };
 
-const HeaderRight = ({
+export const HeaderRight = ({
   loading = false,
   options = [],
   menuOptions = [],
@@ -36,11 +36,22 @@ const HeaderRight = ({
       )}
       {options.map(({icon, onPress}) => {
         return (
-          <Touchable key={icon} onPress={onPress}>
-            <View style={applyStyles('center w-48 h-48 rounded-24')}>
-              <Icon type="material-icons" color="white" size={24} name={icon} />
-            </View>
-          </Touchable>
+          <HeaderBackButton
+            key={icon}
+            onPress={onPress}
+            backImage={() => {
+              return (
+                <View style={applyStyles('center w-36 h-36 rounded-24')}>
+                  <Icon
+                    type="feathericons"
+                    color={colors['gray-300']}
+                    size={24}
+                    name={icon}
+                  />
+                </View>
+              );
+            }}
+          />
         );
       })}
       {!!menuOptions.length && (
@@ -51,7 +62,7 @@ const HeaderRight = ({
             }}>
             <Icon
               type="material-icons"
-              color={colors.white}
+              color={colors['gray-300']}
               name="more-vert"
               size={28}
               borderRadius={12}
@@ -81,5 +92,3 @@ const HeaderRight = ({
     </View>
   );
 };
-
-export default HeaderRight;

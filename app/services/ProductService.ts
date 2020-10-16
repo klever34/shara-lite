@@ -3,7 +3,9 @@ import {IProduct, modelName} from '../models/Product';
 import {getBaseModelValues} from '../helpers/models';
 
 export const getProducts = ({realm}: {realm: Realm}): IProduct[] => {
-  return (realm.objects<IProduct>(modelName) as unknown) as IProduct[];
+  return (realm
+    .objects<IProduct>(modelName)
+    .filtered('is_deleted = false') as unknown) as IProduct[];
 };
 
 export const saveProduct = ({
@@ -37,6 +39,7 @@ export const updateProduct = ({
   const updatedProduct = {
     _id: product._id,
     ...updates,
+    updated_at: new Date(),
   };
 
   const updateProductInDb = () => {

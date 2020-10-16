@@ -3,7 +3,9 @@ import {IStockItem, modelName} from '../models/StockItem';
 import {restockProduct} from './ProductService';
 
 export const getStockItems = ({realm}: {realm: Realm}): IStockItem[] => {
-  return (realm.objects<IStockItem>(modelName) as unknown) as IStockItem[];
+  return (realm
+    .objects<IStockItem>(modelName)
+    .filtered('is_deleted = false') as unknown) as IStockItem[];
 };
 
 export const addNewStockItem = ({

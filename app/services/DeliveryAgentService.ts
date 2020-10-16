@@ -9,9 +9,9 @@ export const getDeliveryAgents = ({
 }: {
   realm: Realm;
 }): IDeliveryAgent[] => {
-  return (realm.objects<IDeliveryAgent>(
-    modelName,
-  ) as unknown) as IDeliveryAgent[];
+  return (realm
+    .objects<IDeliveryAgent>(modelName)
+    .filtered('is_deleted = false') as unknown) as IDeliveryAgent[];
 };
 
 export const getDeliveryAgentByMobile = ({
@@ -81,6 +81,7 @@ export const updateDeliveryAgent = ({
   const updatedDeliveryAgent = {
     _id: deliveryAgent._id,
     ...updates,
+    updated_at: new Date(),
   };
 
   const updateDeliveryAgentInDb = () => {

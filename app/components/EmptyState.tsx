@@ -15,12 +15,22 @@ const EmptyState = (props: Props) => {
   const {style, children, heading, source, text} = props;
   return (
     <View
-      style={applyStyles('flex-1', 'justify-center', 'items-center', style)}>
+      style={applyStyles(
+        'flex-1 my-xl',
+        'justify-center',
+        'items-center',
+        style,
+      )}>
       {source && (
         <Image style={applyStyles('pb-xl', styles.image)} source={source} />
       )}
       {!!heading && (
-        <Text style={applyStyles('pb-xs', 'heading-700', styles.heading)}>
+        <Text
+          style={applyStyles(
+            'pb-xs',
+            'heading-700 text-center',
+            styles.heading,
+          )}>
           {heading}
         </Text>
       )}
