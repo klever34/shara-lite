@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.58-bugfix.contacts-permission-caching+build.3656",
+  "version": "0.2.58-bugfix.contacts-permission-caching+build.3666",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
