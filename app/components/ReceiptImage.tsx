@@ -78,7 +78,7 @@ export const ReceiptImage = (props: Props) => {
           })}>
           <View style={applyStyles('py-lg items-center justify-center')}>
             <View style={applyStyles('mb-md')}>
-              {businessInfo?.profile_image?.url && (
+              {!!businessInfo?.profile_image?.url && (
                 <Image
                   style={applyStyles('mb-lg items-center justify-center', {
                     width: 100,
@@ -90,7 +90,7 @@ export const ReceiptImage = (props: Props) => {
                 />
               )}
             </View>
-            {businessInfo.name && (
+            {!!businessInfo.name && (
               <Text
                 style={applyStyles(
                   'pb-xs text-700 text-center text-uppercase',
@@ -102,7 +102,7 @@ export const ReceiptImage = (props: Props) => {
                 {businessInfo?.name}
               </Text>
             )}
-            {businessInfo.address && (
+            {!!businessInfo.address && (
               <Text
                 style={applyStyles('text-400 pb-xs text-center', {
                   color: colors['gray-200'],
@@ -110,7 +110,7 @@ export const ReceiptImage = (props: Props) => {
                 {businessInfo?.address}
               </Text>
             )}
-            {businessInfo.name && (
+            {!!businessInfo.name && (
               <Text
                 style={applyStyles('text-400 pb-xs text-center', {
                   color: colors['gray-200'],
@@ -118,7 +118,7 @@ export const ReceiptImage = (props: Props) => {
                 Tel: +{businessInfo?.mobile || user?.mobile}
               </Text>
             )}
-            {user?.email && (
+            {!!user?.email && (
               <Text
                 style={applyStyles('text-400 pb-xs text-center', {
                   color: colors['gray-200'],
