@@ -402,7 +402,7 @@ export const CreateReceipt = withModal((props: Props) => {
                 <View
                   style={applyStyles(
                     summaryTableStyles.column,
-                    summaryTableStyles['column-30'],
+                    summaryTableStyles['column-25'],
                   )}>
                   <View
                     style={applyStyles('flex-row items-center h-full w-full')}>
@@ -428,7 +428,7 @@ export const CreateReceipt = withModal((props: Props) => {
                 />
                 <View
                   style={applyStyles(
-                    summaryTableStyles['column-10'],
+                    summaryTableStyles['column-15'],
                     summaryTableStyles.column,
                   )}
                 />
