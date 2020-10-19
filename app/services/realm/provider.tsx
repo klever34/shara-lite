@@ -2,9 +2,9 @@ import Realm from 'realm';
 import React, {createContext, useRef, useState} from 'react';
 import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
-import {normalizeDb} from '@/services/realm/normalizations';
 import perf from '@react-native-firebase/perf';
 import {getStorageService} from '@/services';
+import {normalizeDb} from '@/services/realm/normalizations';
 
 type RealmObject = {
   realm?: Realm;
@@ -31,7 +31,7 @@ const RealmProvider = (props: any) => {
   const [isRealmSyncLoaderInitiated, setIsRealmSyncLoaderInitiated] = useState<
     Boolean
   >(false);
-  const [isSyncCompleted, setIsSyncCompleted] = useState<Boolean>(false);
+  const [isSyncCompleted, setIsSyncCompleted] = useState<Boolean>(true);
   const [realm, setRealm] = useState<Realm>();
   const [realmUser, setRealmUser] = useState<any>(false);
   const syncRealm = useRef<Realm>();
@@ -52,7 +52,7 @@ const RealmProvider = (props: any) => {
     // TODO Sync trace
     const trace = await perf().startTrace('updateSyncRealm');
     setRealmUser(user);
-    setIsSyncCompleted(false);
+    setIsSyncCompleted(true);
 
     const currentDate = new Date();
     const storedSyncDate = (await storageService.getItem(

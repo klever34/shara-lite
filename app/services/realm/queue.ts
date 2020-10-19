@@ -1,4 +1,4 @@
-const queueDelay = 1500;
+const queueDelay = 2000;
 const queueItems: Array<() => void> = [];
 
 const processItems = () => {

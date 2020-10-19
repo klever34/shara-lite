@@ -3,6 +3,7 @@ import {
   getRealmObjectCopy,
   shouldUpdateRealmObject,
 } from '@/services/realm/utils';
+import {addItemToQueue} from '@/services/realm/queue';
 
 const copyObject = ({
   obj,
@@ -14,21 +15,24 @@ const copyObject = ({
   targetRealm: Realm;
 }) => {
   const copy = getRealmObjectCopy({obj, objSchema});
-  const updateRealmObject = shouldUpdateRealmObject({
-    sourceObject: obj,
-    targetRealm,
-    modelName: objSchema.name,
+
+  addItemToQueue(() => {
+    const updateRealmObject = shouldUpdateRealmObject({
+      sourceObject: obj,
+      targetRealm,
+      modelName: objSchema.name,
+    });
+
+    if (!updateRealmObject) {
+      return;
+    }
+
+    try {
+      targetRealm.create(objSchema.name, copy, Realm.UpdateMode.Modified);
+    } catch (e) {
+      console.log('Error writing to realm sync', e);
+    }
   });
-
-  if (!updateRealmObject) {
-    return;
-  }
-
-  try {
-    targetRealm.create(objSchema.name, copy, Realm.UpdateMode.Modified);
-  } catch (e) {
-    console.log('Error writing to realm sync', e);
-  }
 };
 
 export const copyRealm = ({
