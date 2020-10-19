@@ -55,7 +55,7 @@ export const copyRealm = ({
         ? allObjects.filtered('updated_at >= $0', lastSyncDate)
         : allObjects;
 
-      allObjects.forEach((obj: any) => {
+      allObjects.sorted('updated_at', true).forEach((obj: any) => {
         if (obj._partition && obj._partition === partitionValue) {
           copyObject({obj, objSchema, targetRealm});
         }
