@@ -35,16 +35,21 @@ export const copyRealm = ({
   sourceRealm,
   targetRealm,
   partitionValue,
+  lastSyncDate,
 }: {
   sourceRealm: Realm;
   targetRealm: Realm;
   partitionValue: string;
-  syncDate?: Date;
+  lastSyncDate?: Date;
 }) => {
   const sourceRealmSchema = sourceRealm.schema;
   targetRealm.write(() => {
     sourceRealmSchema.forEach((objSchema) => {
-      const allObjects = sourceRealm.objects(objSchema.name);
+      let allObjects = sourceRealm.objects(objSchema.name);
+
+      allObjects = lastSyncDate
+        ? allObjects.filtered('updated_at >= $0', lastSyncDate)
+        : allObjects;
 
       allObjects.forEach((obj: any) => {
         if (obj._partition && obj._partition === partitionValue) {

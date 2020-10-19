@@ -4,6 +4,7 @@ import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
 import {normalizeDb} from '@/services/realm/normalizations';
 import perf from '@react-native-firebase/perf';
+import {getStorageService} from '@/services';
 
 type RealmObject = {
   realm?: Realm;
@@ -36,6 +37,9 @@ const RealmProvider = (props: any) => {
   const syncRealm = useRef<Realm>();
   const localRealm = useRef<Realm>();
 
+  const lastLocalSyncDateStorageKey = 'lastLocalSyncDate';
+  const storageService = getStorageService();
+
   const updateSyncRealm = async ({
     newRealm,
     realmUser: user,
@@ -50,16 +54,27 @@ const RealmProvider = (props: any) => {
     setRealmUser(user);
     setIsSyncCompleted(false);
 
+    const currentDate = new Date();
+    const storedSyncDate = (await storageService.getItem(
+      lastLocalSyncDateStorageKey,
+    )) as string;
+    const lastLocalSyncDate = storedSyncDate
+      ? new Date(storedSyncDate)
+      : undefined;
+
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
       partitionValue,
+      lastLocalSyncDate,
     });
 
     setTimeout(() => {
       setIsSyncCompleted(true);
     }, 2000);
     syncRealm.current = newRealm;
+
+    await storageService.setItem(lastLocalSyncDateStorageKey, currentDate);
     await trace.stop();
   };
 
@@ -113,18 +128,16 @@ const syncLocalData = ({
   syncRealm,
   localRealm,
   partitionValue,
+  lastLocalSyncDate,
 }: {
   syncRealm?: Realm;
   localRealm?: Realm;
   partitionValue: string;
+  lastLocalSyncDate: Date | undefined;
 }) => {
   if (!syncRealm || !localRealm) {
     return;
   }
-
-  const syncDate = new Date(
-    'Tue Oct 11 2020 09:26:43 GMT+0100 (West Africa Standard Time)',
-  );
 
   normalizeDb({partitionKey: partitionValue, realm: localRealm});
 
@@ -132,19 +145,21 @@ const syncLocalData = ({
     sourceRealm: localRealm,
     targetRealm: syncRealm,
     partitionValue,
-    syncDate,
+    lastSyncDate: lastLocalSyncDate,
   });
+
   copyRealm({
     sourceRealm: syncRealm,
     targetRealm: localRealm,
     partitionValue,
-    syncDate,
   });
+
   syncRealmDbs({
     sourceRealm: localRealm,
     targetRealm: syncRealm,
     partitionValue,
   });
+
   syncRealmDbs({
     sourceRealm: syncRealm,
     targetRealm: localRealm,
