@@ -4,7 +4,6 @@ import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
@@ -14,7 +13,6 @@ import {useRealm} from '@/services/realm';
 import {
   getReceipts,
   getReceiptsTotalProductQuantity,
-  saveReceipt,
 } from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
@@ -133,20 +131,21 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   );
 
   const onSnapReceipt = useCallback(() => {
-    handleSnapReceipt((uri) =>
-      saveReceipt({
-        realm,
-        tax: 0,
-        payments: [],
-        amountPaid: 0,
-        totalAmount: 0,
-        creditAmount: 0,
-        receiptItems: [],
-        local_image_url: uri,
-        customer: {} as ICustomer,
-      }),
-    );
-  }, [handleSnapReceipt, realm]);
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
+    // handleSnapReceipt((uri) =>
+    //   saveReceipt({
+    //     realm,
+    //     tax: 0,
+    //     payments: [],
+    //     amountPaid: 0,
+    //     totalAmount: 0,
+    //     creditAmount: 0,
+    //     receiptItems: [],
+    //     local_image_url: uri,
+    //     customer: {} as ICustomer,
+    //   }),
+    // );
+  }, []);
 
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('full', {

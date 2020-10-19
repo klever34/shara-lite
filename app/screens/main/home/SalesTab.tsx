@@ -31,7 +31,7 @@ const statusFilters: StatusFilter[] = [
   {label: 'All', value: 'all'},
   {label: 'Unpaid', value: 'unpaid'},
   {label: 'Paid', value: 'paid'},
-  {label: 'Pending', value: 'pending'},
+  // {label: 'Pending', value: 'pending'},
   {label: 'Cancelled', value: 'cancelled'},
 ];
 

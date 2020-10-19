@@ -27,7 +27,14 @@ import {colors} from '@/styles';
 import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Text,
+  TextInput,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {AddCustomer} from '../main/customers';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
 import {ReceiptPreviewModal} from './ReceiptPreviewModal';
@@ -44,7 +51,7 @@ export const CreateReceipt = withModal((props: Props) => {
     receipt,
     openModal,
     closeReceiptModal,
-    onSnapReceipt,
+    // onSnapReceipt,
     initialCustomer,
   } = props;
 
@@ -66,7 +73,10 @@ export const CreateReceipt = withModal((props: Props) => {
   const [customer, setCustomer] = useState<ICustomer>(
     receipt?.customer || ({} as ICustomer),
   );
-  const [snappedReceipt, setSnappedReceipt] = useState('');
+  const [
+    snappedReceipt,
+    // setSnappedReceipt,
+  ] = useState('');
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
   const tax = 0;
@@ -241,8 +251,9 @@ export const CreateReceipt = withModal((props: Props) => {
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
   const handleSnapReceipt = useCallback(() => {
-    onSnapReceipt && onSnapReceipt((uri) => setSnappedReceipt(uri));
-  }, [onSnapReceipt]);
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
+    // onSnapReceipt?.((uri) => setSnappedReceipt(uri));
+  }, []);
 
   const handleSaveReceipt = useCallback(() => {
     setIsSaving(true);
