@@ -69,7 +69,6 @@ export const ReceiptPreview = withModal(
       receipt?.customer,
     );
     const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
-    const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
     const [isCancelReceiptModalOpen, setIsCancelReceiptModalOpen] = useState(
       false,
     );
@@ -159,16 +158,8 @@ export const ReceiptPreview = withModal(
       handleWhatsappShare();
     }, [analyticsService, receipt, handleWhatsappShare]);
 
-    const handleOpenContactListModal = useCallback(() => {
-      setIsContactListModalOpen(true);
-    }, []);
-
-    const handleCloseContactListModal = useCallback(() => {
-      setIsContactListModalOpen(false);
-    }, []);
-
     const handleSetCustomer = useCallback(
-      (value?: ICustomer) => {
+      (value?: ICustomer, callback?: () => void) => {
         if (customers.map((item) => item.mobile).includes(value?.mobile)) {
           const newCustomer = customers.find(
             (item) => item.mobile === value?.mobile,
@@ -192,9 +183,9 @@ export const ReceiptPreview = withModal(
               customer: newCustomer,
             });
         }
-        handleCloseContactListModal();
+        callback && callback();
       },
-      [customers, realm, receipt, handleCloseContactListModal],
+      [customers, realm, receipt],
     );
 
     const handleCreditPaymentAmountChange = useCallback((amount) => {
@@ -427,6 +418,23 @@ export const ReceiptPreview = withModal(
       }
     }, [handleOpenPrinterModal, handlePrint, printer]);
 
+    const handleOpenContactList = useCallback(() => {
+      const closeContactListModal = openModal('bottom-half', {
+        swipeDirection: [],
+        renderContent: () => (
+          <ContactsListModal<ICustomer>
+            entity="Customer"
+            onClose={closeContactListModal}
+            createdData={(customers as unknown) as ICustomer[]}
+            onAddNew={() => navigation.navigate('AddCustomer')}
+            onContactSelect={(data) =>
+              handleSetCustomer(data, closeContactListModal)
+            }
+          />
+        ),
+      });
+    }, [customers, handleSetCustomer, navigation, openModal]);
+
     const handleReissueReceipt = useCallback(() => {
       const closeModal = openModal('full', {
         renderContent: () => (
@@ -491,7 +499,7 @@ export const ReceiptPreview = withModal(
         {!receipt?.isPending && (
           <View style={applyStyles('px-xl mb-md')}>
             {!receipt?.is_cancelled && !hasCustomer && (
-              <Touchable onPress={handleOpenContactListModal}>
+              <Touchable onPress={handleOpenContactList}>
                 <View
                   style={applyStyles('center px-lg', {
                     height: 40,
@@ -724,14 +732,6 @@ export const ReceiptPreview = withModal(
           visible={isPrintingModalOpen}
           onPrintReceipt={handlePrint}
           onClose={handleClosePrinterModal}
-        />
-        <ContactsListModal<ICustomer>
-          entity="Customer"
-          createdData={(customers as unknown) as ICustomer[]}
-          visible={isContactListModalOpen}
-          onClose={handleCloseContactListModal}
-          onAddNew={() => navigation.navigate('AddCustomer')}
-          onContactSelect={(data) => handleSetCustomer(data)}
         />
         <CancelReceiptModal
           isVisible={isCancelReceiptModalOpen}

@@ -1,15 +1,16 @@
-import {ContactsListModal} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {HeaderRight} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {
-  applyStyles,
   amountWithCurrency,
+  applyStyles,
   prepareValueForSearch,
 } from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
+import {useAsync} from '@/services/api';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
@@ -31,8 +32,6 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {useAsync} from '@/services/api';
 
 type CustomerListItem =
   | Pick<
@@ -56,7 +55,6 @@ export const CustomersScreen = withModal(
     const realm = useRealm() as Realm;
     const myCustomers = getCustomers({realm});
     const analyticsService = getAnalyticsService();
-    const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
     const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
     const {run: runGetPhoneContacts, loading} = useAsync(
       getPhoneContactsPromiseFn,
@@ -89,10 +87,6 @@ export const CustomersScreen = withModal(
         );
       });
     }, [runGetPhoneContacts, realm]);
-
-    const handleCloseContactListModal = useCallback(() => {
-      setIsContactListModalOpen(false);
-    }, []);
 
     const handleSelectCustomer = useCallback(
       (item?: ICustomer) => {
@@ -303,10 +297,6 @@ export const CustomersScreen = withModal(
       ],
       [myCustomers, phoneContacts],
     );
-    const onContactSelect = useCallback(
-      (contact?: ICustomer) => contact && handleCreateCustomer(contact),
-      [handleCreateCustomer],
-    );
     const keyExtractor = useCallback((item) => {
       if (!item) {
         return '';
@@ -338,14 +328,6 @@ export const CustomersScreen = withModal(
           renderSectionHeader={renderCustomerListSectionHeader}
           keyExtractor={keyExtractor}
           sections={sections}
-        />
-        <ContactsListModal<ICustomer>
-          entity="Customer"
-          createdData={(myCustomers as unknown) as ICustomer[]}
-          visible={isContactListModalOpen}
-          onClose={handleCloseContactListModal}
-          onAddNew={() => navigation.navigate('AddCustomer')}
-          onContactSelect={onContactSelect}
         />
       </View>
     );
