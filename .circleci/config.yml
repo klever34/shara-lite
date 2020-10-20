@@ -1,6 +1,6 @@
 version: 2.1
 workflows:
-  internal-workflow:
+  testing-workflow:
     jobs:
       - checkout_code:
           context: shara-test
