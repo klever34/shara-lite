@@ -446,7 +446,7 @@ export const ReceiptItemModalContent = (props: Props) => {
         payload = addReceiptItemPrice(payload);
         setReceiptItem(payload);
         onDone(payload);
-        closeModal();
+        closeModal?.();
       }
     },
     [item, receiptItem, section, addReceiptItemPrice, onDone, closeModal],
