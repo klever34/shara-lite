@@ -720,7 +720,7 @@ export const ReceiptPreview = withModal(
                           color: colors['gray-200'],
                         },
                       )}>
-                      email
+                      more
                     </Text>
                   </View>
                 </Touchable>

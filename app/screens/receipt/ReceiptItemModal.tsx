@@ -243,7 +243,7 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
               <TextInput
                 value={name}
                 onChangeText={(text) => handleNameChange(text)}
-                style={applyStyles('px-12 py-0 mb-96 text-400', {
+                style={applyStyles('px-12 py-0 mb-56 text-400', {
                   fontSize: 16,
                 })}
                 placeholder="Enter item name here..."
@@ -301,7 +301,7 @@ const ItemUnitPriceSection = ({
 
   return (
     <View>
-      <View style={applyStyles('pb-96')}>
+      <View style={applyStyles('pb-56')}>
         <View style={applyStyles('mx-12 py-0', {fontSize: 16})}>
           <CurrencyInput
             value={price.toString()}
@@ -337,7 +337,7 @@ const ItemQuantitySection = ({
 
   return (
     <View>
-      <View style={applyStyles('pt-16 pb-96')}>
+      <View style={applyStyles('pt-16 pb-56')}>
         <TextInput
           value={quantity}
           keyboardType="numeric"
@@ -367,7 +367,7 @@ const ItemNoteSection = ({onNext, onPrevious}: SectionProps) => {
 
   return (
     <View>
-      <View style={applyStyles('pt-16 pb-96')}>
+      <View style={applyStyles('pt-16 pb-56')}>
         <TextInput
           multiline
           value={note}
@@ -458,7 +458,7 @@ export const ReceiptItemModalContent = (props: Props) => {
         style={applyStyles(
           'px-xs bg-white flex-row items-center justify-between',
           {
-            height: 80,
+            height: 64,
             elevation: 3,
           },
         )}>
