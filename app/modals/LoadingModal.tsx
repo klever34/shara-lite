@@ -1,11 +1,11 @@
 import React from 'react';
-import {applyStyles} from '../helpers/utils';
+import {applyStyles} from '@/helpers/utils';
 import {ActivityIndicator, Text, View} from 'react-native';
-import {colors} from '../styles';
+import {colors} from '@/styles';
 import Modal from 'react-native-modal';
-import {BaseModalProps, ModalPropsList} from '../../types/modal';
+import {BaseModalProps, ModalOptionsList} from 'types/modal';
 
-type LoadingModalProps = ModalPropsList['loading'] & BaseModalProps;
+type LoadingModalProps = ModalOptionsList['loading'] & BaseModalProps;
 
 const LoadingModal = ({text, visible = false}: LoadingModalProps) => {
   return (

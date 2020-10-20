@@ -1,6 +1,6 @@
 import {ReactNode} from 'react';
 import {SearchableDropdownProps} from '@/components/SearchableDropdown';
-import {Direction} from 'react-native-modal';
+import {Direction, ModalProps} from 'react-native-modal';
 
 type BaseModalProps = {
   visible?: boolean;
@@ -10,25 +10,33 @@ type BaseModalProps = {
 type BottomHalfContentProps = {closeModal?: () => void};
 type FullModalContentProps = {closeModal?: () => void};
 
-type ModalPropsList = {
-  loading: {
-    text: string;
-  };
-  'bottom-half': {
-    animationInTiming?: number;
-    animationOutTiming?: number;
-    swipeDirection?: Direction | Array<Direction>;
-    renderContent: (props: BottomHalfContentProps) => ReactNode;
-  };
-  full: {
-    animationInTiming?: number;
-    animationOutTiming?: number;
-    renderContent: (props: FullModalContentProps) => ReactNode;
-  };
-  options: {
-    options: {text: string; onPress: () => void}[];
-  };
-  search: SearchableDropdownProps;
+type BaseModalOptions = {
+  onCloseModal?: () => void;
 };
 
-type ModalVisibilityList = Record<keyof ModalPropsList, boolean>;
+type ModalOptionsList = {
+  loading: Partial<ModalProps> &
+    BaseModalOptions & {
+      text: string;
+    };
+  'bottom-half': Partial<ModalProps> &
+    BaseModalOptions & {
+      animationInTiming?: number;
+      animationOutTiming?: number;
+      swipeDirection?: Direction | Array<Direction>;
+      renderContent: (props: BottomHalfContentProps) => ReactNode;
+    };
+  full: Partial<ModalProps> &
+    BaseModalOptions & {
+      animationInTiming?: number;
+      animationOutTiming?: number;
+      renderContent: (props: FullModalContentProps) => ReactNode;
+    };
+  options: Partial<ModalProps> &
+    BaseModalOptions & {
+      options: {text: string; onPress: () => void}[];
+    };
+  search: Partial<ModalProps> & BaseModalOptions & SearchableDropdownProps;
+};
+
+type ModalVisibilityList = Record<keyof ModalOptionsList, boolean>;

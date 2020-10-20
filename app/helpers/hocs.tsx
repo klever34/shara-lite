@@ -6,23 +6,23 @@ import React, {
   useState,
 } from 'react';
 import LoadingModal from '../modals/LoadingModal';
-import {ModalPropsList, ModalVisibilityList} from 'types/modal';
+import {ModalOptionsList, ModalVisibilityList} from 'types/modal';
 import BottomHalfModal from '../modals/BottomHalfModal';
 import OptionsModal from '../modals/OptionsModal';
 import FullModal from '@/modals/FullModal';
 import SearchModal from '@/modals/SearchModal';
 
-type OpenModal = <K extends keyof ModalPropsList>(
+type OpenModal = <K extends keyof ModalOptionsList>(
   modalType: K,
-  modalProps: ModalPropsList[K],
-) => (callback?: () => void) => void;
+  modalProps: ModalOptionsList[K],
+) => () => void;
 
 export type ModalWrapperFields = {
   openModal: OpenModal;
   closeModal: () => void;
 };
 
-const defaultModalPropsList: ModalPropsList = {
+const defaultModalPropsList: ModalOptionsList = {
   loading: {text: ''},
   'bottom-half': {
     renderContent: () => null,
@@ -62,19 +62,18 @@ export const withModal = (Component: ElementType) => (
   const [modalVisibility, setModalVisibility] = useState<ModalVisibilityList>(
     defaultModalVisibility,
   );
-  const [modalPropsList, setModalPropsList] = useState<ModalPropsList>(
+  const [modalPropsList, setModalPropsList] = useState<ModalOptionsList>(
     defaultModalPropsList,
   );
 
-  const closeModal = useCallback((callback = () => {}) => {
+  const closeModal = useCallback(() => {
     setModalVisibility(defaultModalVisibility);
     setModalPropsList(defaultModalPropsList);
-    typeof callback === 'function' && callback();
   }, []);
   const openModal = useCallback(
     (
-      modalType: keyof ModalPropsList,
-      modalProps: ModalPropsList[typeof modalType],
+      modalType: keyof ModalOptionsList,
+      modalProps: ModalOptionsList[typeof modalType],
     ) => {
       setModalPropsList((prevModalPropsList) => {
         return {
