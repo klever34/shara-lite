@@ -6225,10 +6225,10 @@ realm-network-transport@^0.7.0:
     abort-controller "^3.0.0"
     node-fetch "^2.6.0"
 
-realm@10.0.0-beta.12:
-  version "10.0.0-beta.12"
-  resolved "https://registry.yarnpkg.com/realm/-/realm-10.0.0-beta.12.tgz#f7d0947299a7f7fc44a75c591b5fb38a47423102"
-  integrity sha512-kPqLbXPEH+JpKuWVysJJHitLDPYNSndqamwy74KHUF16H8IoS2UlKowxocrS3BuCkcZ9RPnSjC6RtLL/tP1o3g==
+realm@10.0.1:
+  version "10.0.1"
+  resolved "https://registry.yarnpkg.com/realm/-/realm-10.0.1.tgz#0b7ef72043f71d23ba3768635838e04a86827e1b"
+  integrity sha512-o3dUNZgydUcAIKsXd2QkoRuM1awmx0i56QUy9xbmpOB2CdvgbpX7fPb9cmusjVYml2tNbhu2EGF8jB0Tem8M6A==
   dependencies:
     bson "^4.0.3"
     command-line-args "^4.0.6"
