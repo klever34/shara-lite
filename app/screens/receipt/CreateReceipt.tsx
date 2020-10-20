@@ -43,9 +43,9 @@ export const CreateReceipt = withModal((props: Props) => {
   const {
     receipt,
     openModal,
-    closeReceiptModal,
     onSnapReceipt,
     initialCustomer,
+    closeReceiptModal,
   } = props;
 
   const realm = useRealm();

@@ -1,6 +1,7 @@
 import {AuthView, BusinessForm, BusinessFormPayload} from '@/components';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getAuthService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
 import React, {useCallback} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert, ToastAndroid} from 'react-native';
@@ -9,6 +10,7 @@ export const BusinessSettings = () => {
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const apiService = getApiService();
+  const navigation = useAppNavigation();
 
   const user = authService.getUser();
   const {name, id, mobile, address, profile_image} = user?.businesses
@@ -42,11 +44,12 @@ export const BusinessSettings = () => {
           'Business settings update successful',
           ToastAndroid.SHORT,
         );
+        navigation.goBack();
       } catch (error) {
         Alert.alert('Error', error.message);
       }
     },
-    [user, apiService, id, handleError],
+    [user, apiService, navigation, id, handleError],
   );
 
   return (
