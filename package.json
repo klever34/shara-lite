@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.60-discovery",
+  "version": "0.2.60-bugfix.contacts-permission-caching+build.3762",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -41,9 +41,9 @@
     "pubnub": "^4.28.1",
     "pubnub-react": "^2.0.0",
     "query-string": "^6.13.1",
-    "react": "16.11.0",
+    "react": "16.13.1",
     "react-error-boundary": "^2.3.1",
-    "react-native": "0.62.2",
+    "react-native": "0.63.3",
     "react-native-background-fetch": "^3.1.0",
     "react-native-bluetooth-escpos-printer": "^0.0.5",
     "react-native-config": "^1.2.1",
@@ -72,7 +72,7 @@
     "react-native-view-shot": "^3.1.2",
     "react-native-webview": "^10.3.2",
     "readable-stream": "1.0.33",
-    "realm": "10.0.1",
+    "realm": "10.0.0-beta.12",
     "rn-fetch-blob": "^0.12.0",
     "rsdi": "^1.0.5",
     "uuid": "^8.2.0",

@@ -45,6 +45,9 @@ export class ContactService implements IContactService {
   private permissionGranted: boolean = false;
 
   private async checkPermission() {
+    this.permissionGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+    );
     if (!this.permissionGranted) {
       return new Promise((resolve) => {
         Alert.alert(

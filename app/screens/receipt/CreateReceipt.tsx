@@ -67,7 +67,6 @@ export const CreateReceipt = withModal((props: Props) => {
     receipt?.customer || ({} as ICustomer),
   );
   const [snappedReceipt, setSnappedReceipt] = useState('');
-  const [isContactListModalOpen, setIsContactListModalOpen] = useState(false);
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
   const tax = 0;
@@ -113,9 +112,9 @@ export const CreateReceipt = withModal((props: Props) => {
     [handleCloseAddCustomerModal],
   );
 
-  const handleContactSelect = useCallback((newCustomer) => {
+  const handleContactSelect = useCallback((newCustomer, callback) => {
     setCustomer(newCustomer);
-    setIsContactListModalOpen(false);
+    callback();
   }, []);
 
   const handleUpdateReceiptItem = useCallback(
@@ -223,6 +222,23 @@ export const CreateReceipt = withModal((props: Props) => {
     },
     [openModal, closeReceiptModal],
   );
+
+  const handleOpenContactList = useCallback(() => {
+    const closeContactListModal = openModal('bottom-half', {
+      swipeDirection: [],
+      renderContent: () => (
+        <ContactsListModal<ICustomer>
+          entity="Customer"
+          onClose={closeContactListModal}
+          onAddNew={handleOpenAddCustomerModal}
+          onContactSelect={(data) =>
+            handleContactSelect(data, closeContactListModal)
+          }
+          createdData={(myCustomers as unknown) as ICustomer[]}
+        />
+      ),
+    });
+  }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
   const handleSnapReceipt = useCallback(() => {
     onSnapReceipt && onSnapReceipt((uri) => setSnappedReceipt(uri));
@@ -339,11 +355,7 @@ export const CreateReceipt = withModal((props: Props) => {
 
             <View style={applyStyles({paddingBottom: 32})}>
               <Touchable
-                onPress={
-                  initialCustomer
-                    ? undefined
-                    : () => setIsContactListModalOpen(true)
-                }>
+                onPress={initialCustomer ? undefined : handleOpenContactList}>
                 <View style={applyStyles('px-lg py-lg flex-row items-center')}>
                   <Text
                     style={applyStyles('text-400', {
@@ -546,15 +558,6 @@ export const CreateReceipt = withModal((props: Props) => {
             </View>
           </>
         }
-      />
-
-      <ContactsListModal<ICustomer>
-        entity="Customer"
-        visible={isContactListModalOpen}
-        onAddNew={handleOpenAddCustomerModal}
-        onContactSelect={handleContactSelect}
-        onClose={() => setIsContactListModalOpen(false)}
-        createdData={(myCustomers as unknown) as ICustomer[]}
       />
 
       <PageModal

@@ -34,11 +34,19 @@ export const shouldUpdateRealmObject = ({
   sourceObject: any;
   targetRealm: Realm;
   modelName: string;
-}) => {
+}): boolean => {
+  if (!sourceObject.isValid()) {
+    return false;
+  }
+
   const targetRecord = targetRealm.objectForPrimaryKey(
     modelName,
     sourceObject._id,
-  ) as BaseModelInterface;
+  ) as BaseModelInterface & {isValid: () => boolean};
+
+  if (targetRecord && !targetRecord.isValid()) {
+    return false;
+  }
 
   return (
     !targetRecord ||

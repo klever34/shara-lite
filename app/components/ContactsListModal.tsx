@@ -1,5 +1,4 @@
 import {applyStyles} from '@/helpers/utils';
-import BottomHalfModal from '@/modals/BottomHalfModal';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -25,7 +24,6 @@ import Icon from './Icon';
 import Touchable from './Touchable';
 
 type Props<T> = {
-  visible: boolean;
   entity?: string;
   onClose: () => void;
   createdData?: T[];
@@ -98,7 +96,6 @@ const ContactListItem = memo(
 const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
 
 export function ContactsListModal<T>({
-  visible,
   onClose,
   entity,
   onAddNew,
@@ -306,116 +303,104 @@ export function ContactsListModal<T>({
   }, []);
 
   return (
-    <BottomHalfModal
-      visible={visible}
-      swipeDirection={[]}
-      closeModal={handleClose}
-      renderContent={({closeModal}) => (
-        <View>
-          <SectionList
-            sections={sections}
-            persistentScrollbar
-            initialNumToRender={10}
-            keyExtractor={keyExtractor}
-            renderItem={renderCustomerListItem}
-            renderSectionHeader={renderCustomerListSectionHeader}
-            ListHeaderComponent={
-              <View style={applyStyles('bg-white')}>
-                <View
-                  style={applyStyles(
-                    'py-md px-lg flex-row items-center justify-between',
-                    {
-                      borderBottomWidth: 1,
-                      borderBottomColor: colors['gray-20'],
-                    },
-                  )}>
-                  <View style={applyStyles({width: '48%'})}>
-                    <Text
-                      style={applyStyles('text-700 text-xs text-uppercase')}>
-                      Select a Customer
-                    </Text>
-                  </View>
-                  <View style={applyStyles({width: '48%'})}>
-                    {onAddNew && (
-                      <Button onPress={handleAddNew}>
-                        <View
-                          style={applyStyles('flex-row px-sm items-center')}>
-                          <Icon
-                            size={16}
-                            name="plus"
-                            type="feathericons"
-                            color={colors.white}
-                          />
-                          <Text
-                            style={applyStyles(
-                              'text-400 text-xs text-uppercase ',
-                              {
-                                color: colors.white,
-                              },
-                            )}>
-                            Create {entity}
-                          </Text>
-                        </View>
-                      </Button>
-                    )}
-                  </View>
-                </View>
-                <View style={styles.searchContainer}>
-                  <View style={styles.searchInputContainer}>
-                    <Icon
-                      size={24}
-                      style={styles.searchInputIcon}
-                      type="feathericons"
-                      name="search"
-                      color={colors.primary}
-                    />
-                    <TextInput
-                      value={searchInputValue}
-                      onChangeText={handleSearch}
-                      placeholder="Search for customer here..."
-                      placeholderTextColor={colors['gray-50']}
-                      style={applyStyles(styles.searchInput, 'text-400')}
-                    />
-                  </View>
-                </View>
-              </View>
-            }
-            ListEmptyComponent={
-              <View
-                style={applyStyles('items-center', 'justify-center', {
-                  paddingVertical: 40,
-                })}>
-                <Text
-                  style={applyStyles('heading-700', 'text-center', {
-                    color: colors['gray-300'],
-                  })}>
-                  No results found
+    <View>
+      <SectionList
+        sections={sections}
+        persistentScrollbar
+        initialNumToRender={10}
+        keyExtractor={keyExtractor}
+        renderItem={renderCustomerListItem}
+        renderSectionHeader={renderCustomerListSectionHeader}
+        ListHeaderComponent={
+          <View style={applyStyles('bg-white')}>
+            <View
+              style={applyStyles(
+                'py-md px-lg flex-row items-center justify-between',
+                {
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors['gray-20'],
+                },
+              )}>
+              <View style={applyStyles({width: '48%'})}>
+                <Text style={applyStyles('text-700 text-xs text-uppercase')}>
+                  Select a Customer
                 </Text>
               </View>
-            }
-            ListFooterComponent={
-              <View>
-                <Button
-                  onPress={closeModal}
-                  variantColor="clear"
-                  style={applyStyles({
-                    width: '100%',
-                    borderTopWidth: 1,
-                    borderTopColor: colors['gray-20'],
-                  })}>
-                  <Text
-                    style={applyStyles('text-400', 'text-uppercase', {
-                      color: colors.primary,
-                    })}>
-                    Close
-                  </Text>
-                </Button>
+              <View style={applyStyles({width: '48%'})}>
+                {onAddNew && (
+                  <Button onPress={handleAddNew}>
+                    <View style={applyStyles('flex-row px-sm items-center')}>
+                      <Icon
+                        size={16}
+                        name="plus"
+                        type="feathericons"
+                        color={colors.white}
+                      />
+                      <Text
+                        style={applyStyles('text-400 text-xs text-uppercase ', {
+                          color: colors.white,
+                        })}>
+                        Create {entity}
+                      </Text>
+                    </View>
+                  </Button>
+                )}
               </View>
-            }
-          />
-        </View>
-      )}
-    />
+            </View>
+            <View style={styles.searchContainer}>
+              <View style={styles.searchInputContainer}>
+                <Icon
+                  size={24}
+                  style={styles.searchInputIcon}
+                  type="feathericons"
+                  name="search"
+                  color={colors.primary}
+                />
+                <TextInput
+                  value={searchInputValue}
+                  onChangeText={handleSearch}
+                  placeholder="Search for customer here..."
+                  placeholderTextColor={colors['gray-50']}
+                  style={applyStyles(styles.searchInput, 'text-400')}
+                />
+              </View>
+            </View>
+          </View>
+        }
+        ListEmptyComponent={
+          <View
+            style={applyStyles('items-center', 'justify-center', {
+              paddingVertical: 40,
+            })}>
+            <Text
+              style={applyStyles('heading-700', 'text-center', {
+                color: colors['gray-300'],
+              })}>
+              No results found
+            </Text>
+          </View>
+        }
+        ListFooterComponent={
+          <View>
+            <Button
+              onPress={handleClose}
+              variantColor="clear"
+              style={applyStyles({
+                width: '100%',
+                borderTopWidth: 1,
+                borderTopColor: colors['gray-20'],
+              })}>
+              <Text
+                style={applyStyles('text-400', 'text-uppercase', {
+                  color: colors.primary,
+                })}>
+                Close
+              </Text>
+            </Button>
+          </View>
+        }
+      />
+    </View>
   );
 }
 
