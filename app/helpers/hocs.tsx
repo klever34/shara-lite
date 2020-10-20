@@ -75,7 +75,7 @@ export const withModal = (Component: ElementType) => (
       modalType: keyof ModalOptionsList,
       modalProps: ModalOptionsList[typeof modalType],
     ) => {
-      setModalPropsList((prevModalPropsList) => {
+      setModalPropsList((prevModalPropsList: any) => {
         return {
           ...prevModalPropsList,
           [modalType]: modalProps,
