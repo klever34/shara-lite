@@ -63,6 +63,8 @@ export const ItemsTab = withModal(({openModal}: Props) => {
 
   const handleOpenReceiptItemModal = useCallback(() => {
     const closeReceiptItemModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <ReceiptItemModalContent
           type="item"
@@ -82,6 +84,8 @@ export const ItemsTab = withModal(({openModal}: Props) => {
         })
         .catch(handleError);
       const closeReceiptItemModal = openModal('full', {
+        animationInTiming: 0.1,
+        animationOutTiming: 0.1,
         renderContent: () => (
           <ReceiptItemModalContent
             item={item}

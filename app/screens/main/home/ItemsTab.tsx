@@ -149,6 +149,8 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
 
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <CreateReceipt
           closeReceiptModal={closeModal}

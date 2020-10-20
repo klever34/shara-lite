@@ -15,10 +15,14 @@ type ModalPropsList = {
     text: string;
   };
   'bottom-half': {
+    animationInTiming?: number;
+    animationOutTiming?: number;
     swipeDirection?: Direction | Array<Direction>;
     renderContent: (props: BottomHalfContentProps) => ReactNode;
   };
   full: {
+    animationInTiming?: number;
+    animationOutTiming?: number;
     renderContent: (props: FullModalContentProps) => ReactNode;
   };
   options: {

@@ -180,6 +180,8 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptItemModal = useCallback(() => {
     const closeReceiptItemModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <ReceiptItemModalContent
           //@ts-ignore
@@ -199,6 +201,8 @@ export const CreateReceipt = withModal((props: Props) => {
         })
         .catch(handleError);
       const closeReceiptItemModal = openModal('full', {
+        animationInTiming: 0.1,
+        animationOutTiming: 0.1,
         renderContent: () => (
           <ReceiptItemModalContent
             item={item}
@@ -219,6 +223,8 @@ export const CreateReceipt = withModal((props: Props) => {
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
       const closeReceiptPreviewModal = openModal('full', {
+        animationInTiming: 0.1,
+        animationOutTiming: 0.1,
         renderContent: () => (
           <ReceiptPreviewModal
             receiptId={item._id}

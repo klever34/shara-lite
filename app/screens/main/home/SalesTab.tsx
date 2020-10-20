@@ -267,11 +267,13 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   const handleOpenCreateReciptModal = useCallback(() => {
-    const closeModal = openModal('full', {
+    const closeCreateReceiptModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <CreateReceipt
-          closeReceiptModal={closeModal}
           onSnapReceipt={handleSnapReceipt}
+          closeReceiptModal={closeCreateReceiptModal}
         />
       ),
     });

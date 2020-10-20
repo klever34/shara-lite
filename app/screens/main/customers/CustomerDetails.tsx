@@ -107,6 +107,8 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const handleOpenModal = useCallback(() => {
     const closeModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <CreateReceipt
           initialCustomer={customer}
