@@ -56,7 +56,7 @@ export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
     },
     onSubmit: (payload) => {
       const {countryCode, mobile, ...rest} = payload;
-      onSubmit({mobile: `${countryCode}${mobile}`, ...rest});
+      onSubmit({mobile: `${countryCode}${mobile}`, countryCode, ...rest});
     },
   });
 

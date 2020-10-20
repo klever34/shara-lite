@@ -13,13 +13,28 @@ export const BusinessSettings = () => {
   const navigation = useAppNavigation();
 
   const user = authService.getUser();
-  const {name, id, mobile, address, profile_image} = user?.businesses
+  const {
+    name,
+    id,
+    mobile,
+    address,
+    countryCode,
+    profile_image,
+  } = user?.businesses
     ? user?.businesses[0]
-    : {name: '', mobile: '', address: '', profile_image: {url: ''}, id: ''};
+    : {
+        name: '',
+        mobile: '',
+        address: '',
+        countryCode: '',
+        profile_image: {url: ''},
+        id: '',
+      };
   const businessFormIntialValues = {
     name,
     mobile,
     address,
+    countryCode,
     profileImageFile: {uri: profile_image?.url},
   } as BusinessFormPayload;
 
@@ -27,8 +42,9 @@ export const BusinessSettings = () => {
     async (data?: BusinessFormPayload) => {
       const payload = new FormData();
       payload.append('name', data?.name);
-      data?.mobile && payload.append('mobile', data?.mobile);
       payload.append('address', data?.address);
+      data?.mobile && payload.append('mobile', data?.mobile);
+      data?.countryCode && payload.append('countryCode', data?.countryCode);
       data?.profileImageFile &&
         Object.keys(data?.profileImageFile).length > 1 &&
         payload.append('profileImageFile', data?.profileImageFile);
