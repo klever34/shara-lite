@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.2.58-discovery",
+  "version": "0.2.58-feature.realm-version-upgrade-v10.0.1+build.3697",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
