@@ -7,7 +7,7 @@ import {useRealm} from '@/services/realm';
 import {getReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import React, {useEffect, useState} from 'react';
-import {ScrollView, View, BackHandler} from 'react-native';
+import {ScrollView, View} from 'react-native';
 
 type Props = {
   closeModal(): void;
@@ -23,20 +23,6 @@ export const ReceiptPreviewModal = ({receiptId, closeModal}: Props) => {
     const retrievedRecipt = receiptId && getReceipt({realm, receiptId});
     setReceipt(retrievedRecipt);
   }, [realm, receiptId]);
-
-  useEffect(() => {
-    const backAction = () => {
-      closeModal();
-      return true;
-    };
-
-    const backHandler = BackHandler.addEventListener(
-      'hardwareBackPress',
-      backAction,
-    );
-
-    return () => backHandler.remove();
-  }, [closeModal]);
 
   return (
     <ScrollView

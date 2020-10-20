@@ -229,8 +229,7 @@ export const CreateReceipt = withModal((props: Props) => {
           <ReceiptPreviewModal
             receiptId={item._id}
             closeModal={() => {
-              closeReceiptPreviewModal();
-              closeReceiptModal();
+              closeReceiptPreviewModal(closeReceiptModal);
             }}
           />
         ),

@@ -15,7 +15,7 @@ import SearchModal from '@/modals/SearchModal';
 type OpenModal = <K extends keyof ModalPropsList>(
   modalType: K,
   modalProps: ModalPropsList[K],
-) => () => void;
+) => (callback?: () => void) => void;
 
 export type ModalWrapperFields = {
   openModal: OpenModal;
@@ -66,9 +66,10 @@ export const withModal = (Component: ElementType) => (
     defaultModalPropsList,
   );
 
-  const closeModal = useCallback(() => {
+  const closeModal = useCallback((callback = () => {}) => {
     setModalVisibility(defaultModalVisibility);
     setModalPropsList(defaultModalPropsList);
+    typeof callback === 'function' && callback();
   }, []);
   const openModal = useCallback(
     (
