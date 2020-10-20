@@ -90,6 +90,8 @@ const RealmProvider = (props: any) => {
         setRealmUser(undefined);
       }
     }
+
+    setIsSyncCompleted(false);
   };
 
   return (
