@@ -42,22 +42,6 @@ workflows:
                 - discovery
                 - /^release.*/
                 - shara-v2-designs
-      - fastlane:
-          context: shara-test
-          lane: testlab
-          gradleTask: assembleDevRelease
-          testBuild: true
-          requires:
-            - checkout_code
-            - test
-          filters:
-            branches:
-              ignore:
-                - master
-                - develop
-                - discovery
-                - /^release.*/
-                - shara-v2-designs
   discovery-workflow:
     jobs:
       - checkout_code:
