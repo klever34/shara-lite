@@ -1,7 +1,7 @@
 import Realm, {UpdateMode} from 'realm';
-import {IReceiptItem, modelName} from '../models/ReceiptItem';
-import {IReceipt} from '../models/Receipt';
-import {getBaseModelValues} from '../helpers/models';
+import {IReceipt} from '@/models/Receipt';
+import {getBaseModelValues} from '@/helpers/models';
+import {IReceiptItem, modelName} from '@/models/ReceiptItem';
 
 export const saveReceiptItem = ({
   realm,
@@ -26,4 +26,36 @@ export const saveReceiptItem = ({
   };
 
   realm.create<IReceiptItem>(modelName, receiptItemToSave, UpdateMode.Modified);
+};
+
+export const updateReceiptItem = ({
+  realm,
+  receiptItem,
+  updates,
+}: {
+  realm: Realm;
+  receiptItem: IReceiptItem;
+  updates: object;
+}) => {
+  const updatedReceiptItem = {
+    _id: receiptItem._id,
+    ...updates,
+    updated_at: new Date(),
+  };
+
+  realm.create(modelName, updatedReceiptItem, UpdateMode.Modified);
+};
+
+export const deleteReceiptItem = ({
+  realm,
+  receiptItem,
+}: {
+  realm: Realm;
+  receiptItem: IReceiptItem;
+}) => {
+  updateReceiptItem({
+    realm,
+    receiptItem,
+    updates: {is_deleted: true},
+  });
 };

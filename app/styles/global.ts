@@ -8,14 +8,20 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'flex-col': {
     flexDirection: 'column',
   },
+  'justify-start': {
+    justifyContent: 'flex-start',
+  },
   'justify-center': {
     justifyContent: 'center',
   },
   'justify-end': {
     justifyContent: 'flex-end',
   },
-  'justify-space-between': {
+  'justify-between': {
     justifyContent: 'space-between',
+  },
+  'justify-around': {
+    justifyContent: 'space-around',
   },
   'items-center': {
     alignItems: 'center',

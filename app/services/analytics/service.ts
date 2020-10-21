@@ -106,7 +106,7 @@ export class AnalyticsService implements IAnalyticsService {
         {},
       );
       userData.environment = Config.ENVIRONMENT;
-      userData.businessName = user.businesses?.[0]?.name;
+      userData.businessName = user.businesses?.[0]?.name ?? '';
       const alias = `${user.firstname} ${user?.lastname}`;
 
       RNUxcam.setUserIdentity(alias);
@@ -127,7 +127,7 @@ export class AnalyticsService implements IAnalyticsService {
 
   async logEvent<K extends keyof SharaAppEventsProperties>(
     eventName: K,
-    eventData?: SharaAppEventsProperties[K],
+    eventData: SharaAppEventsProperties[K],
   ): Promise<void> {
     let nextEventData;
     if (eventData) {

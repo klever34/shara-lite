@@ -1,312 +1,415 @@
-import {useNavigation} from '@react-navigation/native';
+import {applyStyles} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {getAnalyticsService, getContactService} from '@/services';
+import {useAsync} from '@/services/api';
+import {getCustomers, saveCustomer} from '@/services/customer';
+import {useRealm} from '@/services/realm';
+import {colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
   ActivityIndicator,
-  Alert,
-  FlatList,
-  Image,
   ListRenderItemInfo,
-  Modal,
+  SectionList,
+  SectionListProps,
   StyleSheet,
   Text,
+  TextInput,
+  ToastAndroid,
   View,
 } from 'react-native';
-import {Contact} from 'react-native-contacts';
-import {TextInput} from 'react-native-gesture-handler';
-import {applyStyles} from '@/helpers/utils';
-import {getContactService} from '@/services';
-import {colors} from '@/styles';
 import {Button} from './Button';
+import EmptyState from './EmptyState';
 import Icon from './Icon';
 import Touchable from './Touchable';
 
 type Props<T> = {
-  visible: boolean;
   entity?: string;
   onClose: () => void;
   createdData?: T[];
   onAddNew?: () => void;
-  onContactSelect?: (contact: Contact) => void;
+  onContactSelect?: (customer?: ICustomer) => void;
 };
 
+type CustomerListItem =
+  | Pick<ICustomer, 'name' | 'mobile' | '_id'>
+  | {
+      name: string;
+      mobile?: string;
+    };
+
+const ContactListItem = memo(
+  ({
+    customer,
+    onItemSelect,
+    onContactSelect,
+  }: {
+    customer: CustomerListItem;
+    onItemSelect: (item: CustomerListItem) => void;
+    onContactSelect: (item: CustomerListItem) => void;
+  }) => (
+    <Touchable
+      onPress={
+        '_id' in customer
+          ? () => {
+              getAnalyticsService().logEvent('selectContent', {
+                item_id: String(customer._id),
+                content_type: 'Customer',
+              });
+              return onItemSelect(customer);
+            }
+          : undefined
+      }>
+      <View
+        style={applyStyles(
+          'flex-row items-center border-b-1 border-gray-20 p-16',
+        )}>
+        <View style={applyStyles('flex-1')}>
+          <Text style={applyStyles('text-sm text-700 text-gray-300')}>
+            {customer.name}
+          </Text>
+          <Text style={applyStyles('text-sm text-400 text-gray-300')}>
+            {customer.mobile}
+          </Text>
+        </View>
+        {'_id' in customer ? null : (
+          <Touchable onPress={() => onContactSelect(customer)}>
+            <View
+              style={applyStyles(
+                'flex-row items-center bg-red-200 rounded-4 py-4 px-8',
+              )}>
+              <Icon
+                type="feathericons"
+                name="plus"
+                style={applyStyles('text-white mr-4')}
+                size={14}
+              />
+              <Text style={applyStyles('text-white text-400')}>Add</Text>
+            </View>
+          </Touchable>
+        )}
+      </View>
+    </Touchable>
+  ),
+);
+
+const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
+
 export function ContactsListModal<T>({
-  visible,
   onClose,
   entity,
   onAddNew,
-  createdData,
   onContactSelect,
 }: Props<T>) {
-  const navigation = useNavigation();
-  const [isLoading, setIsLoading] = useState(false);
-  const ref = useRef<{contacts: Contact[]}>({contacts: []});
-  const [contacts, setContacts] = useState<Contact[]>([]);
-  const [searchInputValue, setSearchInputValue] = useState('');
+  const realm = useRealm() as Realm;
+  const myCustomers = getCustomers({realm});
+  const analyticsService = getAnalyticsService();
 
-  useEffect(() => {
-    if (!visible) {
-      return;
+  const [searchInputValue, setSearchInputValue] = useState('');
+  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
+
+  const sectionData = useMemo(
+    () => [
+      {
+        data: myCustomers.length
+          ? orderBy(myCustomers, ['name'] as (keyof ICustomer)[], [
+              'desc',
+              'asc',
+            ])
+          : [],
+      },
+      {
+        title: 'Add from your phonebook',
+        data: orderBy(phoneContacts, ['name'] as (keyof CustomerListItem)[], [
+          'asc',
+        ]),
+      },
+    ],
+    [myCustomers, phoneContacts],
+  );
+  const [sections, setSections] = useState<SectionListProps<any>['sections']>(
+    sectionData,
+  );
+
+  const {run: runGetPhoneContacts, loading} = useAsync(
+    getPhoneContactsPromiseFn,
+    {
+      defer: true,
+    },
+  );
+
+  const keyExtractor = useCallback((item) => {
+    if (!item) {
+      return '';
     }
-    setIsLoading(true);
-    setTimeout(() => {
-      getContactService()
-        .getPhoneContacts()
-        .then((nextContacts: Contact[]) => {
-          setIsLoading(false);
-          const data = nextContacts.filter((contact) => {
-            if (contact.phoneNumbers.length) {
-              return {
-                firstname: contact.givenName,
-                lastname: contact.familyName,
-                mobile: contact.phoneNumbers[0].number,
-                fullName: `${contact.givenName} ${contact.familyName}`,
-              };
-            }
-          });
-          ref.current.contacts = data;
-          setContacts(data);
+    return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
+  }, []);
+
+  const handleCreateCustomer = useCallback(
+    (contact: CustomerListItem) => {
+      const mobile = contact.mobile;
+      const name = contact.name;
+      const customer = {
+        name,
+        mobile,
+      };
+      saveCustomer({realm, customer});
+      setPhoneContacts((prevPhoneContacts) => {
+        return prevPhoneContacts.filter(
+          (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
+        );
+      });
+      ToastAndroid.show('Customer added', ToastAndroid.SHORT);
+    },
+    [realm],
+  );
+
+  const handleSelectCustomer = useCallback(
+    (item?: ICustomer) => {
+      analyticsService
+        .logEvent('selectContent', {
+          item_id: item?._id?.toString() ?? '',
+          content_type: 'customer',
         })
-        .catch((error: Error) => {
-          setIsLoading(false);
-          Alert.alert(
-            '',
-            error.message,
-            [
-              {
-                text: 'OK',
-              },
-            ],
-            {
-              cancelable: false,
-            },
-          );
-        });
-    }, 500);
-  }, [navigation, visible]);
+        .then(() => {});
+      onContactSelect && onContactSelect(item);
+    },
+    [analyticsService, onContactSelect],
+  );
+
+  const handleContactSelect = useCallback(
+    (customer: ICustomer) => {
+      handleCreateCustomer(customer);
+      onContactSelect && onContactSelect(customer);
+    },
+    [handleCreateCustomer, onContactSelect],
+  );
 
   const handleClose = useCallback(() => {
     setSearchInputValue('');
     onClose();
   }, [onClose]);
 
-  const handleSearch = useCallback((searchedText: string) => {
-    setSearchInputValue(searchedText);
-    if (searchedText) {
-      const searchValue = searchedText.trim();
-      const sort = (item: Contact, text: string) => {
-        const name = `${item.givenName} ${item.familyName}`;
-        const mobile =
-          item.phoneNumbers &&
-          item.phoneNumbers[0] &&
-          item.phoneNumbers[0].number;
-        return (
-          name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
-          mobile.replace(/[\s-]+/g, '').indexOf(text) > -1
-        );
-      };
-      const results = ref.current.contacts.filter((item: Contact) => {
-        return sort(item, searchValue);
-      });
-      setContacts(results);
-    } else {
-      setContacts(ref.current.contacts);
-    }
-  }, []);
-
-  const handleContactSelect = useCallback(
-    (contact: Contact) => {
-      onContactSelect && onContactSelect(contact);
-      handleClose();
-    },
-    [handleClose, onContactSelect],
-  );
-
   const handleAddNew = useCallback(() => {
     handleClose();
     onAddNew && onAddNew();
   }, [onAddNew, handleClose]);
 
-  const renderContactItem = useCallback(
-    ({item: contact}: ListRenderItemInfo<Contact>) => {
-      const contactMobile =
-        contact.phoneNumbers && contact.phoneNumbers[0]
-          ? contact.phoneNumbers[0].number
-          : '';
-      const isAdded =
-        createdData &&
-        createdData.map((item: any) => item.mobile).includes(contactMobile);
-      return (
-        <Touchable onPress={() => handleContactSelect(contact)}>
-          <View
-            style={applyStyles(
-              'mx-lg flex-row items-center p-md justify-space-between',
-              {
-                borderBottomWidth: 1,
-                borderBottomColor: colors['gray-20'],
-              },
-            )}>
-            <View style={applyStyles('flex-row items-center')}>
-              {contact.hasThumbnail ? (
-                <Image
-                  style={applyStyles('mr-md', {
-                    height: 48,
-                    width: 48,
-                    borderRadius: 24,
-                    backgroundColor: '#FFE2E2',
-                  })}
-                  source={{uri: contact.thumbnailPath}}
-                />
-              ) : (
-                <View
-                  style={applyStyles('mr-md items-center justify-center', {
-                    height: 48,
-                    width: 48,
-                    borderRadius: 24,
-                    backgroundColor: '#FFE2E2',
-                  })}>
-                  <Text
-                    style={applyStyles('text-center text-500', {
-                      color: colors.primary,
-                      fontSize: 12,
-                    })}>
-                    {contact.givenName[0]}
-                    {contact.familyName[0]}
-                  </Text>
-                </View>
-              )}
+  const handleSearch = useCallback(
+    (searchedText: string) => {
+      setSearchInputValue(searchedText);
+      if (searchedText) {
+        const searchValue = searchedText.trim();
+        const sort = (item: ICustomer, text: string) => {
+          const name = item.name;
+          const mobile = item.mobile;
+          return (
+            name.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
+            (mobile && mobile.replace(/[\s-]+/g, '').indexOf(text) > -1)
+          );
+        };
+        const listToSearch = sectionData
+          .map((item) => item.data)
+          .reduce((acc, arr) => [...acc, ...arr], []);
+        const results = listToSearch.filter((item) => {
+          return sort(item, searchValue);
+        });
 
-              <Text style={applyStyles('text-400', 'text-lg')}>
-                {contact.givenName} {contact.familyName}
-              </Text>
-            </View>
-            {isAdded && (
-              <View>
-                <Text
-                  style={applyStyles('text-400', {
-                    fontSize: 12,
-                    color: colors['gray-50'],
-                  })}>
-                  Already Added
-                </Text>
-              </View>
-            )}
-          </View>
-        </Touchable>
+        setSections([{data: results}]);
+      } else {
+        setSections(sectionData);
+      }
+    },
+    [sectionData],
+  );
+
+  const renderCustomerListItem = useCallback(
+    ({item: customer}: ListRenderItemInfo<CustomerListItem | null>) => {
+      if (!customer) {
+        return (
+          <EmptyState
+            heading="You don't have any customers on Shara yet"
+            text="Add a new customer from the list below"
+            source={require('../assets/images/coming-soon.png')}
+          />
+        );
+      }
+      return (
+        <ContactListItem
+          customer={customer}
+          onItemSelect={handleSelectCustomer}
+          onContactSelect={handleContactSelect}
+        />
       );
     },
-    [createdData, handleContactSelect],
+    [handleContactSelect, handleSelectCustomer],
   );
 
-  const renderContactListHeader = useCallback(
-    () => (
-      <Text style={applyStyles(styles.customerListHeader, 'text-500')}>
-        Select a contact
-      </Text>
-    ),
-    [],
+  const renderCustomerListSectionHeader = useCallback(
+    ({section: {title}}) => {
+      if (!title) {
+        return null;
+      }
+      if (loading) {
+        return (
+          <View style={styles.customerListHeader}>
+            <ActivityIndicator size={24} color={colors.primary} />
+          </View>
+        );
+      }
+      return <Text style={styles.customerListHeader}>{title}</Text>;
+    },
+    [loading],
   );
+
+  useEffect(() => {
+    const customers = getCustomers({realm});
+    runGetPhoneContacts().then((contacts) => {
+      const data = contacts.reduce<CustomerListItem[]>(
+        (acc, {givenName, familyName, phoneNumber}) => {
+          const existing = customers.filtered(
+            `mobile = "${phoneNumber.number}"`,
+          );
+          if (existing.length) {
+            return acc;
+          }
+          return [
+            ...acc,
+            {
+              name: `${givenName} ${familyName}`,
+              mobile: phoneNumber.number,
+            },
+          ];
+        },
+        [],
+      );
+      setPhoneContacts(data);
+      setSections([
+        {
+          data: myCustomers.length
+            ? orderBy(myCustomers, ['name'] as (keyof ICustomer)[], [
+                'desc',
+                'asc',
+              ])
+            : [],
+        },
+        {
+          title: 'Add from your phonebook',
+          data: orderBy(data, ['name'] as (keyof CustomerListItem)[], ['asc']),
+        },
+      ]);
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <Modal
-      animationType="slide"
-      visible={visible}
-      onDismiss={handleClose}
-      onRequestClose={handleClose}>
-      <View style={styles.searchContainer}>
-        <View style={styles.searchInputContainer}>
-          <Icon
-            size={24}
-            style={styles.searchInputIcon}
-            type="feathericons"
-            name="search"
-            color={colors.primary}
-          />
-          <TextInput
-            value={searchInputValue}
-            onChangeText={handleSearch}
-            placeholder="Search Contacts"
-            placeholderTextColor={colors['gray-50']}
-            style={applyStyles(styles.searchInput, 'text-400')}
-          />
-        </View>
-      </View>
-      {onAddNew && (
-        <Touchable onPress={handleAddNew}>
+    <View>
+      <SectionList
+        sections={sections}
+        persistentScrollbar
+        initialNumToRender={10}
+        keyExtractor={keyExtractor}
+        renderItem={renderCustomerListItem}
+        renderSectionHeader={renderCustomerListSectionHeader}
+        ListHeaderComponent={
+          <View style={applyStyles('bg-white')}>
+            <View
+              style={applyStyles(
+                'py-md px-lg flex-row items-center justify-between',
+                {
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors['gray-20'],
+                },
+              )}>
+              <View style={applyStyles({width: '48%'})}>
+                <Text style={applyStyles('text-700 text-xs text-uppercase')}>
+                  Select a Customer
+                </Text>
+              </View>
+              <View style={applyStyles({width: '48%'})}>
+                {onAddNew && (
+                  <Button onPress={handleAddNew}>
+                    <View style={applyStyles('flex-row px-sm items-center')}>
+                      <Icon
+                        size={16}
+                        name="plus"
+                        type="feathericons"
+                        color={colors.white}
+                      />
+                      <Text
+                        style={applyStyles('text-400 text-xs text-uppercase ', {
+                          color: colors.white,
+                        })}>
+                        Create {entity}
+                      </Text>
+                    </View>
+                  </Button>
+                )}
+              </View>
+            </View>
+            <View style={styles.searchContainer}>
+              <View style={styles.searchInputContainer}>
+                <Icon
+                  size={24}
+                  style={styles.searchInputIcon}
+                  type="feathericons"
+                  name="search"
+                  color={colors.primary}
+                />
+                <TextInput
+                  value={searchInputValue}
+                  onChangeText={handleSearch}
+                  placeholder="Search for customer here..."
+                  placeholderTextColor={colors['gray-50']}
+                  style={applyStyles(styles.searchInput, 'text-400')}
+                />
+              </View>
+            </View>
+          </View>
+        }
+        ListEmptyComponent={
           <View
-            style={applyStyles('flex-row px-lg py-lg items-center', {
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
+            style={applyStyles('items-center', 'justify-center', {
+              paddingVertical: 40,
             })}>
-            <Icon
-              size={24}
-              name="user-plus"
-              type="feathericons"
-              color={colors.primary}
-            />
             <Text
-              style={applyStyles('text-400 pl-md', {
-                fontSize: 16,
+              style={applyStyles('heading-700', 'text-center', {
                 color: colors['gray-300'],
               })}>
-              Add New {entity}
+              No results found
             </Text>
           </View>
-        </Touchable>
-      )}
-
-      {isLoading && !contacts.length ? (
-        <View style={applyStyles('flex-1 items-center justify-center')}>
-          <ActivityIndicator color={colors.primary} />
-        </View>
-      ) : (
-        <FlatList
-          style={applyStyles('flex-1')}
-          renderItem={renderContactItem}
-          data={orderBy(contacts, 'givenName', 'asc')}
-          ListHeaderComponent={renderContactListHeader}
-          keyExtractor={(item: Contact, index) => `${item.recordID}-${index}`}
-          ListEmptyComponent={
-            <View
-              style={applyStyles('flex-1', 'items-center', 'justify-center', {
-                paddingVertical: 40,
+        }
+        ListFooterComponent={
+          <View>
+            <Button
+              onPress={handleClose}
+              variantColor="clear"
+              style={applyStyles({
+                width: '100%',
+                borderTopWidth: 1,
+                borderTopColor: colors['gray-20'],
               })}>
               <Text
-                style={applyStyles('heading-700', 'text-center', {
-                  color: colors['gray-300'],
+                style={applyStyles('text-400', 'text-uppercase', {
+                  color: colors.primary,
                 })}>
-                No results found
+                Close
               </Text>
-            </View>
-          }
-        />
-      )}
-      <View>
-        <Button
-          onPress={handleClose}
-          variantColor="clear"
-          style={applyStyles({
-            width: '100%',
-            borderTopWidth: 1,
-            borderTopColor: colors['gray-20'],
-          })}>
-          <Text
-            style={applyStyles('text-400', 'text-uppercase', {
-              color: colors.primary,
-            })}>
-            Close
-          </Text>
-        </Button>
-      </View>
-    </Modal>
+            </Button>
+          </View>
+        }
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   searchContainer: {
     paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: colors.primary,
+    paddingHorizontal: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: colors['gray-20'],
   },
   searchInputContainer: {
     position: 'relative',
@@ -319,19 +422,19 @@ const styles = StyleSheet.create({
   },
   searchInput: {
     height: 48,
-    elevation: 2,
     fontSize: 16,
     borderRadius: 8,
     paddingLeft: 36,
     backgroundColor: colors.white,
   },
-  customerListHeader: {
-    fontSize: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 16,
+  customerListHeader: applyStyles('text-center bg-gray-10', {
+    fontWeight: 'bold',
+    paddingVertical: 16,
+    paddingHorizontal: 4,
     borderBottomWidth: 1,
     textTransform: 'uppercase',
     color: colors['gray-300'],
+    fontFamily: 'Rubik-Regular',
     borderBottomColor: colors['gray-20'],
-  },
+  }),
 });

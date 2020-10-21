@@ -9,6 +9,8 @@ import LoadingModal from '../modals/LoadingModal';
 import {ModalPropsList, ModalVisibilityList} from 'types/modal';
 import BottomHalfModal from '../modals/BottomHalfModal';
 import OptionsModal from '../modals/OptionsModal';
+import FullModal from '@/modals/FullModal';
+import SearchModal from '@/modals/SearchModal';
 
 type OpenModal = <K extends keyof ModalPropsList>(
   modalType: K,
@@ -17,6 +19,7 @@ type OpenModal = <K extends keyof ModalPropsList>(
 
 export type ModalWrapperFields = {
   openModal: OpenModal;
+  closeModal: () => void;
 };
 
 const defaultModalPropsList: ModalPropsList = {
@@ -24,8 +27,16 @@ const defaultModalPropsList: ModalPropsList = {
   'bottom-half': {
     renderContent: () => null,
   },
+  full: {
+    renderContent: () => null,
+  },
   options: {
     options: [],
+  },
+  search: {
+    items: [],
+    renderItem: () => null,
+    setFilter: () => false,
   },
 };
 
@@ -39,7 +50,7 @@ const defaultModalVisibility = Object.keys(defaultModalPropsList).reduce(
   {},
 ) as ModalVisibilityList;
 
-const ModalContext = React.createContext<{openModal?: OpenModal}>({});
+const ModalContext = React.createContext<Partial<ModalWrapperFields>>({});
 
 export const useModal = () => {
   return useContext(ModalContext);
@@ -81,8 +92,8 @@ export const withModal = (Component: ElementType) => (
     [closeModal],
   );
   return (
-    <ModalContext.Provider value={{openModal}}>
-      <Component {...props} openModal={openModal} />
+    <ModalContext.Provider value={{openModal, closeModal}}>
+      <Component {...props} openModal={openModal} closeModal={closeModal} />
       <LoadingModal
         visible={modalVisibility.loading}
         closeModal={closeModal}
@@ -93,10 +104,20 @@ export const withModal = (Component: ElementType) => (
         closeModal={closeModal}
         {...modalPropsList['bottom-half']}
       />
+      <FullModal
+        visible={modalVisibility.full}
+        closeModal={closeModal}
+        {...modalPropsList.full}
+      />
       <OptionsModal
         visible={modalVisibility.options}
         closeModal={closeModal}
         {...modalPropsList.options}
+      />
+      <SearchModal
+        visible={modalVisibility.search}
+        closeModal={closeModal}
+        {...modalPropsList.search}
       />
     </ModalContext.Provider>
   );

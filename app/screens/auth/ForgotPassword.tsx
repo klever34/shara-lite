@@ -1,6 +1,5 @@
 import React from 'react';
-import {AuthView} from '@/components/AuthView';
-import {FormBuilder, PhoneNumber} from '@/components';
+import {AuthView, FormBuilder, PhoneNumber} from '@/components';
 import {getApiService} from '@/services';
 import {ToastAndroid} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';

@@ -7,6 +7,7 @@ import perf from '@react-native-firebase/perf';
 
 type RealmObject = {
   realm?: Realm;
+  isSyncCompleted?: Boolean;
   isRealmSyncLoaderInitiated?: Boolean;
   updateLocalRealm?: (realm: Realm) => void;
   updateSyncRealm?: ({
@@ -20,6 +21,7 @@ type RealmObject = {
   }) => void;
   logoutFromRealm?: () => void;
   setIsRealmSyncLoaderInitiated?: (isLoaded: Boolean) => void;
+  setIsSyncCompleted?: (isLoaded: Boolean) => void;
 };
 
 export const RealmContext = createContext<RealmObject>({});
@@ -28,6 +30,7 @@ const RealmProvider = (props: any) => {
   const [isRealmSyncLoaderInitiated, setIsRealmSyncLoaderInitiated] = useState<
     Boolean
   >(false);
+  const [isSyncCompleted, setIsSyncCompleted] = useState<Boolean>(false);
   const [realm, setRealm] = useState<Realm>();
   const [realmUser, setRealmUser] = useState<any>(false);
   const syncRealm = useRef<Realm>();
@@ -45,11 +48,17 @@ const RealmProvider = (props: any) => {
     // TODO Sync trace
     const trace = await perf().startTrace('updateSyncRealm');
     setRealmUser(user);
+    setIsSyncCompleted(false);
+
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
       partitionValue,
     });
+
+    setTimeout(() => {
+      setIsSyncCompleted(true);
+    }, 2000);
     syncRealm.current = newRealm;
     await trace.stop();
   };
@@ -60,6 +69,10 @@ const RealmProvider = (props: any) => {
   };
 
   const logoutFromRealm = () => {
+    setIsRealmSyncLoaderInitiated(false);
+    setRealm(undefined);
+    setIsSyncCompleted(true);
+
     if (localRealm.current) {
       localRealm.current?.removeAllListeners();
 
@@ -78,19 +91,20 @@ const RealmProvider = (props: any) => {
       }
     }
 
-    setIsRealmSyncLoaderInitiated(false);
-    setRealm(undefined);
+    setIsSyncCompleted(false);
   };
 
   return (
     <RealmContext.Provider
       value={{
         realm,
+        isSyncCompleted,
         isRealmSyncLoaderInitiated,
         logoutFromRealm,
         updateLocalRealm,
         updateSyncRealm,
         setIsRealmSyncLoaderInitiated,
+        setIsSyncCompleted,
       }}>
       {props.children}
     </RealmContext.Provider>
@@ -110,10 +124,24 @@ const syncLocalData = ({
     return;
   }
 
+  const syncDate = new Date(
+    'Tue Oct 11 2020 09:26:43 GMT+0100 (West Africa Standard Time)',
+  );
+
   normalizeDb({partitionKey: partitionValue, realm: localRealm});
 
-  copyRealm({sourceRealm: localRealm, targetRealm: syncRealm, partitionValue});
-  copyRealm({sourceRealm: syncRealm, targetRealm: localRealm, partitionValue});
+  copyRealm({
+    sourceRealm: localRealm,
+    targetRealm: syncRealm,
+    partitionValue,
+    syncDate,
+  });
+  copyRealm({
+    sourceRealm: syncRealm,
+    targetRealm: localRealm,
+    partitionValue,
+    syncDate,
+  });
   syncRealmDbs({
     sourceRealm: localRealm,
     targetRealm: syncRealm,

@@ -1,18 +1,20 @@
-import React, {useEffect} from 'react';
-import {Welcome} from './Welcome';
-import {Login} from './Login';
-import {Register} from './Register';
-import {createStackNavigator} from '@react-navigation/stack';
+import {PhoneNumber} from '@/components';
 import ForgotPassword from '@/screens/auth/ForgotPassword';
 import ResetPassword from '@/screens/auth/ResetPassword';
-import {PhoneNumber} from '@/components';
+import {createStackNavigator} from '@react-navigation/stack';
+import React, {useEffect} from 'react';
+import {BusinessSetup} from './BusinessSetup';
+import {Login} from './Login';
+import {Register} from './Register';
+import {Welcome} from './Welcome';
 
 export type AuthStackParamList = {
-  Welcome: undefined;
   Login: undefined;
+  Welcome: undefined;
   Register: undefined;
-  ForgotPassword: {mobile?: PhoneNumber};
+  BusinessSetup: undefined;
   ResetPassword: {mobile: string};
+  ForgotPassword: {mobile?: PhoneNumber};
 };
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
@@ -50,6 +52,11 @@ const AuthScreens = () => {
       <AuthStack.Screen
         name="ResetPassword"
         component={ResetPassword}
+        options={{headerShown: false}}
+      />
+      <AuthStack.Screen
+        name="BusinessSetup"
+        component={BusinessSetup}
         options={{headerShown: false}}
       />
     </AuthStack.Navigator>

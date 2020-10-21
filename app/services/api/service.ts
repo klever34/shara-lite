@@ -27,6 +27,7 @@ export type Requester = {
   patch: <T extends any = any>(
     url: string,
     data: {[key: string]: any},
+    config?: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
   delete: <T extends any = any>(
     url: string,
@@ -38,8 +39,6 @@ export interface IApiService {
   requester: Requester;
 
   register(payload: {
-    firstname: string;
-    lastname: string;
     country_code: string;
     mobile: string;
     password: string;
@@ -94,6 +93,18 @@ export interface IApiService {
   ): Promise<any>;
 
   businessSetup(payload: FormData): Promise<ApiResponse>;
+
+  businessSetupUpdate(
+    payload: FormData,
+    businessId?: string,
+  ): Promise<ApiResponse>;
+
+  userProfileUpdate(
+    payload: Pick<
+      User,
+      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+    >,
+  ): Promise<ApiResponse>;
 
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
@@ -152,6 +163,7 @@ export class ApiService implements IApiService {
     patch: async <T extends any = any>(
       url: string,
       data: {[key: string]: any},
+      config?: {[key: string]: any},
     ) => {
       const trace = await perf().startTrace(url);
       const response = await fetch(`${Config.API_BASE_URL}${url}`, {
@@ -159,8 +171,9 @@ export class ApiService implements IApiService {
         headers: {
           Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
           'Content-Type': 'application/json',
+          ...config?.headers,
         },
-        body: JSON.stringify(data),
+        body: config ? data : JSON.stringify(data),
       });
       await trace.stop();
       return (await this.handleFetchErrors<T>(response)) as T;
@@ -200,13 +213,26 @@ export class ApiService implements IApiService {
   };
 
   public async register(payload: {
-    firstname: string;
-    lastname: string;
+    country_code: string;
     mobile: string;
     password: string;
   }) {
     try {
-      return await this.requester.post('/signup', payload);
+      const fetchResponse = await this.requester.post('/signup', payload);
+      const {
+        data: {
+          credentials: {token},
+          realmCredentials,
+          user,
+        },
+      } = fetchResponse;
+      await this.storageService.setItem('token', token);
+      await this.storageService.setItem('user', user);
+      await this.storageService.setItem('realmCredentials', realmCredentials);
+      this.authService.setToken(token);
+      this.authService.setUser(user);
+      this.authService.setRealmCredentials(realmCredentials);
+      return fetchResponse;
     } catch (error) {
       throw error;
     }
@@ -372,6 +398,63 @@ export class ApiService implements IApiService {
       user = {...user, businesses: [business]};
       this.authService.setUser(user);
       await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async businessSetupUpdate(payload: FormData, businessId?: string) {
+    try {
+      const fetchResponse = await this.requester.patch(
+        `/business/${businessId}`,
+        payload,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        },
+      );
+      const {
+        data: {business},
+      }: {data: {business: Business}} = fetchResponse;
+
+      let user = this.authService.getUser() as User;
+      user = {
+        ...user,
+        businesses: user.businesses.map((item) => {
+          if (item.id === business.id) {
+            return business;
+          }
+          return item;
+        }),
+      };
+      this.authService.setUser(user);
+      await this.storageService.setItem('user', user);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async userProfileUpdate(
+    payload: Pick<
+      User,
+      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+    >,
+  ) {
+    try {
+      const fetchResponse = await this.requester.patch('/users/me', payload);
+      const {
+        data: {user},
+      }: {data: {user: User}} = fetchResponse;
+
+      let updatedUser = this.authService.getUser() as User;
+      updatedUser = {
+        ...updatedUser,
+        ...user,
+      };
+      this.authService.setUser(updatedUser);
+      await this.storageService.setItem('user', updatedUser);
       return fetchResponse;
     } catch (error) {
       throw error;
