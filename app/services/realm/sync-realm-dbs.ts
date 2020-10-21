@@ -3,9 +3,6 @@ import {shouldUpdateRealmObject} from '@/services/realm/utils';
 import {addItemToQueue} from '@/services/realm/queue';
 import {getStorageService} from '@/services';
 
-const lastLocalSyncDateStorageKey = 'lastLocalSyncDate';
-const storageService = getStorageService();
-
 export const syncRealmDbs = ({
   sourceRealm,
   targetRealm,
@@ -17,6 +14,9 @@ export const syncRealmDbs = ({
   partitionValue: string;
   isLocal?: boolean;
 }) => {
+  const lastLocalSyncDateStorageKey = 'lastLocalSyncDate';
+  const storageService = getStorageService();
+
   sourceRealm.schema.forEach((objSchema) => {
     const modelName = objSchema.name;
     const collectionListenerRetainer = sourceRealm.objects(modelName);
