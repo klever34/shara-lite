@@ -183,6 +183,7 @@ const syncLocalData = ({
     sourceRealm: localRealm,
     targetRealm: syncRealm,
     partitionValue,
+    isLocal: true,
   });
 
   syncRealmDbs({

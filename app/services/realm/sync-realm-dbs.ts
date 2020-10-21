@@ -1,15 +1,21 @@
 import Realm from 'realm';
 import {shouldUpdateRealmObject} from '@/services/realm/utils';
 import {addItemToQueue} from '@/services/realm/queue';
+import {getStorageService} from '@/services';
+
+const lastLocalSyncDateStorageKey = 'lastLocalSyncDate';
+const storageService = getStorageService();
 
 export const syncRealmDbs = ({
   sourceRealm,
   targetRealm,
   partitionValue,
+  isLocal,
 }: {
   sourceRealm: Realm;
   targetRealm: Realm;
   partitionValue: string;
+  isLocal?: boolean;
 }) => {
   sourceRealm.schema.forEach((objSchema) => {
     const modelName = objSchema.name;
@@ -47,6 +53,13 @@ export const syncRealmDbs = ({
               } else {
                 targetRealm.write(insertItem);
               }
+
+              if (isLocal) {
+                storageService.setItem(
+                  lastLocalSyncDateStorageKey,
+                  insertedRecord.updated_at,
+                );
+              }
             }
           });
         });
@@ -79,6 +92,13 @@ export const syncRealmDbs = ({
                 modifyItem();
               } else {
                 targetRealm.write(modifyItem);
+              }
+
+              if (isLocal) {
+                storageService.setItem(
+                  lastLocalSyncDateStorageKey,
+                  modifiedRecord.updated_at,
+                );
               }
             }
           });
