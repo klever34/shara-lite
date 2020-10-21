@@ -1,6 +1,6 @@
 version: 2.1
 workflows:
-  internal-workflow:
+  testing-workflow:
     jobs:
       - checkout_code:
           context: shara-test
@@ -31,22 +31,6 @@ workflows:
           lane: internal
           gradleTask: assembleDevRelease
           testBuild: false
-          requires:
-            - checkout_code
-            - test
-          filters:
-            branches:
-              ignore:
-                - master
-                - develop
-                - discovery
-                - /^release.*/
-                - shara-v2-designs
-      - fastlane:
-          context: shara-test
-          lane: testlab
-          gradleTask: assembleDevRelease
-          testBuild: true
           requires:
             - checkout_code
             - test

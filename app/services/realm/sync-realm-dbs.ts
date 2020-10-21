@@ -29,9 +29,10 @@ export const syncRealmDbs = ({
             });
 
             if (
+              insertRealmObject &&
+              insertedRecord &&
               insertedRecord._partition &&
-              insertedRecord._partition === partitionValue &&
-              insertRealmObject
+              insertedRecord._partition === partitionValue
             ) {
               const insertItem = () => {
                 targetRealm.create(
@@ -61,9 +62,10 @@ export const syncRealmDbs = ({
             });
 
             if (
+              updateRealmObject &&
+              modifiedRecord &&
               modifiedRecord._partition &&
-              modifiedRecord._partition === partitionValue &&
-              updateRealmObject
+              modifiedRecord._partition === partitionValue
             ) {
               const modifyItem = () => {
                 targetRealm.create(
