@@ -349,6 +349,11 @@ jobs:
             bundle install
             curl -sL https://firebase.tools | bash
       - run:
+          name: Install Sentry CLI
+          command: |
+            curl -sL https://sentry.io/get-cli/ | bash
+            sentry-cli --help
+      - run:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           no_output_timeout: 30m
           command: |
