@@ -458,6 +458,7 @@ export const CreateReceipt = withModal((props: Props) => {
                     inputStyle={applyStyles({
                       height: 48,
                       width: 200,
+                      fontSize: 16,
                       borderWidth: 1,
                       paddingTop: 14,
                       fontFamily: 'Rubik-Regular',
@@ -477,9 +478,10 @@ export const CreateReceipt = withModal((props: Props) => {
                   <TextInput
                     multiline
                     value={note}
-                    style={applyStyles('px-lg py-0', {
+                    style={applyStyles('px-sm py-0', {
                       width: '55%',
                       height: 100,
+                      fontSize: 16,
                       borderWidth: 1,
                       fontFamily: 'Rubik-Regular',
                       borderColor: colors['gray-50'],

@@ -15,7 +15,8 @@ export const summaryTableStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   column: {
-    height: 48,
+    // height: 48,
+    paddingVertical: 12,
     borderRightWidth: 1,
     paddingHorizontal: 4,
     justifyContent: 'center',
@@ -143,9 +144,6 @@ export const SummaryTableFooter = ({
           style={applyStyles(
             summaryTableStyles.column,
             summaryTableStyles['column-25'],
-            {
-              height: 30,
-            },
           )}
         />
         <View
@@ -153,7 +151,6 @@ export const SummaryTableFooter = ({
             summaryTableStyles.column,
             summaryTableStyles['column-30'],
             {
-              height: 30,
               alignItems: 'flex-end',
             },
           )}
@@ -163,21 +160,23 @@ export const SummaryTableFooter = ({
             summaryTableStyles['column-15'],
             summaryTableStyles.column,
             {
-              height: 30,
               alignItems: 'flex-end',
             },
           )}
         />
         <View
-          style={applyStyles(summaryTableStyles['column-30'], {
-            height: 30,
-            alignItems: 'flex-end',
-          })}
+          style={applyStyles(
+            summaryTableStyles['column-30'],
+            summaryTableStyles.column,
+            {
+              alignItems: 'flex-end',
+            },
+          )}
         />
       </View>
       <View
         style={applyStyles('flex-row', {
-          height: 30,
+          height: 32,
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-20'],
         })}>
@@ -202,7 +201,7 @@ export const SummaryTableFooter = ({
       </View>
       <View
         style={applyStyles('flex-row', {
-          height: 30,
+          height: 32,
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-20'],
         })}>
@@ -227,7 +226,7 @@ export const SummaryTableFooter = ({
       </View>
       <View
         style={applyStyles('flex-row', {
-          height: 30,
+          height: 32,
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-20'],
         })}>
