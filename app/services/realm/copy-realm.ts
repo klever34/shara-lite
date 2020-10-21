@@ -9,14 +9,16 @@ const copyObject = ({
   obj,
   objSchema,
   targetRealm,
+  useQueue,
 }: {
   obj: any;
   objSchema: any;
   targetRealm: Realm;
+  useQueue: boolean;
 }) => {
   const copy = getRealmObjectCopy({obj, objSchema});
 
-  addItemToQueue(() => {
+  const copyItem = () => {
     const updateRealmObject = shouldUpdateRealmObject({
       sourceObject: obj,
       targetRealm,
@@ -32,7 +34,13 @@ const copyObject = ({
     } catch (e) {
       console.log('Error writing to realm sync', e);
     }
-  });
+  };
+
+  if (useQueue) {
+    addItemToQueue(copyItem);
+  } else {
+    copyItem();
+  }
 };
 
 export const copyRealm = ({
@@ -40,10 +48,12 @@ export const copyRealm = ({
   targetRealm,
   partitionValue,
   lastSyncDate,
+  useQueue,
 }: {
   sourceRealm: Realm;
   targetRealm: Realm;
   partitionValue: string;
+  useQueue: boolean;
   lastSyncDate?: Date;
 }) => {
   const sourceRealmSchema = sourceRealm.schema;
@@ -57,7 +67,7 @@ export const copyRealm = ({
 
       allObjects.sorted('updated_at', true).forEach((obj: any) => {
         if (obj._partition && obj._partition === partitionValue) {
-          copyObject({obj, objSchema, targetRealm});
+          copyObject({obj, objSchema, targetRealm, useQueue});
         }
       });
     });

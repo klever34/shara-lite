@@ -1,5 +1,11 @@
 import Realm from 'realm';
-import React, {createContext, useRef, useState} from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
 import perf from '@react-native-firebase/perf';
@@ -40,6 +46,20 @@ const RealmProvider = (props: any) => {
   const lastLocalSyncDateStorageKey = 'lastLocalSyncDate';
   const storageService = getStorageService();
 
+  const updateSyncCompleteStatus = useCallback(async () => {
+    const storedSyncDate = await storageService.getItem(
+      lastLocalSyncDateStorageKey,
+    );
+
+    if (storedSyncDate) {
+      setIsSyncCompleted(false);
+    }
+  }, [storageService, setIsSyncCompleted]);
+
+  useEffect(() => {
+    updateSyncCompleteStatus();
+  }, [updateSyncCompleteStatus]);
+
   const updateSyncRealm = async ({
     newRealm,
     realmUser: user,
@@ -52,7 +72,6 @@ const RealmProvider = (props: any) => {
     // TODO Sync trace
     const trace = await perf().startTrace('updateSyncRealm');
     setRealmUser(user);
-    setIsSyncCompleted(true);
 
     const currentDate = new Date();
     const storedSyncDate = (await storageService.getItem(
@@ -141,6 +160,8 @@ const syncLocalData = ({
     return;
   }
 
+  const useQueue = !!lastLocalSyncDate;
+
   normalizeDb({partitionKey: partitionValue, realm: localRealm});
 
   copyRealm({
@@ -148,12 +169,14 @@ const syncLocalData = ({
     targetRealm: syncRealm,
     partitionValue,
     lastSyncDate: lastLocalSyncDate,
+    useQueue,
   });
 
   copyRealm({
     sourceRealm: syncRealm,
     targetRealm: localRealm,
     partitionValue,
+    useQueue,
   });
 
   syncRealmDbs({
