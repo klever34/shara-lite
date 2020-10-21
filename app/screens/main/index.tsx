@@ -1,8 +1,6 @@
 import EmptyState from '@/components/EmptyState';
 import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {ICredit} from '@/models/Credit';
-import {IPayment} from '@/models/Payment';
 import {IReceipt} from '@/models/Receipt';
 import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
 import {useCreditReminder} from '@/services/credit-reminder';
@@ -34,20 +32,12 @@ import {BusinessSettings, UserProfileSettings} from './settings';
 export type MainStackParamList = {
   Home: undefined;
   CustomerDetails: {customer: ICustomer};
-  CustomerRecordCreditPayment: undefined;
-  CustomerCreditPayment: {creditDetails: ICredit};
-  CustomerPaymentDetails: {payment: IPayment};
-  CustomerOrderDetails: {order: any};
-  CustomerTotalCredit: {credits: ICredit[]};
-  CustomerCreditPaymentDetails: {creditPaymentDetails: IPayment};
-  CustomerOverdueCredit: {credits: ICredit[]};
-  CustomerCreditDetails: {creditDetails: ICredit};
   BusinessSettings: undefined;
   Reports: undefined;
   Customers: undefined;
   AddCustomer: undefined;
   UserProfileSettings: undefined;
-  SalesDetails: {id: IReceipt['_id']};
+  SalesDetails: {receipt: IReceipt};
   ManageItems: undefined;
 };
 

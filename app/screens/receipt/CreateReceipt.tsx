@@ -21,6 +21,7 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
+import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {saveReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
@@ -37,7 +38,6 @@ import {
 } from 'react-native';
 import {AddCustomer} from '../main/customers';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
-import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 
 type Props = {
   receipt?: IReceipt;
@@ -57,6 +57,7 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const realm = useRealm();
   const handleError = useErrorHandler();
+  const navigation = useAppNavigation();
   const myCustomers = getCustomers({realm});
   const currency = getAuthService().getUserCurrency();
 
@@ -222,24 +223,10 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
-      const closeReceiptPreviewModal = openModal('full', {
-        animationInTiming: 0.1,
-        animationOutTiming: 0.1,
-        renderContent: () => (
-          <ReceiptPreviewModal
-            receiptId={item._id}
-            closeModal={() => {
-              closeReceiptPreviewModal();
-              closeReceiptModal();
-            }}
-          />
-        ),
-        onCloseModal: () => {
-          closeReceiptModal();
-        },
-      });
+      closeReceiptModal();
+      navigation.navigate('SalesDetails', {id: item._id});
     },
-    [openModal, closeReceiptModal],
+    [closeReceiptModal, navigation],
   );
 
   const handleOpenContactList = useCallback(() => {
