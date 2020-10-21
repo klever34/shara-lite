@@ -243,7 +243,7 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
               <TextInput
                 value={name}
                 onChangeText={(text) => handleNameChange(text)}
-                style={applyStyles('px-12 py-0 mb-56 text-400', {
+                style={applyStyles('px-12 py-0 pb-56 text-400', {
                   fontSize: 16,
                 })}
                 placeholder="Enter item name here..."
@@ -301,16 +301,17 @@ const ItemUnitPriceSection = ({
 
   return (
     <View>
-      <View style={applyStyles('pb-56')}>
-        <View style={applyStyles('mx-12 py-0', {fontSize: 16})}>
-          <CurrencyInput
-            value={price.toString()}
-            iconStyle={applyStyles({top: -12})}
-            inputStyle={applyStyles({borderBottomWidth: 0, paddingTop: 0})}
-            onChange={(text) => handlePriceChange(text)}
-            placeholder="Enter item unit price here..."
-          />
-        </View>
+      <View style={applyStyles('mx-12 py-0', {fontSize: 16})}>
+        <CurrencyInput
+          value={price.toString()}
+          iconStyle={applyStyles({top: -12})}
+          inputStyle={applyStyles('pb-56', {
+            borderBottomWidth: 0,
+            paddingTop: 0,
+          })}
+          onChange={(text) => handlePriceChange(text)}
+          placeholder="Enter item unit price here..."
+        />
       </View>
       <SectionButtons
         onPrevious={onPrevious}
@@ -337,12 +338,12 @@ const ItemQuantitySection = ({
 
   return (
     <View>
-      <View style={applyStyles('pt-16 pb-56')}>
+      <View style={applyStyles('pt-16')}>
         <TextInput
           value={quantity}
           keyboardType="numeric"
           onChangeText={(text) => handleQuantityChange(text)}
-          style={applyStyles('px-12 py-0 text-400', {fontSize: 16})}
+          style={applyStyles('px-12 pb-56 py-0 text-400', {fontSize: 16})}
           placeholder="Enter quantity here..."
         />
       </View>
