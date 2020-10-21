@@ -353,9 +353,11 @@ jobs:
           command: |
             curl -sL https://sentry.io/get-cli/ | bash
             VERSION=`sentry-cli releases propose-version`
+            sentry-cli releases new "$VERSION"
             sentry-cli releases finalize "$VERSION"
             sentry-cli releases set-commits "$VERSION" --auto
             echo "Sentry Version: ${VERSION}"
+#            sentry-cli releases files VERSION upload-sourcemaps /path/to/sourcemaps
       - run:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           no_output_timeout: 30m
