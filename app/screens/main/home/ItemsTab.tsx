@@ -162,6 +162,8 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
 
   const renderListItem = useCallback(
     ({item}: {item: FilteredProduct}) => {
+      const showQuantityLeft =
+        item && item.quantity && item.quantity >= 0 && isToday(filter.date);
       return (
         <View
           style={applyStyles('px-md flex-row center justify-between', {
@@ -189,27 +191,24 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
                 {isToday(filter.date) ? 'sold today' : 'sold'}
               </Text>
             </View>
-            {item &&
-              item.quantity &&
-              item.quantity >= 0 &&
-              isToday(filter.date) && (
-                <View style={applyStyles('flex-row items-center')}>
-                  <Text
-                    style={applyStyles('text-500 pr-xs', {
-                      fontSize: 16,
-                      color: colors['gray-300'],
-                    })}>
-                    {item.quantity}
-                  </Text>
-                  <Text
-                    style={applyStyles('text-400', {
-                      fontSize: 16,
-                      color: colors['gray-300'],
-                    })}>
-                    left
-                  </Text>
-                </View>
-              )}
+            {!!showQuantityLeft && (
+              <View style={applyStyles('flex-row items-center')}>
+                <Text
+                  style={applyStyles('text-500 pr-xs', {
+                    fontSize: 16,
+                    color: colors['gray-300'],
+                  })}>
+                  {item.quantity}
+                </Text>
+                <Text
+                  style={applyStyles('text-400', {
+                    fontSize: 16,
+                    color: colors['gray-300'],
+                  })}>
+                  left
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       );
