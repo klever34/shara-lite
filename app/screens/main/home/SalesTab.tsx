@@ -402,7 +402,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           <FilterButtonGroup
             value={filter.status}
             onChange={(status: any) => handleStatusFilter(status)}>
-            <View style={applyStyles('py-lg px-sm flex-row')}>
+            <View style={applyStyles('py-lg px-sm flex-row center')}>
               {statusFilters.map((filterItem) => (
                 <FilterButton
                   {...filterItem}
