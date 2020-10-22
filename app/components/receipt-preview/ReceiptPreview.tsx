@@ -41,7 +41,6 @@ import {
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
 import {CancelReceiptModal} from './CancelReceiptModal';
-import {Business} from 'types/app';
 
 type Props = {
   isNew: boolean;
@@ -75,9 +74,7 @@ export const ReceiptPreview = withModal(
 
     const hasCustomer = customer?.name;
     const creditDueDate = receipt?.dueDate;
-    const businessInfo = user?.businesses
-      ? user?.businesses[0]
-      : ({} as Business);
+    const businessInfo = getAuthService().getBusinessInfo();
     const hasCustomerMobile = customer?.mobile;
     const allPayments = receipt ? getAllPayments({receipt}) : [];
     const totalAmountPaid = allPayments.reduce(

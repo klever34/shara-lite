@@ -2,7 +2,7 @@ import {IStorageService} from '../storage';
 import {IPubNubService} from '../pubnub';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
-import {User} from 'types/app';
+import {Business, User} from 'types/app';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -26,6 +26,8 @@ export interface IAuthService {
   getUserCurrency(): string;
 
   getUserCurrencyCode(): string;
+
+  getBusinessInfo(): Business;
 }
 
 export class AuthService implements IAuthService {
@@ -111,5 +113,20 @@ export class AuthService implements IAuthService {
   public getUserCurrencyCode(): string {
     const user = this.user;
     return user?.currency_code ? user.currency_code : '';
+  }
+
+  public getBusinessInfo(): Business {
+    const user = this.user;
+    if (user?.businesses && user.businesses.length) {
+      return user.businesses[0];
+    }
+    return {
+      name: '',
+      mobile: '',
+      address: '',
+      countryCode: '',
+      profile_image: undefined,
+      id: '',
+    } as Business;
   }
 }

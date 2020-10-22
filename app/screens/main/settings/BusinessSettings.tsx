@@ -13,29 +13,14 @@ export const BusinessSettings = () => {
   const navigation = useAppNavigation();
 
   const user = authService.getUser();
-  const {
-    name,
-    id,
-    mobile,
-    address,
-    countryCode,
-    profile_image,
-  } = user?.businesses
-    ? user?.businesses[0]
-    : {
-        name: '',
-        mobile: '',
-        address: '',
-        countryCode: '',
-        profile_image: {url: ''},
-        id: '',
-      };
+  const businessInfo = authService.getBusinessInfo();
+  const {name, id, mobile, address, countryCode, profile_image} = businessInfo;
   const businessFormIntialValues = {
     name,
     mobile,
     address,
     countryCode: countryCode ?? '',
-    profileImageFile: {uri: profile_image?.url},
+    profileImageFile: {uri: profile_image?.url ?? ''},
   } as BusinessFormPayload;
 
   const [isLoading, setIsLoading] = useState(false);
@@ -50,10 +35,9 @@ export const BusinessSettings = () => {
       data?.profileImageFile &&
         Object.keys(data?.profileImageFile).length > 1 &&
         payload.append('profileImageFile', data?.profileImageFile);
-
       try {
         setIsLoading(true);
-        user?.businesses
+        user?.businesses && user.businesses.length
           ? await apiService.businessSetupUpdate(payload, id)
           : await apiService.businessSetup(payload);
         getAnalyticsService()
