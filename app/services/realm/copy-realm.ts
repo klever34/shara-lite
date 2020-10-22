@@ -30,7 +30,14 @@ const copyObject = ({
     }
 
     try {
-      targetRealm.create(objSchema.name, copy, Realm.UpdateMode.Modified);
+      const writeItem = () => {
+        targetRealm.create(objSchema.name, copy, Realm.UpdateMode.Modified);
+      };
+      if (targetRealm.isInTransaction) {
+        writeItem();
+      } else {
+        targetRealm.write(writeItem);
+      }
     } catch (e) {
       console.log('Error writing to realm sync', e);
     }
