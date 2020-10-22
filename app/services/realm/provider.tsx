@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import subWeeks from 'date-fns/subWeeks';
 import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
 import perf from '@react-native-firebase/perf';
@@ -161,6 +162,9 @@ const syncLocalData = ({
   }
 
   const useQueue = !!lastLocalSyncDate;
+  const lastOnlineSyncDate = lastLocalSyncDate
+    ? subWeeks(new Date(), 3)
+    : undefined;
 
   normalizeDb({partitionKey: partitionValue, realm: localRealm});
 
@@ -177,6 +181,7 @@ const syncLocalData = ({
     targetRealm: localRealm,
     partitionValue,
     useQueue,
+    lastSyncDate: lastOnlineSyncDate,
   });
 
   syncRealmDbs({
