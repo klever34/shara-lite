@@ -376,9 +376,8 @@ jobs:
             sentry-cli releases finalize "$VERSION"
             sentry-cli releases set-commits "$VERSION" --auto
             echo "Sentry Version: ${VERSION}"
-            pwd
+            sentry-cli releases files ${VERSION} upload-sourcemaps android/app/build/generated/sourcemaps/react/dev/release/index.android.bundle.map
             ls -R android/app/build/generated/sourcemaps/
-      #            sentry-cli releases files VERSION upload-sourcemaps /path/to/sourcemaps
 orbs:
   android: circleci/android@0.2.1
   react-native: react-native-community/react-native@4.4.2
