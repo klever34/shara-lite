@@ -349,16 +349,6 @@ jobs:
             bundle install
             curl -sL https://firebase.tools | bash
       - run:
-          name: Install Sentry CLI
-          command: |
-            curl -sL https://sentry.io/get-cli/ | bash
-            VERSION=`sentry-cli releases propose-version`
-            sentry-cli releases new "$VERSION"
-            sentry-cli releases finalize "$VERSION"
-            sentry-cli releases set-commits "$VERSION" --auto
-            echo "Sentry Version: ${VERSION}"
-#            sentry-cli releases files VERSION upload-sourcemaps /path/to/sourcemaps
-      - run:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           no_output_timeout: 30m
           command: |
@@ -377,6 +367,18 @@ jobs:
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
+      - run:
+          name: Sentry Release Integration
+          command: |
+            curl -sL https://sentry.io/get-cli/ | bash
+            VERSION=`sentry-cli releases propose-version`
+            sentry-cli releases new "$VERSION"
+            sentry-cli releases finalize "$VERSION"
+            sentry-cli releases set-commits "$VERSION" --auto
+            echo "Sentry Version: ${VERSION}"
+            pwd
+            ls -R android/app/build/generated/sourcemaps/
+      #            sentry-cli releases files VERSION upload-sourcemaps /path/to/sourcemaps
 orbs:
   android: circleci/android@0.2.1
   react-native: react-native-community/react-native@4.4.2
