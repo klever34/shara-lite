@@ -13,7 +13,7 @@ import {
 } from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
-import {omit} from 'lodash';
+import {omit, orderBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {FlatList, Text, TextInput, View} from 'react-native';
 
@@ -117,6 +117,7 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
   const realm = useRealm();
   const handleError = useErrorHandler();
   const myProducts = getProducts({realm});
+  const sortedProducts = orderBy(myProducts, 'name', 'asc');
 
   const [productIsNew, setProductIsNew] = useState(false);
   const [name, setName] = useState(receiptItem?.name || '');
@@ -125,7 +126,7 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
       ? receiptItem?.product || ({} as IProduct)
       : undefined,
   );
-  const [products, setProducts] = useState<IProduct[]>(myProducts || []);
+  const [products, setProducts] = useState<IProduct[]>(sortedProducts || []);
 
   const handleAddProduct = useCallback(() => {
     getAnalyticsService().logEvent('productStart').catch(handleError);
