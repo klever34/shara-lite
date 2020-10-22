@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.3.1-feature.sentry-source-maps+build.3815",
+  "version": "0.3.1-feature.sentry-source-maps+build.3836",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
