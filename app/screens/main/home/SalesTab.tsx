@@ -28,7 +28,7 @@ import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 import {StatusFilter} from 'types/app';
 
 const statusFilters: StatusFilter[] = [
-  {label: 'All', value: 'all'},
+  {label: 'All Sales', value: 'all'},
   {label: 'Unpaid', value: 'unpaid'},
   {label: 'Paid', value: 'paid'},
   // {label: 'Pending', value: 'pending'},
@@ -402,14 +402,15 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
           <FilterButtonGroup
             value={filter.status}
             onChange={(status: any) => handleStatusFilter(status)}>
-            <View
-              style={applyStyles(
-                'py-xl px-sm flex-row center justify-between',
-              )}>
+            <View style={applyStyles('py-lg px-sm flex-row')}>
               {statusFilters.map((filterItem) => (
                 <FilterButton
                   {...filterItem}
                   key={filterItem.value}
+                  style={applyStyles('mx-xs', {
+                    paddingVertical: 8,
+                    paddingHorizontal: 14,
+                  })}
                   isChecked={filter.status === filterItem.value}
                 />
               ))}

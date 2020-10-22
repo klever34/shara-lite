@@ -137,7 +137,10 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
     setName(createdProduct.name);
     setProduct(createdProduct);
     setProductIsNew(false);
-  }, [handleError, name, realm]);
+    type === 'receipt'
+      ? onNext(createdProduct, 'product')
+      : onNext(createdProduct.name, 'name');
+  }, [handleError, name, onNext, realm, type]);
 
   const handleSearch = useCallback(
     (searchedText: string) => {
@@ -182,8 +185,12 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
         .catch(handleError);
       setName(selectedProduct.name);
       setProduct(selectedProduct);
+      setProductIsNew(false);
+      type === 'receipt'
+        ? onNext(selectedProduct, 'product')
+        : onNext(selectedProduct.name, 'name');
     },
-    [handleError],
+    [handleError, onNext, type],
   );
 
   const handleNextClick = useCallback(() => {
