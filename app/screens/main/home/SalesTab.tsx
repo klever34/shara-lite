@@ -394,29 +394,27 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
             </Text>
           </View>
         </View>
-        <View>
-          <View
-            style={applyStyles({
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
-            })}>
-            <FilterButtonGroup
-              value={filter.status}
-              onChange={(status: any) => handleStatusFilter(status)}>
-              <View
-                style={applyStyles(
-                  'py-xl px-sm flex-row center justify-between',
-                )}>
-                {statusFilters.map((filterItem) => (
-                  <FilterButton
-                    {...filterItem}
-                    key={filterItem.value}
-                    isChecked={filter.status === filterItem.value}
-                  />
-                ))}
-              </View>
-            </FilterButtonGroup>
-          </View>
+        <View
+          style={applyStyles({
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
+          <FilterButtonGroup
+            value={filter.status}
+            onChange={(status: any) => handleStatusFilter(status)}>
+            <View
+              style={applyStyles(
+                'py-xl px-sm flex-row center justify-between',
+              )}>
+              {statusFilters.map((filterItem) => (
+                <FilterButton
+                  {...filterItem}
+                  key={filterItem.value}
+                  isChecked={filter.status === filterItem.value}
+                />
+              ))}
+            </View>
+          </FilterButtonGroup>
         </View>
       </ReceiptingContainer>
     </KeyboardAvoidingView>
