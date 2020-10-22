@@ -25,6 +25,7 @@ export type BusinessFormPayload = {
 
 type Props = {
   onSkip?(): void;
+  isLoading?: boolean;
   page?: 'setup' | 'settings';
   initalValues?: BusinessFormPayload;
   onSubmit(payload: BusinessFormPayload): void;
@@ -35,13 +36,18 @@ const validationSchema = yup.object().shape({
   address: yup.string().required('Business address is required'),
 });
 
-export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
+export const BusinessForm = ({
+  page,
+  onSkip,
+  onSubmit,
+  isLoading,
+  initalValues,
+}: Props) => {
   const {callingCode} = useIPGeolocation();
   const {
     errors,
     values,
     touched,
-    isSubmitting,
     handleChange,
     handleSubmit,
     setFieldValue,
@@ -196,7 +202,7 @@ export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
         <Button
           variantColor="red"
           onPress={handleSubmit}
-          isLoading={isSubmitting}
+          isLoading={isLoading}
           style={applyStyles({marginBottom: 18})}
           title={page === 'setup' ? 'Done' : 'save'}
         />

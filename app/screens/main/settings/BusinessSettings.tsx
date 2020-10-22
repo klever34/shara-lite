@@ -2,7 +2,7 @@ import {AuthView, BusinessForm, BusinessFormPayload} from '@/components';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert, ToastAndroid} from 'react-native';
 
@@ -34,9 +34,11 @@ export const BusinessSettings = () => {
     name,
     mobile,
     address,
-    countryCode,
+    countryCode: countryCode ?? '',
     profileImageFile: {uri: profile_image?.url},
   } as BusinessFormPayload;
+
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = useCallback(
     async (data?: BusinessFormPayload) => {
@@ -50,18 +52,21 @@ export const BusinessSettings = () => {
         payload.append('profileImageFile', data?.profileImageFile);
 
       try {
+        setIsLoading(true);
         user?.businesses
           ? await apiService.businessSetupUpdate(payload, id)
           : await apiService.businessSetup(payload);
         getAnalyticsService()
           .logEvent('businessSetupComplete')
           .catch(handleError);
+        setIsLoading(false);
         ToastAndroid.show(
           'Business settings update successful',
           ToastAndroid.SHORT,
         );
         navigation.goBack();
       } catch (error) {
+        setIsLoading(false);
         Alert.alert('Error', error.message);
       }
     },
@@ -75,6 +80,7 @@ export const BusinessSettings = () => {
       description="Create an account to do business faster and better.">
       <BusinessForm
         page="settings"
+        isLoading={isLoading}
         onSubmit={handleSubmit}
         initalValues={businessFormIntialValues}
       />
