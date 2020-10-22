@@ -409,7 +409,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
                   key={filterItem.value}
                   style={applyStyles('mx-xs', {
                     paddingVertical: 8,
-                    paddingHorizontal: 14,
+                    paddingHorizontal: 8,
                   })}
                   isChecked={filter.status === filterItem.value}
                 />
