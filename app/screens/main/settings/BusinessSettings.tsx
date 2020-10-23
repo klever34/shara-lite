@@ -1,6 +1,7 @@
 import {AuthView, BusinessForm, BusinessFormPayload} from '@/components';
 import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getAuthService} from '@/services';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import React, {useCallback, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
@@ -11,15 +12,16 @@ export const BusinessSettings = () => {
   const authService = getAuthService();
   const apiService = getApiService();
   const navigation = useAppNavigation();
+  const {callingCode} = useIPGeolocation();
 
   const user = authService.getUser();
   const businessInfo = authService.getBusinessInfo();
-  const {name, id, mobile, address, countryCode, profile_image} = businessInfo;
+  const {name, id, mobile, address, country_code, profile_image} = businessInfo;
   const businessFormIntialValues = {
     name,
     mobile,
     address,
-    countryCode: countryCode ?? '',
+    countryCode: country_code ?? callingCode,
     profileImageFile: {uri: profile_image?.url ?? ''},
   } as BusinessFormPayload;
 
@@ -31,7 +33,7 @@ export const BusinessSettings = () => {
       payload.append('name', data?.name);
       payload.append('address', data?.address);
       data?.mobile && payload.append('mobile', data?.mobile);
-      data?.countryCode && payload.append('countryCode', data?.countryCode);
+      data?.countryCode && payload.append('country_code', data?.countryCode);
       data?.profileImageFile &&
         Object.keys(data?.profileImageFile).length > 1 &&
         payload.append('profileImageFile', data?.profileImageFile);
