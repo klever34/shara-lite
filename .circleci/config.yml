@@ -363,7 +363,6 @@ jobs:
             GRADLE_TASK: <<parameters.gradleTask>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
-            # TODO Add `GOOGLE_PROJECT_ID` using environment variables or parameters
       - store_artifacts:
           path: fastlane/report.xml
           destination: test-results
@@ -371,7 +370,6 @@ jobs:
           name: Sentry Release Integration
           command: |
             curl -sL https://sentry.io/get-cli/ | bash
-#            VERSION=`sentry-cli releases propose-version`
             VERSION=$(jq ".version" -r package.json)
             sentry-cli releases new "$VERSION"
             sentry-cli releases set-commits "$VERSION" --auto
