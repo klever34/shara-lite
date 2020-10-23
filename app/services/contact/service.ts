@@ -30,7 +30,7 @@ export interface IContactService {
   createMultipleContacts(contact: IContact[]): Promise<IContact[]>;
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
-  phoneNumberIteratee(number: string): string;
+  formatPhoneNumber(number: string): string;
 }
 
 const parseDateString = (dateString: string) => {
@@ -89,15 +89,23 @@ export class ContactService implements IContactService {
     return this.permissionGranted;
   }
 
-  public phoneNumberIteratee(phoneNumber: string): string {
-    const removeAllNonDigits = (number: string) => number.replace(/\D/g, '');
+  public formatPhoneNumber(phoneNumber: string): string {
+    const removeAllNonDigits = (number: string) =>
+      number.replace(/[^\d+]/g, '');
     if (phoneNumber[0] !== '+') {
+      let countryCallingCode;
       const ipDetails = this.ipGeolocationService.getUserIpDetails();
-      if (!ipDetails) {
+      if (ipDetails) {
+        countryCallingCode = ipDetails.calling_code;
+      } else {
+        countryCallingCode = this.authService.getUser()?.country_code ?? '';
+      }
+      if (!countryCallingCode) {
         return removeAllNonDigits(phoneNumber);
       }
-      const countryCallingCode = ipDetails.calling_code;
-      phoneNumber = countryCallingCode + phoneNumber;
+      phoneNumber =
+        `${countryCallingCode[0] === '+' ? '' : '+'}${countryCallingCode}` +
+        phoneNumber;
     }
     const phoneNumberDetails = parsePhoneNumber(phoneNumber);
     if (!phoneNumberDetails || !phoneNumberDetails.isValid()) {
@@ -116,7 +124,7 @@ export class ContactService implements IContactService {
           let nextPhoneContacts: PhoneContact[] = [];
           phoneContacts.forEach(({phoneNumbers, ...phoneContact}) => {
             const uniquePhoneNumbers = uniqBy(phoneNumbers, (item) =>
-              this.phoneNumberIteratee(item.number),
+              this.formatPhoneNumber(item.number),
             );
             nextPhoneContacts.push(
               ...uniquePhoneNumbers.map((phoneNumber) => ({
@@ -126,7 +134,7 @@ export class ContactService implements IContactService {
             );
           });
           nextPhoneContacts = uniqBy(nextPhoneContacts, (item) =>
-            this.phoneNumberIteratee(item.phoneNumber.number),
+            this.formatPhoneNumber(item.phoneNumber.number),
           );
           resolve(nextPhoneContacts);
         });

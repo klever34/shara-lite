@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.3.3-discovery",
+  "version": "0.3.3-bugfix.sprint-review+build.3952",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
