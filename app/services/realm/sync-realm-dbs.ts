@@ -1,15 +1,20 @@
 import Realm from 'realm';
-import {shouldUpdateRealmObject} from '@/services/realm/utils';
+import {
+  saveLastLocalSync,
+  shouldUpdateRealmObject,
+} from '@/services/realm/utils';
 import {addItemToQueue} from '@/services/realm/queue';
 
 export const syncRealmDbs = ({
   sourceRealm,
   targetRealm,
   partitionValue,
+  isLocal,
 }: {
   sourceRealm: Realm;
   targetRealm: Realm;
   partitionValue: string;
+  isLocal?: boolean;
 }) => {
   sourceRealm.schema.forEach((objSchema) => {
     const modelName = objSchema.name;
@@ -17,87 +22,85 @@ export const syncRealmDbs = ({
 
     // @ts-ignore
     function listener(records, changes) {
-      const updateRecords = () => {
-        changes.insertions.forEach((index: number) => {
-          const insertedRecord = records[index];
+      changes.insertions.forEach((index: number) => {
+        const insertedRecord = records[index];
 
-          addItemToQueue(() => {
-            const insertRealmObject = shouldUpdateRealmObject({
-              sourceObject: insertedRecord,
-              targetRealm,
-              modelName,
-            });
-
-            if (
-              insertRealmObject &&
-              insertedRecord &&
-              insertedRecord._partition &&
-              insertedRecord._partition === partitionValue
-            ) {
-              const insertItem = () => {
-                targetRealm.create(
-                  modelName,
-                  insertedRecord,
-                  Realm.UpdateMode.Modified,
-                );
-              };
-
-              if (targetRealm.isInTransaction) {
-                insertItem();
-              } else {
-                targetRealm.write(insertItem);
-              }
-            }
+        addItemToQueue(() => {
+          const insertRealmObject = shouldUpdateRealmObject({
+            sourceObject: insertedRecord,
+            targetRealm,
+            modelName,
           });
-        });
 
-        changes.modifications.forEach((index: number) => {
-          const modifiedRecord = records[index];
+          if (
+            insertRealmObject &&
+            insertedRecord &&
+            insertedRecord._partition &&
+            insertedRecord._partition === partitionValue
+          ) {
+            const insertItem = () => {
+              targetRealm.create(
+                modelName,
+                insertedRecord,
+                Realm.UpdateMode.Modified,
+              );
+            };
 
-          addItemToQueue(() => {
-            const updateRealmObject = shouldUpdateRealmObject({
-              sourceObject: modifiedRecord,
-              targetRealm,
-              modelName,
-            });
-
-            if (
-              updateRealmObject &&
-              modifiedRecord &&
-              modifiedRecord._partition &&
-              modifiedRecord._partition === partitionValue
-            ) {
-              const modifyItem = () => {
-                targetRealm.create(
-                  modelName,
-                  modifiedRecord,
-                  Realm.UpdateMode.Modified,
-                );
-              };
-
-              if (targetRealm.isInTransaction) {
-                modifyItem();
-              } else {
-                targetRealm.write(modifyItem);
-              }
+            if (targetRealm.isInTransaction) {
+              insertItem();
+            } else {
+              targetRealm.write(insertItem);
             }
+
+            if (isLocal) {
+              saveLastLocalSync({
+                model: objSchema.name,
+                date: insertedRecord.updated_at,
+              }).then(() => {});
+            }
+          }
+        });
+      });
+
+      changes.modifications.forEach((index: number) => {
+        const modifiedRecord = records[index];
+
+        addItemToQueue(() => {
+          const updateRealmObject = shouldUpdateRealmObject({
+            sourceObject: modifiedRecord,
+            targetRealm,
+            modelName,
           });
-        });
 
-        // @ts-ignore
-        changes.deletions.forEach(() => {
-          // Deleted objects cannot be accessed directly
-          // Support for accessing deleted objects coming soon...
-        });
-      };
+          if (
+            updateRealmObject &&
+            modifiedRecord &&
+            modifiedRecord._partition &&
+            modifiedRecord._partition === partitionValue
+          ) {
+            const modifyItem = () => {
+              targetRealm.create(
+                modelName,
+                modifiedRecord,
+                Realm.UpdateMode.Modified,
+              );
+            };
 
-      setTimeout(() => {
-        if (targetRealm.isInTransaction) {
-          updateRecords();
-        } else {
-          targetRealm.write(updateRecords);
-        }
-      }, 1000);
+            if (targetRealm.isInTransaction) {
+              modifyItem();
+            } else {
+              targetRealm.write(modifyItem);
+            }
+
+            if (isLocal) {
+              saveLastLocalSync({
+                model: objSchema.name,
+                date: modifiedRecord.updated_at,
+              }).then(() => {});
+            }
+          }
+        });
+      });
     }
 
     // @ts-ignore
