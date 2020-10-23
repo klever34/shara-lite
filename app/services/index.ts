@@ -15,6 +15,10 @@ import {
 import {INotificationService, NotificationService} from './notification';
 import {IGeolocationService, GeolocationService} from './geolocation';
 import {AddressService, IAddressService} from '@/services/address/service';
+import {
+  IIPGeolocationService,
+  IPGeolocationService,
+} from '@/services/ip-geolocation';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
@@ -26,6 +30,7 @@ const createDIContainer = (): IDIContainer => {
     Realm: object(RealmService),
     Storage: object(StorageService),
     Geolocation: object(GeolocationService),
+    IPGeolocation: object(IPGeolocationService),
     Auth: object(AuthService).construct(
       get('Storage'),
       get('PubNub'),
@@ -36,6 +41,7 @@ const createDIContainer = (): IDIContainer => {
       get('Realm'),
       get('Api'),
       get('Auth'),
+      get('IPGeolocation'),
     ),
     Message: object(MessageService).construct(get('Realm'), get('PubNub')),
     Conversation: object(ConversationService).construct(
@@ -86,3 +92,6 @@ export const getGeolocationService = () =>
 
 export const getAddressService = () =>
   container.get<IAddressService>('Address');
+
+export const getIPGeolocationService = () =>
+  container.get<IIPGeolocationService>('IPGeolocation');
