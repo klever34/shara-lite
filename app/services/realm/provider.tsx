@@ -6,12 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import subWeeks from 'date-fns/subWeeks';
 import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
 import perf from '@react-native-firebase/perf';
-import {getStorageService} from '@/services';
 import {normalizeDb} from '@/services/realm/normalizations';
+import {
+  getLocalLastSync,
+  initLocalLastSyncStorage,
+} from '@/services/realm/utils';
 
 type RealmObject = {
   realm?: Realm;
@@ -44,18 +46,13 @@ const RealmProvider = (props: any) => {
   const syncRealm = useRef<Realm>();
   const localRealm = useRef<Realm>();
 
-  const lastLocalSyncDateStorageKey = 'lastLocalSyncDate';
-  const storageService = getStorageService();
-
   const updateSyncCompleteStatus = useCallback(async () => {
-    const storedSyncDate = await storageService.getItem(
-      lastLocalSyncDateStorageKey,
-    );
+    const storedSyncDate = await getLocalLastSync();
 
     if (!storedSyncDate) {
       setIsSyncCompleted(false);
     }
-  }, [storageService, setIsSyncCompleted]);
+  }, [setIsSyncCompleted]);
 
   useEffect(() => {
     updateSyncCompleteStatus();
@@ -74,27 +71,21 @@ const RealmProvider = (props: any) => {
     const trace = await perf().startTrace('updateSyncRealm');
     setRealmUser(user);
 
-    const currentDate = new Date();
-    const storedSyncDate = (await storageService.getItem(
-      lastLocalSyncDateStorageKey,
-    )) as string;
-    const lastLocalSyncDate = storedSyncDate
-      ? new Date(storedSyncDate)
-      : undefined;
+    const lastLocalSync = await getLocalLastSync();
+    localRealm.current &&
+      (await initLocalLastSyncStorage({realm: localRealm.current}));
 
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
       partitionValue,
-      lastLocalSyncDate,
+      lastLocalSync,
     });
 
     setTimeout(() => {
       setIsSyncCompleted(true);
     }, 2000);
     syncRealm.current = newRealm;
-
-    await storageService.setItem(lastLocalSyncDateStorageKey, currentDate);
     await trace.stop();
   };
 
@@ -150,21 +141,18 @@ const syncLocalData = ({
   syncRealm,
   localRealm,
   partitionValue,
-  lastLocalSyncDate,
+  lastLocalSync,
 }: {
   syncRealm?: Realm;
   localRealm?: Realm;
   partitionValue: string;
-  lastLocalSyncDate: Date | undefined;
+  lastLocalSync: any | undefined;
 }) => {
   if (!syncRealm || !localRealm) {
     return;
   }
 
-  const useQueue = !!lastLocalSyncDate;
-  const lastOnlineSyncDate = lastLocalSyncDate
-    ? subWeeks(new Date(), 3)
-    : undefined;
+  const useQueue = !!lastLocalSync;
 
   normalizeDb({partitionKey: partitionValue, realm: localRealm});
 
@@ -172,16 +160,18 @@ const syncLocalData = ({
     sourceRealm: localRealm,
     targetRealm: syncRealm,
     partitionValue,
-    lastSyncDate: lastLocalSyncDate,
+    lastLocalSync,
     useQueue,
+    isLocal: true,
   });
 
   copyRealm({
     sourceRealm: syncRealm,
     targetRealm: localRealm,
     partitionValue,
+    lastLocalSync,
     useQueue,
-    lastSyncDate: lastOnlineSyncDate,
+    isLocal: false,
   });
 
   syncRealmDbs({
