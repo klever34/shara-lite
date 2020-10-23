@@ -1,11 +1,11 @@
 import React from 'react';
 import Modal from 'react-native-modal';
-import {BaseModalProps, ModalPropsList} from '../../types/modal';
-import {applyStyles} from '../helpers/utils';
+import {ModalOptionsList, BaseModalProps} from 'types/modal';
+import {applyStyles} from '@/helpers/utils';
 import {View, StyleSheet, Text} from 'react-native';
 import Touchable from '../components/Touchable';
 
-type OptionsModalProps = ModalPropsList['options'] & BaseModalProps;
+type OptionsModalProps = ModalOptionsList['options'] & BaseModalProps;
 
 const OptionsModal = ({visible, closeModal, options}: OptionsModalProps) => {
   return (

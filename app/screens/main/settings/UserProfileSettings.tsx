@@ -1,6 +1,7 @@
 import {AuthView, UserProfileForm, UserProfileFormPayload} from '@/components';
 import {applyStyles} from '@/helpers/utils';
 import {getApiService, getAuthService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
 import React, {useCallback} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
 
@@ -9,6 +10,7 @@ export const UserProfileSettings = () => {
   const apiService = getApiService();
 
   const user = authService.getUser();
+  const navigation = useAppNavigation();
   const {firstname, id, lastname, email, mobile, country_code} = user || {};
   const formIntialValues = {
     email,
@@ -26,11 +28,12 @@ export const UserProfileSettings = () => {
           'User profile updated successfully',
           ToastAndroid.SHORT,
         );
+        navigation.goBack();
       } catch (error) {
         Alert.alert('Error', error.message);
       }
     },
-    [apiService],
+    [navigation, apiService],
   );
 
   return (

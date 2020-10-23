@@ -22,6 +22,7 @@ import {
 } from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
+import {orderBy} from 'lodash';
 import React, {useCallback} from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
 
@@ -30,6 +31,8 @@ type Props = ModalWrapperFields;
 export const ItemsTab = withModal(({openModal}: Props) => {
   const realm = useRealm();
   const products = getProducts({realm});
+  const sortedProducts = orderBy(products, 'name', 'asc');
+
   const handleError = useErrorHandler();
 
   const handleUpdateItem = useCallback(
@@ -63,6 +66,8 @@ export const ItemsTab = withModal(({openModal}: Props) => {
 
   const handleOpenReceiptItemModal = useCallback(() => {
     const closeReceiptItemModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <ReceiptItemModalContent
           type="item"
@@ -82,6 +87,8 @@ export const ItemsTab = withModal(({openModal}: Props) => {
         })
         .catch(handleError);
       const closeReceiptItemModal = openModal('full', {
+        animationInTiming: 0.1,
+        animationOutTiming: 0.1,
         renderContent: () => (
           <ReceiptItemModalContent
             item={item}
@@ -145,7 +152,7 @@ export const ItemsTab = withModal(({openModal}: Props) => {
   return (
     <SafeAreaView style={applyStyles('py-md flex-1 bg-white')}>
       <FlatList
-        data={products}
+        data={sortedProducts}
         renderItem={renderListItem}
         keyboardShouldPersistTaps="always"
         keyExtractor={(item) => `${item?._id?.toString()}`}
