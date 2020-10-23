@@ -62,7 +62,11 @@ export const BusinessForm = ({
     },
     onSubmit: (payload) => {
       const {countryCode, mobile, ...rest} = payload;
-      onSubmit({mobile: `${countryCode}${mobile}`, countryCode, ...rest});
+      onSubmit({
+        mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
+        countryCode,
+        ...rest,
+      });
     },
   });
 

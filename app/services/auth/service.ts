@@ -128,7 +128,7 @@ export class AuthService implements IAuthService {
       name: '',
       mobile: '',
       address: '',
-      countryCode: '',
+      country_code: '',
       profile_image: undefined,
       id: '',
     } as Business;
