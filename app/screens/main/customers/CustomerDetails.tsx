@@ -169,7 +169,12 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                         -1) !== -1 ||
                       (prepareValueForSearch(item.credit_amount).search(
                         query,
-                      ) ?? -1) !== -1
+                      ) ?? -1) !== -1 ||
+                      (prepareValueForSearch(
+                        item.created_at
+                          ? format(item.created_at, 'dd MMMM, yyyy')
+                          : '',
+                      ).search(query) ?? -1) !== -1
                     );
                   },
                   textInputProps: {
