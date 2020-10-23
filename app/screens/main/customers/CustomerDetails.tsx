@@ -107,6 +107,8 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const handleOpenModal = useCallback(() => {
     const closeModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <CreateReceipt
           initialCustomer={customer}
@@ -236,12 +238,15 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         onCreateReceipt={handleOpenModal}
         handleListItemSelect={handleListItemSelect}>
         <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
-          <View
-            style={applyStyles('py-xl px-sm flex-row center justify-between')}>
+          <View style={applyStyles('py-lg px-sm flex-row center')}>
             {statusFilters.map((filterItem) => (
               <FilterButton
                 {...filterItem}
                 key={filterItem.value}
+                style={applyStyles('mx-xs', {
+                  paddingVertical: 8,
+                  paddingHorizontal: 8,
+                })}
                 isChecked={filter === filterItem.value}
               />
             ))}

@@ -21,16 +21,23 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
+import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {saveReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Text,
+  TextInput,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {AddCustomer} from '../main/customers';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
-import {ReceiptPreviewModal} from './ReceiptPreviewModal';
 
 type Props = {
   receipt?: IReceipt;
@@ -43,13 +50,14 @@ export const CreateReceipt = withModal((props: Props) => {
   const {
     receipt,
     openModal,
-    closeReceiptModal,
-    onSnapReceipt,
+    // onSnapReceipt,
     initialCustomer,
+    closeReceiptModal,
   } = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
+  const navigation = useAppNavigation();
   const myCustomers = getCustomers({realm});
   const currency = getAuthService().getUserCurrency();
 
@@ -66,7 +74,10 @@ export const CreateReceipt = withModal((props: Props) => {
   const [customer, setCustomer] = useState<ICustomer>(
     receipt?.customer || ({} as ICustomer),
   );
-  const [snappedReceipt, setSnappedReceipt] = useState('');
+  const [
+    snappedReceipt,
+    // setSnappedReceipt,
+  ] = useState('');
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
 
   const tax = 0;
@@ -170,6 +181,8 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptItemModal = useCallback(() => {
     const closeReceiptItemModal = openModal('full', {
+      animationInTiming: 0.1,
+      animationOutTiming: 0.1,
       renderContent: () => (
         <ReceiptItemModalContent
           //@ts-ignore
@@ -189,6 +202,8 @@ export const CreateReceipt = withModal((props: Props) => {
         })
         .catch(handleError);
       const closeReceiptItemModal = openModal('full', {
+        animationInTiming: 0.1,
+        animationOutTiming: 0.1,
         renderContent: () => (
           <ReceiptItemModalContent
             item={item}
@@ -208,19 +223,10 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
-      const closeReceiptPreviewModal = openModal('full', {
-        renderContent: () => (
-          <ReceiptPreviewModal
-            receiptId={item._id}
-            closeModal={() => {
-              closeReceiptPreviewModal();
-              closeReceiptModal();
-            }}
-          />
-        ),
-      });
+      closeReceiptModal();
+      navigation.navigate('SalesDetails', {id: item._id});
     },
-    [openModal, closeReceiptModal],
+    [closeReceiptModal, navigation],
   );
 
   const handleOpenContactList = useCallback(() => {
@@ -241,8 +247,9 @@ export const CreateReceipt = withModal((props: Props) => {
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
   const handleSnapReceipt = useCallback(() => {
-    onSnapReceipt && onSnapReceipt((uri) => setSnappedReceipt(uri));
-  }, [onSnapReceipt]);
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
+    // onSnapReceipt?.((uri) => setSnappedReceipt(uri));
+  }, []);
 
   const handleSaveReceipt = useCallback(() => {
     setIsSaving(true);
@@ -402,7 +409,7 @@ export const CreateReceipt = withModal((props: Props) => {
                 <View
                   style={applyStyles(
                     summaryTableStyles.column,
-                    summaryTableStyles['column-30'],
+                    summaryTableStyles['column-25'],
                   )}>
                   <View
                     style={applyStyles('flex-row items-center h-full w-full')}>
@@ -428,7 +435,7 @@ export const CreateReceipt = withModal((props: Props) => {
                 />
                 <View
                   style={applyStyles(
-                    summaryTableStyles['column-10'],
+                    summaryTableStyles['column-15'],
                     summaryTableStyles.column,
                   )}
                 />
@@ -451,6 +458,7 @@ export const CreateReceipt = withModal((props: Props) => {
                     inputStyle={applyStyles({
                       height: 48,
                       width: 200,
+                      fontSize: 16,
                       borderWidth: 1,
                       paddingTop: 14,
                       fontFamily: 'Rubik-Regular',
@@ -470,10 +478,11 @@ export const CreateReceipt = withModal((props: Props) => {
                   <TextInput
                     multiline
                     value={note}
-                    style={applyStyles('px-lg py-0', {
+                    style={applyStyles('px-sm pt-xs', {
                       width: '55%',
-                      height: 100,
+                      fontSize: 16,
                       borderWidth: 1,
+                      paddingBottom: 100,
                       fontFamily: 'Rubik-Regular',
                       borderColor: colors['gray-50'],
                     })}

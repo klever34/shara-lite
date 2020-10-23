@@ -1,12 +1,12 @@
 import React, {useCallback} from 'react';
-import {BaseModalProps, ModalPropsList} from 'types/modal';
+import {BaseModalProps, ModalOptionsList} from 'types/modal';
 import Modal from 'react-native-modal';
 import {applyStyles} from '@/helpers/utils';
 import SearchableDropdown from '@/components/SearchableDropdown';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 
-type SearchModalProps = ModalPropsList['search'] & BaseModalProps;
+type SearchModalProps = ModalOptionsList['search'] & BaseModalProps;
 
 const SearchModal = ({visible, closeModal, ...restProps}: SearchModalProps) => {
   const handleError = useErrorHandler();
