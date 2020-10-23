@@ -3,6 +3,8 @@ import {IPubNubService} from '../pubnub';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
 import {Business, User} from 'types/app';
+import {IAnalyticsService} from '@/services/analytics';
+import {handleError} from '@/services/error-boundary';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -38,6 +40,7 @@ export class AuthService implements IAuthService {
   constructor(
     private storageService: IStorageService,
     private pubNubService: IPubNubService,
+    private analyticsService: IAnalyticsService,
   ) {}
 
   public async initialize(): Promise<void> {
@@ -65,6 +68,7 @@ export class AuthService implements IAuthService {
 
   public setUser(user: User) {
     this.user = user;
+    this.analyticsService.setUser(user).catch(handleError);
   }
 
   public setRealmCredentials(realmCredentials: any) {

@@ -26,7 +26,11 @@ const createDIContainer = (): IDIContainer => {
     Realm: object(RealmService),
     Storage: object(StorageService),
     Geolocation: object(GeolocationService),
-    Auth: object(AuthService).construct(get('Storage'), get('PubNub')),
+    Auth: object(AuthService).construct(
+      get('Storage'),
+      get('PubNub'),
+      get('Analytics'),
+    ),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
       get('Realm'),

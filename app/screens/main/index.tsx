@@ -4,7 +4,6 @@ import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
 import {useCreditReminder} from '@/services/credit-reminder';
-import {useErrorHandler} from '@/services/error-boundary';
 import {useRepeatBackToExit} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
@@ -16,11 +15,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
-import {
-  getAnalyticsService,
-  getAuthService,
-  getPubNubService,
-} from '../../services';
+import {getAuthService, getPubNubService} from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import CustomerDetails from './customers/CustomerDetails';
 import {SalesDetails} from './home';
@@ -45,9 +40,7 @@ const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = () => {
   useRepeatBackToExit();
-  const handleError = useErrorHandler();
   const realm = useRealm();
-  const user = getAuthService().getUser();
   const {isSyncCompleted} = useContext(RealmContext);
 
   useRealmSyncLoader();
@@ -56,12 +49,7 @@ const MainScreens = () => {
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
 
   useEffect(() => {
-    if (user) {
-      getAnalyticsService().setUser(user).catch(handleError);
-    }
-  }, [handleError, user]);
-
-  useEffect(() => {
+    const user = getAuthService().getUser();
     if (user) {
       const pubNub = new PubNub({
         subscribeKey: Config.PUBNUB_SUB_KEY,
@@ -72,7 +60,7 @@ const MainScreens = () => {
       pubNubService.setInstance(pubNub);
       setPubNubClient(pubNub);
     }
-  }, [user]);
+  }, []);
 
   if (!realm) {
     return (
