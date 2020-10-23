@@ -1,9 +1,19 @@
 import Realm from 'realm';
-import React, {createContext, useRef, useState} from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {copyRealm} from '@/services/realm/copy-realm';
 import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
-import {normalizeDb} from '@/services/realm/normalizations';
 import perf from '@react-native-firebase/perf';
+import {normalizeDb} from '@/services/realm/normalizations';
+import {
+  getLocalLastSync,
+  initLocalLastSyncStorage,
+} from '@/services/realm/utils';
 
 type RealmObject = {
   realm?: Realm;
@@ -30,11 +40,23 @@ const RealmProvider = (props: any) => {
   const [isRealmSyncLoaderInitiated, setIsRealmSyncLoaderInitiated] = useState<
     Boolean
   >(false);
-  const [isSyncCompleted, setIsSyncCompleted] = useState<Boolean>(false);
+  const [isSyncCompleted, setIsSyncCompleted] = useState<Boolean>(true);
   const [realm, setRealm] = useState<Realm>();
   const [realmUser, setRealmUser] = useState<any>(false);
   const syncRealm = useRef<Realm>();
   const localRealm = useRef<Realm>();
+
+  const updateSyncCompleteStatus = useCallback(async () => {
+    const storedSyncDate = await getLocalLastSync();
+
+    if (!storedSyncDate) {
+      setIsSyncCompleted(false);
+    }
+  }, [setIsSyncCompleted]);
+
+  useEffect(() => {
+    updateSyncCompleteStatus();
+  }, [updateSyncCompleteStatus]);
 
   const updateSyncRealm = async ({
     newRealm,
@@ -48,12 +70,16 @@ const RealmProvider = (props: any) => {
     // TODO Sync trace
     const trace = await perf().startTrace('updateSyncRealm');
     setRealmUser(user);
-    setIsSyncCompleted(false);
+
+    const lastLocalSync = await getLocalLastSync();
+    localRealm.current &&
+      (await initLocalLastSyncStorage({realm: localRealm.current}));
 
     syncLocalData({
       syncRealm: newRealm,
       localRealm: localRealm.current,
       partitionValue,
+      lastLocalSync,
     });
 
     setTimeout(() => {
@@ -115,18 +141,18 @@ const syncLocalData = ({
   syncRealm,
   localRealm,
   partitionValue,
+  lastLocalSync,
 }: {
   syncRealm?: Realm;
   localRealm?: Realm;
   partitionValue: string;
+  lastLocalSync: any | undefined;
 }) => {
   if (!syncRealm || !localRealm) {
     return;
   }
 
-  const syncDate = new Date(
-    'Tue Oct 11 2020 09:26:43 GMT+0100 (West Africa Standard Time)',
-  );
+  const useQueue = !!lastLocalSync;
 
   normalizeDb({partitionKey: partitionValue, realm: localRealm});
 
@@ -134,19 +160,27 @@ const syncLocalData = ({
     sourceRealm: localRealm,
     targetRealm: syncRealm,
     partitionValue,
-    syncDate,
+    lastLocalSync,
+    useQueue,
+    isLocal: true,
   });
+
   copyRealm({
     sourceRealm: syncRealm,
     targetRealm: localRealm,
     partitionValue,
-    syncDate,
+    lastLocalSync,
+    useQueue,
+    isLocal: false,
   });
+
   syncRealmDbs({
     sourceRealm: localRealm,
     targetRealm: syncRealm,
     partitionValue,
+    isLocal: true,
   });
+
   syncRealmDbs({
     sourceRealm: syncRealm,
     targetRealm: localRealm,

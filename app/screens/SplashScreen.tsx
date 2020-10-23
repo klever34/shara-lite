@@ -57,24 +57,26 @@ const SplashScreen = () => {
         }
       }
 
-      if (authService.isLoggedIn()) {
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Main'}],
-        });
-      } else {
-        navigation.reset({
-          index: 0,
-          routes: [{name: 'Auth'}],
-        });
-      }
+      setTimeout(() => {
+        if (authService.isLoggedIn()) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Main'}],
+          });
+        } else {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'Auth'}],
+          });
+        }
+      }, 750);
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [navigation],
   );
 
   useEffect(() => {
-    setTimeout(handleRedirect, 750);
+    handleRedirect();
   }, [handleRedirect]);
 
   return (
