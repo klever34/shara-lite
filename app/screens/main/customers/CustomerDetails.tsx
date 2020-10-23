@@ -32,7 +32,8 @@ const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
   {label: 'Unpaid', value: 'unpaid'},
   {label: 'Paid', value: 'paid'},
-  {label: 'Pending', value: 'pending'},
+  {label: 'Cancelled', value: 'cancelled'},
+  // {label: 'Pending', value: 'pending'},
 ];
 
 type CustomerDetailsProps = ModalWrapperFields & {
@@ -206,6 +207,8 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         return `total_amount = amount_paid AND (${isNotPending})`;
       case 'unpaid':
         return `total_amount != amount_paid AND (${isNotPending})`;
+      case 'cancelled':
+        return `is_cancelled = true AND (${isNotPending})`;
       case 'pending':
         return `!(${isNotPending})`;
       default:
