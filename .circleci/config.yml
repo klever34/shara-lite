@@ -371,11 +371,13 @@ jobs:
           command: |
             curl -sL https://sentry.io/get-cli/ | bash
             VERSION=$(jq ".version" -r package.json)
-            sentry-cli releases new "$VERSION"
-            sentry-cli releases set-commits "$VERSION" --auto
-            sentry-cli releases finalize "$VERSION"
-            echo "Sentry Version: ${VERSION}"
+            PACKAGE_NAME="co.shara.app.test"
+            SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}"
+            sentry-cli releases new "${SENTRY_VERSION}"
+            sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
+            echo "Sentry Version: ${SENTRY_VERSION}"
             sentry-cli releases files ${VERSION} upload-sourcemaps android/app/build/generated/sourcemaps/react/dev/release/index.android.bundle.map
+            sentry-cli releases finalize "${SENTRY_VERSION}"
             ls -R android/app/build/generated/sourcemaps/
 orbs:
   android: circleci/android@0.2.1
