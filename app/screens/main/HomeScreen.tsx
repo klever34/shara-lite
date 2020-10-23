@@ -55,7 +55,9 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
           <HeaderBackButton
             {...props}
             onPress={() => {
-              openModal('bottom-half', {renderContent: HomeMenu});
+              openModal('bottom-half', {
+                renderContent: (contentProps) => <HomeMenu {...contentProps} />,
+              });
             }}
             backImage={() => {
               return (

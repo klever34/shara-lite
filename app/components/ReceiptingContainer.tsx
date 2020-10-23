@@ -1,13 +1,11 @@
 import EmptyState from '@/components/EmptyState';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
-import {useRealm} from '@/services/realm';
-import {getAllPayments, saveReceipt} from '@/services/ReceiptService';
+import {getAllPayments} from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import React, {ReactNode, useCallback} from 'react';
-import {SafeAreaView, Text, TextStyle, View} from 'react-native';
+import {Alert, SafeAreaView, Text, TextStyle, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {HomeContainer} from './HomeContainer';
 
@@ -27,13 +25,13 @@ type ReceiptingContainerProps = {
 export const ReceiptingContainer = ({
   receipts,
   children,
-  onSnapReceipt,
+  // onSnapReceipt,
   emptyStateText,
   onCreateReceipt,
   handleListItemSelect,
   getReceiptItemLeftText,
 }: ReceiptingContainerProps) => {
-  const realm = useRealm();
+  // const realm = useRealm();
 
   const renderReceiptItem = useCallback(
     ({item}: {item: IReceipt}) => {
@@ -53,21 +51,21 @@ export const ReceiptingContainer = ({
   }, [onCreateReceipt]);
 
   const handleSnapReceipt = useCallback(() => {
-    onSnapReceipt &&
-      onSnapReceipt((uri) =>
-        saveReceipt({
-          realm,
-          tax: 0,
-          payments: [],
-          amountPaid: 0,
-          totalAmount: 0,
-          creditAmount: 0,
-          receiptItems: [],
-          local_image_url: uri,
-          customer: {} as ICustomer,
-        }),
-      );
-  }, [onSnapReceipt, realm]);
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
+    // onSnapReceipt?.((uri) =>
+    //   saveReceipt({
+    //     realm,
+    //     tax: 0,
+    //     payments: [],
+    //     amountPaid: 0,
+    //     totalAmount: 0,
+    //     creditAmount: 0,
+    //     receiptItems: [],
+    //     local_image_url: uri,
+    //     customer: {} as ICustomer,
+    //   }),
+    // );
+  }, []);
 
   return (
     <SafeAreaView

@@ -1,13 +1,14 @@
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceiptItem} from '@/models/ReceiptItem';
+import {getAuthService} from '@/services';
 import {colors} from '@/styles';
 import format from 'date-fns/format';
 import React, {useCallback} from 'react';
 import {FlatList, Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
-import {Business, User} from 'types/app';
+import {User} from 'types/app';
 import {
   SummaryTableFooter,
   SummaryTableHeader,
@@ -47,9 +48,8 @@ export const ReceiptImage = (props: Props) => {
     containerStyle,
     captureMode = 'mount',
   } = props;
-  const businessInfo = user?.businesses
-    ? user?.businesses[0]
-    : ({} as Business);
+
+  const businessInfo = getAuthService().getBusinessInfo();
 
   const onCapture = useCallback(
     async (uri: any) => {

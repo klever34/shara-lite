@@ -15,7 +15,8 @@ export const summaryTableStyles = StyleSheet.create({
     flexDirection: 'row',
   },
   column: {
-    height: 48,
+    // height: 48,
+    paddingVertical: 12,
     borderRightWidth: 1,
     paddingHorizontal: 4,
     justifyContent: 'center',
@@ -32,6 +33,9 @@ export const summaryTableStyles = StyleSheet.create({
   },
   'column-10': {
     width: '10%',
+  },
+  'column-15': {
+    width: '15%',
   },
   'column-40': {
     width: '40%',
@@ -78,7 +82,7 @@ export const SummaryTableHeader = () => {
         style={applyStyles(
           'px-xs',
           summaryTableStyles.column,
-          summaryTableStyles['column-30'],
+          summaryTableStyles['column-25'],
         )}>
         <Text style={summaryTableHeaderStyles.text}>Item</Text>
       </View>
@@ -96,7 +100,7 @@ export const SummaryTableHeader = () => {
       <View
         style={applyStyles(
           'px-xs',
-          summaryTableStyles['column-10'],
+          summaryTableStyles['column-15'],
           summaryTableStyles.column,
           {
             alignItems: 'flex-end',
@@ -139,10 +143,7 @@ export const SummaryTableFooter = ({
         <View
           style={applyStyles(
             summaryTableStyles.column,
-            summaryTableStyles['column-30'],
-            {
-              height: 30,
-            },
+            summaryTableStyles['column-25'],
           )}
         />
         <View
@@ -150,31 +151,32 @@ export const SummaryTableFooter = ({
             summaryTableStyles.column,
             summaryTableStyles['column-30'],
             {
-              height: 30,
               alignItems: 'flex-end',
             },
           )}
         />
         <View
           style={applyStyles(
-            summaryTableStyles['column-10'],
+            summaryTableStyles['column-15'],
             summaryTableStyles.column,
             {
-              height: 30,
               alignItems: 'flex-end',
             },
           )}
         />
         <View
-          style={applyStyles(summaryTableStyles['column-30'], {
-            height: 30,
-            alignItems: 'flex-end',
-          })}
+          style={applyStyles(
+            summaryTableStyles['column-30'],
+            summaryTableStyles.column,
+            {
+              alignItems: 'flex-end',
+            },
+          )}
         />
       </View>
       <View
         style={applyStyles('flex-row', {
-          height: 30,
+          height: 32,
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-20'],
         })}>
@@ -199,7 +201,7 @@ export const SummaryTableFooter = ({
       </View>
       <View
         style={applyStyles('flex-row', {
-          height: 30,
+          height: 32,
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-20'],
         })}>
@@ -224,7 +226,7 @@ export const SummaryTableFooter = ({
       </View>
       <View
         style={applyStyles('flex-row', {
-          height: 30,
+          height: 32,
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-20'],
         })}>
@@ -269,7 +271,7 @@ export const SummaryTableItem = ({
         <View
           style={applyStyles(
             summaryTableStyles.column,
-            summaryTableStyles['column-30'],
+            summaryTableStyles['column-25'],
           )}>
           <Text style={summaryTableItemStyles.text}>{item.product.name}</Text>
         </View>
@@ -287,7 +289,7 @@ export const SummaryTableItem = ({
         </View>
         <View
           style={applyStyles(
-            summaryTableStyles['column-10'],
+            summaryTableStyles['column-15'],
             summaryTableStyles.column,
             {
               alignItems: 'flex-end',

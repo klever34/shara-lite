@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.3.0",
+  "version": "0.3.4",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -36,6 +36,7 @@
     "faker": "^5.1.0",
     "formik": "^2.1.5",
     "intl": "^1.2.5",
+    "libphonenumber-js": "^1.8.5",
     "lodash": "^4.17.15",
     "promise-retry": "^2.0.1",
     "pubnub": "^4.28.1",

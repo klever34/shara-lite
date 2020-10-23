@@ -13,7 +13,7 @@ import {
 } from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
-import {omit} from 'lodash';
+import {omit, orderBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {FlatList, Text, TextInput, View} from 'react-native';
 
@@ -117,6 +117,7 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
   const realm = useRealm();
   const handleError = useErrorHandler();
   const myProducts = getProducts({realm});
+  const sortedProducts = orderBy(myProducts, 'name', 'asc');
 
   const [productIsNew, setProductIsNew] = useState(false);
   const [name, setName] = useState(receiptItem?.name || '');
@@ -125,7 +126,7 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
       ? receiptItem?.product || ({} as IProduct)
       : undefined,
   );
-  const [products, setProducts] = useState<IProduct[]>(myProducts || []);
+  const [products, setProducts] = useState<IProduct[]>(sortedProducts || []);
 
   const handleAddProduct = useCallback(() => {
     getAnalyticsService().logEvent('productStart').catch(handleError);
@@ -137,7 +138,10 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
     setName(createdProduct.name);
     setProduct(createdProduct);
     setProductIsNew(false);
-  }, [handleError, name, realm]);
+    type === 'receipt'
+      ? onNext(createdProduct, 'product')
+      : onNext(createdProduct.name, 'name');
+  }, [handleError, name, onNext, realm, type]);
 
   const handleSearch = useCallback(
     (searchedText: string) => {
@@ -182,8 +186,12 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
         .catch(handleError);
       setName(selectedProduct.name);
       setProduct(selectedProduct);
+      setProductIsNew(false);
+      type === 'receipt'
+        ? onNext(selectedProduct, 'product')
+        : onNext(selectedProduct.name, 'name');
     },
-    [handleError],
+    [handleError, onNext, type],
   );
 
   const handleNextClick = useCallback(() => {
@@ -243,7 +251,7 @@ const ItemNameSection = ({type, onNext, receiptItem}: SectionProps) => {
               <TextInput
                 value={name}
                 onChangeText={(text) => handleNameChange(text)}
-                style={applyStyles('px-12 py-0 mb-96 text-400', {
+                style={applyStyles('px-12 py-0 pb-56 text-400', {
                   fontSize: 16,
                 })}
                 placeholder="Enter item name here..."
@@ -301,16 +309,17 @@ const ItemUnitPriceSection = ({
 
   return (
     <View>
-      <View style={applyStyles('pb-96')}>
-        <View style={applyStyles('mx-12 py-0', {fontSize: 16})}>
-          <CurrencyInput
-            value={price.toString()}
-            iconStyle={applyStyles({top: -12})}
-            inputStyle={applyStyles({borderBottomWidth: 0, paddingTop: 0})}
-            onChange={(text) => handlePriceChange(text)}
-            placeholder="Enter item unit price here..."
-          />
-        </View>
+      <View style={applyStyles('mx-12 py-0', {fontSize: 16})}>
+        <CurrencyInput
+          value={price.toString()}
+          iconStyle={applyStyles({top: -12})}
+          inputStyle={applyStyles('pb-56', {
+            borderBottomWidth: 0,
+            paddingTop: 0,
+          })}
+          onChange={(text) => handlePriceChange(text)}
+          placeholder="Enter item unit price here..."
+        />
       </View>
       <SectionButtons
         onPrevious={onPrevious}
@@ -337,12 +346,12 @@ const ItemQuantitySection = ({
 
   return (
     <View>
-      <View style={applyStyles('pt-16 pb-96')}>
+      <View style={applyStyles('pt-16')}>
         <TextInput
           value={quantity}
           keyboardType="numeric"
           onChangeText={(text) => handleQuantityChange(text)}
-          style={applyStyles('px-12 py-0 text-400', {fontSize: 16})}
+          style={applyStyles('px-12 pb-56 py-0 text-400', {fontSize: 16})}
           placeholder="Enter quantity here..."
         />
       </View>
@@ -367,7 +376,7 @@ const ItemNoteSection = ({onNext, onPrevious}: SectionProps) => {
 
   return (
     <View>
-      <View style={applyStyles('pt-16 pb-96')}>
+      <View style={applyStyles('pt-16 pb-56')}>
         <TextInput
           multiline
           value={note}
@@ -458,7 +467,7 @@ export const ReceiptItemModalContent = (props: Props) => {
         style={applyStyles(
           'px-xs bg-white flex-row items-center justify-between',
           {
-            height: 80,
+            height: 64,
             elevation: 3,
           },
         )}>

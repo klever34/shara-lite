@@ -24,6 +24,7 @@ type Business = {
   mobile?: string;
   created_at: string;
   updated_at: string;
+  country_code?: string;
   profile_image?: {url: string};
   signature_image?: {url: string};
 };

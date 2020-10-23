@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import {getApiService} from '@/services';
+import {getApiService, getIPGeolocationService} from '@/services';
 import {IPGeolocationResponse} from 'types/app';
 
 type IPGeolocationObject = {
@@ -34,6 +34,7 @@ const IPGeolocationProvider = (props: any) => {
   const fetchCountryCode = useCallback(async () => {
     try {
       const response: IPGeolocationResponse = await apiService.getUserIPDetails();
+      getIPGeolocationService().setUserIpDetails(response);
       setCountryCode2(response.country_code2);
       setCallingCode(response.calling_code.replace('+', ''));
     } catch (e) {}
