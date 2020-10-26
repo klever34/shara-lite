@@ -240,10 +240,12 @@ export const CreateReceipt = withModal((props: Props) => {
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
   const handleSaveReceipt = useCallback(() => {
+    console.log(note);
     setIsSaving(true);
     setTimeout(() => {
       let receiptToCreate: any = {
         tax,
+        note,
         realm,
         dueDate,
         customer,
@@ -265,6 +267,7 @@ export const CreateReceipt = withModal((props: Props) => {
       handleOpenReceiptPreviewModal(createdReceipt);
     }, 100);
   }, [
+    note,
     realm,
     dueDate,
     customer,
@@ -420,7 +423,12 @@ export const CreateReceipt = withModal((props: Props) => {
             </View>
             <View style={applyStyles('px-lg', {paddingBottom: 40})}>
               <View style={applyStyles('pb-xl flex-row items-center')}>
-                <Text style={applyStyles('text-400')}>Paid:</Text>
+                <Text
+                  style={applyStyles('text-400', {
+                    color: colors['gray-300'],
+                  })}>
+                  Paid:
+                </Text>
                 <View style={applyStyles('ml-sm')}>
                   <CurrencyInput
                     value={amountPaid.toString()}
@@ -442,7 +450,12 @@ export const CreateReceipt = withModal((props: Props) => {
                 </View>
               </View>
               <View style={applyStyles('flex-row')}>
-                <Text style={applyStyles('text-400')}>Note:</Text>
+                <Text
+                  style={applyStyles('text-400', {
+                    color: colors['gray-300'],
+                  })}>
+                  Note:
+                </Text>
                 <View style={applyStyles('ml-sm')}>
                   <TextInput
                     multiline

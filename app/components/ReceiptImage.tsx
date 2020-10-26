@@ -169,7 +169,12 @@ export const ReceiptImage = (props: Props) => {
         <View>
           <View style={applyStyles('mb-xl px-lg flex-row items-center')}>
             <View style={applyStyles('pr-sm')}>
-              <Text style={applyStyles('text-400')}>Paid:</Text>
+              <Text
+                style={applyStyles('text-400', {
+                  color: colors['gray-300'],
+                })}>
+                Paid:
+              </Text>
             </View>
             <View
               style={applyStyles('p-sm', {

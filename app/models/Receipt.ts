@@ -20,6 +20,7 @@ export interface IReceipt extends BaseModelInterface {
   local_image_url?: string;
   is_cancelled?: boolean;
   cancellation_reason?: string;
+  note?: string;
 
   //Getters
   isPaid?: boolean;
@@ -48,6 +49,7 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       local_image_url: 'string?',
       is_cancelled: {type: 'bool', default: false, optional: true},
       cancellation_reason: 'string?',
+      note: 'string?',
       items: {
         type: 'linkingObjects',
         objectType: 'ReceiptItem',
