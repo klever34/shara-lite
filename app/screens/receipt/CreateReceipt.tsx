@@ -239,11 +239,6 @@ export const CreateReceipt = withModal((props: Props) => {
     });
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
-  // const handleSnapReceipt = useCallback(() => {
-  //   Alert.alert('Coming Soon', 'This feature is coming in the next update');
-  //   // onSnapReceipt?.((uri) => setSnappedReceipt(uri));
-  // }, []);
-
   const handleSaveReceipt = useCallback(() => {
     setIsSaving(true);
     setTimeout(() => {
@@ -268,7 +263,7 @@ export const CreateReceipt = withModal((props: Props) => {
       setIsSaving(false);
       ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       handleOpenReceiptPreviewModal(createdReceipt);
-    }, 300);
+    }, 100);
   }, [
     realm,
     dueDate,
