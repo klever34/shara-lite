@@ -546,7 +546,6 @@ export const ReceiptPreview = withModal(
               <ReceiptImage
                 user={user}
                 tax={receipt?.tax}
-                captureMode="continuous"
                 products={receipt?.items}
                 amountPaid={totalAmountPaid}
                 creditDueDate={creditDueDate}

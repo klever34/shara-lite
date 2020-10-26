@@ -4,11 +4,10 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
 import {colors} from '@/styles';
 import format from 'date-fns/format';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {FlatList, Image, ScrollView, Text, View, ViewStyle} from 'react-native';
-// import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
-import {ViewShotProperties} from 'react-native-view-shot';
-// import RNFetchBlob from 'rn-fetch-blob';
+import {captureRef} from 'react-native-view-shot';
+import RNFetchBlob from 'rn-fetch-blob';
 import {User} from 'types/app';
 import {
   SummaryTableFooter,
@@ -30,7 +29,6 @@ type Props = {
   products?: IReceiptItem[];
   containerStyle?: ViewStyle;
   getImageUri: (base64: string) => void;
-  captureMode?: ViewShotProperties['captureMode'];
 };
 
 export const ReceiptImage = (props: Props) => {
@@ -42,36 +40,43 @@ export const ReceiptImage = (props: Props) => {
     createdAt,
     amountPaid,
     totalAmount,
-    // getImageUri,
+    getImageUri,
     isCancelled,
     creditAmount,
     creditDueDate,
     containerStyle,
-    // captureMode = 'mount',
   } = props;
 
   const businessInfo = getAuthService().getBusinessInfo();
+  const viewRef = useRef<any>(null);
 
-  // const onCapture = useCallback(
-  //   async (uri: any) => {
-  //     RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
-  //       getImageUri(data);
-  //     });
-  //   },
-  //   [getImageUri],
-  // );
+  const onCapture = useCallback(async () => {
+    captureRef(viewRef, {
+      format: 'png',
+      snapshotContentContainer: true,
+    }).then(
+      (uri) => {
+        RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
+          getImageUri(data);
+        });
+      },
+      (error) => console.error('Oops, snapshot failed', error),
+    );
+  }, [getImageUri]);
 
   const renderSummaryItem = useCallback(
     ({item}: SummaryTableItemProps) => <SummaryTableItem item={item} />,
     [],
   );
 
+  useEffect(() => {
+    if (customer?.name) {
+      onCapture();
+    }
+  }, [customer, onCapture]);
+
   return (
-    <ScrollView>
-      {/* <ViewShot
-        onCapture={onCapture}
-        captureMode={captureMode}
-        options={{format: 'png', quality: 0.9}}> */}
+    <ScrollView ref={viewRef}>
       <View
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
@@ -244,7 +249,6 @@ export const ReceiptImage = (props: Props) => {
           </Text>
         </View>
       </View>
-      {/* </ViewShot> */}
     </ScrollView>
   );
 };
