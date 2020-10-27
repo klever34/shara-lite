@@ -8,8 +8,7 @@ import {useRealm} from '@/services/realm';
 import {getReceipt} from '@/services/ReceiptService';
 import {colors} from '@/styles';
 import React, {useEffect, useState} from 'react';
-import {View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
+import {ActivityIndicator, FlatList, View} from 'react-native';
 
 export const SalesDetails = ({route}: any) => {
   const realm = useRealm();
@@ -50,11 +49,17 @@ export const SalesDetails = ({route}: any) => {
               </View>
             </Touchable>
           </View>
-          <ReceiptPreview
-            isNew={false}
-            receipt={receipt}
-            onClose={() => navigation.goBack()}
-          />
+          {!receipt ? (
+            <View style={applyStyles('flex-1 center')}>
+              <ActivityIndicator color={colors.primary} size={40} />
+            </View>
+          ) : (
+            <ReceiptPreview
+              isNew={false}
+              receipt={receipt}
+              onClose={() => navigation.goBack()}
+            />
+          )}
         </>
       }
     />

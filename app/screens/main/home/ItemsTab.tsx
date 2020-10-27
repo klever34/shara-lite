@@ -117,7 +117,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
       return (
         <View
           style={applyStyles('px-md flex-row center justify-between', {
-            height: 50,
+            height: 52,
             borderBottomWidth: 1,
             borderBottomColor: colors['gray-20'],
           })}>
