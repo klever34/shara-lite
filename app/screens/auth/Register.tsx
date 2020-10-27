@@ -12,6 +12,7 @@ import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
+import * as Sentry from '@sentry/react-native'; // TODO Remove
 
 type Fields = {
   mobile: string;
@@ -68,6 +69,7 @@ export const Register = () => {
     };
     const apiService = getApiService();
     setLoading(true);
+
     try {
       await apiService.register(payload);
       const createdLocalRealm = await initLocalRealm();
@@ -80,7 +82,10 @@ export const Register = () => {
         .catch(handleError);
       setLoading(false);
       navigation.replace('BusinessSetup');
+
+      throw new Error('My test Sentry error!'); // TODO Remove
     } catch (error) {
+      Sentry.captureException(error); // TODO Remove
       setLoading(false);
       Alert.alert('Error', error.message);
     }
