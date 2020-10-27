@@ -7,6 +7,7 @@ import React, {
   ReactNode,
   useCallback,
   useContext,
+  useEffect,
   useState,
 } from 'react';
 
@@ -47,6 +48,11 @@ export const HomeProvider = ({children}: {children: ReactNode}) => {
       setDate(selectedDate);
     }
   }, []);
+
+  useEffect(() => {
+    setDate(getRecentSalesDate());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [allReceipts.length]);
 
   return (
     <HomeContext.Provider value={{date, handleDateChange}}>
