@@ -25,7 +25,11 @@ export const SalesDetails = ({route}: any) => {
     return unsubscribe;
   }, [realm, navigation, route.params.id]);
 
-  return (
+  return !receipt ? (
+    <View style={applyStyles('flex-1 center bg-white')}>
+      <ActivityIndicator color={colors.primary} size={40} />
+    </View>
+  ) : (
     <FlatList
       data={[]}
       style={applyStyles('py-sm flex-1', {
@@ -49,17 +53,11 @@ export const SalesDetails = ({route}: any) => {
               </View>
             </Touchable>
           </View>
-          {!receipt ? (
-            <View style={applyStyles('flex-1 center')}>
-              <ActivityIndicator color={colors.primary} size={40} />
-            </View>
-          ) : (
-            <ReceiptPreview
-              isNew={false}
-              receipt={receipt}
-              onClose={() => navigation.goBack()}
-            />
-          )}
+          <ReceiptPreview
+            isNew={false}
+            receipt={receipt}
+            onClose={() => navigation.goBack()}
+          />
         </>
       }
     />

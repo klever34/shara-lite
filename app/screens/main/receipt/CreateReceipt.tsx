@@ -57,7 +57,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>(
     receipt?.items || [],
   );
-  const [customer, setCustomer] = useState<ICustomer>(
+  const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer || ({} as ICustomer),
   );
   const [
@@ -209,6 +209,7 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
+      setCustomer(undefined);
       closeReceiptModal();
       navigation.navigate('SalesDetails', {id: item._id});
     },
@@ -346,7 +347,7 @@ export const CreateReceipt = withModal((props: Props) => {
                             textDecorationColor: colors.primary,
                           },
                     )}>
-                    {customer.name ? customer.name : 'Add Customer Details'}
+                    {customer?.name ? customer.name : 'Add Customer Details'}
                   </Text>
                 </View>
               </Touchable>
