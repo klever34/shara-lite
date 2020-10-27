@@ -30,6 +30,7 @@ workflows:
           context: shara-test
           lane: internal
           gradleTask: assembleDevRelease
+          packageName: co.shara.app.test
           testBuild: false
           requires:
             - checkout_code
@@ -61,6 +62,7 @@ workflows:
           context: shara-discovery
           lane: internal
           gradleTask: assembleDiscoveryRelease
+          packageName: co.shara.app.discovery
           requires:
             - test
           filters:
@@ -109,6 +111,7 @@ workflows:
           lane: testlab
           testBuild: true
           gradleTask: assembleDeliveryRelease
+          packageName: co.shara.app.delivery
           requires:
             - test
           filters:
@@ -133,6 +136,7 @@ workflows:
           context: shara-qa
           lane: internal
           gradleTask: assembleQaRelease
+          packageName: co.shara.app.qa
           requires:
             - test
           filters:
@@ -144,6 +148,7 @@ workflows:
           lane: testlab
           testBuild: true
           gradleTask: assembleQaRelease
+          packageName: co.shara.app.qa
           requires:
             - test
           filters:
@@ -169,6 +174,7 @@ workflows:
           lane: play
           track: beta
           gradleTask: assembleProductionRelease
+          packageName: co.shara.app
           requires:
             - test
           filters:
@@ -179,6 +185,7 @@ workflows:
           context: shara-beta
           lane: internal
           gradleTask: assembleProductionRelease
+          packageName: co.shara.app
           requires:
             - test
           filters:
@@ -297,6 +304,9 @@ jobs:
           name: Run ESLint
   fastlane:
     parameters:
+      packageName:
+        type: string
+        default: co.shara.app.test
       lane:
         type: string
         default: test
@@ -371,7 +381,7 @@ jobs:
           command: |
             curl -sL https://sentry.io/get-cli/ | bash
             VERSION=$(jq ".version" -r package.json)
-            PACKAGE_NAME="co.shara.app.test"
+            PACKAGE_NAME="<<parameters.packageName>>"
             SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}+${CIRCLE_BUILD_NUM}"
             echo "Sentry Version: ${SENTRY_VERSION}"
             sentry-cli releases new "${SENTRY_VERSION}"
