@@ -1,4 +1,4 @@
-import {DatePicker, HomeContainer} from '@/components';
+import {DatePicker, HomeContainer, useHomeProvider} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -29,26 +29,9 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const allReceipts = realm ? getReceipts({realm}) : [];
+  const {date: homeDateFilter, handleDateChange} = useHomeProvider();
 
-  const getRecentSalesDate = useCallback(() => {
-    const realmReceipts = (allReceipts as unknown) as Realm.Results<
-      IReceipt & Realm.Object
-    >;
-    if (realmReceipts.length) {
-      const receiptsSortedByDate = realmReceipts.sorted('created_at', true);
-      const recentReceipt = receiptsSortedByDate[0];
-      if (
-        recentReceipt &&
-        recentReceipt.created_at &&
-        !isToday(recentReceipt.created_at)
-      ) {
-        return recentReceipt.created_at;
-      }
-    }
-    return new Date();
-  }, [allReceipts]);
-
-  const [filter, setFilter] = useState({date: getRecentSalesDate()} || {});
+  const [filter, setFilter] = useState({date: homeDateFilter} || {});
   const [products, setProducts] = useState<FilteredProduct[]>([]);
 
   const dateFilterFunc = useCallback(
@@ -99,6 +82,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   const handleDateFilter = useCallback(
     (date?: Date) => {
       if (date) {
+        handleDateChange(date);
         handleFilterChange('date', date);
         const filtered = allReceipts
           .filter((receipt) => !receipt.is_cancelled)
@@ -115,7 +99,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
         setTotalItems(getReceiptsTotalProductQuantity(filtered));
       }
     },
-    [allReceipts, getFilteredProducts, handleFilterChange],
+    [allReceipts, handleDateChange, getFilteredProducts, handleFilterChange],
   );
 
   const handleOpenCreateReciptModal = useCallback(() => {
@@ -183,19 +167,18 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   );
 
   useEffect(() => {
-    const date = getRecentSalesDate();
     const filtered = allReceipts
       .filter((receipt) => !receipt.is_cancelled)
       .filter((receipt: IReceipt) => {
         if (receipt.created_at) {
           return isEqual(
             new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-            new Date(format(date, 'MMM dd, yyyy')),
+            new Date(format(homeDateFilter, 'MMM dd, yyyy')),
           );
         }
       });
 
-    handleFilterChange('date', date);
+    handleFilterChange('date', homeDateFilter);
     setProducts(getFilteredProducts(filtered));
     setTotalItems(getReceiptsTotalProductQuantity(filtered));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -203,7 +186,6 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      const date = getRecentSalesDate();
       const allReceiptsData = getReceipts({realm});
       const filtered = allReceiptsData
         .filter((receipt) => !receipt.is_cancelled)
@@ -211,21 +193,21 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
           if (receipt.created_at) {
             return isEqual(
               new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-              new Date(format(date, 'MMM dd, yyyy')),
+              new Date(format(homeDateFilter, 'MMM dd, yyyy')),
             );
           }
         });
 
-      handleFilterChange('date', date);
+      handleFilterChange('date', homeDateFilter);
       setProducts(getFilteredProducts(filtered));
       setTotalItems(getReceiptsTotalProductQuantity(filtered));
     });
   }, [
     handleFilterChange,
     getFilteredProducts,
-    getRecentSalesDate,
     navigation,
     realm,
+    homeDateFilter,
   ]);
 
   return (

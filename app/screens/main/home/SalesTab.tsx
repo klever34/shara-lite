@@ -3,6 +3,7 @@ import {
   FilterButton,
   FilterButtonGroup,
   ReceiptingContainer,
+  useHomeProvider,
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -40,24 +41,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   const navigation = useAppNavigation();
   const handleError = useErrorHandler();
   const allReceipts = realm ? getReceipts({realm}) : [];
-
-  const getRecentSalesDate = useCallback(() => {
-    const realmReceipts = (allReceipts as unknown) as Realm.Results<
-      IReceipt & Realm.Object
-    >;
-    if (realmReceipts.length) {
-      const receiptsSortedByDate = realmReceipts.sorted('created_at', true);
-      const recentReceipt = receiptsSortedByDate[0];
-      if (
-        recentReceipt &&
-        recentReceipt.created_at &&
-        !isToday(recentReceipt.created_at)
-      ) {
-        return recentReceipt.created_at;
-      }
-    }
-    return new Date();
-  }, [allReceipts]);
+  const {date: homeDateFilter, handleDateChange} = useHomeProvider();
 
   const sortReceipts = useCallback(
     (receiptsData: IReceipt[]) =>
@@ -70,7 +54,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   const [filter, setFilter] = useState(
-    {status: statusFilters[0].value, date: getRecentSalesDate()} || {},
+    {status: statusFilters[0].value, date: homeDateFilter} || {},
   );
 
   const dateFilterFunc = useCallback(
@@ -213,6 +197,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   const handleDateFilter = useCallback(
     (date?: Date) => {
       if (date) {
+        handleDateChange(date);
         if (filter.status) {
           handleStatusFilter(filter.status, date);
           return;
@@ -226,12 +211,17 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
             );
           }
         });
-
         setReceipts(filtered);
         setTotalAmount(getReceiptsTotalAmount(filtered));
       }
     },
-    [filter.status, allReceipts, handleFilterChange, handleStatusFilter],
+    [
+      filter.status,
+      allReceipts,
+      handleDateChange,
+      handleFilterChange,
+      handleStatusFilter,
+    ],
   );
 
   const handleListItemSelect = useCallback(
@@ -303,11 +293,23 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   useEffect(() => {
-    const date = getRecentSalesDate();
-    handleFilterChange('date', date);
-    handleStatusFilter(filter.status, date);
+    handleFilterChange('date', homeDateFilter);
+    handleStatusFilter(filter.status, homeDateFilter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allReceipts.length]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      handleFilterChange('date', homeDateFilter);
+      handleStatusFilter(filter.status, homeDateFilter);
+    });
+  }, [
+    handleFilterChange,
+    navigation,
+    homeDateFilter,
+    handleStatusFilter,
+    filter.status,
+  ]);
 
   return (
     <KeyboardAvoidingView
