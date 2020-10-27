@@ -12,7 +12,7 @@ import {
   numberWithCommas,
 } from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
-import {ReceiptItemModalContent} from '@/screens/receipt';
+import {ReceiptItemModalContent} from '@/screens/main/receipt';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {

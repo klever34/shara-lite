@@ -18,7 +18,7 @@ import {
 } from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {
   getAnalyticsService,
   getAuthService,

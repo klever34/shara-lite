@@ -7,7 +7,7 @@ import {applyStyles} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {
