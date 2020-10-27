@@ -2,7 +2,9 @@ import {IStorageService} from '../storage';
 import {IPubNubService} from '../pubnub';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
-import {User} from 'types/app';
+import {Business, User} from 'types/app';
+import {IAnalyticsService} from '@/services/analytics';
+import {handleError} from '@/services/error-boundary';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -26,6 +28,8 @@ export interface IAuthService {
   getUserCurrency(): string;
 
   getUserCurrencyCode(): string;
+
+  getBusinessInfo(): Business;
 }
 
 export class AuthService implements IAuthService {
@@ -36,6 +40,7 @@ export class AuthService implements IAuthService {
   constructor(
     private storageService: IStorageService,
     private pubNubService: IPubNubService,
+    private analyticsService: IAnalyticsService,
   ) {}
 
   public async initialize(): Promise<void> {
@@ -63,6 +68,7 @@ export class AuthService implements IAuthService {
 
   public setUser(user: User) {
     this.user = user;
+    this.analyticsService.setUser(user).catch(handleError);
   }
 
   public setRealmCredentials(realmCredentials: any) {
@@ -111,5 +117,20 @@ export class AuthService implements IAuthService {
   public getUserCurrencyCode(): string {
     const user = this.user;
     return user?.currency_code ? user.currency_code : '';
+  }
+
+  public getBusinessInfo(): Business {
+    const user = this.user;
+    if (user?.businesses && user.businesses.length) {
+      return user.businesses[0];
+    }
+    return {
+      name: '',
+      mobile: '',
+      address: '',
+      country_code: '',
+      profile_image: undefined,
+      id: '',
+    } as Business;
   }
 }

@@ -1,4 +1,5 @@
 import {applyStyles} from '@/helpers/utils';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useCallback} from 'react';
@@ -11,17 +12,20 @@ import * as yup from 'yup';
 import {Button} from '../Button';
 import {FloatingLabelInput} from '../FloatingLabelInput';
 import {Icon} from '../Icon';
+import {PhoneNumberField} from '../PhoneNumberField';
 import Touchable from '../Touchable';
 
 export type BusinessFormPayload = {
   name: string;
   address?: string;
   mobile?: string;
+  countryCode?: string;
   profileImageFile?: ImagePickerResponse;
 };
 
 type Props = {
   onSkip?(): void;
+  isLoading?: boolean;
   page?: 'setup' | 'settings';
   initalValues?: BusinessFormPayload;
   onSubmit(payload: BusinessFormPayload): void;
@@ -32,12 +36,18 @@ const validationSchema = yup.object().shape({
   address: yup.string().required('Business address is required'),
 });
 
-export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
+export const BusinessForm = ({
+  page,
+  onSkip,
+  onSubmit,
+  isLoading,
+  initalValues,
+}: Props) => {
+  const {callingCode} = useIPGeolocation();
   const {
     errors,
     values,
     touched,
-    isSubmitting,
     handleChange,
     handleSubmit,
     setFieldValue,
@@ -47,10 +57,24 @@ export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
       name: '',
       address: '',
       mobile: '',
+      countryCode: callingCode,
       profileImageFile: {} as ImagePickerResponse,
     },
-    onSubmit: (payload) => onSubmit(payload),
+    onSubmit: (payload) => {
+      const {countryCode, mobile, ...rest} = payload;
+      onSubmit({
+        mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
+        countryCode,
+        ...rest,
+      });
+    },
   });
+
+  const onChangeMobile = (value: {code: string; number: string}) => {
+    const {code, number} = value;
+    setFieldValue('countryCode', code);
+    setFieldValue('mobile', number);
+  };
 
   const handleAddPicture = useCallback(() => {
     const options: ImagePickerOptions = {
@@ -167,16 +191,14 @@ export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
       </View>
       {page === 'settings' && (
         <View style={applyStyles({paddingBottom: 18})}>
-          <FloatingLabelInput
-            label="Phone Number"
-            value={values.mobile}
-            autoCompleteType="tel"
-            keyboardType="phone-pad"
-            inputStyle={applyStyles({
-              fontSize: 18,
-              width: '100%',
-            })}
-            onChangeText={handleChange('mobile')}
+          <PhoneNumberField
+            errorMessage={errors.mobile}
+            isInvalid={touched.mobile && !!errors.mobile}
+            onChangeText={(data) => onChangeMobile(data)}
+            value={{
+              number: values.mobile ?? '',
+              code: values.countryCode ?? callingCode,
+            }}
           />
         </View>
       )}
@@ -184,7 +206,7 @@ export const BusinessForm = ({page, onSubmit, onSkip, initalValues}: Props) => {
         <Button
           variantColor="red"
           onPress={handleSubmit}
-          isLoading={isSubmitting}
+          isLoading={isLoading}
           style={applyStyles({marginBottom: 18})}
           title={page === 'setup' ? 'Done' : 'save'}
         />

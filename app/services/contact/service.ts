@@ -10,6 +10,8 @@ import {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {User} from 'types/app';
 import {uniqBy} from 'lodash';
+import parsePhoneNumber from 'libphonenumber-js';
+import {IIPGeolocationService} from '@/services/ip-geolocation';
 
 export type PhoneContact = Omit<RNContacts.Contact, 'phoneNumbers'> & {
   phoneNumber: RNContacts.PhoneNumber;
@@ -28,6 +30,7 @@ export interface IContactService {
   createMultipleContacts(contact: IContact[]): Promise<IContact[]>;
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
+  formatPhoneNumber(number: string): string;
 }
 
 const parseDateString = (dateString: string) => {
@@ -40,6 +43,7 @@ export class ContactService implements IContactService {
     private realmService: IRealmService,
     private apiService: IApiService,
     private authService: IAuthService,
+    private ipGeolocationService: IIPGeolocationService,
   ) {}
 
   private permissionGranted: boolean = false;
@@ -85,6 +89,31 @@ export class ContactService implements IContactService {
     return this.permissionGranted;
   }
 
+  public formatPhoneNumber(phoneNumber: string): string {
+    const removeAllNonDigits = (number: string) =>
+      number.replace(/[^\d+]/g, '');
+    if (phoneNumber[0] !== '+') {
+      let countryCallingCode;
+      const ipDetails = this.ipGeolocationService.getUserIpDetails();
+      if (ipDetails) {
+        countryCallingCode = ipDetails.calling_code;
+      } else {
+        countryCallingCode = this.authService.getUser()?.country_code ?? '';
+      }
+      if (!countryCallingCode) {
+        return removeAllNonDigits(phoneNumber);
+      }
+      phoneNumber =
+        `${countryCallingCode[0] === '+' ? '' : '+'}${countryCallingCode}` +
+        phoneNumber;
+    }
+    const phoneNumberDetails = parsePhoneNumber(phoneNumber);
+    if (!phoneNumberDetails || !phoneNumberDetails.isValid()) {
+      return removeAllNonDigits(phoneNumber);
+    }
+    return String(phoneNumberDetails.number);
+  }
+
   public async getPhoneContacts() {
     if (await this.checkPermission()) {
       return new Promise<PhoneContact[]>((resolve, reject) => {
@@ -95,7 +124,7 @@ export class ContactService implements IContactService {
           let nextPhoneContacts: PhoneContact[] = [];
           phoneContacts.forEach(({phoneNumbers, ...phoneContact}) => {
             const uniquePhoneNumbers = uniqBy(phoneNumbers, (item) =>
-              item.number.replace(/\D/g, ''),
+              this.formatPhoneNumber(item.number),
             );
             nextPhoneContacts.push(
               ...uniquePhoneNumbers.map((phoneNumber) => ({
@@ -105,7 +134,7 @@ export class ContactService implements IContactService {
             );
           });
           nextPhoneContacts = uniqBy(nextPhoneContacts, (item) =>
-            item.phoneNumber.number.replace(/\D/g, ''),
+            this.formatPhoneNumber(item.phoneNumber.number),
           );
           resolve(nextPhoneContacts);
         });
