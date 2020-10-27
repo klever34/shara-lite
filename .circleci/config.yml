@@ -399,7 +399,7 @@ jobs:
             echo "Sentry Version: ${SENTRY_VERSION}"
             sentry-cli releases new "${SENTRY_VERSION}"
             sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
-            sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps android/app/build/generated/sourcemaps/react/dev/release/index.android.bundle.map android/app/build/generated/assets/react/dev/release/index.android.bundle
+            sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --url-prefix app:/// --bundle-sourcemap android/app/build/generated/sourcemaps/react/dev/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/dev/release/index.android.bundle
             sentry-cli releases finalize "${SENTRY_VERSION}"
             sentry-cli releases deploys "${SENTRY_VERSION}" new --env <<parameters.env>>
             ls -R android/app/build/generated
