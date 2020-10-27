@@ -494,12 +494,12 @@ export const ReceiptPreview = withModal(
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
         })}>
-        {!receipt?.isPending && (
-          <View style={applyStyles('px-xl mb-md')}>
+        {receipt && !receipt?.isPending && (
+          <View>
             {!receipt?.is_cancelled && !hasCustomer && (
               <Touchable onPress={handleOpenContactList}>
                 <View
-                  style={applyStyles('center px-lg', {
+                  style={applyStyles('center px-lg mx-xl mb-md', {
                     height: 40,
                     borderRadius: 4,
                     alignSelf: 'flex-start',
