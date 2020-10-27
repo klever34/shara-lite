@@ -372,7 +372,7 @@ jobs:
             curl -sL https://sentry.io/get-cli/ | bash
             VERSION=$(jq ".version" -r package.json)
             PACKAGE_NAME="co.shara.app.test"
-            SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}"
+            SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}+${CIRCLE_BUILD_NUM}"
             echo "Sentry Version: ${SENTRY_VERSION}"
             sentry-cli releases new "${SENTRY_VERSION}"
             sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
