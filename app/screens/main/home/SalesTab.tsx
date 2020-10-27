@@ -23,15 +23,13 @@ import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
 import {sortBy} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
-import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
+import {KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
 import {StatusFilter} from 'types/app';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
   {label: 'Unpaid', value: 'unpaid'},
   {label: 'Paid', value: 'paid'},
-  // {label: 'Pending', value: 'pending'},
   {label: 'Cancelled', value: 'cancelled'},
 ];
 
@@ -42,6 +40,24 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   const navigation = useAppNavigation();
   const handleError = useErrorHandler();
   const allReceipts = realm ? getReceipts({realm}) : [];
+
+  const getRecentSalesDate = useCallback(() => {
+    const realmReceipts = (allReceipts as unknown) as Realm.Results<
+      IReceipt & Realm.Object
+    >;
+    if (realmReceipts.length) {
+      const receiptsSortedByDate = realmReceipts.sorted('created_at', true);
+      const recentReceipt = receiptsSortedByDate[0];
+      if (
+        recentReceipt &&
+        recentReceipt.created_at &&
+        !isToday(recentReceipt.created_at)
+      ) {
+        return recentReceipt.created_at;
+      }
+    }
+    return new Date();
+  }, [allReceipts]);
 
   const sortReceipts = useCallback(
     (receiptsData: IReceipt[]) =>
@@ -54,33 +70,27 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   const [filter, setFilter] = useState(
-    {status: statusFilters[0].value, date: new Date()} || {},
+    {status: statusFilters[0].value, date: getRecentSalesDate()} || {},
   );
+
+  const dateFilterFunc = useCallback(
+    (receipt: IReceipt) => {
+      if (filter.date && receipt.created_at) {
+        return isEqual(
+          new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+          new Date(format(filter.date, 'MMM dd, yyyy')),
+        );
+      }
+    },
+    [filter.date],
+  );
+
   const [totalAmount, setTotalAmount] = useState(
-    getReceiptsTotalAmount(
-      sortReceipts(
-        allReceipts.filter((receipt) => {
-          if (filter.date && receipt.created_at) {
-            return isEqual(
-              new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-              new Date(format(filter.date, 'MMM dd, yyyy')),
-            );
-          }
-        }),
-      ),
-    ) || 0,
+    getReceiptsTotalAmount(sortReceipts(allReceipts.filter(dateFilterFunc))) ||
+      0,
   );
   const [receipts, setReceipts] = useState(
-    sortReceipts(
-      allReceipts.filter((receipt) => {
-        if (filter.date && receipt.created_at) {
-          return isEqual(
-            new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
-            new Date(format(filter.date, 'MMM dd, yyyy')),
-          );
-        }
-      }),
-    ) || [],
+    sortReceipts(allReceipts.filter(dateFilterFunc)) || [],
   );
   const emptyStateText = isToday(filter.date)
     ? "You've made no sales today."
@@ -237,47 +247,15 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     [handleError, navigation],
   );
 
-  const handleSnapReceipt = useCallback(
-    (callback: (imageUri: string) => void) => {
-      const options: ImagePickerOptions = {
-        noData: true,
-        maxWidth: 256,
-        maxHeight: 256,
-        mediaType: 'photo',
-        allowsEditing: true,
-      };
-      ImagePicker.launchCamera(options, (response) => {
-        if (response.didCancel) {
-          // do nothing
-        } else if (response.error) {
-          Alert.alert('Error', response.error);
-        } else {
-          const {uri} = response;
-          const extensionIndex = uri.lastIndexOf('.');
-          const extension = uri.slice(extensionIndex + 1);
-          const allowedExtensions = ['jpg', 'jpeg', 'png'];
-          if (!allowedExtensions.includes(extension)) {
-            return Alert.alert('Error', 'That file type is not allowed.');
-          }
-          callback(uri);
-        }
-      });
-    },
-    [],
-  );
-
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeCreateReceiptModal = openModal('full', {
       animationInTiming: 0.1,
       animationOutTiming: 0.1,
       renderContent: () => (
-        <CreateReceipt
-          onSnapReceipt={handleSnapReceipt}
-          closeReceiptModal={closeCreateReceiptModal}
-        />
+        <CreateReceipt closeReceiptModal={closeCreateReceiptModal} />
       ),
     });
-  }, [openModal, handleSnapReceipt]);
+  }, [openModal]);
 
   const getCustomerText = useCallback(
     (receipt: IReceipt, customerTextStyle: TextStyle) => {
@@ -325,7 +303,9 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
   );
 
   useEffect(() => {
-    handleStatusFilter(filter.status, filter.date);
+    const date = getRecentSalesDate();
+    handleFilterChange('date', date);
+    handleStatusFilter(filter.status, date);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allReceipts.length]);
 
@@ -335,7 +315,6 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
       <ReceiptingContainer
         receipts={receipts}
         emptyStateText={emptyStateText}
-        onSnapReceipt={handleSnapReceipt}
         onCreateReceipt={handleOpenCreateReciptModal}
         handleListItemSelect={handleListItemSelect}
         getReceiptItemLeftText={getCustomerText}>

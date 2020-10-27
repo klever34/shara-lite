@@ -36,17 +36,10 @@ type Props = {
   receipt?: IReceipt;
   closeReceiptModal: () => void;
   initialCustomer?: ICustomer;
-  onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {
-    receipt,
-    openModal,
-    // onSnapReceipt,
-    initialCustomer,
-    closeReceiptModal,
-  } = props;
+  const {receipt, openModal, initialCustomer, closeReceiptModal} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
