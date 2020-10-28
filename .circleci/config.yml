@@ -386,9 +386,6 @@ jobs:
             GRADLE_TASK: <<parameters.gradleTask>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
-      - store_artifacts:
-          path: fastlane/report.xml
-          destination: test-results
       - run:
           name: Sentry Release Integration
           command: |

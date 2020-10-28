@@ -12,7 +12,6 @@ import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
 import {getAnalyticsService, getApiService, getRealmService} from '@/services';
-import * as Sentry from '@sentry/react-native'; // TODO Remove
 
 type Fields = {
   mobile: string;
@@ -68,8 +67,6 @@ export const Login = () => {
     const apiService = getApiService();
     setLoading(true);
     try {
-      Sentry.nativeCrash(); // TODO Remove
-
       await apiService.logIn(payload);
       const createdLocalRealm = await initLocalRealm();
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
