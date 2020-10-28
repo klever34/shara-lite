@@ -14,7 +14,6 @@ import {useAsync} from 'app-v3/services/api';
 import {getCustomers, saveCustomer} from 'app-v3/services/customer/service';
 import {useRealm} from 'app-v3/services/realm';
 import {colors} from 'app-v3/styles';
-import {useNavigation} from '@react-navigation/native';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -32,6 +31,11 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
+import {useAppNavigation} from 'app-v3/services/navigation';
+import {
+  HeaderBackButton,
+  StackHeaderLeftButtonProps,
+} from '@react-navigation/stack';
 
 type CustomerListItem =
   | Pick<
@@ -51,7 +55,7 @@ type CustomersScreenProps = ModalWrapperFields & {};
 const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
 export const CustomerListScreen = withModal(
   ({openModal, closeModal}: CustomersScreenProps) => {
-    const navigation = useNavigation();
+    const navigation = useAppNavigation();
     const realm = useRealm() as Realm;
     const myCustomers = getCustomers({realm});
     const analyticsService = getAnalyticsService();
@@ -205,6 +209,36 @@ export const CustomerListScreen = withModal(
 
     useLayoutEffect(() => {
       navigation.setOptions({
+        headerLeft: (props: StackHeaderLeftButtonProps) => {
+          return (
+            <HeaderBackButton
+              {...props}
+              backImage={() => {
+                return (
+                  <View style={applyStyles('flex-row center')}>
+                    <Icon
+                      type="feathericons"
+                      color={colors['gray-300']}
+                      name="users"
+                      size={28}
+                      borderRadius={12}
+                    />
+                    <Text
+                      style={applyStyles(
+                        'pl-sm text-md text-gray-300 text-uppercase',
+                        {
+                          fontFamily: 'Rubik-Medium',
+                        },
+                      )}
+                      numberOfLines={1}>
+                      Customers
+                    </Text>
+                  </View>
+                );
+              }}
+            />
+          );
+        },
         headerRight: () => (
           <HeaderRight
             options={[
