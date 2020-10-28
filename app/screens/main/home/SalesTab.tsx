@@ -9,7 +9,7 @@ import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency, applyStyles} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';

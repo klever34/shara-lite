@@ -18,7 +18,7 @@ import {
 } from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {
   getAnalyticsService,
   getAuthService,
@@ -41,6 +41,7 @@ import {
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
 import {CancelReceiptModal} from './CancelReceiptModal';
+import {TitleDivider} from '../TitleDivider';
 
 type Props = {
   isNew: boolean;
@@ -546,7 +547,6 @@ export const ReceiptPreview = withModal(
               <ReceiptImage
                 user={user}
                 tax={receipt?.tax}
-                captureMode="continuous"
                 products={receipt?.items}
                 amountPaid={totalAmountPaid}
                 creditDueDate={creditDueDate}
@@ -605,37 +605,11 @@ export const ReceiptPreview = withModal(
         {!receipt?.is_cancelled && hasCustomer && (
           <View
             style={applyStyles('px-xl', {
-              paddingBottom: 100,
+              paddingBottom: 24,
             })}>
-            <View style={applyStyles('mb-md flex-row justify-space-between')}>
-              <View
-                style={applyStyles({
-                  height: 10,
-                  width: '33%',
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors['gray-50'],
-                })}
-              />
-              <View
-                style={applyStyles({
-                  width: '33%',
-                })}>
-                <Text
-                  style={applyStyles('text-400 text-center text-uppercase', {
-                    color: colors['gray-300'],
-                  })}>
-                  {isFulfilled || isNew ? 'Send via' : 'Send reminder'}
-                </Text>
-              </View>
-              <View
-                style={applyStyles({
-                  height: 10,
-                  width: '33%',
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors['gray-50'],
-                })}
-              />
-            </View>
+            <TitleDivider
+              title={isFulfilled || isNew ? 'Send via' : 'Send reminder'}
+            />
             <View
               style={applyStyles(
                 'flex-row w-full items-center justify-space-between flex-wrap',
@@ -723,6 +697,36 @@ export const ReceiptPreview = withModal(
                 </Touchable>
               </View>
             </View>
+          </View>
+        )}
+        {!!receipt?.note && (
+          <View
+            style={applyStyles('px-xl', {
+              paddingBottom: 24,
+            })}>
+            <TitleDivider title="Receipt Note" />
+            <Text
+              style={applyStyles('text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              {receipt?.note}
+            </Text>
+          </View>
+        )}
+        {!!receipt?.is_cancelled && (
+          <View
+            style={applyStyles('px-xl', {
+              paddingBottom: 40,
+            })}>
+            <TitleDivider title="Cancellation Reason" />
+            <Text
+              style={applyStyles('text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              {receipt?.cancellation_reason}
+            </Text>
           </View>
         )}
         <BluetoothModal

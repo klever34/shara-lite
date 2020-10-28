@@ -14,7 +14,7 @@ import {
 } from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {MainStackParamList} from '@/screens/main';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {getAnalyticsService} from '@/services';
 import {CustomerContext} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -245,21 +245,6 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         getReceiptItemLeftText={getReceiptItemLeftText}
         onCreateReceipt={handleOpenModal}
         handleListItemSelect={handleListItemSelect}>
-        <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
-          <View style={applyStyles('py-lg px-sm flex-row center')}>
-            {statusFilters.map((filterItem) => (
-              <FilterButton
-                {...filterItem}
-                key={filterItem.value}
-                style={applyStyles('mx-xs', {
-                  paddingVertical: 8,
-                  paddingHorizontal: 8,
-                })}
-                isChecked={filter === filterItem.value}
-              />
-            ))}
-          </View>
-        </FilterButtonGroup>
         <View
           style={applyStyles('p-md center flex-row justify-between', {
             backgroundColor: colors['gray-300'],
@@ -296,6 +281,22 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
             </Text>
           </View>
         </View>
+
+        <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
+          <View style={applyStyles('py-lg px-sm flex-row center')}>
+            {statusFilters.map((filterItem) => (
+              <FilterButton
+                {...filterItem}
+                key={filterItem.value}
+                style={applyStyles('mx-xs', {
+                  paddingVertical: 8,
+                  paddingHorizontal: 8,
+                })}
+                isChecked={filter === filterItem.value}
+              />
+            ))}
+          </View>
+        </FilterButtonGroup>
       </ReceiptingContainer>
     </CustomerContext.Provider>
   );

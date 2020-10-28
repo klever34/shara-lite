@@ -7,7 +7,7 @@ import {applyStyles} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {
@@ -299,20 +299,6 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
             </Text>
           </View>
         </View>
-        <FlatList
-          data={products}
-          initialNumToRender={10}
-          renderItem={renderListItem}
-          keyboardShouldPersistTaps="always"
-          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
-          ListEmptyComponent={
-            <EmptyState
-              heading="No items"
-              text="No items sold today"
-              style={applyStyles({paddingTop: 100})}
-            />
-          }
-        />
         <View
           style={applyStyles(
             'px-md py-md w-full flex-row items-center justify-between',
@@ -360,6 +346,20 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
             </Touchable>
           </View>
         </View>
+        <FlatList
+          data={products}
+          initialNumToRender={10}
+          renderItem={renderListItem}
+          keyboardShouldPersistTaps="always"
+          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+          ListEmptyComponent={
+            <EmptyState
+              heading="No items"
+              text="No items sold today"
+              style={applyStyles({paddingTop: 100})}
+            />
+          }
+        />
       </HomeContainer>
     </KeyboardAvoidingView>
   );
