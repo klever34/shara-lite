@@ -239,6 +239,7 @@ export const CustomerListScreen = withModal(
             />
           );
         },
+        headerTitle: () => null,
         headerRight: () => (
           <HeaderRight
             options={[
