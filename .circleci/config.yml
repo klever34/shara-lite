@@ -398,23 +398,22 @@ jobs:
             GRADLE_TASK: <<parameters.gradleTask>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
-      - run:
-          name: List android build contents
-          command: |
-            ls -R android/app/build/generated
-      - run:
-          name: Sentry Release Integration
-          command: |
-            curl -sL https://sentry.io/get-cli/ | bash
-            VERSION=$(jq ".version" -r package.json)
-            PACKAGE_NAME="<<parameters.packageName>>"
-            SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}+${CIRCLE_BUILD_NUM}"
-            echo "Sentry Version: ${SENTRY_VERSION}"
-            sentry-cli releases new "${SENTRY_VERSION}"
-            sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
-            sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --bundle-sourcemap android/app/build/generated/sourcemaps/react/<<parameters.productFlavor>>/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/<<parameters.productFlavor>>/release/index.android.bundle
-            sentry-cli releases finalize "${SENTRY_VERSION}"
-            sentry-cli releases deploys "${SENTRY_VERSION}" new --env <<parameters.env>>
+      - unless:
+          condition: <<parameters.testBuild>>
+          steps:
+            - run:
+                name: Sentry Release Integration
+                command: |
+                  curl -sL https://sentry.io/get-cli/ | bash
+                  VERSION=$(jq ".version" -r package.json)
+                  PACKAGE_NAME="<<parameters.packageName>>"
+                  SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}+${CIRCLE_BUILD_NUM}"
+                  echo "Sentry Version: ${SENTRY_VERSION}"
+                  sentry-cli releases new "${SENTRY_VERSION}"
+                  sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
+                  sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --bundle-sourcemap android/app/build/generated/sourcemaps/react/<<parameters.productFlavor>>/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/<<parameters.productFlavor>>/release/index.android.bundle
+                  sentry-cli releases finalize "${SENTRY_VERSION}"
+                  sentry-cli releases deploys "${SENTRY_VERSION}" new --env <<parameters.env>>
 orbs:
   android: circleci/android@0.2.1
   react-native: react-native-community/react-native@4.4.2
