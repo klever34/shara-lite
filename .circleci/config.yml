@@ -31,6 +31,7 @@ workflows:
           lane: internal
           gradleTask: assembleDevRelease
           packageName: co.shara.app.test
+          productFlavor: dev
           env: test
           testBuild: false
           requires:
@@ -64,6 +65,7 @@ workflows:
           lane: internal
           gradleTask: assembleDiscoveryRelease
           packageName: co.shara.app.discovery
+          productFlavor: discovery
           env: discovery
           requires:
             - test
@@ -77,6 +79,7 @@ workflows:
           lane: testlab
           testBuild: true
           gradleTask: assembleDiscoveryRelease
+          productFlavor: discovery
           env: discovery
           requires:
             - test
@@ -104,6 +107,7 @@ workflows:
           lane: internal
           gradleTask: assembleDeliveryRelease
           packageName: co.shara.app.delivery
+          productFlavor: delivery
           env: delivery
           requires:
             - test
@@ -117,6 +121,7 @@ workflows:
           testBuild: true
           gradleTask: assembleDeliveryRelease
           packageName: co.shara.app.delivery
+          productFlavor: delivery
           env: delivery
           requires:
             - test
@@ -143,6 +148,7 @@ workflows:
           lane: internal
           gradleTask: assembleQaRelease
           packageName: co.shara.app.qa
+          productFlavor: qa
           env: qa
           requires:
             - test
@@ -156,6 +162,7 @@ workflows:
           testBuild: true
           gradleTask: assembleQaRelease
           packageName: co.shara.app.qa
+          productFlavor: qa
           env: qa
           requires:
             - test
@@ -183,6 +190,7 @@ workflows:
           track: beta
           gradleTask: assembleProductionRelease
           packageName: co.shara.app
+          productFlavor: production
           env: beta
           requires:
             - test
@@ -195,6 +203,7 @@ workflows:
           lane: internal
           gradleTask: assembleProductionRelease
           packageName: co.shara.app
+          productFlavor: production
           env: beta
           requires:
             - test
@@ -320,6 +329,9 @@ jobs:
       packageName:
         type: string
         default: co.shara.app.test
+      productFlavor:
+        type: string
+        default: dev
       lane:
         type: string
         default: test
@@ -400,7 +412,7 @@ jobs:
             echo "Sentry Version: ${SENTRY_VERSION}"
             sentry-cli releases new "${SENTRY_VERSION}"
             sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
-            sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --bundle-sourcemap android/app/build/generated/sourcemaps/react/dev/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/dev/release/index.android.bundle
+            sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --bundle-sourcemap android/app/build/generated/sourcemaps/react/<<parameters.productFlavor>>/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/<<parameters.productFlavor>>/release/index.android.bundle
             sentry-cli releases finalize "${SENTRY_VERSION}"
             sentry-cli releases deploys "${SENTRY_VERSION}" new --env <<parameters.env>>
 orbs:
