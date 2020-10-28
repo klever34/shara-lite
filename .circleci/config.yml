@@ -30,6 +30,9 @@ workflows:
           context: shara-test
           lane: internal
           gradleTask: assembleDevRelease
+          packageName: co.shara.app.test
+          productFlavor: dev
+          env: test
           testBuild: false
           requires:
             - checkout_code
@@ -61,6 +64,9 @@ workflows:
           context: shara-discovery
           lane: internal
           gradleTask: assembleDiscoveryRelease
+          packageName: co.shara.app.discovery
+          productFlavor: discovery
+          env: discovery
           requires:
             - test
           filters:
@@ -73,6 +79,8 @@ workflows:
           lane: testlab
           testBuild: true
           gradleTask: assembleDiscoveryRelease
+          productFlavor: discovery
+          env: discovery
           requires:
             - test
           filters:
@@ -98,6 +106,9 @@ workflows:
           context: shara-dev
           lane: internal
           gradleTask: assembleDeliveryRelease
+          packageName: co.shara.app.delivery
+          productFlavor: delivery
+          env: delivery
           requires:
             - test
           filters:
@@ -109,6 +120,9 @@ workflows:
           lane: testlab
           testBuild: true
           gradleTask: assembleDeliveryRelease
+          packageName: co.shara.app.delivery
+          productFlavor: delivery
+          env: delivery
           requires:
             - test
           filters:
@@ -133,6 +147,9 @@ workflows:
           context: shara-qa
           lane: internal
           gradleTask: assembleQaRelease
+          packageName: co.shara.app.qa
+          productFlavor: qa
+          env: qa
           requires:
             - test
           filters:
@@ -144,6 +161,9 @@ workflows:
           lane: testlab
           testBuild: true
           gradleTask: assembleQaRelease
+          packageName: co.shara.app.qa
+          productFlavor: qa
+          env: qa
           requires:
             - test
           filters:
@@ -169,6 +189,9 @@ workflows:
           lane: play
           track: beta
           gradleTask: assembleProductionRelease
+          packageName: co.shara.app
+          productFlavor: production
+          env: beta
           requires:
             - test
           filters:
@@ -179,6 +202,9 @@ workflows:
           context: shara-beta
           lane: internal
           gradleTask: assembleProductionRelease
+          packageName: co.shara.app
+          productFlavor: production
+          env: beta
           requires:
             - test
           filters:
@@ -297,6 +323,15 @@ jobs:
           name: Run ESLint
   fastlane:
     parameters:
+      env:
+        type: string
+        default: test
+      packageName:
+        type: string
+        default: co.shara.app.test
+      productFlavor:
+        type: string
+        default: dev
       lane:
         type: string
         default: test
@@ -314,7 +349,7 @@ jobs:
         default: false
     docker:
       - image: circleci/android:api-27-node
-    resource_class: xlarge
+    resource_class: large
     steps:
       - attach_workspace:
           at: .
@@ -363,10 +398,22 @@ jobs:
             GRADLE_TASK: <<parameters.gradleTask>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
-            # TODO Add `GOOGLE_PROJECT_ID` using environment variables or parameters
-      - store_artifacts:
-          path: fastlane/report.xml
-          destination: test-results
+      - unless:
+          condition: <<parameters.testBuild>>
+          steps:
+            - run:
+                name: Sentry Release Integration
+                command: |
+                  curl -sL https://sentry.io/get-cli/ | bash
+                  VERSION=$(jq ".version" -r package.json)
+                  PACKAGE_NAME="<<parameters.packageName>>"
+                  SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}+${CIRCLE_BUILD_NUM}"
+                  echo "Sentry Version: ${SENTRY_VERSION}"
+                  sentry-cli releases new "${SENTRY_VERSION}"
+                  sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
+                  sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --bundle-sourcemap android/app/build/generated/sourcemaps/react/<<parameters.productFlavor>>/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/<<parameters.productFlavor>>/release/index.android.bundle
+                  sentry-cli releases finalize "${SENTRY_VERSION}"
+                  sentry-cli releases deploys "${SENTRY_VERSION}" new --env <<parameters.env>>
 orbs:
   android: circleci/android@0.2.1
   react-native: react-native-community/react-native@4.4.2
