@@ -68,6 +68,7 @@ export const Register = () => {
     };
     const apiService = getApiService();
     setLoading(true);
+
     try {
       await apiService.register(payload);
       const createdLocalRealm = await initLocalRealm();
