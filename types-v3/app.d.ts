@@ -1,4 +1,4 @@
-import {IProduct} from '@/models/Product';
+import {IProduct} from 'app-v3/models/Product';
 import {ObjectId} from 'bson';
 
 type Falsy = undefined | null | false;

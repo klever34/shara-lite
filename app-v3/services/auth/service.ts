@@ -2,7 +2,7 @@ import {IStorageService} from '../storage';
 import {IPubNubService} from '../pubnub';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
-import {Business, User} from 'types/app';
+import {Business, User} from 'types-v3/app';
 import {IAnalyticsService} from 'app-v3/services/analytics';
 import {handleError} from 'app-v3/services/error-boundary';
 

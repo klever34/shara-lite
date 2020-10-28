@@ -3,7 +3,7 @@ import {ICustomer} from 'app-v3/models';
 import {ICredit, modelName} from 'app-v3/models/Credit';
 import {IReceipt} from 'app-v3/models/Receipt';
 import {getBaseModelValues} from 'app-v3/helpers/models';
-import {Customer} from 'types/app';
+import {Customer} from 'types-v3/app';
 import {getAnalyticsService, getAuthService} from 'app-v3/services';
 import {deleteCreditPayment} from 'app-v3/services/CreditPaymentService';
 

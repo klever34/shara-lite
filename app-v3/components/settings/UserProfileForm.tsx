@@ -3,7 +3,7 @@ import {colors} from 'app-v3/styles';
 import {useFormik} from 'formik';
 import React from 'react';
 import {Text, View} from 'react-native';
-import {User} from 'types/app';
+import {User} from 'types-v3/app';
 import {Button} from '../Button';
 import {FloatingLabelInput} from '../FloatingLabelInput';
 import {PhoneNumberField} from '../PhoneNumberField';

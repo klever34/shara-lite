@@ -4,7 +4,7 @@ import {IReceipt, modelName} from 'app-v3/models/Receipt';
 import {deleteReceiptItem, saveReceiptItem} from './ReceiptItemService';
 import {deletePayment, savePayment, updatePayment} from './PaymentService';
 import {deleteCredit, saveCredit, updateCredit} from './CreditService';
-import {Customer, Payment} from 'types/app';
+import {Customer, Payment} from 'types-v3/app';
 import {IReceiptItem} from 'app-v3/models/ReceiptItem';
 import {
   getAnalyticsService,

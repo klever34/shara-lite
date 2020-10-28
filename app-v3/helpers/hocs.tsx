@@ -6,7 +6,7 @@ import React, {
   useState,
 } from 'react';
 import LoadingModal from '../modals/LoadingModal';
-import {ModalOptionsList, ModalVisibilityList} from 'types/modal';
+import {ModalOptionsList, ModalVisibilityList} from 'types-v3/modal';
 import BottomHalfModal from '../modals/BottomHalfModal';
 import OptionsModal from '../modals/OptionsModal';
 import FullModal from 'app-v3/modals/FullModal';

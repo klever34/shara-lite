@@ -1,6 +1,6 @@
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
-import {StatusFilter} from 'types/app';
+import {StatusFilter} from 'types-v3/app';
 import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
 import {useRealm} from 'app-v3/services/realm';
 import {useAppNavigation} from 'app-v3/services/navigation';

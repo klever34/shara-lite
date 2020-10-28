@@ -3,7 +3,7 @@ import omit from 'lodash/omit';
 import PubNub from 'pubnub';
 import {getBaseModelValues} from 'app-v3/helpers/models';
 import {UpdateMode} from 'realm';
-import {ChannelCustom} from 'types/app';
+import {ChannelCustom} from 'types-v3/app';
 import {compact} from 'lodash';
 import {decrypt, generateUniqueId} from 'app-v3/helpers/utils';
 import {IRealmService} from 'app-v3/services/realm';

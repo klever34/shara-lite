@@ -6,7 +6,7 @@ import {useAppNavigation} from 'app-v3/services/navigation';
 import {colors} from 'app-v3/styles';
 import React from 'react';
 import {Text, View} from 'react-native';
-import {BottomHalfContentProps} from 'types/modal';
+import {BottomHalfContentProps} from 'types-v3/modal';
 
 type HomeMenuProps = BottomHalfContentProps & {};
 

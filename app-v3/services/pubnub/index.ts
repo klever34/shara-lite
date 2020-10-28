@@ -14,7 +14,7 @@ import {IContact, IConversation, IMessage} from 'app-v3/models';
 import {getBaseModelValues} from 'app-v3/helpers/models';
 import Realm from 'realm';
 import {retryPromise} from 'app-v3/helpers/utils';
-import {MessageActionEvent} from 'types/pubnub';
+import {MessageActionEvent} from 'types-v3/pubnub';
 import {useNavigation} from '@react-navigation/native';
 import {useModal} from 'app-v3/helpers/hocs';
 

@@ -1,4 +1,4 @@
-import {IPGeolocationResponse} from 'types/app';
+import {IPGeolocationResponse} from 'types-v3/app';
 
 export interface IIPGeolocationService {
   getUserIpDetails(): IPGeolocationResponse | null;

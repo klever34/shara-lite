@@ -11,7 +11,7 @@ import {
   GroupChat,
   GroupChatMember,
   User,
-} from 'types/app';
+} from 'types-v3/app';
 
 export type Requester = {
   get: <T extends any = any>(

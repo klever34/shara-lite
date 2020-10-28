@@ -1,5 +1,5 @@
 import {ReactNode} from 'react';
-import {SearchableDropdownProps} from '@/components/SearchableDropdown';
+import {SearchableDropdownProps} from 'app-v3/components/SearchableDropdown';
 import {Direction, ModalProps} from 'react-native-modal';
 
 type BaseModalProps = {

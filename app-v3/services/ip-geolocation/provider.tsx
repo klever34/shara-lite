@@ -6,7 +6,7 @@ import React, {
   useCallback,
 } from 'react';
 import {getApiService, getIPGeolocationService} from 'app-v3/services';
-import {IPGeolocationResponse} from 'types/app';
+import {IPGeolocationResponse} from 'types-v3/app';
 
 type IPGeolocationObject = {
   countryCode2: string;

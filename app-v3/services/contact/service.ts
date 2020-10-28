@@ -8,7 +8,7 @@ import {IRealmService} from '../realm';
 import omit from 'lodash/omit';
 import {UpdateMode} from 'realm';
 import {getBaseModelValues} from 'app-v3/helpers/models';
-import {User} from 'types/app';
+import {User} from 'types-v3/app';
 import {uniqBy} from 'lodash';
 import parsePhoneNumber from 'libphonenumber-js';
 import {IIPGeolocationService} from 'app-v3/services/ip-geolocation';

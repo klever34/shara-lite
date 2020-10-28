@@ -2,7 +2,7 @@ import PushNotification, {
   PushNotificationObject,
   PushNotificationScheduleObject,
 } from 'react-native-push-notification';
-import {PushNotificationToken} from 'types/app';
+import {PushNotificationToken} from 'types-v3/app';
 
 export type Notification = any;
 

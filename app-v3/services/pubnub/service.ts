@@ -1,5 +1,5 @@
 import PubNub, {MessageEvent, SignalEvent} from 'pubnub';
-import {MessageActionEvent} from 'types/pubnub';
+import {MessageActionEvent} from 'types-v3/pubnub';
 
 type MessageEventListener = (messageEvent: MessageEvent) => void;
 type SignalEventListener = (signalEvent: SignalEvent) => void;

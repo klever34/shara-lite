@@ -3,7 +3,7 @@ import {applyStyles} from 'app-v3/helpers/utils';
 import {ActivityIndicator, Text, View} from 'react-native';
 import {colors} from 'app-v3/styles';
 import Modal from 'react-native-modal';
-import {BaseModalProps, ModalOptionsList} from 'types/modal';
+import {BaseModalProps, ModalOptionsList} from 'types-v3/modal';
 
 type LoadingModalProps = ModalOptionsList['loading'] & BaseModalProps;
 

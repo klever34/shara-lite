@@ -1,4 +1,4 @@
-import {User} from 'types/app';
+import {User} from 'types-v3/app';
 import segmentAnalytics from '@segment/analytics-react-native';
 import Config from 'react-native-config';
 // @ts-ignore

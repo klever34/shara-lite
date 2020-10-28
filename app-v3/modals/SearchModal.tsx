@@ -1,5 +1,5 @@
 import React, {useCallback} from 'react';
-import {BaseModalProps, ModalOptionsList} from 'types/modal';
+import {BaseModalProps, ModalOptionsList} from 'types-v3/modal';
 import Modal from 'react-native-modal';
 import {applyStyles} from 'app-v3/helpers/utils';
 import SearchableDropdown from 'app-v3/components/SearchableDropdown';

@@ -25,7 +25,7 @@ import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
 import {Alert, Text, TextStyle, View} from 'react-native';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
-import {StatusFilter} from 'types/app';
+import {StatusFilter} from 'types-v3/app';
 import {CustomersStackParamList} from 'app-v3/screens/main/customers';
 
 const statusFilters: StatusFilter[] = [
