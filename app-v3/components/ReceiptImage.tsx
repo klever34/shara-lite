@@ -1,8 +1,8 @@
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAuthService} from '@/services';
-import {colors} from '@/styles';
+import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {ICustomer} from 'app-v3/models';
+import {IReceiptItem} from 'app-v3/models/ReceiptItem';
+import {getAuthService} from 'app-v3/services';
+import {colors} from 'app-v3/styles';
 import format from 'date-fns/format';
 import React, {useCallback} from 'react';
 import {FlatList, Image, ScrollView, Text, View, ViewStyle} from 'react-native';

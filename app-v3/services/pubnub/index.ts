@@ -2,21 +2,21 @@ import {useCallback, useEffect, useRef, useState} from 'react';
 import {MessageEvent, SignalEvent} from 'pubnub';
 import {usePubNub} from 'pubnub-react';
 import {useRealm} from '../realm';
-import {useErrorHandler} from '@/services/error-boundary';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {
   getConversationService,
   getMessageService,
   getNotificationService,
   getPubNubService,
-} from '@/services';
-import {Notification} from '@/services/notification';
-import {IContact, IConversation, IMessage} from '@/models';
-import {getBaseModelValues} from '@/helpers/models';
+} from 'app-v3/services';
+import {Notification} from 'app-v3/services/notification';
+import {IContact, IConversation, IMessage} from 'app-v3/models';
+import {getBaseModelValues} from 'app-v3/helpers/models';
 import Realm from 'realm';
-import {retryPromise} from '@/helpers/utils';
+import {retryPromise} from 'app-v3/helpers/utils';
 import {MessageActionEvent} from 'types/pubnub';
 import {useNavigation} from '@react-navigation/native';
-import {useModal} from '@/helpers/hocs';
+import {useModal} from 'app-v3/helpers/hocs';
 
 export const useTyping = (channel: string, input: string = '') => {
   const pubNub = usePubNub();

@@ -2,11 +2,11 @@ import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
 import promiseRetry from 'promise-retry';
 import addDays from 'date-fns/addDays';
-import {globalStyles} from '@/styles';
+import {globalStyles} from 'app-v3/styles';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
 import {TextStyle, ViewStyle} from 'react-native';
-import {getAuthService} from '@/services';
+import {getAuthService} from 'app-v3/services';
 import {Falsy} from 'types/app';
 import {ReactElement} from 'react';
 

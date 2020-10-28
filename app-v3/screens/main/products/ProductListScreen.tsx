@@ -1,34 +1,90 @@
-import {DatePicker, HomeContainer} from '@/components';
-import EmptyState from '@/components/EmptyState';
-import {Icon} from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {applyStyles} from '@/helpers/utils';
-import {IProduct} from '@/models/Product';
-import {IReceipt} from '@/models/Receipt';
-import {IReceiptItem} from '@/models/ReceiptItem';
-import {CreateReceipt} from '@/screens/receipt';
-import {useAppNavigation} from '@/services/navigation';
-import {useRealm} from '@/services/realm';
+import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
+import {IProduct} from 'app-v3/models/Product';
+import {useRealm} from 'app-v3/services/realm';
+import {useAppNavigation} from 'app-v3/services/navigation';
 import {
   getReceipts,
   getReceiptsTotalProductQuantity,
-} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+} from 'app-v3/services/ReceiptService';
+import {IReceipt} from 'app-v3/models/Receipt';
 import {format, isEqual, isToday} from 'date-fns';
+import {IReceiptItem} from 'app-v3/models/ReceiptItem';
 import {omit, uniqBy} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
-import {FlatList} from 'react-native-gesture-handler';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
+import {CreateReceipt} from 'app-v3/screens/main/receipts';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {colors} from 'app-v3/styles';
+import {DatePicker, HeaderRight, HomeContainer} from 'app-v3/components';
+import Touchable from 'app-v3/components/Touchable';
+import {Icon} from 'app-v3/components/Icon';
+import {FlatList} from 'react-native-gesture-handler';
+import EmptyState from 'app-v3/components/EmptyState';
+import {
+  HeaderBackButton,
+  StackHeaderLeftButtonProps,
+} from '@react-navigation/stack';
+
+export * from './ItemsTab';
+export * from './ManageItems';
+export * from './ActivityTab';
 
 type ItemsTabProps = ModalWrapperFields & {};
 
 type FilteredProduct = IProduct & {quantitySold: number};
 
-export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
+export const ProductListScreen = withModal(({openModal}: ItemsTabProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: applyStyles('border-b-1', {
+        elevation: 0,
+      }),
+      headerLeft: (props: StackHeaderLeftButtonProps) => {
+        return (
+          <HeaderBackButton
+            {...props}
+            backImage={() => {
+              return (
+                <View style={applyStyles('flex-row center')}>
+                  <Icon
+                    type="feathericons"
+                    color={colors['gray-300']}
+                    name="box"
+                    size={28}
+                    borderRadius={12}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'pl-sm text-md text-gray-300 text-uppercase',
+                      {
+                        fontFamily: 'Rubik-Medium',
+                      },
+                    )}
+                    numberOfLines={1}>
+                    Products
+                  </Text>
+                </View>
+              );
+            }}
+          />
+        );
+      },
+      headerTitle: () => null,
+      headerRight: () => (
+        <HeaderRight
+          menuOptions={[
+            {
+              text: 'Help',
+              onSelect: () => {},
+            },
+          ]}
+        />
+      ),
+    });
+  }, [navigation]);
   const allReceipts = realm ? getReceipts({realm}) : [];
 
   const [filter, setFilter] = useState({date: new Date()} || {});

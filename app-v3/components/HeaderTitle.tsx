@@ -1,5 +1,5 @@
 import React from 'react';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles} from 'app-v3/helpers/utils';
 import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
 

@@ -1,6 +1,6 @@
 import {useCallback, useEffect, useMemo, useState} from 'react';
-import {getGeolocationService} from '@/services';
-import {Location} from '@/services/geolocation';
+import {getGeolocationService} from 'app-v3/services';
+import {Location} from 'app-v3/services/geolocation';
 
 export const useGeolocation = () => {
   const [loading, setLoading] = useState(false);

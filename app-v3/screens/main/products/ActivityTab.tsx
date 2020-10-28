@@ -1,5 +1,5 @@
-import EmptyState from '@/components/EmptyState';
-import {applyStyles} from '@/helpers/utils';
+import EmptyState from 'app-v3/components/EmptyState';
+import {applyStyles} from 'app-v3/helpers/utils';
 import React from 'react';
 import {SafeAreaView} from 'react-native';
 

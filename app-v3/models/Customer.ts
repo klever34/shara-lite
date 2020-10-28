@@ -2,7 +2,7 @@ import {IPayment} from './Payment';
 import {IReceipt} from './Receipt';
 import {ICredit} from './Credit';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IAddress} from '@/models/Address';
+import {IAddress} from 'app-v3/models/Address';
 
 export enum DEBT_LEVEL {
   NO_DEBT = 0,

@@ -1,9 +1,9 @@
-import EmptyState from '@/components/EmptyState';
-import Touchable from '@/components/Touchable';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {IReceipt} from '@/models/Receipt';
-import {getAllPayments} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+import EmptyState from 'app-v3/components/EmptyState';
+import Touchable from 'app-v3/components/Touchable';
+import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {IReceipt} from 'app-v3/models/Receipt';
+import {getAllPayments} from 'app-v3/services/ReceiptService';
+import {colors} from 'app-v3/styles';
 import React, {ReactNode, useCallback} from 'react';
 import {Alert, SafeAreaView, Text, TextStyle, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';

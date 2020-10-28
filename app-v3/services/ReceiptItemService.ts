@@ -1,7 +1,7 @@
 import Realm, {UpdateMode} from 'realm';
-import {IReceipt} from '@/models/Receipt';
-import {getBaseModelValues} from '@/helpers/models';
-import {IReceiptItem, modelName} from '@/models/ReceiptItem';
+import {IReceipt} from 'app-v3/models/Receipt';
+import {getBaseModelValues} from 'app-v3/helpers/models';
+import {IReceiptItem, modelName} from 'app-v3/models/ReceiptItem';
 
 export const saveReceiptItem = ({
   realm,

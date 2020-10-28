@@ -2,7 +2,7 @@ import {
   BaseModel,
   BaseModelInterface,
   baseModelSchema,
-} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+} from 'app-v3/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
 
 export interface IAddress extends BaseModelInterface {
   text: string;

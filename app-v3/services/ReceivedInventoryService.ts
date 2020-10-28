@@ -1,15 +1,15 @@
 import Realm, {UpdateMode} from 'realm';
-import {getBaseModelValues} from '@/helpers/models';
-import {generateUniqueId} from '@/helpers/utils';
-import {IDeliveryAgent} from '@/models/DeliveryAgent';
-import {IReceivedInventory, modelName} from '@/models/ReceivedInventory';
-import {IStockItem} from '@/models/StockItem';
-import {ISupplier} from '@/models/Supplier';
+import {getBaseModelValues} from 'app-v3/helpers/models';
+import {generateUniqueId} from 'app-v3/helpers/utils';
+import {IDeliveryAgent} from 'app-v3/models/DeliveryAgent';
+import {IReceivedInventory, modelName} from 'app-v3/models/ReceivedInventory';
+import {IStockItem} from 'app-v3/models/StockItem';
+import {ISupplier} from 'app-v3/models/Supplier';
 import {saveDeliveryAgent} from './DeliveryAgentService';
 import {addNewStockItem} from './StockItemService';
-import {getGeolocationService} from '@/services';
-import {convertToLocationString} from '@/services/geolocation';
-import {getAnalyticsService} from '@/services';
+import {getGeolocationService} from 'app-v3/services';
+import {convertToLocationString} from 'app-v3/services/geolocation';
+import {getAnalyticsService} from 'app-v3/services';
 
 export const getReceivedInventories = ({
   realm,

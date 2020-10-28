@@ -1,18 +1,18 @@
-import {Button, CurrencyInput} from '@/components';
-import {Icon} from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {IProduct} from '@/models/Product';
-import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAnalyticsService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
+import {Button, CurrencyInput} from 'app-v3/components';
+import {Icon} from 'app-v3/components/Icon';
+import Touchable from 'app-v3/components/Touchable';
+import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {IProduct} from 'app-v3/models/Product';
+import {IReceiptItem} from 'app-v3/models/ReceiptItem';
+import {getAnalyticsService} from 'app-v3/services';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {
   getProducts,
   saveProduct,
   updateProduct,
-} from '@/services/ProductService';
-import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+} from 'app-v3/services/ProductService';
+import {useRealm} from 'app-v3/services/realm';
+import {colors} from 'app-v3/styles';
 import {omit, orderBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {FlatList, Text, TextInput, View} from 'react-native';

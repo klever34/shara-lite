@@ -1,4 +1,4 @@
-import {getCustomerWhatsappNumber} from '@/helpers/utils';
+import {getCustomerWhatsappNumber} from 'app-v3/helpers/utils';
 import {useCallback} from 'react';
 import {Alert} from 'react-native';
 import Share from 'react-native-share';
@@ -61,8 +61,10 @@ export const useShare = ({
   }, [image, message, subject, title]);
 
   const handleWhatsappShare = useCallback(async () => {
-    const mobile = recipient;
-    const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
+    const whatsAppNumber = getCustomerWhatsappNumber(
+      recipient,
+      userCountryCode,
+    );
     const shareOptions = {
       title,
       message,

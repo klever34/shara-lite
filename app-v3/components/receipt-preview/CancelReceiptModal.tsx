@@ -1,12 +1,12 @@
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {colors} from 'app-v3/styles';
 import {useFormik} from 'formik';
 import React from 'react';
 import {Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import * as yup from 'yup';
 import {Button} from '../Button';
-import {FloatingLabelInput} from '@/components';
+import {FloatingLabelInput} from 'app-v3/components';
 
 type Props = {
   isVisible: boolean;

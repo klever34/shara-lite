@@ -3,10 +3,10 @@ import {
   getRealmObjectCopy,
   saveLastLocalSync,
   shouldUpdateRealmObject,
-} from '@/services/realm/utils';
-import {addItemToQueue} from '@/services/realm/queue';
+} from 'app-v3/services/realm/utils';
+import {addItemToQueue} from 'app-v3/services/realm/queue';
 import subWeeks from 'date-fns/subWeeks';
-import {BaseModelInterface} from '@/models/baseSchema';
+import {BaseModelInterface} from 'app-v3/models/baseSchema';
 
 const copyObject = ({
   obj,

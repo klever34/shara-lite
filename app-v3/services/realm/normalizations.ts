@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import {ICredit} from '@/models/Credit';
+import {ICredit} from 'app-v3/models/Credit';
 
 export const normalizeDb = ({
   partitionKey,

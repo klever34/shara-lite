@@ -1,6 +1,6 @@
-import {IProduct} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Product';
-import {ISupplier} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Supplier';
-import {IReceivedInventory} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/ReceivedInventory';
+import {IProduct} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Product';
+import {ISupplier} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Supplier';
+import {IReceivedInventory} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/ReceivedInventory';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export interface IStockItem extends BaseModelInterface {

@@ -7,18 +7,18 @@ import {ApiService, IApiService} from './api';
 import {IPubNubService, PubNubService} from './pubnub';
 import {INavigationService, NavigationService} from './navigation';
 import {AnalyticsService, IAnalyticsService} from './analytics';
-import {IMessageService, MessageService} from '@/services/MessageService';
+import {IMessageService, MessageService} from 'app-v3/services/MessageService';
 import {
   ConversationService,
   IConversationService,
-} from '@/services/ConversationService';
+} from 'app-v3/services/ConversationService';
 import {INotificationService, NotificationService} from './notification';
 import {IGeolocationService, GeolocationService} from './geolocation';
-import {AddressService, IAddressService} from '@/services/address/service';
+import {AddressService, IAddressService} from 'app-v3/services/address/service';
 import {
   IIPGeolocationService,
   IPGeolocationService,
-} from '@/services/ip-geolocation';
+} from 'app-v3/services/ip-geolocation';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();

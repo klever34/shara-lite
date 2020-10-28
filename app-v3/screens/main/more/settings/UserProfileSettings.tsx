@@ -1,7 +1,11 @@
-import {AuthView, UserProfileForm, UserProfileFormPayload} from '@/components';
-import {applyStyles} from '@/helpers/utils';
-import {getApiService, getAuthService} from '@/services';
-import {useAppNavigation} from '@/services/navigation';
+import {
+  AuthView,
+  UserProfileForm,
+  UserProfileFormPayload,
+} from 'app-v3/components';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {getApiService, getAuthService} from 'app-v3/services';
+import {useAppNavigation} from 'app-v3/services/navigation';
 import React, {useCallback} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
 

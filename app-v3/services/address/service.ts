@@ -1,5 +1,5 @@
-import {IRealmService} from '@/services/realm';
-import {IAddress} from '@/models/Address';
+import {IRealmService} from 'app-v3/services/realm';
+import {IAddress} from 'app-v3/models/Address';
 import {UpdateMode} from 'realm';
 
 export interface IAddressService {

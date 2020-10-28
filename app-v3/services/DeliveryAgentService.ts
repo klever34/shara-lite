@@ -1,8 +1,8 @@
 import Realm, {UpdateMode} from 'realm';
 import {omit} from 'lodash';
-import {IDeliveryAgent, modelName} from '@/models/DeliveryAgent';
-import {getBaseModelValues} from '@/helpers/models';
-import {getAnalyticsService} from '@/services/index';
+import {IDeliveryAgent, modelName} from 'app-v3/models/DeliveryAgent';
+import {getBaseModelValues} from 'app-v3/helpers/models';
+import {getAnalyticsService} from 'app-v3/services/index';
 
 export const getDeliveryAgents = ({
   realm,

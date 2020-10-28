@@ -1,11 +1,11 @@
 import React from 'react';
-import {AuthView, FormBuilder} from '@/components';
-import {getApiService} from '@/services';
+import {AuthView, FormBuilder} from 'app-v3/components';
+import {getApiService} from 'app-v3/services';
 import {ToastAndroid} from 'react-native';
-import {useErrorHandler} from '@/services/error-boundary';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {useRoute, RouteProp} from '@react-navigation/native';
-import {AuthStackParamList} from '@/screens/auth/index';
-import {useAppNavigation} from '@/services/navigation';
+import {AuthStackParamList} from 'app-v3/screens/auth/index';
+import {useAppNavigation} from 'app-v3/services/navigation';
 
 const ResetPassword = () => {
   const handleError = useErrorHandler();

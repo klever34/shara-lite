@@ -6,35 +6,35 @@ import {
   BluetoothModal,
   ContactsListModal,
   PreviewActionButton,
-} from '@/components';
-import {Icon} from '@/components/Icon';
-import {ReceiptImage} from '@/components/ReceiptImage';
-import Touchable from '@/components/Touchable';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+} from 'app-v3/components';
+import {Icon} from 'app-v3/components/Icon';
+import {ReceiptImage} from 'app-v3/components/ReceiptImage';
+import Touchable from 'app-v3/components/Touchable';
+import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
 import {
   amountWithCurrency,
   applyStyles,
   numberWithCommas,
-} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/receipt';
+} from 'app-v3/helpers/utils';
+import {ICustomer} from 'app-v3/models';
+import {IReceipt} from 'app-v3/models/Receipt';
+import {CreateReceipt} from 'app-v3/screens/main/receipts';
 import {
   getAnalyticsService,
   getAuthService,
   getStorageService,
-} from '@/services';
-import {saveCreditPayment} from '@/services/CreditPaymentService';
-import {getCustomers, saveCustomer} from '@/services/customer';
-import {useAppNavigation} from '@/services/navigation';
-import {useRealm} from '@/services/realm';
+} from 'app-v3/services';
+import {saveCreditPayment} from 'app-v3/services/CreditPaymentService';
+import {getCustomers, saveCustomer} from 'app-v3/services/customer';
+import {useAppNavigation} from 'app-v3/services/navigation';
+import {useRealm} from 'app-v3/services/realm';
 import {
   cancelReceipt,
   getAllPayments,
   updateReceipt,
-} from '@/services/ReceiptService';
-import {ShareHookProps, useShare} from '@/services/share';
-import {colors} from '@/styles';
+} from 'app-v3/services/ReceiptService';
+import {ShareHookProps, useShare} from 'app-v3/services/share';
+import {colors} from 'app-v3/styles';
 import {format} from 'date-fns';
 import {
   BluetoothEscposPrinter,

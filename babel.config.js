@@ -8,9 +8,10 @@ module.exports = {
         extensions: ['.ios.js', '.android.js', '.js', '.ts', '.tsx', '.json'],
         alias: {
           tests: ['./tests/'],
-          '@': './app-v3',
-          'app-v2': './app',
+          'app-v3': './app-v3',
+          '@': './app',
           'app-v1': './app-v1',
+          'types-v3': './types-v3',
           types: './types',
         },
       },

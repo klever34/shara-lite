@@ -1,18 +1,18 @@
-import {getBaseModelValues} from '@/helpers/models';
-import {ICustomer} from '@/models';
-import {IReceipt, modelName} from '@/models/Receipt';
+import {getBaseModelValues} from 'app-v3/helpers/models';
+import {ICustomer} from 'app-v3/models';
+import {IReceipt, modelName} from 'app-v3/models/Receipt';
 import {deleteReceiptItem, saveReceiptItem} from './ReceiptItemService';
 import {deletePayment, savePayment, updatePayment} from './PaymentService';
 import {deleteCredit, saveCredit, updateCredit} from './CreditService';
 import {Customer, Payment} from 'types/app';
-import {IReceiptItem} from '@/models/ReceiptItem';
+import {IReceiptItem} from 'app-v3/models/ReceiptItem';
 import {
   getAnalyticsService,
   getAuthService,
   getGeolocationService,
-} from '@/services';
-import {convertToLocationString} from '@/services/geolocation';
-import {restockProduct} from '@/services/ProductService';
+} from 'app-v3/services';
+import {convertToLocationString} from 'app-v3/services/geolocation';
+import {restockProduct} from 'app-v3/services/ProductService';
 import {ObjectId} from 'bson';
 import Realm, {UpdateMode} from 'realm';
 import {getPaymentsFromCredit} from './CreditPaymentService';

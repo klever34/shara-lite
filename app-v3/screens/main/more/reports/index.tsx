@@ -1,11 +1,11 @@
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {getSummary, IFinanceSummary} from '@/services/FinanceService';
-import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {getSummary, IFinanceSummary} from 'app-v3/services/FinanceService';
+import {useRealm} from 'app-v3/services/realm';
+import {colors} from 'app-v3/styles';
 import React, {useCallback} from 'react';
 import {Alert, StyleSheet, Text, ToastAndroid, View} from 'react-native';
-import {ActionCard, Button} from '@/components';
-import {useReports} from '@/services/reports';
+import {ActionCard, Button} from 'app-v3/components';
+import {useReports} from 'app-v3/services/reports';
 
 export const ReportsScreen = () => {
   const realm = useRealm();

@@ -6,14 +6,14 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useRealm} from '@/services/realm';
-import {IContact} from '@/models';
+import {useRealm} from 'app-v3/services/realm';
+import {IContact} from 'app-v3/models';
 import Touchable from './Touchable';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles} from 'app-v3/helpers/utils';
 import PlaceholderImage, {PlaceholderImageProps} from './PlaceholderImage';
 import {Collection} from 'realm';
-import {getAnalyticsService, getAuthService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
+import {getAnalyticsService, getAuthService} from 'app-v3/services';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 
 type ContactsListProps = Omit<
   FlatListProps<IContact>,

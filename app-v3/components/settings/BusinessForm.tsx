@@ -1,6 +1,6 @@
-import {applyStyles} from '@/helpers/utils';
-import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {colors} from '@/styles';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {useIPGeolocation} from 'app-v3/services/ip-geolocation/provider';
+import {colors} from 'app-v3/styles';
 import {useFormik} from 'formik';
 import React, {useCallback} from 'react';
 import {Alert, Image, Text, View} from 'react-native';
@@ -10,9 +10,9 @@ import ImagePicker, {
 } from 'react-native-image-picker';
 import * as yup from 'yup';
 import {Button} from '../Button';
-import {FloatingLabelInput} from '../FloatingLabelInput';
+import {FloatingLabelInput} from 'app-v3/components';
 import {Icon} from '../Icon';
-import {PhoneNumberField} from '../PhoneNumberField';
+import {PhoneNumberField} from 'app-v3/components';
 import Touchable from '../Touchable';
 
 export type BusinessFormPayload = {

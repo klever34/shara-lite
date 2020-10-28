@@ -1,5 +1,5 @@
 import flatten from 'lodash/flatten';
-import {IContact} from '@/models';
+import {IContact} from 'app-v3/models';
 import Config from 'react-native-config';
 import queryString from 'query-string';
 import {IAuthService} from '../auth';

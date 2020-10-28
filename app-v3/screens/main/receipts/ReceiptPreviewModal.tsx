@@ -1,11 +1,11 @@
-import {ReceiptPreview} from '@/components';
-import {Icon} from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/helpers/utils';
-import {IReceipt} from '@/models/Receipt';
-import {useRealm} from '@/services/realm';
-import {getReceipt} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+import {ReceiptPreview} from 'app-v3/components';
+import {Icon} from 'app-v3/components/Icon';
+import Touchable from 'app-v3/components/Touchable';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {IReceipt} from 'app-v3/models/Receipt';
+import {useRealm} from 'app-v3/services/realm';
+import {getReceipt} from 'app-v3/services/ReceiptService';
+import {colors} from 'app-v3/styles';
 import React, {useEffect, useState} from 'react';
 import {ScrollView, View} from 'react-native';
 

@@ -3,7 +3,7 @@ import segmentAnalytics from '@segment/analytics-react-native';
 import Config from 'react-native-config';
 // @ts-ignore
 import RNUxcam from 'react-native-ux-cam';
-import {castObjectValuesToString} from '@/helpers/utils';
+import {castObjectValuesToString} from 'app-v3/helpers/utils';
 import getFirebaseAnalytics from '@react-native-firebase/analytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 

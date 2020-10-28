@@ -9,8 +9,8 @@ import LoadingModal from '../modals/LoadingModal';
 import {ModalOptionsList, ModalVisibilityList} from 'types/modal';
 import BottomHalfModal from '../modals/BottomHalfModal';
 import OptionsModal from '../modals/OptionsModal';
-import FullModal from '@/modals/FullModal';
-import SearchModal from '@/modals/SearchModal';
+import FullModal from 'app-v3/modals/FullModal';
+import SearchModal from 'app-v3/modals/SearchModal';
 
 type OpenModal = <K extends keyof ModalOptionsList>(
   modalType: K,

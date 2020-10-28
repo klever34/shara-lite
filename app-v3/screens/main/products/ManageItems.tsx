@@ -1,6 +1,6 @@
-import {HeaderRight} from '@/components';
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {HeaderRight} from 'app-v3/components';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {colors} from 'app-v3/styles';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
 import React, {useLayoutEffect} from 'react';

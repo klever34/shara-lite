@@ -1,8 +1,8 @@
 import Realm, {UpdateMode} from 'realm';
-import {ISupplier, modelName} from '@/models/Supplier';
-import {getBaseModelValues} from '@/helpers/models';
+import {ISupplier, modelName} from 'app-v3/models/Supplier';
+import {getBaseModelValues} from 'app-v3/helpers/models';
 import {omit} from 'lodash';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService} from 'app-v3/services';
 
 export const getSuppliers = ({realm}: {realm: Realm}): ISupplier[] => {
   return (realm

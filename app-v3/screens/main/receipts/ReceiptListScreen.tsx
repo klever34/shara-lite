@@ -1,31 +1,36 @@
-import {
-  DatePicker,
-  FilterButton,
-  FilterButtonGroup,
-  ReceiptingContainer,
-} from '@/components';
-import {Icon} from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/receipt';
-import {getAnalyticsService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
-import {useAppNavigation} from '@/services/navigation';
-import {useRealm} from '@/services/realm';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
+import {StatusFilter} from 'types/app';
+import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
+import {useRealm} from 'app-v3/services/realm';
+import {useAppNavigation} from 'app-v3/services/navigation';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {
   getAllPayments,
   getReceipts,
   getReceiptsTotalAmount,
-} from '@/services/ReceiptService';
-import {colors} from '@/styles';
-import {format, isEqual, isToday} from 'date-fns';
+} from 'app-v3/services/ReceiptService';
+import {IReceipt} from 'app-v3/models/Receipt';
 import {sortBy} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Text, TextStyle, View} from 'react-native';
+import {format, isEqual, isToday} from 'date-fns';
+import {getAnalyticsService} from 'app-v3/services';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
-import {StatusFilter} from 'types/app';
+import {CreateReceipt} from 'app-v3/screens/main/receipts';
+import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {colors} from 'app-v3/styles';
+import {
+  DatePicker,
+  FilterButton,
+  FilterButtonGroup,
+  HeaderRight,
+  ReceiptingContainer,
+} from 'app-v3/components';
+import Touchable from 'app-v3/components/Touchable';
+import {Icon} from 'app-v3/components/Icon';
+import {
+  HeaderBackButton,
+  StackHeaderLeftButtonProps,
+} from '@react-navigation/stack';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
@@ -37,10 +42,58 @@ const statusFilters: StatusFilter[] = [
 
 type SalesTabProps = ModalWrapperFields & {};
 
-export const SalesTab = withModal(({openModal}: SalesTabProps) => {
+export const ReceiptListScreen = withModal(({openModal}: SalesTabProps) => {
+  const handleError = useErrorHandler();
   const realm = useRealm();
   const navigation = useAppNavigation();
-  const handleError = useErrorHandler();
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerStyle: applyStyles('border-b-1', {
+        elevation: 0,
+      }),
+      headerLeft: (props: StackHeaderLeftButtonProps) => {
+        return (
+          <HeaderBackButton
+            {...props}
+            backImage={() => {
+              return (
+                <View style={applyStyles('flex-row center')}>
+                  <Icon
+                    type="feathericons"
+                    color={colors['gray-300']}
+                    name="file-text"
+                    size={28}
+                    borderRadius={12}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'pl-sm text-md text-gray-300 text-uppercase',
+                      {
+                        fontFamily: 'Rubik-Medium',
+                      },
+                    )}
+                    numberOfLines={1}>
+                    Receipts
+                  </Text>
+                </View>
+              );
+            }}
+          />
+        );
+      },
+      headerTitle: () => null,
+      headerRight: () => (
+        <HeaderRight
+          menuOptions={[
+            {
+              text: 'Help',
+              onSelect: () => {},
+            },
+          ]}
+        />
+      ),
+    });
+  }, [navigation]);
   const allReceipts = realm ? getReceipts({realm}) : [];
 
   const sortReceipts = useCallback(
@@ -421,3 +474,7 @@ export const SalesTab = withModal(({openModal}: SalesTabProps) => {
     </KeyboardAvoidingView>
   );
 });
+
+export * from './CreateReceipt';
+export * from './ReceiptItemModal';
+export * from './ReceiptPreviewModal';

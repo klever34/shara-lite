@@ -3,23 +3,23 @@ import Realm from 'realm';
 import Config from 'react-native-config';
 import perf from '@react-native-firebase/perf';
 import {Contact, Message, Conversation, Customer} from '../../models';
-import {Payment} from '@/models/Payment';
-import {Credit} from '@/models/Credit';
-import {CreditPayment} from '@/models/CreditPayment';
-import {Receipt} from '@/models/Receipt';
-import {ReceiptItem} from '@/models/ReceiptItem';
-import {Product} from '@/models/Product';
-import {Supplier} from '@/models/Supplier';
-import {StockItem} from '@/models/StockItem';
-import {DeliveryAgent} from '@/models/DeliveryAgent';
+import {Payment} from 'app-v3/models/Payment';
+import {Credit} from 'app-v3/models/Credit';
+import {CreditPayment} from 'app-v3/models/CreditPayment';
+import {Receipt} from 'app-v3/models/Receipt';
+import {ReceiptItem} from 'app-v3/models/ReceiptItem';
+import {Product} from 'app-v3/models/Product';
+import {Supplier} from 'app-v3/models/Supplier';
+import {StockItem} from 'app-v3/models/StockItem';
+import {DeliveryAgent} from 'app-v3/models/DeliveryAgent';
 import {RealmContext} from './provider';
 import {Alert} from 'react-native';
 import {StorageService} from '../storage';
-import {ReceivedInventory} from '@/models/ReceivedInventory';
-import {setRealmPartitionKey} from '@/models/baseSchema';
-import {setBasePartitionKey} from '@/helpers/models';
-import {runMigration} from '@/services/realm/migrations';
-import {Address} from '@/models/Address';
+import {ReceivedInventory} from 'app-v3/models/ReceivedInventory';
+import {setRealmPartitionKey} from 'app-v3/models/baseSchema';
+import {setBasePartitionKey} from 'app-v3/helpers/models';
+import {runMigration} from 'app-v3/services/realm/migrations';
+import {Address} from 'app-v3/models/Address';
 
 export const schema = [
   Address,

@@ -1,7 +1,7 @@
 import React, {useCallback} from 'react';
 import Modal from 'react-native-modal';
 import {ModalOptionsList, BaseModalProps} from 'types/modal';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles} from 'app-v3/helpers/utils';
 import {View, StyleSheet} from 'react-native';
 
 type FullModalProps = ModalOptionsList['full'] & BaseModalProps;

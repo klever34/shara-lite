@@ -3,8 +3,8 @@ import {IPubNubService} from '../pubnub';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
 import {Business, User} from 'types/app';
-import {IAnalyticsService} from '@/services/analytics';
-import {handleError} from '@/services/error-boundary';
+import {IAnalyticsService} from 'app-v3/services/analytics';
+import {handleError} from 'app-v3/services/error-boundary';
 
 export interface IAuthService {
   initialize(): Promise<void>;

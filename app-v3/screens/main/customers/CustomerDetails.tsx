@@ -4,22 +4,21 @@ import {
   HeaderRight,
   ReceiptingContainer,
   ReceiptListItem,
-} from '@/components';
-import {Icon} from '@/components/Icon';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+} from 'app-v3/components';
+import {Icon} from 'app-v3/components/Icon';
+import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
 import {
   amountWithCurrency,
   applyStyles,
   prepareValueForSearch,
-} from '@/helpers/utils';
-import {IReceipt} from '@/models/Receipt';
-import {MainStackParamList} from '@/screens/main';
-import {CreateReceipt} from '@/screens/receipt';
-import {getAnalyticsService} from '@/services';
-import {CustomerContext} from '@/services/customer';
-import {useErrorHandler} from '@/services/error-boundary';
-import {getReceiptsTotalAmount} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+} from 'app-v3/helpers/utils';
+import {IReceipt} from 'app-v3/models/Receipt';
+import {CreateReceipt} from 'app-v3/screens/main/receipts';
+import {getAnalyticsService} from 'app-v3/services';
+import {CustomerContext} from 'app-v3/services/customer';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
+import {getReceiptsTotalAmount} from 'app-v3/services/ReceiptService';
+import {colors} from 'app-v3/styles';
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
 import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
@@ -27,6 +26,7 @@ import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
 import {Alert, Text, TextStyle, View} from 'react-native';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 import {StatusFilter} from 'types/app';
+import {CustomersStackParamList} from 'app-v3/screens/main/customers';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
@@ -37,7 +37,7 @@ const statusFilters: StatusFilter[] = [
 ];
 
 type CustomerDetailsProps = ModalWrapperFields & {
-  route: RouteProp<MainStackParamList, 'CustomerDetails'>;
+  route: RouteProp<CustomersStackParamList, 'CustomerDetails'>;
 };
 
 const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {

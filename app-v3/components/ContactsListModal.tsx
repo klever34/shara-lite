@@ -1,10 +1,10 @@
-import {applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {getAnalyticsService, getContactService} from '@/services';
-import {useAsync} from '@/services/api';
-import {getCustomers, saveCustomer} from '@/services/customer';
-import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {ICustomer} from 'app-v3/models';
+import {getAnalyticsService, getContactService} from 'app-v3/services';
+import {useAsync} from 'app-v3/services/api';
+import {getCustomers, saveCustomer} from 'app-v3/services/customer';
+import {useRealm} from 'app-v3/services/realm';
+import {colors} from 'app-v3/styles';
 import orderBy from 'lodash/orderBy';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {

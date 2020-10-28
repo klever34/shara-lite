@@ -1,8 +1,12 @@
-import {AuthView, BusinessForm, BusinessFormPayload} from '@/components';
-import {applyStyles} from '@/helpers/utils';
-import {getAnalyticsService, getApiService, getAuthService} from '@/services';
-import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {useAppNavigation} from '@/services/navigation';
+import {AuthView, BusinessForm, BusinessFormPayload} from 'app-v3/components';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+} from 'app-v3/services';
+import {useIPGeolocation} from 'app-v3/services/ip-geolocation/provider';
+import {useAppNavigation} from 'app-v3/services/navigation';
 import React, {useCallback, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert, ToastAndroid} from 'react-native';

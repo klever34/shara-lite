@@ -10,10 +10,10 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
-import {getAnalyticsService, getNotificationService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
+import {getAnalyticsService, getNotificationService} from 'app-v3/services';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {Platform} from 'react-native';
-import IPGeolocationProvider from '@/services/ip-geolocation/provider';
+import IPGeolocationProvider from 'app-v3/services/ip-geolocation/provider';
 import {NavigationState} from '@react-navigation/routers';
 
 if (Platform.OS === 'android') {

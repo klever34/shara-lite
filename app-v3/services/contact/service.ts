@@ -3,15 +3,15 @@ import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import {IContact} from '@/models';
+import {IContact} from 'app-v3/models';
 import {IRealmService} from '../realm';
 import omit from 'lodash/omit';
 import {UpdateMode} from 'realm';
-import {getBaseModelValues} from '@/helpers/models';
+import {getBaseModelValues} from 'app-v3/helpers/models';
 import {User} from 'types/app';
 import {uniqBy} from 'lodash';
 import parsePhoneNumber from 'libphonenumber-js';
-import {IIPGeolocationService} from '@/services/ip-geolocation';
+import {IIPGeolocationService} from 'app-v3/services/ip-geolocation';
 
 export type PhoneContact = Omit<RNContacts.Contact, 'phoneNumbers'> & {
   phoneNumber: RNContacts.PhoneNumber;

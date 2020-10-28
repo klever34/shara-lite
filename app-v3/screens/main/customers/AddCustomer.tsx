@@ -1,9 +1,9 @@
-import {applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {getCustomers, saveCustomer} from '@/services/customer/service';
-import {FormDefaults} from '@/services/FormDefaults';
-import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {ICustomer} from 'app-v3/models';
+import {getCustomers, saveCustomer} from 'app-v3/services/customer/service';
+import {FormDefaults} from 'app-v3/services/FormDefaults';
+import {useRealm} from 'app-v3/services/realm';
+import {colors} from 'app-v3/styles';
 import {useNavigation} from '@react-navigation/native';
 import {Formik, FormikHelpers} from 'formik';
 import React, {useCallback} from 'react';

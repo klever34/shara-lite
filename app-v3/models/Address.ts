@@ -1,5 +1,5 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {ICustomer} from '@/models/Customer';
+import {ICustomer} from 'app-v3/models/Customer';
 
 export interface IAddress extends BaseModelInterface {
   text: string;

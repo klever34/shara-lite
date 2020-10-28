@@ -1,6 +1,6 @@
-import {PhoneNumber} from '@/components';
-import ForgotPassword from '@/screens/auth/ForgotPassword';
-import ResetPassword from '@/screens/auth/ResetPassword';
+import {PhoneNumber} from 'app-v3/components';
+import ForgotPassword from 'app-v3/screens/auth/ForgotPassword';
+import ResetPassword from 'app-v3/screens/auth/ResetPassword';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
 import {BusinessSetup} from './BusinessSetup';

@@ -1,18 +1,18 @@
-import {IConversation} from '@/models';
+import {IConversation} from 'app-v3/models';
 import omit from 'lodash/omit';
 import PubNub from 'pubnub';
-import {getBaseModelValues} from '@/helpers/models';
+import {getBaseModelValues} from 'app-v3/helpers/models';
 import {UpdateMode} from 'realm';
 import {ChannelCustom} from 'types/app';
 import {compact} from 'lodash';
-import {decrypt, generateUniqueId} from '@/helpers/utils';
-import {IRealmService} from '@/services/realm';
-import {IPubNubService} from '@/services/pubnub';
-import {IAuthService} from '@/services/auth';
-import {IApiService} from '@/services/api';
-import {IContactService} from '@/services/contact';
+import {decrypt, generateUniqueId} from 'app-v3/helpers/utils';
+import {IRealmService} from 'app-v3/services/realm';
+import {IPubNubService} from 'app-v3/services/pubnub';
+import {IAuthService} from 'app-v3/services/auth';
+import {IApiService} from 'app-v3/services/api';
+import {IContactService} from 'app-v3/services/contact';
 import {Platform} from 'react-native';
-import {getNotificationService} from '@/services/index';
+import {getNotificationService} from 'app-v3/services/index';
 
 export interface IConversationService {
   getConversationByChannel(channel: string): IConversation | null;

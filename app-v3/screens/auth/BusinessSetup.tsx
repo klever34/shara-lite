@@ -1,10 +1,10 @@
-import {AuthView, BusinessForm} from '@/components';
-import {getAnalyticsService, getApiService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
+import {AuthView, BusinessForm} from 'app-v3/components';
+import {getAnalyticsService, getApiService} from 'app-v3/services';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles} from 'app-v3/helpers/utils';
 
 export const BusinessSetup = () => {
   const handleError = useErrorHandler();

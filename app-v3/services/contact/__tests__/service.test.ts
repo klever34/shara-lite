@@ -1,4 +1,4 @@
-// import {getContactService} from '@/services';
+// import {getContactService} from 'app-v3/services';
 
 // @ts-ignore
 describe('ContactService', () => {

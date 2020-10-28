@@ -1,5 +1,5 @@
-import {ICustomer} from '@/models';
-import {getContactService} from '@/services';
+import {ICustomer} from 'app-v3/models';
+import {getContactService} from 'app-v3/services';
 import React, {
   createContext,
   useCallback,

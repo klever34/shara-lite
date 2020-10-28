@@ -1,6 +1,6 @@
 import Realm from 'realm';
-import {BaseModelInterface} from '@/models/baseSchema';
-import {getStorageService} from '@/services';
+import {BaseModelInterface} from 'app-v3/models/baseSchema';
+import {getStorageService} from 'app-v3/services';
 
 export const getRealmObjectCopy = ({
   obj,

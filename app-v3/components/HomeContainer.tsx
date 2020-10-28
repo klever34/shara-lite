@@ -1,5 +1,5 @@
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {colors} from 'app-v3/styles';
 import React, {ReactNode} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';

@@ -10,21 +10,21 @@ import {
   SummaryTableItem,
   SummaryTableItemProps,
   summaryTableStyles,
-} from '@/components';
-import Icon from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {IReceipt} from '@/models/Receipt';
-import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAnalyticsService, getAuthService} from '@/services';
-import {getCustomers} from '@/services/customer';
-import {useErrorHandler} from '@/services/error-boundary';
-import {useAppNavigation} from '@/services/navigation';
-import {useRealm} from '@/services/realm';
-import {saveReceipt} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+} from 'app-v3/components';
+import Icon from 'app-v3/components/Icon';
+import Touchable from 'app-v3/components/Touchable';
+import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
+import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {ICustomer} from 'app-v3/models';
+import {IReceipt} from 'app-v3/models/Receipt';
+import {IReceiptItem} from 'app-v3/models/ReceiptItem';
+import {getAnalyticsService, getAuthService} from 'app-v3/services';
+import {getCustomers} from 'app-v3/services/customer';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
+import {useAppNavigation} from 'app-v3/services/navigation';
+import {useRealm} from 'app-v3/services/realm';
+import {saveReceipt} from 'app-v3/services/ReceiptService';
+import {colors} from 'app-v3/styles';
 import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
@@ -36,7 +36,7 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {AddCustomer} from '../main/customers';
+import {AddCustomer} from '../customers';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
 
 type Props = {

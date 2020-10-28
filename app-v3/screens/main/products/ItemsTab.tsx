@@ -2,26 +2,26 @@ import {
   summaryTableHeaderStyles,
   summaryTableItemStyles,
   summaryTableStyles,
-} from '@/components';
-import {Icon} from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+} from 'app-v3/components';
+import {Icon} from 'app-v3/components/Icon';
+import Touchable from 'app-v3/components/Touchable';
+import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
 import {
   amountWithCurrency,
   applyStyles,
   numberWithCommas,
-} from '@/helpers/utils';
-import {IProduct} from '@/models/Product';
-import {ReceiptItemModalContent} from '@/screens/receipt';
-import {getAnalyticsService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
+} from 'app-v3/helpers/utils';
+import {IProduct} from 'app-v3/models/Product';
+import {ReceiptItemModalContent} from 'app-v3/screens/main/receipts';
+import {getAnalyticsService} from 'app-v3/services';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {
   getProducts,
   saveProduct,
   updateProduct,
-} from '@/services/ProductService';
-import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+} from 'app-v3/services/ProductService';
+import {useRealm} from 'app-v3/services/realm';
+import {colors} from 'app-v3/styles';
 import {orderBy} from 'lodash';
 import React, {useCallback} from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';

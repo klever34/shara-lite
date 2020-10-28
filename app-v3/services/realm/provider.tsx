@@ -6,14 +6,14 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import {copyRealm} from '@/services/realm/copy-realm';
-import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
+import {copyRealm} from 'app-v3/services/realm/copy-realm';
+import {syncRealmDbs} from 'app-v3/services/realm/sync-realm-dbs';
 import perf from '@react-native-firebase/perf';
-import {normalizeDb} from '@/services/realm/normalizations';
+import {normalizeDb} from 'app-v3/services/realm/normalizations';
 import {
   getLocalLastSync,
   initLocalLastSyncStorage,
-} from '@/services/realm/utils';
+} from 'app-v3/services/realm/utils';
 
 type RealmObject = {
   realm?: Realm;

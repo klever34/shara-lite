@@ -1,7 +1,7 @@
 import React from 'react';
 import {Text, View, TouchableHighlight, StyleSheet} from 'react-native';
-import {colors} from '@/styles';
-import {useAppNavigation} from '@/services/navigation';
+import {colors} from 'app-v3/styles';
+import {useAppNavigation} from 'app-v3/services/navigation';
 
 export const Welcome = () => {
   const navigation = useAppNavigation();

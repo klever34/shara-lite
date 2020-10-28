@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useCallback,
 } from 'react';
-import {getApiService, getIPGeolocationService} from '@/services';
+import {getApiService, getIPGeolocationService} from 'app-v3/services';
 import {IPGeolocationResponse} from 'types/app';
 
 type IPGeolocationObject = {

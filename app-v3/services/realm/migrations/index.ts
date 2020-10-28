@@ -1,5 +1,5 @@
 import Realm from 'realm';
-import schemas from '@/services/realm/migrations/schemas';
+import schemas from 'app-v3/services/realm/migrations/schemas';
 
 export const runMigration = ({currentSchema}: {currentSchema: any}) => {
   if (!schemas.length) {

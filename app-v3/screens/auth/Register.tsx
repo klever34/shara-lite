@@ -1,13 +1,22 @@
-import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
-import {applyStyles} from '@/helpers/utils';
-import {getAnalyticsService, getApiService, getRealmService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
-import {FormDefaults} from '@/services/FormDefaults';
-import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {useAppNavigation} from '@/services/navigation';
-import {initLocalRealm} from '@/services/realm';
-import {RealmContext} from '@/services/realm/provider';
-import {colors} from '@/styles';
+import {
+  AuthView,
+  Button,
+  PasswordField,
+  PhoneNumberField,
+} from 'app-v3/components';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {
+  getAnalyticsService,
+  getApiService,
+  getRealmService,
+} from 'app-v3/services';
+import {useErrorHandler} from 'app-v3/services/error-boundary';
+import {FormDefaults} from 'app-v3/services/FormDefaults';
+import {useIPGeolocation} from 'app-v3/services/ip-geolocation/provider';
+import {useAppNavigation} from 'app-v3/services/navigation';
+import {initLocalRealm} from 'app-v3/services/realm';
+import {RealmContext} from 'app-v3/services/realm/provider';
+import {colors} from 'app-v3/styles';
 import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';

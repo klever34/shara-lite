@@ -1,9 +1,9 @@
-import {IConversation, IMessage} from '@/models';
+import {IConversation, IMessage} from 'app-v3/models';
 import omit from 'lodash/omit';
-import {IRealmService} from '@/services/realm';
-import {getBaseModelValues} from '@/helpers/models';
+import {IRealmService} from 'app-v3/services/realm';
+import {getBaseModelValues} from 'app-v3/helpers/models';
 import {UpdateMode} from 'realm';
-import {IPubNubService} from '@/services/pubnub';
+import {IPubNubService} from 'app-v3/services/pubnub';
 
 export interface IMessageService {
   getMessageByPubnubId(messageId: string): IMessage | null;

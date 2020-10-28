@@ -1,11 +1,11 @@
-import {IPayment} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
-import {IReceipt} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Receipt';
-import {ICredit} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
+import {IPayment} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
+import {IReceipt} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Receipt';
+import {ICredit} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
 import {
   BaseModel,
   BaseModelInterface,
   baseModelSchema,
-} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+} from 'app-v3/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
 
 export interface ICustomer extends BaseModelInterface {
   name: string;

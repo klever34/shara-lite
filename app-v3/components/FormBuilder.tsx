@@ -1,14 +1,17 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import TextInput, {TextInputProps} from '@/components/TextInput';
+import TextInput, {TextInputProps} from 'app-v3/components/TextInput';
 import {View} from 'react-native';
-import {Button, ButtonProps} from '@/components/Button';
-import {useAsync} from '@/services/api';
+import {Button, ButtonProps} from 'app-v3/components/Button';
+import {useAsync} from 'app-v3/services/api';
 import {
   PhoneNumberField,
   PhoneNumberFieldProps,
-} from '@/components/PhoneNumberField';
-import {applyStyles} from '@/helpers/utils';
-import {PasswordField, PasswordFieldProps} from '@/components/PasswordField';
+} from 'app-v3/components/PhoneNumberField';
+import {applyStyles} from 'app-v3/helpers/utils';
+import {
+  PasswordField,
+  PasswordFieldProps,
+} from 'app-v3/components/PasswordField';
 
 type FormFieldProps = {
   text: TextInputProps;
