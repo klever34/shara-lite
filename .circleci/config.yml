@@ -387,6 +387,10 @@ jobs:
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
       - run:
+          name: List android build contents
+          command: |
+            ls -R android/app/build/generated
+      - run:
           name: Sentry Release Integration
           command: |
             curl -sL https://sentry.io/get-cli/ | bash
@@ -399,7 +403,6 @@ jobs:
             sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --bundle-sourcemap android/app/build/generated/sourcemaps/react/dev/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/dev/release/index.android.bundle
             sentry-cli releases finalize "${SENTRY_VERSION}"
             sentry-cli releases deploys "${SENTRY_VERSION}" new --env <<parameters.env>>
-            ls -R android/app/build/generated
 orbs:
   android: circleci/android@0.2.1
   react-native: react-native-community/react-native@4.4.2
