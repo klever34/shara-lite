@@ -234,7 +234,6 @@ export const CreateReceipt = withModal((props: Props) => {
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
   const handleSaveReceipt = useCallback(() => {
-    console.log(note);
     setIsSaving(true);
     setTimeout(() => {
       let receiptToCreate: any = {
