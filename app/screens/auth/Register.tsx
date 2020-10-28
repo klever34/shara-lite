@@ -34,7 +34,7 @@ const validationSchema = yup.object().shape({
 export const Register = () => {
   const navigation = useAppNavigation();
   const {callingCode} = useIPGeolocation();
-  const {updateLocalRealm} = useContext(RealmContext);
+  const {updateLocalRealm, setIsSyncCompleted} = useContext(RealmContext);
   const {
     errors,
     values,
@@ -73,6 +73,7 @@ export const Register = () => {
       await apiService.register(payload);
       const createdLocalRealm = await initLocalRealm();
       updateLocalRealm && updateLocalRealm(createdLocalRealm);
+      setIsSyncCompleted && setIsSyncCompleted(true);
       const realmService = getRealmService();
       realmService.setInstance(createdLocalRealm);
 
