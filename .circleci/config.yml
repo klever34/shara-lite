@@ -1,57 +1,5 @@
 version: 2.1
 workflows:
-  play-store-fix-workflow: # TODO Remove
-    jobs:
-      - checkout_code:
-          context: shara-test
-          merged: false
-          commit: false
-          versioning: false
-          filters:
-            branches:
-              only:
-                - bugfix/google-play-aab-deploy
-      - test:
-          requires:
-            - checkout_code
-#      - fastlane:
-#          context: shara-beta
-#          lane: play
-#          track: internal
-#          packageName: co.shara.app
-#          productFlavor: production
-#          requires:
-#            - test
-#          filters:
-#            branches:
-#              only:
-#                - bugfix/google-play-aab-deploy
-      - fastlane:
-          context: shara-test
-          lane: testlab
-          testBuild: true
-          productFlavor: dev
-          env: test
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - bugfix/google-play-aab-deploy
-#      - fastlane:
-#          context: shara-test
-#          lane: internal
-#          packageName: co.shara.app.test
-#          productFlavor: dev
-#          env: test
-#          testBuild: false
-#          requires:
-#            - checkout_code
-#            - test
-#          filters:
-#            branches:
-#              only:
-#                - bugfix/google-play-aab-deploy
   testing-workflow:
     jobs:
       - checkout_code:
@@ -67,19 +15,17 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
-                - bugfix/google-play-aab-deploy # TODO Remove
-                - shara-v2-designs
       - test:
           requires:
             - checkout_code
-          filters: # TODO Remove
+          filters:
             branches:
               ignore:
                 - master
                 - develop
                 - discovery
                 - /^release.*/
-                - shara-v2-designs # TODO Remove
+                - /^hotfix.*/
       - fastlane:
           context: shara-test
           lane: internal
@@ -90,14 +36,14 @@ workflows:
           requires:
             - checkout_code
             - test
-          filters: # TODO Remove
+          filters:
             branches:
               ignore:
                 - master
                 - develop
                 - discovery
                 - /^release.*/
-                - shara-v2-designs # TODO Remove
+                - /^hotfix.*/
   discovery-workflow:
     jobs:
       - checkout_code:
