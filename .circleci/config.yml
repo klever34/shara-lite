@@ -1,6 +1,6 @@
 version: 2.1
 workflows:
-  play-store-fix-workflow:
+  play-store-fix-workflow: # TODO Remove
     jobs:
       - checkout_code:
           context: shara-beta
@@ -42,7 +42,7 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
-                - bugfix/google-play-aab-deploy
+                - bugfix/google-play-aab-deploy # TODO Remove
                 - shara-v2-designs
       - test:
           requires:

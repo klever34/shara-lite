@@ -98,7 +98,7 @@ platform :android do
       task: "clean",
     )
     gradle(
-      task: "bundle"
+      task: "bundle",
       flavor: ENV['PRODUCT_FLAVOUR'],
       build_type: 'Release'
     )
