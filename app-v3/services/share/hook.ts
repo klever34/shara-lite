@@ -61,10 +61,8 @@ export const useShare = ({
   }, [image, message, subject, title]);
 
   const handleWhatsappShare = useCallback(async () => {
-    const whatsAppNumber = getCustomerWhatsappNumber(
-      recipient,
-      userCountryCode,
-    );
+    const mobile = recipient;
+    const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
     const shareOptions = {
       title,
       message,

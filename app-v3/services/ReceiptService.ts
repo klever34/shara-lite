@@ -29,6 +29,7 @@ export const saveReceipt = ({
   customer,
   amountPaid,
   tax,
+  note,
   dueDate,
   totalAmount,
   creditAmount,
@@ -38,6 +39,7 @@ export const saveReceipt = ({
   image_url,
 }: {
   realm: Realm;
+  note?: string;
   dueDate?: Date;
   customer: ICustomer | Customer;
   amountPaid: number;
@@ -51,6 +53,7 @@ export const saveReceipt = ({
 }) => {
   const receipt: IReceipt = {
     tax,
+    note,
     amount_paid: amountPaid,
     total_amount: totalAmount,
     credit_amount: creditAmount,

@@ -309,6 +309,7 @@ export function ContactsListModal<T>({
         persistentScrollbar
         initialNumToRender={10}
         keyExtractor={keyExtractor}
+        keyboardShouldPersistTaps="always"
         renderItem={renderCustomerListItem}
         renderSectionHeader={renderCustomerListSectionHeader}
         ListHeaderComponent={

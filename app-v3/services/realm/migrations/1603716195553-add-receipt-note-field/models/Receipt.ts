@@ -1,8 +1,13 @@
-import {ICustomer} from './Customer';
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IPayment} from './Payment';
-import {IReceiptItem} from './ReceiptItem';
-import {ICredit} from './Credit';
+import {IPayment} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
+import {ICredit} from 'app-v3/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
+
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from 'app-v3/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IReceiptItem} from 'app-v3/services/realm/migrations/1599807779969-decimal-quantity/models/ReceiptItem';
+import {ICustomer} from 'app-v3/services/realm/migrations/1599826529206-customer-address/models/Customer';
 
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;
