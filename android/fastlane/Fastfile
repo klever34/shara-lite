@@ -96,7 +96,9 @@ platform :android do
   lane :play do
     gradle(task: "clean " + ENV['GRADLE_TASK'])
     upload_to_play_store(
-      track: ENV['GOOGLE_PLAY_TRACK']
+      track: ENV['GOOGLE_PLAY_TRACK'],
+      skip_upload_apk: true,
+      skip_upload_aab: false
     )
   end
 
