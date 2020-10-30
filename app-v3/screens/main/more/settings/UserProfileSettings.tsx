@@ -3,11 +3,11 @@ import {
   UserProfileForm,
   UserProfileFormPayload,
 } from 'app-v3/components';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {getApiService, getAuthService} from 'app-v3/services';
 import {useAppNavigation} from 'app-v3/services/navigation';
 import React, {useCallback} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
+import {applyStyles} from 'app-v3/styles';
 
 export const UserProfileSettings = () => {
   const authService = getAuthService();

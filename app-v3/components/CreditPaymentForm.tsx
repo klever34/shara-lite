@@ -2,10 +2,10 @@ import {Picker} from '@react-native-community/picker';
 import React, {useCallback} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Button} from './Button';
-import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {CurrencyInput} from './CurrencyInput';
 import {Formik} from 'formik';
+import {applyStyles} from 'app-v3/styles';
 
 type Payload = {
   amount: number | undefined;

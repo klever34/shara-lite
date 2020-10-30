@@ -1,5 +1,4 @@
 import {HeaderRight} from 'app-v3/components';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {colors} from 'app-v3/styles';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import {useNavigation} from '@react-navigation/native';
@@ -7,6 +6,7 @@ import React, {useLayoutEffect} from 'react';
 import {SafeAreaView} from 'react-native';
 import {ActivityTab} from './ActivityTab';
 import {ItemsTab} from './ItemsTab';
+import {applyStyles} from 'app-v3/styles';
 
 type ManageItemsTabParamList = {
   ActivityTab: undefined;

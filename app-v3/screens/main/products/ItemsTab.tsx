@@ -6,11 +6,7 @@ import {
 import {Icon} from 'app-v3/components/Icon';
 import Touchable from 'app-v3/components/Touchable';
 import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
-import {
-  amountWithCurrency,
-  applyStyles,
-  numberWithCommas,
-} from 'app-v3/helpers/utils';
+import {amountWithCurrency, numberWithCommas} from 'app-v3/helpers/utils';
 import {IProduct} from 'app-v3/models/Product';
 import {ReceiptItemModalContent} from 'app-v3/screens/main/receipts';
 import {getAnalyticsService} from 'app-v3/services';
@@ -25,6 +21,7 @@ import {colors} from 'app-v3/styles';
 import {orderBy} from 'lodash';
 import React, {useCallback} from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = ModalWrapperFields;
 

@@ -1,12 +1,12 @@
 import {Icon} from 'app-v3/components/Icon';
 import Touchable from 'app-v3/components/Touchable';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {getAuthService} from 'app-v3/services';
 import {useAppNavigation} from 'app-v3/services/navigation';
 import {colors} from 'app-v3/styles';
 import React from 'react';
 import {Text, View} from 'react-native';
 import {BottomHalfContentProps} from 'types-v3/modal';
+import {applyStyles} from 'app-v3/styles';
 
 type HomeMenuProps = BottomHalfContentProps & {};
 

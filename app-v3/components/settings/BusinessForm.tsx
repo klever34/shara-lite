@@ -1,4 +1,3 @@
-import {applyStyles} from 'app-v3/helpers/utils';
 import {useIPGeolocation} from 'app-v3/services/ip-geolocation/provider';
 import {colors} from 'app-v3/styles';
 import {useFormik} from 'formik';
@@ -13,6 +12,7 @@ import {Button} from '../Button';
 import {FloatingLabelInput, PhoneNumberField} from 'app-v3/components';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
+import {applyStyles} from 'app-v3/styles';
 
 export type BusinessFormPayload = {
   name: string;

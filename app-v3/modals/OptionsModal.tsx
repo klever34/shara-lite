@@ -1,9 +1,9 @@
 import React from 'react';
 import Modal from 'react-native-modal';
 import {ModalOptionsList, BaseModalProps} from 'types-v3/modal';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {View, StyleSheet, Text} from 'react-native';
 import Touchable from '../components/Touchable';
+import {applyStyles} from 'app-v3/styles';
 
 type OptionsModalProps = ModalOptionsList['options'] & BaseModalProps;
 

@@ -1,7 +1,7 @@
 import {Button, CurrencyInput} from 'app-v3/components';
 import {Icon} from 'app-v3/components/Icon';
 import Touchable from 'app-v3/components/Touchable';
-import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {amountWithCurrency} from 'app-v3/helpers/utils';
 import {IProduct} from 'app-v3/models/Product';
 import {IReceiptItem} from 'app-v3/models/ReceiptItem';
 import {getAnalyticsService} from 'app-v3/services';
@@ -16,6 +16,7 @@ import {colors} from 'app-v3/styles';
 import {omit, orderBy} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {FlatList, Text, TextInput, View} from 'react-native';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   onDelete?: () => void;

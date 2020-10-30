@@ -3,11 +3,7 @@ import {HeaderRight} from 'app-v3/components/HeaderRight';
 import Icon from 'app-v3/components/Icon';
 import Touchable from 'app-v3/components/Touchable';
 import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
-import {
-  amountWithCurrency,
-  applyStyles,
-  prepareValueForSearch,
-} from 'app-v3/helpers/utils';
+import {amountWithCurrency, prepareValueForSearch} from 'app-v3/helpers/utils';
 import {ICustomer} from 'app-v3/models';
 import {getAnalyticsService, getContactService} from 'app-v3/services';
 import {useAsync} from 'app-v3/services/api';
@@ -36,6 +32,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
+import {applyStyles} from 'app-v3/styles';
 
 type CustomerListItem =
   | Pick<

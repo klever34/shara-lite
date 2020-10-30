@@ -1,8 +1,8 @@
 import React from 'react';
 import Icon from './Icon';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {IMessage} from 'app-v3/models';
 import {getAuthService} from 'app-v3/services';
+import {applyStyles} from 'app-v3/styles';
 
 type MessageStatus = 'pending' | 'sent' | 'received' | 'read';
 

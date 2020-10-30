@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {colors} from 'app-v3/styles';
 import Touchable from './Touchable';
-import {applyStyles} from 'app-v3/helpers/utils';
+import {applyStyles} from 'app-v3/styles';
 
 interface variantColorStylesOptions {
   [key: string]: any;

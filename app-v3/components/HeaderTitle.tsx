@@ -1,7 +1,7 @@
 import React from 'react';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
+import {applyStyles} from 'app-v3/styles';
 
 type HeaderTitleProps = {
   title: string;

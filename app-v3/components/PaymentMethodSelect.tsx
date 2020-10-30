@@ -1,7 +1,7 @@
-import {applyStyles} from 'app-v3/helpers/utils';
 import React, {useCallback, useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {PaymentMethodOption} from './PaymentMethodOption';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   value: string[];

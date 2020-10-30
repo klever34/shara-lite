@@ -7,11 +7,11 @@ import {
   PhoneNumberField,
   PhoneNumberFieldProps,
 } from 'app-v3/components/PhoneNumberField';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {
   PasswordField,
   PasswordFieldProps,
 } from 'app-v3/components/PasswordField';
+import {applyStyles} from 'app-v3/styles';
 
 type FormFieldProps = {
   text: TextInputProps;

@@ -14,7 +14,6 @@ import {IReceiptItem} from 'app-v3/models/ReceiptItem';
 import {omit, uniqBy} from 'lodash';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 import {CreateReceipt} from 'app-v3/screens/main/receipts';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {colors} from 'app-v3/styles';
 import {DatePicker, HeaderRight, HomeContainer} from 'app-v3/components';
 import Touchable from 'app-v3/components/Touchable';
@@ -25,6 +24,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
+import {applyStyles} from 'app-v3/styles';
 
 export * from './ItemsTab';
 export * from './ManageItems';

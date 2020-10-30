@@ -4,7 +4,6 @@ import {
   PasswordField,
   PhoneNumberField,
 } from 'app-v3/components';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {
   getAnalyticsService,
   getApiService,
@@ -21,6 +20,7 @@ import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
+import {applyStyles} from 'app-v3/styles';
 
 type Fields = {
   mobile: string;

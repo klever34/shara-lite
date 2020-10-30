@@ -1,5 +1,4 @@
 import {AuthView, BusinessForm, BusinessFormPayload} from 'app-v3/components';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {
   getAnalyticsService,
   getApiService,
@@ -10,6 +9,7 @@ import {useAppNavigation} from 'app-v3/services/navigation';
 import React, {useCallback, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert, ToastAndroid} from 'react-native';
+import {applyStyles} from 'app-v3/styles';
 
 export const BusinessSettings = () => {
   const handleError = useErrorHandler();

@@ -7,11 +7,7 @@ import {
 } from 'app-v3/components';
 import {Icon} from 'app-v3/components/Icon';
 import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
-import {
-  amountWithCurrency,
-  applyStyles,
-  prepareValueForSearch,
-} from 'app-v3/helpers/utils';
+import {amountWithCurrency, prepareValueForSearch} from 'app-v3/helpers/utils';
 import {IReceipt} from 'app-v3/models/Receipt';
 import {CreateReceipt} from 'app-v3/screens/main/receipts';
 import {getAnalyticsService} from 'app-v3/services';
@@ -27,6 +23,7 @@ import {Alert, Text, TextStyle, View} from 'react-native';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 import {StatusFilter} from 'types-v3/app';
 import {CustomersStackParamList} from 'app-v3/screens/main/customers';
+import {applyStyles} from 'app-v3/styles';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},

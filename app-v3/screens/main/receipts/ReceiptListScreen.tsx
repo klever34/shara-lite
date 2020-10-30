@@ -16,7 +16,7 @@ import {format, isEqual, isToday} from 'date-fns';
 import {getAnalyticsService} from 'app-v3/services';
 import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 import {CreateReceipt} from 'app-v3/screens/main/receipts';
-import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {amountWithCurrency} from 'app-v3/helpers/utils';
 import {colors} from 'app-v3/styles';
 import {
   DatePicker,
@@ -31,6 +31,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
+import {applyStyles} from 'app-v3/styles';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},

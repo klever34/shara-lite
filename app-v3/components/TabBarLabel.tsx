@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react';
 import {Text} from 'react-native';
-import {applyStyles} from 'app-v3/helpers/utils';
+import {applyStyles} from 'app-v3/styles';
 
 type TabBarLabelProps = {
   focused: boolean;

@@ -5,8 +5,8 @@ import {colors} from '../styles';
 import {IContact, IConversation, IMessage} from '../models';
 import {useRealm} from '../services/realm';
 import MessageStatusIcon from './MessageStatusIcon';
-import {applyStyles} from '../helpers/utils';
 import {getAuthService} from '../services';
+import {applyStyles} from 'app-v3/styles';
 
 type ChatBubbleProps = {
   message: IMessage;

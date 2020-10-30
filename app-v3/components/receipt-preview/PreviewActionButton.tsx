@@ -1,9 +1,9 @@
-import {applyStyles} from 'app-v3/helpers/utils';
 import {colors} from 'app-v3/styles';
 import React from 'react';
 import {Text, View} from 'react-native';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   label: string;

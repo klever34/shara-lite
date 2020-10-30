@@ -1,5 +1,4 @@
 import React from 'react';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {ActivityIndicator, View} from 'react-native';
 import Icon from './Icon';
 import {
@@ -10,6 +9,7 @@ import {
 } from 'react-native-popup-menu';
 import {colors} from 'app-v3/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
+import {applyStyles} from 'app-v3/styles';
 
 export type HeaderRightOption = {icon: string; onPress: () => void};
 export type HeaderRightMenuOption = {text: string; onSelect: () => void};

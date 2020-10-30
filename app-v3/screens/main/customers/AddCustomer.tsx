@@ -1,4 +1,3 @@
-import {applyStyles} from 'app-v3/helpers/utils';
 import {ICustomer} from 'app-v3/models';
 import {getCustomers, saveCustomer} from 'app-v3/services/customer/service';
 import {FormDefaults} from 'app-v3/services/FormDefaults';
@@ -10,6 +9,7 @@ import React, {useCallback} from 'react';
 import {Alert, ScrollView, StyleSheet, ToastAndroid, View} from 'react-native';
 import * as yup from 'yup';
 import {Button, FloatingLabelInput} from '../../../components';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   onSubmit?: (customer: ICustomer) => void;

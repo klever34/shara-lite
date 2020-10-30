@@ -1,8 +1,8 @@
-import {applyStyles} from 'app-v3/helpers/utils';
 import React, {ReactNode} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 import {Icon} from './Icon';
 import {FAButton} from 'app-v3/components';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   style?: ViewStyle;

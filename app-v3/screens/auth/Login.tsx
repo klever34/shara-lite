@@ -4,7 +4,6 @@ import {
   PasswordField,
   PhoneNumberField,
 } from 'app-v3/components';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {useErrorHandler} from 'app-v3/services/error-boundary';
 import {FormDefaults} from 'app-v3/services/FormDefaults';
 import {useIPGeolocation} from 'app-v3/services/ip-geolocation/provider';
@@ -21,6 +20,7 @@ import {
   getApiService,
   getRealmService,
 } from 'app-v3/services';
+import {applyStyles} from 'app-v3/styles';
 
 type Fields = {
   mobile: string;

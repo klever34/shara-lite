@@ -9,8 +9,8 @@ import {
   View,
   Text,
 } from 'react-native';
-import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
+import {applyStyles} from 'app-v3/styles';
 
 export type FloatingLabelInputProps = {
   label?: string;

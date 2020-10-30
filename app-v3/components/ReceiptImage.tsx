@@ -1,4 +1,4 @@
-import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {amountWithCurrency} from 'app-v3/helpers/utils';
 import {ICustomer} from 'app-v3/models';
 import {IReceiptItem} from 'app-v3/models/ReceiptItem';
 import {getAuthService} from 'app-v3/services';
@@ -15,6 +15,7 @@ import {
   SummaryTableItem,
   SummaryTableItemProps,
 } from './receipt-preview';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   tax?: number;

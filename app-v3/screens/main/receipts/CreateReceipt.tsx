@@ -14,7 +14,7 @@ import {
 import Icon from 'app-v3/components/Icon';
 import Touchable from 'app-v3/components/Touchable';
 import {ModalWrapperFields, withModal} from 'app-v3/helpers/hocs';
-import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {amountWithCurrency} from 'app-v3/helpers/utils';
 import {ICustomer} from 'app-v3/models';
 import {IReceipt} from 'app-v3/models/Receipt';
 import {IReceiptItem} from 'app-v3/models/ReceiptItem';
@@ -31,6 +31,7 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
 import {AddCustomer} from '../customers';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
+import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   receipt?: IReceipt;

@@ -1,5 +1,4 @@
 import EmptyState from 'app-v3/components/EmptyState';
-import {applyStyles} from 'app-v3/helpers/utils';
 import {useCreditReminder} from 'app-v3/services/credit-reminder';
 import {useRepeatBackToExit} from 'app-v3/services/navigation';
 import {useRealm} from 'app-v3/services/realm';
@@ -20,6 +19,7 @@ import {ReceiptsScreen} from './receipts';
 import {CustomersScreen} from './customers';
 import {ProductsScreen} from './products';
 import {MoreScreen} from './more';
+import {applyStyles} from 'app-v3/styles';
 
 export type MainNavParamList = {
   Receipts: undefined;

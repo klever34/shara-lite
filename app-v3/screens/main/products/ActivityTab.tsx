@@ -1,7 +1,7 @@
 import EmptyState from 'app-v3/components/EmptyState';
-import {applyStyles} from 'app-v3/helpers/utils';
 import React from 'react';
 import {SafeAreaView} from 'react-native';
+import {applyStyles} from 'app-v3/styles';
 
 export const ActivityTab = () => {
   return (

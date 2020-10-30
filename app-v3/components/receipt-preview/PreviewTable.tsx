@@ -1,9 +1,10 @@
-import {amountWithCurrency, applyStyles} from 'app-v3/helpers/utils';
+import {amountWithCurrency} from 'app-v3/helpers/utils';
 import {IReceiptItem} from 'app-v3/models/ReceiptItem';
 import {colors} from 'app-v3/styles';
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Touchable from '../Touchable';
+import {applyStyles} from 'app-v3/styles';
 
 export type SummaryTableItemProps = {
   item: IReceiptItem;
