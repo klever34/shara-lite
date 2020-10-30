@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.3.11-chore.app-improvements+build.4194",
+  "version": "0.3.12-discovery",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
