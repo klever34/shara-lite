@@ -49,11 +49,18 @@ platform :android do
 
   desc "Submit a test build to Firebase Test Lab"
   lane :testlab do
-    gradle(task: "clean " + ENV['GRADLE_TASK'])
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "assemble",
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
 
     # Get Pull request number from CI
     pr_number = ENV["CI_PULL_REQUEST"] != nil ? ENV["CI_PULL_REQUEST"][/(?<=https:\/\/github.com\/shara-inc\/mobile\/pull\/)(.*)/] : nil
-    test_devices = ENV["GRADLE_TASK"] == "assembleQaRelease" ? qa_devices : basic_devices
+    test_devices = ENV["PRODUCT_FLAVOUR"] == "qa" ? qa_devices : basic_devices
 
     # Upload to Firebase Test Lab
     firebase_test_lab_android(
@@ -77,8 +84,14 @@ platform :android do
 
   desc "Submit a new build to Firebase App Distribution"
   lane :internal do
-    # gradle(task: "clean assembleRelease")
-    gradle(task: "clean " + ENV['GRADLE_TASK'])
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "assemble",
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
     firebase_app_distribution(
       app: ENV['FIREBASE_APP_ID_ANDROID'],
       firebase_cli_token: ENV['FIREBASE_TOKEN'],
@@ -88,7 +101,14 @@ platform :android do
 
   desc "Deploy a new version to the Google Play Internal Test Release"
   lane :playinternalappsharing do
-    gradle(task: "clean " + ENV['GRADLE_TASK'])
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "assemble",
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
     upload_to_play_store_internal_app_sharing
   end
 

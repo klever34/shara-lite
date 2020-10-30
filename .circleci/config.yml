@@ -18,10 +18,23 @@ workflows:
           context: shara-beta
           lane: play
           track: internal
-          gradleTask: assembleProductionRelease
           packageName: co.shara.app
           productFlavor: production
           requires:
+            - test
+          filters:
+            branches:
+              only:
+                - bugfix/google-play-aab-deploy
+      - fastlane:
+          context: shara-test
+          lane: internal
+          packageName: co.shara.app.test
+          productFlavor: dev
+          env: test
+          testBuild: false
+          requires:
+            - checkout_code
             - test
           filters:
             branches:
@@ -58,7 +71,6 @@ workflows:
       - fastlane:
           context: shara-test
           lane: internal
-          gradleTask: assembleDevRelease
           packageName: co.shara.app.test
           productFlavor: dev
           env: test
@@ -92,7 +104,6 @@ workflows:
       - fastlane:
           context: shara-discovery
           lane: internal
-          gradleTask: assembleDiscoveryRelease
           packageName: co.shara.app.discovery
           productFlavor: discovery
           env: discovery
@@ -107,7 +118,6 @@ workflows:
           context: shara-discovery
           lane: testlab
           testBuild: true
-          gradleTask: assembleDiscoveryRelease
           productFlavor: discovery
           env: discovery
           requires:
@@ -134,7 +144,6 @@ workflows:
       - fastlane:
           context: shara-dev
           lane: internal
-          gradleTask: assembleDeliveryRelease
           packageName: co.shara.app.delivery
           productFlavor: delivery
           env: delivery
@@ -148,7 +157,6 @@ workflows:
           context: shara-dev
           lane: testlab
           testBuild: true
-          gradleTask: assembleDeliveryRelease
           packageName: co.shara.app.delivery
           productFlavor: delivery
           env: delivery
@@ -175,7 +183,6 @@ workflows:
       - fastlane:
           context: shara-qa
           lane: internal
-          gradleTask: assembleQaRelease
           packageName: co.shara.app.qa
           productFlavor: qa
           env: qa
@@ -189,7 +196,6 @@ workflows:
           context: shara-qa
           lane: testlab
           testBuild: true
-          gradleTask: assembleQaRelease
           packageName: co.shara.app.qa
           productFlavor: qa
           env: qa
@@ -217,7 +223,8 @@ workflows:
           context: shara-beta
           lane: play
           track: internal
-          gradleTask: assembleProductionRelease
+          packageName: co.shara.app
+          productFlavor: production
           requires:
             - test
           filters:
@@ -242,7 +249,6 @@ workflows:
           context: shara-beta
           lane: play
           track: beta
-          gradleTask: assembleProductionRelease
           packageName: co.shara.app
           productFlavor: production
           env: beta
@@ -255,7 +261,6 @@ workflows:
       - fastlane:
           context: shara-beta
           lane: internal
-          gradleTask: assembleProductionRelease
           packageName: co.shara.app
           productFlavor: production
           env: beta
@@ -396,9 +401,6 @@ jobs:
       track:
         type: string
         default: internal
-      gradleTask:
-        type: string
-        default: assembleRelease
       testersGroup:
         type: string
         default: shara-product
@@ -453,7 +455,6 @@ jobs:
             bundle exec fastlane <<parameters.lane>>
           environment:
             GOOGLE_PLAY_TRACK: <<parameters.track>>
-            GRADLE_TASK: <<parameters.gradleTask>>
             PRODUCT_FLAVOUR: <<parameters.productFlavor>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
