@@ -30,11 +30,7 @@ export const FAButton = ({
   return (
     <Touchable onPress={onPress}>
       <View
-        style={applyStyles(
-          styles.container,
-          {backgroundColor: color},
-          {...style},
-        )}>
+        style={applyStyles(styles.container, style, {backgroundColor: color})}>
         {children ? (
           children
         ) : (
@@ -48,9 +44,8 @@ export const FAButton = ({
 const styles = StyleSheet.create({
   container: {
     backgroundColor: 'red',
-    width: 64,
-    height: 64,
     position: 'absolute',
+    padding: 12,
     bottom: 16,
     right: 16,
     borderRadius: 32,
