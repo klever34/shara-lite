@@ -25,3 +25,5 @@ export * from './PaymentMethodOption';
 export * from './PaymentMethodSelect';
 export * from './ReceiptingContainer';
 export * from './HomeContainer';
+export * from './TitleDivider';
+export * from './HomeProvider';

@@ -18,7 +18,7 @@ import {
 } from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {
   getAnalyticsService,
   getAuthService,
@@ -41,6 +41,7 @@ import {
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
 import {CancelReceiptModal} from './CancelReceiptModal';
+import {TitleDivider} from '../TitleDivider';
 
 type Props = {
   isNew: boolean;
@@ -74,6 +75,7 @@ export const ReceiptPreview = withModal(
 
     const hasCustomer = customer?.name;
     const creditDueDate = receipt?.dueDate;
+    const receiptDate = receipt?.created_at ?? new Date();
     const businessInfo = getAuthService().getBusinessInfo();
     const hasCustomerMobile = customer?.mobile;
     const allPayments = receipt ? getAllPayments({receipt}) : [];
@@ -95,19 +97,22 @@ export const ReceiptPreview = withModal(
       totalAmountPaid,
     )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
       creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
-    }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
+    }. Don't forget to make payment.\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const receiptShareMessage = `Hi ${
       customer?.name ?? ''
     }, thank you for your recent purchase of ${
       receipt?.items?.length
-    } item(s) from ${businessInfo.name}.  You paid ${amountWithCurrency(
+    } item(s) from ${businessInfo.name}. You paid ${amountWithCurrency(
       totalAmountPaid,
-    )} and owe ${amountWithCurrency(creditAmountLeft)} ${
+    )} and owe ${amountWithCurrency(creditAmountLeft)}${
       creditDueDate
-        ? `(which is due on ${format(new Date(creditDueDate), 'MMM dd, yyyy')})`
+        ? ` (which is due on ${format(
+            new Date(creditDueDate),
+            'MMM dd, yyyy',
+          )})`
         : ''
-    }. Thank you.\n\nPowered by Shara for free.\nhttp://shara.co`;
+    }. Thank you.\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
@@ -294,7 +299,7 @@ export const ReceiptPreview = withModal(
           );
           await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
           await BluetoothEscposPrinter.printText(
-            `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
+            `Date: ${format(receiptDate, 'dd/MM/yyyy, hh:mm:a')}\n`,
             {},
           );
           await BluetoothEscposPrinter.printerAlign(
@@ -392,6 +397,7 @@ export const ReceiptPreview = withModal(
         }
       },
       [
+        receiptDate,
         printer,
         customer,
         businessInfo.name,
@@ -493,12 +499,12 @@ export const ReceiptPreview = withModal(
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
         })}>
-        {!receipt?.isPending && (
-          <View style={applyStyles('px-xl mb-md')}>
+        {receipt && !receipt?.isPending && (
+          <View>
             {!receipt?.is_cancelled && !hasCustomer && (
               <Touchable onPress={handleOpenContactList}>
                 <View
-                  style={applyStyles('center px-lg', {
+                  style={applyStyles('center px-lg mx-xl mb-md', {
                     height: 40,
                     borderRadius: 4,
                     alignSelf: 'flex-start',
@@ -546,7 +552,6 @@ export const ReceiptPreview = withModal(
               <ReceiptImage
                 user={user}
                 tax={receipt?.tax}
-                captureMode="continuous"
                 products={receipt?.items}
                 amountPaid={totalAmountPaid}
                 creditDueDate={creditDueDate}
@@ -605,37 +610,11 @@ export const ReceiptPreview = withModal(
         {!receipt?.is_cancelled && hasCustomer && (
           <View
             style={applyStyles('px-xl', {
-              paddingBottom: 100,
+              paddingBottom: 24,
             })}>
-            <View style={applyStyles('mb-md flex-row justify-space-between')}>
-              <View
-                style={applyStyles({
-                  height: 10,
-                  width: '33%',
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors['gray-50'],
-                })}
-              />
-              <View
-                style={applyStyles({
-                  width: '33%',
-                })}>
-                <Text
-                  style={applyStyles('text-400 text-center text-uppercase', {
-                    color: colors['gray-300'],
-                  })}>
-                  {isFulfilled || isNew ? 'Send via' : 'Send reminder'}
-                </Text>
-              </View>
-              <View
-                style={applyStyles({
-                  height: 10,
-                  width: '33%',
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors['gray-50'],
-                })}
-              />
-            </View>
+            <TitleDivider
+              title={isFulfilled || isNew ? 'Send via' : 'Send reminder'}
+            />
             <View
               style={applyStyles(
                 'flex-row w-full items-center justify-space-between flex-wrap',
@@ -723,6 +702,36 @@ export const ReceiptPreview = withModal(
                 </Touchable>
               </View>
             </View>
+          </View>
+        )}
+        {!!receipt?.note && (
+          <View
+            style={applyStyles('px-xl', {
+              paddingBottom: 24,
+            })}>
+            <TitleDivider title="Receipt Note" />
+            <Text
+              style={applyStyles('text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              {receipt?.note}
+            </Text>
+          </View>
+        )}
+        {!!receipt?.is_cancelled && (
+          <View
+            style={applyStyles('px-xl', {
+              paddingBottom: 40,
+            })}>
+            <TitleDivider title="Cancellation Reason" />
+            <Text
+              style={applyStyles('text-400', {
+                fontSize: 16,
+                color: colors['gray-300'],
+              })}>
+              {receipt?.cancellation_reason}
+            </Text>
           </View>
         )}
         <BluetoothModal

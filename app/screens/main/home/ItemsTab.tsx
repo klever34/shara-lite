@@ -1,4 +1,4 @@
-import {DatePicker, HomeContainer} from '@/components';
+import {DatePicker, HomeContainer, useHomeProvider} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -7,7 +7,7 @@ import {applyStyles} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {CreateReceipt} from '@/screens/receipt';
+import {CreateReceipt} from '@/screens/main/receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {
@@ -18,9 +18,8 @@ import {colors} from '@/styles';
 import {format, isEqual, isToday} from 'date-fns';
 import {omit, uniqBy} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
+import {KeyboardAvoidingView, Text, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
 
 type ItemsTabProps = ModalWrapperFields & {};
 
@@ -30,8 +29,9 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const allReceipts = realm ? getReceipts({realm}) : [];
+  const {date: homeDateFilter, handleDateChange} = useHomeProvider();
 
-  const [filter, setFilter] = useState({date: new Date()} || {});
+  const [filter, setFilter] = useState({date: homeDateFilter} || {});
   const [products, setProducts] = useState<FilteredProduct[]>([]);
 
   const dateFilterFunc = useCallback(
@@ -82,6 +82,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   const handleDateFilter = useCallback(
     (date?: Date) => {
       if (date) {
+        handleDateChange(date);
         handleFilterChange('date', date);
         const filtered = allReceipts
           .filter((receipt) => !receipt.is_cancelled)
@@ -98,67 +99,16 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
         setTotalItems(getReceiptsTotalProductQuantity(filtered));
       }
     },
-    [allReceipts, getFilteredProducts, handleFilterChange],
+    [allReceipts, handleDateChange, getFilteredProducts, handleFilterChange],
   );
-
-  const handleSnapReceipt = useCallback(
-    (callback: (imageUri: string) => void) => {
-      const options: ImagePickerOptions = {
-        noData: true,
-        maxWidth: 256,
-        maxHeight: 256,
-        mediaType: 'photo',
-        allowsEditing: true,
-      };
-      ImagePicker.launchCamera(options, (response) => {
-        if (response.didCancel) {
-          // do nothing
-        } else if (response.error) {
-          Alert.alert('Error', response.error);
-        } else {
-          const {uri} = response;
-          const extensionIndex = uri.lastIndexOf('.');
-          const extension = uri.slice(extensionIndex + 1);
-          const allowedExtensions = ['jpg', 'jpeg', 'png'];
-          if (!allowedExtensions.includes(extension)) {
-            return Alert.alert('Error', 'That file type is not allowed.');
-          }
-          callback(uri);
-        }
-      });
-    },
-    [],
-  );
-
-  const onSnapReceipt = useCallback(() => {
-    Alert.alert('Coming Soon', 'This feature is coming in the next update');
-    // handleSnapReceipt((uri) =>
-    //   saveReceipt({
-    //     realm,
-    //     tax: 0,
-    //     payments: [],
-    //     amountPaid: 0,
-    //     totalAmount: 0,
-    //     creditAmount: 0,
-    //     receiptItems: [],
-    //     local_image_url: uri,
-    //     customer: {} as ICustomer,
-    //   }),
-    // );
-  }, []);
 
   const handleOpenCreateReciptModal = useCallback(() => {
     const closeModal = openModal('full', {
       animationInTiming: 0.1,
       animationOutTiming: 0.1,
-      renderContent: () => (
-        <CreateReceipt
-          closeReceiptModal={closeModal}
-          onSnapReceipt={handleSnapReceipt}
-        />
-      ),
+      renderContent: () => <CreateReceipt closeReceiptModal={closeModal} />,
     });
-  }, [openModal, handleSnapReceipt]);
+  }, [openModal]);
 
   const renderListItem = useCallback(
     ({item}: {item: FilteredProduct}) => {
@@ -167,7 +117,7 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
       return (
         <View
           style={applyStyles('px-md flex-row center justify-between', {
-            height: 50,
+            height: 52,
             borderBottomWidth: 1,
             borderBottomColor: colors['gray-20'],
           })}>
@@ -219,8 +169,16 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
   useEffect(() => {
     const filtered = allReceipts
       .filter((receipt) => !receipt.is_cancelled)
-      .filter(dateFilterFunc);
+      .filter((receipt: IReceipt) => {
+        if (receipt.created_at) {
+          return isEqual(
+            new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+            new Date(format(homeDateFilter, 'MMM dd, yyyy')),
+          );
+        }
+      });
 
+    handleFilterChange('date', homeDateFilter);
     setProducts(getFilteredProducts(filtered));
     setTotalItems(getReceiptsTotalProductQuantity(filtered));
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -231,19 +189,31 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
       const allReceiptsData = getReceipts({realm});
       const filtered = allReceiptsData
         .filter((receipt) => !receipt.is_cancelled)
-        .filter(dateFilterFunc);
+        .filter((receipt: IReceipt) => {
+          if (receipt.created_at) {
+            return isEqual(
+              new Date(format(receipt?.created_at, 'MMM dd, yyyy')),
+              new Date(format(homeDateFilter, 'MMM dd, yyyy')),
+            );
+          }
+        });
 
+      handleFilterChange('date', homeDateFilter);
       setProducts(getFilteredProducts(filtered));
       setTotalItems(getReceiptsTotalProductQuantity(filtered));
     });
-  }, [dateFilterFunc, getFilteredProducts, navigation, realm]);
+  }, [
+    handleFilterChange,
+    getFilteredProducts,
+    navigation,
+    realm,
+    homeDateFilter,
+  ]);
 
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <HomeContainer
-        onSnapReceipt={onSnapReceipt}
-        onCreateReceipt={handleOpenCreateReciptModal}>
+      <HomeContainer onCreateReceipt={handleOpenCreateReciptModal}>
         <View
           style={applyStyles('p-md center flex-row justify-between', {
             backgroundColor: colors['gray-300'],
@@ -299,20 +269,6 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
             </Text>
           </View>
         </View>
-        <FlatList
-          data={products}
-          initialNumToRender={10}
-          renderItem={renderListItem}
-          keyboardShouldPersistTaps="always"
-          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
-          ListEmptyComponent={
-            <EmptyState
-              heading="No items"
-              text="No items sold today"
-              style={applyStyles({paddingTop: 100})}
-            />
-          }
-        />
         <View
           style={applyStyles(
             'px-md py-md w-full flex-row items-center justify-between',
@@ -360,6 +316,20 @@ export const ItemsTab = withModal(({openModal}: ItemsTabProps) => {
             </Touchable>
           </View>
         </View>
+        <FlatList
+          data={products}
+          initialNumToRender={10}
+          renderItem={renderListItem}
+          keyboardShouldPersistTaps="always"
+          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+          ListEmptyComponent={
+            <EmptyState
+              heading="No items"
+              text="No items sold today"
+              style={applyStyles({paddingTop: 100})}
+            />
+          }
+        />
       </HomeContainer>
     </KeyboardAvoidingView>
   );
