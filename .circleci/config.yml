@@ -14,6 +14,7 @@ workflows:
                 - develop
                 - discovery
                 - /^release.*/
+                - /^hotfix.*/
                 - shara-v2-designs
       - test:
           requires:
