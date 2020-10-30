@@ -28,32 +28,18 @@ import {colors} from '@/styles';
 import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  Text,
-  TextInput,
-  ToastAndroid,
-  View,
-} from 'react-native';
-import {AddCustomer} from '../main/customers';
+import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
+import {AddCustomer} from '../customers';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
 
 type Props = {
   receipt?: IReceipt;
   closeReceiptModal: () => void;
   initialCustomer?: ICustomer;
-  onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {
-    receipt,
-    openModal,
-    // onSnapReceipt,
-    initialCustomer,
-    closeReceiptModal,
-  } = props;
+  const {receipt, openModal, initialCustomer, closeReceiptModal} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -71,7 +57,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>(
     receipt?.items || [],
   );
-  const [customer, setCustomer] = useState<ICustomer>(
+  const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer || ({} as ICustomer),
   );
   const [
@@ -223,6 +209,7 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
+      setCustomer(undefined);
       closeReceiptModal();
       navigation.navigate('SalesDetails', {id: item._id});
     },
@@ -246,16 +233,12 @@ export const CreateReceipt = withModal((props: Props) => {
     });
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
-  const handleSnapReceipt = useCallback(() => {
-    Alert.alert('Coming Soon', 'This feature is coming in the next update');
-    // onSnapReceipt?.((uri) => setSnappedReceipt(uri));
-  }, []);
-
   const handleSaveReceipt = useCallback(() => {
     setIsSaving(true);
     setTimeout(() => {
       let receiptToCreate: any = {
         tax,
+        note,
         realm,
         dueDate,
         customer,
@@ -275,8 +258,9 @@ export const CreateReceipt = withModal((props: Props) => {
       setIsSaving(false);
       ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
       handleOpenReceiptPreviewModal(createdReceipt);
-    }, 300);
+    }, 100);
   }, [
+    note,
     realm,
     dueDate,
     customer,
@@ -331,32 +315,13 @@ export const CreateReceipt = withModal((props: Props) => {
         ListHeaderComponent={
           <>
             <View
-              style={applyStyles('pt-lg px-lg flex-row items-center', {
+              style={applyStyles('pt-lg px-lg flex-row items-center h-60', {
                 paddingBottom: 8,
               })}>
               <View style={applyStyles({width: '48%'})}>
                 <Text style={applyStyles('text-700 text-uppercase')}>
                   Create a receipt
                 </Text>
-              </View>
-              <View style={applyStyles('items-end', {width: '48%'})}>
-                <Touchable onPress={handleSnapReceipt}>
-                  <View
-                    style={applyStyles('flex-row items-center', {height: 48})}>
-                    <Icon
-                      size={24}
-                      name="camera"
-                      type="feathericons"
-                      color={colors.primary}
-                    />
-                    <Text
-                      style={applyStyles('pl-sm text-400 text-uppercase', {
-                        color: colors.primary,
-                      })}>
-                      Snap receipt
-                    </Text>
-                  </View>
-                </Touchable>
               </View>
             </View>
 
@@ -381,7 +346,7 @@ export const CreateReceipt = withModal((props: Props) => {
                             textDecorationColor: colors.primary,
                           },
                     )}>
-                    {customer.name ? customer.name : 'Add Customer Details'}
+                    {customer?.name ? customer.name : 'Add Customer Details'}
                   </Text>
                 </View>
               </Touchable>
@@ -451,7 +416,12 @@ export const CreateReceipt = withModal((props: Props) => {
             </View>
             <View style={applyStyles('px-lg', {paddingBottom: 40})}>
               <View style={applyStyles('pb-xl flex-row items-center')}>
-                <Text style={applyStyles('text-400')}>Paid:</Text>
+                <Text
+                  style={applyStyles('text-400', {
+                    color: colors['gray-300'],
+                  })}>
+                  Paid:
+                </Text>
                 <View style={applyStyles('ml-sm')}>
                   <CurrencyInput
                     value={amountPaid.toString()}
@@ -473,7 +443,12 @@ export const CreateReceipt = withModal((props: Props) => {
                 </View>
               </View>
               <View style={applyStyles('flex-row')}>
-                <Text style={applyStyles('text-400')}>Note:</Text>
+                <Text
+                  style={applyStyles('text-400', {
+                    color: colors['gray-300'],
+                  })}>
+                  Note:
+                </Text>
                 <View style={applyStyles('ml-sm')}>
                   <TextInput
                     multiline

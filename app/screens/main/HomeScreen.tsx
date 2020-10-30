@@ -1,4 +1,4 @@
-import {HeaderRight, HomeMenu} from '@/components';
+import {HeaderRight, HomeMenu, HomeProvider} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {applyStyles} from '@/helpers/utils';
@@ -111,26 +111,28 @@ const HomeScreen = ({openModal}: HomeScreenProps) => {
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
-      <HomeTab.Navigator
-        initialRouteName="SalesTab"
-        tabBarOptions={{
-          indicatorContainerStyle: {backgroundColor: colors.white},
-          indicatorStyle: applyStyles('bg-primary h-4 rounded-2'),
-          labelStyle: {fontFamily: 'Rubik-Regular'},
-          activeTintColor: colors.primary,
-          inactiveTintColor: colors['gray-300'],
-        }}>
-        <HomeTab.Screen
-          name="SalesTab"
-          component={SalesTab}
-          options={{title: 'Sales'}}
-        />
-        <HomeTab.Screen
-          name="ItemsTab"
-          component={ItemsTab}
-          options={{title: 'Items'}}
-        />
-      </HomeTab.Navigator>
+      <HomeProvider>
+        <HomeTab.Navigator
+          initialRouteName="SalesTab"
+          tabBarOptions={{
+            indicatorContainerStyle: {backgroundColor: colors.white},
+            indicatorStyle: applyStyles('bg-primary h-4 rounded-2'),
+            labelStyle: {fontFamily: 'Rubik-Regular'},
+            activeTintColor: colors.primary,
+            inactiveTintColor: colors['gray-300'],
+          }}>
+          <HomeTab.Screen
+            name="SalesTab"
+            component={SalesTab}
+            options={{title: 'Sales'}}
+          />
+          <HomeTab.Screen
+            name="ItemsTab"
+            component={ItemsTab}
+            options={{title: 'Items'}}
+          />
+        </HomeTab.Navigator>
+      </HomeProvider>
     </SafeAreaView>
   );
 };
