@@ -115,7 +115,7 @@ workflows:
             branches:
               only:
                 - discovery
-  release-workflow:
+  qa-workflow:
     jobs:
       - checkout_code:
           context: shara-qa
@@ -150,6 +150,42 @@ workflows:
             branches:
               only:
                 - /^release.*/
+  hotfix-workflow:
+    jobs:
+      - checkout_code:
+          context: shara-beta
+          merged: false
+          commit: false
+          versioning: false
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+      - test:
+          requires:
+            - checkout_code
+      - fastlane:
+          context: shara-beta
+          lane: play
+          track: internal
+          gradleTask: assembleProductionRelease
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+#      - fastlane:
+#          context: shara-beta
+#          lane: testlab
+#          testBuild: true
+#          gradleTask: assembleProductionRelease
+#          requires:
+#            - test
+#          filters:
+#            branches:
+#              only:
+#                - /^hotfix.*/
   beta-workflow:
     jobs:
       - checkout_code:
@@ -185,6 +221,7 @@ workflows:
             branches:
               only:
                 - master
+
 jobs:
   checkout_code:
     docker:
