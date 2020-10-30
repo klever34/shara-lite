@@ -197,7 +197,7 @@ export const MoreOptionsScreen = () => {
           <Touchable onPress={handleLogout}>
             <View
               style={applyStyles(
-                'flex-row border-1 border-gray-20 center p-16 rounded-md',
+                'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',
               )}>
               <Icon
                 type="feathericons"
