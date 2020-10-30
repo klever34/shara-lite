@@ -162,3 +162,5 @@ declare module 'country-currency-map';
 declare module 'react-native-signature-capture';
 // @ts-ignore
 declare module 'react-native-bluetooth-escpos-printer';
+//@ts-ignore
+declare module 'react-native-check-app-install';

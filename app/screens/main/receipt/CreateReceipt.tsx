@@ -36,17 +36,10 @@ type Props = {
   receipt?: IReceipt;
   closeReceiptModal: () => void;
   initialCustomer?: ICustomer;
-  onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {
-    receipt,
-    openModal,
-    // onSnapReceipt,
-    initialCustomer,
-    closeReceiptModal,
-  } = props;
+  const {receipt, openModal, initialCustomer, closeReceiptModal} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -64,7 +57,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>(
     receipt?.items || [],
   );
-  const [customer, setCustomer] = useState<ICustomer>(
+  const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer || ({} as ICustomer),
   );
   const [
@@ -216,6 +209,7 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
+      setCustomer(undefined);
       closeReceiptModal();
       navigation.navigate('SalesDetails', {id: item._id});
     },
@@ -240,7 +234,6 @@ export const CreateReceipt = withModal((props: Props) => {
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
   const handleSaveReceipt = useCallback(() => {
-    console.log(note);
     setIsSaving(true);
     setTimeout(() => {
       let receiptToCreate: any = {
@@ -353,7 +346,7 @@ export const CreateReceipt = withModal((props: Props) => {
                             textDecorationColor: colors.primary,
                           },
                     )}>
-                    {customer.name ? customer.name : 'Add Customer Details'}
+                    {customer?.name ? customer.name : 'Add Customer Details'}
                   </Text>
                 </View>
               </Touchable>

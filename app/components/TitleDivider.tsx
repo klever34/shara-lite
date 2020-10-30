@@ -14,15 +14,15 @@ export const TitleDivider = ({
     <View style={applyStyles('mb-md flex-row justify-space-between', style)}>
       <View
         style={applyStyles({
+          flex: 1,
           height: 10,
-          width: '33%',
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-50'],
         })}
       />
       <View
-        style={applyStyles({
-          width: '33%',
+        style={applyStyles('mx-sm', {
+          width: 'auto',
         })}>
         <Text
           style={applyStyles('text-400 text-center text-uppercase', {
@@ -33,8 +33,8 @@ export const TitleDivider = ({
       </View>
       <View
         style={applyStyles({
+          flex: 1,
           height: 10,
-          width: '33%',
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-50'],
         })}

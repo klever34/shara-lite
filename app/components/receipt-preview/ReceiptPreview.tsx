@@ -75,6 +75,7 @@ export const ReceiptPreview = withModal(
 
     const hasCustomer = customer?.name;
     const creditDueDate = receipt?.dueDate;
+    const receiptDate = receipt?.created_at ?? new Date();
     const businessInfo = getAuthService().getBusinessInfo();
     const hasCustomerMobile = customer?.mobile;
     const allPayments = receipt ? getAllPayments({receipt}) : [];
@@ -295,7 +296,7 @@ export const ReceiptPreview = withModal(
           );
           await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
           await BluetoothEscposPrinter.printText(
-            `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
+            `Date: ${format(receiptDate, 'dd/MM/yyyy, hh:mm:a')}\n`,
             {},
           );
           await BluetoothEscposPrinter.printerAlign(
@@ -393,6 +394,7 @@ export const ReceiptPreview = withModal(
         }
       },
       [
+        receiptDate,
         printer,
         customer,
         businessInfo.name,
@@ -494,12 +496,12 @@ export const ReceiptPreview = withModal(
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
         })}>
-        {!receipt?.isPending && (
-          <View style={applyStyles('px-xl mb-md')}>
+        {receipt && !receipt?.isPending && (
+          <View>
             {!receipt?.is_cancelled && !hasCustomer && (
               <Touchable onPress={handleOpenContactList}>
                 <View
-                  style={applyStyles('center px-lg', {
+                  style={applyStyles('center px-lg mx-xl mb-md', {
                     height: 40,
                     borderRadius: 4,
                     alignSelf: 'flex-start',

@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.3.9-feature.v3-design-home+build.4180",
+  "version": "0.3.11-feature.v3-design-home+build.4180",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -48,6 +48,7 @@
     "react-native": "0.63.3",
     "react-native-background-fetch": "^3.1.0",
     "react-native-bluetooth-escpos-printer": "^0.0.5",
+    "react-native-check-app-install": "^0.0.5",
     "react-native-config": "^1.2.1",
     "react-native-contacts": "^5.2.3",
     "react-native-country-picker-modal": "^2.0.0",
