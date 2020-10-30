@@ -75,6 +75,7 @@ export const ReceiptPreview = withModal(
 
     const hasCustomer = customer?.name;
     const creditDueDate = receipt?.dueDate;
+    const receiptDate = receipt?.created_at ?? new Date();
     const businessInfo = getAuthService().getBusinessInfo();
     const hasCustomerMobile = customer?.mobile;
     const allPayments = receipt ? getAllPayments({receipt}) : [];
@@ -295,7 +296,7 @@ export const ReceiptPreview = withModal(
           );
           await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
           await BluetoothEscposPrinter.printText(
-            `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
+            `Date: ${format(receiptDate, 'dd/MM/yyyy, hh:mm:a')}\n`,
             {},
           );
           await BluetoothEscposPrinter.printerAlign(
@@ -393,6 +394,7 @@ export const ReceiptPreview = withModal(
         }
       },
       [
+        receiptDate,
         printer,
         customer,
         businessInfo.name,
