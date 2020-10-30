@@ -28,18 +28,30 @@ workflows:
 #                - bugfix/google-play-aab-deploy
       - fastlane:
           context: shara-test
-          lane: internal
-          packageName: co.shara.app.test
+          lane: testlab
+          testBuild: true
           productFlavor: dev
           env: test
-          testBuild: false
           requires:
-            - checkout_code
             - test
           filters:
             branches:
               only:
                 - bugfix/google-play-aab-deploy
+#      - fastlane:
+#          context: shara-test
+#          lane: internal
+#          packageName: co.shara.app.test
+#          productFlavor: dev
+#          env: test
+#          testBuild: false
+#          requires:
+#            - checkout_code
+#            - test
+#          filters:
+#            branches:
+#              only:
+#                - bugfix/google-play-aab-deploy
   testing-workflow:
     jobs:
       - checkout_code:
@@ -60,14 +72,14 @@ workflows:
       - test:
           requires:
             - checkout_code
-          filters:
+          filters: # TODO Remove
             branches:
               ignore:
                 - master
                 - develop
                 - discovery
                 - /^release.*/
-                - shara-v2-designs
+                - shara-v2-designs # TODO Remove
       - fastlane:
           context: shara-test
           lane: internal
@@ -78,14 +90,14 @@ workflows:
           requires:
             - checkout_code
             - test
-          filters:
+          filters: # TODO Remove
             branches:
               ignore:
                 - master
                 - develop
                 - discovery
                 - /^release.*/
-                - shara-v2-designs
+                - shara-v2-designs # TODO Remove
   discovery-workflow:
     jobs:
       - checkout_code:
