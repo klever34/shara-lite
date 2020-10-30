@@ -3,7 +3,7 @@ workflows:
   play-store-fix-workflow: # TODO Remove
     jobs:
       - checkout_code:
-          context: shara-beta
+          context: shara-test
           merged: false
           commit: false
           versioning: false
@@ -14,18 +14,18 @@ workflows:
       - test:
           requires:
             - checkout_code
-      - fastlane:
-          context: shara-beta
-          lane: play
-          track: internal
-          packageName: co.shara.app
-          productFlavor: production
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - bugfix/google-play-aab-deploy
+#      - fastlane:
+#          context: shara-beta
+#          lane: play
+#          track: internal
+#          packageName: co.shara.app
+#          productFlavor: production
+#          requires:
+#            - test
+#          filters:
+#            branches:
+#              only:
+#                - bugfix/google-play-aab-deploy
       - fastlane:
           context: shara-test
           lane: internal
