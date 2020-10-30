@@ -94,7 +94,14 @@ platform :android do
 
   desc "Deploy a new version to the Google Play lane " + ENV['GOOGLE_PLAY_TRACK']
   lane :play do
-    gradle(task: "clean " + ENV['GRADLE_TASK'])
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "bundle"
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
     upload_to_play_store(
       track: ENV['GOOGLE_PLAY_TRACK'],
       skip_upload_apk: true,
