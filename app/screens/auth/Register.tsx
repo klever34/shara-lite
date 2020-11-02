@@ -89,7 +89,6 @@ export const Register = () => {
 
   return (
     <AuthView
-      title="Sign Up"
       isLoading={loading}
       buttonTitle="Sign Up"
       onSubmit={handleSubmit}
@@ -113,11 +112,13 @@ export const Register = () => {
           </View>
         </View>
       </View>
-      <View style={applyStyles('pt-24', {paddingBottom: 200})}>
+      <View>
         <TouchableOpacity
-          style={styles.helpSection}
+          style={applyStyles('flex-row center')}
           onPress={() => navigation.replace('Login')}>
-          <Text style={styles.helpSectionText}>Already have an account? </Text>
+          <Text style={applyStyles('text-gray-100 text-base')}>
+            Already have an account?{' '}
+          </Text>
           <Text style={styles.helpSectionButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
@@ -126,60 +127,11 @@ export const Register = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 32,
-  },
-  backButton: {
-    marginBottom: 24,
-  },
-  heading: {
-    fontSize: 24,
-    paddingBottom: 8,
-    color: colors.black,
-    fontFamily: 'CocogoosePro-Regular',
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 27,
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-  },
-  form: {
-    paddingBottom: 32,
-  },
-  inputField: {
-    fontSize: 18,
-    width: '100%',
-  },
-  headerText: {
-    fontSize: 40,
-    marginBottom: 40,
-    color: '#d51a1a',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    fontFamily: 'CocogoosePro-Regular',
-  },
-  helpSection: {
-    marginBottom: 80,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  helpSectionText: {
-    fontSize: 16,
-    color: colors['gray-100'],
-    fontFamily: 'Rubik-Regular',
-  },
   helpSectionButtonText: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: 'Rubik-Regular',
     textDecorationStyle: 'solid',
     textDecorationLine: 'underline',
     textDecorationColor: colors.black,
-  },
-  inputFieldSpacer: {
-    paddingBottom: 18,
   },
 });

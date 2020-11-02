@@ -1,10 +1,9 @@
-import {applyStyles, colors} from '@/styles';
+import {applyStyles} from '@/styles';
 import React, {ReactNode} from 'react';
-import {ScrollView, Text, View, ViewStyle} from 'react-native';
+import {Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';
 
 export type AuthViewProps = {
-  title?: string;
   heading?: string;
   style?: ViewStyle;
   children: ReactNode;
@@ -16,7 +15,6 @@ export type AuthViewProps = {
 };
 
 export const AuthView = ({
-  title,
   style,
   heading,
   onSubmit,
@@ -28,15 +26,6 @@ export const AuthView = ({
 }: AuthViewProps) => {
   return (
     <>
-      <View
-        style={applyStyles('flex-row center bg-white pt-32 pb-24', {
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-10'],
-        })}>
-        <Text style={applyStyles('text-400 text-uppercase text-gray-300')}>
-          {title}
-        </Text>
-      </View>
       <ScrollView
         style={applyStyles('flex-1 py-32 bg-white')}
         keyboardShouldPersistTaps="always"
@@ -44,18 +33,31 @@ export const AuthView = ({
         <View style={applyStyles('mb-24 px-16 center')}>
           <Text
             style={applyStyles(
-              'text-2xl pb-8 text-black heading-700 text-center',
+              'text-2xl pb-8 text-black text-700 text-center',
             )}>
             {heading}
           </Text>
           <Text
             style={applyStyles(
-              'text-base leading-28 text-gray-300 text-400 text-center',
+              'text-sm leading-28 text-gray-300 text-400 text-center',
             )}>
             {description}
           </Text>
         </View>
         <View style={applyStyles('px-16', style)}>{children}</View>
+        <View style={applyStyles('flex-row center', {paddingBottom: 250})}>
+          <View
+            style={applyStyles({
+              width: '50%',
+              height: '50%',
+            })}>
+            <Image
+              resizeMode="contain"
+              style={applyStyles('w-full h-full')}
+              source={require('@/assets/images/emblem.png')}
+            />
+          </View>
+        </View>
       </ScrollView>
       {showButton && (
         <View

@@ -101,13 +101,12 @@ export const Login = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={applyStyles('flex-1 bg-white')}>
       <AuthView
-        title="Sign in"
         isLoading={loading}
         buttonTitle="Sign In"
         onSubmit={handleSubmit}
-        heading="Welcome Back!"
-        description="Sign in and enjoy all the features available on Shara.">
-        <View style={styles.form}>
+        heading="Welcome Back"
+        description="Sign in and enjoy all the features available on Shara. It only takes a few moments.">
+        <View style={applyStyles('pb-32')}>
           <View style={applyStyles('pb-16')}>
             <PhoneNumberField
               errorMessage={errors.mobile}
@@ -125,71 +124,38 @@ export const Login = () => {
             />
           </View>
         </View>
-        <View>
-          <TouchableOpacity
-            style={styles.helpSection}
-            onPress={() =>
-              navigation.navigate('ForgotPassword', {
-                mobile: {number: values.mobile, code: values.countryCode},
-              })
-            }>
-            <Text style={styles.helpSectionText}>Forgot your password? </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={applyStyles({paddingBottom: 200})}>
-          <TouchableOpacity
-            style={styles.helpSection}
-            onPress={() => navigation.replace('Register')}>
-            <Text style={styles.helpSectionText}>Don’t have an account? </Text>
+
+        <TouchableOpacity
+          style={applyStyles('flex-row center')}
+          onPress={() =>
+            navigation.navigate('ForgotPassword', {
+              mobile: {number: values.mobile, code: values.countryCode},
+            })
+          }>
+          <Text style={applyStyles('mb-12 text-gray-100', {fontSize: 16})}>
+            Forgot your password?
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={applyStyles('flex-row center')}
+          onPress={() => navigation.replace('Register')}>
+          <View style={applyStyles('flex-row')}>
+            <Text style={applyStyles('text-gray-100', {fontSize: 16})}>
+              Don’t have an account?{' '}
+            </Text>
             <Text style={styles.helpSectionButtonText}>Sign Up</Text>
-          </TouchableOpacity>
-        </View>
+          </View>
+        </TouchableOpacity>
       </AuthView>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 32,
-  },
-  backButton: {
-    marginBottom: 16,
-  },
-  headerSection: {
-    marginBottom: 48,
-  },
-  heading: {
-    fontSize: 24,
-    paddingBottom: 8,
-    color: colors.black,
-    fontFamily: 'CocogoosePro-Regular',
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 27,
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-  },
-  form: {
-    paddingBottom: 32,
-  },
-  helpSection: {
-    marginBottom: 20,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  helpSectionText: {
-    fontSize: 16,
-    color: colors['gray-100'],
-    fontFamily: 'Rubik-Regular',
-  },
   helpSectionButtonText: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: 'Rubik-Regular',
     textDecorationStyle: 'solid',
     textDecorationLine: 'underline',
     textDecorationColor: colors.black,

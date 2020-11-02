@@ -14,7 +14,6 @@ const ForgotPassword = () => {
   return (
     <AuthView
       showButton={false}
-      title="Forgot password"
       heading="Forgot your password?"
       description="Enter your mobile number to receive your OTP">
       <FormBuilder

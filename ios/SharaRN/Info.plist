@@ -81,6 +81,12 @@
 		<string>Rubik-Light.otf</string>
 		<string>Rubik-Medium.otf</string>
 		<string>Rubik-Regular.otf</string>
+		<string>Roboto-Bold.otf</string>
+		<string>Roboto-BoldItalic.otf</string>
+		<string>Roboto-Light.otf</string>
+		<string>Roboto-LightItalic.otf</string>
+		<string>Roboto-Regular.otf</string>
+		<string>Roboto-RegularItalic.otf</string>
 	</array>
 </dict>
 </plist>
