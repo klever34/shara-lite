@@ -111,7 +111,7 @@ export const Login = () => {
             errorMessage="Hello world"
             placeholder="Enter your number"
             label="What's your phone number?"
-            containerStyle={applyStyles('mb-16')}
+            containerStyle={applyStyles('mb-24')}
             onChangeText={(data) => onChangeMobile(data)}
             isInvalid={touched.mobile && !!errors.mobile}
             value={{number: values.mobile, code: values.countryCode}}

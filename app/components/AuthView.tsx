@@ -1,4 +1,4 @@
-import {applyStyles} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
 import {Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';
@@ -30,17 +30,18 @@ export const AuthView = ({
         style={applyStyles('flex-1 py-32 bg-white')}
         keyboardShouldPersistTaps="always"
         persistentScrollbar={true}>
-        <View style={applyStyles('mb-24 px-16 center')}>
+        <View style={applyStyles('mb-48 px-16 center')}>
           <Text
-            style={applyStyles(
-              'text-2xl pb-8 text-black text-700 text-center',
-            )}>
+            style={applyStyles('text-2xl pb-8 text-700 text-center', {
+              color: colors['gray-300'],
+            })}>
             {heading}
           </Text>
           <Text
-            style={applyStyles(
-              'text-sm leading-28 text-gray-300 text-400 text-center',
-            )}>
+            style={applyStyles('text-400 text-center', {
+              fontSize: 14,
+              color: colors['gray-300'],
+            })}>
             {description}
           </Text>
         </View>
