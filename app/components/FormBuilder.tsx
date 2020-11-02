@@ -1,22 +1,20 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import TextInput, {TextInputProps} from '@/components/TextInput';
-import {View} from 'react-native';
 import {Button, ButtonProps} from '@/components/Button';
-import {useAsync} from '@/services/api';
+import {PasswordField} from '@/components/PasswordField';
 import {
   PhoneNumberField,
   PhoneNumberFieldProps,
 } from '@/components/PhoneNumberField';
-import {
-  PasswordField,
-  PasswordFieldProps,
-} from '@/components/PasswordField';
+import TextInput, {TextInputProps} from '@/components/TextInput';
+import {useAsync} from '@/services/api';
 import {applyStyles} from '@/styles';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {View} from 'react-native';
+import {AppInputProps} from './AppInput';
 
 type FormFieldProps = {
   text: TextInputProps;
   mobile: PhoneNumberFieldProps;
-  password: PasswordFieldProps;
+  password: AppInputProps;
 };
 
 export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
@@ -102,7 +100,7 @@ export const FormBuilder = ({
               />
             );
           case 'password':
-            fieldProps = field.props as PasswordFieldProps;
+            fieldProps = field.props as AppInputProps;
             return (
               <PasswordField
                 {...fieldProps}
