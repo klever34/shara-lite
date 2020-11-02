@@ -4,6 +4,7 @@ import {Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';
 
 export type AuthViewProps = {
+  title?: string;
   heading?: string;
   style?: ViewStyle;
   children: ReactNode;
@@ -16,6 +17,7 @@ export type AuthViewProps = {
 
 export const AuthView = ({
   style,
+  title,
   heading,
   onSubmit,
   children,
@@ -26,6 +28,17 @@ export const AuthView = ({
 }: AuthViewProps) => {
   return (
     <>
+      {!!title && (
+        <View
+          style={applyStyles('center flex-row py-16 bg-white', {
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-10'],
+          })}>
+          <Text style={applyStyles('text-500 text-uppercase text-gray-200')}>
+            {title}
+          </Text>
+        </View>
+      )}
       <ScrollView
         style={applyStyles('flex-1 py-32 bg-white')}
         keyboardShouldPersistTaps="always"
@@ -38,15 +51,14 @@ export const AuthView = ({
             {heading}
           </Text>
           <Text
-            style={applyStyles('text-400 text-center', {
-              fontSize: 14,
+            style={applyStyles('text-400 text-center text-sm', {
               color: colors['gray-300'],
             })}>
             {description}
           </Text>
         </View>
         <View style={applyStyles('px-16', style)}>{children}</View>
-        <View style={applyStyles('flex-row center', {paddingBottom: 250})}>
+        <View style={applyStyles('flex-row center', {paddingBottom: 400})}>
           <View
             style={applyStyles({
               width: '50%',

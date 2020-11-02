@@ -89,6 +89,7 @@ export const Register = () => {
 
   return (
     <AuthView
+      title="Sign up"
       isLoading={loading}
       buttonTitle="Sign Up"
       onSubmit={handleSubmit}

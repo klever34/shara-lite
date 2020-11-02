@@ -101,6 +101,7 @@ export const Login = () => {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={applyStyles('flex-1 bg-white')}>
       <AuthView
+        title="Sign In"
         isLoading={loading}
         buttonTitle="Sign In"
         onSubmit={handleSubmit}

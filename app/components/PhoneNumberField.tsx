@@ -50,7 +50,9 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     });
   };
 
-  const pickerStyles = isEmpty(country) ? {top: 0} : {top: -3};
+  const pickerStyles = !countryCode2
+    ? applyStyles({top: 0})
+    : applyStyles({top: -3});
 
   return (
     <AppInput
