@@ -224,7 +224,9 @@ export const ReceiptImage = (props: Props) => {
                   {creditDueDate && (
                     <View style={applyStyles('flex-row items-center mb-md')}>
                       <View style={applyStyles('pr-sm')}>
-                        <Text style={applyStyles('text-400')}>Collect on:</Text>
+                        <Text style={applyStyles('text-400')}>
+                          Payment due:
+                        </Text>
                       </View>
                       <View
                         style={applyStyles('p-sm', {

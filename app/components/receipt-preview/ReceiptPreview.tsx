@@ -97,19 +97,22 @@ export const ReceiptPreview = withModal(
       totalAmountPaid,
     )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
       creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
-    }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
+    }. Don't forget to make payment.\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const receiptShareMessage = `Hi ${
       customer?.name ?? ''
     }, thank you for your recent purchase of ${
       receipt?.items?.length
-    } item(s) from ${businessInfo.name}.  You paid ${amountWithCurrency(
+    } item(s) from ${businessInfo.name}. You paid ${amountWithCurrency(
       totalAmountPaid,
-    )} and owe ${amountWithCurrency(creditAmountLeft)} ${
+    )} and owe ${amountWithCurrency(creditAmountLeft)}${
       creditDueDate
-        ? `(which is due on ${format(new Date(creditDueDate), 'MMM dd, yyyy')})`
+        ? ` (which is due on ${format(
+            new Date(creditDueDate),
+            'MMM dd, yyyy',
+          )})`
         : ''
-    }. Thank you.\n\nPowered by Shara for free.\nhttp://shara.co`;
+    }. Thank you.\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
