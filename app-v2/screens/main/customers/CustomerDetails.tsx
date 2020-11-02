@@ -117,7 +117,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
               onPress: () => {
                 const closeModal = openModal('search', {
                   items: customer.receipts ?? [],
-                  renderItem: ({item, onPress}) => {
+                  renderItem: ({item, onPress}: any) => {
                     return (
                       <ReceiptListItem
                         receipt={item}
@@ -130,7 +130,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                       />
                     );
                   },
-                  setFilter: (item: IReceipt, query) => {
+                  setFilter: (item: IReceipt, query: string) => {
                     // TODO: Improve search algorithm
                     return (
                       (prepareValueForSearch(item.total_amount).search(query) ??

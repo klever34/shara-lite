@@ -216,7 +216,7 @@ export const CustomersScreen = withModal(
                       ...((myCustomers as unknown) as CustomerListItem[]),
                       ...phoneContacts,
                     ],
-                    renderItem: ({item, onPress}) => {
+                    renderItem: ({item, onPress}: any) => {
                       return renderCustomerListItem({
                         item: item as CustomerListItem,
                         onPress: () => {
@@ -225,7 +225,7 @@ export const CustomersScreen = withModal(
                         },
                       });
                     },
-                    setFilter: (item: ICustomer, query) => {
+                    setFilter: (item: ICustomer, query: string) => {
                       // TODO: Improve search algorithm
                       return (
                         (prepareValueForSearch(item.name).search(query) ??
