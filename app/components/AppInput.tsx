@@ -1,5 +1,5 @@
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useState} from 'react';
 import {
   TextInput,
   View,
@@ -34,6 +34,9 @@ export const AppInput = (props: AppInputProps) => {
     containerStyle,
     ...rest
   } = props;
+  let [bgStyle, setBgStyle] = useState({
+    backgroundColor: colors['gray-10'],
+  });
   const withLeftIconStyle = leftIcon
     ? applyStyles('pl-56')
     : applyStyles('pl-16');
@@ -43,6 +46,9 @@ export const AppInput = (props: AppInputProps) => {
 
   const handleFocus = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+      setBgStyle({
+        backgroundColor: colors.white,
+      });
       onFocus && onFocus(e);
     },
     [onFocus],
@@ -50,6 +56,9 @@ export const AppInput = (props: AppInputProps) => {
 
   const handleBlur = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+      setBgStyle({
+        backgroundColor: colors['gray-10'],
+      });
       onBlur && onBlur(e);
     },
     [onBlur],
@@ -92,10 +101,11 @@ export const AppInput = (props: AppInputProps) => {
             {
               height: 56,
               fontSize: 16,
+              borderWidth: 1.5,
               borderRadius: 8,
               borderColor: colors['gray-10'],
-              backgroundColor: colors['gray-10'],
             },
+            bgStyle,
             withLeftIconStyle,
             withRightIconStyle,
             style,
