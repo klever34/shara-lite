@@ -1,6 +1,5 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {applyStyles, colors} from '@/styles';
-import {isEmpty} from 'lodash';
 import React, {ReactNode} from 'react';
 import {View} from 'react-native';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
