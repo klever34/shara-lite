@@ -20,6 +20,7 @@ import {CustomersScreen} from './customers';
 import {ProductsScreen} from './products';
 import {MoreScreen} from './more';
 import {applyStyles} from 'app-v3/styles';
+import {HomeProvider} from '@/components';
 
 export type MainNavParamList = {
   Receipts: undefined;
@@ -87,69 +88,76 @@ const MainScreens = () => {
 
   return (
     <PubNubProvider client={pubNubClient}>
-      <MainNav.Navigator
-        initialRouteName="Receipts"
-        tabBarOptions={{
-          labelStyle: {fontFamily: 'Rubik-Regular'},
-          activeTintColor: colors['red-200'],
-          inactiveTintColor: colors['gray-50'],
-          style: applyStyles('h-64'),
-          tabStyle: applyStyles('py-10'),
-        }}>
-        <MainNav.Screen
-          name="Receipts"
-          component={ReceiptsScreen}
-          options={{
-            tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Receipts</TabBarLabel>
-            ),
-            tabBarIcon: ({color}) => (
-              <Icon
-                type="feathericons"
-                name="file-text"
-                size={24}
-                color={color}
-              />
-            ),
-          }}
-        />
-        <MainNav.Screen
-          name="CustomersTab"
-          component={CustomersScreen}
-          options={{
-            tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Customers</TabBarLabel>
-            ),
-            tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="users" size={24} color={color} />
-            ),
-          }}
-        />
-        <MainNav.Screen
-          name="ProductsTab"
-          component={ProductsScreen}
-          options={{
-            tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Products</TabBarLabel>
-            ),
-            tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="box" size={24} color={color} />
-            ),
-          }}
-        />
-        <MainNav.Screen
-          name="MoreTab"
-          component={MoreScreen}
-          options={{
-            tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>More</TabBarLabel>
-            ),
-            tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="menu" size={24} color={color} />
-            ),
-          }}
-        />
-      </MainNav.Navigator>
+      <HomeProvider>
+        <MainNav.Navigator
+          initialRouteName="Receipts"
+          tabBarOptions={{
+            labelStyle: {fontFamily: 'Rubik-Regular'},
+            activeTintColor: colors['red-200'],
+            inactiveTintColor: colors['gray-50'],
+            style: applyStyles('h-64'),
+            tabStyle: applyStyles('py-10'),
+          }}>
+          <MainNav.Screen
+            name="Receipts"
+            component={ReceiptsScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>Receipts</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon
+                  type="feathericons"
+                  name="file-text"
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <MainNav.Screen
+            name="CustomersTab"
+            component={CustomersScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>Customers</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon
+                  type="feathericons"
+                  name="users"
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
+          />
+          <MainNav.Screen
+            name="ProductsTab"
+            component={ProductsScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>Products</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon type="feathericons" name="box" size={24} color={color} />
+              ),
+            }}
+          />
+          <MainNav.Screen
+            name="MoreTab"
+            component={MoreScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>More</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon type="feathericons" name="menu" size={24} color={color} />
+              ),
+            }}
+          />
+        </MainNav.Navigator>
+      </HomeProvider>
     </PubNubProvider>
   );
 };

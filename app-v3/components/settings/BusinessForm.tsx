@@ -9,8 +9,9 @@ import ImagePicker, {
 } from 'react-native-image-picker';
 import * as yup from 'yup';
 import {Button} from '../Button';
-import {FloatingLabelInput, PhoneNumberField} from 'app-v3/components';
+import {FloatingLabelInput} from '../FloatingLabelInput';
 import {Icon} from '../Icon';
+import {PhoneNumberField} from '../PhoneNumberField';
 import Touchable from '../Touchable';
 import {applyStyles} from 'app-v3/styles';
 

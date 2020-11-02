@@ -35,6 +35,6 @@ export const ProductsScreen = () => {
   );
 };
 
-export * from './ItemsTab';
+export * from './ProductListScreen';
 export * from './ManageItems';
 export * from './ActivityTab';

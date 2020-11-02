@@ -2,6 +2,8 @@ import {getCustomerWhatsappNumber} from 'app-v3/helpers/utils';
 import {useCallback} from 'react';
 import {Alert} from 'react-native';
 import Share from 'react-native-share';
+//@ts-ignore
+import {AppInstalledChecker} from 'react-native-check-app-install';
 import {getAuthService} from '..';
 
 export type ShareHookProps = {
@@ -61,6 +63,7 @@ export const useShare = ({
   }, [image, message, subject, title]);
 
   const handleWhatsappShare = useCallback(async () => {
+    let isWhatsappInstalled, isWhatsappBusinessInstalled;
     const mobile = recipient;
     const whatsAppNumber = getCustomerWhatsappNumber(mobile, userCountryCode);
     const shareOptions = {
@@ -82,9 +85,34 @@ export const useShare = ({
       );
     } else {
       try {
-        await Share.shareSingle(shareOptions);
+        isWhatsappInstalled = await AppInstalledChecker.checkPackageName(
+          'com.whatsapp',
+        );
+        isWhatsappBusinessInstalled = await AppInstalledChecker.checkPackageName(
+          'com.whatsapp.w4b',
+        );
       } catch (e) {
-        Alert.alert('Error', errorMessages[e.error]);
+        console.log(e);
+      }
+      if (isWhatsappInstalled) {
+        try {
+          await Share.shareSingle(shareOptions);
+        } catch (e) {
+          Alert.alert('Error', errorMessages[e.error]);
+        }
+      }
+      if (isWhatsappBusinessInstalled) {
+        try {
+          await Share.open(shareOptions);
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      if (!isWhatsappInstalled && !isWhatsappBusinessInstalled) {
+        Alert.alert(
+          'Info',
+          'Please install Whatsapp or Whatsapp for Business to share receipt via Whatsapp',
+        );
       }
     }
   }, [image, message, recipient, title, userCountryCode]);

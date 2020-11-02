@@ -1,5 +1,5 @@
 import {useIPGeolocation} from 'app-v3/services/ip-geolocation/provider';
-import {colors} from 'app-v3/styles';
+import {applyStyles, colors} from 'app-v3/styles';
 import isEmpty from 'lodash/isEmpty';
 import React, {ReactNode} from 'react';
 import {
@@ -14,7 +14,6 @@ import CountryPicker, {Country} from 'react-native-country-picker-modal';
 import {FlagButtonProps} from 'react-native-country-picker-modal/lib/FlagButton';
 import {FloatingLabelInputProps} from './FloatingLabelInput';
 import Icon from './Icon';
-import {applyStyles} from 'app-v3/styles';
 
 export type PhoneNumber = {
   code: string;

@@ -7,9 +7,8 @@ import {
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {colors} from 'app-v3/styles';
+import {applyStyles, colors} from 'app-v3/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
-import {applyStyles} from 'app-v3/styles';
 
 export type HeaderRightOption = {icon: string; onPress: () => void};
 export type HeaderRightMenuOption = {text: string; onSelect: () => void};

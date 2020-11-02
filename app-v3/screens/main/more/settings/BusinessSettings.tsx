@@ -21,15 +21,14 @@ export const BusinessSettings = () => {
   const user = authService.getUser();
   const businessInfo = authService.getBusinessInfo();
   const {name, id, mobile, address, country_code, profile_image} = businessInfo;
+  const code = country_code || callingCode;
   const businessMobile =
-    country_code && mobile?.startsWith(country_code)
-      ? mobile.replace(country_code, '')
-      : mobile;
+    code && mobile?.startsWith(code) ? mobile.replace(code, '') : mobile;
   const businessFormIntialValues = {
     name,
     address,
+    countryCode: code,
     mobile: businessMobile,
-    countryCode: country_code ?? callingCode,
     profileImageFile: {uri: profile_image?.url ?? ''},
   } as BusinessFormPayload;
 

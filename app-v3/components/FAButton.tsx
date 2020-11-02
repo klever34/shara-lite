@@ -1,9 +1,8 @@
 import React from 'react';
 import {StyleSheet, View, ViewStyle} from 'react-native';
-import {colors} from '../styles';
+import {applyStyles, colors} from '../styles';
 import Icon from './Icon';
 import Touchable from './Touchable';
-import {applyStyles} from 'app-v3/styles';
 
 export type FAButtonProps = {
   style?: ViewStyle;

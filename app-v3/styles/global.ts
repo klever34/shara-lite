@@ -108,10 +108,6 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
     fontSize: 12,
     lineHeight: 16,
   },
-  'text-xxs': {
-    fontSize: 10,
-    lineHeight: 16,
-  },
   'font-normal': {
     fontWeight: 'normal',
   },

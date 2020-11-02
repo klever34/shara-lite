@@ -19,8 +19,7 @@ import {RouteProp, useNavigation} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
 import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
-import {Alert, Text, TextStyle, View} from 'react-native';
-import ImagePicker, {ImagePickerOptions} from 'react-native-image-picker';
+import {Text, TextStyle, View} from 'react-native';
 import {StatusFilter} from 'types-v3/app';
 import {CustomersStackParamList} from 'app-v3/screens/main/customers';
 import {applyStyles} from 'app-v3/styles';
@@ -74,35 +73,6 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     [],
   );
 
-  const handleSnapReceipt = useCallback(
-    (callback: (imageUri: string) => void) => {
-      const options: ImagePickerOptions = {
-        noData: true,
-        maxWidth: 256,
-        maxHeight: 256,
-        mediaType: 'photo',
-        allowsEditing: true,
-      };
-      ImagePicker.launchCamera(options, (response) => {
-        if (response.didCancel) {
-          // do nothing
-        } else if (response.error) {
-          Alert.alert('Error', response.error);
-        } else {
-          const {uri} = response;
-          const extensionIndex = uri.lastIndexOf('.');
-          const extension = uri.slice(extensionIndex + 1);
-          const allowedExtensions = ['jpg', 'jpeg', 'png'];
-          if (!allowedExtensions.includes(extension)) {
-            return Alert.alert('Error', 'That file type is not allowed.');
-          }
-          callback(uri);
-        }
-      });
-    },
-    [],
-  );
-
   const handleOpenModal = useCallback(() => {
     const closeModal = openModal('full', {
       animationInTiming: 0.1,
@@ -111,11 +81,10 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         <CreateReceipt
           initialCustomer={customer}
           closeReceiptModal={closeModal}
-          onSnapReceipt={handleSnapReceipt}
         />
       ),
     });
-  }, [customer, handleSnapReceipt, openModal]);
+  }, [customer, openModal]);
 
   const handleError = useErrorHandler();
 
@@ -237,7 +206,6 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     <CustomerContext.Provider value={customer}>
       <ReceiptingContainer
         receipts={filteredReceipts}
-        onSnapReceipt={handleSnapReceipt}
         emptyStateText="You have not created any receipt for this customer"
         getReceiptItemLeftText={getReceiptItemLeftText}
         onCreateReceipt={handleOpenModal}
@@ -278,21 +246,27 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
             </Text>
           </View>
         </View>
-        <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
-          <View style={applyStyles('py-lg px-sm flex-row center')}>
-            {statusFilters.map((filterItem) => (
-              <FilterButton
-                {...filterItem}
-                key={filterItem.value}
-                style={applyStyles('mx-xs', {
-                  paddingVertical: 8,
-                  paddingHorizontal: 8,
-                })}
-                isChecked={filter === filterItem.value}
-              />
-            ))}
-          </View>
-        </FilterButtonGroup>
+        <View
+          style={applyStyles({
+            borderBottomWidth: 1,
+            borderBottomColor: colors['gray-20'],
+          })}>
+          <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
+            <View style={applyStyles('py-lg px-sm flex-row center')}>
+              {statusFilters.map((filterItem) => (
+                <FilterButton
+                  {...filterItem}
+                  key={filterItem.value}
+                  style={applyStyles('mx-xs', {
+                    paddingVertical: 8,
+                    paddingHorizontal: 8,
+                  })}
+                  isChecked={filter === filterItem.value}
+                />
+              ))}
+            </View>
+          </FilterButtonGroup>
+        </View>
       </ReceiptingContainer>
     </CustomerContext.Provider>
   );

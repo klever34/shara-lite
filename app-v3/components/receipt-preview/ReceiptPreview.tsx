@@ -72,6 +72,7 @@ export const ReceiptPreview = withModal(
 
     const hasCustomer = customer?.name;
     const creditDueDate = receipt?.dueDate;
+    const receiptDate = receipt?.created_at ?? new Date();
     const businessInfo = getAuthService().getBusinessInfo();
     const hasCustomerMobile = customer?.mobile;
     const allPayments = receipt ? getAllPayments({receipt}) : [];
@@ -93,19 +94,22 @@ export const ReceiptPreview = withModal(
       totalAmountPaid,
     )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
       creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
-    }. Don't forget to make payment.\n\nPowered by Shara for free.\nhttp://shara.co`;
+    }. Don't forget to make payment.\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const receiptShareMessage = `Hi ${
       customer?.name ?? ''
     }, thank you for your recent purchase of ${
       receipt?.items?.length
-    } item(s) from ${businessInfo.name}.  You paid ${amountWithCurrency(
+    } item(s) from ${businessInfo.name}. You paid ${amountWithCurrency(
       totalAmountPaid,
-    )} and owe ${amountWithCurrency(creditAmountLeft)} ${
+    )} and owe ${amountWithCurrency(creditAmountLeft)}${
       creditDueDate
-        ? `(which is due on ${format(new Date(creditDueDate), 'MMM dd, yyyy')})`
+        ? ` (which is due on ${format(
+            new Date(creditDueDate),
+            'MMM dd, yyyy',
+          )})`
         : ''
-    }. Thank you.\n\nPowered by Shara for free.\nhttp://shara.co`;
+    }. Thank you.\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
@@ -292,7 +296,7 @@ export const ReceiptPreview = withModal(
           );
           await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
           await BluetoothEscposPrinter.printText(
-            `Date: ${format(new Date(), 'dd/MM/yyyy, hh:mm:a')}\n`,
+            `Date: ${format(receiptDate, 'dd/MM/yyyy, hh:mm:a')}\n`,
             {},
           );
           await BluetoothEscposPrinter.printerAlign(
@@ -390,6 +394,7 @@ export const ReceiptPreview = withModal(
         }
       },
       [
+        receiptDate,
         printer,
         customer,
         businessInfo.name,
@@ -491,12 +496,12 @@ export const ReceiptPreview = withModal(
         style={applyStyles('flex-1', {
           backgroundColor: colors.white,
         })}>
-        {!receipt?.isPending && (
-          <View style={applyStyles('px-xl mb-md')}>
+        {receipt && !receipt?.isPending && (
+          <View>
             {!receipt?.is_cancelled && !hasCustomer && (
               <Touchable onPress={handleOpenContactList}>
                 <View
-                  style={applyStyles('center px-lg', {
+                  style={applyStyles('center px-lg mx-xl mb-md', {
                     height: 40,
                     borderRadius: 4,
                     alignSelf: 'flex-start',

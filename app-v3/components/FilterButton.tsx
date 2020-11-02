@@ -1,9 +1,8 @@
-import {colors} from 'app-v3/styles';
+import {applyStyles, colors} from 'app-v3/styles';
 import React, {useCallback} from 'react';
 import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import {useFilterButtonGroup} from './FilterButtonGroup';
 import Touchable from './Touchable';
-import {applyStyles} from 'app-v3/styles';
 
 type Props = {
   value: string;

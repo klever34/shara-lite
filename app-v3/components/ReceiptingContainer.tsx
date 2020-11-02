@@ -3,12 +3,11 @@ import Touchable from 'app-v3/components/Touchable';
 import {amountWithCurrency} from 'app-v3/helpers/utils';
 import {IReceipt} from 'app-v3/models/Receipt';
 import {getAllPayments} from 'app-v3/services/ReceiptService';
-import {colors} from 'app-v3/styles';
+import {applyStyles, colors} from 'app-v3/styles';
 import React, {ReactNode, useCallback} from 'react';
-import {Alert, SafeAreaView, Text, TextStyle, View} from 'react-native';
+import {SafeAreaView, Text, TextStyle, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 import {HomeContainer} from './HomeContainer';
-import {applyStyles} from 'app-v3/styles';
 
 type ReceiptingContainerProps = {
   handleListItemSelect?: (receiptId: IReceipt['_id']) => void;
@@ -20,20 +19,16 @@ type ReceiptingContainerProps = {
   receipts?: IReceipt[];
   children: ReactNode;
   onCreateReceipt?(): void;
-  onSnapReceipt?(callback: (imageUri: string) => void): void;
 };
 
 export const ReceiptingContainer = ({
   receipts,
   children,
-  // onSnapReceipt,
   emptyStateText,
   onCreateReceipt,
   handleListItemSelect,
   getReceiptItemLeftText,
 }: ReceiptingContainerProps) => {
-  // const realm = useRealm();
-
   const renderReceiptItem = useCallback(
     ({item}: {item: IReceipt}) => {
       return (
@@ -51,29 +46,10 @@ export const ReceiptingContainer = ({
     onCreateReceipt && onCreateReceipt();
   }, [onCreateReceipt]);
 
-  const handleSnapReceipt = useCallback(() => {
-    Alert.alert('Coming Soon', 'This feature is coming in the next update');
-    // onSnapReceipt?.((uri) =>
-    //   saveReceipt({
-    //     realm,
-    //     tax: 0,
-    //     payments: [],
-    //     amountPaid: 0,
-    //     totalAmount: 0,
-    //     creditAmount: 0,
-    //     receiptItems: [],
-    //     local_image_url: uri,
-    //     customer: {} as ICustomer,
-    //   }),
-    // );
-  }, []);
-
   return (
     <SafeAreaView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <HomeContainer
-        onSnapReceipt={handleSnapReceipt}
-        onCreateReceipt={handleCreateReceipt}>
+      <HomeContainer onCreateReceipt={handleCreateReceipt}>
         {children}
         <FlatList
           data={receipts}
@@ -154,7 +130,7 @@ export const ReceiptListItem = ({
       }>
       <View
         style={applyStyles('px-md flex-row center justify-between', {
-          height: 50,
+          height: 52,
           borderBottomWidth: 1,
           borderBottomColor: colors['gray-20'],
         })}>

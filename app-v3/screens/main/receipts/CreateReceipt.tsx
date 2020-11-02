@@ -29,7 +29,7 @@ import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
-import {AddCustomer} from '../customers';
+import {AddCustomer} from '../customers/CustomerListScreen';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
 import {applyStyles} from 'app-v3/styles';
 
@@ -37,17 +37,10 @@ type Props = {
   receipt?: IReceipt;
   closeReceiptModal: () => void;
   initialCustomer?: ICustomer;
-  onSnapReceipt?(callback: (imageUri: string) => void): void;
 } & ModalWrapperFields;
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {
-    receipt,
-    openModal,
-    // onSnapReceipt,
-    initialCustomer,
-    closeReceiptModal,
-  } = props;
+  const {receipt, openModal, initialCustomer, closeReceiptModal} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
@@ -65,7 +58,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>(
     receipt?.items || [],
   );
-  const [customer, setCustomer] = useState<ICustomer>(
+  const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer || ({} as ICustomer),
   );
   const [
@@ -217,6 +210,7 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleOpenReceiptPreviewModal = useCallback(
     (item: IReceipt) => {
+      setCustomer(undefined);
       closeReceiptModal();
       navigation.navigate('SalesDetails', {id: item._id});
     },
@@ -353,7 +347,7 @@ export const CreateReceipt = withModal((props: Props) => {
                             textDecorationColor: colors.primary,
                           },
                     )}>
-                    {customer.name ? customer.name : 'Add Customer Details'}
+                    {customer?.name ? customer.name : 'Add Customer Details'}
                   </Text>
                 </View>
               </Touchable>

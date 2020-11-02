@@ -5,11 +5,10 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {colors} from 'app-v3/styles';
+import {applyStyles, colors} from 'app-v3/styles';
 import {Icon, IconProps} from 'app-v3/components/Icon';
 import Touchable from 'app-v3/components/Touchable';
 import {FloatingLabelInput} from 'app-v3/components/FloatingLabelInput';
-import {applyStyles} from 'app-v3/styles';
 
 export type TextInputProps = Omit<RNTextInputProps, 'style'> & {
   icon?: IconProps & {

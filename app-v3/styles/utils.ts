@@ -17,6 +17,7 @@ export const applyStyles = (
     }
     return {...acc, ...curr};
   }, {});
+
 export const appendPrefix = (
   prefix: string,
   values: {[key: string]: {[key: string]: string | number}},

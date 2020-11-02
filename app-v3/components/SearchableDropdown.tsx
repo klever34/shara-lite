@@ -8,11 +8,10 @@ import {
   View,
   TextInputProps,
 } from 'react-native';
-import {colors} from 'app-v3/styles';
+import {applyStyles, colors} from 'app-v3/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import debounce from 'lodash/debounce';
-import {applyStyles} from 'app-v3/styles';
 
 export type SearchableDropdownProps<T extends any = any> = {
   items: T[];

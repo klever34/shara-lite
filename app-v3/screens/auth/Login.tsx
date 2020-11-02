@@ -10,7 +10,7 @@ import {useIPGeolocation} from 'app-v3/services/ip-geolocation/provider';
 import {useAppNavigation} from 'app-v3/services/navigation';
 import {initLocalRealm} from 'app-v3/services/realm';
 import {RealmContext} from 'app-v3/services/realm/provider';
-import {colors} from 'app-v3/styles';
+import {applyStyles, colors} from 'app-v3/styles';
 import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
@@ -20,7 +20,6 @@ import {
   getApiService,
   getRealmService,
 } from 'app-v3/services';
-import {applyStyles} from 'app-v3/styles';
 
 type Fields = {
   mobile: string;
