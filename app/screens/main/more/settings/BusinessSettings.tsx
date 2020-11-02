@@ -1,9 +1,5 @@
 import {AuthView, BusinessForm, BusinessFormPayload} from '@/components';
-import {
-  getAnalyticsService,
-  getApiService,
-  getAuthService,
-} from '@/services';
+import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import React, {useCallback, useState} from 'react';

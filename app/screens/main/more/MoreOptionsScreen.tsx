@@ -14,9 +14,13 @@ import {RealmContext} from '@/services/realm/provider';
 import {useErrorHandler} from '@/services/error-boundary';
 import {getAnalyticsService} from '@/services';
 import {version} from '../../../../package.json';
+import {MoreStackParamList} from '.';
+import {MainStackParamList} from '..';
 
 export const MoreOptionsScreen = () => {
-  const navigation = useAppNavigation();
+  const navigation = useAppNavigation<
+    MainStackParamList & MoreStackParamList
+  >();
   const user = getAuthService().getUser();
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -57,14 +61,18 @@ export const MoreOptionsScreen = () => {
     });
   }, [navigation]);
 
-  const onEditBusinessSettings = useCallback(() => {}, []);
+  const onEditBusinessSettings = useCallback(() => {
+    navigation.navigate('BusinessSettings');
+  }, [navigation]);
 
   const moreOptions = useMemo(() => {
     return [
       {
         title: 'Profile Settings',
         icon: 'user',
-        onPress: () => {},
+        onPress: () => {
+          navigation.navigate('UserProfileSettings');
+        },
       },
       {
         title: 'Business Settings',
@@ -74,7 +82,9 @@ export const MoreOptionsScreen = () => {
       {
         title: 'Reports',
         icon: 'eye',
-        onPress: () => {},
+        onPress: () => {
+          navigation.navigate('Reports');
+        },
       },
       {
         title: 'Reminder Settings',
@@ -92,7 +102,7 @@ export const MoreOptionsScreen = () => {
         onPress: () => {},
       },
     ];
-  }, [onEditBusinessSettings]);
+  }, [navigation, onEditBusinessSettings]);
 
   const {logoutFromRealm} = useContext(RealmContext);
   const handleError = useErrorHandler();

@@ -2,17 +2,9 @@ import React from 'react';
 import {colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
 import {MoreOptionsScreen} from './MoreOptionsScreen';
-import {ReportsScreen} from '@/screens/main/more/reports';
-import {
-  BusinessSettings,
-  UserProfileSettings,
-} from '@/screens/main/more/settings';
 
 export type MoreStackParamList = {
   MoreOptions: undefined;
-  BusinessSettings: undefined;
-  Reports: undefined;
-  UserProfileSettings: undefined;
 };
 
 const MoreStack = createStackNavigator<MoreStackParamList>();
@@ -32,23 +24,6 @@ export const MoreScreen = () => {
         headerTintColor: colors['gray-300'],
       }}>
       <MoreStack.Screen name="MoreOptions" component={MoreOptionsScreen} />
-      <MoreStack.Screen
-        name="BusinessSettings"
-        component={BusinessSettings}
-        options={{headerShown: false}}
-      />
-      <MoreStack.Screen
-        name="Reports"
-        component={ReportsScreen}
-        options={{
-          title: 'Reports',
-        }}
-      />
-      <MoreStack.Screen
-        name="UserProfileSettings"
-        component={UserProfileSettings}
-        options={{headerShown: false}}
-      />
     </MoreStack.Navigator>
   );
 };
