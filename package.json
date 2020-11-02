@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.3.13-feature.v3-design-auth-screens+build.4271",
+  "version": "0.3.13-feature.v3-design-auth-screens+build.4276",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
