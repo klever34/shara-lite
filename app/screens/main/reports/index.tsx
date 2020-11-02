@@ -71,7 +71,7 @@ export const ReportsScreen = () => {
         <Button
           variantColor="red"
           onPress={handleExport}
-          title="Export to xlsx"
+          title="Export to Excel"
           style={applyStyles({
             marginBottom: 24,
           })}
