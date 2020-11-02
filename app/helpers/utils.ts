@@ -2,31 +2,12 @@ import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
 import promiseRetry from 'promise-retry';
 import addDays from 'date-fns/addDays';
-import {globalStyles} from '@/styles';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
-import {TextStyle, ViewStyle} from 'react-native';
 import {getAuthService} from '@/services';
-import {Falsy} from 'types/app';
 import {ReactElement} from 'react';
 
 export const generateUniqueId = () => uuidV4();
-
-export const applyStyles = (
-  ...styles: ({[key: string]: any} | ViewStyle | TextStyle | string | Falsy)[]
-): {[key: string]: any} =>
-  styles.reduce<{[key: string]: any}>((acc, curr) => {
-    if (typeof curr === 'string') {
-      const classNames = curr.split(' ');
-      if (!classNames.length) {
-        return acc;
-      } else if (classNames.length === 1) {
-        return {...acc, ...globalStyles[classNames[0]]};
-      }
-      return applyStyles(...classNames);
-    }
-    return {...acc, ...curr};
-  }, {});
 
 export const numberWithCommas = (x: number | undefined) =>
   x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';

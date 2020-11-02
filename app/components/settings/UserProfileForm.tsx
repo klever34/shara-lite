@@ -1,4 +1,3 @@
-import {applyStyles} from '@/helpers/utils';
 import {colors} from '@/styles';
 import {useFormik} from 'formik';
 import React from 'react';
@@ -7,6 +6,7 @@ import {User} from 'types/app';
 import {Button} from '../Button';
 import {FloatingLabelInput} from '../FloatingLabelInput';
 import {PhoneNumberField} from '../PhoneNumberField';
+import {applyStyles} from '@/styles';
 
 export type UserProfileFormPayload = Pick<
   User,

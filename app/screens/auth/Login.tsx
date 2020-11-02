@@ -1,17 +1,25 @@
-import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
-import {applyStyles} from '@/helpers/utils';
+import {
+  AuthView,
+  Button,
+  PasswordField,
+  PhoneNumberField,
+} from '@/components';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {initLocalRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
-import {getAnalyticsService, getApiService, getRealmService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getRealmService,
+} from '@/services';
 
 type Fields = {
   mobile: string;

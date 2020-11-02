@@ -1,6 +1,5 @@
-import {applyStyles} from '@/helpers/utils';
 import BottomHalfModal from '@/modals/BottomHalfModal';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React, {useCallback} from 'react';
 import {Text, View} from 'react-native';
 import {Icon} from './Icon';

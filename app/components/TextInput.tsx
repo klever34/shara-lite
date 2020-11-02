@@ -5,8 +5,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import {colors} from '@/styles';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles, colors} from '@/styles';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {FloatingLabelInput} from '@/components/FloatingLabelInput';

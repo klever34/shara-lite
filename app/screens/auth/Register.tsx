@@ -1,6 +1,14 @@
-import {AuthView, Button, PasswordField, PhoneNumberField} from '@/components';
-import {applyStyles} from '@/helpers/utils';
-import {getAnalyticsService, getApiService, getRealmService} from '@/services';
+import {
+  AuthView,
+  Button,
+  PasswordField,
+  PhoneNumberField,
+} from '@/components';
+import {
+  getAnalyticsService,
+  getApiService,
+  getRealmService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
@@ -12,6 +20,7 @@ import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
+import {applyStyles} from '@/styles';
 
 type Fields = {
   mobile: string;

@@ -1,10 +1,10 @@
 import React, {ReactNode} from 'react';
 import {ScrollView, Text, View, ViewStyle} from 'react-native';
 import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/helpers/utils';
 import Icon from '@/components/Icon';
 import {useNavigation} from '@react-navigation/native';
 import {colors} from '@/styles';
+import {applyStyles} from '@/styles';
 
 export type AuthViewProps = {
   title: string;

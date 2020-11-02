@@ -1,6 +1,5 @@
-import {applyStyles} from '@/helpers/utils';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import isEmpty from 'lodash/isEmpty';
 import React, {ReactNode} from 'react';
 import {

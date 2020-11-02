@@ -1,5 +1,4 @@
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React, {useCallback} from 'react';
 import {StyleSheet, Text, View, ViewStyle} from 'react-native';
 import {useFilterButtonGroup} from './FilterButtonGroup';

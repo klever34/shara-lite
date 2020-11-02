@@ -1,14 +1,9 @@
 import EmptyState from '@/components/EmptyState';
-import {applyStyles} from '@/helpers/utils';
-import {ICustomer} from '@/models';
-import {IReceipt} from '@/models/Receipt';
-import {AddCustomer, CustomersScreen} from '@/screens/main/customers';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useRepeatBackToExit} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
 import {colors} from '@/styles';
-import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useContext, useEffect, useState} from 'react';
@@ -17,23 +12,22 @@ import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {getAuthService, getPubNubService} from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
-import CustomerDetails from './customers/CustomerDetails';
-import {SalesDetails} from './home';
-import HomeScreen from './HomeScreen';
-import {ManageItems} from './items';
-import {ReportsScreen} from './reports';
-import {BusinessSettings, UserProfileSettings} from './settings';
+import {applyStyles} from '@/styles';
+import {HomeScreen} from '@/screens/main/HomeScreen';
+import {createStackNavigator} from '@react-navigation/stack';
+import {
+  BusinessSettings,
+  UserProfileSettings,
+} from '@/screens/main/more/settings';
+import {ReportsScreen} from '@/screens/main/more/reports';
 
 export type MainStackParamList = {
   Home: undefined;
-  CustomerDetails: {customer: ICustomer};
+
+  // More
+  UserProfileSettings: undefined;
   BusinessSettings: undefined;
   Reports: undefined;
-  Customers: undefined;
-  AddCustomer: undefined;
-  UserProfileSettings: undefined;
-  SalesDetails: {receipt: IReceipt};
-  ManageItems: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -107,32 +101,18 @@ const MainScreens = () => {
           },
           headerTintColor: colors['gray-300'],
         }}>
-        <MainStack.Screen name="Home" component={HomeScreen} />
+        {/* Home */}
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
+
+        {/* More */}
         <MainStack.Screen
           name="BusinessSettings"
           component={BusinessSettings}
           options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="AddCustomer"
-          component={AddCustomer}
-          options={{
-            title: 'Add Customer',
-          }}
-        />
-        <MainStack.Screen
-          name="CustomerDetails"
-          component={CustomerDetails}
-          options={({route}) => ({
-            title: route.params.customer.name,
-          })}
-        />
-        <MainStack.Screen
-          name="Customers"
-          component={CustomersScreen}
-          options={{
-            title: 'My Customers',
-          }}
         />
         <MainStack.Screen
           name="Reports"
@@ -145,16 +125,6 @@ const MainScreens = () => {
           name="UserProfileSettings"
           component={UserProfileSettings}
           options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="SalesDetails"
-          component={SalesDetails}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="ManageItems"
-          component={ManageItems}
-          options={{title: 'Manage Items'}}
         />
       </MainStack.Navigator>
     </PubNubProvider>

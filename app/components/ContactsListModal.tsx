@@ -1,4 +1,3 @@
-import {applyStyles} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -22,6 +21,7 @@ import {Button} from './Button';
 import EmptyState from './EmptyState';
 import Icon from './Icon';
 import Touchable from './Touchable';
+import {applyStyles} from '@/styles';
 
 type Props<T> = {
   entity?: string;

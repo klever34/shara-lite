@@ -1,140 +1,97 @@
-import {HeaderRight, HomeMenu, HomeProvider} from '@/components';
+import React from 'react';
+import {SafeAreaView} from 'react-native';
+import {applyStyles, colors} from '@/styles';
+import {HomeProvider} from '@/components';
+import {ReceiptsScreen} from '@/screens/main/receipts';
+import {TabBarLabel} from '@/components/TabBarLabel';
 import {Icon} from '@/components/Icon';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {applyStyles} from '@/helpers/utils';
-import {getAnalyticsService, getAuthService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
-import {RealmContext} from '@/services/realm/provider';
-import {colors} from '@/styles';
-import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
-import {useNavigation} from '@react-navigation/native';
-import {
-  HeaderBackButton,
-  StackHeaderLeftButtonProps,
-} from '@react-navigation/stack';
-import React, {useCallback, useContext, useLayoutEffect} from 'react';
-import {Alert, SafeAreaView, Text, View} from 'react-native';
-import {ItemsTab, SalesTab} from './home';
+import {CustomersScreen} from '@/screens/main/customers';
+import {ProductsScreen} from '@/screens/main/products';
+import {MoreScreen} from '@/screens/main/more';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 
-type HomeTabParamList = {
-  SalesTab: undefined;
-  ItemsTab: undefined;
+export type MainNavParamList = {
+  Receipts: undefined;
+  CustomersTab: undefined;
+  ProductsTab: undefined;
+  MoreTab: undefined;
 };
 
-const HomeTab = createMaterialTopTabNavigator<HomeTabParamList>();
+const MainNav = createBottomTabNavigator<MainNavParamList>();
 
-type HomeScreenProps = ModalWrapperFields & {};
-
-const HomeScreen = ({openModal}: HomeScreenProps) => {
-  const {logoutFromRealm} = useContext(RealmContext);
-  const navigation = useNavigation();
-  const handleError = useErrorHandler();
-
-  const handleLogout = useCallback(async () => {
-    try {
-      const authService = getAuthService();
-      await authService.logOut();
-      getAnalyticsService().logEvent('logout').catch(handleError);
-      navigation.reset({
-        index: 0,
-        routes: [{name: 'Auth'}],
-      });
-      logoutFromRealm && logoutFromRealm();
-    } catch (e) {
-      handleError(e);
-    }
-  }, [handleError, navigation, logoutFromRealm]);
-  const user = getAuthService().getUser();
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerStyle: applyStyles('border-b-1', {
-        elevation: 0,
-      }),
-      headerLeft: (props: StackHeaderLeftButtonProps) => {
-        return (
-          <HeaderBackButton
-            {...props}
-            onPress={() => {
-              openModal('bottom-half', {
-                renderContent: (contentProps) => <HomeMenu {...contentProps} />,
-              });
-            }}
-            backImage={() => {
-              return (
-                <View style={applyStyles('flex-row center')}>
-                  <Icon
-                    type="material-icons"
-                    color={colors['gray-300']}
-                    name="dehaze"
-                    size={28}
-                    borderRadius={12}
-                  />
-                  <Text
-                    style={applyStyles(
-                      'pl-sm text-md text-gray-300 text-uppercase',
-                      {
-                        fontFamily: 'Rubik-Medium',
-                      },
-                    )}
-                    numberOfLines={1}>
-                    Menu
-                  </Text>
-                </View>
-              );
-            }}
-          />
-        );
-      },
-      headerTitle: () => null,
-      headerRight: () => (
-        <HeaderRight
-          menuOptions={[
-            {
-              text: 'Log out',
-              onSelect: () => {
-                Alert.alert('Log Out', 'Are you sure you want to log out?', [
-                  {
-                    text: 'CANCEL',
-                  },
-                  {
-                    text: 'OK',
-                    onPress: handleLogout,
-                  },
-                ]);
-              },
-            },
-          ]}
-        />
-      ),
-    });
-  }, [handleLogout, navigation, openModal, user]);
-
+export const HomeScreen = () => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <HomeProvider>
-        <HomeTab.Navigator
-          initialRouteName="SalesTab"
+        <MainNav.Navigator
+          initialRouteName="Receipts"
           tabBarOptions={{
-            indicatorContainerStyle: {backgroundColor: colors.white},
-            indicatorStyle: applyStyles('bg-primary h-4 rounded-2'),
             labelStyle: {fontFamily: 'Rubik-Regular'},
-            activeTintColor: colors.primary,
-            inactiveTintColor: colors['gray-300'],
+            activeTintColor: colors['red-200'],
+            inactiveTintColor: colors['gray-50'],
+            style: applyStyles('h-64'),
+            tabStyle: applyStyles('py-10'),
           }}>
-          <HomeTab.Screen
-            name="SalesTab"
-            component={SalesTab}
-            options={{title: 'Sales'}}
+          <MainNav.Screen
+            name="Receipts"
+            component={ReceiptsScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>Receipts</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon
+                  type="feathericons"
+                  name="file-text"
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
           />
-          <HomeTab.Screen
-            name="ItemsTab"
-            component={ItemsTab}
-            options={{title: 'Items'}}
+          <MainNav.Screen
+            name="CustomersTab"
+            component={CustomersScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>Customers</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon
+                  type="feathericons"
+                  name="users"
+                  size={24}
+                  color={color}
+                />
+              ),
+            }}
           />
-        </HomeTab.Navigator>
+          <MainNav.Screen
+            name="ProductsTab"
+            component={ProductsScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>Products</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon type="feathericons" name="box" size={24} color={color} />
+              ),
+            }}
+          />
+          <MainNav.Screen
+            name="MoreTab"
+            component={MoreScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>More</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon type="feathericons" name="menu" size={24} color={color} />
+              ),
+            }}
+          />
+        </MainNav.Navigator>
       </HomeProvider>
     </SafeAreaView>
   );
 };
-
-export default withModal(HomeScreen);

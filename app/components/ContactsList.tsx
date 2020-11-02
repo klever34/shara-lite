@@ -9,11 +9,11 @@ import {
 import {useRealm} from '@/services/realm';
 import {IContact} from '@/models';
 import Touchable from './Touchable';
-import {applyStyles} from '@/helpers/utils';
 import PlaceholderImage, {PlaceholderImageProps} from './PlaceholderImage';
 import {Collection} from 'realm';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
+import {applyStyles} from '@/styles';
 
 type ContactsListProps = Omit<
   FlatListProps<IContact>,

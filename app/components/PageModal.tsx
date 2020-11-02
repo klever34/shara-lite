@@ -1,5 +1,4 @@
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {Modal, Text, View} from 'react-native';
 import Icon from './Icon';

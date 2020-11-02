@@ -1,13 +1,16 @@
 import {dimensions, spacing, colors} from './variables';
 import {StyleSheet} from 'react-native';
+import {appendPrefix} from './utils';
 
 export const globalStyles: {[key: string]: any} = StyleSheet.create({
-  'flex-row': {
-    flexDirection: 'row',
-  },
-  'flex-col': {
-    flexDirection: 'column',
-  },
+  ...appendPrefix('flex', {
+    row: {
+      flexDirection: 'row',
+    },
+    col: {
+      flexDirection: 'column',
+    },
+  }),
   'justify-start': {
     justifyContent: 'flex-start',
   },
@@ -103,6 +106,10 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'text-xs': {
     fontSize: 12,
+    lineHeight: 16,
+  },
+  'text-xxs': {
+    fontSize: 10,
     lineHeight: 16,
   },
   'font-normal': {

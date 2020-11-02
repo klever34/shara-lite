@@ -7,14 +7,9 @@ import {
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {
-  amountWithCurrency,
-  applyStyles,
-  prepareValueForSearch,
-} from '@/helpers/utils';
+import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {MainStackParamList} from '@/screens/main';
-import {CreateReceipt} from '@/screens/main/receipt';
+import {CreateReceipt} from '@/screens/main/receipts';
 import {getAnalyticsService} from '@/services';
 import {CustomerContext} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -26,6 +21,8 @@ import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
 import {Text, TextStyle, View} from 'react-native';
 import {StatusFilter} from 'types/app';
+import {CustomersStackParamList} from '@/screens/main/customers';
+import {applyStyles} from '@/styles';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
@@ -36,7 +33,7 @@ const statusFilters: StatusFilter[] = [
 ];
 
 type CustomerDetailsProps = ModalWrapperFields & {
-  route: RouteProp<MainStackParamList, 'CustomerDetails'>;
+  route: RouteProp<CustomersStackParamList, 'CustomerDetails'>;
 };
 
 const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
@@ -249,7 +246,6 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
             </Text>
           </View>
         </View>
-
         <View
           style={applyStyles({
             borderBottomWidth: 1,
