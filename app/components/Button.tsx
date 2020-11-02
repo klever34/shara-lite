@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
   text: {
     fontSize: 16,
     fontFamily: 'Rubik-Regular',
-    textTransform: 'uppercase',
+    textTransform: 'capitalize',
   },
   whiteButtonText: {
     color: colors.primary,
@@ -157,7 +157,7 @@ export const baseButtonStyles = StyleSheet.create({
   },
   text: {
     color: colors.white,
-    textTransform: 'uppercase',
+    textTransform: 'capitalize',
     fontSize: 14,
     lineHeight: 20,
     fontFamily: 'Rubik-Light',

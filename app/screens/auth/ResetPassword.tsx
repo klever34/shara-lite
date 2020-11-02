@@ -12,7 +12,10 @@ const ResetPassword = () => {
   const {params} = useRoute<RouteProp<AuthStackParamList, 'ResetPassword'>>();
   const navigation = useAppNavigation();
   return (
-    <AuthView title="Reset your password">
+    <AuthView
+      title="Reset password"
+      heading="Reset your password"
+      showButton={false}>
       <FormBuilder
         fields={{
           otp: {

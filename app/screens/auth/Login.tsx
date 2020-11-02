@@ -1,9 +1,5 @@
-import {
-  AuthView,
-  Button,
-  PasswordField,
-  PhoneNumberField,
-} from '@/components';
+import {AuthView, PasswordField, PhoneNumberField} from '@/components';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
@@ -13,13 +9,16 @@ import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import * as yup from 'yup';
 import {
-  getAnalyticsService,
-  getApiService,
-  getRealmService,
-} from '@/services';
+  Alert,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import * as yup from 'yup';
 
 type Fields = {
   mobile: string;
@@ -98,51 +97,55 @@ export const Login = () => {
   const navigation = useAppNavigation();
 
   return (
-    <AuthView title="Welcome Back!" description="Sign in to your account.">
-      <View style={styles.form}>
-        <View style={styles.inputField}>
-          <PhoneNumberField
-            errorMessage={errors.mobile}
-            isInvalid={touched.mobile && !!errors.mobile}
-            onChangeText={(data) => onChangeMobile(data)}
-            value={{number: values.mobile, code: values.countryCode}}
-          />
+    <KeyboardAvoidingView
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={applyStyles('flex-1 bg-white')}>
+      <AuthView
+        title="Sign in"
+        isLoading={loading}
+        buttonTitle="Sign In"
+        onSubmit={handleSubmit}
+        heading="Welcome Back!"
+        description="Sign in and enjoy all the features available on Shara.">
+        <View style={styles.form}>
+          <View style={applyStyles('pb-16')}>
+            <PhoneNumberField
+              errorMessage={errors.mobile}
+              isInvalid={touched.mobile && !!errors.mobile}
+              onChangeText={(data) => onChangeMobile(data)}
+              value={{number: values.mobile, code: values.countryCode}}
+            />
+          </View>
+          <View>
+            <PasswordField
+              value={values.password}
+              errorMessage={errors.password}
+              onChangeText={handleChange('password')}
+              isInvalid={touched.password && !!errors.password}
+            />
+          </View>
         </View>
-        <View style={styles.inputField}>
-          <PasswordField
-            value={values.password}
-            errorMessage={errors.password}
-            onChangeText={handleChange('password')}
-            isInvalid={touched.password && !!errors.password}
-          />
+        <View>
+          <TouchableOpacity
+            style={styles.helpSection}
+            onPress={() =>
+              navigation.navigate('ForgotPassword', {
+                mobile: {number: values.mobile, code: values.countryCode},
+              })
+            }>
+            <Text style={styles.helpSectionText}>Forgot your password? </Text>
+          </TouchableOpacity>
         </View>
-        <Button
-          title="Continue"
-          variantColor="red"
-          onPress={handleSubmit}
-          isLoading={loading}
-        />
-      </View>
-      <View style={applyStyles('mb-16')}>
-        <TouchableOpacity
-          style={styles.helpSection}
-          onPress={() =>
-            navigation.navigate('ForgotPassword', {
-              mobile: {number: values.mobile, code: values.countryCode},
-            })
-          }>
-          <Text style={styles.helpSectionText}>Forgot your password? </Text>
-        </TouchableOpacity>
-      </View>
-      <View>
-        <TouchableOpacity
-          style={styles.helpSection}
-          onPress={() => navigation.replace('Register')}>
-          <Text style={styles.helpSectionText}>Don’t have an account? </Text>
-          <Text style={styles.helpSectionButtonText}>Sign Up</Text>
-        </TouchableOpacity>
-      </View>
-    </AuthView>
+        <View style={applyStyles({paddingBottom: 200})}>
+          <TouchableOpacity
+            style={styles.helpSection}
+            onPress={() => navigation.replace('Register')}>
+            <Text style={styles.helpSectionText}>Don’t have an account? </Text>
+            <Text style={styles.helpSectionButtonText}>Sign Up</Text>
+          </TouchableOpacity>
+        </View>
+      </AuthView>
+    </KeyboardAvoidingView>
   );
 };
 
@@ -171,9 +174,6 @@ const styles = StyleSheet.create({
   },
   form: {
     paddingBottom: 32,
-  },
-  inputField: {
-    marginBottom: 24,
   },
   helpSection: {
     marginBottom: 20,

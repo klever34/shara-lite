@@ -1,26 +1,16 @@
-import {
-  AuthView,
-  Button,
-  PasswordField,
-  PhoneNumberField,
-} from '@/components';
-import {
-  getAnalyticsService,
-  getApiService,
-  getRealmService,
-} from '@/services';
+import {AuthView, PasswordField, PhoneNumberField} from '@/components';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {initLocalRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
-import {applyStyles} from '@/styles';
 
 type Fields = {
   mobile: string;
@@ -100,18 +90,20 @@ export const Register = () => {
   return (
     <AuthView
       title="Sign Up"
-      description="Create an account to do business faster and better.">
+      isLoading={loading}
+      buttonTitle="Sign Up"
+      onSubmit={handleSubmit}
+      heading="Get Started For Free"
+      description="Sign up and enjoy all the features available on Shara. It only takes a few moments.">
       <View>
-        <View style={applyStyles({marginBottom: 32})}>
-          <View style={applyStyles({paddingVertical: 18})}>
-            <PhoneNumberField
-              errorMessage={errors.mobile}
-              onChangeText={(data) => onChangeMobile(data)}
-              isInvalid={touched.mobile && !!errors.mobile}
-              value={{number: values.mobile, code: values.countryCode}}
-            />
-          </View>
-          <View style={styles.inputFieldSpacer}>
+        <View style={applyStyles('pb-16')}>
+          <PhoneNumberField
+            errorMessage={errors.mobile}
+            onChangeText={(data) => onChangeMobile(data)}
+            isInvalid={touched.mobile && !!errors.mobile}
+            value={{number: values.mobile, code: values.countryCode}}
+          />
+          <View>
             <PasswordField
               value={values.password}
               errorMessage={errors.password}
@@ -121,16 +113,7 @@ export const Register = () => {
           </View>
         </View>
       </View>
-      <View>
-        <Button
-          variantColor="red"
-          isLoading={loading}
-          onPress={handleSubmit}
-          title="Create an account"
-          style={applyStyles({
-            marginBottom: 24,
-          })}
-        />
+      <View style={applyStyles('pt-24', {paddingBottom: 200})}>
         <TouchableOpacity
           style={styles.helpSection}
           onPress={() => navigation.replace('Login')}>
