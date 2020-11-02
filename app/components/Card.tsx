@@ -1,8 +1,8 @@
 import React, {ReactNode} from 'react';
 import {View, ViewStyle, Text} from 'react-native';
-import {applyStyles} from '@/helpers/utils';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
+import {applyStyles} from '@/styles';
 
 type CardProps = {
   style?: ViewStyle;

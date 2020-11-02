@@ -4,9 +4,9 @@ import {
   FloatingLabelInputProps,
 } from './FloatingLabelInput';
 import {Text, TextStyle, ViewStyle} from 'react-native';
-import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {getAuthService} from '../services';
+import {applyStyles} from '@/styles';
 
 type Props = Omit<FloatingLabelInputProps, 'onChange' | 'onChangeText'> & {
   onChange?: (value: number) => void;

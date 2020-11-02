@@ -3,7 +3,7 @@
  */
 
 import {AppRegistry} from 'react-native';
-import App from './app-v3/index';
+import App from './app/index';
 import {name as appName} from './app.json';
 import * as Sentry from '@sentry/react-native';
 import {LogBox} from 'react-native';

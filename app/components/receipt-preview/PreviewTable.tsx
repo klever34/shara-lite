@@ -1,6 +1,6 @@
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import Touchable from '../Touchable';

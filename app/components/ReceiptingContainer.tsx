@@ -1,9 +1,9 @@
 import EmptyState from '@/components/EmptyState';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {getAllPayments} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React, {ReactNode, useCallback} from 'react';
 import {SafeAreaView, Text, TextStyle, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';

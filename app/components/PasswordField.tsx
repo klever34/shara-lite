@@ -2,8 +2,7 @@ import React, {useState} from 'react';
 import {StyleSheet, TouchableOpacity, View, ViewStyle} from 'react-native';
 import Icon from '../components/Icon';
 import {FloatingLabelInput} from './FloatingLabelInput';
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 
 export type PasswordFieldProps = {
   value?: string;

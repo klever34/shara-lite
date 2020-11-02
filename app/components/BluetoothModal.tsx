@@ -15,12 +15,12 @@ import {
 // @ts-ignore
 import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
 import Modal from 'react-native-modal';
-import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
 import {getAnalyticsService, getStorageService} from '../services';
+import {applyStyles} from '@/styles';
 
 type BluetoothDevice = {address: string; name?: string};
 type BluetoothModalProps = {

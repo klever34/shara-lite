@@ -4,7 +4,7 @@ import {useErrorHandler} from '@/services/error-boundary';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles} from '@/styles';
 
 export const BusinessSetup = () => {
   const handleError = useErrorHandler();

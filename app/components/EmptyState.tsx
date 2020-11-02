@@ -1,7 +1,6 @@
 import React from 'react';
 import {Image, StyleSheet, Text, View, ImageProps} from 'react-native';
-import {applyStyles} from '../helpers/utils';
-import {colors} from '../styles';
+import {applyStyles, colors} from '../styles';
 
 type Props = {
   text?: string;

@@ -11,14 +11,10 @@ import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {
-  amountWithCurrency,
-  applyStyles,
-  numberWithCommas,
-} from '@/helpers/utils';
+import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/main/receipt';
+import {CreateReceipt} from '@/screens/main/receipts';
 import {
   getAnalyticsService,
   getAuthService,
@@ -42,6 +38,7 @@ import {
 } from 'react-native-bluetooth-escpos-printer';
 import {CancelReceiptModal} from './CancelReceiptModal';
 import {TitleDivider} from '../TitleDivider';
+import {applyStyles} from '@/styles';
 
 type Props = {
   isNew: boolean;

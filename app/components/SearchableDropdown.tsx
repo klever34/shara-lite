@@ -8,8 +8,7 @@ import {
   View,
   TextInputProps,
 } from 'react-native';
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import debounce from 'lodash/debounce';

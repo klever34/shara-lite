@@ -7,8 +7,11 @@ import {
   PhoneNumberField,
   PhoneNumberFieldProps,
 } from '@/components/PhoneNumberField';
-import {applyStyles} from '@/helpers/utils';
-import {PasswordField, PasswordFieldProps} from '@/components/PasswordField';
+import {
+  PasswordField,
+  PasswordFieldProps,
+} from '@/components/PasswordField';
+import {applyStyles} from '@/styles';
 
 type FormFieldProps = {
   text: TextInputProps;
