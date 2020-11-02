@@ -98,6 +98,9 @@ export const Register = () => {
         <View style={applyStyles('pb-16')}>
           <PhoneNumberField
             errorMessage={errors.mobile}
+            placeholder="Enter your number"
+            label="What's your phone number?"
+            containerStyle={applyStyles('mb-16')}
             onChangeText={(data) => onChangeMobile(data)}
             isInvalid={touched.mobile && !!errors.mobile}
             value={{number: values.mobile, code: values.countryCode}}
@@ -106,6 +109,7 @@ export const Register = () => {
             <PasswordField
               value={values.password}
               errorMessage={errors.password}
+              placeholder="Enter your password"
               onChangeText={handleChange('password')}
               isInvalid={touched.password && !!errors.password}
             />

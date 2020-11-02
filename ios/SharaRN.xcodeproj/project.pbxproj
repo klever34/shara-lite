@@ -53,6 +53,8 @@
 		7DAA46728B4B4279A6F99340 /* Roboto-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 169D8B95FBA44921B3BDB2F0 /* Roboto-LightItalic.otf */; };
 		DBFCE6843411444998E7B5C1 /* Roboto-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9ECD0189FFD4850845F1AF1 /* Roboto-Regular.otf */; };
 		319CFE1947464794B97888AE /* Roboto-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */; };
+		7BF1906AB6E34A3E85C14FAE /* Roboto-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */; };
+		5EF887CA439F4F5AB9D7F9C8 /* Roboto-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -134,6 +136,8 @@
 		169D8B95FBA44921B3BDB2F0 /* Roboto-LightItalic.otf */ = {isa = PBXFileReference; name = "Roboto-LightItalic.otf"; path = "../app/assets/fonts/Roboto-LightItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		B9ECD0189FFD4850845F1AF1 /* Roboto-Regular.otf */ = {isa = PBXFileReference; name = "Roboto-Regular.otf"; path = "../app/assets/fonts/Roboto-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */ = {isa = PBXFileReference; name = "Roboto-RegularItalic.otf"; path = "../app/assets/fonts/Roboto-RegularItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */ = {isa = PBXFileReference; name = "Roboto-Medium.otf"; path = "../app/assets/fonts/Roboto-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */ = {isa = PBXFileReference; name = "Roboto-MediumItalic.otf"; path = "../app/assets/fonts/Roboto-MediumItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -303,6 +307,8 @@
 				169D8B95FBA44921B3BDB2F0 /* Roboto-LightItalic.otf */,
 				B9ECD0189FFD4850845F1AF1 /* Roboto-Regular.otf */,
 				4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */,
+				196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */,
+				10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */,
 			);
 			name = Resources;
 			path = "";
@@ -486,6 +492,8 @@
 				7DAA46728B4B4279A6F99340 /* Roboto-LightItalic.otf in Resources */,
 				DBFCE6843411444998E7B5C1 /* Roboto-Regular.otf in Resources */,
 				319CFE1947464794B97888AE /* Roboto-RegularItalic.otf in Resources */,
+				7BF1906AB6E34A3E85C14FAE /* Roboto-Medium.otf in Resources */,
+				5EF887CA439F4F5AB9D7F9C8 /* Roboto-MediumItalic.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

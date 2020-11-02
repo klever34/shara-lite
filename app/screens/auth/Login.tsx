@@ -107,22 +107,22 @@ export const Login = () => {
         heading="Welcome Back"
         description="Sign in and enjoy all the features available on Shara. It only takes a few moments.">
         <View style={applyStyles('pb-32')}>
-          <View style={applyStyles('pb-16')}>
-            <PhoneNumberField
-              errorMessage={errors.mobile}
-              isInvalid={touched.mobile && !!errors.mobile}
-              onChangeText={(data) => onChangeMobile(data)}
-              value={{number: values.mobile, code: values.countryCode}}
-            />
-          </View>
-          <View>
-            <PasswordField
-              value={values.password}
-              errorMessage={errors.password}
-              onChangeText={handleChange('password')}
-              isInvalid={touched.password && !!errors.password}
-            />
-          </View>
+          <PhoneNumberField
+            errorMessage="Hello world"
+            placeholder="Enter your number"
+            label="What's your phone number?"
+            containerStyle={applyStyles('mb-16')}
+            onChangeText={(data) => onChangeMobile(data)}
+            isInvalid={touched.mobile && !!errors.mobile}
+            value={{number: values.mobile, code: values.countryCode}}
+          />
+          <PasswordField
+            value={values.password}
+            errorMessage={errors.password}
+            placeholder="Enter your password"
+            onChangeText={handleChange('password')}
+            isInvalid={touched.password && !!errors.password}
+          />
         </View>
 
         <TouchableOpacity

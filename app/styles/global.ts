@@ -120,6 +120,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'text-400': {
     fontFamily: 'Roboto-Regular',
   },
+  'text-500': {
+    fontFamily: 'Roboto-Medium',
+  },
   'text-700': {
     fontFamily: 'Roboto-Bold',
   },
