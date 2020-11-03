@@ -1,15 +1,11 @@
 import React, {useCallback, useState} from 'react';
-import {
-  TextInputProps as RNTextInputProps,
-  View,
-  ViewStyle,
-} from 'react-native';
+import {View, ViewStyle} from 'react-native';
 import {applyStyles} from '@/styles';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {AppInput} from '@/components/AppInput';
+import {AppInput, AppInputProps} from '@/components/AppInput';
 
-export type TextInputProps = Omit<RNTextInputProps, 'style'> & {
+export type TextInputProps = Omit<AppInputProps, 'style'> & {
   icon?: IconProps & {
     activeStyle?: string;
     inactiveStyle?: string;
