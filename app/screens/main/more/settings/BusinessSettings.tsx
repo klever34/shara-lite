@@ -64,7 +64,7 @@ export const BusinessSettings = () => {
 
   return (
     <AuthView
-      title="Business Settings"
+      heading="Business Settings"
       style={applyStyles({paddingBottom: 100})}
       description="Create an account to do business faster and better.">
       <BusinessForm

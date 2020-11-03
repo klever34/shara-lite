@@ -6,6 +6,7 @@ import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {AuthStackParamList} from '@/screens/auth/index';
+import {applyStyles} from '@/styles';
 
 const ForgotPassword = () => {
   const handleError = useErrorHandler();
@@ -13,7 +14,9 @@ const ForgotPassword = () => {
   const {params} = useRoute<RouteProp<AuthStackParamList, 'ForgotPassword'>>();
   return (
     <AuthView
-      title="Forgot your password"
+      showButton={false}
+      heading="Forgot your password?"
+      style={applyStyles('bg-white pt-24')}
       description="Enter your mobile number to receive your OTP">
       <FormBuilder
         fields={{

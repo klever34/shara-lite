@@ -119,19 +119,16 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
     fontWeight: 'bold',
   },
   'text-300': {
-    fontFamily: 'Rubik-Light',
+    fontFamily: 'Roboto-Light',
   },
   'text-400': {
-    fontFamily: 'Rubik-Regular',
+    fontFamily: 'Roboto-Regular',
   },
   'text-500': {
-    fontFamily: 'Rubik-Medium',
+    fontFamily: 'Roboto-Medium',
   },
   'text-700': {
-    fontFamily: 'Rubik-Bold',
-  },
-  'text-900': {
-    fontFamily: 'Rubik-Black',
+    fontFamily: 'Roboto-Bold',
   },
   'heading-100': {
     fontFamily: 'CocogoosePro-Thin',

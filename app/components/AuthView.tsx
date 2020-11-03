@@ -1,53 +1,75 @@
+import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
-import {ScrollView, Text, View, ViewStyle} from 'react-native';
-import Touchable from '@/components/Touchable';
-import Icon from '@/components/Icon';
-import {useNavigation} from '@react-navigation/native';
-import {colors} from '@/styles';
-import {applyStyles} from '@/styles';
+import {Image, Text, View, ViewStyle} from 'react-native';
+import {Button} from './Button';
+import {Page} from './Page';
 
 export type AuthViewProps = {
-  title: string;
+  title?: string;
+  heading?: string;
   style?: ViewStyle;
   children: ReactNode;
+  isLoading?: boolean;
   description?: string;
-  showBackButton?: boolean;
+  buttonTitle?: string;
+  showButton?: boolean;
+  onSubmit?: (data?: any) => void;
 };
 
 export const AuthView = ({
-  title,
   style,
+  title,
+  heading,
+  onSubmit,
   children,
+  isLoading,
   description,
-  showBackButton = true,
+  buttonTitle,
+  showButton = true,
 }: AuthViewProps) => {
-  const navigation = useNavigation();
   return (
-    <ScrollView
-      style={applyStyles('flex-1 py-32', {backgroundColor: colors.white})}
-      keyboardShouldPersistTaps="always"
-      persistentScrollbar={true}>
-      {showBackButton && (
-        <View style={applyStyles('mb-32')}>
-          <Touchable onPress={() => navigation.goBack()}>
-            <View style={applyStyles('h-48 w-48 center ml-16')}>
-              <Icon size={24} type="feathericons" name="arrow-left" />
-            </View>
-          </Touchable>
-        </View>
-      )}
-      <View style={applyStyles('mb-24 px-32')}>
-        <Text style={applyStyles('text-2xl pb-8 text-black heading-700')}>
-          {title}
+    <Page
+      style={style}
+      header={title ? {title} : undefined}
+      footer={
+        showButton ? (
+          <Button
+            variantColor="red"
+            onPress={onSubmit}
+            title={buttonTitle}
+            isLoading={isLoading}
+            style={applyStyles('w-full')}
+          />
+        ) : undefined
+      }>
+      <View style={applyStyles('mb-32 px-16 pt-24 center')}>
+        <Text
+          style={applyStyles('text-2xl pb-8 text-700 text-center', {
+            color: colors['gray-300'],
+          })}>
+          {heading}
         </Text>
         <Text
-          style={applyStyles(
-            'text-base leading-28 pb-8 text-gray-300 text-400',
-          )}>
+          style={applyStyles('text-400 text-center text-sm', {
+            color: colors['gray-300'],
+          })}>
           {description}
         </Text>
       </View>
-      <View style={applyStyles('px-32', style)}>{children}</View>
-    </ScrollView>
+      <View style={applyStyles('px-16')}>{children}</View>
+      <View style={applyStyles('flex-row center')}>
+        <View
+          style={applyStyles({
+            top: -40,
+            width: '20%',
+          })}>
+          <Image
+            resizeMode="contain"
+            style={applyStyles('w-full')}
+            source={require('@/assets/images/emblem.png')}
+          />
+        </View>
+      </View>
+    </Page>
   );
 };
