@@ -8,7 +8,7 @@ export const PasswordField = (props: AppInputProps) => {
   const {
     onChangeText,
     value: initialValue = '',
-    placeholder = 'Password',
+    label = 'Password',
     ...rest
   } = props;
   const [secure, setSecure] = React.useState(true);
@@ -21,7 +21,7 @@ export const PasswordField = (props: AppInputProps) => {
   return (
     <AppInput
       value={value}
-      label={placeholder}
+      label={label}
       autoCapitalize="none"
       secureTextEntry={secure}
       placeholder="**************"

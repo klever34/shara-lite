@@ -1,8 +1,9 @@
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
-import {Image, Text, View, ViewStyle} from 'react-native';
+import {Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';
 import {Page} from './Page';
+import {SecureEmblem} from './SecureEmblem';
 
 export type AuthViewProps = {
   title?: string;
@@ -57,18 +58,12 @@ export const AuthView = ({
         </Text>
       </View>
       {children}
-      <View style={applyStyles('flex-row center', {paddingBottom: 400})}>
-        <View
+      <View style={applyStyles('flex-row center')}>
+        <SecureEmblem
           style={applyStyles({
-            width: '50%',
-            height: '50%',
-          })}>
-          <Image
-            resizeMode="contain"
-            style={applyStyles('w-full h-full')}
-            source={require('@/assets/images/emblem.png')}
-          />
-        </View>
+            top: -40,
+          })}
+        />
       </View>
     </Page>
   );

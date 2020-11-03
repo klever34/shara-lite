@@ -13,7 +13,7 @@ import {AppInputProps} from './AppInput';
 import {ImageInput, ImageInputProps} from './ImageInput';
 
 type FormFieldProps = {
-  text: TextInputProps;
+  text: AppInputProps;
   mobile: PhoneNumberFieldProps;
   password: AppInputProps;
   image: ImageInputProps;

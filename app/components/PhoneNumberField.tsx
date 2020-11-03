@@ -77,7 +77,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     });
   };
 
-  const pickerStyles = !countryCode2
+  const pickerStyles = !phoneNumber?.countryCode
     ? applyStyles({top: 0})
     : applyStyles({top: -3});
 
