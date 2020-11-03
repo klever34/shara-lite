@@ -53,6 +53,7 @@ export const UserProfileSettings = () => {
           value: email,
           label: "What's your email? (Optional)",
           keyboardType: 'email-address',
+          rightIcon: 'mail',
         },
       },
     };

@@ -39,6 +39,7 @@ export const BusinessSettings = () => {
         props: {
           value: name,
           label: "What's the name of your business",
+          rightIcon: 'home',
         },
       },
       mobile: {
@@ -53,6 +54,7 @@ export const BusinessSettings = () => {
         props: {
           value: address,
           label: 'where is your business located?',
+          rightIcon: 'map-pin',
         },
       },
       profileImageFile: {
