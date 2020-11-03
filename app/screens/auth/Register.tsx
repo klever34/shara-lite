@@ -16,6 +16,7 @@ type Fields = {
   mobile: string;
   password: string;
   countryCode: string;
+  confirmPassword?: string;
 };
 
 const validationSchema = yup.object().shape({
@@ -27,6 +28,13 @@ const validationSchema = yup.object().shape({
     .string()
     .strict(true)
     .trim("Password shouldn't contain spaces")
+    .oneOf([yup.ref('confirmPassword'), undefined], 'Passwords must match')
+    .required('Password is required'),
+  confirmPassword: yup
+    .string()
+    .strict(true)
+    .trim("Password shouldn't contain spaces")
+    .oneOf([yup.ref('password'), undefined], 'Passwords must match')
     .required('Password is required'),
 });
 
@@ -48,7 +56,10 @@ export const Register = () => {
       password: '',
       countryCode: callingCode,
     }) as Fields,
-    onSubmit: (payload) => onSubmit(payload),
+    onSubmit: (payload) => {
+      delete payload.confirmPassword;
+      onSubmit(payload);
+    },
   });
   const [loading, setLoading] = useState(false);
 
@@ -107,15 +118,21 @@ export const Register = () => {
             isInvalid={touched.mobile && !!errors.mobile}
             value={{number: values.mobile, code: values.countryCode}}
           />
-          <View>
-            <PasswordField
-              value={values.password}
-              errorMessage={errors.password}
-              placeholder="Enter your password"
-              onChangeText={handleChange('password')}
-              isInvalid={touched.password && !!errors.password}
-            />
-          </View>
+          <PasswordField
+            value={values.password}
+            label="Enter your password"
+            errorMessage={errors.password}
+            containerStyle={applyStyles('mb-24')}
+            onChangeText={handleChange('password')}
+            isInvalid={touched.password && !!errors.password}
+          />
+          <PasswordField
+            value={values.confirmPassword}
+            label="Confirm password"
+            errorMessage={errors.confirmPassword}
+            onChangeText={handleChange('confirmPassword')}
+            isInvalid={touched.confirmPassword && !!errors.confirmPassword}
+          />
         </View>
       </View>
       <View>

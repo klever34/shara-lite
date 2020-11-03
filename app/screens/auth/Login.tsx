@@ -109,8 +109,8 @@ export const Login = () => {
         />
         <PasswordField
           value={values.password}
+          label="Enter your password"
           errorMessage={errors.password}
-          placeholder="Enter your password"
           onChangeText={handleChange('password')}
           isInvalid={touched.password && !!errors.password}
         />

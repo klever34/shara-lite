@@ -60,12 +60,11 @@ export const AuthView = ({
       <View style={applyStyles('flex-row center', {paddingBottom: 400})}>
         <View
           style={applyStyles({
-            width: '50%',
-            height: '50%',
+            width: '25%',
           })}>
           <Image
             resizeMode="contain"
-            style={applyStyles('w-full h-full')}
+            style={applyStyles('w-full')}
             source={require('@/assets/images/emblem.png')}
           />
         </View>

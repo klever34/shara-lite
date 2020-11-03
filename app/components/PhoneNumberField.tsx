@@ -1,5 +1,6 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {applyStyles, colors} from '@/styles';
+import {isEmpty} from 'lodash';
 import React, {ReactNode} from 'react';
 import {View} from 'react-native';
 import CountryPicker, {Country} from 'react-native-country-picker-modal';
@@ -49,9 +50,10 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     });
   };
 
-  const pickerStyles = !countryCode2
-    ? applyStyles({top: 0})
-    : applyStyles({top: -3});
+  const pickerStyles =
+    !countryCode2 && isEmpty(country)
+      ? applyStyles({top: 0})
+      : applyStyles({top: -3});
 
   return (
     <AppInput
