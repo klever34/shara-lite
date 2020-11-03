@@ -7,7 +7,7 @@ import {applyStyles, colors} from '@/styles';
 import React, {ReactNode, useCallback} from 'react';
 import {SafeAreaView, Text, TextStyle, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {HomeContainer} from './HomeContainer';
+import {HomeContainer} from './home-container';
 
 type ReceiptingContainerProps = {
   handleListItemSelect?: (receiptId: IReceipt['_id']) => void;
