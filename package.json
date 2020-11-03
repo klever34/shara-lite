@@ -140,7 +140,7 @@
     }
   },
   "lint-staged": {
-    "app-v3/**": "yarn lint"
+    "app/**": "yarn lint"
   },
   "husky": {
     "hooks": {
