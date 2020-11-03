@@ -1,4 +1,9 @@
-import {AuthView, PasswordField, PhoneNumberField} from '@/components';
+import {
+  AuthView,
+  PasswordField,
+  PhoneNumber,
+  PhoneNumberField,
+} from '@/components';
 import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
@@ -52,10 +57,9 @@ export const Register = () => {
   });
   const [loading, setLoading] = useState(false);
 
-  const onChangeMobile = (value: {code: string; number: string}) => {
-    const {code, number} = value;
-    setFieldValue('countryCode', code);
-    setFieldValue('mobile', number);
+  const onChangeMobile = (value: PhoneNumber) => {
+    setFieldValue('countryCode', value.callingCode);
+    setFieldValue('mobile', value.number);
   };
   const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
@@ -105,7 +109,7 @@ export const Register = () => {
             containerStyle={applyStyles('mb-24')}
             onChangeText={(data) => onChangeMobile(data)}
             isInvalid={touched.mobile && !!errors.mobile}
-            value={{number: values.mobile, code: values.countryCode}}
+            value={{number: values.mobile, callingCode: values.countryCode}}
           />
           <View>
             <PasswordField

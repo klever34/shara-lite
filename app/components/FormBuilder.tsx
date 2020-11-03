@@ -10,11 +10,13 @@ import {applyStyles} from '@/styles';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View} from 'react-native';
 import {AppInputProps} from './AppInput';
+import {ImageInput, ImageInputProps} from './ImageInput';
 
 type FormFieldProps = {
   text: TextInputProps;
   mobile: PhoneNumberFieldProps;
   password: AppInputProps;
+  image: ImageInputProps;
 };
 
 export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
@@ -74,12 +76,14 @@ export const FormBuilder = <FieldNames extends keyof any>({
   const {loading, run: onSubmitBtnPress} = useAsync(_onSubmitBtnPress, {
     defer: true,
   });
-  const onChangeText = useCallback(
+
+  const onChangeValue = useCallback(
     (name) => (value: any) => {
       setValues((prevValues) => ({...prevValues, [name]: value}));
     },
     [],
   );
+
   return (
     <View style={applyStyles('flex-row flex-wrap')}>
       {names.map((name) => {
@@ -90,36 +94,52 @@ export const FormBuilder = <FieldNames extends keyof any>({
             fieldProps = field.props as TextInputProps;
             return (
               <TextInput
+                key={name as string}
                 {...fieldProps}
                 containerStyle={applyStyles(
                   'mb-24 w-full',
                   fieldProps.containerStyle,
                 )}
-                onChangeText={onChangeText(name)}
+                onChangeText={onChangeValue(name)}
               />
             );
           case 'mobile':
             fieldProps = field.props as PhoneNumberFieldProps;
             return (
               <PhoneNumberField
+                key={name as string}
                 {...fieldProps}
                 containerStyle={applyStyles(
                   'mb-24 w-full',
                   fieldProps.containerStyle,
                 )}
-                onChangeText={onChangeText(name)}
+                onChangeText={onChangeValue(name)}
               />
             );
           case 'password':
             fieldProps = field.props as AppInputProps;
             return (
               <PasswordField
+                key={name as string}
                 {...fieldProps}
                 containerStyle={applyStyles(
                   'mb-24 w-full',
                   fieldProps.containerStyle,
                 )}
-                onChangeText={onChangeText(name)}
+                onChangeText={onChangeValue(name)}
+              />
+            );
+          case 'image':
+            fieldProps = field.props as ImageInputProps;
+            return (
+              <ImageInput
+                key={name as string}
+                {...fieldProps}
+                containerStyle={applyStyles(
+                  'mb-24 w-full',
+                  fieldProps.containerStyle,
+                )}
+                onChangeValue={onChangeValue(name)}
               />
             );
           default:

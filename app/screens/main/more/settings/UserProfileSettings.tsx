@@ -42,7 +42,7 @@ export const UserProfileSettings = () => {
       mobile: {
         type: 'mobile',
         props: {
-          value: {number: nationalNumber, code: country_code},
+          value: {number: nationalNumber, callingCode: country_code},
           label: 'Phone Number',
           editable: false,
         },
@@ -83,19 +83,17 @@ export const UserProfileSettings = () => {
       header={{title: 'Profile Settings', iconLeft: {}}}
       footer={<Button title={'Save'} onPress={handleSubmit} />}
       style={applyStyles('bg-white')}>
-      <>
-        <FormBuilder
-          fields={formFields}
-          onInputChange={(values) => {
-            const phoneNumber = values.mobile as PhoneNumber;
-            formValuesRef.current = {
-              ...values,
-              mobile: phoneNumber.number,
-              country_code: phoneNumber.code,
-            };
-          }}
-        />
-      </>
+      <FormBuilder
+        fields={formFields}
+        onInputChange={(values) => {
+          const phoneNumber = values.mobile as PhoneNumber;
+          formValuesRef.current = {
+            ...values,
+            mobile: phoneNumber.number,
+            country_code: phoneNumber.callingCode,
+          };
+        }}
+      />
     </Page>
   );
 };

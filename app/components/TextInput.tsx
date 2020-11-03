@@ -1,11 +1,10 @@
 import React, {useCallback, useState} from 'react';
 import {
-  StyleSheet,
   TextInputProps as RNTextInputProps,
   View,
   ViewStyle,
 } from 'react-native';
-import {applyStyles, colors} from '@/styles';
+import {applyStyles} from '@/styles';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {AppInput} from '@/components/AppInput';
