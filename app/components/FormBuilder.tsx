@@ -4,15 +4,15 @@ import {
   PhoneNumberField,
   PhoneNumberFieldProps,
 } from '@/components/PhoneNumberField';
-import TextInput, {TextInputProps} from '@/components/TextInput';
+import {TextInputProps} from '@/components/TextInput';
 import {useAsync} from '@/services/api';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View} from 'react-native';
-import {AppInputProps} from './AppInput';
+import {AppInput, AppInputProps} from './AppInput';
 
 type FormFieldProps = {
-  text: TextInputProps;
+  text: AppInputProps;
   mobile: PhoneNumberFieldProps;
   password: AppInputProps;
 };
@@ -84,7 +84,7 @@ export const FormBuilder = ({
           case 'text':
             fieldProps = field.props as TextInputProps;
             return (
-              <TextInput
+              <AppInput
                 {...fieldProps}
                 containerStyle={applyStyles('mb-24')}
                 onChangeText={onChangeText(name)}

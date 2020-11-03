@@ -91,7 +91,10 @@ export const Register = () => {
         .logEvent('signup', {method: 'mobile'})
         .catch(handleError);
       setLoading(false);
-      navigation.replace('BusinessSetup');
+      navigation.reset({
+        index: 0,
+        routes: [{name: 'Main'}],
+      });
     } catch (error) {
       setLoading(false);
       Alert.alert('Error', error.message);
