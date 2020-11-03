@@ -13,7 +13,8 @@ const ForgotPassword = () => {
   const {params} = useRoute<RouteProp<AuthStackParamList, 'ForgotPassword'>>();
   return (
     <AuthView
-      title="Forgot your password"
+      showButton={false}
+      heading="Forgot your password?"
       description="Enter your mobile number to receive your OTP">
       <FormBuilder
         fields={{

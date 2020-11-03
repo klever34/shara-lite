@@ -1,13 +1,9 @@
-import {
-  AuthView,
-  UserProfileForm,
-  UserProfileFormPayload,
-} from '@/components';
+import {AuthView, UserProfileForm, UserProfileFormPayload} from '@/components';
 import {getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
+import {applyStyles} from '@/styles';
 import React, {useCallback} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
-import {applyStyles} from '@/styles';
 
 export const UserProfileSettings = () => {
   const authService = getAuthService();
@@ -42,7 +38,7 @@ export const UserProfileSettings = () => {
 
   return (
     <AuthView
-      title="User Profile"
+      heading="User Profile"
       style={applyStyles({paddingBottom: 100})}
       description={`USER ID: ${id}`}>
       <UserProfileForm

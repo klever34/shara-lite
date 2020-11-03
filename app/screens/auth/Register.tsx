@@ -1,26 +1,16 @@
-import {
-  AuthView,
-  Button,
-  PasswordField,
-  PhoneNumberField,
-} from '@/components';
-import {
-  getAnalyticsService,
-  getApiService,
-  getRealmService,
-} from '@/services';
+import {AuthView, PasswordField, PhoneNumberField} from '@/components';
+import {getAnalyticsService, getApiService, getRealmService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {initLocalRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
-import {applyStyles} from '@/styles';
 
 type Fields = {
   mobile: string;
@@ -99,22 +89,28 @@ export const Register = () => {
 
   return (
     <AuthView
-      title="Sign Up"
-      description="Create an account to do business faster and better.">
+      title="Sign up"
+      isLoading={loading}
+      buttonTitle="Sign Up"
+      onSubmit={handleSubmit}
+      heading="Get Started For Free"
+      description="Sign up and enjoy all the features available on Shara. It only takes a few moments.">
       <View>
-        <View style={applyStyles({marginBottom: 32})}>
-          <View style={applyStyles({paddingVertical: 18})}>
-            <PhoneNumberField
-              errorMessage={errors.mobile}
-              onChangeText={(data) => onChangeMobile(data)}
-              isInvalid={touched.mobile && !!errors.mobile}
-              value={{number: values.mobile, code: values.countryCode}}
-            />
-          </View>
-          <View style={styles.inputFieldSpacer}>
+        <View style={applyStyles('pb-16')}>
+          <PhoneNumberField
+            errorMessage={errors.mobile}
+            placeholder="Enter your number"
+            label="What's your phone number?"
+            containerStyle={applyStyles('mb-24')}
+            onChangeText={(data) => onChangeMobile(data)}
+            isInvalid={touched.mobile && !!errors.mobile}
+            value={{number: values.mobile, code: values.countryCode}}
+          />
+          <View>
             <PasswordField
               value={values.password}
               errorMessage={errors.password}
+              placeholder="Enter your password"
               onChangeText={handleChange('password')}
               isInvalid={touched.password && !!errors.password}
             />
@@ -122,19 +118,12 @@ export const Register = () => {
         </View>
       </View>
       <View>
-        <Button
-          variantColor="red"
-          isLoading={loading}
-          onPress={handleSubmit}
-          title="Create an account"
-          style={applyStyles({
-            marginBottom: 24,
-          })}
-        />
         <TouchableOpacity
-          style={styles.helpSection}
+          style={applyStyles('flex-row center')}
           onPress={() => navigation.replace('Login')}>
-          <Text style={styles.helpSectionText}>Already have an account? </Text>
+          <Text style={applyStyles('text-gray-100 text-base')}>
+            Already have an account?{' '}
+          </Text>
           <Text style={styles.helpSectionButtonText}>Sign In</Text>
         </TouchableOpacity>
       </View>
@@ -143,60 +132,11 @@ export const Register = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 32,
-  },
-  backButton: {
-    marginBottom: 24,
-  },
-  heading: {
-    fontSize: 24,
-    paddingBottom: 8,
-    color: colors.black,
-    fontFamily: 'CocogoosePro-Regular',
-  },
-  description: {
-    fontSize: 16,
-    lineHeight: 27,
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-  },
-  form: {
-    paddingBottom: 32,
-  },
-  inputField: {
-    fontSize: 18,
-    width: '100%',
-  },
-  headerText: {
-    fontSize: 40,
-    marginBottom: 40,
-    color: '#d51a1a',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    fontFamily: 'CocogoosePro-Regular',
-  },
-  helpSection: {
-    marginBottom: 80,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  helpSectionText: {
-    fontSize: 16,
-    color: colors['gray-100'],
-    fontFamily: 'Rubik-Regular',
-  },
   helpSectionButtonText: {
     fontSize: 16,
     color: colors.black,
-    fontFamily: 'Rubik-Regular',
     textDecorationStyle: 'solid',
     textDecorationLine: 'underline',
     textDecorationColor: colors.black,
-  },
-  inputFieldSpacer: {
-    paddingBottom: 18,
   },
 });

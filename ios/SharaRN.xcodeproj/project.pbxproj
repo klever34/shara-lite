@@ -47,6 +47,14 @@
 		79340C9A070C49E8B29A1410 /* Rubik-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3637D543DE434C8F978D263E /* Rubik-Medium.otf */; };
 		EC84491691CB4B94A0FAD557 /* Rubik-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = 3AC6BE21476942BBB4ECDFB6 /* Rubik-Regular.otf */; };
 		E1A9D8B8CDBB4622BAB77DF8 /* libRNBluetoothEscposPrinter.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C0543D6E14F47008028B3B3 /* libRNBluetoothEscposPrinter.a */; };
+		71E0BC76CE96467EBA048CCA /* Roboto-Bold.otf in Resources */ = {isa = PBXBuildFile; fileRef = B614C31EABAA4283884D5ED7 /* Roboto-Bold.otf */; };
+		065A8096BAF649E68D11BFDA /* Roboto-BoldItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 43C632F140E44BC2A3E8602F /* Roboto-BoldItalic.otf */; };
+		28F493195E1746B8B2BDBD1F /* Roboto-Light.otf in Resources */ = {isa = PBXBuildFile; fileRef = 945F0CAAF76248D19BCFD4E9 /* Roboto-Light.otf */; };
+		7DAA46728B4B4279A6F99340 /* Roboto-LightItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 169D8B95FBA44921B3BDB2F0 /* Roboto-LightItalic.otf */; };
+		DBFCE6843411444998E7B5C1 /* Roboto-Regular.otf in Resources */ = {isa = PBXBuildFile; fileRef = B9ECD0189FFD4850845F1AF1 /* Roboto-Regular.otf */; };
+		319CFE1947464794B97888AE /* Roboto-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */; };
+		7BF1906AB6E34A3E85C14FAE /* Roboto-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */; };
+		5EF887CA439F4F5AB9D7F9C8 /* Roboto-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -122,6 +130,14 @@
 		3AC6BE21476942BBB4ECDFB6 /* Rubik-Regular.otf */ = {isa = PBXFileReference; name = "Rubik-Regular.otf"; path = "../app/assets/fonts/Rubik-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		1F58A2847AD242ECB4586DF3 /* RNBluetoothEscposPrinter.xcodeproj */ = {isa = PBXFileReference; name = "RNBluetoothEscposPrinter.xcodeproj"; path = "../node_modules/react-native-bluetooth-escpos-printer/ios/RNBluetoothEscposPrinter.xcodeproj"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = wrapper.pb-project; explicitFileType = undefined; includeInIndex = 0; };
 		6C0543D6E14F47008028B3B3 /* libRNBluetoothEscposPrinter.a */ = {isa = PBXFileReference; name = "libRNBluetoothEscposPrinter.a"; path = "libRNBluetoothEscposPrinter.a"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = archive.ar; explicitFileType = undefined; includeInIndex = 0; };
+		B614C31EABAA4283884D5ED7 /* Roboto-Bold.otf */ = {isa = PBXFileReference; name = "Roboto-Bold.otf"; path = "../app/assets/fonts/Roboto-Bold.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		43C632F140E44BC2A3E8602F /* Roboto-BoldItalic.otf */ = {isa = PBXFileReference; name = "Roboto-BoldItalic.otf"; path = "../app/assets/fonts/Roboto-BoldItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		945F0CAAF76248D19BCFD4E9 /* Roboto-Light.otf */ = {isa = PBXFileReference; name = "Roboto-Light.otf"; path = "../app/assets/fonts/Roboto-Light.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		169D8B95FBA44921B3BDB2F0 /* Roboto-LightItalic.otf */ = {isa = PBXFileReference; name = "Roboto-LightItalic.otf"; path = "../app/assets/fonts/Roboto-LightItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		B9ECD0189FFD4850845F1AF1 /* Roboto-Regular.otf */ = {isa = PBXFileReference; name = "Roboto-Regular.otf"; path = "../app/assets/fonts/Roboto-Regular.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */ = {isa = PBXFileReference; name = "Roboto-RegularItalic.otf"; path = "../app/assets/fonts/Roboto-RegularItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */ = {isa = PBXFileReference; name = "Roboto-Medium.otf"; path = "../app/assets/fonts/Roboto-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */ = {isa = PBXFileReference; name = "Roboto-MediumItalic.otf"; path = "../app/assets/fonts/Roboto-MediumItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -285,6 +301,14 @@
 				4AED76054A084405914A567C /* Rubik-Light.otf */,
 				3637D543DE434C8F978D263E /* Rubik-Medium.otf */,
 				3AC6BE21476942BBB4ECDFB6 /* Rubik-Regular.otf */,
+				B614C31EABAA4283884D5ED7 /* Roboto-Bold.otf */,
+				43C632F140E44BC2A3E8602F /* Roboto-BoldItalic.otf */,
+				945F0CAAF76248D19BCFD4E9 /* Roboto-Light.otf */,
+				169D8B95FBA44921B3BDB2F0 /* Roboto-LightItalic.otf */,
+				B9ECD0189FFD4850845F1AF1 /* Roboto-Regular.otf */,
+				4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */,
+				196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */,
+				10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */,
 			);
 			name = Resources;
 			path = "";
@@ -462,6 +486,14 @@
 				2B657AE90F7449EF8F96D331 /* Rubik-Light.otf in Resources */,
 				79340C9A070C49E8B29A1410 /* Rubik-Medium.otf in Resources */,
 				EC84491691CB4B94A0FAD557 /* Rubik-Regular.otf in Resources */,
+				71E0BC76CE96467EBA048CCA /* Roboto-Bold.otf in Resources */,
+				065A8096BAF649E68D11BFDA /* Roboto-BoldItalic.otf in Resources */,
+				28F493195E1746B8B2BDBD1F /* Roboto-Light.otf in Resources */,
+				7DAA46728B4B4279A6F99340 /* Roboto-LightItalic.otf in Resources */,
+				DBFCE6843411444998E7B5C1 /* Roboto-Regular.otf in Resources */,
+				319CFE1947464794B97888AE /* Roboto-RegularItalic.otf in Resources */,
+				7BF1906AB6E34A3E85C14FAE /* Roboto-Medium.otf in Resources */,
+				5EF887CA439F4F5AB9D7F9C8 /* Roboto-MediumItalic.otf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

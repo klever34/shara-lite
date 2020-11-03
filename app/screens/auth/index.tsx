@@ -3,7 +3,6 @@ import ForgotPassword from '@/screens/auth/ForgotPassword';
 import ResetPassword from '@/screens/auth/ResetPassword';
 import {createStackNavigator} from '@react-navigation/stack';
 import React, {useEffect} from 'react';
-import {BusinessSetup} from './BusinessSetup';
 import {Login} from './Login';
 import {Register} from './Register';
 import {Welcome} from './Welcome';
@@ -52,11 +51,6 @@ const AuthScreens = () => {
       <AuthStack.Screen
         name="ResetPassword"
         component={ResetPassword}
-        options={{headerShown: false}}
-      />
-      <AuthStack.Screen
-        name="BusinessSetup"
-        component={BusinessSetup}
         options={{headerShown: false}}
       />
     </AuthStack.Navigator>
