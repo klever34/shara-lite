@@ -1,24 +1,29 @@
-import React, {ReactNode} from 'react';
-import {KeyboardAvoidingView, ScrollView, View} from 'react-native';
 import {Header, HeaderTitleProps} from '@/components/Header';
 import {applyStyles} from '@/styles';
+import React, {ReactNode} from 'react';
+import {View, ViewStyle} from 'react-native';
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 
 type PageProps = {
   header?: HeaderTitleProps;
   children?: ReactNode;
   footer?: ReactNode;
+  style?: ViewStyle;
 };
 
-export const Page = ({header, children, footer}: PageProps) => {
+export const Page = ({header, children, footer, style}: PageProps) => {
   return (
-    <KeyboardAvoidingView style={applyStyles('flex-1')}>
-      {header && <Header {...header} />}
-      <ScrollView
-        style={applyStyles('flex-1 py-32 bg-white')}
+    <>
+      <KeyboardAwareScrollView
+        enableAutomaticScroll
+        enableResetScrollToCoords
+        persistentScrollbar={true}
         keyboardShouldPersistTaps="always"
-        persistentScrollbar={true}>
+        resetScrollToCoords={{x: 0, y: 0}}
+        style={applyStyles('flex-1', style)}>
+        {header && <Header {...header} />}
         {children}
-      </ScrollView>
+      </KeyboardAwareScrollView>
       {footer && (
         <View
           style={applyStyles('w-full p-16 bg-white', {
@@ -36,6 +41,6 @@ export const Page = ({header, children, footer}: PageProps) => {
           {footer}
         </View>
       )}
-    </KeyboardAvoidingView>
+    </>
   );
 };

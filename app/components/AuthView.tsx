@@ -29,6 +29,7 @@ export const AuthView = ({
 }: AuthViewProps) => {
   return (
     <Page
+      style={style}
       header={title ? {title} : undefined}
       footer={
         showButton ? (
@@ -41,7 +42,7 @@ export const AuthView = ({
           />
         ) : undefined
       }>
-      <View style={applyStyles('mb-48 px-16 center')}>
+      <View style={applyStyles('mb-32 px-16 pt-24 center')}>
         <Text
           style={applyStyles('text-2xl pb-8 text-700 text-center', {
             color: colors['gray-300'],
@@ -55,7 +56,7 @@ export const AuthView = ({
           {description}
         </Text>
       </View>
-      <View style={applyStyles('px-16', style)}>{children}</View>
+      <View style={applyStyles('px-16')}>{children}</View>
       <View style={applyStyles('flex-row center', {paddingBottom: 400})}>
         <View
           style={applyStyles({

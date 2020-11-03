@@ -6,13 +6,17 @@ import {useErrorHandler} from '@/services/error-boundary';
 import {useRoute, RouteProp} from '@react-navigation/native';
 import {AuthStackParamList} from '@/screens/auth/index';
 import {useAppNavigation} from '@/services/navigation';
+import {applyStyles} from '@/styles';
 
 const ResetPassword = () => {
   const handleError = useErrorHandler();
   const {params} = useRoute<RouteProp<AuthStackParamList, 'ResetPassword'>>();
   const navigation = useAppNavigation();
   return (
-    <AuthView heading="Reset your password" showButton={false}>
+    <AuthView
+      heading="Reset your password"
+      style={applyStyles('bg-white pt-24')}
+      showButton={false}>
       <FormBuilder
         fields={{
           otp: {

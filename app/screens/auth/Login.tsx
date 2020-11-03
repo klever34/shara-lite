@@ -9,15 +9,7 @@ import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useContext, useState} from 'react';
-import {
-  Alert,
-  KeyboardAvoidingView,
-  Platform,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
 
 type Fields = {
@@ -97,59 +89,56 @@ export const Login = () => {
   const navigation = useAppNavigation();
 
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-      style={applyStyles('flex-1 bg-white')}>
-      <AuthView
-        title="Sign In"
-        isLoading={loading}
-        buttonTitle="Sign In"
-        onSubmit={handleSubmit}
-        heading="Welcome Back"
-        description="Sign in and enjoy all the features available on Shara. It only takes a few moments.">
-        <View style={applyStyles('pb-32')}>
-          <PhoneNumberField
-            errorMessage="Hello world"
-            placeholder="Enter your number"
-            label="What's your phone number?"
-            containerStyle={applyStyles('mb-24')}
-            onChangeText={(data) => onChangeMobile(data)}
-            isInvalid={touched.mobile && !!errors.mobile}
-            value={{number: values.mobile, code: values.countryCode}}
-          />
-          <PasswordField
-            value={values.password}
-            errorMessage={errors.password}
-            placeholder="Enter your password"
-            onChangeText={handleChange('password')}
-            isInvalid={touched.password && !!errors.password}
-          />
-        </View>
+    <AuthView
+      title="Sign In"
+      isLoading={loading}
+      buttonTitle="Sign In"
+      onSubmit={handleSubmit}
+      heading="Welcome Back"
+      style={applyStyles('bg-white')}
+      description="Sign in and enjoy all the features available on Shara. It only takes a few moments.">
+      <View style={applyStyles('pb-32')}>
+        <PhoneNumberField
+          errorMessage={errors.mobile}
+          placeholder="Enter your number"
+          label="What's your phone number?"
+          containerStyle={applyStyles('mb-24')}
+          onChangeText={(data) => onChangeMobile(data)}
+          isInvalid={touched.mobile && !!errors.mobile}
+          value={{number: values.mobile, code: values.countryCode}}
+        />
+        <PasswordField
+          value={values.password}
+          errorMessage={errors.password}
+          placeholder="Enter your password"
+          onChangeText={handleChange('password')}
+          isInvalid={touched.password && !!errors.password}
+        />
+      </View>
 
-        <TouchableOpacity
-          style={applyStyles('flex-row center')}
-          onPress={() =>
-            navigation.navigate('ForgotPassword', {
-              mobile: {number: values.mobile, code: values.countryCode},
-            })
-          }>
-          <Text style={applyStyles('mb-12 text-gray-100', {fontSize: 16})}>
-            Forgot your password?
+      <TouchableOpacity
+        style={applyStyles('flex-row center')}
+        onPress={() =>
+          navigation.navigate('ForgotPassword', {
+            mobile: {number: values.mobile, code: values.countryCode},
+          })
+        }>
+        <Text style={applyStyles('mb-12 text-gray-100', {fontSize: 16})}>
+          Forgot your password?
+        </Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={applyStyles('flex-row center')}
+        onPress={() => navigation.replace('Register')}>
+        <View style={applyStyles('flex-row')}>
+          <Text style={applyStyles('text-gray-100', {fontSize: 16})}>
+            Don’t have an account?{' '}
           </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={applyStyles('flex-row center')}
-          onPress={() => navigation.replace('Register')}>
-          <View style={applyStyles('flex-row')}>
-            <Text style={applyStyles('text-gray-100', {fontSize: 16})}>
-              Don’t have an account?{' '}
-            </Text>
-            <Text style={styles.helpSectionButtonText}>Sign Up</Text>
-          </View>
-        </TouchableOpacity>
-      </AuthView>
-    </KeyboardAvoidingView>
+          <Text style={styles.helpSectionButtonText}>Sign Up</Text>
+        </View>
+      </TouchableOpacity>
+    </AuthView>
   );
 };
 
