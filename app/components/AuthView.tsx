@@ -57,10 +57,11 @@ export const AuthView = ({
         </Text>
       </View>
       <View style={applyStyles('px-16')}>{children}</View>
-      <View style={applyStyles('flex-row center', {paddingBottom: 400})}>
+      <View style={applyStyles('flex-row center')}>
         <View
           style={applyStyles({
-            width: '25%',
+            top: -40,
+            width: '20%',
           })}>
           <Image
             resizeMode="contain"
