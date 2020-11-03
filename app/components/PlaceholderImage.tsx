@@ -1,9 +1,8 @@
-import React from 'react';
-import {StyleProp, Text, View, ViewStyle} from 'react-native';
-import capitalize from 'lodash/capitalize';
-import Icon, {IconProps} from './Icon';
 import {applyStyles} from '@/styles';
 import {upperCase} from 'lodash';
+import React from 'react';
+import {StyleProp, Text, View, ViewStyle} from 'react-native';
+import Icon, {IconProps} from './Icon';
 
 export type PlaceholderImageProps = {
   text: string;
