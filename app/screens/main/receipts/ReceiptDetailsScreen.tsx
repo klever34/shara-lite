@@ -548,7 +548,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
 
           {!receipt?.is_cancelled && (
             <View
-              style={applyStyles('w-full p-16 bg-white', {
+              style={applyStyles('w-full py-16 px-24 bg-white', {
                 shadowColor: '#000',
                 shadowOffset: {
                   width: 0,
