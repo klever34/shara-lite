@@ -3,7 +3,7 @@ import {Text, View} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton, HeaderBackButtonProps} from './HeaderBackButton';
 
-type HeaderTitleProps = {
+export type HeaderTitleProps = {
   title: string;
   iconLeft?: HeaderBackButtonProps;
   iconRight?: HeaderBackButtonProps;
