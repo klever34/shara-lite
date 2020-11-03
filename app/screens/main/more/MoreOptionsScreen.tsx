@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useLayoutEffect, useMemo} from 'react';
-import {Text, View, Image, ScrollView} from 'react-native';
+import {Text, View, Image, ScrollView, Alert} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {
   HeaderBackButton,
@@ -89,17 +89,32 @@ export const MoreOptionsScreen = () => {
       {
         title: 'Reminder Settings',
         icon: 'users',
-        onPress: () => {},
+        onPress: () => {
+          Alert.alert(
+            'Coming Soon',
+            'This feature is coming in the next update',
+          );
+        },
       },
       {
         title: 'App Lock',
         icon: 'users',
-        onPress: () => {},
+        onPress: () => {
+          Alert.alert(
+            'Coming Soon',
+            'This feature is coming in the next update',
+          );
+        },
       },
       {
         title: 'Help & Support',
         icon: 'users',
-        onPress: () => {},
+        onPress: () => {
+          Alert.alert(
+            'Coming Soon',
+            'This feature is coming in the next update',
+          );
+        },
       },
     ];
   }, [navigation, onEditBusinessSettings]);

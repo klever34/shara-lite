@@ -13,7 +13,7 @@ export * from './FloatingLabelInput';
 export * from './FormBuilder';
 export * from './ShareModal';
 export * from './HomeMenu';
-export * from './HeaderTitle';
+export * from './Header';
 export * from './HeaderRight';
 export * from './AuthView';
 export * from './settings';

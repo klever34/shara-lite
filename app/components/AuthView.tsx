@@ -2,6 +2,7 @@ import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
 import {Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';
+import {Header} from './Header';
 
 export type AuthViewProps = {
   title?: string;
@@ -28,17 +29,7 @@ export const AuthView = ({
 }: AuthViewProps) => {
   return (
     <>
-      {!!title && (
-        <View
-          style={applyStyles('center flex-row py-16 bg-white', {
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-10'],
-          })}>
-          <Text style={applyStyles('text-500 text-uppercase text-gray-200')}>
-            {title}
-          </Text>
-        </View>
-      )}
+      {!!title && <Header title={title} />}
       <ScrollView
         style={applyStyles('flex-1 py-32 bg-white')}
         keyboardShouldPersistTaps="always"
