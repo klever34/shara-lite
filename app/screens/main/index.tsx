@@ -12,24 +12,25 @@ import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {getAuthService, getPubNubService} from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {TabBarLabel} from '@/components/TabBarLabel';
-import {Icon} from '@/components/Icon';
-import {ReceiptsScreen} from './receipts';
-import {CustomersScreen} from './customers';
-import {ProductsScreen} from './products';
-import {MoreScreen} from './more';
 import {applyStyles} from '@/styles';
-import {HomeProvider} from '@/components';
+import {HomeScreen} from '@/screens/main/HomeScreen';
+import {createStackNavigator} from '@react-navigation/stack';
+import {
+  BusinessSettings,
+  UserProfileSettings,
+} from '@/screens/main/more/settings';
+import {ReportsScreen} from '@/screens/main/more/reports';
 
-export type MainNavParamList = {
-  Receipts: undefined;
-  CustomersTab: undefined;
-  ProductsTab: undefined;
-  MoreTab: undefined;
+export type MainStackParamList = {
+  Home: undefined;
+
+  // More
+  UserProfileSettings: undefined;
+  BusinessSettings: undefined;
+  Reports: undefined;
 };
 
-const MainNav = createBottomTabNavigator<MainNavParamList>();
+const MainStack = createStackNavigator<MainStackParamList>();
 
 const MainScreens = () => {
   useRepeatBackToExit();
@@ -88,76 +89,44 @@ const MainScreens = () => {
 
   return (
     <PubNubProvider client={pubNubClient}>
-      <HomeProvider>
-        <MainNav.Navigator
-          initialRouteName="Receipts"
-          tabBarOptions={{
-            labelStyle: {fontFamily: 'Rubik-Regular'},
-            activeTintColor: colors['red-200'],
-            inactiveTintColor: colors['gray-50'],
-            style: applyStyles('h-64'),
-            tabStyle: applyStyles('py-10'),
-          }}>
-          <MainNav.Screen
-            name="Receipts"
-            component={ReceiptsScreen}
-            options={{
-              tabBarLabel: (labelProps) => (
-                <TabBarLabel {...labelProps}>Receipts</TabBarLabel>
-              ),
-              tabBarIcon: ({color}) => (
-                <Icon
-                  type="feathericons"
-                  name="file-text"
-                  size={24}
-                  color={color}
-                />
-              ),
-            }}
-          />
-          <MainNav.Screen
-            name="CustomersTab"
-            component={CustomersScreen}
-            options={{
-              tabBarLabel: (labelProps) => (
-                <TabBarLabel {...labelProps}>Customers</TabBarLabel>
-              ),
-              tabBarIcon: ({color}) => (
-                <Icon
-                  type="feathericons"
-                  name="users"
-                  size={24}
-                  color={color}
-                />
-              ),
-            }}
-          />
-          <MainNav.Screen
-            name="ProductsTab"
-            component={ProductsScreen}
-            options={{
-              tabBarLabel: (labelProps) => (
-                <TabBarLabel {...labelProps}>Products</TabBarLabel>
-              ),
-              tabBarIcon: ({color}) => (
-                <Icon type="feathericons" name="box" size={24} color={color} />
-              ),
-            }}
-          />
-          <MainNav.Screen
-            name="MoreTab"
-            component={MoreScreen}
-            options={{
-              tabBarLabel: (labelProps) => (
-                <TabBarLabel {...labelProps}>More</TabBarLabel>
-              ),
-              tabBarIcon: ({color}) => (
-                <Icon type="feathericons" name="menu" size={24} color={color} />
-              ),
-            }}
-          />
-        </MainNav.Navigator>
-      </HomeProvider>
+      <MainStack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.white,
+          },
+          headerTitleStyle: {
+            fontSize: 16,
+            fontFamily: 'CocogoosePro-SemiLight',
+          },
+          headerTintColor: colors['gray-300'],
+        }}>
+        {/* Home */}
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
+
+        {/* More */}
+        <MainStack.Screen
+          name="BusinessSettings"
+          component={BusinessSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Reports"
+          component={ReportsScreen}
+          options={{
+            title: 'Reports',
+          }}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+      </MainStack.Navigator>
     </PubNubProvider>
   );
 };

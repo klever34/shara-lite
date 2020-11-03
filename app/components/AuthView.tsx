@@ -1,7 +1,8 @@
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
-import {Image, ScrollView, Text, View, ViewStyle} from 'react-native';
+import {Image, Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';
+import {Page} from './Page';
 
 export type AuthViewProps = {
   title?: string;
@@ -27,65 +28,10 @@ export const AuthView = ({
   showButton = true,
 }: AuthViewProps) => {
   return (
-    <>
-      {!!title && (
-        <View
-          style={applyStyles('center flex-row py-16 bg-white', {
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-10'],
-          })}>
-          <Text style={applyStyles('text-500 text-uppercase text-gray-200')}>
-            {title}
-          </Text>
-        </View>
-      )}
-      <ScrollView
-        style={applyStyles('flex-1 py-32 bg-white')}
-        keyboardShouldPersistTaps="always"
-        persistentScrollbar={true}>
-        <View style={applyStyles('mb-48 px-16 center')}>
-          <Text
-            style={applyStyles('text-2xl pb-8 text-700 text-center', {
-              color: colors['gray-300'],
-            })}>
-            {heading}
-          </Text>
-          <Text
-            style={applyStyles('text-400 text-center text-sm', {
-              color: colors['gray-300'],
-            })}>
-            {description}
-          </Text>
-        </View>
-        <View style={applyStyles('px-16', style)}>{children}</View>
-        <View style={applyStyles('flex-row center', {paddingBottom: 400})}>
-          <View
-            style={applyStyles({
-              width: '50%',
-              height: '50%',
-            })}>
-            <Image
-              resizeMode="contain"
-              style={applyStyles('w-full h-full')}
-              source={require('@/assets/images/emblem.png')}
-            />
-          </View>
-        </View>
-      </ScrollView>
-      {showButton && (
-        <View
-          style={applyStyles('w-full p-16 bg-white', {
-            position: 'absolute',
-            bottom: 0,
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 5,
-            },
-            shadowOpacity: 0.34,
-            shadowRadius: 6.27,
-            elevation: 10,
-          })}>
+    <Page
+      header={title ? {title} : undefined}
+      footer={
+        showButton ? (
           <Button
             variantColor="red"
             onPress={onSubmit}
@@ -93,8 +39,36 @@ export const AuthView = ({
             isLoading={isLoading}
             style={applyStyles('w-full')}
           />
+        ) : undefined
+      }>
+      <View style={applyStyles('mb-48 px-16 center')}>
+        <Text
+          style={applyStyles('text-2xl pb-8 text-700 text-center', {
+            color: colors['gray-300'],
+          })}>
+          {heading}
+        </Text>
+        <Text
+          style={applyStyles('text-400 text-center text-sm', {
+            color: colors['gray-300'],
+          })}>
+          {description}
+        </Text>
+      </View>
+      <View style={applyStyles('px-16', style)}>{children}</View>
+      <View style={applyStyles('flex-row center', {paddingBottom: 400})}>
+        <View
+          style={applyStyles({
+            width: '50%',
+            height: '50%',
+          })}>
+          <Image
+            resizeMode="contain"
+            style={applyStyles('w-full h-full')}
+            source={require('@/assets/images/emblem.png')}
+          />
         </View>
-      )}
-    </>
+      </View>
+    </Page>
   );
 };
