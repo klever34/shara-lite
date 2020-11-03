@@ -1,4 +1,4 @@
-import React, {useCallback, ReactNode} from 'react';
+import React, {useCallback, ReactNode, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -18,12 +18,13 @@ interface variantColorHexColorOptions {
   [key: string]: string;
 }
 
-export type ButtonProps = BaseButtonProps & {
+export type ButtonProps = Omit<BaseButtonProps, 'onPress'> & {
   style?: ViewStyle;
   isLoading?: boolean;
   children?: React.ReactNode;
   variant?: 'filled' | 'clear';
   variantColor?: 'red' | 'white' | 'clear';
+  onPress?: () => Promise<void> | void;
 };
 
 export const Button = ({
@@ -55,6 +56,24 @@ export const Button = ({
     red: colors.white,
   };
 
+  const [loading, setLoading] = useState(isLoading);
+
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
+
+  const handlePress = useCallback(() => {
+    if (onPress) {
+      const result = onPress();
+      if (result) {
+        setLoading(true);
+        result.finally(() => {
+          setLoading(false);
+        });
+      }
+    }
+  }, [onPress]);
+
   const renderContent = useCallback(() => {
     if (title) {
       return (
@@ -71,16 +90,16 @@ export const Button = ({
 
   return (
     <BaseButton
-      onPress={onPress}
-      disabled={disabled || isLoading}
+      onPress={handlePress}
+      disabled={disabled || loading}
       style={applyStyles(
         styles.button,
         variantColorStyles[variantColor].button,
         {...style},
       )}>
-      {isLoading ? (
+      {loading ? (
         <ActivityIndicator
-          animating={isLoading}
+          animating={loading}
           color={activityIndicatorColor[variantColor]}
         />
       ) : (

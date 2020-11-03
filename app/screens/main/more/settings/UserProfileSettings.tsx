@@ -1,9 +1,12 @@
-import {AuthView, UserProfileForm, UserProfileFormPayload} from '@/components';
+import {FormBuilder, FormFields, Button, PhoneNumber} from '@/components';
 import {getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo, useRef} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
+import {Page} from '@/components/Page';
+import parsePhoneNumber from 'libphonenumber-js';
+import {UserProfileFormPayload} from '@/services/api';
 
 export const UserProfileSettings = () => {
   const authService = getAuthService();
@@ -11,40 +14,88 @@ export const UserProfileSettings = () => {
 
   const user = authService.getUser();
   const navigation = useAppNavigation();
-  const {firstname, id, lastname, email, mobile, country_code} = user || {};
-  const formIntialValues = {
-    email,
-    mobile,
-    lastname,
-    firstname,
-    country_code,
-  } as UserProfileFormPayload;
+  const {firstname, lastname, email, mobile = '', country_code = ''} =
+    user || {};
 
-  const handleSubmit = useCallback(
-    async (data: UserProfileFormPayload) => {
-      try {
-        await apiService.userProfileUpdate(data);
-        ToastAndroid.show(
-          'User profile updated successfully',
-          ToastAndroid.SHORT,
-        );
-        navigation.goBack();
-      } catch (error) {
-        Alert.alert('Error', error.message);
-      }
-    },
-    [navigation, apiService],
-  );
+  const formFields = useMemo(() => {
+    const phoneNumber = parsePhoneNumber('+' + mobile);
+    const nationalNumber = (phoneNumber?.nationalNumber ?? '') as string;
+    const fields: FormFields<
+      keyof Omit<UserProfileFormPayload, 'country_code'>
+    > = {
+      firstname: {
+        type: 'text',
+        props: {
+          value: firstname,
+          label: 'First Name',
+          containerStyle: applyStyles({width: '48%', marginRight: '2%'}),
+        },
+      },
+      lastname: {
+        type: 'text',
+        props: {
+          value: lastname,
+          label: 'Last Name',
+          containerStyle: applyStyles({width: '48%', marginLeft: '2%'}),
+        },
+      },
+      mobile: {
+        type: 'mobile',
+        props: {
+          value: {number: nationalNumber, code: country_code},
+          label: 'Phone Number',
+          editable: false,
+        },
+      },
+      email: {
+        type: 'text',
+        props: {
+          value: email,
+          label: "What's your email? (Optional)",
+          keyboardType: 'email-address',
+        },
+      },
+    };
+    return fields;
+  }, [country_code, email, firstname, lastname, mobile]);
+
+  const formValuesRef = useRef<UserProfileFormPayload>();
+
+  const handleSubmit = useCallback(async () => {
+    const {current: formValues} = formValuesRef;
+    if (!formValues) {
+      return;
+    }
+    try {
+      await apiService.userProfileUpdate(formValues);
+      ToastAndroid.show(
+        'User profile updated successfully',
+        ToastAndroid.SHORT,
+      );
+      navigation.goBack();
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  }, [apiService, navigation]);
 
   return (
-    <AuthView
-      heading="User Profile"
-      style={applyStyles({paddingBottom: 100})}
-      description={`USER ID: ${id}`}>
-      <UserProfileForm
-        onSubmit={handleSubmit}
-        initalValues={formIntialValues}
-      />
-    </AuthView>
+    <Page
+      header={{title: 'Profile Settings', iconLeft: {}}}
+      footer={<Button title={'Save'} onPress={handleSubmit} />}
+      style={applyStyles('bg-white')}>
+      <>
+        <FormBuilder
+          fields={formFields}
+          onInputChange={(values) => {
+            const phoneNumber = values.mobile as PhoneNumber;
+            formValuesRef.current = {
+              ...values,
+              mobile: phoneNumber.number,
+              country_code: phoneNumber.code,
+            };
+          }}
+        />
+      </>
+    </Page>
   );
 };

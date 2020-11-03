@@ -18,7 +18,14 @@ export type PhoneNumberFieldProps = {
 } & Omit<AppInputProps, 'value' | 'onChangeText'>;
 
 export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
-  const {value, style, onChangeText, renderFlagButton, ...rest} = props;
+  const {
+    value,
+    style,
+    onChangeText,
+    renderFlagButton,
+    containerStyle,
+    ...rest
+  } = props;
   const {countryCode2} = useIPGeolocation();
   const [phoneNumber, setPhoneNumber] = React.useState(
     value ?? {number: '', code: '234'},
@@ -54,35 +61,37 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     : applyStyles({top: -3});
 
   return (
-    <AppInput
-      rightIcon="phone"
-      autoCompleteType="tel"
-      keyboardType="phone-pad"
-      placeholder="Phone Number"
-      value={phoneNumber.number}
-      style={applyStyles('pl-96', style)}
-      placeholderTextColor={colors['gray-50']}
-      onChangeText={(text) => onInputChangeText(text)}
-      leftIcon={
-        <View style={applyStyles('mb-0 pb-0', pickerStyles)}>
-          <CountryPicker
-            withModal
-            withEmoji
-            withFilter
-            withCallingCode
-            withFlag={false}
-            onSelect={onSelect}
-            withCallingCodeButton
-            // @ts-ignore
-            placeholder="Country"
-            renderFlagButton={renderFlagButton}
-            countryCode={country.cca2 || countryCode2}
-            preferredCountries={['NG', 'KE', 'ZA', 'ZW']}
-            containerButtonStyle={applyStyles('w-full text-500')}
-          />
-        </View>
-      }
-      {...rest}
-    />
+    <View style={applyStyles('w-full', containerStyle)}>
+      <AppInput
+        rightIcon="phone"
+        autoCompleteType="tel"
+        keyboardType="phone-pad"
+        placeholder="Phone Number"
+        value={phoneNumber.number}
+        style={applyStyles('pl-96', style)}
+        placeholderTextColor={colors['gray-50']}
+        onChangeText={(text) => onInputChangeText(text)}
+        leftIcon={
+          <View style={applyStyles('mb-0 pb-0', pickerStyles)}>
+            <CountryPicker
+              withModal
+              withEmoji
+              withFilter
+              withCallingCode
+              withFlag={false}
+              onSelect={onSelect}
+              withCallingCodeButton
+              // @ts-ignore
+              placeholder="Country"
+              renderFlagButton={renderFlagButton}
+              countryCode={country.cca2 || countryCode2}
+              preferredCountries={['NG', 'KE', 'ZA', 'ZW']}
+              containerButtonStyle={applyStyles('w-full text-500')}
+            />
+          </View>
+        }
+        {...rest}
+      />
+    </View>
   );
 };

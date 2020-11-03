@@ -8,7 +8,7 @@ import {
 import {applyStyles, colors} from '@/styles';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {FloatingLabelInput} from '@/components/FloatingLabelInput';
+import {AppInput} from '@/components/AppInput';
 
 export type TextInputProps = Omit<RNTextInputProps, 'style'> & {
   icon?: IconProps & {
@@ -37,20 +37,15 @@ const TextInput = ({
     });
   }, [icon]);
   return (
-    <View
-      style={applyStyles(
-        'flex-row w-full border-b-1 border-gray-300',
-        containerStyle,
-      )}>
-      <FloatingLabelInput
+    <View style={applyStyles('flex-row w-full', containerStyle)}>
+      <AppInput
         {...restProps}
         value={value}
         onChangeText={(nextValue) => {
           restProps.onChangeText?.(nextValue);
           setValue(nextValue);
         }}
-        containerStyle={applyStyles(icon && 'flex-1')}
-        inputStyle={applyStyles(styles.inputField, 'border-b-0')}
+        containerStyle={applyStyles('flex-1')}
       />
       {icon && (
         <Touchable onPress={icon.onPress ? onIconPress : undefined}>
@@ -70,15 +65,5 @@ const TextInput = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  inputField: {
-    fontSize: 18,
-    width: '100%',
-    borderBottomWidth: 1,
-    fontFamily: 'Rubik-Regular',
-    borderColor: colors['gray-300'],
-  },
-});
 
 export default TextInput;

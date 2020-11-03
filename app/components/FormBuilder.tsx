@@ -23,27 +23,29 @@ export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
   required?: boolean;
 };
 
-export type FormFields = {
-  [name: string]: FormField;
-};
+export type FormFields<T extends keyof any> = Record<T, FormField>;
 
-type FormBuilderProps<fields extends FormFields = FormFields> = {
-  fields: fields;
-  onInputChange?: (values: {[name: string]: any}) => void;
+type FormBuilderProps<
+  FieldNames extends keyof any,
+  Fields = FormFields<FieldNames>
+> = {
+  fields: Fields;
+  onInputChange?: (values: {[name in keyof Fields]: any}) => void;
   submitBtn?: ButtonProps;
-  onSubmit?: (values: {[name: string]: any}) => Promise<any>;
+  onSubmit?: (values: {[name in keyof Fields]: any}) => Promise<any>;
 };
 
-export const FormBuilder = ({
+export const FormBuilder = <FieldNames extends keyof any>({
   fields,
   onInputChange,
   submitBtn,
   onSubmit,
-}: FormBuilderProps) => {
-  const names = useMemo(() => {
-    return Object.keys(fields);
+}: FormBuilderProps<FieldNames>) => {
+  const names = useMemo<FieldNames[]>(() => {
+    return Object.keys(fields) as FieldNames[];
   }, [fields]);
-  const [values, setValues] = useState<{[name: string]: any}>(
+  type FormValues = Record<FieldNames, any>;
+  const [values, setValues] = useState<FormValues>(
     names.reduce((acc, name) => {
       const {
         props: {value = ''},
@@ -52,15 +54,18 @@ export const FormBuilder = ({
         ...acc,
         [name]: value,
       };
-    }, {}),
+    }, {} as FormValues),
   );
   useEffect(() => {
     onInputChange?.(values);
   }, [onInputChange, values]);
   const _onSubmitBtnPress = useCallback(() => {
-    const formComplete = Object.keys(values).reduce((acc, name) => {
-      return acc && (!fields[name].required || !!values[name]);
-    }, true);
+    const formComplete = (Object.keys(values) as FieldNames[]).reduce(
+      (acc, name) => {
+        return acc && (!fields[name].required || !!values[name]);
+      },
+      true,
+    );
     if (!formComplete) {
       return Promise.resolve();
     }
@@ -76,7 +81,7 @@ export const FormBuilder = ({
     [],
   );
   return (
-    <View>
+    <View style={applyStyles('flex-row flex-wrap')}>
       {names.map((name) => {
         const field = fields[name];
         let fieldProps;
@@ -86,7 +91,10 @@ export const FormBuilder = ({
             return (
               <TextInput
                 {...fieldProps}
-                containerStyle={applyStyles('mb-24')}
+                containerStyle={applyStyles(
+                  'mb-24 w-full',
+                  fieldProps.containerStyle,
+                )}
                 onChangeText={onChangeText(name)}
               />
             );
@@ -95,7 +103,10 @@ export const FormBuilder = ({
             return (
               <PhoneNumberField
                 {...fieldProps}
-                containerStyle={applyStyles('mb-24')}
+                containerStyle={applyStyles(
+                  'mb-24 w-full',
+                  fieldProps.containerStyle,
+                )}
                 onChangeText={onChangeText(name)}
               />
             );
@@ -104,7 +115,10 @@ export const FormBuilder = ({
             return (
               <PasswordField
                 {...fieldProps}
-                containerStyle={applyStyles('mb-24')}
+                containerStyle={applyStyles(
+                  'mb-24 w-full',
+                  fieldProps.containerStyle,
+                )}
                 onChangeText={onChangeText(name)}
               />
             );
