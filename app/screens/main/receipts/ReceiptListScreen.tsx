@@ -1,7 +1,5 @@
 import {HeaderRight, HomeContainer} from '@/components';
 import {Icon} from '@/components/Icon';
-import PlaceholderImage from '@/components/PlaceholderImage';
-import Touchable from '@/components/Touchable';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
@@ -13,18 +11,26 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
-import {format, subMonths} from 'date-fns';
+import {subMonths} from 'date-fns';
 import {subDays, subWeeks, subYears} from 'date-fns/esm';
-import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
+import {ReceiptListItem} from './ReceiptListItem';
 
 export const ReceiptListScreen = withModal(() => {
   const realm = useRealm();
   const navigation = useAppNavigation();
-  const allReceipts = realm ? getReceipts({realm}) : [];
+  const receipts = realm ? getReceipts({realm}) : [];
 
   const [filter, setFilter] = useState('today');
   const [searchTerm, setSearchTerm] = useState('');
+  const [allReceipts, setAllReceipts] = useState(receipts || []);
 
   const handleStatusFilter = useCallback((status: any) => {
     setFilter(status);
@@ -129,58 +135,18 @@ export const ReceiptListScreen = withModal(() => {
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
-      navigation.replace('ReceiptDetails', {id: receipt._id});
+      navigation.navigate('ReceiptDetails', {id: receipt._id});
     },
     [navigation],
   );
 
   const renderReceiptItem = useCallback(
     ({item: receipt}: {item: IReceipt}) => {
-      const statusText = receipt.isPaid ? 'Paid' : 'owes you';
-      const statusTextWeight = receipt.isPaid ? 'text-400' : 'text-700';
-      const statusTextColor = receipt.isPaid ? 'text-gray-200' : 'text-red-100';
-
       return (
-        <Touchable onPress={() => handleReceiptItemSelect(receipt)}>
-          <View
-            style={applyStyles(
-              'px-16 pt-16 flex-row items-center justify-between flex-wrap',
-              {
-                borderBottomWidth: 1,
-                borderBottomColor: colors['gray-10'],
-              },
-            )}>
-            <View style={applyStyles('pb-16 flex-row items-center')}>
-              <PlaceholderImage text={receipt.customer?.name ?? ''} />
-              <View style={applyStyles('pl-sm')}>
-                <Text
-                  style={applyStyles(
-                    'pb-4 text-uppercase text-700 text-gray-300',
-                  )}>
-                  {receipt.customer?.name ?? 'No Customer'}
-                </Text>
-                <Text
-                  style={applyStyles(
-                    'text-uppercase text-400 text-gray-200 text-xs',
-                  )}>
-                  {receipt.created_at &&
-                    format(receipt.created_at, 'MMM dd yyyy, hh:mmaa')}
-                </Text>
-              </View>
-            </View>
-            <View style={applyStyles('pb-16 items-end')}>
-              <Text style={applyStyles('pb-4 text-700 text-gray-300')}>
-                {amountWithCurrency(receipt.total_amount)}
-              </Text>
-              <Text
-                style={applyStyles(
-                  `${statusTextWeight} text-uppercase text-xs ${statusTextColor}`,
-                )}>
-                {statusText}
-              </Text>
-            </View>
-          </View>
-        </Touchable>
+        <ReceiptListItem
+          receipt={receipt}
+          onPress={() => handleReceiptItemSelect(receipt)}
+        />
       );
     },
     [handleReceiptItemSelect],
@@ -234,6 +200,13 @@ export const ReceiptListScreen = withModal(() => {
       ),
     });
   }, [navigation]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      const myReceipts = realm ? getReceipts({realm}) : [];
+      setAllReceipts(myReceipts);
+    });
+  }, [navigation, realm]);
 
   return (
     <KeyboardAvoidingView

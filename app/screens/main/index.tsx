@@ -20,9 +20,14 @@ import {
   UserProfileSettings,
 } from '@/screens/main/more/settings';
 import {ReportsScreen} from '@/screens/main/more/reports';
+import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
+import {IReceipt} from '@/models/Receipt';
 
 export type MainStackParamList = {
   Home: undefined;
+
+  // Receipt
+  ReceiptDetails: {id: IReceipt['_id']};
 
   // More
   UserProfileSettings: undefined;
@@ -97,7 +102,7 @@ const MainScreens = () => {
           },
           headerTitleStyle: {
             fontSize: 16,
-            fontFamily: 'CocogoosePro-SemiLight',
+            fontFamily: 'Roboto-Regular',
           },
           headerTintColor: colors['gray-300'],
         }}>
@@ -124,6 +129,11 @@ const MainScreens = () => {
         <MainStack.Screen
           name="UserProfileSettings"
           component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="ReceiptDetails"
+          component={ReceiptDetailsScreen}
           options={{headerShown: false}}
         />
       </MainStack.Navigator>
