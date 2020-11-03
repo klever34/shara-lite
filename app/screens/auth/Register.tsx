@@ -56,10 +56,7 @@ export const Register = () => {
       password: '',
       countryCode: callingCode,
     }) as Fields,
-    onSubmit: (payload) => {
-      delete payload.confirmPassword;
-      onSubmit(payload);
-    },
+    onSubmit: (payload) => onSubmit(payload),
   });
   const [loading, setLoading] = useState(false);
 

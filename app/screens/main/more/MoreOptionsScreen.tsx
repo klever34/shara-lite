@@ -155,7 +155,7 @@ export const MoreOptionsScreen = () => {
                 style={applyStyles(
                   'text-700 uppercase text-sm leading-16 text-gray-300 mb-4',
                 )}>
-                {user.businesses[0].name}
+                {getAuthService().getBusinessInfo().name}
               </Text>
               <Text
                 style={applyStyles('text-400 text-sm leading-16 mb-4', {
