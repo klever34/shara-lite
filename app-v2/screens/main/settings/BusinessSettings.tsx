@@ -1,6 +1,10 @@
 import {AuthView, BusinessForm, BusinessFormPayload} from 'app-v2/components';
 import {applyStyles} from 'app-v2/helpers/utils';
-import {getAnalyticsService, getApiService, getAuthService} from 'app-v2/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+} from 'app-v2/services';
 import {useIPGeolocation} from 'app-v2/services/ip-geolocation/provider';
 import {useAppNavigation} from 'app-v2/services/navigation';
 import React, {useCallback, useState} from 'react';

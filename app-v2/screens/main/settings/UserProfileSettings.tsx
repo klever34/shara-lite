@@ -1,4 +1,8 @@
-import {AuthView, UserProfileForm, UserProfileFormPayload} from 'app-v2/components';
+import {
+  AuthView,
+  UserProfileForm,
+  UserProfileFormPayload,
+} from 'app-v2/components';
 import {applyStyles} from 'app-v2/helpers/utils';
 import {getApiService, getAuthService} from 'app-v2/services';
 import {useAppNavigation} from 'app-v2/services/navigation';

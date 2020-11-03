@@ -1,6 +1,15 @@
-import {AuthView, Button, PasswordField, PhoneNumberField} from 'app-v2/components';
+import {
+  AuthView,
+  Button,
+  PasswordField,
+  PhoneNumberField,
+} from 'app-v2/components';
 import {applyStyles} from 'app-v2/helpers/utils';
-import {getAnalyticsService, getApiService, getRealmService} from 'app-v2/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getRealmService,
+} from 'app-v2/services';
 import {useErrorHandler} from 'app-v2/services/error-boundary';
 import {FormDefaults} from 'app-v2/services/FormDefaults';
 import {useIPGeolocation} from 'app-v2/services/ip-geolocation/provider';
