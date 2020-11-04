@@ -33,7 +33,7 @@ export const ReceiptListItem = ({
     <Touchable onPress={onPress ? onPress : undefined}>
       <View
         style={applyStyles(
-          'px-16 pt-16 flex-row items-center justify-between flex-wrap',
+          'px-16 pt-16 flex-row items-center justify-between',
           {
             borderBottomWidth: 1,
             borderBottomColor: colors['gray-10'],
