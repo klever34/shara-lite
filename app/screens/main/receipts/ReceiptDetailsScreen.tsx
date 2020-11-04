@@ -197,15 +197,15 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
 
   const handlePrint = useCallback(
     async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [22, 5, 15];
+      const productListColumnWidth = [21, 21];
       try {
         const savedPrinterAddress = printer ? printer.address : '';
         const printerAddressToUse = useSavedPrinter
           ? savedPrinterAddress
           : address;
-        const customerText = customer?.name
-          ? `Receipt for: ${customer.name}`
-          : 'No customer';
+        const customerText = `Receipt No: ${receipt?._id
+          ?.toString()
+          .substring(0, 6)}`;
         await BluetoothManager.connect(printerAddressToUse);
         const receiptStyles = {
           header: {
@@ -242,17 +242,17 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
-        businessInfo.address &&
+        businessInfo.name &&
           (await BluetoothEscposPrinter.printText(
-            `${businessInfo.address}\n`,
+            `Tel: ${businessInfo.mobile || user?.mobile}\n`,
             {},
           ));
         await BluetoothEscposPrinter.printerAlign(
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
-        businessInfo.name &&
+        businessInfo.address &&
           (await BluetoothEscposPrinter.printText(
-            `Tel: ${businessInfo.mobile || user?.mobile}\n`,
+            `${businessInfo.address}\n`,
             {},
           ));
         await BluetoothEscposPrinter.printerAlign(
@@ -264,7 +264,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
         );
         await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
         await BluetoothEscposPrinter.printText(
-          `Date: ${format(receiptDate, 'dd/MM/yyyy, hh:mm:a')}\n`,
+          `${format(receiptDate, 'dd/MM/yyyy')}\n`,
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
@@ -274,16 +274,6 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
           '--------------------------------\n',
           {},
         );
-        await BluetoothEscposPrinter.printColumn(
-          productListColumnWidth,
-          [
-            BluetoothEscposPrinter.ALIGN.LEFT,
-            BluetoothEscposPrinter.ALIGN.CENTER,
-            BluetoothEscposPrinter.ALIGN.RIGHT,
-          ],
-          ['Description', 'QTY', `SubTotal(${currencyCode})`],
-          receiptStyles.product,
-        );
         for (const item of receipt?.items ?? []) {
           const p = item.price;
           const q = item.quantity;
@@ -292,10 +282,12 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
             productListColumnWidth,
             [
               BluetoothEscposPrinter.ALIGN.LEFT,
-              BluetoothEscposPrinter.ALIGN.CENTER,
               BluetoothEscposPrinter.ALIGN.RIGHT,
             ],
-            [`${item.product.name}`, `${q}`, `${numberWithCommas(total)}`],
+            [
+              `${q} x ${item.product.name}`,
+              ` ${currencyCode}${numberWithCommas(total)}`,
+            ],
             receiptStyles.product,
           );
         }
@@ -307,11 +299,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
           {},
         );
         await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.RIGHT,
-        );
-        await BluetoothEscposPrinter.printText(`Tax: ${0}\n`, {});
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.RIGHT,
+          BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
           `Total: ${currencyCode} ${numberWithCommas(receipt?.total_amount)}\n`,
@@ -334,7 +322,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          'Free receipting by Shara. www.shara.co\n',
+          'CREATE RECEIPTS FOR FREE WITH SHARA\n www.shara.co\n',
           receiptStyles.product,
         );
         await BluetoothEscposPrinter.printText(
@@ -360,7 +348,6 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
     [
       receiptDate,
       printer,
-      customer,
       businessInfo.name,
       businessInfo.address,
       businessInfo.mobile,
@@ -673,6 +660,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
           isCancelled={receipt?.is_cancelled}
           customer={customer || receipt?.customer}
           getImageUri={(data) => setReceiptImage(data)}
+          receiptNo={receipt?._id?.toString().substring(0, 6)}
         />
       </View>
 

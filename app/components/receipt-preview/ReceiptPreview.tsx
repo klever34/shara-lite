@@ -558,6 +558,7 @@ export const ReceiptPreview = withModal(
                 isCancelled={receipt?.is_cancelled}
                 customer={customer || receipt?.customer}
                 getImageUri={(data) => setReceiptImage(data)}
+                receiptNo={receipt?._id?.toString().substring(0, 6)}
               />
             </View>
           )}

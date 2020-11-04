@@ -14,6 +14,7 @@ type Props = {
   tax?: number;
   createdAt?: Date;
   user: User | null;
+  receiptNo?: string;
   amountPaid?: number;
   customer?: ICustomer;
   totalAmount?: number;
@@ -31,6 +32,7 @@ export const ReceiptImage = (props: Props) => {
     customer,
     products,
     createdAt,
+    receiptNo,
     amountPaid,
     totalAmount,
     getImageUri,
@@ -140,7 +142,7 @@ export const ReceiptImage = (props: Props) => {
                   style={applyStyles(
                     'pl-sm print-text-400 text-black text-lg',
                   )}>
-                  {customer?._id?.toString().substring(0, 6)}
+                  {receiptNo}
                 </Text>
               </View>
               <View style={applyStyles('pb-sm flex-row items-center')}>
