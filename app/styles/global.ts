@@ -145,6 +145,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'heading-700': {
     fontFamily: 'CocogoosePro-Regular',
   },
+  'print-400': {
+    fontFamily: 'VT323-Regular',
+  },
   'overflow-hidden': {
     overflow: 'hidden',
   },

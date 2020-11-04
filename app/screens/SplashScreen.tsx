@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     resizeMode: 'contain',
   },
-  text: {color: colors.white, fontSize: 16, fontFamily: 'CocogoosePro-Regular'},
+  text: {color: colors.white, fontSize: 12, fontFamily: 'CocogoosePro-Regular'},
 });
 
 export default SplashScreen;

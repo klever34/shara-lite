@@ -1,6 +1,5 @@
 import {ICustomer} from '@/models';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAuthService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useRef} from 'react';
 import {FlatList, View, ViewStyle} from 'react-native';
@@ -25,21 +24,21 @@ type Props = {
 
 export const ReceiptImage = (props: Props) => {
   const {
-    tax,
-    user,
+    // tax,
+    // user,
     customer,
-    products,
-    createdAt,
-    amountPaid,
-    totalAmount,
+    // products,
+    // createdAt,
+    // amountPaid,
+    // totalAmount,
     getImageUri,
-    isCancelled,
-    creditAmount,
-    creditDueDate,
+    // isCancelled,
+    // creditAmount,
+    // creditDueDate,
     containerStyle,
   } = props;
 
-  const businessInfo = getAuthService().getBusinessInfo();
+  // const businessInfo = getAuthService().getBusinessInfo();
   const viewRef = useRef<any>(null);
 
   const onCapture = useCallback(async () => {
@@ -55,7 +54,7 @@ export const ReceiptImage = (props: Props) => {
     );
   }, [getImageUri]);
 
-  const renderSummaryItem = useCallback(({item}: any) => null, []);
+  // const renderSummaryItem = useCallback(({item}: any) => null, []);
 
   useEffect(() => {
     if (customer?.name) {
@@ -73,7 +72,7 @@ export const ReceiptImage = (props: Props) => {
       <FlatList
         data={[]}
         style={applyStyles('mt-lg')}
-        renderItem={renderSummaryItem}
+        renderItem={undefined}
         // keyExtractor={(item) => `${item._id}`}
         ListHeaderComponent={<></>}
         ListFooterComponent={<></>}
