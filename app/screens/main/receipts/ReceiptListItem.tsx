@@ -4,18 +4,19 @@ import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {applyStyles, colors} from '@/styles';
-import {format} from 'date-fns';
 import React from 'react';
 import {Text, View} from 'react-native';
 
 export const ReceiptListItem = ({
   receipt,
   onPress,
+  leftSection,
   isHeader = false,
 }: {
   isHeader?: boolean;
   receipt?: IReceipt;
   onPress?: () => void;
+  leftSection?: {heading?: string; subheading?: string};
 }) => {
   const hasCustomer = receipt?.hasCustomer;
   const statusText = receipt?.is_cancelled
@@ -65,14 +66,13 @@ export const ReceiptListItem = ({
                   style={applyStyles(
                     'pb-4 text-uppercase text-700 text-gray-300',
                   )}>
-                  {receipt?.customer?.name ?? 'No Customer'}
+                  {leftSection?.heading}
                 </Text>
                 <Text
                   style={applyStyles(
                     'text-uppercase text-400 text-gray-200 text-xs',
                   )}>
-                  {receipt?.created_at &&
-                    format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa')}
+                  {leftSection?.subheading}
                 </Text>
               </View>
             </>

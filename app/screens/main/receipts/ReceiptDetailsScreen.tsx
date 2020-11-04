@@ -492,6 +492,12 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
         <ReceiptListItem
           isHeader
           receipt={receipt}
+          leftSection={{
+            heading: receipt?.customer?.name ?? 'No Customer',
+            subheading:
+              receipt?.created_at &&
+              format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
+          }}
           onPress={receipt.hasCustomer ? undefined : handleOpenContactList}
         />
         {!isFulfilled && !receipt?.is_cancelled && (
