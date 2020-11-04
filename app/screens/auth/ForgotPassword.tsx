@@ -33,7 +33,7 @@ const ForgotPassword = () => {
         submitBtn={{title: 'submit'}}
         onSubmit={(values) => {
           const phoneNumber = values.mobile as PhoneNumber;
-          const mobile = `${phoneNumber.code}${phoneNumber.number}`;
+          const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;
           return getApiService()
             .forgotPassword({
               mobile,

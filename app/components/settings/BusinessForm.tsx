@@ -1,29 +1,25 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useCallback} from 'react';
-import {Alert, Image, Text, View} from 'react-native';
-import ImagePicker, {
-  ImagePickerOptions,
-  ImagePickerResponse,
-} from 'react-native-image-picker';
+import React, {useEffect} from 'react';
+import {Image, Text, View} from 'react-native';
 import * as yup from 'yup';
 import {Button} from '../Button';
-import {FloatingLabelInput} from '../FloatingLabelInput';
+import {FloatingLabelInput, PhoneNumber, PhoneNumberField} from '@/components';
 import {Icon} from '../Icon';
-import {PhoneNumberField} from '../PhoneNumberField';
 import Touchable from '../Touchable';
 import {applyStyles} from '@/styles';
+import {ImagePickerResult, useImageInput} from '@/helpers/utils';
 
 export type BusinessFormPayload = {
   name: string;
   address?: string;
   mobile?: string;
   countryCode?: string;
-  profileImageFile?: ImagePickerResponse;
+  profileImageFile?: ImagePickerResult;
 };
 
-type Props = {
+type BusinessFormProps = {
   onSkip?(): void;
   isLoading?: boolean;
   page?: 'setup' | 'settings';
@@ -42,7 +38,7 @@ export const BusinessForm = ({
   onSubmit,
   isLoading,
   initalValues,
-}: Props) => {
+}: BusinessFormProps) => {
   const {callingCode} = useIPGeolocation();
   const {
     errors,
@@ -58,7 +54,6 @@ export const BusinessForm = ({
       address: '',
       mobile: '',
       countryCode: callingCode,
-      profileImageFile: {} as ImagePickerResponse,
     },
     onSubmit: (payload) => {
       const {countryCode, mobile, ...rest} = payload;
@@ -70,49 +65,29 @@ export const BusinessForm = ({
     },
   });
 
-  const onChangeMobile = (value: {code: string; number: string}) => {
-    const {code, number} = value;
-    setFieldValue('countryCode', code);
-    setFieldValue('mobile', number);
+  const onChangeMobile = (value: PhoneNumber) => {
+    setFieldValue('countryCode', value.callingCode);
+    setFieldValue('mobile', value.number);
   };
 
-  const handleAddPicture = useCallback(() => {
-    const options: ImagePickerOptions = {
-      maxWidth: 256,
-      maxHeight: 256,
-      noData: true,
-      mediaType: 'photo',
-      allowsEditing: true,
-      title: 'Select a picture',
-      takePhotoButtonTitle: 'Take a Photo',
-    };
-    ImagePicker.showImagePicker(options, (response) => {
-      if (response.didCancel) {
-        // do nothing
-      } else if (response.error) {
-        Alert.alert('Error', response.error);
-      } else {
-        const {uri, type, fileName} = response;
-        const extensionIndex = uri.lastIndexOf('.');
-        const extension = uri.slice(extensionIndex + 1);
-        const allowedExtensions = ['jpg', 'jpeg', 'png'];
-        if (!allowedExtensions.includes(extension)) {
-          return Alert.alert('Error', 'That file type is not allowed.');
-        }
-        const image = {
-          uri,
-          type,
-          name: fileName,
-        };
-        setFieldValue('profileImageFile', image);
-      }
-    });
-  }, [setFieldValue]);
+  const {imageUrl, handleImageInputChange} = useImageInput(undefined, {
+    maxWidth: 256,
+    maxHeight: 256,
+    noData: true,
+    mediaType: 'photo',
+    allowsEditing: true,
+    title: 'Select a picture',
+    takePhotoButtonTitle: 'Take a Photo',
+  });
+
+  useEffect(() => {
+    setFieldValue('profileImageFile', imageUrl);
+  }, [imageUrl, setFieldValue]);
 
   return (
     <View>
       {page === 'settings' && (
-        <Touchable onPress={handleAddPicture}>
+        <Touchable onPress={handleImageInputChange}>
           <View style={applyStyles('mb-xl items-center justify-center')}>
             {values?.profileImageFile?.uri ? (
               <Image
@@ -123,7 +98,7 @@ export const BusinessForm = ({
                   backgroundColor: colors['gray-20'],
                 })}
                 source={{
-                  uri: values?.profileImageFile?.uri ?? '',
+                  uri: values.profileImageFile.uri ?? '',
                 }}
               />
             ) : (
@@ -197,7 +172,7 @@ export const BusinessForm = ({
             onChangeText={(data) => onChangeMobile(data)}
             value={{
               number: values.mobile ?? '',
-              code: values.countryCode ?? callingCode,
+              callingCode: values.countryCode ?? callingCode,
             }}
           />
         </View>

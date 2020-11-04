@@ -123,7 +123,7 @@ const MainScreens = () => {
           name="Reports"
           component={ReportsScreen}
           options={{
-            title: 'Reports',
+            headerShown: false,
           }}
         />
         <MainStack.Screen

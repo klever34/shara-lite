@@ -14,21 +14,19 @@ type PageProps = {
 export const Page = ({header, children, footer, style}: PageProps) => {
   return (
     <>
+      {header && <Header {...header} />}
       <KeyboardAwareScrollView
         enableAutomaticScroll
         enableResetScrollToCoords
         persistentScrollbar={true}
         keyboardShouldPersistTaps="always"
         resetScrollToCoords={{x: 0, y: 0}}
-        style={applyStyles('flex-1', style)}>
-        {header && <Header {...header} />}
+        style={applyStyles('flex-1 px-16 py-16', style)}>
         {children}
       </KeyboardAwareScrollView>
       {footer && (
         <View
           style={applyStyles('w-full p-16 bg-white', {
-            position: 'absolute',
-            bottom: 0,
             shadowColor: '#000',
             shadowOffset: {
               width: 0,

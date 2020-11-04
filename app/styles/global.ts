@@ -60,6 +60,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'w-full': {
     width: '100%',
   },
+  'w-1/2': {
+    width: '50%',
+  },
   'w-screen': {
     width: dimensions.fullWidth,
   },
