@@ -21,7 +21,6 @@ export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
     MainStackParamList & MoreStackParamList
   >();
-  const user = getAuthService().getUser();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: applyStyles('border-b-1', {
@@ -87,16 +86,6 @@ export const MoreOptionsScreen = () => {
         },
       },
       {
-        title: 'Reminder Settings',
-        icon: 'users',
-        onPress: () => {
-          Alert.alert(
-            'Coming Soon',
-            'This feature is coming in the next update',
-          );
-        },
-      },
-      {
         title: 'App Lock',
         icon: 'users',
         onPress: () => {
@@ -140,8 +129,28 @@ export const MoreOptionsScreen = () => {
   return (
     <ScrollView>
       <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
-        {user && (
-          <View style={applyStyles('p-16 flex-row items-center')}>
+        {(!business?.name || !business?.address) && (
+          <Touchable onPress={onEditBusinessSettings}>
+            <View
+              style={applyStyles('my-lg mx-lg py-sm', {
+                fontSize: 14,
+                borderRadius: 8,
+                backgroundColor: colors['red-50'],
+              })}>
+              <Text
+                style={applyStyles('text-500 text-center', {
+                  color: colors['red-200'],
+                })}>
+                Tap here to complete your Business Settings
+              </Text>
+            </View>
+          </Touchable>
+        )}
+        {business && business.name && (
+          <View
+            style={applyStyles(
+              'p-16 flex-row items-center border-t-1 border-gray-20',
+            )}>
             <View style={applyStyles('w-80 h-80')}>
               {business.profile_image ? (
                 <Image
@@ -171,12 +180,14 @@ export const MoreOptionsScreen = () => {
                 )}>
                 {business.name}
               </Text>
-              <Text
-                style={applyStyles('text-400 text-sm leading-16 mb-4', {
-                  color: colors['gray-300'],
-                })}>
-                {`+${business.country_code}${business.mobile}`}
-              </Text>
+              {!!business.mobile && (
+                <Text
+                  style={applyStyles('text-400 text-sm leading-16 mb-4', {
+                    color: colors['gray-300'],
+                  })}>
+                  {`+${business.country_code}${business.mobile}`}
+                </Text>
+              )}
               <Text
                 style={applyStyles('text-400 text-xs leading-16 uppercase', {
                   color: colors['gray-100'],
