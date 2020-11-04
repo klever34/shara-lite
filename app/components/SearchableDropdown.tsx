@@ -7,6 +7,7 @@ import {
   TextInput,
   View,
   TextInputProps,
+  ViewStyle,
 } from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {Button} from './Button';
@@ -15,7 +16,11 @@ import debounce from 'lodash/debounce';
 
 export type SearchableDropdownProps<T extends any = any> = {
   items: T[];
+  label?: string;
+  leftIcon?: string;
+  rightIcon?: string;
   onFocus?: () => void;
+  inputStyle?: ViewStyle;
   onBlur?: (query: string) => void;
   emptyStateText?: string;
   noResultsAction?: () => void;
@@ -35,14 +40,17 @@ export type SearchableDropdownProps<T extends any = any> = {
 
 function SearchableDropdown<T>({
   items,
-  setFilter,
-  onFocus,
   onBlur,
+  label,
+  onFocus,
+  leftIcon,
+  rightIcon,
+  setFilter,
+  inputStyle,
   renderItem,
   onChangeText,
   onItemSelect,
   textInputProps,
-  emptyStateText,
   noResultsAction,
   noResultsActionButtonText,
 }: SearchableDropdownProps<T>) {
@@ -80,7 +88,7 @@ function SearchableDropdown<T>({
       queryRef.current = searchedText;
       const searchValue = searchedText.trim().toLowerCase();
       const results = items.filter((item: T) => {
-        return setFilter(item, searchValue);
+        return setFilter && setFilter(item, searchValue);
       });
       setListItems(results);
       const onTextChange = onChangeText || textInputProps?.onChangeText;
@@ -97,72 +105,55 @@ function SearchableDropdown<T>({
     if (focus) {
       return (
         <View
-          style={applyStyles({
-            top: 60,
+          style={applyStyles('bg-white', {
+            top: 80,
+            height: 150,
             zIndex: 100,
-            elevation: 2,
             width: '100%',
+            elevation: 10,
+            borderRadius: 8,
+            shadowRadius: 6.27,
             position: 'absolute',
-            backgroundColor: colors.white,
+            shadowOpacity: 0.34,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 5,
+            },
           })}>
-          {listItems.length ? (
-            <FlatList
-              data={listItems}
-              //@ts-ignore
-              renderItem={({item}) =>
-                renderItem({item, onPress: handleItemSelect})
-              }
-              keyExtractor={(item, index) => index.toString()}
-              ListEmptyComponent={
-                <View
-                  style={applyStyles(
-                    'px-lg flex-1 items-center justify-center',
-                    {
-                      paddingVertical: 100,
-                    },
-                  )}>
-                  <Text
-                    style={applyStyles('mb-xs heading-700', 'text-center', {
-                      color: colors['gray-300'],
-                    })}>
-                    No results found
-                  </Text>
-                  {noResultsAction && (
-                    <Button
-                      variantColor="clear"
-                      onPress={noResultsAction}
-                      style={applyStyles('w-full')}
-                      title={noResultsActionButtonText}
-                    />
-                  )}
-                </View>
-              }
-            />
-          ) : (
-            <View style={styles.emptyState}>
-              <Text
-                style={applyStyles(
-                  'heading-700',
-                  styles.emptyStateText,
-                  styles.emptyStateHeading,
-                )}>
-                No results found
-              </Text>
-              <Text
-                style={applyStyles(
-                  'text-400',
-                  styles.emptyStateText,
-                  styles.emptyStateDescription,
-                )}>
-                {emptyStateText}
-              </Text>
-            </View>
-          )}
+          <FlatList
+            data={listItems}
+            //@ts-ignore
+            renderItem={({item}) =>
+              renderItem({item, onPress: handleItemSelect})
+            }
+            keyExtractor={(item, index) => index.toString()}
+            ListEmptyComponent={
+              <View
+                style={applyStyles('px-lg flex-1 items-center justify-center', {
+                  paddingVertical: 100,
+                })}>
+                <Text
+                  style={applyStyles('mb-xs heading-700', 'text-center', {
+                    color: colors['gray-300'],
+                  })}>
+                  No results found
+                </Text>
+                {noResultsAction && (
+                  <Button
+                    variantColor="clear"
+                    onPress={noResultsAction}
+                    style={applyStyles('w-full')}
+                    title={noResultsActionButtonText}
+                  />
+                )}
+              </View>
+            }
+          />
         </View>
       );
     }
   }, [
-    emptyStateText,
     focus,
     handleItemSelect,
     listItems,
@@ -172,30 +163,66 @@ function SearchableDropdown<T>({
   ]);
 
   const renderTextInput = useCallback(() => {
+    let style = styles.searchInput as ViewStyle;
+
+    if (leftIcon) {
+      style = {...style, paddingLeft: 48};
+    }
+
+    if (rightIcon) {
+      style = {...style, paddingRight: 48};
+    }
+
     return (
-      <View style={styles.searchContainer}>
+      <View>
         <View style={styles.searchInputContainer}>
-          <Icon
-            size={24}
-            style={styles.searchInputIcon}
-            type="feathericons"
-            name="search"
-            color={colors['gray-200']}
-          />
+          {leftIcon && (
+            <Icon
+              size={24}
+              name={leftIcon}
+              type="feathericons"
+              style={styles.iconLeft}
+              color={colors['gray-200']}
+            />
+          )}
           <TextInput
             onFocus={handleInputFocus}
             onChangeText={handleChangeText}
             placeholderTextColor={colors['gray-50']}
-            style={applyStyles(styles.searchInput, 'text-400')}
+            style={applyStyles('text-400', style, inputStyle)}
             {...textInputProps}
           />
+          {rightIcon && (
+            <Icon
+              size={24}
+              name={rightIcon}
+              type="feathericons"
+              style={styles.iconRight}
+              color={colors['gray-200']}
+            />
+          )}
         </View>
       </View>
     );
-  }, [handleInputFocus, handleChangeText, textInputProps]);
+  }, [
+    leftIcon,
+    handleInputFocus,
+    handleChangeText,
+    inputStyle,
+    textInputProps,
+    rightIcon,
+  ]);
 
   return (
     <View>
+      {!!label && (
+        <Text
+          style={applyStyles(
+            'text-xs text-uppercase text-500 text-gray-100 pb-8',
+          )}>
+          {label}
+        </Text>
+      )}
       {renderTextInput()}
       {renderFlatList()}
     </View>
@@ -203,23 +230,26 @@ function SearchableDropdown<T>({
 }
 
 const styles = StyleSheet.create({
-  searchContainer: {
-    backgroundColor: colors.primary,
-  },
   searchInputContainer: {
     position: 'relative',
   },
-  searchInputIcon: {
-    top: 12,
-    left: 10,
+  iconLeft: {
+    top: 16,
+    left: 12,
+    elevation: 3,
+    position: 'absolute',
+  },
+  iconRight: {
+    top: 16,
+    right: 12,
     elevation: 3,
     position: 'absolute',
   },
   searchInput: {
-    height: 48,
-    elevation: 2,
+    height: 56,
     fontSize: 16,
-    paddingLeft: 48,
+    borderRadius: 8,
+    paddingHorizontal: 16,
     backgroundColor: colors.white,
   },
   emptyState: {

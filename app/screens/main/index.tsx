@@ -22,11 +22,13 @@ import {
 import {ReportsScreen} from '@/screens/main/more/reports';
 import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
 import {IReceipt} from '@/models/Receipt';
+import {CreateReceiptScreen} from './receipts/CreateReceiptScreen';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Receipt
+  CreateReceipt: {receipt?: IReceipt};
   ReceiptDetails: {id: IReceipt['_id']};
 
   // More
@@ -134,6 +136,11 @@ const MainScreens = () => {
         <MainStack.Screen
           name="ReceiptDetails"
           component={ReceiptDetailsScreen}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="CreateReceipt"
+          component={CreateReceiptScreen}
           options={{headerShown: false}}
         />
       </MainStack.Navigator>

@@ -1,275 +1,167 @@
 import {
+  AppInput,
   Button,
-  ContactsListModal,
   CurrencyInput,
-  DatePicker,
-  PageModal,
+  ReceiptTableFooterItem,
   ReceiptTableHeader,
-  receiptTableHeaderStyles,
   ReceiptTableItem,
   ReceiptTableItemProps,
-  receiptTableStyles,
 } from '@/components';
-import Icon from '@/components/Icon';
+import SearchableDropdown from '@/components/SearchableDropdown';
 import Touchable from '@/components/Touchable';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
-import {ICustomer} from '@/models';
+import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService} from '@/services';
-import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
-import {useAppNavigation} from '@/services/navigation';
+import {FormDefaults} from '@/services/FormDefaults';
+import {getProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
-import {saveReceipt} from '@/services/ReceiptService';
 import {applyStyles, colors} from '@/styles';
-import {addDays} from 'date-fns';
-import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
-import {AddCustomer} from '../customers/CustomerListScreen';
-import {ReceiptItemModalContent} from './ReceiptItemModal';
+import {Alert, FlatList, Text, View} from 'react-native';
 
 type Props = {
   receipt?: IReceipt;
-  closeReceiptModal: () => void;
-  initialCustomer?: ICustomer;
-} & ModalWrapperFields;
+};
 
 export const CreateReceipt = withModal((props: Props) => {
-  const {receipt, openModal, initialCustomer, closeReceiptModal} = props;
+  const {receipt} = props;
 
   const realm = useRealm();
   const handleError = useErrorHandler();
-  const navigation = useAppNavigation();
-  const myCustomers = getCustomers({realm});
+  const products = getProducts({realm});
 
-  const [note, setNote] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
+  const [price, setPrice] = useState<number | undefined>();
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [totalAmount, setTotalAmount] = useState(receipt?.total_amount || 0);
-  const [amountPaid, setAmountPaid] = useState(0);
-  const [dueDate, setDueDate] = useState<Date | undefined>(
-    receipt?.dueDate || addDays(new Date(), 7),
-  );
   const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>(
     receipt?.items || [],
   );
-  const [customer, setCustomer] = useState<ICustomer | undefined>(
-    receipt?.customer || ({} as ICustomer),
+  const [quantity, setQuantity] = useState<string | undefined>(
+    FormDefaults.get('quantity', ''),
   );
-  const [
-    snappedReceipt,
-    // setSnappedReceipt,
-  ] = useState('');
-  const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
-
-  const tax = 0;
-  const creditAmount = totalAmount - amountPaid;
 
   useEffect(() => {
     getAnalyticsService().logEvent('receiptStart').catch(handleError);
   }, [handleError, receipt]);
 
-  useEffect(() => {
-    if (initialCustomer) {
-      setCustomer(initialCustomer);
-    }
-  }, [initialCustomer]);
-
-  const handleNoteChange = useCallback((text: string) => {
-    setNote(text);
+  const handlePriceChange = useCallback((item) => {
+    setPrice(item);
   }, []);
 
-  const handleAmountPaidChange = useCallback((text) => {
-    setAmountPaid(text);
+  const handleQuantityChange = useCallback((item) => {
+    setQuantity(item);
   }, []);
 
-  const handleDueDateChange = useCallback((date?: Date) => {
-    if (date) {
-      setDueDate(date);
-    }
+  const handleProductSearch = useCallback((item: IProduct, text: string) => {
+    return `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1;
   }, []);
 
-  const handleOpenAddCustomerModal = useCallback(() => {
-    setIsAddCustomerModalOpen(true);
-  }, []);
-
-  const handleCloseAddCustomerModal = useCallback(() => {
-    setIsAddCustomerModalOpen(false);
-  }, []);
-
-  const handleAddNewCustomer = useCallback(
-    (newCustomer) => {
-      setCustomer(newCustomer);
-      handleCloseAddCustomerModal();
-    },
-    [handleCloseAddCustomerModal],
-  );
-
-  const handleContactSelect = useCallback((newCustomer, callback) => {
-    setCustomer(newCustomer);
-    callback();
-  }, []);
-
-  const handleUpdateReceiptItem = useCallback(
-    (item: IReceiptItem) => {
-      setReceiptItems(
-        receiptItems.map((receiptItem) => {
-          if (
-            receiptItem.product._id?.toString() === item.product._id?.toString()
-          ) {
-            return item;
-          }
-          return receiptItem;
-        }),
+  const handleSelectProduct = useCallback(
+    (item: IProduct) => {
+      const addedItem = receiptItems.find(
+        (receiptItem) =>
+          receiptItem?.product &&
+          receiptItem?.product?._id?.toString() === item?._id?.toString(),
       );
+      if (addedItem) {
+        setQuantity(addedItem.quantity.toString());
+      }
+      setSelectedProduct(item);
+      setPrice(item?.price);
     },
     [receiptItems],
   );
 
-  const handleRemoveReceiptItem = useCallback(
-    (item: IReceiptItem) => {
-      setReceiptItems(
-        receiptItems.filter(
-          (receiptItem) =>
-            receiptItem.product._id?.toString() !==
-            item.product._id?.toString(),
-        ),
-      );
-    },
-    [receiptItems],
-  );
+  // const handleUpdateReceiptItem = useCallback(
+  //   (item: IReceiptItem) => {
+  //     setReceiptItems(
+  //       receiptItems.map((receiptItem) => {
+  //         if (
+  //           receiptItem.product._id?.toString() === item.product._id?.toString()
+  //         ) {
+  //           return item;
+  //         }
+  //         return receiptItem;
+  //       }),
+  //     );
+  //   },
+  //   [receiptItems],
+  // );
 
-  const handleAddReceiptItem = useCallback(
-    (item: IReceiptItem) => {
+  // const handleRemoveReceiptItem = useCallback(
+  //   (item: IReceiptItem) => {
+  //     setReceiptItems(
+  //       receiptItems.filter(
+  //         (receiptItem) =>
+  //           receiptItem.product._id?.toString() !==
+  //           item.product._id?.toString(),
+  //       ),
+  //     );
+  //   },
+  //   [receiptItems],
+  // );
+
+  const handleAddReceiptItem = useCallback(() => {
+    const priceCondition = price || price === 0 ? true : false;
+    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    if (priceCondition && quantityCondition && quantity) {
+      const product = {
+        ...selectedProduct,
+        _id: selectedProduct?._id,
+        price,
+        product: selectedProduct,
+        name: selectedProduct?.name,
+        quantity: parseFloat(quantity),
+      } as IReceiptItem;
+      getAnalyticsService()
+        .logEvent('productAddedToReceipt')
+        .catch(handleError);
       if (
         receiptItems
-          .map((receiptItem) => receiptItem.product._id?.toString())
-          .includes(item?.product._id?.toString())
+          .map((item) => item._id?.toString())
+          .includes(product?._id?.toString())
       ) {
-        handleUpdateReceiptItem(item);
+        setReceiptItems(
+          receiptItems.map((item) => {
+            if (item._id?.toString() === product._id?.toString()) {
+              return {
+                ...item,
+                quantity: parseFloat(quantity),
+              };
+            }
+            return item;
+          }),
+        );
       } else {
-        getAnalyticsService()
-          .logEvent('productAddedToReceipt')
-          .catch(handleError);
-        setReceiptItems([item, ...receiptItems]);
+        setReceiptItems([product, ...receiptItems]);
       }
-    },
-    [handleError, receiptItems, handleUpdateReceiptItem],
-  );
+      setSelectedProduct(null);
+      setPrice(0);
+      setQuantity('');
+    } else {
+      Alert.alert('Info', 'Please add product quantity');
+    }
+  }, [price, quantity, selectedProduct, handleError, receiptItems]);
 
-  const handleClearReceipt = useCallback(() => {
-    setReceiptItems([]);
-  }, []);
-
-  const handleOpenReceiptItemModal = useCallback(() => {
-    const closeReceiptItemModal = openModal('full', {
-      animationInTiming: 0.1,
-      animationOutTiming: 0.1,
-      renderContent: () => (
-        <ReceiptItemModalContent
-          //@ts-ignore
-          onDone={handleAddReceiptItem}
-          closeModal={closeReceiptItemModal}
-        />
-      ),
-    });
-  }, [openModal, handleAddReceiptItem]);
-
-  const handleOpenEditReceiptItemModal = useCallback(
-    (item: IReceiptItem) => {
-      getAnalyticsService()
-        .logEvent('selectContent', {
-          item_id: String(item._id),
-          content_type: 'ReceiptItem',
-        })
-        .catch(handleError);
-      const closeReceiptItemModal = openModal('full', {
-        animationInTiming: 0.1,
-        animationOutTiming: 0.1,
-        renderContent: () => (
-          <ReceiptItemModalContent
-            item={item}
-            //@ts-ignore
-            onDone={handleUpdateReceiptItem}
-            closeModal={closeReceiptItemModal}
-            onDelete={() => {
-              handleRemoveReceiptItem(item);
-              closeReceiptItemModal();
-            }}
-          />
-        ),
-      });
-    },
-    [handleError, openModal, handleUpdateReceiptItem, handleRemoveReceiptItem],
-  );
-
-  const handleOpenReceiptPreviewModal = useCallback(
-    (item: IReceipt) => {
-      setCustomer(undefined);
-      closeReceiptModal();
-      navigation.navigate('SalesDetails', {id: item._id});
-    },
-    [closeReceiptModal, navigation],
-  );
-
-  const handleOpenContactList = useCallback(() => {
-    const closeContactListModal = openModal('bottom-half', {
-      swipeDirection: [],
-      renderContent: () => (
-        <ContactsListModal<ICustomer>
-          entity="Customer"
-          onClose={closeContactListModal}
-          onAddNew={handleOpenAddCustomerModal}
-          onContactSelect={(data) =>
-            handleContactSelect(data, closeContactListModal)
-          }
-          createdData={(myCustomers as unknown) as ICustomer[]}
-        />
-      ),
-    });
-  }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
-
-  const handleSaveReceipt = useCallback(() => {
-    setIsSaving(true);
-    setTimeout(() => {
-      let receiptToCreate: any = {
-        tax,
-        note,
-        realm,
-        dueDate,
-        customer,
-        amountPaid,
-        totalAmount,
-        creditAmount,
-        receiptItems,
-        payments: [{method: '', amount: amountPaid}],
-      };
-
-      if (snappedReceipt) {
-        receiptToCreate = {...receiptToCreate, local_image_url: snappedReceipt};
-      }
-
-      const createdReceipt = saveReceipt(receiptToCreate);
-      handleClearReceipt();
-      setIsSaving(false);
-      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
-      handleOpenReceiptPreviewModal(createdReceipt);
-    }, 100);
-  }, [
-    note,
-    realm,
-    dueDate,
-    customer,
-    amountPaid,
-    totalAmount,
-    creditAmount,
-    receiptItems,
-    snappedReceipt,
-    handleClearReceipt,
-    handleOpenReceiptPreviewModal,
-  ]);
+  const handleDone = useCallback(() => {
+    let items = receiptItems;
+    const priceCondition = price || price === 0 ? true : false;
+    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    if (selectedProduct && quantity && quantityCondition && priceCondition) {
+      handleAddReceiptItem();
+    } else if (items.length) {
+      setSelectedProduct(null);
+    } else {
+      Alert.alert(
+        'Info',
+        'Please select at least one product item with quantity',
+      );
+    }
+  }, [receiptItems, price, quantity, selectedProduct, handleAddReceiptItem]);
 
   const renderReceiptItem = useCallback(
     ({item}: ReceiptTableItemProps) => (
@@ -282,243 +174,135 @@ export const CreateReceipt = withModal((props: Props) => {
               content_type: 'ReceiptItem',
             })
             .catch(handleError);
-          return handleOpenEditReceiptItemModal(item);
         }}
       />
     ),
-    [handleError, handleOpenEditReceiptItemModal],
+    [handleError],
   );
+
+  const renderSearchDropdownItem = useCallback(({item, onPress}) => {
+    return (
+      <Touchable onPress={() => onPress(item)}>
+        <View style={applyStyles('p-16 flex-row items-center justify-between')}>
+          <Text style={applyStyles('text-700 text-base text-gray-300')}>
+            {item.name}
+          </Text>
+          <Text style={applyStyles('text-400 text-base text-gray-300')}>
+            {amountWithCurrency(item.price)}
+          </Text>
+        </View>
+      </Touchable>
+    );
+  }, []);
 
   useEffect(() => {
     const total = receiptItems
-      .map(({quantity, price}) => {
-        const itemPrice = price ? price : 0;
-        const itemQuantity = quantity ? quantity : 0;
+      .map(({quantity: q, price: p}) => {
+        const itemPrice = p ? p : 0;
+        const itemQuantity = q ? q : 0;
         return itemPrice * itemQuantity;
       })
       .reduce((acc, curr) => acc + curr, 0);
 
     setTotalAmount(total);
-    setAmountPaid(total);
   }, [receiptItems]);
 
   return (
-    <View>
+    <View style={applyStyles('flex-1')}>
+      <View style={applyStyles('bg-gray-10 px-16 py-32')}>
+        <View style={applyStyles('pb-16')}>
+          <SearchableDropdown<IProduct>
+            items={products}
+            rightIcon="box"
+            label="Product/Service"
+            setFilter={handleProductSearch}
+            onItemSelect={handleSelectProduct}
+            renderItem={renderSearchDropdownItem}
+            noResultsActionButtonText="Add a product"
+            textInputProps={{placeholder: 'Search or enter product here'}}
+            noResultsAction={() => {}}
+          />
+        </View>
+        <View
+          style={applyStyles('pb-16 flex-row items-center justify-between')}>
+          <View style={applyStyles({width: '48%'})}>
+            <CurrencyInput
+              label="Unit Price"
+              value={price?.toString()}
+              style={applyStyles('bg-white', {
+                borderWidth: 0,
+              })}
+              onChange={(text) => handlePriceChange(text)}
+            />
+          </View>
+          <View style={applyStyles({width: '48%'})}>
+            <AppInput
+              value={quantity}
+              label="Quantity"
+              keyboardType="numeric"
+              style={applyStyles('bg-white', {
+                borderWidth: 0,
+              })}
+              onChangeText={handleQuantityChange}
+            />
+          </View>
+        </View>
+        <Button
+          variantColor="clear"
+          title="Add to Receipt"
+          onPress={handleAddReceiptItem}
+        />
+      </View>
       <FlatList
         data={receiptItems}
         persistentScrollbar
+        style={applyStyles('bg-white')}
         renderItem={renderReceiptItem}
         keyboardShouldPersistTaps="always"
+        ListHeaderComponent={<ReceiptTableHeader />}
         keyExtractor={(item) => `${item?.product._id?.toString()}`}
-        ListHeaderComponent={
-          <>
-            <View
-              style={applyStyles('pt-lg px-lg flex-row items-center h-60', {
-                paddingBottom: 8,
-              })}>
-              <View style={applyStyles({width: '48%'})}>
-                <Text style={applyStyles('text-700 text-uppercase')}>
-                  Create a receipt
-                </Text>
-              </View>
-            </View>
-
-            <View style={applyStyles({paddingBottom: 32})}>
-              <Touchable
-                onPress={initialCustomer ? undefined : handleOpenContactList}>
-                <View style={applyStyles('px-lg py-lg flex-row items-center')}>
-                  <Text
-                    style={applyStyles('text-400', {
-                      color: colors['gray-200'],
-                    })}>
-                    Receipt for:
-                  </Text>
-                  <Text
-                    style={applyStyles(
-                      'text-500 pl-sm',
-                      initialCustomer
-                        ? undefined
-                        : {
-                            color: colors.primary,
-                            textDecorationLine: 'underline',
-                            textDecorationColor: colors.primary,
-                          },
-                    )}>
-                    {customer?.name ? customer.name : 'Add Customer Details'}
-                  </Text>
-                </View>
-              </Touchable>
-              <View style={applyStyles('px-lg pt-sm pb-md')}>
-                <Text
-                  style={applyStyles('text-400', {
-                    color: colors['gray-200'],
-                  })}>
-                  Date: {format(new Date(), 'dd/MM/yyyy, hh:mm:a')}
-                </Text>
-              </View>
-            </View>
-            <ReceiptTableHeader />
-
-            <Touchable onPress={handleOpenReceiptItemModal}>
-              <View
-                style={applyStyles(
-                  receiptTableStyles.row,
-                  receiptTableHeaderStyles.row,
-                  {
-                    height: 48,
-                    borderTopWidth: 0,
-                  },
-                )}>
-                <View style={applyStyles(receiptTableStyles['column-40'])}>
-                  <View
-                    style={applyStyles('flex-row items-center h-full w-full')}>
-                    <Icon
-                      name="plus"
-                      type="feathericons"
-                      color={colors.primary}
-                    />
-                    <Text
-                      style={applyStyles('text-500', {
-                        fontSize: 12,
-                        color: colors.primary,
-                      })}>
-                      Add Item
-                    </Text>
-                  </View>
-                </View>
-                <View style={applyStyles(receiptTableStyles['column-40'])} />
-                <View style={applyStyles(receiptTableStyles['column-20'])} />
-                <View style={applyStyles(receiptTableStyles['column-40'])} />
-              </View>
-            </Touchable>
-          </>
-        }
-        ListFooterComponent={
-          <>
-            <View style={applyStyles('px-lg', {paddingBottom: 40})}>
-              <View style={applyStyles('pb-xl flex-row items-center')}>
-                <Text
-                  style={applyStyles('text-400', {
-                    color: colors['gray-300'],
-                  })}>
-                  Paid:
-                </Text>
-                <View style={applyStyles('ml-sm')}>
-                  <CurrencyInput
-                    value={amountPaid.toString()}
-                    placeholder="How much was paid?"
-                    onChange={(value) => handleAmountPaidChange(value)}
-                  />
-                </View>
-              </View>
-              <View style={applyStyles('flex-row')}>
-                <Text
-                  style={applyStyles('text-400', {
-                    color: colors['gray-300'],
-                  })}>
-                  Note:
-                </Text>
-                <View style={applyStyles('ml-sm')}>
-                  <TextInput
-                    multiline
-                    value={note}
-                    style={applyStyles('px-sm pt-xs', {
-                      width: '55%',
-                      fontSize: 16,
-                      borderWidth: 1,
-                      paddingBottom: 100,
-                      fontFamily: 'Rubik-Regular',
-                      borderColor: colors['gray-50'],
-                    })}
-                    onChangeText={handleNoteChange}
-                    placeholder="Add extra info here e.g Driver details, vehicle number etc."
-                  />
-                </View>
-              </View>
-            </View>
-            {!!creditAmount && (
-              <View
-                style={applyStyles('px-xl', {
-                  borderTopWidth: 1,
-                  paddingBottom: 40,
-                  borderTopColor: colors['gray-20'],
-                })}>
-                <View style={applyStyles('pt-md pb-xl center')}>
-                  <Text
-                    style={applyStyles('text-500', {
-                      fontSize: 16,
-                      color: colors['gray-200'],
-                    })}>
-                    Credit Details
-                  </Text>
-                </View>
-                <View
-                  style={applyStyles(
-                    'flex-row items-center, justify-between flex-wrap',
-                  )}>
-                  <View style={applyStyles('flex-row items-center mb-md')}>
-                    <View style={applyStyles('pr-sm')}>
-                      <Text style={applyStyles('text-400')}>Balance:</Text>
-                    </View>
-                    <View>
-                      <Text style={applyStyles('text-500')}>
-                        {amountWithCurrency(creditAmount)}
-                      </Text>
-                    </View>
-                  </View>
-                  {dueDate && (
-                    <View style={applyStyles(' mb-md')}>
-                      <DatePicker
-                        value={dueDate}
-                        minimumDate={new Date()}
-                        onChange={(e: Event, date?: Date) =>
-                          handleDueDateChange(date)
-                        }>
-                        {(toggleShow) => (
-                          <Touchable onPress={toggleShow}>
-                            <View style={applyStyles('flex-row items-center')}>
-                              <View style={applyStyles('pr-sm')}>
-                                <Text style={applyStyles('text-400')}>
-                                  Collect on:
-                                </Text>
-                              </View>
-                              <View
-                                style={applyStyles('p-sm', {
-                                  borderWidth: 1,
-                                  borderColor: colors['gray-900'],
-                                })}>
-                                <Text style={applyStyles('text-500')}>
-                                  {format(dueDate, 'dd/MM/yyyy')}
-                                </Text>
-                              </View>
-                            </View>
-                          </Touchable>
-                        )}
-                      </DatePicker>
-                    </View>
-                  )}
-                </View>
-              </View>
-            )}
-            <View style={applyStyles('px-xl', {paddingBottom: 100})}>
-              <Button
-                title="create"
-                variantColor="red"
-                isLoading={isSaving}
-                onPress={handleSaveReceipt}
-                disabled={!receiptItems.length}
-              />
-            </View>
-          </>
+        ListEmptyComponent={
+          <View style={applyStyles('h-full center mx-auto')}>
+            <Text
+              style={applyStyles(
+                'text-700 text-center text-gray-200 text-uppercase',
+              )}>
+              There are no items in this receipt
+            </Text>
+          </View>
         }
       />
-
-      <PageModal
-        title="Create Customer"
-        visible={isAddCustomerModalOpen}
-        onClose={handleCloseAddCustomerModal}>
-        <AddCustomer onSubmit={handleAddNewCustomer} />
-      </PageModal>
+      <View
+        style={applyStyles('p-16 items-end bg-white w-full', {
+          elevation: 10,
+          borderBottomWidth: 1,
+          shadowRadius: 6.27,
+          shadowOpacity: 0.34,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 5,
+          },
+          borderBottomColor: colors['gray-10'],
+        })}>
+        <ReceiptTableFooterItem
+          title="Total"
+          value={amountWithCurrency(totalAmount)}
+        />
+      </View>
+      <View
+        style={applyStyles('w-full p-16 bg-white', {
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 5,
+          },
+          shadowOpacity: 0.34,
+          shadowRadius: 6.27,
+          elevation: 10,
+        })}>
+        <Button title="Continue" onPress={handleDone} />
+      </View>
     </View>
   );
 });

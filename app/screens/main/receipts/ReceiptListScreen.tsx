@@ -20,7 +20,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
+import {KeyboardAvoidingView, Text, View} from 'react-native';
 import {ReceiptListItem} from './ReceiptListItem';
 
 export const ReceiptListScreen = withModal(() => {
@@ -130,8 +130,8 @@ export const ReceiptListScreen = withModal(() => {
   }, []);
 
   const handleCreateReceipt = useCallback(() => {
-    Alert.alert('Coming soon', 'This feature is coming in the next PR');
-  }, []);
+    navigation.navigate('CreateReceipt');
+  }, [navigation]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {

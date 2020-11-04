@@ -4,7 +4,6 @@ import {
   CancelReceiptModal,
   ContactsListModal,
   CurrencyInput,
-  Header,
   PreviewActionButton,
   ReceiptTableFooterItem,
   ReceiptTableHeader,
@@ -36,14 +35,7 @@ import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  Alert,
-  FlatList,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {Alert, FlatList, Text, ToastAndroid, View} from 'react-native';
 import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
@@ -54,6 +46,7 @@ type ReceiptDetailsProps = ModalWrapperFields & {receipt?: IReceipt};
 
 export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const {receipt, openModal} = props;
+
   const realm = useRealm();
   const navigation = useAppNavigation();
   const customers = getCustomers({realm});
@@ -470,16 +463,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     setCustomer(receipt?.customer);
   }, [receipt]);
 
-  return !receipt ? (
-    <View style={applyStyles('flex-1 center bg-white')}>
-      <ActivityIndicator color={colors.primary} size={40} />
-    </View>
-  ) : (
+  return (
     <>
-      <Header
-        title="View Receipt"
-        iconLeft={{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
-      />
       <View style={applyStyles('bg-white flex-1')}>
         <ReceiptListItem
           isHeader
@@ -490,7 +475,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
               receipt?.created_at &&
               format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
           }}
-          onPress={receipt.hasCustomer ? undefined : handleOpenContactList}
+          onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
         />
         {!isFulfilled && !receipt?.is_cancelled && (
           <View
@@ -515,14 +500,14 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         )}
         <FlatList
           persistentScrollbar
-          data={receipt.items}
+          data={receipt?.items}
           renderItem={renderItem}
           keyboardShouldPersistTaps="always"
           ListHeaderComponent={<ReceiptTableHeader />}
           keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         />
         <>
-          {!receipt.is_cancelled && (
+          {!receipt?.is_cancelled && (
             <View
               style={applyStyles('px-16 items-end', {
                 borderTopWidth: 1,
@@ -530,7 +515,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
               })}>
               <ReceiptTableFooterItem
                 title="Total"
-                value={amountWithCurrency(receipt.total_amount)}
+                value={amountWithCurrency(receipt?.total_amount)}
               />
               <ReceiptTableFooterItem
                 title="Paid"
