@@ -374,7 +374,9 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
     }
   }, [handleOpenPrinterModal, handlePrint, printer]);
 
-  const handleReissueReceipt = useCallback(() => {}, []);
+  const handleReissueReceipt = useCallback(() => {
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
+  }, []);
 
   const handleCancelReceipt = useCallback(
     (note) => {
@@ -383,7 +385,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
         setIsCancelReceiptModalOpen(false);
         navigation.goBack();
         ToastAndroid.show('Receipt cancelled', ToastAndroid.SHORT);
-      }, 300);
+      }, 50);
     },
     [receipt, realm, navigation],
   );
