@@ -129,7 +129,7 @@ export const MoreOptionsScreen = () => {
   return (
     <ScrollView>
       <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
-        {(!business?.name || !business?.address) && (
+        {(!business.name || !business.address) && (
           <Touchable onPress={onEditBusinessSettings}>
             <View
               style={applyStyles('my-lg mx-lg py-sm', {
@@ -146,7 +146,7 @@ export const MoreOptionsScreen = () => {
             </View>
           </Touchable>
         )}
-        {business && business.name && (
+        {!!business.name && (
           <View
             style={applyStyles(
               'p-16 flex-row items-center border-t-1 border-gray-20',
