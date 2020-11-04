@@ -110,7 +110,7 @@ export const ReceiptListScreen = withModal(() => {
     }
     if (searchTerm) {
       userReceipts = userReceipts.filtered(
-        `customer.name BEGINSWITH[c] "${searchTerm}"`,
+        `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
     return (userReceipts.sorted('created_at', true) as unknown) as IReceipt[];

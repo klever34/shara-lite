@@ -34,9 +34,7 @@ export const ProductListScreen = withModal(() => {
       IProduct & Realm.Object
     >;
     if (searchTerm) {
-      userProducts = userProducts.filtered(
-        `name BEGINSWITH[c] "${searchTerm}"`,
-      );
+      userProducts = userProducts.filtered(`name CONTAINS[c] "${searchTerm}"`);
     }
     return (userProducts.sorted('created_at', true) as unknown) as IProduct[];
   }, [products, searchTerm]);
