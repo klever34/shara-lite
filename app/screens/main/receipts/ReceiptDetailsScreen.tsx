@@ -1,7 +1,9 @@
 import {
   BluetoothModal,
+  Button,
   CancelReceiptModal,
   ContactsListModal,
+  CurrencyInput,
   Header,
   PreviewActionButton,
   ReceiptTableFooterItem,
@@ -21,6 +23,7 @@ import {
   getAuthService,
   getStorageService,
 } from '@/services';
+import {saveCreditPayment} from '@/services/CreditPaymentService';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
@@ -57,6 +60,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
   const analyticsService = getAnalyticsService();
   const currencyCode = getAuthService().getUserCurrencyCode();
 
+  const [isLoading, setIsLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState('');
   const [receipt, setReceipt] = useState<IReceipt | undefined>();
   const [printer, setPrinter] = useState<{address: string}>(
@@ -65,15 +69,16 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer,
   );
+  const [creditPaymentAmount, setCreditPaymentAmount] = useState(0);
   const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
   const [isCancelReceiptModalOpen, setIsCancelReceiptModalOpen] = useState(
     false,
   );
 
   const creditDueDate = receipt?.dueDate;
+  const hasCustomerMobile = customer?.mobile;
   const receiptDate = receipt?.created_at ?? new Date();
   const businessInfo = getAuthService().getBusinessInfo();
-  const hasCustomerMobile = customer?.mobile;
   const allPayments = receipt ? getAllPayments({receipt}) : [];
   const totalAmountPaid = allPayments.reduce(
     (total, payment) => total + payment.amount_paid,
@@ -387,6 +392,38 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
     Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, []);
 
+  const handleCreditPaymentAmountChange = useCallback((amount) => {
+    setCreditPaymentAmount(amount);
+  }, []);
+
+  const handleCreditPaymentSubmit = useCallback(() => {
+    if (customer?.name) {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+        const newCustomer = customer._id
+          ? customer
+          : saveCustomer({realm, customer});
+        receipt &&
+          updateReceipt({
+            realm,
+            receipt,
+            customer: newCustomer,
+          });
+        saveCreditPayment({
+          realm,
+          customer,
+          method: '',
+          amount: creditPaymentAmount,
+        });
+        setCreditPaymentAmount(0);
+        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
+      }, 50);
+    } else {
+      Alert.alert('Info', 'Please select a customer');
+    }
+  }, [creditPaymentAmount, customer, realm, receipt]);
+
   const handleOpenContactList = useCallback(() => {
     const closeContactListModal = openModal('bottom-half', {
       swipeDirection: [],
@@ -455,6 +492,27 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
           receipt={receipt}
           onPress={receipt.hasCustomer ? undefined : handleOpenContactList}
         />
+        {!isFulfilled && !receipt?.is_cancelled && (
+          <View
+            style={applyStyles('p-16', {
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-10'],
+            })}>
+            <View style={applyStyles('mb-md')}>
+              <CurrencyInput
+                label="how much has been paid?"
+                value={creditPaymentAmount.toString()}
+                onChange={(value) => handleCreditPaymentAmountChange(value)}
+              />
+            </View>
+            <Button
+              isLoading={isLoading}
+              title="record payment"
+              disabled={!creditPaymentAmount}
+              onPress={handleCreditPaymentSubmit}
+            />
+          </View>
+        )}
         <FlatList
           persistentScrollbar
           data={receipt.items}
@@ -538,7 +596,6 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
               </Text>
             </View>
           )}
-
           {!receipt?.is_cancelled && (
             <View
               style={applyStyles('w-full py-16 px-24 bg-white', {
