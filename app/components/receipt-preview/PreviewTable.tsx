@@ -3,263 +3,96 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {StyleSheet, Text, View} from 'react-native';
+import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 
-export type SummaryTableItemProps = {
+export type ReceiptTableItemProps = {
   item: IReceiptItem;
 };
 
-export const summaryTableStyles = StyleSheet.create({
+export const receiptTableStyles = StyleSheet.create({
   row: {
     flexWrap: 'wrap',
+    paddingVertical: 8,
+    paddingHorizontal: 16,
     flexDirection: 'row',
-  },
-  column: {
-    // height: 48,
-    paddingVertical: 12,
-    borderRightWidth: 1,
-    paddingHorizontal: 4,
-    justifyContent: 'center',
-    borderRightColor: colors['gray-20'],
   },
   'column-20': {
     width: '20%',
   },
-  'column-50': {
-    width: '50%',
-  },
-  'column-25': {
-    width: '25%',
-  },
-  'column-10': {
-    width: '10%',
-  },
-  'column-15': {
-    width: '15%',
-  },
   'column-40': {
     width: '40%',
   },
-  'column-30': {
-    width: '30%',
+});
+
+export const receiptTableHeaderStyles = StyleSheet.create({
+  row: {
+    borderBottomWidth: 1,
+    borderBottomColor: colors['gray-10'],
   },
 });
 
-export const summaryTableHeaderStyles = StyleSheet.create({
+export const receiptTableItemStyles = StyleSheet.create({
   row: {
     borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderTopColor: colors['gray-20'],
-    borderBottomColor: colors['gray-20'],
-  },
-  text: {
-    fontFamily: 'Rubik-Medium',
-    color: colors['gray-300'],
+    borderTopColor: colors['gray-10'],
   },
 });
 
-export const summaryTableItemStyles = StyleSheet.create({
-  row: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-20'],
-  },
-  text: {
-    fontFamily: 'Rubik-Regular',
-    color: colors['gray-300'],
-  },
-  subText: {
-    fontSize: 12,
-    fontFamily: 'Rubik-Regular',
-    color: colors['gray-200'],
-  },
-});
-
-export const SummaryTableHeader = () => {
+export const ReceiptTableFooterItem = ({
+  title,
+  value,
+}: {
+  title: string;
+  value: string;
+}) => {
   return (
-    <View
-      style={applyStyles(summaryTableStyles.row, summaryTableHeaderStyles.row)}>
-      <View
-        style={applyStyles(
-          'px-xs',
-          summaryTableStyles.column,
-          summaryTableStyles['column-25'],
-        )}>
-        <Text style={summaryTableHeaderStyles.text}>Item</Text>
+    <View style={applyStyles('flex-row py-4')}>
+      <Text style={applyStyles('text-700 text-uppercase text-gray-200')}>
+        {title}
+      </Text>
+      <Text style={applyStyles('pl-xs text-700 text-uppercase text-gray-300')}>
+        {value}
+      </Text>
+    </View>
+  );
+};
+
+export const ReceiptTableHeader = () => {
+  return (
+    <View style={applyStyles(receiptTableStyles.row)}>
+      <View style={receiptTableStyles['column-40']}>
+        <Text
+          style={applyStyles('text-xs text-400 text-gray-100 text-uppercase')}>
+          Product
+        </Text>
       </View>
       <View
-        style={applyStyles(
-          'px-xs',
-          summaryTableStyles.column,
-          summaryTableStyles['column-30'],
-          {
-            alignItems: 'flex-end',
-          },
-        )}>
-        <Text style={summaryTableHeaderStyles.text}>Unit Price</Text>
+        style={applyStyles(receiptTableStyles['column-20'], {
+          alignItems: 'flex-end',
+        })}>
+        <Text
+          style={applyStyles('text-xs text-400 text-gray-100 text-uppercase')}>
+          QTY
+        </Text>
       </View>
       <View
-        style={applyStyles(
-          'px-xs',
-          summaryTableStyles['column-15'],
-          summaryTableStyles.column,
-          {
-            alignItems: 'flex-end',
-          },
-        )}>
-        <Text style={summaryTableHeaderStyles.text}>QTY</Text>
-      </View>
-      <View
-        style={applyStyles(
-          'px-xs justify-center',
-          summaryTableStyles['column-30'],
-          {
-            alignItems: 'flex-end',
-          },
-        )}>
-        <Text style={summaryTableHeaderStyles.text}>Price</Text>
+        style={applyStyles(receiptTableStyles['column-40'], {
+          alignItems: 'flex-end',
+        })}>
+        <Text
+          style={applyStyles('text-xs text-400 text-gray-100 text-uppercase')}>
+          Subtotal
+        </Text>
       </View>
     </View>
   );
 };
 
-export const SummaryTableFooter = ({
-  tax,
-  totalAmount,
-}: {
-  tax?: number;
-  totalAmount?: number;
-}) => {
-  return (
-    <>
-      <View
-        style={applyStyles(
-          summaryTableStyles.row,
-          summaryTableHeaderStyles.row,
-          {
-            borderTopWidth: 0,
-            backgroundColor: colors['gray-10'],
-          },
-        )}>
-        <View
-          style={applyStyles(
-            summaryTableStyles.column,
-            summaryTableStyles['column-25'],
-          )}
-        />
-        <View
-          style={applyStyles(
-            summaryTableStyles.column,
-            summaryTableStyles['column-30'],
-            {
-              alignItems: 'flex-end',
-            },
-          )}
-        />
-        <View
-          style={applyStyles(
-            summaryTableStyles['column-15'],
-            summaryTableStyles.column,
-            {
-              alignItems: 'flex-end',
-            },
-          )}
-        />
-        <View
-          style={applyStyles(
-            summaryTableStyles['column-30'],
-            summaryTableStyles.column,
-            {
-              alignItems: 'flex-end',
-            },
-          )}
-        />
-      </View>
-      <View
-        style={applyStyles('flex-row', {
-          height: 32,
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <View
-          style={applyStyles('px-xs items-end justify-center', {
-            width: '70%',
-            borderRightWidth: 1,
-            borderRightColor: colors['gray-20'],
-          })}>
-          <Text style={applyStyles('text-400', {color: colors['gray-300']})}>
-            Subtotal
-          </Text>
-        </View>
-        <View
-          style={applyStyles('px-xs items-end justify-center', {
-            width: '30%',
-          })}>
-          <Text style={applyStyles('text-400', {color: colors['gray-300']})}>
-            {amountWithCurrency(totalAmount)}
-          </Text>
-        </View>
-      </View>
-      <View
-        style={applyStyles('flex-row', {
-          height: 32,
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <View
-          style={applyStyles('px-xs items-end justify-center', {
-            width: '70%',
-            borderRightWidth: 1,
-            borderRightColor: colors['gray-20'],
-          })}>
-          <Text style={applyStyles('text-400', {color: colors['gray-300']})}>
-            Tax
-          </Text>
-        </View>
-        <View
-          style={applyStyles('px-xs items-end justify-center', {
-            width: '30%',
-          })}>
-          <Text style={applyStyles('text-400', {color: colors['gray-300']})}>
-            {amountWithCurrency(tax)}
-          </Text>
-        </View>
-      </View>
-      <View
-        style={applyStyles('flex-row', {
-          height: 32,
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <View
-          style={applyStyles('px-xs items-end justify-center', {
-            width: '70%',
-            borderRightWidth: 1,
-            borderRightColor: colors['gray-20'],
-          })}>
-          <Text
-            style={applyStyles('text-500 text-uppercase', {
-              color: colors['gray-300'],
-            })}>
-            Total
-          </Text>
-        </View>
-        <View
-          style={applyStyles('px-xs items-end justify-center', {
-            width: '30%',
-          })}>
-          <Text style={applyStyles('text-400', {color: colors['gray-300']})}>
-            {amountWithCurrency((totalAmount ?? 0) + (tax ?? 0))}
-          </Text>
-        </View>
-      </View>
-    </>
-  );
-};
-
-export const SummaryTableItem = ({
+export const ReceiptTableItem = ({
   item,
   onPress,
-}: SummaryTableItemProps & {onPress?: (item: IReceiptItem) => void}) => {
+}: ReceiptTableItemProps & {onPress?: (item: IReceiptItem) => void}) => {
   const price = item.price ? item.price : 0;
   const quantity = item.quantity ? item.quantity : 0;
   const subtotal = price * quantity;
@@ -267,48 +100,57 @@ export const SummaryTableItem = ({
   return (
     <Touchable onPress={onPress ? () => onPress(item) : undefined}>
       <View
-        style={applyStyles(summaryTableStyles.row, summaryTableItemStyles.row)}>
-        <View
-          style={applyStyles(
-            summaryTableStyles.column,
-            summaryTableStyles['column-25'],
-          )}>
-          <Text style={summaryTableItemStyles.text}>{item.product.name}</Text>
-        </View>
-        <View
-          style={applyStyles(
-            summaryTableStyles['column-30'],
-            summaryTableStyles.column,
-            {
-              alignItems: 'flex-end',
-            },
-          )}>
-          <Text style={summaryTableItemStyles.text}>
-            {amountWithCurrency(item.price)}
+        style={applyStyles(receiptTableStyles.row, receiptTableItemStyles.row)}>
+        <View style={receiptTableStyles['column-40']}>
+          <Text
+            style={applyStyles('pb-4 text-700 text-uppercase text-gray-300')}>
+            {item.product.name} {item.product.weight ? `(${item.weight})` : ''}
+          </Text>
+          <Text style={applyStyles('text-uppercase text-gray-100 text-xxs')}>
+            Unit price: {amountWithCurrency(price)}
           </Text>
         </View>
         <View
-          style={applyStyles(
-            summaryTableStyles['column-15'],
-            summaryTableStyles.column,
-            {
-              alignItems: 'flex-end',
-            },
-          )}>
-          <Text style={summaryTableItemStyles.text}>{quantity}</Text>
+          style={applyStyles(receiptTableStyles['column-20'], {
+            alignItems: 'flex-end',
+          })}>
+          <Text
+            style={applyStyles('pb-4 text-700 text-uppercase text-gray-100')}>
+            {quantity}
+          </Text>
         </View>
         <View
-          style={applyStyles(
-            'justify-center',
-            summaryTableStyles['column-30'],
-            {
-              alignItems: 'flex-end',
-            },
-          )}>
-          <Text style={summaryTableItemStyles.text}>
+          style={applyStyles(receiptTableStyles['column-40'], {
+            alignItems: 'flex-end',
+          })}>
+          <Text
+            style={applyStyles('pb-4 text-700 text-uppercase text-gray-300')}>
             {amountWithCurrency(subtotal)}
           </Text>
         </View>
+        {onPress && (
+          <View
+            style={applyStyles('flex-row', 'w-full', {
+              justifyContent: 'flex-end',
+            })}>
+            <View
+              style={applyStyles('flex-row', 'items-center', 'justify-center')}>
+              <Icon
+                size={14}
+                name="edit"
+                type="feathericons"
+                color={colors.primary}
+              />
+              <Text
+                style={applyStyles('text-400', 'text-uppercase', 'pl-xs', {
+                  fontSize: 12,
+                  color: colors.primary,
+                })}>
+                Edit
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
     </Touchable>
   );

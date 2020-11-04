@@ -8,7 +8,10 @@ import {
   PhoneNumberFieldProps,
 } from 'app-v2/components/PhoneNumberField';
 import {applyStyles} from 'app-v2/helpers/utils';
-import {PasswordField, PasswordFieldProps} from 'app-v2/components/PasswordField';
+import {
+  PasswordField,
+  PasswordFieldProps,
+} from 'app-v2/components/PasswordField';
 
 type FormFieldProps = {
   text: TextInputProps;

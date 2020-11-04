@@ -60,6 +60,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'w-full': {
     width: '100%',
   },
+  'w-1/2': {
+    width: '50%',
+  },
   'w-screen': {
     width: dimensions.fullWidth,
   },
@@ -144,6 +147,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   },
   'heading-700': {
     fontFamily: 'CocogoosePro-Regular',
+  },
+  'print-text-400': {
+    fontFamily: 'VT323-Regular',
   },
   'overflow-hidden': {
     overflow: 'hidden',

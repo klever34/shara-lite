@@ -55,6 +55,7 @@
 		319CFE1947464794B97888AE /* Roboto-RegularItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */; };
 		7BF1906AB6E34A3E85C14FAE /* Roboto-Medium.otf in Resources */ = {isa = PBXBuildFile; fileRef = 196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */; };
 		5EF887CA439F4F5AB9D7F9C8 /* Roboto-MediumItalic.otf in Resources */ = {isa = PBXBuildFile; fileRef = 10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */; };
+		7A8F36BA7F89412EA2126636 /* VT323-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 15F98031A01042DFADDE6441 /* VT323-Regular.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -138,6 +139,7 @@
 		4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */ = {isa = PBXFileReference; name = "Roboto-RegularItalic.otf"; path = "../app/assets/fonts/Roboto-RegularItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */ = {isa = PBXFileReference; name = "Roboto-Medium.otf"; path = "../app/assets/fonts/Roboto-Medium.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 		10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */ = {isa = PBXFileReference; name = "Roboto-MediumItalic.otf"; path = "../app/assets/fonts/Roboto-MediumItalic.otf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
+		15F98031A01042DFADDE6441 /* VT323-Regular.ttf */ = {isa = PBXFileReference; name = "VT323-Regular.ttf"; path = "../app/assets/fonts/VT323-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -309,6 +311,7 @@
 				4E5D1CEB7ED740AABF256671 /* Roboto-RegularItalic.otf */,
 				196938679E6E41F8AE8B4CF1 /* Roboto-Medium.otf */,
 				10E171141F234BA7BC145B23 /* Roboto-MediumItalic.otf */,
+				15F98031A01042DFADDE6441 /* VT323-Regular.ttf */,
 			);
 			name = Resources;
 			path = "";
@@ -494,6 +497,7 @@
 				319CFE1947464794B97888AE /* Roboto-RegularItalic.otf in Resources */,
 				7BF1906AB6E34A3E85C14FAE /* Roboto-Medium.otf in Resources */,
 				5EF887CA439F4F5AB9D7F9C8 /* Roboto-MediumItalic.otf in Resources */,
+				7A8F36BA7F89412EA2126636 /* VT323-Regular.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

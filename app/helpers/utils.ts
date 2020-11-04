@@ -5,7 +5,12 @@ import addDays from 'date-fns/addDays';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
 import {getAuthService} from '@/services';
-import {ReactElement} from 'react';
+import {useCallback, useMemo, useState} from 'react';
+import ImagePicker, {
+  ImagePickerOptions,
+  ImagePickerResponse,
+} from 'react-native-image-picker';
+import {Alert} from 'react-native';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -81,16 +86,47 @@ export const getCustomerWhatsappNumber = (
   }
 };
 
-export const renderList = <T extends {}>(
-  list: T[],
-  renderItem: (item: T, index: number, list: T[]) => ReactElement,
-  emptyState?: ReactElement,
+export type ImagePickerResult = Pick<ImagePickerResponse, 'uri'> & {
+  type?: string;
+  name?: string;
+};
+
+export const useImageInput = (
+  initialUrl?: ImagePickerResult,
+  options: ImagePickerOptions = {},
 ) => {
-  if (!list.length) {
-    return emptyState ?? null;
-  } else {
-    return list.map((...args) => renderItem(...args));
-  }
+  const [imageUrl, setImageUrl] = useState(initialUrl);
+  const handleImageInputChange = useCallback(() => {
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        // do nothing
+      } else if (response.error) {
+        Alert.alert('Error', response.error);
+      } else {
+        const {uri, type, fileName} = response;
+        const extensionIndex = uri.lastIndexOf('.');
+        const extension = uri.slice(extensionIndex + 1);
+        const allowedExtensions = ['jpg', 'jpeg', 'png'];
+        if (!allowedExtensions.includes(extension)) {
+          return Alert.alert('Error', 'That file type is not allowed.');
+        }
+        const image = {
+          uri,
+          type,
+          name: fileName ?? '',
+        };
+        setImageUrl(image);
+      }
+    });
+  }, [options]);
+  return useMemo(
+    () => ({
+      imageUrl,
+      setImageUrl,
+      handleImageInputChange,
+    }),
+    [handleImageInputChange, imageUrl],
+  );
 };
 
 export const prepareValueForSearch = (text: any): string => {

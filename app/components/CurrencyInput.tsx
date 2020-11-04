@@ -1,16 +1,12 @@
-import React, {useEffect, useState, useCallback} from 'react';
-import {
-  FloatingLabelInput,
-  FloatingLabelInputProps,
-} from './FloatingLabelInput';
-import {Text, TextStyle, ViewStyle} from 'react-native';
-import {colors} from '../styles';
-import {getAuthService} from '../services';
 import {applyStyles} from '@/styles';
+import React, {useCallback, useEffect, useState} from 'react';
+import {Text, TextStyle} from 'react-native';
+import {getAuthService} from '../services';
+import {colors} from '../styles';
+import {AppInput, AppInputProps} from './AppInput';
 
-type Props = Omit<FloatingLabelInputProps, 'onChange' | 'onChangeText'> & {
+type Props = Omit<AppInputProps, 'onChange' | 'onChangeText'> & {
   onChange?: (value: number) => void;
-  inputStyle?: ViewStyle;
   iconStyle?: TextStyle;
 };
 
@@ -40,10 +36,8 @@ const toNumber = (value: string) => parseFloat(value.replace(/,/g, ''));
 export const CurrencyInput = (props: Props) => {
   const authService = getAuthService();
   const currency = authService.getUserCurrency();
-  const {value: valueProp, onChange, inputStyle, iconStyle, ...rest} = props;
+  const {value: valueProp, onChange, iconStyle, ...rest} = props;
   const [value, setValue] = useState(valueProp);
-
-  const paddingLeft = currency.length > 1 ? 36 : 16;
 
   useEffect(() => {
     if (valueProp) {
@@ -67,11 +61,10 @@ export const CurrencyInput = (props: Props) => {
   );
 
   return (
-    <FloatingLabelInput
+    <AppInput
       value={value}
       keyboardType="number-pad"
       onChangeText={handleChange}
-      inputStyle={applyStyles({paddingLeft, ...inputStyle})}
       leftIcon={
         <Text
           style={applyStyles('text-400', {

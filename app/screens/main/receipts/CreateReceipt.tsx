@@ -4,12 +4,11 @@ import {
   CurrencyInput,
   DatePicker,
   PageModal,
-  SummaryTableFooter,
-  SummaryTableHeader,
-  summaryTableHeaderStyles,
-  SummaryTableItem,
-  SummaryTableItemProps,
-  summaryTableStyles,
+  ReceiptTableHeader,
+  receiptTableHeaderStyles,
+  ReceiptTableItem,
+  ReceiptTableItemProps,
+  receiptTableStyles,
 } from '@/components';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -18,20 +17,19 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
-import {getAnalyticsService, getAuthService} from '@/services';
+import {getAnalyticsService} from '@/services';
 import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {saveReceipt} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
 import {AddCustomer} from '../customers/CustomerListScreen';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
-import {applyStyles} from '@/styles';
 
 type Props = {
   receipt?: IReceipt;
@@ -46,7 +44,6 @@ export const CreateReceipt = withModal((props: Props) => {
   const handleError = useErrorHandler();
   const navigation = useAppNavigation();
   const myCustomers = getCustomers({realm});
-  const currency = getAuthService().getUserCurrency();
 
   const [note, setNote] = useState('');
   const [isSaving, setIsSaving] = useState(false);
@@ -275,8 +272,8 @@ export const CreateReceipt = withModal((props: Props) => {
   ]);
 
   const renderReceiptItem = useCallback(
-    ({item}: SummaryTableItemProps) => (
-      <SummaryTableItem
+    ({item}: ReceiptTableItemProps) => (
+      <ReceiptTableItem
         item={item}
         onPress={() => {
           getAnalyticsService()
@@ -360,23 +357,19 @@ export const CreateReceipt = withModal((props: Props) => {
                 </Text>
               </View>
             </View>
-            <SummaryTableHeader />
+            <ReceiptTableHeader />
 
             <Touchable onPress={handleOpenReceiptItemModal}>
               <View
                 style={applyStyles(
-                  summaryTableStyles.row,
-                  summaryTableHeaderStyles.row,
+                  receiptTableStyles.row,
+                  receiptTableHeaderStyles.row,
                   {
                     height: 48,
                     borderTopWidth: 0,
                   },
                 )}>
-                <View
-                  style={applyStyles(
-                    summaryTableStyles.column,
-                    summaryTableStyles['column-25'],
-                  )}>
+                <View style={applyStyles(receiptTableStyles['column-40'])}>
                   <View
                     style={applyStyles('flex-row items-center h-full w-full')}>
                     <Icon
@@ -393,28 +386,15 @@ export const CreateReceipt = withModal((props: Props) => {
                     </Text>
                   </View>
                 </View>
-                <View
-                  style={applyStyles(
-                    summaryTableStyles.column,
-                    summaryTableStyles['column-30'],
-                  )}
-                />
-                <View
-                  style={applyStyles(
-                    summaryTableStyles['column-15'],
-                    summaryTableStyles.column,
-                  )}
-                />
-                <View style={applyStyles(summaryTableStyles['column-30'])} />
+                <View style={applyStyles(receiptTableStyles['column-40'])} />
+                <View style={applyStyles(receiptTableStyles['column-20'])} />
+                <View style={applyStyles(receiptTableStyles['column-40'])} />
               </View>
             </Touchable>
           </>
         }
         ListFooterComponent={
           <>
-            <View style={applyStyles('pb-32')}>
-              <SummaryTableFooter tax={tax} totalAmount={totalAmount} />
-            </View>
             <View style={applyStyles('px-lg', {paddingBottom: 40})}>
               <View style={applyStyles('pb-xl flex-row items-center')}>
                 <Text
@@ -426,18 +406,6 @@ export const CreateReceipt = withModal((props: Props) => {
                 <View style={applyStyles('ml-sm')}>
                   <CurrencyInput
                     value={amountPaid.toString()}
-                    inputStyle={applyStyles({
-                      height: 48,
-                      width: 200,
-                      fontSize: 16,
-                      borderWidth: 1,
-                      paddingTop: 14,
-                      fontFamily: 'Rubik-Regular',
-                      borderColor: colors['gray-50'],
-                      borderBottomColor: colors['gray-50'],
-                      paddingLeft: currency.length > 1 ? 40 : 20,
-                    })}
-                    iconStyle={applyStyles('px-xs')}
                     placeholder="How much was paid?"
                     onChange={(value) => handleAmountPaidChange(value)}
                   />

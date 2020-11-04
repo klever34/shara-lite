@@ -1,8 +1,8 @@
+import {applyStyles} from '@/styles';
+import {upperCase} from 'lodash';
 import React from 'react';
 import {StyleProp, Text, View, ViewStyle} from 'react-native';
-import capitalize from 'lodash/capitalize';
 import Icon, {IconProps} from './Icon';
-import {applyStyles} from '@/styles';
 
 export type PlaceholderImageProps = {
   text: string;
@@ -20,17 +20,24 @@ const PlaceholderImage = ({
 }: PlaceholderImageProps) => {
   let displayLetter: string;
   if (text && text[0].match(/[A-Za-z]/)) {
-    displayLetter = capitalize(text[0]);
+    const splitText = text.split(' ');
+    if (splitText.length > 1) {
+      displayLetter = upperCase(`${splitText[0][0]}${splitText[1][0]}`);
+    } else {
+      displayLetter = upperCase(text[0]);
+    }
   } else {
     displayLetter = '#';
   }
   return (
     <View
       style={applyStyles(
-        applyStyles('center w-48 h-48 rounded-12 bg-red-30'),
+        applyStyles('center w-40 h-40 rounded-20', {
+          backgroundColor: '#4D86E3',
+        }),
         style,
       )}>
-      <Text style={applyStyles('text-xl font-bold text-primary text-700')}>
+      <Text style={applyStyles('text-xl text-white text-400')}>
         {displayLetter}
       </Text>
       {indicator && (

@@ -1,9 +1,8 @@
-import React from 'react';
 import {IReceipt} from '@/models/Receipt';
 import {colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
+import React from 'react';
 import {ReceiptListScreen} from './ReceiptListScreen';
-import {ReceiptDetailsScreen} from './ReceiptDetailsScreen';
 
 export type ReceiptsStackParamList = {
   ReceiptList: undefined;
@@ -22,16 +21,11 @@ export const ReceiptsScreen = () => {
         },
         headerTitleStyle: {
           fontSize: 16,
-          fontFamily: 'CocogoosePro-SemiLight',
+          fontFamily: 'Roboto-Regular',
         },
         headerTintColor: colors['gray-300'],
       }}>
       <ReceiptsStack.Screen name="ReceiptList" component={ReceiptListScreen} />
-      <ReceiptsStack.Screen
-        name="ReceiptDetails"
-        component={ReceiptDetailsScreen}
-        options={{headerShown: false}}
-      />
     </ReceiptsStack.Navigator>
   );
 };

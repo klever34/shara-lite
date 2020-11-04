@@ -1,7 +1,7 @@
 import {
-  summaryTableHeaderStyles,
-  summaryTableItemStyles,
-  summaryTableStyles,
+  receiptTableHeaderStyles,
+  receiptTableItemStyles,
+  receiptTableStyles,
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -105,39 +105,23 @@ export const ItemsTab = withModal(({openModal}: Props) => {
         <Touchable onPress={() => handleOpenEditReceiptItemModal(item)}>
           <View
             style={applyStyles(
-              summaryTableStyles.row,
-              summaryTableItemStyles.row,
+              receiptTableStyles.row,
+              receiptTableItemStyles.row,
             )}>
-            <View
-              style={applyStyles(
-                summaryTableStyles.column,
-                summaryTableStyles['column-50'],
-              )}>
-              <Text style={summaryTableItemStyles.text}>{item.name}</Text>
+            <View style={applyStyles()}>
+              <Text>{item.name}</Text>
             </View>
             <View
-              style={applyStyles(
-                summaryTableStyles['column-25'],
-                summaryTableStyles.column,
-                {
-                  alignItems: 'flex-end',
-                },
-              )}>
-              <Text style={summaryTableItemStyles.text}>
-                {amountWithCurrency(item.price)}
-              </Text>
+              style={applyStyles({
+                alignItems: 'flex-end',
+              })}>
+              <Text>{amountWithCurrency(item.price)}</Text>
             </View>
             <View
-              style={applyStyles(
-                summaryTableStyles['column-25'],
-                summaryTableStyles.column,
-                {
-                  alignItems: 'flex-end',
-                },
-              )}>
-              <Text style={summaryTableItemStyles.text}>
-                {numberWithCommas(item.quantity)}
-              </Text>
+              style={applyStyles({
+                alignItems: 'flex-end',
+              })}>
+              <Text>{numberWithCommas(item.quantity)}</Text>
             </View>
           </View>
         </Touchable>
@@ -157,55 +141,36 @@ export const ItemsTab = withModal(({openModal}: Props) => {
           <>
             <View
               style={applyStyles(
-                summaryTableStyles.row,
-                summaryTableHeaderStyles.row,
+                receiptTableStyles.row,
+                receiptTableHeaderStyles.row,
               )}>
-              <View
-                style={applyStyles(
-                  'px-xs',
-                  summaryTableStyles.column,
-                  summaryTableStyles['column-50'],
-                )}>
-                <Text style={summaryTableHeaderStyles.text}>Item</Text>
+              <View style={applyStyles('px-xs')}>
+                <Text>Item</Text>
               </View>
               <View
-                style={applyStyles(
-                  'px-xs',
-                  summaryTableStyles.column,
-                  summaryTableStyles['column-25'],
-                  {
-                    alignItems: 'flex-end',
-                  },
-                )}>
-                <Text style={summaryTableHeaderStyles.text}>Sales Price</Text>
+                style={applyStyles('px-xs', {
+                  alignItems: 'flex-end',
+                })}>
+                <Text>Sales Price</Text>
               </View>
               <View
-                style={applyStyles(
-                  'px-xs',
-                  summaryTableStyles['column-25'],
-                  summaryTableStyles.column,
-                  {
-                    alignItems: 'flex-end',
-                  },
-                )}>
-                <Text style={summaryTableHeaderStyles.text}>QTY</Text>
+                style={applyStyles('px-xs', {
+                  alignItems: 'flex-end',
+                })}>
+                <Text>QTY</Text>
               </View>
             </View>
             <Touchable onPress={handleOpenReceiptItemModal}>
               <View
                 style={applyStyles(
-                  summaryTableStyles.row,
-                  summaryTableHeaderStyles.row,
+                  receiptTableStyles.row,
+                  receiptTableHeaderStyles.row,
                   {
                     height: 48,
                     borderTopWidth: 0,
                   },
                 )}>
-                <View
-                  style={applyStyles(
-                    summaryTableStyles.column,
-                    summaryTableStyles['column-50'],
-                  )}>
+                <View>
                   <View
                     style={applyStyles('flex-row items-center h-full w-full')}>
                     <Icon
@@ -222,18 +187,6 @@ export const ItemsTab = withModal(({openModal}: Props) => {
                     </Text>
                   </View>
                 </View>
-                <View
-                  style={applyStyles(
-                    summaryTableStyles.column,
-                    summaryTableStyles['column-25'],
-                  )}
-                />
-                <View
-                  style={applyStyles(
-                    summaryTableStyles['column-25'],
-                    summaryTableStyles.column,
-                  )}
-                />
               </View>
             </Touchable>
           </>
