@@ -4,9 +4,9 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useRef} from 'react';
-import {FlatList, Text, View, ViewStyle} from 'react-native';
-import {captureRef} from 'react-native-view-shot';
+import React, {useCallback} from 'react';
+import {FlatList, ScrollView, Text, View, ViewStyle} from 'react-native';
+import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {User} from 'types/app';
 
@@ -24,12 +24,12 @@ type Props = {
   products?: IReceiptItem[];
   containerStyle?: ViewStyle;
   getImageUri: (base64: string) => void;
+  captureMode?: ViewShotProperties['captureMode'];
 };
 
 export const ReceiptImage = (props: Props) => {
   const {
     user,
-    customer,
     products,
     createdAt,
     receiptNo,
@@ -37,24 +37,19 @@ export const ReceiptImage = (props: Props) => {
     totalAmount,
     getImageUri,
     creditAmount,
-    containerStyle,
+    captureMode,
   } = props;
 
   const businessInfo = getAuthService().getBusinessInfo();
-  const viewRef = useRef<any>(null);
 
-  const onCapture = useCallback(async () => {
-    captureRef(viewRef, {
-      format: 'png',
-    }).then(
-      (uri) => {
-        RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
-          getImageUri(data);
-        });
-      },
-      (error) => console.error('Oops, snapshot failed', error),
-    );
-  }, [getImageUri]);
+  const onCapture = useCallback(
+    async (uri: any) => {
+      RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
+        getImageUri(data);
+      });
+    },
+    [getImageUri],
+  );
 
   const renderItem = useCallback(({item}: {item: IReceiptItem}) => {
     const price = item.price ? item.price : 0;
@@ -78,25 +73,16 @@ export const ReceiptImage = (props: Props) => {
     );
   }, []);
 
-  useEffect(() => {
-    if (customer?.name) {
-      onCapture();
-    }
-  }, [customer, onCapture]);
-
   return (
-    <View
-      style={applyStyles('flex-1', {
-        backgroundColor: colors.white,
-        ...containerStyle,
-      })}
-      ref={viewRef}>
-      <FlatList
-        data={products}
-        renderItem={renderItem}
-        style={applyStyles('mt-lg')}
-        keyExtractor={(item) => `${item._id}`}
-        ListHeaderComponent={
+    <ScrollView>
+      <ViewShot
+        onCapture={onCapture}
+        captureMode={captureMode}
+        options={{format: 'png'}}>
+        <View
+          style={applyStyles('px-lg flex-1', {
+            backgroundColor: colors.white,
+          })}>
           <>
             <View style={applyStyles('py-lg items-center justify-center')}>
               {!!businessInfo.name && (
@@ -158,8 +144,11 @@ export const ReceiptImage = (props: Props) => {
               </View>
             </View>
           </>
-        }
-        ListFooterComponent={
+          <FlatList
+            data={products}
+            renderItem={renderItem}
+            keyExtractor={(item) => `${item._id}`}
+          />
           <>
             <View
               style={applyStyles('center py-16', {
@@ -198,8 +187,8 @@ export const ReceiptImage = (props: Props) => {
               </Text>
             </View>
           </>
-        }
-      />
-    </View>
+        </View>
+      </ViewShot>
+    </ScrollView>
   );
 };

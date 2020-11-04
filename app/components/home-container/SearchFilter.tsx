@@ -37,7 +37,7 @@ export const SearchFilter = ({
           />
         </View>
         <TextInput
-          style={applyStyles('px-40 text-500 bg-white', {
+          style={applyStyles('px-40 text-400 bg-white', {
             height: 40,
             fontSize: 16,
             borderWidth: 1.5,
@@ -47,22 +47,24 @@ export const SearchFilter = ({
           onChangeText={onSearch}
           placeholder={placeholderText}
         />
-        <Touchable onPress={onOpenFilter}>
-          <View
-            style={applyStyles('flex-row center', {
-              position: 'absolute',
-              right: 12,
-              top: 10,
-              zIndex: 10,
-            })}>
-            <Icon
-              size={20}
-              name="sliders"
-              type="feathericons"
-              color={colors['gray-50']}
-            />
-          </View>
-        </Touchable>
+        {onOpenFilter && (
+          <Touchable onPress={onOpenFilter}>
+            <View
+              style={applyStyles('flex-row center', {
+                position: 'absolute',
+                right: 12,
+                top: 10,
+                zIndex: 10,
+              })}>
+              <Icon
+                size={20}
+                name="sliders"
+                type="feathericons"
+                color={colors['gray-50']}
+              />
+            </View>
+          </Touchable>
+        )}
       </View>
     </View>
   );

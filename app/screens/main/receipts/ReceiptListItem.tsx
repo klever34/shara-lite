@@ -18,9 +18,15 @@ export const ReceiptListItem = ({
   onPress?: () => void;
 }) => {
   const hasCustomer = receipt?.hasCustomer;
-  const statusText = receipt?.isPaid ? 'Paid' : 'owes you';
-  const statusTextWeight = receipt?.isPaid ? 'text-400' : 'text-700';
-  const statusTextColor = receipt?.isPaid ? 'text-gray-200' : 'text-red-100';
+  const statusText = receipt?.is_cancelled
+    ? 'Cancelled'
+    : receipt?.isPaid
+    ? 'Paid'
+    : 'owes you';
+  const statusTextWeight =
+    receipt?.isPaid || receipt?.is_cancelled ? 'text-400' : 'text-700';
+  const statusTextColor =
+    receipt?.isPaid || receipt?.is_cancelled ? 'text-gray-200' : 'text-red-100';
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>

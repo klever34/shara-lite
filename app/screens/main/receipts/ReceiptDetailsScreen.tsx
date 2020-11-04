@@ -464,26 +464,28 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
           keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         />
         <>
-          <View
-            style={applyStyles('px-16 items-end', {
-              borderTopWidth: 1,
-              borderTopColor: colors['gray-10'],
-            })}>
-            <ReceiptTableFooterItem
-              title="Total"
-              value={amountWithCurrency(receipt.total_amount)}
-            />
-            <ReceiptTableFooterItem
-              title="Paid"
-              value={amountWithCurrency(totalAmountPaid)}
-            />
-            {!isFulfilled && (
+          {!receipt.is_cancelled && (
+            <View
+              style={applyStyles('px-16 items-end', {
+                borderTopWidth: 1,
+                borderTopColor: colors['gray-10'],
+              })}>
               <ReceiptTableFooterItem
-                title="Balance"
-                value={amountWithCurrency(creditAmountLeft)}
+                title="Total"
+                value={amountWithCurrency(receipt.total_amount)}
               />
-            )}
-          </View>
+              <ReceiptTableFooterItem
+                title="Paid"
+                value={amountWithCurrency(totalAmountPaid)}
+              />
+              {!isFulfilled && (
+                <ReceiptTableFooterItem
+                  title="Balance"
+                  value={amountWithCurrency(creditAmountLeft)}
+                />
+              )}
+            </View>
+          )}
           {!receipt?.is_cancelled && (
             <View
               style={applyStyles(
@@ -651,6 +653,7 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
         <ReceiptImage
           user={user}
           tax={receipt?.tax}
+          captureMode="update"
           products={receipt?.items}
           amountPaid={totalAmountPaid}
           creditDueDate={creditDueDate}
