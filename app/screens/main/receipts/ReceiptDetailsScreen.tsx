@@ -477,7 +477,11 @@ export const ReceiptDetailsScreen = withModal(({route, openModal}: any) => {
           keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         />
         <>
-          <View>
+          <View
+            style={applyStyles('px-16 items-end', {
+              borderTopWidth: 1,
+              borderTopColor: colors['gray-10'],
+            })}>
             <ReceiptTableFooterItem
               title="Total"
               value={amountWithCurrency(receipt.total_amount)}

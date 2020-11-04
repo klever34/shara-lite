@@ -34,8 +34,8 @@ export const receiptTableHeaderStyles = StyleSheet.create({
 
 export const receiptTableItemStyles = StyleSheet.create({
   row: {
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-10'],
+    borderTopWidth: 1,
+    borderTopColor: colors['gray-10'],
   },
 });
 
@@ -47,31 +47,20 @@ export const ReceiptTableFooterItem = ({
   value: string;
 }) => {
   return (
-    <View style={applyStyles('flex-row p-4')}>
-      <View
-        style={applyStyles('px-xs items-end justify-center', {
-          width: '70%',
-        })}>
-        <Text style={applyStyles('text-700 text-uppercase text-gray-200')}>
-          {title}
-        </Text>
-      </View>
-      <View
-        style={applyStyles('px-xs items-end justify-center', {
-          width: '30%',
-        })}>
-        <Text style={applyStyles('text-700 text-uppercase text-gray-300')}>
-          {value}
-        </Text>
-      </View>
+    <View style={applyStyles('flex-row py-4')}>
+      <Text style={applyStyles('text-700 text-uppercase text-gray-200')}>
+        {title}
+      </Text>
+      <Text style={applyStyles('pl-xs text-700 text-uppercase text-gray-300')}>
+        {value}
+      </Text>
     </View>
   );
 };
 
 export const ReceiptTableHeader = () => {
   return (
-    <View
-      style={applyStyles(receiptTableStyles.row, receiptTableHeaderStyles.row)}>
+    <View style={applyStyles(receiptTableStyles.row)}>
       <View style={receiptTableStyles['column-40']}>
         <Text
           style={applyStyles('text-xs text-400 text-gray-100 text-uppercase')}>
@@ -117,7 +106,7 @@ export const ReceiptTableItem = ({
             style={applyStyles('pb-4 text-700 text-uppercase text-gray-300')}>
             {item.product.name} {item.product.weight ? `(${item.weight})` : ''}
           </Text>
-          <Text style={applyStyles('text-uppercase text-gray-100 text-xs')}>
+          <Text style={applyStyles('text-uppercase text-gray-100 text-xxs')}>
             Unit price: {amountWithCurrency(price)}
           </Text>
         </View>
