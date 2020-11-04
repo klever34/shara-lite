@@ -61,6 +61,7 @@ export const ReceiptListItem = ({
               <PlaceholderImage text={receipt?.customer?.name ?? ''} />
               <View style={applyStyles('pl-sm')}>
                 <Text
+                  numberOfLines={1}
                   style={applyStyles(
                     'pb-4 text-uppercase text-700 text-gray-300',
                   )}>
