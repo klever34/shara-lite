@@ -94,7 +94,7 @@ export const Login = () => {
 
   return (
     <AuthView
-      title="Sign In"
+      header={{title: 'Sign In', iconLeft: {}}}
       isLoading={loading}
       buttonTitle="Sign In"
       onSubmit={handleSubmit}
