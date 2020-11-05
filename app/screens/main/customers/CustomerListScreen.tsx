@@ -1,5 +1,5 @@
 import EmptyState from '@/components/EmptyState';
-import {HeaderRight} from '@/components/HeaderRight';
+import {HeaderRight, HeaderRightMenuOption} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
@@ -19,10 +19,8 @@ import React, {
   useState,
 } from 'react';
 import {
-  ActivityIndicator,
+  KeyboardAvoidingView,
   ListRenderItemInfo,
-  SectionList,
-  StyleSheet,
   Text,
   ToastAndroid,
   View,
@@ -33,6 +31,9 @@ import {
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
 import {applyStyles} from '@/styles';
+import {HomeContainer} from '@/components';
+import PlaceholderImage from '@/components/PlaceholderImage';
+import {getSummary, IFinanceSummary} from '@/services/FinanceService';
 
 type CustomerListItem =
   | Pick<
@@ -57,12 +58,13 @@ export const CustomerListScreen = withModal(
     const myCustomers = getCustomers({realm});
     const analyticsService = getAnalyticsService();
     const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
-    const {run: runGetPhoneContacts, loading} = useAsync(
-      getPhoneContactsPromiseFn,
-      {
-        defer: true,
-      },
-    );
+
+    const financeSummary: IFinanceSummary = getSummary({realm});
+
+    const {run: runGetPhoneContacts} = useAsync(getPhoneContactsPromiseFn, {
+      defer: true,
+    });
+
     useEffect(() => {
       const customers = getCustomers({realm});
       runGetPhoneContacts().then((contacts) => {
@@ -155,8 +157,12 @@ export const CustomerListScreen = withModal(
               style={applyStyles(
                 'flex-row items-center border-b-1 border-gray-20 p-16',
               )}>
-              <View style={applyStyles('flex-1')}>
-                <Text style={applyStyles('text-sm text-700 text-gray-300')}>
+              <PlaceholderImage text={customer?.name ?? ''} />
+              <View style={applyStyles('flex-1 pl-sm')}>
+                <Text
+                  style={applyStyles(
+                    'text-sm text-700 text-gray-300 text-uppercase',
+                  )}>
                   {customer.name}
                 </Text>
                 <Text style={applyStyles('text-sm text-400 text-gray-300')}>
@@ -165,7 +171,7 @@ export const CustomerListScreen = withModal(
               </View>
               {'_id' in customer ? (
                 !!customer.remainingCreditAmount && (
-                  <View>
+                  <View style={applyStyles('items-end')}>
                     <Text
                       style={applyStyles(
                         'text-sm text-700',
@@ -173,7 +179,16 @@ export const CustomerListScreen = withModal(
                           ? 'text-primary'
                           : 'text-gray-300',
                       )}>
-                      {amountWithCurrency(customer.remainingCreditAmount)}
+                      {amountWithCurrency(
+                        customer.overdueCreditAmount ||
+                          customer.remainingCreditAmount,
+                      )}
+                    </Text>
+                    <Text
+                      style={applyStyles(
+                        'text-xxs text-700 text-red-100 text-uppercase',
+                      )}>
+                      {customer.overdueCreditAmount ? 'Due' : 'Owes you'}
                     </Text>
                   </View>
                 )
@@ -289,46 +304,6 @@ export const CustomerListScreen = withModal(
       renderCustomerListItem,
     ]);
 
-    const renderCustomerListSectionHeader = useCallback(
-      ({section: {title}}) => {
-        if (!title) {
-          return null;
-        }
-        if (loading) {
-          return (
-            <View style={styles.customerListHeader}>
-              <ActivityIndicator size={24} color={colors.primary} />
-            </View>
-          );
-        }
-        return (
-          <View style={styles.customerListHeader}>
-            <Text style={styles.customerListHeaderText}>{title}</Text>
-          </View>
-        );
-      },
-      [loading],
-    );
-    const sections = useMemo(
-      () => [
-        {
-          data: myCustomers.length
-            ? orderBy(
-                myCustomers,
-                ['debtLevel', 'name'] as (keyof ICustomer)[],
-                ['desc', 'asc'],
-              )
-            : [null],
-        },
-        {
-          title: 'Add from your phonebook',
-          data: orderBy(phoneContacts, ['name'] as (keyof CustomerListItem)[], [
-            'asc',
-          ]),
-        },
-      ],
-      [myCustomers, phoneContacts],
-    );
     const keyExtractor = useCallback((item) => {
       if (!item) {
         return '';
@@ -336,76 +311,68 @@ export const CustomerListScreen = withModal(
       return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
     }, []);
 
+    type Filter = 'all' | 'paid' | 'owes';
+
+    const [filter, setFilter] = useState<Filter>('all');
+
+    const handleStatusFilter = useCallback((status: Filter) => {
+      setFilter(status);
+    }, []);
+
+    const filterOptions = useMemo<Record<Filter, HeaderRightMenuOption>>(
+      () => ({
+        all: {text: 'All', onSelect: () => handleStatusFilter('all')},
+        paid: {text: 'Paid', onSelect: () => handleStatusFilter('paid')},
+        owes: {
+          text: 'Owes you',
+          onSelect: () => handleStatusFilter('owes'),
+        },
+      }),
+      [handleStatusFilter],
+    );
+
+    const filterOptionList = useMemo(() => Object.values(filterOptions), [
+      filterOptions,
+    ]);
+    const [searchTerm, setSearchTerm] = useState('');
+    const handleCustomerSearch = useCallback((query) => {
+      setSearchTerm(query);
+    }, []);
+    console.log(searchTerm, filter);
     return (
-      <View style={styles.container}>
-        <Touchable onPress={() => navigation.navigate('AddCustomer')}>
-          <View
-            style={applyStyles(
-              'flex-row items-center py-16 px-16 border-b-1 border-gray-20',
-            )}>
-            <Icon
-              size={24}
-              name="plus"
-              type="feathericons"
-              style={applyStyles('mr-8')}
-              color={colors.primary}
-            />
-            <Text style={applyStyles('text-sm text-primary uppercase')}>
-              Create Customer
-            </Text>
-          </View>
-        </Touchable>
-        <SectionList
-          renderItem={renderCustomerListItem}
-          renderSectionHeader={renderCustomerListSectionHeader}
+      <KeyboardAvoidingView
+        style={applyStyles('flex-1', {
+          backgroundColor: colors.white,
+        })}>
+        <HomeContainer<ICustomer>
+          initialNumToRender={10}
+          headerTitle="total credit"
+          createEntityButtonIcon="users"
+          renderListItem={renderCustomerListItem}
+          data={
+            (orderBy(
+              myCustomers,
+              ['debtLevel', 'name'] as (keyof ICustomer)[],
+              ['desc', 'asc'],
+            ) as unknown) as ICustomer[]
+          }
+          searchPlaceholderText="Search Customers"
+          createEntityButtonText="Add Customer"
+          onCreateEntity={() => navigation.navigate('AddCustomer')}
+          headerAmount={amountWithCurrency(financeSummary.totalCredit)}
           keyExtractor={keyExtractor}
-          sections={sections}
+          emptyStateProps={{
+            heading: 'Add your customers',
+            text:
+              'Keep track of who your customers are, what they bought, and what they owe you.',
+          }}
+          filterOptions={filterOptionList}
+          activeFilter={filterOptions[filter].text}
+          onSearch={handleCustomerSearch}
         />
-      </View>
+      </KeyboardAvoidingView>
     );
   },
 );
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  searchContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-    backgroundColor: colors.primary,
-  },
-  searchInputContainer: {
-    position: 'relative',
-  },
-  searchInputIcon: {
-    top: 12,
-    left: 10,
-    elevation: 3,
-    position: 'absolute',
-  },
-  searchInput: {
-    height: 48,
-    elevation: 2,
-    fontSize: 16,
-    borderRadius: 8,
-    paddingLeft: 36,
-    backgroundColor: colors.white,
-  },
-  customerListHeader: applyStyles('text-center bg-gray-10', {
-    paddingVertical: 16,
-    paddingHorizontal: 4,
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-20'],
-  }),
-  customerListHeaderText: applyStyles('text-center bg-gray-10', {
-    fontSize: 12,
-    fontWeight: 'bold',
-    textTransform: 'uppercase',
-    color: colors['gray-300'],
-    fontFamily: 'Rubik-Regular',
-  }),
-});
 
 export * from './AddCustomer';

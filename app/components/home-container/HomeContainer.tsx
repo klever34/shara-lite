@@ -120,27 +120,29 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
           imageStyle={applyStyles({width: 80, height: 80})}
           source={require('@/assets/images/emblem.png')}
           {...emptyStateProps}>
-          <Button
-            style={applyStyles('mt-md mx-auto', {width: '90%'})}
-            onPress={onCreateEntity}>
-            <View
-              style={applyStyles(
-                'w-auto rounded-8 py-16 px-20 flex-row items-center',
-              )}>
-              <Icon
-                size={20}
-                color="white"
-                type="feathericons"
-                name={createEntityButtonIcon}
-              />
-              <Text
+          {createEntityButtonText && (
+            <Button
+              style={applyStyles('mt-md mx-auto', {width: '90%'})}
+              onPress={onCreateEntity}>
+              <View
                 style={applyStyles(
-                  'text-capitalize text-700 pl-sm text-base text-white',
+                  'w-auto rounded-8 py-16 px-20 flex-row items-center',
                 )}>
-                {createEntityButtonText}
-              </Text>
-            </View>
-          </Button>
+                <Icon
+                  size={20}
+                  color="white"
+                  type="feathericons"
+                  name={createEntityButtonIcon}
+                />
+                <Text
+                  style={applyStyles(
+                    'text-capitalize text-700 pl-sm text-base text-white',
+                  )}>
+                  {createEntityButtonText}
+                </Text>
+              </View>
+            </Button>
+          )}
         </EmptyState>
       )}
     </View>
