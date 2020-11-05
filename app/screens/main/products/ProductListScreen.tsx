@@ -104,7 +104,7 @@ export const ProductListScreen = withModal(() => {
           <View style={applyStyles('items-end')}>
             <View style={applyStyles('flex-row items-center')}>
               <Text style={applyStyles('text-700 text-gray-300 pr-xs')}>
-                {item.quantity}
+                {item?.quantity && !(item?.quantity < 0) ? item.quantity : 0}
               </Text>
               <Text
                 style={applyStyles(
