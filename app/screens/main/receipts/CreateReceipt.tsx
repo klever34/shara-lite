@@ -23,15 +23,14 @@ import {getCustomers} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {saveReceipt} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {addDays} from 'date-fns';
 import {format} from 'date-fns/esm';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, Text, TextInput, ToastAndroid, View} from 'react-native';
 import {AddCustomer} from '../customers/CustomerListScreen';
 import {ReceiptItemModalContent} from './ReceiptItemModal';
-import {applyStyles} from '@/styles';
+import {useReceipt} from '@/services/receipt';
 
 type Props = {
   receipt?: IReceipt;
@@ -45,6 +44,7 @@ export const CreateReceipt = withModal((props: Props) => {
   const realm = useRealm();
   const handleError = useErrorHandler();
   const navigation = useAppNavigation();
+  const {saveReceipt} = useReceipt();
   const myCustomers = getCustomers({realm});
   const currency = getAuthService().getUserCurrency();
 
@@ -234,32 +234,29 @@ export const CreateReceipt = withModal((props: Props) => {
     });
   }, [handleContactSelect, handleOpenAddCustomerModal, myCustomers, openModal]);
 
-  const handleSaveReceipt = useCallback(() => {
+  const handleSaveReceipt = useCallback(async () => {
     setIsSaving(true);
-    setTimeout(() => {
-      let receiptToCreate: any = {
-        tax,
-        note,
-        realm,
-        dueDate,
-        customer,
-        amountPaid,
-        totalAmount,
-        creditAmount,
-        receiptItems,
-        payments: [{method: '', amount: amountPaid}],
-      };
+    let receiptToCreate: any = {
+      tax,
+      note,
+      dueDate,
+      customer,
+      amountPaid,
+      totalAmount,
+      creditAmount,
+      receiptItems,
+      payments: [{method: '', amount: amountPaid}],
+    };
 
-      if (snappedReceipt) {
-        receiptToCreate = {...receiptToCreate, local_image_url: snappedReceipt};
-      }
+    if (snappedReceipt) {
+      receiptToCreate = {...receiptToCreate, local_image_url: snappedReceipt};
+    }
 
-      const createdReceipt = saveReceipt(receiptToCreate);
-      handleClearReceipt();
-      setIsSaving(false);
-      ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
-      handleOpenReceiptPreviewModal(createdReceipt);
-    }, 100);
+    const createdReceipt = await saveReceipt(receiptToCreate);
+    handleClearReceipt();
+    setIsSaving(false);
+    ToastAndroid.show('Receipt created', ToastAndroid.SHORT);
+    handleOpenReceiptPreviewModal(createdReceipt);
   }, [
     note,
     realm,
@@ -270,6 +267,7 @@ export const CreateReceipt = withModal((props: Props) => {
     creditAmount,
     receiptItems,
     snappedReceipt,
+    saveReceipt,
     handleClearReceipt,
     handleOpenReceiptPreviewModal,
   ]);
