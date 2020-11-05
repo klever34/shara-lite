@@ -9,6 +9,7 @@ import {
   ReceiptTableHeader,
   ReceiptTableItem,
   ReceiptTableItemProps,
+  StickyFooter,
 } from '@/components/';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
@@ -582,17 +583,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
             </View>
           )}
           {!receipt?.is_cancelled && (
-            <View
-              style={applyStyles('w-full py-16 px-24 bg-white', {
-                shadowColor: '#000',
-                shadowOffset: {
-                  width: 0,
-                  height: 5,
-                },
-                shadowOpacity: 0.34,
-                shadowRadius: 6.27,
-                elevation: 10,
-              })}>
+            <StickyFooter style={applyStyles('py-16 px-24 bg-white')}>
               <Text
                 style={applyStyles(
                   'text-center text-700 text-gray-200 text-uppercase',
@@ -686,7 +677,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                   </Touchable>
                 </View>
               </View>
-            </View>
+            </StickyFooter>
           )}
         </>
       </View>

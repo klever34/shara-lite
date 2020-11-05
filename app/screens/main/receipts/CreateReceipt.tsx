@@ -1,13 +1,14 @@
 import {
   AppInput,
+  AutoComplete,
   Button,
   CurrencyInput,
   ReceiptTableFooterItem,
   ReceiptTableHeader,
   ReceiptTableItem,
   ReceiptTableItemProps,
+  StickyFooter,
 } from '@/components';
-import SearchableDropdown from '@/components/SearchableDropdown';
 import Touchable from '@/components/Touchable';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -211,7 +212,7 @@ export const CreateReceipt = withModal((props: Props) => {
     <View style={applyStyles('flex-1')}>
       <View style={applyStyles('bg-gray-10 px-16 py-32')}>
         <View style={applyStyles('pb-16')}>
-          <SearchableDropdown<IProduct>
+          <AutoComplete<IProduct>
             items={products}
             rightIcon="box"
             label="Product/Service"
@@ -259,7 +260,9 @@ export const CreateReceipt = withModal((props: Props) => {
         style={applyStyles('bg-white')}
         renderItem={renderReceiptItem}
         keyboardShouldPersistTaps="always"
-        ListHeaderComponent={<ReceiptTableHeader />}
+        ListHeaderComponent={
+          receiptItems.length ? <ReceiptTableHeader /> : undefined
+        }
         keyExtractor={(item) => `${item?.product._id?.toString()}`}
         ListEmptyComponent={
           <View style={applyStyles('h-full center mx-auto')}>
@@ -290,19 +293,9 @@ export const CreateReceipt = withModal((props: Props) => {
           value={amountWithCurrency(totalAmount)}
         />
       </View>
-      <View
-        style={applyStyles('w-full p-16 bg-white', {
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 5,
-          },
-          shadowOpacity: 0.34,
-          shadowRadius: 6.27,
-          elevation: 10,
-        })}>
+      <StickyFooter>
         <Button title="Continue" onPress={handleDone} />
-      </View>
+      </StickyFooter>
     </View>
   );
 });
