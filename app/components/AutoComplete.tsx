@@ -131,6 +131,7 @@ export function AutoComplete<T>({
           <FlatList
             data={listItems}
             persistentScrollbar
+            initialNumToRender={5}
             keyboardShouldPersistTaps="always"
             keyExtractor={(item, index) => index.toString()}
             //@ts-ignore

@@ -59,7 +59,9 @@ export const HomeContainerHeader = ({
           <Menu>
             <MenuTrigger
               customStyles={{
-                triggerWrapper: applyStyles('mr-sm', {borderRadius: 12}),
+                triggerWrapper: applyStyles('mr-sm p-8 pr-0', {
+                  borderRadius: 12,
+                }),
               }}>
               <View style={applyStyles('flex-row items-center')}>
                 <Text

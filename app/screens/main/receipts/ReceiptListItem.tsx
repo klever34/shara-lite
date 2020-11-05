@@ -64,6 +64,9 @@ export const ReceiptListItem = ({
                 <Text
                   style={applyStyles(
                     'pb-4 text-700 text-sm text-primary text-uppercase',
+                    {
+                      textDecorationLine: 'underline',
+                    },
                   )}>
                   Add Customer details
                 </Text>

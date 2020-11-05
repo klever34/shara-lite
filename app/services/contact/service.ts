@@ -48,6 +48,7 @@ export class ContactService implements IContactService {
   ) {}
 
   private permissionGranted: boolean = false;
+  private writePermissionGranted: boolean = false;
 
   private async checkPermission() {
     this.permissionGranted = await PermissionsAndroid.check(
@@ -90,6 +91,47 @@ export class ContactService implements IContactService {
     return this.permissionGranted;
   }
 
+  private async checkWritePermission() {
+    this.permissionGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
+    );
+    if (!this.writePermissionGranted) {
+      return new Promise((resolve) => {
+        Alert.alert(
+          'Write to your contacts',
+          'Shara would like to write to your contacts.',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                this.writePermissionGranted = false;
+                resolve(this.writePermissionGranted);
+              },
+            },
+            {
+              text: 'OK',
+              onPress: () => {
+                PermissionsAndroid.request(
+                  PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
+                )
+                  .then((status) => {
+                    this.writePermissionGranted = status === 'granted';
+                    resolve(this.writePermissionGranted);
+                  })
+                  .catch(() => {
+                    this.writePermissionGranted = false;
+                    resolve(this.writePermissionGranted);
+                  });
+              },
+            },
+          ],
+          {cancelable: false},
+        );
+      });
+    }
+    return this.permissionGranted;
+  }
+
   public formatPhoneNumber(phoneNumber: string): string {
     const removeAllNonDigits = (number: string) =>
       number.replace(/[^\d+]/g, '');
@@ -116,7 +158,7 @@ export class ContactService implements IContactService {
   }
 
   public async addContact(contact: any) {
-    if (await this.checkPermission()) {
+    if (await this.checkWritePermission()) {
       return new Promise<PhoneContact[]>((resolve, reject) => {
         RNContacts.addContact(contact, (err) => {
           if (err) {

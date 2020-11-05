@@ -438,16 +438,16 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       renderContent: () => (
         <ContactsListModal<ICustomer>
           entity="Customer"
+          onAddNew={undefined}
           onClose={closeContactListModal}
           createdData={(customers as unknown) as ICustomer[]}
-          onAddNew={() => navigation.navigate('AddCustomer')}
           onContactSelect={(data) =>
             handleSetCustomer(data, closeContactListModal)
           }
         />
       ),
     });
-  }, [customers, handleSetCustomer, navigation, openModal]);
+  }, [customers, handleSetCustomer, openModal]);
 
   const receiptActions = [
     {

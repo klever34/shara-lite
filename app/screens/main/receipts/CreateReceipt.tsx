@@ -217,11 +217,46 @@ export const CreateReceipt = withModal((props: Props) => {
 
   const handleDone = useCallback(() => {
     let items = receiptItems;
+    let payload = selectedProduct;
     const priceCondition = price || price === 0 ? true : false;
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
-    if (selectedProduct && quantity && quantityCondition && priceCondition) {
-      handleAddReceiptItem();
-      handleUpdateReceipt({tax: 0, receiptItems, totalAmount});
+
+    if (isNewProduct) {
+      payload = handleAddProduct({
+        name: searchQuery,
+        price,
+      });
+    }
+
+    if (payload && quantity && quantityCondition && priceCondition) {
+      const product = {
+        ...payload,
+        price,
+        product: payload,
+        _id: payload?._id,
+        name: payload?.name,
+        quantity: parseFloat(quantity),
+      } as IReceiptItem;
+
+      getAnalyticsService()
+        .logEvent('productAddedToReceipt')
+        .catch(handleError);
+
+      setReceiptItems([product, ...receiptItems]);
+      handleUpdateReceipt({
+        tax: 0,
+        totalAmount,
+        receiptItems: [product, ...receiptItems],
+      });
+
+      Keyboard.dismiss();
+      setPrice(0);
+      setQuantity('');
+      setSearchQuery('');
+      setSelectedProduct(null);
+
+      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
+
       navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {
       setSelectedProduct(null);
@@ -238,10 +273,13 @@ export const CreateReceipt = withModal((props: Props) => {
     price,
     quantity,
     selectedProduct,
-    handleAddReceiptItem,
+    isNewProduct,
+    handleError,
     handleUpdateReceipt,
     totalAmount,
     navigation,
+    handleAddProduct,
+    searchQuery,
   ]);
 
   const renderReceiptItem = useCallback(

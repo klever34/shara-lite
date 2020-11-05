@@ -24,9 +24,11 @@ interface Receipt {
 
 const ReceiptContext = createContext<{
   receipt: Receipt;
+  handleClearReceipt: () => void;
   handleUpdateReceipt: (data: any) => void;
 }>({
   receipt: {} as Receipt,
+  handleClearReceipt: () => {},
   handleUpdateReceipt: (data) => console.log(data),
 });
 
@@ -36,6 +38,10 @@ export const useReceiptProvider = () => {
 
 export const ReceiptProvider = ({children}: {children: ReactNode}) => {
   const [receipt, setReceipt] = useState<Receipt>({} as Receipt);
+
+  const handleClearReceipt = useCallback(() => {
+    setReceipt({} as Receipt);
+  }, []);
 
   const handleUpdateReceipt = useCallback(
     (data: any) => {
@@ -47,7 +53,8 @@ export const ReceiptProvider = ({children}: {children: ReactNode}) => {
   );
 
   return (
-    <ReceiptContext.Provider value={{receipt, handleUpdateReceipt}}>
+    <ReceiptContext.Provider
+      value={{receipt, handleClearReceipt, handleUpdateReceipt}}>
       {children}
     </ReceiptContext.Provider>
   );

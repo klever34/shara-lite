@@ -8,7 +8,7 @@ import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Text, ToastAndroid, View} from 'react-native';
+import {Alert, Text, ToastAndroid, View} from 'react-native';
 import {AutoComplete} from './AutoComplete';
 import {PhoneNumber, PhoneNumberField} from './PhoneNumberField';
 import {RadioButton} from './RadioButton';
@@ -53,6 +53,7 @@ export const AddCustomerModal = (props: Props) => {
   );
 
   const handleClose = useCallback(() => {
+    setIsNewCustomer(false);
     onClose();
   }, [onClose]);
 
@@ -79,23 +80,38 @@ export const AddCustomerModal = (props: Props) => {
     if (isNewCustomer) {
       setCustomer({
         name: customerSearchQuery,
-        mobile: `${value.callingCode}${value.number}`,
+        mobile: `+${value.callingCode}${value.number}`,
       });
     }
   };
 
   const handleSave = useCallback(async () => {
-    if (saveToPhoneBook) {
-      await contactService.addContact(customer);
-      onAddCustomer && onAddCustomer(customer);
-      handleClose();
-      ToastAndroid.show('CUSTOMER ADDED', ToastAndroid.SHORT);
-    } else {
-      onAddCustomer && onAddCustomer(customer);
-      handleClose();
-      ToastAndroid.show('CUSTOMER ADDED', ToastAndroid.SHORT);
+    if (isNewCustomer && saveToPhoneBook) {
+      try {
+        await contactService.addContact({
+          givenName: customer?.name,
+          phoneNumbers: [
+            {
+              label: 'mobile',
+              number: customer?.mobile,
+            },
+          ],
+        });
+      } catch (error) {
+        Alert.alert('Error', error);
+      }
     }
-  }, [contactService, customer, handleClose, onAddCustomer, saveToPhoneBook]);
+    onAddCustomer && onAddCustomer(customer);
+    handleClose();
+    ToastAndroid.show('CUSTOMER ADDED', ToastAndroid.SHORT);
+  }, [
+    contactService,
+    customer,
+    handleClose,
+    isNewCustomer,
+    onAddCustomer,
+    saveToPhoneBook,
+  ]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
     return (
@@ -205,7 +221,7 @@ export const AddCustomerModal = (props: Props) => {
             })}
           />
           <Button
-            title="Update"
+            title="Done"
             variantColor="red"
             onPress={handleSave}
             style={applyStyles({

@@ -1,5 +1,12 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Text, ToastAndroid, View} from 'react-native';
+import {
+  ActivityIndicator,
+  Alert,
+  Image,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {BluetoothModal, PreviewActionButton} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
@@ -31,6 +38,7 @@ import {applyStyles} from '@/styles';
 import {StickyFooter} from '../StickyFooter';
 import {Button} from '../Button';
 import {AddCustomerModal} from '../AddCustomerModal';
+import {ScrollView} from 'react-native-gesture-handler';
 
 type Props = {
   receipt?: IReceipt;
@@ -402,93 +410,86 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
   }, [receipt]);
 
   return (
-    <View
-      style={applyStyles('flex-1', {
-        backgroundColor: colors.white,
-      })}>
-      <View style={applyStyles('center')}>
-        <Text style={applyStyles('py-24 text-700 text-red-200 text-center')}>
-          Your receipt was created succesfully
-        </Text>
-        <View
-          style={applyStyles('mb-24', {
+    <View style={applyStyles('flex-1 bg-white')}>
+      <Text style={applyStyles('py-24 text-700 text-red-200 text-center')}>
+        Your receipt was created succesfully
+      </Text>
+      {!receiptImage ? (
+        <View style={applyStyles('flex-1 center bg-white')}>
+          <ActivityIndicator color={colors.primary} size={40} />
+          <Text style={applyStyles('text-400 text-gray-200 py-8')}>
+            Generating receipt image. This might take a while
+          </Text>
+        </View>
+      ) : (
+        <ScrollView
+          persistentScrollbar
+          contentContainerStyle={applyStyles('center')}
+          style={applyStyles('mb-16 mx-48', {
             elevation: 3,
-            width: '100%',
+            transform: [{scale: 1}],
             backgroundColor: colors.white,
           })}>
-          <ReceiptImage
-            user={user}
-            tax={receipt?.tax}
-            captureMode="update"
-            products={receipt?.items}
-            amountPaid={totalAmountPaid}
-            creditDueDate={creditDueDate}
-            creditAmount={creditAmountLeft}
-            createdAt={receipt?.created_at}
-            totalAmount={receipt?.total_amount}
-            isCancelled={receipt?.is_cancelled}
-            customer={customer || receipt?.customer}
-            getImageUri={(data) => setReceiptImage(data)}
-            receiptNo={receipt?._id?.toString().substring(0, 6)}
+          <Image
+            resizeMode="contain"
+            style={applyStyles({
+              width: 350,
+              height: 400,
+            })}
+            source={{uri: `data:image/png;base64,${receiptImage}`}}
           />
+        </ScrollView>
+      )}
+      {!receipt?.is_cancelled && (
+        <View
+          style={applyStyles(
+            'mb-16 flex-row center w-full justify-space-between flex-wrap',
+          )}>
+          {receiptActions.map((item, index) => (
+            <View
+              key={index.toString()}
+              style={applyStyles('center', {width: '25%'})}>
+              <PreviewActionButton {...item} />
+            </View>
+          ))}
         </View>
-        {!receipt?.is_cancelled && (
-          <View
+      )}
+      {receipt?.customer?.name ? (
+        <View style={applyStyles('px-16')}>
+          <Text
             style={applyStyles(
-              'mb-24 flex-row center w-full justify-space-between flex-wrap',
+              'pb-8 px-32 text-700 text-gray-200 text-center text-uppercase',
             )}>
-            {receiptActions.map((item, index) => (
-              <View
-                key={index.toString()}
-                style={applyStyles('center', {width: '25%'})}>
-                <PreviewActionButton {...item} />
-              </View>
-            ))}
-          </View>
-        )}
-        <View style={applyStyles('pb-96')}>
-          {receipt?.customer?.name ? (
-            <View>
+            Customer
+          </Text>
+          <Touchable onPress={handleOpenAddCustomerModal}>
+            <View style={applyStyles('py-16 px-8 center w-full')}>
               <Text
                 style={applyStyles(
-                  'pb-16 px-48 text-700 text-gray-200 text-center text-uppercase',
+                  'text-700 text-red-200 text-uppercase text-base text-center',
+                  {
+                    textDecorationLine: 'underline',
+                  },
                 )}>
-                Customer
+                {receipt?.customer?.name}
               </Text>
-              <Touchable onPress={handleOpenAddCustomerModal}>
-                <View style={applyStyles('p-16 center w-full')}>
-                  <Text
-                    style={applyStyles(
-                      'text-700 text-red-200 text-uppercase text-base text-center',
-                    )}>
-                    {receipt?.customer?.name}
-                  </Text>
-                </View>
-              </Touchable>
             </View>
-          ) : (
-            <View>
-              <Text
-                style={applyStyles(
-                  'pb-16 px-48 text-700 text-gray-200 text-center text-uppercase',
-                )}>
-                Share this receipt with your customer
-              </Text>
-              <Button
-                title="Add Customer"
-                onPress={handleOpenAddCustomerModal}
-              />
-            </View>
-          )}
+          </Touchable>
         </View>
-      </View>
+      ) : (
+        <View style={applyStyles('px-16')}>
+          <Text
+            style={applyStyles(
+              'pb-16 px-96 text-700 text-gray-200 text-center text-uppercase',
+            )}>
+            Share this receipt with your customer
+          </Text>
+          <Button title="Add Customer" onPress={handleOpenAddCustomerModal} />
+        </View>
+      )}
 
       {!receipt?.is_cancelled && (
-        <StickyFooter
-          style={applyStyles('py-16 px-24 bg-white', {
-            bottom: 0,
-            position: 'absolute',
-          })}>
+        <StickyFooter style={applyStyles('py-16 px-24 bg-white')}>
           <Text
             style={applyStyles(
               'text-center text-700 text-gray-200 text-uppercase',
@@ -579,6 +580,24 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
           </View>
         </StickyFooter>
       )}
+
+      <View style={applyStyles({opacity: 0, height: 0})}>
+        <ReceiptImage
+          user={user}
+          tax={receipt?.tax}
+          captureMode="update"
+          products={receipt?.items}
+          amountPaid={totalAmountPaid}
+          creditDueDate={creditDueDate}
+          creditAmount={creditAmountLeft}
+          createdAt={receipt?.created_at}
+          totalAmount={receipt?.total_amount}
+          isCancelled={receipt?.is_cancelled}
+          customer={customer || receipt?.customer}
+          getImageUri={(data) => setReceiptImage(data)}
+          receiptNo={receipt?._id?.toString().substring(0, 6)}
+        />
+      </View>
 
       <AddCustomerModal
         customer={customer}

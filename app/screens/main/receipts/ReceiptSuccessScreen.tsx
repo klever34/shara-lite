@@ -6,16 +6,19 @@ import {useRealm} from '@/services/realm';
 import {getReceipt} from '@/services/ReceiptService';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
+import {useReceiptProvider} from './ReceiptProvider';
 
 export const ReceiptSuccessScreen = ({route}: any) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
+  const {handleClearReceipt} = useReceiptProvider();
   const [receipt, setReceipt] = useState<IReceipt | undefined>();
 
-  const handleClose = useCallback(() => navigation.navigate('Home'), [
-    navigation,
-  ]);
+  const handleClose = useCallback(() => {
+    handleClearReceipt();
+    navigation.navigate('Home');
+  }, [navigation, handleClearReceipt]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -36,16 +39,7 @@ export const ReceiptSuccessScreen = ({route}: any) => {
         title={`Total: ${amountWithCurrency(receipt.total_amount)}`}
         iconRight={{iconName: 'x', onPress: handleClose}}
       />
-      <FlatList
-        data={[]}
-        renderItem={undefined}
-        style={applyStyles('py-sm flex-1 bg-white')}
-        ListHeaderComponent={
-          <>
-            <ReceiptPreview receipt={receipt} onClose={handleClose} />
-          </>
-        }
-      />
+      <ReceiptPreview receipt={receipt} onClose={handleClose} />
     </>
   );
 };

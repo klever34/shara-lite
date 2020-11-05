@@ -23,7 +23,7 @@ import {saveReceipt} from '@/services/ReceiptService';
 import {applyStyles, colors} from '@/styles';
 import {addDays, format} from 'date-fns';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {SafeAreaView, Text, View} from 'react-native';
+import {Alert, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptProvider} from './ReceiptProvider';
 
 type CustomerListItem =
@@ -46,13 +46,27 @@ export const ReceiptOtherDetailsScreen = () => {
     defer: true,
   });
 
+  const totalAmount = useMemo(() => {
+    if (receipt.receiptItems) {
+      return receipt.receiptItems
+        .map(({quantity: q, price: p}) => {
+          const itemPrice = p ? p : 0;
+          const itemQuantity = q ? q : 0;
+          return itemPrice * itemQuantity;
+        })
+        .reduce((acc, curr) => acc + curr, 0);
+    }
+    return 0;
+  }, [receipt]);
+
   const [note, setNote] = useState('');
   const [mobile, setMobile] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const [isNewCustomer, setIsNewCustomer] = useState(false);
   const [saveToPhoneBook, setSaveToPhoneBook] = useState(true);
+  const [amountPaid, setAmountPaid] = useState(totalAmount || 0);
   const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [countryCode, setCountryCode] = useState(callingCode || '');
-  const [amountPaid, setAmountPaid] = useState(receipt.totalAmount || 0);
   const [customerSearchQuery, setCustomerSearchQuery] = useState(
     receipt?.customer?.name ?? '',
   );
@@ -64,14 +78,22 @@ export const ReceiptOtherDetailsScreen = () => {
     receipt?.customer || ({} as ICustomer),
   );
 
-  const creditAmount = useMemo(() => receipt.totalAmount - amountPaid, [
+  const creditAmount = useMemo(() => totalAmount - amountPaid, [
     amountPaid,
-    receipt.totalAmount,
+    totalAmount,
   ]);
 
+  const handleClearState = useCallback(() => {
+    setNote('');
+    setMobile('');
+    setCustomer({} as ICustomer);
+    setCustomerSearchQuery('');
+  }, []);
+
   const handleGoBack = useCallback(() => {
+    handleClearState();
     navigation.goBack();
-  }, [navigation]);
+  }, [navigation, handleClearState]);
 
   const handleCustomerSearch = useCallback((item: ICustomer, text: string) => {
     return `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1;
@@ -114,12 +136,13 @@ export const ReceiptOtherDetailsScreen = () => {
     if (isNewCustomer) {
       setCustomer({
         name: customerSearchQuery,
-        mobile: `${value.callingCode}${value.number}`,
+        mobile: `+${value.callingCode}${value.number}`,
       });
     }
   };
 
   const handleFinish = useCallback(async () => {
+    setIsLoading(true);
     let receiptToCreate: any = {
       ...receipt,
       note,
@@ -128,17 +151,28 @@ export const ReceiptOtherDetailsScreen = () => {
       customer,
       amountPaid,
       creditAmount,
+      totalAmount,
       payments: [{method: '', amount: amountPaid}],
     };
-    if (customerSearchQuery && saveToPhoneBook) {
+    if (isNewCustomer && saveToPhoneBook) {
       try {
-        await contactService.addContact(customer);
+        await contactService.addContact({
+          givenName: customer?.name,
+          phoneNumbers: [
+            {
+              label: 'mobile',
+              number: customer?.mobile,
+            },
+          ],
+        });
       } catch (error) {
-        console.log(error);
+        Alert.alert('Error', error);
       }
     }
     handleUpdateReceipt(receiptToCreate);
+    handleClearState();
     const createdReceipt = saveReceipt(receiptToCreate);
+    setIsLoading(true);
     navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
   }, [
     note,
@@ -148,10 +182,12 @@ export const ReceiptOtherDetailsScreen = () => {
     customer,
     amountPaid,
     navigation,
+    totalAmount,
     creditAmount,
+    isNewCustomer,
     contactService,
     saveToPhoneBook,
-    customerSearchQuery,
+    handleClearState,
     handleUpdateReceipt,
   ]);
 
@@ -201,13 +237,14 @@ export const ReceiptOtherDetailsScreen = () => {
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Page
         header={{
-          title: `Total: ${amountWithCurrency(receipt.totalAmount)}`,
+          title: `Total: ${amountWithCurrency(totalAmount)}`,
           iconLeft: {iconName: 'arrow-left', onPress: handleGoBack},
         }}
         footer={
           <Button
             title="Finish"
             variantColor="red"
+            isLoading={isLoading}
             onPress={handleFinish}
             style={applyStyles('w-full')}
           />
@@ -240,7 +277,7 @@ export const ReceiptOtherDetailsScreen = () => {
                     editable={false}
                     placeholder="0.00"
                     label="Customer owes"
-                    value={(receipt.totalAmount - amountPaid)?.toString()}
+                    value={(totalAmount - amountPaid)?.toString()}
                   />
                 </View>
               </View>
@@ -315,7 +352,7 @@ export const ReceiptOtherDetailsScreen = () => {
             label="Select or add customer (optional)"
             inputStyle={applyStyles('mb-16 bg-gray-10')}
             noResultsAction={() => setIsNewCustomer(true)}
-            textInputProps={{placeholder: 'Search or add a customer '}}
+            textInputProps={{placeholder: 'Search or add a customer'}}
           />
           {isNewCustomer && (
             <>
