@@ -27,6 +27,7 @@
     "@react-navigation/stack": "^5.5.1",
     "@segment/analytics-react-native": "^1.2.1",
     "@sentry/react-native": "^1.9.0",
+    "@types/bluebird": "^3.5.33",
     "@types/bson": "^4.0.2",
     "@types/yup": "^0.29.6",
     "bluebird": "^3.7.2",

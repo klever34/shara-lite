@@ -1,0 +1,177 @@
+import {UpdateMode} from 'realm';
+import {ObjectId} from 'bson';
+import BluebirdPromise from 'bluebird';
+import {useRealm} from '@/services/realm';
+import {ICustomer} from '@/models';
+import {getBaseModelValues} from '@/helpers/models';
+import {ICredit} from '@/models/Credit';
+import {getAnalyticsService, getAuthService} from '@/services';
+import {ICreditPayment, modelName} from '@/models/CreditPayment';
+import {IPayment} from '@/models/Payment';
+import {useCustomer} from '@/services/customer/hook';
+import {useCredit} from '@/services/credit';
+import {usePayment} from '@/services/payment';
+
+interface saveCreditPaymentInterface {
+  customer: ICustomer;
+  amount: number;
+  method: string;
+  note?: string;
+}
+
+interface getPaymentsFromCreditInterface {
+  credits?: ICredit[];
+}
+
+interface updateCreditPaymentInterface {
+  creditPayment: ICreditPayment;
+  updates: object;
+}
+
+interface deleteCreditPaymentInterface {
+  creditPayment: ICreditPayment;
+}
+
+interface useCreditPayment {
+  getCreditPayments: () => ICreditPayment[];
+  saveCreditPayment: (data: saveCreditPaymentInterface) => Promise<void>;
+  getPaymentsFromCredit: (params: getPaymentsFromCreditInterface) => Array<any>;
+  updateCreditPayment: (data: updateCreditPaymentInterface) => void;
+  deleteCreditPayment: (data: deleteCreditPaymentInterface) => void;
+}
+
+export const useCreditPayment = (): useCreditPayment => {
+  const realm = useRealm();
+  const {getCustomer} = useCustomer();
+  const {updateCredit} = useCredit();
+  const {savePayment} = usePayment();
+
+  const getCreditPayments = (): ICreditPayment[] => {
+    return (realm
+      .objects<ICreditPayment>(modelName)
+      .filtered('is_deleted = false') as unknown) as ICreditPayment[];
+  };
+
+  const saveCreditPayment = async ({
+    customer,
+    amount,
+    method,
+    note,
+  }: saveCreditPaymentInterface): Promise<void> => {
+    const updatedCustomer = getCustomer({
+      customerId: customer._id as ObjectId,
+    });
+    const credits = updatedCustomer.credits;
+    let amountLeft = amount;
+
+    await BluebirdPromise.each(credits || [], async (credit) => {
+      if (amountLeft <= 0 || credit.fulfilled) {
+        return;
+      }
+
+      const amountLeftFromDeduction = amountLeft - credit.amount_left;
+
+      const creditUpdates: any = {
+        _id: credit._id,
+      };
+
+      if (amountLeftFromDeduction >= 0) {
+        creditUpdates.amount_left = 0;
+        creditUpdates.fulfilled = true;
+        creditUpdates.amount_paid = credit.amount_left;
+        amountLeft = amountLeftFromDeduction;
+      } else {
+        creditUpdates.amount_left = Math.abs(amountLeftFromDeduction);
+        creditUpdates.amount_paid = amountLeft;
+      }
+
+      await updateCredit({credit, updates: creditUpdates});
+
+      const paymentData = {
+        customer,
+        amount: creditUpdates.amount_paid,
+        method,
+        note,
+        type: 'credit',
+      };
+
+      const payment = await savePayment({
+        ...paymentData,
+      });
+
+      const creditPayment: ICreditPayment = {
+        payment,
+        credit,
+        amount_paid: amount,
+        ...getBaseModelValues(),
+      };
+
+      realm.write(() => {
+        realm.create<ICreditPayment>(
+          modelName,
+          creditPayment,
+          UpdateMode.Modified,
+        );
+      });
+
+      amountLeft = amountLeftFromDeduction <= 0 ? 0 : amountLeftFromDeduction;
+      getAnalyticsService()
+        .logEvent('creditPaid', {
+          method,
+          amount: amount.toString(),
+          currency_code: getAuthService().getUser()?.currency_code ?? '',
+          remaining_balance: amountLeft.toString(),
+          item_id: credit?._id?.toString() ?? '',
+        })
+        .then(() => {});
+    });
+  };
+
+  const getPaymentsFromCredit = ({
+    credits,
+  }: getPaymentsFromCreditInterface): Array<any> => {
+    if (!credits || !credits.length) {
+      return [];
+    }
+
+    return credits.reduce(
+      (allCredits: IPayment[], credit) => [
+        ...allCredits,
+        ...(credit.payments || []).map(({payment}) => payment),
+      ],
+      [],
+    );
+  };
+
+  const updateCreditPayment = async ({
+    creditPayment,
+    updates,
+  }: updateCreditPaymentInterface) => {
+    const updatedCreditPayment = {
+      _id: creditPayment._id,
+      ...updates,
+      updated_at: new Date(),
+    };
+
+    realm.write(() => {
+      realm.create(modelName, updatedCreditPayment, UpdateMode.Modified);
+    });
+  };
+
+  const deleteCreditPayment = async ({
+    creditPayment,
+  }: deleteCreditPaymentInterface) => {
+    await updateCreditPayment({
+      creditPayment,
+      updates: {is_deleted: true},
+    });
+  };
+
+  return {
+    getCreditPayments,
+    saveCreditPayment,
+    getPaymentsFromCredit,
+    updateCreditPayment,
+    deleteCreditPayment,
+  };
+};

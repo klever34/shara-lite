@@ -1,22 +1,24 @@
 import {UpdateMode} from 'realm';
 import {ObjectId} from 'bson';
+import BluebirdPromise from 'bluebird';
 import {useRealm} from '@/services/realm';
 import {ICustomer} from '@/models';
 import {Customer, Payment} from 'types/app';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {IReceipt, modelName} from '@/models/Receipt';
 import {getBaseModelValues} from '@/helpers/models';
-import {saveCustomer} from '@/services/customer';
 import {
   getAnalyticsService,
   getAuthService,
   getGeolocationService,
 } from '@/services';
-import {saveReceiptItem} from '@/services/ReceiptItemService';
-import {restockProduct} from '@/services/ProductService';
 import {convertToLocationString} from '@/services/geolocation';
-import {savePayment} from '@/services/PaymentService';
-import {saveCredit} from '@/services/CreditService';
+import {useCustomer} from '@/services/customer/hook';
+import {useReceiptItem} from '@/services/receipt-item';
+import {useProduct} from '@/services/product';
+import {usePayment} from '@/services/payment';
+import {useCredit} from '@/services/credit';
+import {useCreditPayment} from '@/services/credit-payment';
 
 interface saveReceiptInterface {
   note?: string;
@@ -51,14 +53,9 @@ interface getReceiptInterface {
 }
 
 interface useReceiptInterface {
-  saveReceipt: (data: saveReceiptInterface) => void;
   getReceipts: () => IReceipt[];
-}
-
-interface useReceiptInterface {
-  getReceipts: () => IReceipt[];
-  saveReceipt: (data: saveReceiptInterface) => void;
-  updateReceipt: (data: updateReceiptInterface) => void;
+  saveReceipt: (data: saveReceiptInterface) => Promise<IReceipt>;
+  updateReceipt: (data: updateReceiptInterface) => Promise<void>;
   cancelReceipt: (params: cancelReceiptInterface) => void;
   getAllPayments: (params: getAllPaymentsInterface) => Array<any>;
   getReceipt: (params: getReceiptInterface) => IReceipt;
@@ -68,6 +65,12 @@ interface useReceiptInterface {
 
 export const useReceipt = (): useReceiptInterface => {
   const realm = useRealm();
+  const {saveCustomer} = useCustomer();
+  const {saveReceiptItem, deleteReceiptItem} = useReceiptItem();
+  const {restockProduct} = useProduct();
+  const {savePayment, updatePayment, deletePayment} = usePayment();
+  const {saveCredit, updateCredit, deleteCredit} = useCredit();
+  const {getPaymentsFromCredit} = useCreditPayment();
 
   const getReceipts = (): IReceipt[] => {
     return (realm
@@ -107,7 +110,7 @@ export const useReceipt = (): useReceiptInterface => {
     }
 
     if (!customer._id && customer.name) {
-      receiptCustomer = saveCustomer({realm, customer});
+      receiptCustomer = await saveCustomer({customer});
     }
     if (customer._id) {
       receiptCustomer = customer;
@@ -121,21 +124,22 @@ export const useReceipt = (): useReceiptInterface => {
 
     realm.write(() => {
       realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
+    });
 
-      receiptItems.forEach((receiptItem: IReceiptItem) => {
-        saveReceiptItem({
-          realm,
+    await BluebirdPromise.each(
+      receiptItems,
+      async (receiptItem: IReceiptItem) => {
+        await saveReceiptItem({
           receipt,
           receiptItem,
         });
 
-        restockProduct({
-          realm,
+        await restockProduct({
           product: receiptItem.product,
           quantity: receiptItem.quantity * -1,
         });
-      });
-    });
+      },
+    );
     getAnalyticsService()
       .logEvent('receiptCreated', {
         amount: String(receipt.total_amount),
@@ -155,9 +159,8 @@ export const useReceipt = (): useReceiptInterface => {
         });
       });
 
-    payments.forEach((payment) => {
-      savePayment({
-        realm,
+    await BluebirdPromise.each(payments, async (payment) => {
+      await savePayment({
         customer: receiptCustomer,
         receipt,
         type: 'receipt',
@@ -172,20 +175,19 @@ export const useReceipt = (): useReceiptInterface => {
     });
 
     if (creditAmount > 0) {
-      saveCredit({
+      await saveCredit({
         dueDate,
         creditAmount,
         //@ts-ignore
         customer: receiptCustomer,
         receipt,
-        realm,
       });
     }
 
     return receipt;
   };
 
-  const updateReceiptRecord = ({
+  const updateReceiptRecord = async ({
     receipt,
     updates,
   }: {
@@ -198,91 +200,92 @@ export const useReceipt = (): useReceiptInterface => {
       updated_at: new Date(),
     };
 
-    realm.create(modelName, updatedReceipt, UpdateMode.Modified);
+    realm.write(() => {
+      realm.create(modelName, updatedReceipt, UpdateMode.Modified);
+    });
   };
 
-  const updateReceipt = ({customer, receipt}: updateReceiptInterface): void => {
+  const updateReceipt = async ({
+    customer,
+    receipt,
+  }: updateReceiptInterface): Promise<void> => {
     if (!receipt.customer) {
       getAnalyticsService()
         .logEvent('customerAddedToReceipt')
         .then(() => {});
     }
-    realm.write(() => {
+
+    const updates = {
+      customer,
+      _id: receipt._id,
+      _partition: receipt._partition,
+    };
+
+    await updateReceiptRecord({
+      receipt,
+      updates,
+    });
+
+    await BluebirdPromise.each(receipt.payments || [], async (payment) => {
+      await updatePayment({payment, updates: {customer}});
+    });
+
+    if (
+      receipt.credit_amount > 0 &&
+      receipt.credits &&
+      receipt.credits.length
+    ) {
+      await updateCredit({credit: receipt.credits[0], updates: {customer}});
+    }
+  };
+
+  const cancelReceipt = async ({
+    receipt,
+    cancellation_reason,
+  }: cancelReceiptInterface): Promise<void> => {
+    const revertProduct = async () => {
       const updates = {
-        customer,
         _id: receipt._id,
         _partition: receipt._partition,
+        total_amount: 0,
+        credit_amount: 0,
+        is_cancelled: true,
+        cancellation_reason,
       };
 
-      updateReceiptRecord({
+      await updateReceiptRecord({
         receipt,
         updates,
       });
+    };
 
-      (receipt.payments || []).forEach((payment) => {
-        updatePayment({realm, payment, updates: {customer}});
+    const revertStockAndItems = async () => {
+      await BluebirdPromise.each(receipt.items || [], async (item) => {
+        await restockProduct({
+          product: item.product,
+          quantity: item.quantity,
+        });
+
+        await deleteReceiptItem({receiptItem: item});
       });
+    };
 
-      if (
-        receipt.credit_amount > 0 &&
-        receipt.credits &&
-        receipt.credits.length
-      ) {
-        updateCredit({realm, credit: receipt.credits[0], updates: {customer}});
+    const revertPayment = async () => {
+      await BluebirdPromise.each(receipt.payments || [], async (payment) => {
+        await deletePayment({payment});
+      });
+    };
+
+    const revertCredit = async () => {
+      if (receipt.credits && receipt.credits.length) {
+        await deleteCredit({credit: receipt.credits[0]});
       }
-    });
-  };
+    };
 
-  const cancelReceipt = ({
-    receipt,
-    cancellation_reason,
-  }: cancelReceiptInterface): void => {
-    realm.write(() => {
-      const revertProduct = () => {
-        const updates = {
-          _id: receipt._id,
-          _partition: receipt._partition,
-          total_amount: 0,
-          credit_amount: 0,
-          is_cancelled: true,
-          cancellation_reason,
-        };
-
-        updateReceiptRecord({
-          receipt,
-          updates,
-        });
-      };
-
-      const revertStockAndItems = () => {
-        receipt.items?.forEach((item) => {
-          restockProduct({
-            realm,
-            product: item.product,
-            quantity: item.quantity,
-          });
-
-          deleteReceiptItem({realm, receiptItem: item});
-        });
-      };
-
-      const revertPayment = () => {
-        (receipt.payments || []).forEach((payment) => {
-          deletePayment({realm, payment});
-        });
-      };
-
-      const revertCredit = () => {
-        if (receipt.credits && receipt.credits.length) {
-          deleteCredit({realm, credit: receipt.credits[0]});
-        }
-      };
-
-      revertProduct();
-      revertStockAndItems();
-      revertPayment();
-      revertCredit();
-    });
+    await revertProduct();
+    await revertStockAndItems();
+    await revertPayment();
+    await revertCredit();
   };
 
   const getAllPayments = ({receipt}: getAllPaymentsInterface) => {
