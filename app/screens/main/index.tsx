@@ -22,9 +22,13 @@ import {
 import {ReportsScreen} from '@/screens/main/more/reports';
 import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
 import {IReceipt} from '@/models/Receipt';
+import {AddCustomer} from '@/screens/main/customers';
 
 export type MainStackParamList = {
   Home: undefined;
+
+  // Customers
+  AddCustomer: undefined;
 
   // Receipt
   ReceiptDetails: {id: IReceipt['_id']};
@@ -110,6 +114,12 @@ const MainScreens = () => {
         <MainStack.Screen
           name="Home"
           component={HomeScreen}
+          options={{headerShown: false}}
+        />
+
+        <MainStack.Screen
+          name="AddCustomer"
+          component={AddCustomer}
           options={{headerShown: false}}
         />
 
