@@ -3,7 +3,7 @@ import {HeaderRight, HeaderRightMenuOption} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -253,47 +253,7 @@ export const CustomerListScreen = withModal(
         },
         headerTitle: () => null,
         headerRight: () => (
-          <HeaderRight
-            options={[
-              {
-                icon: 'search',
-                onPress: () => {
-                  const closeSearchModal = openModal('search', {
-                    items: [
-                      ...((myCustomers as unknown) as CustomerListItem[]),
-                      ...phoneContacts,
-                    ],
-                    renderItem: ({item, onPress}) => {
-                      return renderCustomerListItem({
-                        item: item as CustomerListItem,
-                        onPress: () => {
-                          onPress('');
-                          closeSearchModal();
-                        },
-                      });
-                    },
-                    setFilter: (item: ICustomer, query) => {
-                      // TODO: Improve search algorithm
-                      return (
-                        (prepareValueForSearch(item.name).search(query) ??
-                          -1) !== -1 ||
-                        (prepareValueForSearch(item.mobile).search(query) ??
-                          -1) !== -1 ||
-                        (prepareValueForSearch(
-                          item.remainingCreditAmount,
-                        ).search(query) ?? -1) !== -1
-                      );
-                    },
-                    textInputProps: {
-                      placeholder: 'Search Customers',
-                      autoFocus: true,
-                    },
-                  });
-                },
-              },
-            ]}
-            menuOptions={[]}
-          />
+          <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
         ),
       });
     }, [
@@ -338,7 +298,34 @@ export const CustomerListScreen = withModal(
     const handleCustomerSearch = useCallback((query) => {
       setSearchTerm(query);
     }, []);
-    console.log(searchTerm, filter);
+
+    const filteredCustomers = useMemo(() => {
+      let customers = myCustomers;
+      if (filter) {
+        switch (filter) {
+          case 'paid':
+            customers = myCustomers.filtered('ALL credits.amount_left = 0');
+            break;
+          case 'owes':
+            customers = myCustomers.filtered('ANY credits.amount_left > 0');
+            break;
+          case 'all':
+          default:
+            customers = myCustomers;
+            break;
+        }
+      }
+      if (searchTerm) {
+        customers = customers.filtered(
+          `name CONTAINS[c] "${searchTerm}" OR mobile CONTAINS[c] "${searchTerm}"`,
+        );
+      }
+      return orderBy(customers, ['debtLevel', 'name'] as (keyof ICustomer)[], [
+        'desc',
+        'asc',
+      ]);
+    }, [filter, searchTerm, myCustomers]);
+
     return (
       <KeyboardAvoidingView
         style={applyStyles('flex-1', {
@@ -349,13 +336,7 @@ export const CustomerListScreen = withModal(
           headerTitle="total credit"
           createEntityButtonIcon="users"
           renderListItem={renderCustomerListItem}
-          data={
-            (orderBy(
-              myCustomers,
-              ['debtLevel', 'name'] as (keyof ICustomer)[],
-              ['desc', 'asc'],
-            ) as unknown) as ICustomer[]
-          }
+          data={(filteredCustomers as unknown) as ICustomer[]}
           searchPlaceholderText="Search Customers"
           createEntityButtonText="Add Customer"
           onCreateEntity={() => navigation.navigate('AddCustomer')}
