@@ -43,7 +43,7 @@ export const Button = ({
     },
     red: {
       button: styles.redButton,
-      text: styles.redButtonText,
+      text: disabled ? styles.redButtonTextDisabled : styles.redButtonText,
     },
     clear: {
       button: styles.clearButton,
@@ -138,6 +138,9 @@ const styles = StyleSheet.create({
   redButtonText: {
     color: colors.white,
   },
+  redButtonTextDisabled: {
+    color: colors['gray-100'],
+  },
 });
 
 type BaseButtonProps = {
@@ -156,10 +159,14 @@ export const BaseButton = ({
   disabled,
 }: BaseButtonProps) => {
   const disabledStyle = disabled ? baseButtonStyles.disabled : {};
+  const textStyle = disabled
+    ? baseButtonStyles.disabledText
+    : baseButtonStyles.text;
+
   return (
     <Touchable onPress={onPress} disabled={disabled}>
       <View style={{...baseButtonStyles.container, ...style, ...disabledStyle}}>
-        {children || <Text style={baseButtonStyles.text}>{title}</Text>}
+        {children || <Text style={textStyle}>{title}</Text>}
       </View>
     </Touchable>
   );
@@ -180,12 +187,19 @@ export const baseButtonStyles = StyleSheet.create({
     color: colors.white,
     textTransform: 'capitalize',
   },
+  disabledText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors['gray-100'],
+    textTransform: 'capitalize',
+  },
   icon: {
     color: colors.white,
     fontSize: 18,
     lineHeight: 24,
   },
   disabled: {
-    opacity: 0.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: colors['gray-20'],
   },
 });

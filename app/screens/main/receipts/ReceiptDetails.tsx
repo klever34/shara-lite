@@ -11,6 +11,7 @@ import {
   ReceiptTableItemProps,
   StickyFooter,
 } from '@/components/';
+import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
@@ -36,17 +37,27 @@ import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, FlatList, Text, ToastAndroid, View} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
 import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {ReceiptListItem} from './ReceiptListItem';
+import {ReceiptListItem, ReceiptListItemProps} from './ReceiptListItem';
 
-type ReceiptDetailsProps = ModalWrapperFields & {receipt?: IReceipt};
+type ReceiptDetailsProps = ModalWrapperFields & {
+  receipt?: IReceipt;
+  headerLeftSection?: ReceiptListItemProps['leftSection'];
+};
 
 export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
-  const {receipt, openModal} = props;
+  const {receipt, openModal, headerLeftSection} = props;
 
   const realm = useRealm();
   const navigation = useAppNavigation();
@@ -466,18 +477,33 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
 
   return (
     <>
-      <View style={applyStyles('bg-white flex-1')}>
+      <View
+        style={applyStyles('flex-row bg-white items-center', {
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.34,
+          shadowRadius: 6.27,
+          elevation: 10,
+          borderBottomColor: colors['gray-10'],
+        })}>
+        <HeaderBackButton
+          {...{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
+        />
         <ReceiptListItem
           isHeader
+          style={applyStyles({
+            borderBottomWidth: 0,
+            width: Dimensions.get('window').width - 48,
+          })}
           receipt={receipt}
-          leftSection={{
-            heading: receipt?.customer?.name ?? 'No Customer',
-            subheading:
-              receipt?.created_at &&
-              format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
-          }}
+          leftSection={headerLeftSection}
           onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
         />
+      </View>
+      <View style={applyStyles('bg-white flex-1 pt-24')}>
         {!isFulfilled && !receipt?.is_cancelled && (
           <View style={applyStyles('p-16')}>
             <Text
@@ -487,13 +513,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
               how much has been paid?
             </Text>
             <View
-              style={applyStyles(
-                'pb-16 flex-row items-center justify-between',
-                {
-                  borderBottomWidth: 1,
-                  borderBottomColor: colors['gray-10'],
-                },
-              )}>
+              style={applyStyles('pb-8 flex-row items-center justify-between')}>
               <View style={applyStyles({width: '48%'})}>
                 <CurrencyInput
                   value={creditPaymentAmount.toString()}
@@ -516,7 +536,14 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
           data={receipt?.items}
           renderItem={renderItem}
           keyboardShouldPersistTaps="always"
-          ListHeaderComponent={<ReceiptTableHeader />}
+          ListHeaderComponent={
+            <ReceiptTableHeader
+              style={applyStyles({
+                borderTopWidth: 1,
+                borderTopColor: colors['gray-10'],
+              })}
+            />
+          }
           keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         />
         <>
