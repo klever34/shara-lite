@@ -18,11 +18,19 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
-import {getProducts} from '@/services/ProductService';
+import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, FlatList, Text, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Keyboard,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
+import {EditProductModal} from './EditProductModal';
 
 type Props = {
   receipt?: IReceipt;
@@ -35,7 +43,10 @@ export const CreateReceipt = withModal((props: Props) => {
   const handleError = useErrorHandler();
   const products = getProducts({realm});
 
+  const [searchQuery, setSearchQuery] = useState('');
+  const [isNewProduct, setIsNewProduct] = useState(false);
   const [price, setPrice] = useState<number | undefined>();
+  const [itemToEdit, setItemToEdit] = useState<IReceiptItem | null>(null);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
   const [totalAmount, setTotalAmount] = useState(receipt?.total_amount || 0);
   const [receiptItems, setReceiptItems] = useState<IReceiptItem[]>(
@@ -61,8 +72,26 @@ export const CreateReceipt = withModal((props: Props) => {
     return `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1;
   }, []);
 
+  const handleOpenEditProductModal = useCallback(
+    (item: IReceiptItem) => {
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          item_id: String(item._id),
+          content_type: 'ReceiptItem',
+        })
+        .catch(handleError);
+      setItemToEdit(item);
+    },
+    [handleError],
+  );
+
+  const handleCloseEditProductModal = useCallback(() => {
+    setItemToEdit(null);
+  }, []);
+
   const handleSelectProduct = useCallback(
     (item: IProduct) => {
+      setSearchQuery(item.name);
       const addedItem = receiptItems.find(
         (receiptItem) =>
           receiptItem?.product &&
@@ -72,55 +101,76 @@ export const CreateReceipt = withModal((props: Props) => {
         setQuantity(addedItem.quantity.toString());
       }
       setSelectedProduct(item);
-      setPrice(item?.price);
+      item.price === null ? setPrice(0) : setPrice(item?.price);
     },
     [receiptItems],
   );
 
-  // const handleUpdateReceiptItem = useCallback(
-  //   (item: IReceiptItem) => {
-  //     setReceiptItems(
-  //       receiptItems.map((receiptItem) => {
-  //         if (
-  //           receiptItem.product._id?.toString() === item.product._id?.toString()
-  //         ) {
-  //           return item;
-  //         }
-  //         return receiptItem;
-  //       }),
-  //     );
-  //   },
-  //   [receiptItems],
-  // );
+  const handleUpdateReceiptItem = useCallback(
+    (item: IReceiptItem) => {
+      setReceiptItems(
+        receiptItems.map((receiptItem) => {
+          if (
+            receiptItem.product._id?.toString() === item.product._id?.toString()
+          ) {
+            return item;
+          }
+          return receiptItem;
+        }),
+      );
+    },
+    [receiptItems],
+  );
 
-  // const handleRemoveReceiptItem = useCallback(
-  //   (item: IReceiptItem) => {
-  //     setReceiptItems(
-  //       receiptItems.filter(
-  //         (receiptItem) =>
-  //           receiptItem.product._id?.toString() !==
-  //           item.product._id?.toString(),
-  //       ),
-  //     );
-  //   },
-  //   [receiptItems],
-  // );
+  const handleRemoveReceiptItem = useCallback(
+    (item: IReceiptItem) => {
+      setReceiptItems(
+        receiptItems.filter(
+          (receiptItem) =>
+            receiptItem.product._id?.toString() !==
+            item.product._id?.toString(),
+        ),
+      );
+    },
+    [receiptItems],
+  );
+
+  const handleAddProduct = useCallback(
+    ({name, price: productPrice}) => {
+      getAnalyticsService().logEvent('productStart').catch(handleError);
+      const createdProduct = saveProduct({
+        realm,
+        product: {name, price: productPrice},
+      });
+      getAnalyticsService().logEvent('productAdded').catch(handleError);
+      setIsNewProduct(false);
+      return createdProduct;
+    },
+    [handleError, realm],
+  );
 
   const handleAddReceiptItem = useCallback(() => {
+    let payload = selectedProduct;
     const priceCondition = price || price === 0 ? true : false;
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
     if (priceCondition && quantityCondition && quantity) {
+      if (isNewProduct) {
+        payload = handleAddProduct({name: searchQuery, price});
+      }
+
       const product = {
-        ...selectedProduct,
-        _id: selectedProduct?._id,
+        ...payload,
         price,
-        product: selectedProduct,
-        name: selectedProduct?.name,
+        product: payload,
+        _id: payload?._id,
+        name: payload?.name,
         quantity: parseFloat(quantity),
       } as IReceiptItem;
+
       getAnalyticsService()
         .logEvent('productAddedToReceipt')
         .catch(handleError);
+
       if (
         receiptItems
           .map((item) => item._id?.toString())
@@ -140,13 +190,26 @@ export const CreateReceipt = withModal((props: Props) => {
       } else {
         setReceiptItems([product, ...receiptItems]);
       }
-      setSelectedProduct(null);
+
+      Keyboard.dismiss();
       setPrice(0);
       setQuantity('');
+      setSearchQuery('');
+      setSelectedProduct(null);
+      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
     } else {
       Alert.alert('Info', 'Please add product quantity');
     }
-  }, [price, quantity, selectedProduct, handleError, receiptItems]);
+  }, [
+    price,
+    quantity,
+    selectedProduct,
+    handleError,
+    receiptItems,
+    isNewProduct,
+    handleAddProduct,
+    searchQuery,
+  ]);
 
   const handleDone = useCallback(() => {
     let items = receiptItems;
@@ -169,16 +232,11 @@ export const CreateReceipt = withModal((props: Props) => {
       <ReceiptTableItem
         item={item}
         onPress={() => {
-          getAnalyticsService()
-            .logEvent('selectContent', {
-              item_id: String(item._id),
-              content_type: 'ReceiptItem',
-            })
-            .catch(handleError);
+          handleOpenEditProductModal(item);
         }}
       />
     ),
-    [handleError],
+    [handleOpenEditProductModal],
   );
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
@@ -208,26 +266,32 @@ export const CreateReceipt = withModal((props: Props) => {
     setTotalAmount(total);
   }, [receiptItems]);
 
+  const handleChangeSearchQuery = useCallback((searchValue) => {
+    setSearchQuery(searchValue);
+  }, []);
+
   return (
     <View style={applyStyles('flex-1')}>
       <View style={applyStyles('bg-gray-10 px-16 py-32')}>
         <View style={applyStyles('pb-16')}>
           <AutoComplete<IProduct>
-            items={products}
             rightIcon="box"
+            items={products}
+            value={searchQuery}
             label="Product/Service"
             setFilter={handleProductSearch}
             onItemSelect={handleSelectProduct}
             renderItem={renderSearchDropdownItem}
-            noResultsActionButtonText="Add a product"
+            onChangeText={handleChangeSearchQuery}
+            noResultsAction={() => setIsNewProduct(true)}
             textInputProps={{placeholder: 'Search or enter product here'}}
-            noResultsAction={() => {}}
           />
         </View>
         <View
           style={applyStyles('pb-16 flex-row items-center justify-between')}>
           <View style={applyStyles({width: '48%'})}>
             <CurrencyInput
+              placeholder="0.00"
               label="Unit Price"
               value={price?.toString()}
               style={applyStyles('bg-white', {
@@ -238,6 +302,7 @@ export const CreateReceipt = withModal((props: Props) => {
           </View>
           <View style={applyStyles({width: '48%'})}>
             <AppInput
+              placeholder="0"
               value={quantity}
               label="Quantity"
               keyboardType="numeric"
@@ -265,7 +330,7 @@ export const CreateReceipt = withModal((props: Props) => {
         }
         keyExtractor={(item) => `${item?.product._id?.toString()}`}
         ListEmptyComponent={
-          <View style={applyStyles('h-full center mx-auto')}>
+          <View style={applyStyles('py-96 center mx-auto')}>
             <Text
               style={applyStyles(
                 'text-700 text-center text-gray-200 text-uppercase',
@@ -296,6 +361,13 @@ export const CreateReceipt = withModal((props: Props) => {
       <StickyFooter>
         <Button title="Continue" onPress={handleDone} />
       </StickyFooter>
+      <EditProductModal
+        item={itemToEdit}
+        visible={!!itemToEdit}
+        onClose={handleCloseEditProductModal}
+        onRemoveProductItem={handleRemoveReceiptItem}
+        onUpdateProductItem={handleUpdateReceiptItem}
+      />
     </View>
   );
 });

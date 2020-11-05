@@ -14,10 +14,18 @@ export const Header = ({title, iconLeft, iconRight}: HeaderTitleProps) => {
     <View
       style={applyStyles('flex-row py-8 bg-white relative', {
         borderBottomWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
+        elevation: 10,
         borderBottomColor: colors['gray-10'],
       })}>
       {iconLeft && (
-        <View style={applyStyles('absolute h-full top-8')}>
+        <View style={applyStyles('absolute h-full top-8 left-8')}>
           <HeaderBackButton {...iconLeft} />
         </View>
       )}
@@ -29,7 +37,7 @@ export const Header = ({title, iconLeft, iconRight}: HeaderTitleProps) => {
         </Text>
       </View>
       {iconRight && (
-        <View style={applyStyles('absolute h-full top-8')}>
+        <View style={applyStyles('absolute h-full top-8 right-8')}>
           <HeaderBackButton {...iconRight} />
         </View>
       )}

@@ -1,32 +1,37 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+/*
+  Code inspired by work done here
+  https://github.com/zubairpaizer/react-native-searchable-dropdown/blob/master/index.js
+*/
+
+import {applyStyles, colors} from '@/styles';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   FlatList,
   Keyboard,
   StyleSheet,
   Text,
   TextInput,
-  View,
   TextInputProps,
+  View,
   ViewStyle,
 } from 'react-native';
-import {applyStyles, colors} from '@/styles';
-import {Button} from './Button';
 import Icon from './Icon';
-import debounce from 'lodash/debounce';
+import Touchable from './Touchable';
 
 export type AutoCompleteProps<T extends any = any> = {
   items: T[];
+  value: string;
   label?: string;
   leftIcon?: string;
   rightIcon?: string;
   onFocus?: () => void;
+  selectionKey?: string;
   inputStyle?: ViewStyle;
-  onBlur?: (query: string) => void;
   emptyStateText?: string;
-  noResultsAction?: () => void;
   textInputProps?: TextInputProps;
+  onBlur?: (query: string) => void;
   onItemSelect?: (item: T) => void;
-  noResultsActionButtonText?: string;
+  noResultsAction?: (query?: string) => void;
   setFilter: (item: T, text: string) => boolean;
   onChangeText?: TextInputProps['onChangeText'];
   renderItem: ({
@@ -40,8 +45,9 @@ export type AutoCompleteProps<T extends any = any> = {
 
 export function AutoComplete<T>({
   items,
-  onBlur,
   label,
+  value,
+  onBlur,
   onFocus,
   leftIcon,
   rightIcon,
@@ -52,9 +58,8 @@ export function AutoComplete<T>({
   onItemSelect,
   textInputProps,
   noResultsAction,
-  noResultsActionButtonText,
 }: AutoCompleteProps<T>) {
-  const queryRef = useRef<string>('');
+  const [query, setQuery] = useState<string>(value || '');
   const [focus, setFocus] = useState(false);
   const [listItems, setListItems] = useState(items || []);
 
@@ -63,29 +68,33 @@ export function AutoComplete<T>({
       Keyboard.dismiss();
       setFocus(false);
       if (onItemSelect) {
-        setTimeout(() => {
-          onItemSelect(item);
-        }, 10);
+        onItemSelect(item);
       }
     },
     [onItemSelect],
   );
-  useEffect(() => {
-    if (focus) {
-      onFocus?.();
-    } else {
-      onBlur?.(queryRef.current);
-    }
-  }, [focus, onBlur, onFocus]);
 
   const handleInputFocus = useCallback(() => {
-    setFocus(true);
     setListItems(items);
   }, [items]);
 
+  const handleNoResultsAction = useCallback(
+    (result: string) => {
+      noResultsAction && noResultsAction(result);
+      setFocus(false);
+      Keyboard.dismiss();
+    },
+    [noResultsAction],
+  );
+
   const handleChangeText = useCallback(
-    debounce((searchedText: string) => {
-      queryRef.current = searchedText;
+    (searchedText: string) => {
+      if (searchedText.length) {
+        setFocus(true);
+      } else {
+        setFocus(false);
+      }
+      setQuery(searchedText);
       const searchValue = searchedText.trim().toLowerCase();
       const results = items.filter((item: T) => {
         return setFilter && setFilter(item, searchValue);
@@ -93,11 +102,9 @@ export function AutoComplete<T>({
       setListItems(results);
       const onTextChange = onChangeText || textInputProps?.onChangeText;
       if (onTextChange && typeof onTextChange === 'function') {
-        setTimeout(() => {
-          onTextChange(searchedText);
-        }, 0);
+        onTextChange(searchedText);
       }
-    }, 750),
+    },
     [items, onChangeText, setFilter, textInputProps],
   );
 
@@ -106,8 +113,7 @@ export function AutoComplete<T>({
       return (
         <View
           style={applyStyles('bg-white', {
-            top: 80,
-            height: 150,
+            top: 60,
             zIndex: 100,
             width: '100%',
             elevation: 10,
@@ -120,34 +126,33 @@ export function AutoComplete<T>({
               width: 0,
               height: 5,
             },
+            height: listItems.length > 3 ? 150 : 'auto',
           })}>
           <FlatList
             data={listItems}
+            persistentScrollbar
+            keyboardShouldPersistTaps="always"
+            keyExtractor={(item, index) => index.toString()}
             //@ts-ignore
             renderItem={({item}) =>
               renderItem({item, onPress: handleItemSelect})
             }
-            keyExtractor={(item, index) => index.toString()}
             ListEmptyComponent={
-              <View
-                style={applyStyles('px-lg flex-1 items-center justify-center', {
-                  paddingVertical: 100,
-                })}>
-                <Text
-                  style={applyStyles('mb-xs heading-700', 'text-center', {
-                    color: colors['gray-300'],
-                  })}>
-                  No results found
-                </Text>
-                {noResultsAction && (
-                  <Button
-                    variantColor="clear"
-                    onPress={noResultsAction}
-                    style={applyStyles('w-full')}
-                    title={noResultsActionButtonText}
-                  />
-                )}
-              </View>
+              <Touchable
+                onPress={
+                  noResultsAction
+                    ? () => handleNoResultsAction(query)
+                    : undefined
+                }>
+                <View style={applyStyles('p-lg flex-row bg-gray-10')}>
+                  <Text style={applyStyles('text-700 text-gray-300')}>
+                    + Add
+                  </Text>
+                  <Text style={applyStyles('pl-xs text-700 text-primary')}>
+                    {query}
+                  </Text>
+                </View>
+              </Touchable>
             }
           />
         </View>
@@ -155,11 +160,12 @@ export function AutoComplete<T>({
     }
   }, [
     focus,
-    handleItemSelect,
+    query,
     listItems,
-    noResultsAction,
-    noResultsActionButtonText,
     renderItem,
+    noResultsAction,
+    handleItemSelect,
+    handleNoResultsAction,
   ]);
 
   const renderTextInput = useCallback(() => {
@@ -186,10 +192,11 @@ export function AutoComplete<T>({
             />
           )}
           <TextInput
+            value={query}
             onFocus={handleInputFocus}
             onChangeText={handleChangeText}
             placeholderTextColor={colors['gray-50']}
-            style={applyStyles('text-400', style, inputStyle)}
+            style={applyStyles('text-500', style, inputStyle)}
             {...textInputProps}
           />
           {rightIcon && (
@@ -206,12 +213,25 @@ export function AutoComplete<T>({
     );
   }, [
     leftIcon,
+    rightIcon,
+    query,
     handleInputFocus,
     handleChangeText,
     inputStyle,
     textInputProps,
-    rightIcon,
   ]);
+
+  useEffect(() => {
+    if (focus) {
+      onFocus?.();
+    } else {
+      onBlur?.(query);
+    }
+  }, [focus, onBlur, onFocus, query]);
+
+  useEffect(() => {
+    setQuery(value);
+  }, [value]);
 
   return (
     <View>
