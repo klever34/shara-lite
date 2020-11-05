@@ -3,7 +3,7 @@ import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import {IContact} from '@/models';
+import {Contact, IContact} from '@/models';
 import {IRealmService} from '../realm';
 import omit from 'lodash/omit';
 import {UpdateMode} from 'realm';
@@ -31,6 +31,7 @@ export interface IContactService {
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
   formatPhoneNumber(number: string): string;
+  addContact(contact: any): any;
 }
 
 const parseDateString = (dateString: string) => {
@@ -112,6 +113,20 @@ export class ContactService implements IContactService {
       return removeAllNonDigits(phoneNumber);
     }
     return String(phoneNumberDetails.number);
+  }
+
+  public async addContact(contact: any) {
+    if (await this.checkPermission()) {
+      return new Promise<PhoneContact[]>((resolve, reject) => {
+        RNContacts.addContact(contact, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(contact);
+        });
+      });
+    }
+    throw new Error('We are unable to access your contacts.');
   }
 
   public async getPhoneContacts() {

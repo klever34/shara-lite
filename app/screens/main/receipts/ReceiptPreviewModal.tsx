@@ -43,7 +43,7 @@ export const ReceiptPreviewModal = ({receiptId, closeModal}: Props) => {
           </View>
         </Touchable>
       </View>
-      <ReceiptPreview isNew receipt={receipt} onClose={closeModal} />
+      <ReceiptPreview receipt={receipt} onClose={closeModal} />
     </ScrollView>
   );
 };

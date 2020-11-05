@@ -5,7 +5,7 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {StyleSheet, Text, ToastAndroid, View} from 'react-native';
+import {Text, ToastAndroid, View} from 'react-native';
 
 type Props = {
   visible: boolean;
@@ -15,7 +15,7 @@ type Props = {
   onRemoveProductItem: (item: IReceiptItem) => void;
 };
 
-export const EditProductModal = (props: Props) => {
+export const EditReceiptItemModal = (props: Props) => {
   const {
     item,
     onClose,
@@ -83,7 +83,7 @@ export const EditProductModal = (props: Props) => {
           borderTopRightRadius: 24,
           backgroundColor: colors.white,
         })}>
-        <View style={styles.calculatorSection}>
+        <View style={applyStyles('py-8 px-16')}>
           <View>
             <Text
               style={applyStyles(
@@ -123,7 +123,7 @@ export const EditProductModal = (props: Props) => {
                 editable={false}
                 value={getSubtotal()}
                 leftIcon={
-                  <Text style={applyStyles(styles.inputIconText, 'text-400')}>
+                  <Text style={applyStyles('text-base text-gray-300 text-400')}>
                     {currency}
                   </Text>
                 }
@@ -131,71 +131,32 @@ export const EditProductModal = (props: Props) => {
             </View>
           </View>
         </View>
-        <View style={styles.calculatorSectionButtons}>
+        <View
+          style={applyStyles(
+            'flex-row items-center py-12 px-16 bg-white justify-between',
+            {
+              borderTopWidth: 1,
+              borderTopColor: colors['gray-20'],
+            },
+          )}>
           <Button
             title="Delete"
             variantColor="clear"
             onPress={handleDelete}
-            style={styles.calculatorSectionButton}
+            style={applyStyles({
+              width: '48%',
+            })}
           />
           <Button
             title="Update"
             variantColor="red"
             onPress={handleUpdate}
-            style={styles.calculatorSectionButton}
+            style={applyStyles({
+              width: '48%',
+            })}
           />
         </View>
       </View>
     </BottomHalfModalContainer>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  recentProductsHeader: {
-    fontSize: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    color: colors['gray-300'],
-    textTransform: 'uppercase',
-    borderBottomColor: colors['gray-20'],
-  },
-  recentProductsList: {
-    height: 200,
-  },
-  recentProductItem: {
-    fontSize: 16,
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: colors['gray-20'],
-  },
-  recentProductItemText: {
-    fontSize: 16,
-    color: colors['gray-300'],
-  },
-  calculatorSection: {
-    paddingVertical: 8,
-    paddingHorizontal: 16,
-  },
-  calculatorSectionButtons: {
-    borderTopWidth: 1,
-    alignItems: 'center',
-    flexDirection: 'row',
-    paddingVertical: 12,
-    paddingHorizontal: 16,
-    backgroundColor: colors.white,
-    justifyContent: 'space-between',
-    borderTopColor: colors['gray-20'],
-  },
-  calculatorSectionButton: {
-    width: '48%',
-  },
-  inputIconText: {
-    fontSize: 16,
-    color: colors['gray-300'],
-  },
-});

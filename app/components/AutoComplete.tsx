@@ -188,7 +188,7 @@ export function AutoComplete<T>({
               name={leftIcon}
               type="feathericons"
               style={styles.iconLeft}
-              color={colors['gray-200']}
+              color={colors['gray-50']}
             />
           )}
           <TextInput
@@ -205,7 +205,7 @@ export function AutoComplete<T>({
               name={rightIcon}
               type="feathericons"
               style={styles.iconRight}
-              color={colors['gray-200']}
+              color={colors['gray-50']}
             />
           )}
         </View>

@@ -112,6 +112,7 @@ export const AppInput = (props: AppInputProps) => {
             withRightIconStyle,
             style,
           )}
+          placeholderTextColor={colors['gray-50']}
           {...rest}
         />
         {rightIcon && (

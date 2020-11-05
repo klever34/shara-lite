@@ -18,6 +18,7 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
+import {useAppNavigation} from '@/services/navigation';
 import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
@@ -30,7 +31,8 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {EditProductModal} from './EditProductModal';
+import {EditReceiptItemModal} from './EditReceiptItemModal';
+import {useReceiptProvider} from './ReceiptProvider';
 
 type Props = {
   receipt?: IReceipt;
@@ -42,6 +44,8 @@ export const CreateReceipt = withModal((props: Props) => {
   const realm = useRealm();
   const handleError = useErrorHandler();
   const products = getProducts({realm});
+  const navigation = useAppNavigation();
+  const {handleUpdateReceipt} = useReceiptProvider();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [isNewProduct, setIsNewProduct] = useState(false);
@@ -72,7 +76,7 @@ export const CreateReceipt = withModal((props: Props) => {
     return `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1;
   }, []);
 
-  const handleOpenEditProductModal = useCallback(
+  const handleOpenEditReceiptItemModal = useCallback(
     (item: IReceiptItem) => {
       getAnalyticsService()
         .logEvent('selectContent', {
@@ -85,7 +89,7 @@ export const CreateReceipt = withModal((props: Props) => {
     [handleError],
   );
 
-  const handleCloseEditProductModal = useCallback(() => {
+  const handleCloseEditReceiptItemModal = useCallback(() => {
     setItemToEdit(null);
   }, []);
 
@@ -217,26 +221,38 @@ export const CreateReceipt = withModal((props: Props) => {
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
     if (selectedProduct && quantity && quantityCondition && priceCondition) {
       handleAddReceiptItem();
+      handleUpdateReceipt({tax: 0, receiptItems, totalAmount: 0});
+      navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {
       setSelectedProduct(null);
+      handleUpdateReceipt({tax: 0, receiptItems, totalAmount: 0});
+      navigation.navigate('ReceiptOtherDetails');
     } else {
       Alert.alert(
         'Info',
         'Please select at least one product item with quantity',
       );
     }
-  }, [receiptItems, price, quantity, selectedProduct, handleAddReceiptItem]);
+  }, [
+    navigation,
+    receiptItems,
+    price,
+    quantity,
+    selectedProduct,
+    handleAddReceiptItem,
+    handleUpdateReceipt,
+  ]);
 
   const renderReceiptItem = useCallback(
     ({item}: ReceiptTableItemProps) => (
       <ReceiptTableItem
         item={item}
         onPress={() => {
-          handleOpenEditProductModal(item);
+          handleOpenEditReceiptItemModal(item);
         }}
       />
     ),
-    [handleOpenEditProductModal],
+    [handleOpenEditReceiptItemModal],
   );
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
@@ -278,7 +294,7 @@ export const CreateReceipt = withModal((props: Props) => {
             rightIcon="box"
             items={products}
             value={searchQuery}
-            label="Product/Service"
+            label="Product / Service"
             setFilter={handleProductSearch}
             onItemSelect={handleSelectProduct}
             renderItem={renderSearchDropdownItem}
@@ -361,10 +377,10 @@ export const CreateReceipt = withModal((props: Props) => {
       <StickyFooter>
         <Button title="Continue" onPress={handleDone} />
       </StickyFooter>
-      <EditProductModal
+      <EditReceiptItemModal
         item={itemToEdit}
         visible={!!itemToEdit}
-        onClose={handleCloseEditProductModal}
+        onClose={handleCloseEditReceiptItemModal}
         onRemoveProductItem={handleRemoveReceiptItem}
         onUpdateProductItem={handleUpdateReceiptItem}
       />
