@@ -1,50 +1,31 @@
-import {
-  FilterButton,
-  FilterButtonGroup,
-  HeaderRight,
-  ReceiptingContainer,
-  ReceiptListItem,
-} from '@/components';
-import {Icon} from '@/components/Icon';
+import {Button, HeaderRight, HomeContainer} from '@/components';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/main/receipts';
 import {getAnalyticsService} from '@/services';
 import {CustomerContext} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
-import {getReceiptsTotalAmount} from '@/services/ReceiptService';
-import {colors} from '@/styles';
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
 import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
-import {Text, TextStyle, View} from 'react-native';
-import {StatusFilter} from 'types/app';
+import {TextStyle} from 'react-native';
 import {CustomersStackParamList} from '@/screens/main/customers';
 import {applyStyles} from '@/styles';
-
-const statusFilters: StatusFilter[] = [
-  {label: 'All Sales', value: 'all'},
-  {label: 'Unpaid', value: 'unpaid'},
-  {label: 'Paid', value: 'paid'},
-  {label: 'Cancelled', value: 'cancelled'},
-  // {label: 'Pending', value: 'pending'},
-];
+import {MainStackParamList} from '..';
+import {Page} from '@/components/Page';
+import {ReceiptListItem} from '@/screens/main/receipts/ReceiptListItem';
+import {prepareValueForSearch} from '@/helpers/utils';
 
 type CustomerDetailsProps = ModalWrapperFields & {
-  route: RouteProp<CustomersStackParamList, 'CustomerDetails'>;
+  route: RouteProp<
+    CustomersStackParamList & MainStackParamList,
+    'CustomerDetails'
+  >;
 };
 
 const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   const navigation = useNavigation();
   const {customer} = route.params;
-
-  const [filter, setFilter] = useState(statusFilters[0].value);
-
-  const handleStatusFilter = useCallback((status: any) => {
-    setFilter(status);
-  }, []);
 
   const getReceiptItemLeftText = useCallback(
     (receipt: IReceipt, baseStyle: TextStyle) => {
@@ -73,19 +54,6 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     [],
   );
 
-  const handleOpenModal = useCallback(() => {
-    const closeModal = openModal('full', {
-      animationInTiming: 0.1,
-      animationOutTiming: 0.1,
-      renderContent: () => (
-        <CreateReceipt
-          initialCustomer={customer}
-          closeReceiptModal={closeModal}
-        />
-      ),
-    });
-  }, [customer, openModal]);
-
   const handleError = useErrorHandler();
 
   const handleListItemSelect = useCallback(
@@ -107,53 +75,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         <HeaderBackButton onPress={() => navigation.navigate('Customers')} />
       ),
       headerRight: () => (
-        <HeaderRight
-          options={[
-            {
-              icon: 'search',
-              onPress: () => {
-                const closeModal = openModal('search', {
-                  items: customer.receipts ?? [],
-                  renderItem: ({item, onPress}) => {
-                    return (
-                      <ReceiptListItem
-                        receipt={item}
-                        handleListItemSelect={handleListItemSelect}
-                        getReceiptItemLeftText={getReceiptItemLeftText}
-                        onPress={() => {
-                          onPress(item);
-                          closeModal();
-                        }}
-                      />
-                    );
-                  },
-                  setFilter: (item: IReceipt, query) => {
-                    // TODO: Improve search algorithm
-                    return (
-                      (prepareValueForSearch(item.total_amount).search(query) ??
-                        -1) !== -1 ||
-                      (prepareValueForSearch(item.amount_paid).search(query) ??
-                        -1) !== -1 ||
-                      (prepareValueForSearch(item.credit_amount).search(
-                        query,
-                      ) ?? -1) !== -1 ||
-                      (prepareValueForSearch(
-                        item.created_at
-                          ? format(item.created_at, 'dd MMMM, yyyy')
-                          : '',
-                      ).search(query) ?? -1) !== -1
-                    );
-                  },
-                  textInputProps: {
-                    placeholder: 'Search Receipts',
-                    autoFocus: true,
-                  },
-                });
-              },
-            },
-          ]}
-          menuOptions={[]}
-        />
+        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
       ),
     });
   }, [
@@ -164,110 +86,76 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     openModal,
   ]);
 
-  const filterQuery = useMemo(() => {
-    const isNotPending = 'local_image_url = null OR image_url = null';
-    switch (filter) {
-      case 'all':
-        return '';
-      case 'paid':
-        return `total_amount = amount_paid AND (${isNotPending})`;
-      case 'unpaid':
-        return `total_amount != amount_paid AND (${isNotPending})`;
-      case 'cancelled':
-        return `is_cancelled = true AND (${isNotPending})`;
-      case 'pending':
-        return `!(${isNotPending})`;
-      default:
-        return '';
-    }
-  }, [filter]);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const filteredReceipts = useMemo(() => {
-    let customerReceipts = (customer.receipts as unknown) as Realm.Results<
-      IReceipt & Realm.Object
-    >;
-    if (filterQuery) {
-      customerReceipts = customerReceipts.filtered(filterQuery);
+    let customerReceipts = customer.receipts?.sorted('created_at', true);
+    if (searchTerm) {
+      // @ts-ignore
+      customerReceipts = customerReceipts?.filter((receipt) => {
+        return (
+          (prepareValueForSearch(receipt.total_amount).search(searchTerm) ??
+            -1) !== -1 ||
+          (prepareValueForSearch(receipt.amount_paid).search(searchTerm) ??
+            -1) !== -1 ||
+          (prepareValueForSearch(receipt.credit_amount).search(searchTerm) ??
+            -1) !== -1
+        );
+      });
     }
-    return (customerReceipts.sorted(
-      'created_at',
-      true,
-    ) as unknown) as IReceipt[];
-  }, [customer.receipts, filterQuery]);
+    return customerReceipts;
+  }, [customer.receipts, searchTerm]);
 
-  const totalAmount = useMemo(() => {
-    if (filterQuery) {
-      return getReceiptsTotalAmount(filteredReceipts);
-    }
-    return customer.totalAmount;
-  }, [customer.totalAmount, filterQuery, filteredReceipts]);
+  const footer = filteredReceipts?.length ? (
+    <Button title="Create Receipt" />
+  ) : null;
+
+  const renderReceiptItem = useCallback(({item: receipt}: {item: IReceipt}) => {
+    return (
+      <ReceiptListItem
+        receipt={receipt}
+        onPress={() => {}}
+        getReceiptItemLeftText={(currentReceipt) => {
+          return currentReceipt?.created_at
+            ? format(currentReceipt?.created_at, 'eeee dd MMMM, yyyy')
+            : '';
+        }}
+        getReceiptItemRightText={(currentReceipt) => {
+          return currentReceipt?.created_at
+            ? format(currentReceipt?.created_at, 'hh:mm aa')
+            : '';
+        }}
+      />
+    );
+  }, []);
+
+  const handleReceiptSearch = useCallback((text) => {
+    setSearchTerm(text);
+  }, []);
 
   return (
     <CustomerContext.Provider value={customer}>
-      <ReceiptingContainer
-        receipts={filteredReceipts}
-        emptyStateText="You have not created any receipt for this customer"
-        getReceiptItemLeftText={getReceiptItemLeftText}
-        onCreateReceipt={handleOpenModal}
-        handleListItemSelect={handleListItemSelect}>
-        <View
-          style={applyStyles('p-md center flex-row justify-between', {
-            backgroundColor: colors['gray-300'],
-          })}>
-          <View style={applyStyles('flex-row center', {height: 40})}>
-            <Icon
-              size={24}
-              name="truck"
-              type="feathericons"
-              color={colors.white}
-            />
-            <Text
-              style={applyStyles('text-700 px-md', {
-                fontSize: 16,
-                color: colors.white,
-              })}>
-              All Sales
-            </Text>
-          </View>
-          <View style={applyStyles('items-end')}>
-            <Text
-              style={applyStyles('text-400 text-uppercase', {
-                fontSize: 14,
-                color: colors.white,
-              })}>
-              You sold
-            </Text>
-            <Text
-              style={applyStyles('text-700 text-uppercase', {
-                fontSize: 16,
-                color: colors.white,
-              })}>
-              {amountWithCurrency(totalAmount)}
-            </Text>
-          </View>
-        </View>
-        <View
-          style={applyStyles({
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-20'],
-          })}>
-          <FilterButtonGroup value={filter} onChange={handleStatusFilter}>
-            <View style={applyStyles('py-lg px-sm flex-row center')}>
-              {statusFilters.map((filterItem) => (
-                <FilterButton
-                  {...filterItem}
-                  key={filterItem.value}
-                  style={applyStyles('mx-xs', {
-                    paddingVertical: 8,
-                    paddingHorizontal: 8,
-                  })}
-                  isChecked={filter === filterItem.value}
-                />
-              ))}
-            </View>
-          </FilterButtonGroup>
-        </View>
-      </ReceiptingContainer>
+      <Page
+        header={{title: customer.name, iconLeft: {}}}
+        footer={footer}
+        style={applyStyles('px-0 py-0')}>
+        <HomeContainer<IReceipt>
+          initialNumToRender={10}
+          createEntityButtonIcon="file-text"
+          data={(filteredReceipts as unknown) as IReceipt[]}
+          searchPlaceholderText="Search Receipts"
+          createEntityButtonText="Create Receipt"
+          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+          emptyStateProps={{
+            heading: `Create your first Receipt for ${customer.name}`,
+            text:
+              'You have no receipts yet. Let’s help you create one it takes only a few seconds.',
+          }}
+          renderListItem={renderReceiptItem}
+          onSearch={handleReceiptSearch}
+          showFAB={false}
+        />
+      </Page>
     </CustomerContext.Provider>
   );
 };

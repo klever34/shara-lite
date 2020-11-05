@@ -13,7 +13,7 @@ export enum DEBT_LEVEL {
 export interface ICustomer extends BaseModelInterface {
   name: string;
   mobile?: string;
-  receipts?: IReceipt[];
+  receipts?: Realm.Results<IReceipt & Realm.Object>;
   payments?: IPayment[];
   credits?: Realm.Results<ICredit & Realm.Object>;
   addresses?: IAddress[];
@@ -59,13 +59,13 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       },
     },
   };
-  public receipts: IReceipt[] | undefined;
+  public receipts: Realm.Results<IReceipt & Realm.Object> | undefined;
   public credits: Realm.Results<ICredit & Realm.Object> | undefined;
 
   public get totalAmount() {
-    return (this.receipts || []).reduce(
-      (acc, receipt) => acc + receipt.total_amount,
-      0,
+    return (
+      this.receipts?.reduce((acc, receipt) => acc + receipt.total_amount, 0) ??
+      0
     );
   }
 

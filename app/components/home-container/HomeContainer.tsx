@@ -14,10 +14,9 @@ import {
 } from 'react-native';
 import {Button} from '../Button';
 import EmptyState, {EmptyStateProps} from '../EmptyState';
-import {HeaderRightMenuOption} from '../HeaderRight';
+import {HeaderRightMenuOption, SearchFilter} from '@/components';
 import {Icon} from '../Icon';
 import {HomeContainerHeader} from './Header';
-import {SearchFilter} from './SearchFilter';
 
 type HomeContainerProps<T> = {
   activeFilter?: string;
@@ -39,6 +38,7 @@ type HomeContainerProps<T> = {
   renderSectionHeader?: SectionListProps<T>['renderSectionHeader'];
   initialNumToRender?: VirtualizedListProps<T>['initialNumToRender'];
   renderSectionListItem?: SectionListRenderItem<T, DefaultSectionT>;
+  showFAB?: boolean;
 };
 
 export function HomeContainer<T>(props: HomeContainerProps<T>) {
@@ -61,16 +61,19 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
     renderSectionListItem,
     createEntityButtonText,
     createEntityButtonIcon,
+    showFAB = true,
   } = props;
 
   return (
     <View style={applyStyles('flex-1 bg-white')}>
-      <HomeContainerHeader
-        title={headerTitle}
-        amount={headerAmount}
-        activeFilter={activeFilter}
-        menuOptions={filterOptions}
-      />
+      {headerTitle && (
+        <HomeContainerHeader
+          title={headerTitle}
+          amount={headerAmount}
+          activeFilter={activeFilter}
+          menuOptions={filterOptions}
+        />
+      )}
       <SearchFilter
         onSearch={onSearch}
         onOpenFilter={onOpenFilter}
@@ -96,24 +99,26 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
               initialNumToRender={initialNumToRender}
             />
           )}
-          <FAButton
-            style={applyStyles(
-              'w-auto rounded-8 py-16 px-20 flex-row items-center',
-            )}
-            onPress={onCreateEntity}>
-            <Icon
-              size={20}
-              color="white"
-              type="feathericons"
-              name={createEntityButtonIcon}
-            />
-            <Text
+          {showFAB && (
+            <FAButton
               style={applyStyles(
-                'text-capitalize text-700 pl-sm text-base text-white',
-              )}>
-              {createEntityButtonText}
-            </Text>
-          </FAButton>
+                'w-auto rounded-8 py-16 px-20 flex-row items-center',
+              )}
+              onPress={onCreateEntity}>
+              <Icon
+                size={20}
+                color="white"
+                type="feathericons"
+                name={createEntityButtonIcon}
+              />
+              <Text
+                style={applyStyles(
+                  'text-capitalize text-700 pl-sm text-base text-white',
+                )}>
+                {createEntityButtonText}
+              </Text>
+            </FAButton>
+          )}
         </>
       ) : (
         <EmptyState
