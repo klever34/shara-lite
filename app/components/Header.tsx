@@ -1,29 +1,39 @@
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text, View, ViewStyle} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton, HeaderBackButtonProps} from './HeaderBackButton';
 
 export type HeaderTitleProps = {
   title: string;
+  style?: ViewStyle;
   iconLeft?: HeaderBackButtonProps;
   iconRight?: HeaderBackButtonProps;
 };
 
-export const Header = ({title, iconLeft, iconRight}: HeaderTitleProps) => {
+export const Header = ({
+  title,
+  style,
+  iconLeft,
+  iconRight,
+}: HeaderTitleProps) => {
   return (
     <View
-      style={applyStyles('flex-row py-8 bg-white relative', {
-        borderBottomWidth: 1,
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 5,
+      style={applyStyles(
+        'flex-row py-8 bg-white relative',
+        {
+          borderBottomWidth: 1,
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 5,
+          },
+          shadowOpacity: 0.34,
+          shadowRadius: 6.27,
+          elevation: 10,
+          borderBottomColor: colors['gray-10'],
         },
-        shadowOpacity: 0.34,
-        shadowRadius: 6.27,
-        elevation: 10,
-        borderBottomColor: colors['gray-10'],
-      })}>
+        style,
+      )}>
       {iconLeft && (
         <View style={applyStyles('absolute h-full top-8 left-8')}>
           <HeaderBackButton {...iconLeft} />

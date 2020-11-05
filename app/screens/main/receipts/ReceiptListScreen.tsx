@@ -11,7 +11,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
-import {format, subMonths} from 'date-fns';
+import {endOfDay, format, startOfDay, subMonths} from 'date-fns';
 import {subDays, subWeeks, subYears} from 'date-fns/esm';
 import React, {
   useCallback,
@@ -66,7 +66,11 @@ export const ReceiptListScreen = withModal(() => {
           userReceipts = userReceipts;
           break;
         case 'today':
-          userReceipts = userReceipts.filtered('created_at == $0', new Date());
+          userReceipts = userReceipts.filtered(
+            'created_at >= $0 && created_at <= $1',
+            startOfDay(new Date()),
+            endOfDay(new Date()),
+          );
           break;
         case '3-days':
           userReceipts = userReceipts.filtered(

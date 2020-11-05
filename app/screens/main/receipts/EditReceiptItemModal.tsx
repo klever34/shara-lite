@@ -87,7 +87,7 @@ export const EditReceiptItemModal = (props: Props) => {
           <View>
             <Text
               style={applyStyles(
-                'pb-32 text-lg text-gray-200 text-center text-uppercase text-700',
+                'pb-32 text-base text-gray-200 text-center text-uppercase text-700',
               )}>
               {item?.product.name}
             </Text>

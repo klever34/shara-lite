@@ -221,11 +221,11 @@ export const CreateReceipt = withModal((props: Props) => {
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
     if (selectedProduct && quantity && quantityCondition && priceCondition) {
       handleAddReceiptItem();
-      handleUpdateReceipt({tax: 0, receiptItems, totalAmount: 0});
+      handleUpdateReceipt({tax: 0, receiptItems, totalAmount});
       navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {
       setSelectedProduct(null);
-      handleUpdateReceipt({tax: 0, receiptItems, totalAmount: 0});
+      handleUpdateReceipt({tax: 0, receiptItems, totalAmount});
       navigation.navigate('ReceiptOtherDetails');
     } else {
       Alert.alert(
@@ -234,13 +234,14 @@ export const CreateReceipt = withModal((props: Props) => {
       );
     }
   }, [
-    navigation,
     receiptItems,
     price,
     quantity,
     selectedProduct,
     handleAddReceiptItem,
     handleUpdateReceipt,
+    totalAmount,
+    navigation,
   ]);
 
   const renderReceiptItem = useCallback(

@@ -2,7 +2,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TextStyle, View} from 'react-native';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 
@@ -42,16 +42,28 @@ export const receiptTableItemStyles = StyleSheet.create({
 export const ReceiptTableFooterItem = ({
   title,
   value,
+  titleTextStyle,
+  valueTextStyle,
 }: {
   title: string;
   value: string;
+  titleTextStyle?: TextStyle;
+  valueTextStyle?: TextStyle;
 }) => {
   return (
-    <View style={applyStyles('flex-row py-4')}>
-      <Text style={applyStyles('text-700 text-uppercase text-gray-200')}>
+    <View style={applyStyles('flex-row py-8')}>
+      <Text
+        style={applyStyles(
+          'text-700 text-uppercase text-gray-200',
+          titleTextStyle,
+        )}>
         {title}
       </Text>
-      <Text style={applyStyles('pl-xs text-700 text-uppercase text-gray-300')}>
+      <Text
+        style={applyStyles(
+          'pl-xs text-700 text-uppercase text-gray-300',
+          valueTextStyle,
+        )}>
         {value}
       </Text>
     </View>

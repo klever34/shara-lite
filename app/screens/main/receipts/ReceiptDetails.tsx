@@ -479,24 +479,36 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
           onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
         />
         {!isFulfilled && !receipt?.is_cancelled && (
-          <View
-            style={applyStyles('p-16', {
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-10'],
-            })}>
-            <View style={applyStyles('mb-md')}>
-              <CurrencyInput
-                label="how much has been paid?"
-                value={creditPaymentAmount.toString()}
-                onChange={(value) => handleCreditPaymentAmountChange(value)}
-              />
+          <View style={applyStyles('p-16')}>
+            <Text
+              style={applyStyles(
+                'text-xs text-uppercase text-500 text-gray-100 pb-8',
+              )}>
+              how much has been paid?
+            </Text>
+            <View
+              style={applyStyles(
+                'pb-16 flex-row items-center justify-between',
+                {
+                  borderBottomWidth: 1,
+                  borderBottomColor: colors['gray-10'],
+                },
+              )}>
+              <View style={applyStyles({width: '48%'})}>
+                <CurrencyInput
+                  value={creditPaymentAmount.toString()}
+                  onChange={(value) => handleCreditPaymentAmountChange(value)}
+                />
+              </View>
+              <View style={applyStyles({width: '48%'})}>
+                <Button
+                  isLoading={isLoading}
+                  title="record payment"
+                  disabled={!creditPaymentAmount}
+                  onPress={handleCreditPaymentSubmit}
+                />
+              </View>
             </View>
-            <Button
-              isLoading={isLoading}
-              title="record payment"
-              disabled={!creditPaymentAmount}
-              onPress={handleCreditPaymentSubmit}
-            />
           </View>
         )}
         <FlatList
@@ -524,7 +536,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
               />
               {!isFulfilled && (
                 <ReceiptTableFooterItem
-                  title="Balance"
+                  title="Owes"
+                  valueTextStyle={applyStyles('text-red-200')}
                   value={amountWithCurrency(creditAmountLeft)}
                 />
               )}

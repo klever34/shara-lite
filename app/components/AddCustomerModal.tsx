@@ -147,39 +147,47 @@ export const AddCustomerModal = (props: Props) => {
           borderTopRightRadius: 24,
           backgroundColor: colors.white,
         })}>
-        <AutoComplete<ICustomer>
-          rightIcon="users"
-          items={allCustomers}
-          value={customerSearchQuery}
-          setFilter={handleCustomerSearch}
-          onItemSelect={handleSelectCustomer}
-          renderItem={renderSearchDropdownItem}
-          onChangeText={handleChangeSearchQuery}
-          label="Select or add customer (optional)"
-          inputStyle={applyStyles('mb-16 bg-gray-10')}
-          noResultsAction={() => setIsNewCustomer(true)}
-          textInputProps={{placeholder: 'Search or add a customer '}}
-        />
-        {isNewCustomer && (
-          <>
-            <PhoneNumberField
-              label="phone number?"
-              placeholder="Enter phone number"
-              containerStyle={applyStyles('mb-24')}
-              onChangeText={(data) => handleChangeMobile(data)}
-              value={{number: mobile, callingCode: countryCode}}
-            />
+        <View style={applyStyles('px-16')}>
+          <Text
+            style={applyStyles(
+              'pb-32 text-base text-gray-200 text-center text-uppercase text-700',
+            )}>
+            Add Customer
+          </Text>
+          <AutoComplete<ICustomer>
+            rightIcon="users"
+            items={allCustomers}
+            value={customerSearchQuery}
+            setFilter={handleCustomerSearch}
+            onItemSelect={handleSelectCustomer}
+            renderItem={renderSearchDropdownItem}
+            onChangeText={handleChangeSearchQuery}
+            label="Select or add customer (optional)"
+            inputStyle={applyStyles('mb-16 bg-gray-10')}
+            noResultsAction={() => setIsNewCustomer(true)}
+            textInputProps={{placeholder: 'Search or add a customer '}}
+          />
+          {isNewCustomer && (
+            <>
+              <PhoneNumberField
+                label="phone number?"
+                placeholder="Enter phone number"
+                containerStyle={applyStyles('mb-24')}
+                onChangeText={(data) => handleChangeMobile(data)}
+                value={{number: mobile, callingCode: countryCode}}
+              />
 
-            <RadioButton
-              isChecked={saveToPhoneBook}
-              containerStyle={applyStyles('py-16 mb-24 center')}
-              onChange={handleSaveToPhoneBookChange}>
-              <Text style={applyStyles('text-400 text-gray-300')}>
-                Save to Phonebook
-              </Text>
-            </RadioButton>
-          </>
-        )}
+              <RadioButton
+                isChecked={saveToPhoneBook}
+                containerStyle={applyStyles('py-16 mb-24 center')}
+                onChange={handleSaveToPhoneBookChange}>
+                <Text style={applyStyles('text-400 text-gray-300')}>
+                  Save to Phonebook
+                </Text>
+              </RadioButton>
+            </>
+          )}
+        </View>
         <View
           style={applyStyles(
             'flex-row items-center py-12 px-16 bg-white justify-between',

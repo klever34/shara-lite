@@ -11,6 +11,7 @@ import {
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import Touchable from '@/components/Touchable';
+import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -47,11 +48,11 @@ export const ReceiptOtherDetailsScreen = () => {
 
   const [note, setNote] = useState('');
   const [mobile, setMobile] = useState('');
-  const [amountPaid, setAmountPaid] = useState(0);
-  const [countryCode, setCountryCode] = useState(callingCode || '');
   const [isNewCustomer, setIsNewCustomer] = useState(false);
   const [saveToPhoneBook, setSaveToPhoneBook] = useState(true);
   const [isPartialPayment, setIsPartialPayment] = useState(false);
+  const [countryCode, setCountryCode] = useState(callingCode || '');
+  const [amountPaid, setAmountPaid] = useState(receipt.totalAmount || 0);
   const [customerSearchQuery, setCustomerSearchQuery] = useState(
     receipt?.customer?.name ?? '',
   );
@@ -118,7 +119,7 @@ export const ReceiptOtherDetailsScreen = () => {
     }
   };
 
-  const handleContinue = useCallback(async () => {
+  const handleFinish = useCallback(async () => {
     let receiptToCreate: any = {
       ...receipt,
       note,
@@ -129,15 +130,16 @@ export const ReceiptOtherDetailsScreen = () => {
       creditAmount,
       payments: [{method: '', amount: amountPaid}],
     };
-    console.log(receiptToCreate);
-    if (saveToPhoneBook) {
-      await contactService.addContact(customer);
-      handleUpdateReceipt(receiptToCreate);
-      saveReceipt(receiptToCreate);
-    } else {
-      handleUpdateReceipt(receiptToCreate);
-      saveReceipt(receiptToCreate);
+    if (customerSearchQuery && saveToPhoneBook) {
+      try {
+        await contactService.addContact(customer);
+      } catch (error) {
+        console.log(error);
+      }
     }
+    handleUpdateReceipt(receiptToCreate);
+    const createdReceipt = saveReceipt(receiptToCreate);
+    navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
   }, [
     note,
     realm,
@@ -145,9 +147,11 @@ export const ReceiptOtherDetailsScreen = () => {
     dueDate,
     customer,
     amountPaid,
+    navigation,
     creditAmount,
     contactService,
     saveToPhoneBook,
+    customerSearchQuery,
     handleUpdateReceipt,
   ]);
 
@@ -197,14 +201,14 @@ export const ReceiptOtherDetailsScreen = () => {
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Page
         header={{
-          title: `Total: ${receipt.totalAmount || 0}`,
-          iconRight: {iconName: 'x', onPress: handleGoBack},
+          title: `Total: ${amountWithCurrency(receipt.totalAmount)}`,
+          iconLeft: {iconName: 'arrow-left', onPress: handleGoBack},
         }}
         footer={
           <Button
             title="Finish"
             variantColor="red"
-            onPress={handleContinue}
+            onPress={handleFinish}
             style={applyStyles('w-full')}
           />
         }>

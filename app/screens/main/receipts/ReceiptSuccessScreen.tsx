@@ -1,4 +1,5 @@
 import {Header, ReceiptPreview} from '@/components';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
@@ -12,7 +13,9 @@ export const ReceiptSuccessScreen = ({route}: any) => {
   const navigation = useAppNavigation();
   const [receipt, setReceipt] = useState<IReceipt | undefined>();
 
-  const handleClose = useCallback(() => navigation.navigate(''), [navigation]);
+  const handleClose = useCallback(() => navigation.navigate('Home'), [
+    navigation,
+  ]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
@@ -29,16 +32,16 @@ export const ReceiptSuccessScreen = ({route}: any) => {
     </View>
   ) : (
     <>
+      <Header
+        title={`Total: ${amountWithCurrency(receipt.total_amount)}`}
+        iconRight={{iconName: 'x', onPress: handleClose}}
+      />
       <FlatList
         data={[]}
         renderItem={undefined}
         style={applyStyles('py-sm flex-1 bg-white')}
         ListHeaderComponent={
           <>
-            <Header
-              title={`Total: ${receipt.total_amount}`}
-              iconRight={{iconName: 'x', onPress: handleClose}}
-            />
             <ReceiptPreview receipt={receipt} onClose={handleClose} />
           </>
         }

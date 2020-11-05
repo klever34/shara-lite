@@ -406,8 +406,8 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
       style={applyStyles('flex-1', {
         backgroundColor: colors.white,
       })}>
-      <View style={applyStyles('flex-row center')}>
-        <Text style={applyStyles('py-24 text-red-200 text-center')}>
+      <View style={applyStyles('center')}>
+        <Text style={applyStyles('py-24 text-700 text-red-200 text-center')}>
           Your receipt was created succesfully
         </Text>
         <View
@@ -419,6 +419,7 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
           <ReceiptImage
             user={user}
             tax={receipt?.tax}
+            captureMode="update"
             products={receipt?.items}
             amountPaid={totalAmountPaid}
             creditDueDate={creditDueDate}
@@ -434,7 +435,7 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
         {!receipt?.is_cancelled && (
           <View
             style={applyStyles(
-              'mb-24 flex-row w-full justify-space-between flex-wrap',
+              'mb-24 flex-row center w-full justify-space-between flex-wrap',
             )}>
             {receiptActions.map((item, index) => (
               <View
@@ -446,15 +447,20 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
           </View>
         )}
         <View style={applyStyles('pb-96')}>
-          {receipt?.customer ? (
+          {receipt?.customer?.name ? (
             <View>
-              <Text style={applyStyles('pb-16 text-700 text-gray-200')}>
+              <Text
+                style={applyStyles(
+                  'pb-16 px-48 text-700 text-gray-200 text-center text-uppercase',
+                )}>
                 Customer
               </Text>
               <Touchable onPress={handleOpenAddCustomerModal}>
-                <View style={applyStyles('p-16')}>
+                <View style={applyStyles('p-16 center w-full')}>
                   <Text
-                    style={applyStyles('text-700 text-red-200 text-uppercase')}>
+                    style={applyStyles(
+                      'text-700 text-red-200 text-uppercase text-base text-center',
+                    )}>
                     {receipt?.customer?.name}
                   </Text>
                 </View>
@@ -462,7 +468,10 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
             </View>
           ) : (
             <View>
-              <Text style={applyStyles('pb-16 px-48 text-700 text-gray-200')}>
+              <Text
+                style={applyStyles(
+                  'pb-16 px-48 text-700 text-gray-200 text-center text-uppercase',
+                )}>
                 Share this receipt with your customer
               </Text>
               <Button
