@@ -134,7 +134,7 @@ export const ReceiptListScreen = withModal(() => {
   }, []);
 
   const handleCreateReceipt = useCallback(() => {
-    navigation.navigate('CreateReceipt');
+    navigation.navigate('CreateReceipt', {});
   }, [navigation]);
 
   const handleReceiptItemSelect = useCallback(
