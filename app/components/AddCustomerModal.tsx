@@ -66,7 +66,10 @@ export const AddCustomerModal = (props: Props) => {
   }, []);
 
   const handleCustomerSearch = useCallback((item: ICustomer, text: string) => {
-    return `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1;
+    return (
+      `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
+      `${item.mobile}`.toLowerCase().indexOf(text.toLowerCase()) > -1
+    );
   }, []);
 
   const handleSelectCustomer = useCallback((item: ICustomer) => {

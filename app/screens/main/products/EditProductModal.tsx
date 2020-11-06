@@ -10,8 +10,8 @@ type Props = {
   isDelete?: boolean;
   onClose: () => void;
   item: IProduct | null;
-  onUpdateProductItem: (item: IProduct) => void;
-  onRemoveProductItem: (item: IProduct) => void;
+  onUpdateProductItem?: (item: IProduct) => void;
+  onRemoveProductItem?: (item: IProduct) => void;
 };
 
 export const EditProductModal = (props: Props) => {
@@ -26,13 +26,20 @@ export const EditProductModal = (props: Props) => {
 
   const [name, setName] = useState(item?.name);
   const [quantity, setQuantity] = useState<string | undefined>(
-    item ? item?.quantity?.toString() : '',
+    item && item?.quantity && !(item?.quantity < 0)
+      ? item?.quantity?.toString()
+      : '0',
   );
   const [price, setPrice] = useState<number | undefined>(item?.price);
 
   useEffect(() => {
+    setName(item?.name);
     setPrice(item?.price);
-    setQuantity(item?.quantity?.toString());
+    setQuantity(
+      item && item?.quantity && !(item?.quantity < 0)
+        ? item?.quantity?.toString()
+        : '0',
+    );
   }, [item]);
 
   const handleNameChange = useCallback((text) => {
@@ -65,13 +72,14 @@ export const EditProductModal = (props: Props) => {
   const handleUpdate = useCallback(() => {
     const payload = {
       ...item,
+      name,
       price: price ? price : 0,
       quantity: quantity ? parseFloat(quantity) : 0,
     } as IProduct;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
     ToastAndroid.show('PRODUCT EDITED', ToastAndroid.SHORT);
-  }, [item, price, quantity, onUpdateProductItem, handleClose]);
+  }, [item, name, price, quantity, onUpdateProductItem, handleClose]);
 
   return (
     <BottomHalfModalContainer visible={visible} onClose={handleClose}>
@@ -92,7 +100,6 @@ export const EditProductModal = (props: Props) => {
             <View style={applyStyles('mb-24')}>
               <AppInput
                 value={name}
-                editable={false}
                 label="Product / service"
                 onChangeText={handleNameChange}
                 placeholder="Enter product / service name here"

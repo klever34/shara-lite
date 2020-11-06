@@ -27,7 +27,6 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {EditProductModal} from './EditProductModal';
 
 type Props = {
   receipt?: IReceipt;
@@ -53,9 +52,17 @@ export const CreateProductScreen = (props: Props) => {
     getAnalyticsService().logEvent('productStart').catch(handleError);
   }, [handleError, receipt]);
 
+  const handleClearState = useCallback(() => {
+    setName('');
+    setPrice(0);
+    setQuantity('');
+    setItemToEdit(null);
+  }, []);
+
   const handleGoBack = useCallback(() => {
+    handleClearState();
     navigation.goBack();
-  }, [navigation]);
+  }, [navigation, handleClearState]);
 
   const handleNameChange = useCallback((text) => {
     setName(text);
@@ -69,7 +76,7 @@ export const CreateProductScreen = (props: Props) => {
     setQuantity(item);
   }, []);
 
-  const handleOpenEditReceiptItemModal = useCallback(
+  const handleStartEdit = useCallback(
     (item: IProduct) => {
       getAnalyticsService()
         .logEvent('selectContent', {
@@ -78,13 +85,12 @@ export const CreateProductScreen = (props: Props) => {
         })
         .catch(handleError);
       setItemToEdit(item);
+      setName(item.name);
+      setPrice(item.price);
+      setQuantity(item?.quantity?.toString());
     },
     [handleError],
   );
-
-  const handleCloseEditReceiptItemModal = useCallback(() => {
-    setItemToEdit(null);
-  }, []);
 
   const handleAddProducts = useCallback(
     (payload: IProduct[]) => {
@@ -98,34 +104,34 @@ export const CreateProductScreen = (props: Props) => {
     [navigation, realm],
   );
 
-  const handleUpdateProduct = useCallback(
-    (item: IProduct) => {
-      setProducts(
-        products.map((product) => {
-          if (product._id?.toString() === item._id?.toString()) {
-            return item;
-          }
-          return product;
-        }),
-      );
-    },
-    [products],
-  );
+  const handleUpdateProduct = useCallback(() => {
+    setProducts(
+      products.map((product) => {
+        if (
+          price &&
+          quantity &&
+          itemToEdit &&
+          product._id?.toString() === itemToEdit?._id?.toString()
+        ) {
+          return {...itemToEdit, price, quantity: parseFloat(quantity)};
+        }
+        return product;
+      }),
+    );
+  }, [itemToEdit, price, products, quantity]);
 
-  const handleRemoveProduct = useCallback(
-    (item: IProduct) => {
-      setProducts(
-        products.filter(
-          (product) => product._id?.toString() !== item._id?.toString(),
-        ),
-      );
-    },
-    [products],
-  );
+  const handleRemoveProduct = useCallback(() => {
+    setProducts(
+      products.filter(
+        (product) => product._id?.toString() !== itemToEdit?._id?.toString(),
+      ),
+    );
+  }, [products, itemToEdit]);
 
   const handleAddProduct = useCallback(() => {
     const priceCondition = price || price === 0 ? true : false;
-    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    const quantityCondition =
+      quantity && parseFloat(quantity) >= 0 ? true : false;
     if (name && priceCondition && quantityCondition && quantity) {
       const product = {
         name,
@@ -133,36 +139,15 @@ export const CreateProductScreen = (props: Props) => {
         quantity: parseFloat(quantity),
       } as IProduct;
 
-      getAnalyticsService().logEvent('productAdded').catch(handleError);
-
-      if (
-        products
-          .map((item) => item._id?.toString())
-          .includes(product?._id?.toString())
-      ) {
-        setProducts(
-          products.map((item) => {
-            if (item._id?.toString() === product._id?.toString()) {
-              return {
-                ...item,
-                quantity: parseFloat(quantity),
-              };
-            }
-            return item;
-          }),
-        );
-      } else {
-        setProducts([product, ...products]);
-      }
+      setProducts([product, ...products]);
 
       Keyboard.dismiss();
-      setPrice(0);
-      setQuantity('');
+      handleClearState();
       ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
     } else {
-      Alert.alert('Info', 'Please add product name & quantity');
+      Alert.alert('Info', 'Please add product name, price & quantity');
     }
-  }, [price, quantity, name, handleError, products]);
+  }, [price, quantity, name, products, handleClearState]);
 
   const handleDone = useCallback(() => {
     let items = products;
@@ -181,8 +166,7 @@ export const CreateProductScreen = (props: Props) => {
       setProducts([product, ...products]);
 
       Keyboard.dismiss();
-      setPrice(0);
-      setQuantity('');
+      handleClearState();
 
       ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
 
@@ -192,18 +176,27 @@ export const CreateProductScreen = (props: Props) => {
     } else {
       Alert.alert('Info', 'Please add at least one product item with quantity');
     }
-  }, [products, price, quantity, name, handleError, handleAddProducts]);
+  }, [
+    products,
+    price,
+    quantity,
+    name,
+    handleError,
+    handleClearState,
+    handleAddProducts,
+  ]);
 
   const renderReceiptItem = useCallback(
     ({item}: ReceiptTableItemProps) => (
       <ReceiptTableItem
+        type="product"
         item={item}
         onPress={() => {
-          handleOpenEditReceiptItemModal(item);
+          handleStartEdit(item);
         }}
       />
     ),
-    [handleOpenEditReceiptItemModal],
+    [handleStartEdit],
   );
 
   return (
@@ -217,10 +210,12 @@ export const CreateProductScreen = (props: Props) => {
           <View style={applyStyles('pb-16')}>
             <AppInput
               value={name}
-              editable={false}
+              style={applyStyles('bg-white', {
+                borderWidth: 0,
+              })}
               label="Product / service name"
               onChangeText={handleNameChange}
-              placeholder="Enter product / service name here"
+              placeholder="Enter product/service name here"
             />
           </View>
           <View
@@ -249,11 +244,35 @@ export const CreateProductScreen = (props: Props) => {
               />
             </View>
           </View>
-          <Button
-            variantColor="clear"
-            title="Add New Product"
-            onPress={handleAddProduct}
-          />
+          {itemToEdit ? (
+            <View
+              style={applyStyles(
+                'flex-row items-center py-12 px-16 bg-white justify-between',
+              )}>
+              <Button
+                title="Delete"
+                variantColor="clear"
+                onPress={handleRemoveProduct}
+                style={applyStyles({
+                  width: '48%',
+                })}
+              />
+              <Button
+                title="Save"
+                variantColor="red"
+                onPress={handleUpdateProduct}
+                style={applyStyles({
+                  width: '48%',
+                })}
+              />
+            </View>
+          ) : (
+            <Button
+              variantColor="clear"
+              title="Add New Product"
+              onPress={handleAddProduct}
+            />
+          )}
         </View>
         <FlatList
           data={products}
@@ -262,9 +281,9 @@ export const CreateProductScreen = (props: Props) => {
           renderItem={renderReceiptItem}
           keyboardShouldPersistTaps="always"
           ListHeaderComponent={
-            products.length ? <ReceiptTableHeader /> : undefined
+            products.length ? <ReceiptTableHeader type="product" /> : undefined
           }
-          keyExtractor={(item) => `${item?._id?.toString()}`}
+          keyExtractor={(item, index) => `${item?.name?.toString()}-${index}`}
           ListEmptyComponent={
             <View style={applyStyles('py-96 center mx-auto')}>
               <Text
@@ -277,15 +296,13 @@ export const CreateProductScreen = (props: Props) => {
           }
         />
         <StickyFooter>
-          <Button title="Continue" isLoading={isLoading} onPress={handleDone} />
+          <Button
+            title="Finish"
+            onPress={handleDone}
+            isLoading={isLoading}
+            disabled={!products.length}
+          />
         </StickyFooter>
-        <EditProductModal
-          item={itemToEdit}
-          visible={!!itemToEdit}
-          onClose={handleCloseEditReceiptItemModal}
-          onRemoveProductItem={handleRemoveProduct}
-          onUpdateProductItem={handleUpdateProduct}
-        />
       </View>
     </SafeAreaView>
   );

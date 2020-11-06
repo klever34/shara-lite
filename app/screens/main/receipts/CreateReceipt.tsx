@@ -286,9 +286,8 @@ export const CreateReceipt = (props: Props) => {
       <ReceiptTableItem
         item={item}
         onPress={() => {
-          if ('product' in item) {
-            handleOpenEditReceiptItemModal(item);
-          }
+          //@ts-ignore
+          handleOpenEditReceiptItemModal(item);
         }}
       />
     ),
@@ -340,7 +339,9 @@ export const CreateReceipt = (props: Props) => {
             renderItem={renderSearchDropdownItem}
             onChangeText={handleChangeSearchQuery}
             noResultsAction={() => setIsNewProduct(true)}
-            textInputProps={{placeholder: 'Search or enter product here'}}
+            textInputProps={{
+              placeholder: 'Search or enter product/service here',
+            }}
           />
         </View>
         <View
@@ -415,7 +416,11 @@ export const CreateReceipt = (props: Props) => {
         />
       </View>
       <StickyFooter>
-        <Button title="Continue" onPress={handleDone} />
+        <Button
+          title="Continue"
+          onPress={handleDone}
+          disabled={!receiptItems.length && !selectedProduct}
+        />
       </StickyFooter>
       <EditReceiptItemModal
         item={itemToEdit}

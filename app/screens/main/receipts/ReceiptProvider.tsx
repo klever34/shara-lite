@@ -1,4 +1,5 @@
 import {ICustomer} from '@/models';
+import {IProduct} from '@/models/Product';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import React, {
   createContext,
@@ -24,12 +25,18 @@ interface Receipt {
 
 const ReceiptContext = createContext<{
   receipt: Receipt;
+  inventoryStock: IProduct[];
   handleClearReceipt: () => void;
+  handleClearInventoryStock: () => void;
   handleUpdateReceipt: (data: any) => void;
+  handleUpdateInventoryStock: (data: IProduct[]) => void;
 }>({
+  inventoryStock: [],
   receipt: {} as Receipt,
   handleClearReceipt: () => {},
+  handleClearInventoryStock: () => {},
   handleUpdateReceipt: (data) => console.log(data),
+  handleUpdateInventoryStock: (data) => console.log(data),
 });
 
 export const useReceiptProvider = () => {
@@ -38,9 +45,14 @@ export const useReceiptProvider = () => {
 
 export const ReceiptProvider = ({children}: {children: ReactNode}) => {
   const [receipt, setReceipt] = useState<Receipt>({} as Receipt);
+  const [inventoryStock, setInventoryStock] = useState<IProduct[]>([]);
 
   const handleClearReceipt = useCallback(() => {
     setReceipt({} as Receipt);
+  }, []);
+
+  const handleClearInventoryStock = useCallback(() => {
+    setInventoryStock([]);
   }, []);
 
   const handleUpdateReceipt = useCallback(
@@ -52,9 +64,25 @@ export const ReceiptProvider = ({children}: {children: ReactNode}) => {
     [receipt],
   );
 
+  const handleUpdateInventoryStock = useCallback(
+    (data: IProduct[]) => {
+      if (data) {
+        setInventoryStock([...inventoryStock, ...data]);
+      }
+    },
+    [inventoryStock],
+  );
+
   return (
     <ReceiptContext.Provider
-      value={{receipt, handleClearReceipt, handleUpdateReceipt}}>
+      value={{
+        receipt,
+        inventoryStock,
+        handleClearReceipt,
+        handleUpdateReceipt,
+        handleClearInventoryStock,
+        handleUpdateInventoryStock,
+      }}>
       {children}
     </ReceiptContext.Provider>
   );

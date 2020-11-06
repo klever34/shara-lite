@@ -96,7 +96,10 @@ export const ReceiptOtherDetailsScreen = () => {
   }, [navigation, handleClearState]);
 
   const handleCustomerSearch = useCallback((item: ICustomer, text: string) => {
-    return `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1;
+    return (
+      `${item.name}`.toLowerCase().indexOf(text.toLowerCase()) > -1 ||
+      `${item.mobile}`.toLowerCase().indexOf(text.toLowerCase()) > -1
+    );
   }, []);
 
   const handleSelectCustomer = useCallback((item: ICustomer) => {
@@ -172,7 +175,7 @@ export const ReceiptOtherDetailsScreen = () => {
     handleUpdateReceipt(receiptToCreate);
     handleClearState();
     const createdReceipt = saveReceipt(receiptToCreate);
-    setIsLoading(true);
+    setIsLoading(false);
     navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
   }, [
     note,

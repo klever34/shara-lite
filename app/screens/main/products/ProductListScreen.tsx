@@ -1,43 +1,77 @@
-import {HeaderRight, HomeContainer} from '@/components';
+import {Button, HeaderRight, HomeContainer} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {withModal} from '@/helpers/hocs';
+import {numberWithCommas} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {useAppNavigation} from '@/services/navigation';
-import {getProducts} from '@/services/ProductService';
+import {getProducts, updateProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
-import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
-import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {KeyboardAvoidingView, Text, ToastAndroid, View} from 'react-native';
+import {EditProductModal} from './EditProductModal';
 
 export const ProductListScreen = withModal(() => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const products = realm ? getProducts({realm}) : [];
 
+  const [allProducts, setAllProducts] = useState(products || []);
   const [searchTerm, setSearchTerm] = useState('');
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
 
   const handleProductSearch = useCallback((text) => {
     setSearchTerm(text);
   }, []);
 
-  const handleCreateProduct = useCallback(() => {
-    Alert.alert('Coming soon', 'This feature is coming in the next PR');
+  const handleOpenEditProductModal = useCallback((item: IProduct) => {
+    setItemToEdit(item);
   }, []);
 
+  const handleCloseEditProductModal = useCallback(() => {
+    setItemToEdit(null);
+    setOpenEditModal(false);
+  }, []);
+
+  const handleCreateProduct = useCallback(() => {
+    navigation.navigate('CreateProduct');
+  }, [navigation]);
+
+  const handleAddInventory = useCallback(() => {
+    navigation.navigate('AddInventory');
+  }, [navigation]);
+
+  const handleUpdateProduct = useCallback(
+    (payload) => {
+      if (itemToEdit) {
+        updateProduct({realm, product: itemToEdit, updates: payload});
+        ToastAndroid.show('Product edited', ToastAndroid.SHORT);
+      }
+    },
+    [itemToEdit, realm],
+  );
+
   const filteredProducts = useMemo(() => {
-    let userProducts = (products as unknown) as Realm.Results<
+    let userProducts = (allProducts as unknown) as Realm.Results<
       IProduct & Realm.Object
     >;
     if (searchTerm) {
       userProducts = userProducts.filtered(`name CONTAINS[c] "${searchTerm}"`);
     }
     return (userProducts.sorted('created_at', true) as unknown) as IProduct[];
-  }, [products, searchTerm]);
+  }, [allProducts, searchTerm]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -88,36 +122,75 @@ export const ProductListScreen = withModal(() => {
     });
   }, [navigation]);
 
-  const renderListItem = useCallback(({item}: {item: IProduct}) => {
-    return (
-      <Touchable onPress={undefined}>
+  const renderListItem = useCallback(
+    ({item}: {item: IProduct}) => {
+      return (
         <View
-          style={applyStyles('p-16 flex-row items-center justify-between', {
+          style={applyStyles({
             borderBottomWidth: 1,
             borderBottomColor: colors['gray-20'],
           })}>
-          <View>
-            <Text style={applyStyles('text-700 text-gray-300 text-uppercase')}>
-              {item.name}
-            </Text>
-          </View>
-          <View style={applyStyles('items-end')}>
-            <View style={applyStyles('flex-row items-center')}>
-              <Text style={applyStyles('text-700 text-gray-300 pr-xs')}>
-                {item?.quantity && !(item?.quantity < 0) ? item.quantity : 0}
-              </Text>
-              <Text
-                style={applyStyles(
-                  'text-400 text-xs text-gray-100 text-uppercase',
-                )}>
-                left
-              </Text>
+          <Touchable onPress={() => handleOpenEditProductModal(item)}>
+            <View
+              style={applyStyles('p-16 flex-row items-center justify-between')}>
+              <View>
+                <Text
+                  style={applyStyles('text-700 text-gray-300 text-uppercase')}>
+                  {item.name}
+                </Text>
+              </View>
+              <View style={applyStyles('items-end')}>
+                <View style={applyStyles('flex-row items-center')}>
+                  <Text style={applyStyles('text-700 text-gray-300 pr-xs')}>
+                    {item?.quantity && !(item?.quantity < 0)
+                      ? numberWithCommas(item.quantity)
+                      : 0}
+                  </Text>
+                  <Text
+                    style={applyStyles(
+                      'text-400 text-xs text-gray-100 text-uppercase',
+                    )}>
+                    left
+                  </Text>
+                </View>
+              </View>
             </View>
-          </View>
+          </Touchable>
+          {item?._id?.toString() === itemToEdit?._id?.toString() && (
+            <View
+              style={applyStyles(
+                'flex-row items-center py-12 px-16 bg-white justify-between',
+              )}>
+              <Button
+                title="Edit"
+                variantColor="clear"
+                style={applyStyles({
+                  width: '48%',
+                })}
+                onPress={() => setOpenEditModal(true)}
+              />
+              <Button
+                variantColor="red"
+                title="Receive Inventory"
+                onPress={handleAddInventory}
+                style={applyStyles({
+                  width: '48%',
+                })}
+              />
+            </View>
+          )}
         </View>
-      </Touchable>
-    );
-  }, []);
+      );
+    },
+    [handleAddInventory, handleOpenEditProductModal, itemToEdit],
+  );
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      const myProducts = realm ? getProducts({realm}) : [];
+      setAllProducts(myProducts);
+    });
+  }, [navigation, realm]);
 
   return (
     <KeyboardAvoidingView
@@ -139,6 +212,12 @@ export const ProductListScreen = withModal(() => {
           text:
             "You have no products yet. Let's help you load your products to create receipts faster and monitor stock levels.",
         }}
+      />
+      <EditProductModal
+        item={itemToEdit}
+        visible={openEditModal}
+        onClose={handleCloseEditProductModal}
+        onUpdateProductItem={handleUpdateProduct}
       />
     </KeyboardAvoidingView>
   );

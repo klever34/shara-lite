@@ -9,6 +9,7 @@ import Touchable from '../Touchable';
 
 export type ReceiptTableItemProps = {
   item: IReceiptItem | IProduct;
+  type?: 'receipt' | 'product';
 };
 
 export const receiptTableStyles = StyleSheet.create({
@@ -71,7 +72,13 @@ export const ReceiptTableFooterItem = ({
   );
 };
 
-export const ReceiptTableHeader = ({style}: {style?: ViewStyle}) => {
+export const ReceiptTableHeader = ({
+  style,
+  type = 'receipt',
+}: {
+  style?: ViewStyle;
+  type?: 'receipt' | 'product';
+}) => {
   return (
     <View style={applyStyles(receiptTableStyles.row, style)}>
       <View style={receiptTableStyles['column-40']}>
@@ -95,7 +102,7 @@ export const ReceiptTableHeader = ({style}: {style?: ViewStyle}) => {
         })}>
         <Text
           style={applyStyles('text-xs text-400 text-gray-100 text-uppercase')}>
-          Subtotal
+          {type === 'receipt' ? 'Subtotal' : 'unit price'}
         </Text>
       </View>
     </View>
@@ -105,12 +112,13 @@ export const ReceiptTableHeader = ({style}: {style?: ViewStyle}) => {
 export const ReceiptTableItem = ({
   item,
   onPress,
+  type = 'receipt',
 }: ReceiptTableItemProps & {
   onPress?: (item: IReceiptItem | IProduct) => void;
 }) => {
   const price = item.price ? item.price : 0;
   const quantity = item.quantity ? item.quantity : 0;
-  const subtotal = price * quantity;
+  const subtotal = type === 'receipt' ? price * quantity : price;
 
   return (
     <Touchable onPress={onPress ? () => onPress(item) : undefined}>
@@ -121,9 +129,11 @@ export const ReceiptTableItem = ({
             style={applyStyles('pb-4 text-700 text-uppercase text-gray-300')}>
             {'product' in item ? item.product.name : item.name}
           </Text>
-          <Text style={applyStyles('text-uppercase text-gray-100 text-xxs')}>
-            Unit price: {amountWithCurrency(price)}
-          </Text>
+          {type === 'receipt' && (
+            <Text style={applyStyles('text-uppercase text-gray-100 text-xxs')}>
+              Unit price: {amountWithCurrency(price)}
+            </Text>
+          )}
         </View>
         <View
           style={applyStyles(receiptTableStyles['column-20'], {

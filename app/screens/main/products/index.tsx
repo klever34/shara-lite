@@ -1,8 +1,7 @@
-import React from 'react';
 import {colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
+import React from 'react';
 import {ProductListScreen} from './ProductListScreen';
-import {ManageItems} from '@/screens/main/products';
 
 export type ProductsStackParamList = {
   ProductList: undefined;
@@ -26,15 +25,8 @@ export const ProductsScreen = () => {
         headerTintColor: colors['gray-300'],
       }}>
       <ProductsStack.Screen name="ProductList" component={ProductListScreen} />
-      <ProductsStack.Screen
-        name="ManageItems"
-        component={ManageItems}
-        options={{title: 'Manage Items'}}
-      />
     </ProductsStack.Navigator>
   );
 };
 
 export * from './ProductListScreen';
-export * from './ManageItems';
-export * from './ActivityTab';

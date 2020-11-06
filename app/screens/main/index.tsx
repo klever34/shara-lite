@@ -20,6 +20,9 @@ import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {getAuthService, getPubNubService} from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
+import {AddInventoryScreen} from './products/AddInventoryScreen';
+import {CreateProductScreen} from './products/CreateProductScreen';
+import {InventoryOtherDetailsScreen} from './products/InventoryOtherDetailsScreen';
 import {CreateReceiptScreen} from './receipts/CreateReceiptScreen';
 import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
 import {ReceiptOtherDetailsScreen} from './receipts/ReceiptOtherDetailsScreen';
@@ -39,6 +42,11 @@ export type MainStackParamList = {
   CreateReceipt: {receipt?: IReceipt};
   ReceiptDetails: {id: IReceipt['_id']};
   ReceiptSuccess: {id: IReceipt['_id']};
+
+  //Product
+  CreateProduct: undefined;
+  AddInventory: undefined;
+  InventoryOtherDetails: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -159,6 +167,23 @@ const MainScreens = () => {
             name="ReceiptSuccess"
             options={{headerShown: false}}
             component={ReceiptSuccessScreen}
+          />
+
+          {/* Product */}
+          <MainStack.Screen
+            name="CreateProduct"
+            component={CreateProductScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="AddInventory"
+            component={AddInventoryScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="InventoryOtherDetails"
+            component={InventoryOtherDetailsScreen}
+            options={{headerShown: false}}
           />
         </MainStack.Navigator>
       </ReceiptProvider>
