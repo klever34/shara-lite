@@ -74,7 +74,7 @@ export const useReports = () => {
     await exportToExcel({
       data,
       columns,
-      filename: `Shara Receipts - ${date}`,
+      filename: `Shara/Receipts/Shara Receipts - ${date}`,
       notificationTitle: 'Report exported successfully',
     });
   }, [getReceiptsData]);
