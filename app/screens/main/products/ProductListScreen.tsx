@@ -50,9 +50,12 @@ export const ProductListScreen = withModal(() => {
     navigation.navigate('CreateProduct');
   }, [navigation]);
 
-  const handleAddInventory = useCallback(() => {
-    navigation.navigate('AddInventory');
-  }, [navigation]);
+  const handleAddInventory = useCallback(
+    (product: IProduct) => {
+      navigation.navigate('AddInventory', {product});
+    },
+    [navigation],
+  );
 
   const handleUpdateProduct = useCallback(
     (payload) => {
@@ -177,7 +180,7 @@ export const ProductListScreen = withModal(() => {
               <Button
                 variantColor="red"
                 title="Receive Inventory"
-                onPress={handleAddInventory}
+                onPress={() => handleAddInventory(item)}
                 style={applyStyles({
                   width: '48%',
                 })}

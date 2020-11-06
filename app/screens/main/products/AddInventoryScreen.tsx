@@ -32,22 +32,28 @@ import {
 } from 'react-native';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
 
-export const AddInventoryScreen = () => {
+export const AddInventoryScreen = ({route}: any) => {
   const realm = useRealm();
-  const handleError = useErrorHandler();
   const products = getProducts({realm});
+  const productToStartWith = route.params.product;
+
+  const handleError = useErrorHandler();
   const navigation = useAppNavigation();
   const {handleUpdateInventoryStock} = useReceiptProvider();
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [isNewProduct, setIsNewProduct] = useState(false);
-  const [price, setPrice] = useState<number | undefined>();
-  const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
-  const [inventoryStock, setInventoryStock] = useState<IProduct[]>([]);
-  const [quantity, setQuantity] = useState<string | undefined>(
-    FormDefaults.get('quantity', ''),
+  const [price, setPrice] = useState<number | undefined>(
+    productToStartWith.price,
   );
+  const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
+  const [inventoryStock, setInventoryStock] = useState<IProduct[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(
+    productToStartWith || null,
+  );
+  const [quantity, setQuantity] = useState<string | undefined>(
+    productToStartWith.quantity.toString() || FormDefaults.get('quantity', ''),
+  );
+  const [searchQuery, setSearchQuery] = useState(productToStartWith.name || '');
 
   const handleClearState = useCallback(() => {
     setPrice(0);
@@ -321,7 +327,7 @@ export const AddInventoryScreen = () => {
                     onChangeText={handleChangeSearchQuery}
                     noResultsAction={() => setIsNewProduct(true)}
                     textInputProps={{
-                      placeholder: 'Search or enter product/service here',
+                      placeholder: 'Search or enter product/service',
                     }}
                   />
                 </View>

@@ -1,4 +1,5 @@
 import EmptyState from '@/components/EmptyState';
+import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {HomeScreen} from '@/screens/main/HomeScreen';
 import {ReportsScreen} from '@/screens/main/more/reports';
@@ -45,7 +46,7 @@ export type MainStackParamList = {
 
   //Product
   CreateProduct: undefined;
-  AddInventory: undefined;
+  AddInventory: {product?: IProduct};
   InventoryOtherDetails: undefined;
 };
 
