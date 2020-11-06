@@ -11,7 +11,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
-import {subMonths} from 'date-fns';
+import {endOfDay, format, startOfDay, subMonths} from 'date-fns';
 import {subDays, subWeeks, subYears} from 'date-fns/esm';
 import React, {
   useCallback,
@@ -20,7 +20,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
+import {KeyboardAvoidingView, Text, View} from 'react-native';
 import {ReceiptListItem} from './ReceiptListItem';
 
 export const ReceiptListScreen = withModal(() => {
@@ -66,7 +66,11 @@ export const ReceiptListScreen = withModal(() => {
           userReceipts = userReceipts;
           break;
         case 'today':
-          userReceipts = userReceipts.filtered('created_at == $0', new Date());
+          userReceipts = userReceipts.filtered(
+            'created_at >= $0 && created_at <= $1',
+            startOfDay(new Date()),
+            endOfDay(new Date()),
+          );
           break;
         case '3-days':
           userReceipts = userReceipts.filtered(
@@ -110,7 +114,7 @@ export const ReceiptListScreen = withModal(() => {
     }
     if (searchTerm) {
       userReceipts = userReceipts.filtered(
-        `customer.name BEGINSWITH[c] "${searchTerm}"`,
+        `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
     return (userReceipts.sorted('created_at', true) as unknown) as IReceipt[];
@@ -130,8 +134,8 @@ export const ReceiptListScreen = withModal(() => {
   }, []);
 
   const handleCreateReceipt = useCallback(() => {
-    Alert.alert('Coming soon', 'This feature is coming in the next PR');
-  }, []);
+    navigation.navigate('CreateReceipt');
+  }, [navigation]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
@@ -145,6 +149,12 @@ export const ReceiptListScreen = withModal(() => {
       return (
         <ReceiptListItem
           receipt={receipt}
+          leftSection={{
+            heading: receipt?.customer?.name ?? 'No Customer',
+            subheading:
+              receipt?.created_at &&
+              format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
+          }}
           onPress={() => handleReceiptItemSelect(receipt)}
         />
       );

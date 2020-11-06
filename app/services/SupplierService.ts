@@ -4,10 +4,8 @@ import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
 import {getAnalyticsService} from '@/services';
 
-export const getSuppliers = ({realm}: {realm: Realm}): ISupplier[] => {
-  return (realm
-    .objects<ISupplier>(modelName)
-    .filtered('is_deleted = false') as unknown) as ISupplier[];
+export const getSuppliers = ({realm}: {realm: Realm}) => {
+  return realm.objects<ISupplier>(modelName).filtered('is_deleted = false');
 };
 
 export const getSupplierByMobile = ({

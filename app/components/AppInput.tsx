@@ -66,12 +66,14 @@ export const AppInput = (props: AppInputProps) => {
 
   return (
     <View style={applyStyles(containerStyle)}>
-      <Text
-        style={applyStyles(
-          'text-xs text-uppercase text-500 text-gray-100 pb-8',
-        )}>
-        {label}
-      </Text>
+      {!!label && (
+        <Text
+          style={applyStyles(
+            'text-xs text-uppercase text-500 text-gray-100 pb-8',
+          )}>
+          {label}
+        </Text>
+      )}
       <View>
         {leftIcon && (
           <View
@@ -110,6 +112,7 @@ export const AppInput = (props: AppInputProps) => {
             withRightIconStyle,
             style,
           )}
+          placeholderTextColor={colors['gray-50']}
           {...rest}
         />
         {rightIcon && (

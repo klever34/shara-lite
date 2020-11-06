@@ -3,7 +3,7 @@ import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import {IContact} from '@/models';
+import {Contact, IContact} from '@/models';
 import {IRealmService} from '../realm';
 import omit from 'lodash/omit';
 import {UpdateMode} from 'realm';
@@ -31,6 +31,7 @@ export interface IContactService {
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
   formatPhoneNumber(number: string): string;
+  addContact(contact: any): any;
 }
 
 const parseDateString = (dateString: string) => {
@@ -47,6 +48,7 @@ export class ContactService implements IContactService {
   ) {}
 
   private permissionGranted: boolean = false;
+  private writePermissionGranted: boolean = false;
 
   private async checkPermission() {
     this.permissionGranted = await PermissionsAndroid.check(
@@ -89,6 +91,47 @@ export class ContactService implements IContactService {
     return this.permissionGranted;
   }
 
+  private async checkWritePermission() {
+    this.permissionGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
+    );
+    if (!this.writePermissionGranted) {
+      return new Promise((resolve) => {
+        Alert.alert(
+          'Write to your contacts',
+          'Shara would like to write to your contacts.',
+          [
+            {
+              text: 'Cancel',
+              onPress: () => {
+                this.writePermissionGranted = false;
+                resolve(this.writePermissionGranted);
+              },
+            },
+            {
+              text: 'OK',
+              onPress: () => {
+                PermissionsAndroid.request(
+                  PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
+                )
+                  .then((status) => {
+                    this.writePermissionGranted = status === 'granted';
+                    resolve(this.writePermissionGranted);
+                  })
+                  .catch(() => {
+                    this.writePermissionGranted = false;
+                    resolve(this.writePermissionGranted);
+                  });
+              },
+            },
+          ],
+          {cancelable: false},
+        );
+      });
+    }
+    return this.permissionGranted;
+  }
+
   public formatPhoneNumber(phoneNumber: string): string {
     const removeAllNonDigits = (number: string) =>
       number.replace(/[^\d+]/g, '');
@@ -112,6 +155,20 @@ export class ContactService implements IContactService {
       return removeAllNonDigits(phoneNumber);
     }
     return String(phoneNumberDetails.number);
+  }
+
+  public async addContact(contact: any) {
+    if (await this.checkWritePermission()) {
+      return new Promise<PhoneContact[]>((resolve, reject) => {
+        RNContacts.addContact(contact, (err) => {
+          if (err) {
+            reject(err);
+          }
+          resolve(contact);
+        });
+      });
+    }
+    throw new Error('We are unable to access your contacts.');
   }
 
   public async getPhoneContacts() {

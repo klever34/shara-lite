@@ -1,9 +1,16 @@
 import EmptyState from '@/components/EmptyState';
+import {HomeScreen} from '@/screens/main/HomeScreen';
+import {ReportsScreen} from '@/screens/main/more/reports';
+import {
+  BusinessSettings,
+  UserProfileSettings,
+} from '@/screens/main/more/settings';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useRepeatBackToExit} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {RealmContext} from '@/services/realm/provider';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
+import {createStackNavigator} from '@react-navigation/stack';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useContext, useEffect, useState} from 'react';
@@ -12,19 +19,18 @@ import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {getAuthService, getPubNubService} from '../../services';
 import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
-import {applyStyles} from '@/styles';
-import {HomeScreen} from '@/screens/main/HomeScreen';
-import {createStackNavigator} from '@react-navigation/stack';
-import {
-  BusinessSettings,
-  UserProfileSettings,
-} from '@/screens/main/more/settings';
-import {ReportsScreen} from '@/screens/main/more/reports';
+import {AddInventoryScreen} from './products/AddInventoryScreen';
+import {CreateProductScreen} from './products/CreateProductScreen';
+import {InventoryOtherDetailsScreen} from './products/InventoryOtherDetailsScreen';
+import {CreateReceiptScreen} from './receipts/CreateReceiptScreen';
 import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
 import {IReceipt} from '@/models/Receipt';
 import {AddCustomer} from '@/screens/main/customers';
 import {ICustomer} from '@/models';
 import CustomerDetails from '@/screens/main/customers/CustomerDetails';
+import {ReceiptOtherDetailsScreen} from './receipts/ReceiptOtherDetailsScreen';
+import {ReceiptProvider} from './receipts/ReceiptProvider';
+import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -34,7 +40,15 @@ export type MainStackParamList = {
   CustomerDetails: {customer: ICustomer};
 
   // Receipt
+  ReceiptOtherDetails: undefined;
+  CreateReceipt: {receipt?: IReceipt};
   ReceiptDetails: {id: IReceipt['_id']};
+  ReceiptSuccess: {id: IReceipt['_id']};
+
+  //Product
+  CreateProduct: undefined;
+  AddInventory: undefined;
+  InventoryOtherDetails: undefined;
 
   // More
   UserProfileSettings: undefined;
@@ -101,64 +115,100 @@ const MainScreens = () => {
 
   return (
     <PubNubProvider client={pubNubClient}>
-      <MainStack.Navigator
-        initialRouteName="Home"
-        screenOptions={{
-          headerStyle: {
-            backgroundColor: colors.white,
-          },
-          headerTitleStyle: {
-            fontSize: 16,
-            fontFamily: 'Roboto-Regular',
-          },
-          headerTintColor: colors['gray-300'],
-        }}>
-        {/* Home */}
-        <MainStack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{headerShown: false}}
-        />
+      <ReceiptProvider>
+        <MainStack.Navigator
+          initialRouteName="Home"
+          screenOptions={{
+            headerStyle: {
+              backgroundColor: colors.white,
+            },
+            headerTitleStyle: {
+              fontSize: 16,
+              fontFamily: 'Roboto-Regular',
+            },
+            headerTintColor: colors['gray-300'],
+          }}>
+          {/* Home */}
+          <MainStack.Screen
+            name="Home"
+            component={HomeScreen}
+            options={{headerShown: false}}
+          />
 
-        {/* Customers */}
-        <MainStack.Screen
-          name="AddCustomer"
-          component={AddCustomer}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="CustomerDetails"
-          component={CustomerDetails}
-          options={({route}) => ({
-            title: route.params.customer.name,
-            headerShown: false,
-          })}
-        />
+          {/* Customers */}
+          <MainStack.Screen
+            name="AddCustomer"
+            component={AddCustomer}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="CustomerDetails"
+            component={CustomerDetails}
+            options={({route}) => ({
+              title: route.params.customer.name,
+              headerShown: false,
+            })}
+          />
 
-        {/* More */}
-        <MainStack.Screen
-          name="BusinessSettings"
-          component={BusinessSettings}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="Reports"
-          component={ReportsScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="UserProfileSettings"
-          component={UserProfileSettings}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="ReceiptDetails"
-          component={ReceiptDetailsScreen}
-          options={{headerShown: false}}
-        />
-      </MainStack.Navigator>
+          {/* More */}
+          <MainStack.Screen
+            name="BusinessSettings"
+            component={BusinessSettings}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="Reports"
+            component={ReportsScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="UserProfileSettings"
+            component={UserProfileSettings}
+            options={{headerShown: false}}
+          />
+
+          {/* Receipt */}
+          <MainStack.Screen
+            name="ReceiptDetails"
+            component={ReceiptDetailsScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="CreateReceipt"
+            component={CreateReceiptScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="ReceiptOtherDetails"
+            options={{headerShown: false}}
+            component={ReceiptOtherDetailsScreen}
+          />
+          <MainStack.Screen
+            name="ReceiptSuccess"
+            options={{headerShown: false}}
+            component={ReceiptSuccessScreen}
+          />
+
+          {/* Product */}
+          <MainStack.Screen
+            name="CreateProduct"
+            component={CreateProductScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="AddInventory"
+            component={AddInventoryScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="InventoryOtherDetails"
+            component={InventoryOtherDetailsScreen}
+            options={{headerShown: false}}
+          />
+        </MainStack.Navigator>
+      </ReceiptProvider>
     </PubNubProvider>
   );
 };
