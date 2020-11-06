@@ -248,6 +248,7 @@ export const CreateReceipt = (props: Props) => {
       handleUpdateReceipt({
         tax: 0,
         totalAmount,
+        customer: receipt?.customer,
         receiptItems: [product, ...receiptItems],
       });
 
@@ -265,26 +266,32 @@ export const CreateReceipt = (props: Props) => {
       navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {
       setSelectedProduct(null);
-      handleUpdateReceipt({tax: 0, receiptItems, totalAmount});
+      handleUpdateReceipt({
+        tax: 0,
+        receiptItems,
+        totalAmount,
+        customer: receipt?.customer,
+      });
       navigation.navigate('ReceiptOtherDetails');
     } else {
       Alert.alert(
         'Info',
-        'Please select at least one product/service item with quantity',
+        'Please select at least one product/service with quantity',
       );
     }
   }, [
     receiptItems,
+    selectedProduct,
     price,
     quantity,
-    selectedProduct,
     isNewProduct,
+    handleAddProduct,
+    searchQuery,
     handleError,
     handleUpdateReceipt,
     totalAmount,
+    receipt,
     navigation,
-    handleAddProduct,
-    searchQuery,
   ]);
 
   const renderReceiptItem = useCallback(
@@ -353,7 +360,7 @@ export const CreateReceipt = (props: Props) => {
                   onChangeText={handleChangeSearchQuery}
                   noResultsAction={() => setIsNewProduct(true)}
                   textInputProps={{
-                    placeholder: 'Search or enter product/service here',
+                    placeholder: 'Search or enter product/service',
                   }}
                 />
               </View>

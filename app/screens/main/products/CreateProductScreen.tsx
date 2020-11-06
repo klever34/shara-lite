@@ -185,7 +185,7 @@ export const CreateProductScreen = (props: Props) => {
     } else {
       Alert.alert(
         'Info',
-        'Please add at least one product/service item with quantity',
+        'Please add at least one product/service with quantity',
       );
     }
   }, [

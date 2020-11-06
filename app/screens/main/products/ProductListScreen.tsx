@@ -27,9 +27,10 @@ export const ProductListScreen = withModal(() => {
   const navigation = useAppNavigation();
   const products = realm ? getProducts({realm}) : [];
 
-  const [allProducts, setAllProducts] = useState(products || []);
   const [searchTerm, setSearchTerm] = useState('');
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [isUpdatingProduct, setIsUpdatingProduct] = useState(false);
+  const [allProducts, setAllProducts] = useState(products || []);
   const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
 
   const handleProductSearch = useCallback((text) => {
@@ -56,8 +57,12 @@ export const ProductListScreen = withModal(() => {
   const handleUpdateProduct = useCallback(
     (payload) => {
       if (itemToEdit) {
-        updateProduct({realm, product: itemToEdit, updates: payload});
-        ToastAndroid.show('Product edited', ToastAndroid.SHORT);
+        setIsUpdatingProduct(true);
+        setTimeout(() => {
+          updateProduct({realm, product: itemToEdit, updates: payload});
+          setIsUpdatingProduct(false);
+          ToastAndroid.show('Product edited', ToastAndroid.SHORT);
+        }, 100);
       }
     },
     [itemToEdit, realm],
@@ -216,6 +221,7 @@ export const ProductListScreen = withModal(() => {
       <EditProductModal
         item={itemToEdit}
         visible={openEditModal}
+        isLoading={isUpdatingProduct}
         onClose={handleCloseEditProductModal}
         onUpdateProductItem={handleUpdateProduct}
       />

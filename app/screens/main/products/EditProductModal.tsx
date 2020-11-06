@@ -9,6 +9,7 @@ type Props = {
   visible: boolean;
   isDelete?: boolean;
   onClose: () => void;
+  isLoading?: boolean;
   item: IProduct | null;
   onUpdateProductItem?: (item: IProduct) => void;
   onRemoveProductItem?: (item: IProduct) => void;
@@ -19,6 +20,7 @@ export const EditProductModal = (props: Props) => {
     item,
     onClose,
     visible,
+    isLoading,
     isDelete = false,
     onRemoveProductItem,
     onUpdateProductItem,
@@ -149,6 +151,7 @@ export const EditProductModal = (props: Props) => {
             style={applyStyles({
               width: '48%',
             })}
+            isLoading={isLoading}
           />
         </View>
       </View>
