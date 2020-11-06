@@ -15,6 +15,7 @@ import {MainStackParamList} from '..';
 import {Page} from '@/components/Page';
 import {ReceiptListItem} from '@/screens/main/receipts/ReceiptListItem';
 import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
+import {useReceiptProvider} from '@/screens/main/receipts/ReceiptProvider';
 
 type CustomerDetailsProps = ModalWrapperFields & {
   route: RouteProp<
@@ -106,10 +107,6 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     return customerReceipts;
   }, [customer.receipts, searchTerm]);
 
-  const footer = filteredReceipts?.length ? (
-    <Button title="Create Receipt" />
-  ) : null;
-
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
       navigation.navigate('ReceiptDetails', {
@@ -157,6 +154,17 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     setSearchTerm(text);
   }, []);
 
+  const {handleUpdateReceipt} = useReceiptProvider();
+
+  const handleCreateReceipt = useCallback(() => {
+    handleUpdateReceipt({customer});
+    navigation.navigate('CreateReceipt');
+  }, [customer, handleUpdateReceipt, navigation]);
+
+  const footer = filteredReceipts?.length ? (
+    <Button title="Create Receipt" onPress={handleCreateReceipt} />
+  ) : null;
+
   return (
     <CustomerContext.Provider value={customer}>
       <Page
@@ -178,6 +186,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
           renderListItem={renderReceiptItem}
           onSearch={handleReceiptSearch}
           showFAB={false}
+          onCreateEntity={handleCreateReceipt}
         />
       </Page>
     </CustomerContext.Provider>
