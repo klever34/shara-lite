@@ -1,7 +1,18 @@
-import React, {useCallback, useState} from 'react';
+import React, {
+  Dispatch,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import {RadioButton} from '@/components/RadioButton';
 import {applyStyles} from '@/styles';
 import {Text, View, ViewStyle} from 'react-native';
+
+export type RadioInputRef = {
+  setValue: (checked: boolean) => void;
+  setDisabled: Dispatch<SetStateAction<boolean>>;
+};
 
 export type RadioInputProps = {
   label?: string;
@@ -9,6 +20,7 @@ export type RadioInputProps = {
   containerStyle?: ViewStyle;
   onChange?: (value: boolean) => void;
   disabled?: boolean;
+  innerRef?: (node: RadioInputRef) => void;
 };
 
 export const RadioInput = ({
@@ -16,9 +28,11 @@ export const RadioInput = ({
   containerStyle,
   label,
   onChange,
-  disabled,
+  disabled: initialDisabled = false,
+  innerRef,
 }: RadioInputProps) => {
   const [value, setValue] = useState(initialValue);
+  const [disabled, setDisabled] = useState(initialDisabled);
   const handleChange = useCallback(
     (checked: boolean) => {
       setValue(checked);
@@ -26,6 +40,16 @@ export const RadioInput = ({
     },
     [onChange],
   );
+
+  useEffect(() => {
+    if (innerRef) {
+      innerRef({
+        setValue: handleChange,
+        setDisabled,
+      });
+    }
+  }, [handleChange, innerRef]);
+
   return (
     <View style={applyStyles(' w-full', containerStyle)}>
       <RadioButton

@@ -1,15 +1,13 @@
 import {ICustomer} from '@/models';
 import {useNavigation} from '@react-navigation/native';
-import React, {
-  useState,
-  useMemo,
-  Dispatch,
-  SetStateAction,
-  useRef,
-  useEffect,
-} from 'react';
+import React, {useState, useMemo, useRef, useEffect} from 'react';
 import {Text} from 'react-native';
-import {FormBuilder, FormFields, PhoneNumber} from '../../../components';
+import {
+  FormBuilder,
+  FormFields,
+  PhoneNumber,
+  PhoneNumberFieldRef,
+} from '../../../components';
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
 import {useAddCustomer} from '@/services/customer/hooks';
@@ -17,6 +15,7 @@ import Touchable from '@/components/Touchable';
 import {selectContactPhone} from 'react-native-select-contact';
 import {getContactService} from '@/services';
 import parsePhoneNumberFromString from 'libphonenumber-js';
+import {RadioInputRef} from '@/components/RadioInput';
 
 type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
@@ -33,12 +32,21 @@ export const AddCustomer = (props: AddCustomerProps) => {
     null,
   );
 
-  const mobileSetterRef = useRef<Dispatch<SetStateAction<PhoneNumber>>>();
+  const mobileFieldRef = useRef<PhoneNumberFieldRef>();
+  const saveToPhonebookFieldRef = useRef<RadioInputRef>();
 
   useEffect(() => {
-    const {current: mobileSetter} = mobileSetterRef;
-    if (mobileSetter && selectedMobile) {
-      mobileSetter(selectedMobile);
+    const {current: mobileField} = mobileFieldRef;
+    if (mobileField && selectedMobile) {
+      mobileField.setPhoneNumber(selectedMobile);
+    }
+  }, [selectedMobile]);
+
+  useEffect(() => {
+    const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
+    if (saveToPhonebookField && selectedMobile) {
+      saveToPhonebookField.setValue(false);
+      saveToPhonebookField.setDisabled(true);
     }
   }, [selectedMobile]);
 
@@ -83,8 +91,8 @@ export const AddCustomer = (props: AddCustomerProps) => {
               </Text>
             </Touchable>
           ),
-          getValueSetter: (mobileSetter) => {
-            mobileSetterRef.current = mobileSetter;
+          innerRef: (mobileField: PhoneNumberFieldRef) => {
+            mobileFieldRef.current = mobileField;
           },
         },
       },
@@ -100,7 +108,9 @@ export const AddCustomer = (props: AddCustomerProps) => {
         props: {
           label: 'Save to Phonebook',
           value: true,
-          disabled: false,
+          innerRef: (saveToPhonebookField: RadioInputRef) => {
+            saveToPhonebookFieldRef.current = saveToPhonebookField;
+          },
         },
       },
     }),

@@ -1,12 +1,6 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {applyStyles, colors} from '@/styles';
-import React, {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useCallback,
-  useEffect,
-} from 'react';
+import React, {ReactNode, useCallback, useEffect} from 'react';
 import {View} from 'react-native';
 import CountryPicker, {
   Country,
@@ -21,11 +15,15 @@ export type PhoneNumber = {
   number: string;
 };
 
+export type PhoneNumberFieldRef = {
+  setPhoneNumber: (phoneNumber: PhoneNumber) => void;
+};
+
 export type PhoneNumberFieldProps = {
   value?: PhoneNumber;
   onChangeText?(number: PhoneNumber): void;
   renderFlagButton?(props: FlagButtonProps): ReactNode;
-  getValueSetter?: (setter: Dispatch<SetStateAction<PhoneNumber>>) => void;
+  innerRef?: (node: PhoneNumberFieldRef) => void;
 } & Omit<AppInputProps, 'value' | 'onChangeText'>;
 
 export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
@@ -35,7 +33,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     onChangeText,
     renderFlagButton,
     containerStyle,
-    getValueSetter,
+    innerRef,
     ...rest
   } = props;
 
@@ -55,23 +53,25 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
   const [phoneNumber, setPhoneNumber] = React.useState<PhoneNumber>(() => ({
     number: value?.number ?? '',
     callingCode: value?.callingCode ?? callingCode,
-    countryCode: getCountryCode(value),
   }));
 
   useEffect(() => {
-    if (getValueSetter) {
-      getValueSetter(setPhoneNumber);
+    if (innerRef) {
+      innerRef({
+        setPhoneNumber: (nextPhoneNumber) => {
+          setPhoneNumber(nextPhoneNumber);
+          onChangeText?.(nextPhoneNumber);
+        },
+      });
     }
-  }, [getValueSetter]);
+  }, [onChangeText, innerRef]);
 
   const onSelect = (nextCountry: Country) => {
     const nextCallingCode = nextCountry.callingCode[0];
-    const nextCountryCode = nextCountry.cca2;
     setPhoneNumber((prevPhoneNumber) => {
       let nextPhoneNumber = {
         ...prevPhoneNumber,
         callingCode: nextCallingCode,
-        countryCode: nextCountryCode,
       };
       onChangeText?.(nextPhoneNumber);
       return nextPhoneNumber;
