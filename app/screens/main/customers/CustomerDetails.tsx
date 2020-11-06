@@ -1,4 +1,4 @@
-import {Button, HeaderRight, HomeContainer} from '@/components';
+import {Button, HeaderRight, HomeContainer, Header} from '@/components';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
@@ -14,7 +14,7 @@ import {applyStyles} from '@/styles';
 import {MainStackParamList} from '..';
 import {Page} from '@/components/Page';
 import {ReceiptListItem} from '@/screens/main/receipts/ReceiptListItem';
-import {prepareValueForSearch} from '@/helpers/utils';
+import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
 
 type CustomerDetailsProps = ModalWrapperFields & {
   route: RouteProp<
@@ -110,24 +110,48 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     <Button title="Create Receipt" />
   ) : null;
 
-  const renderReceiptItem = useCallback(({item: receipt}: {item: IReceipt}) => {
-    return (
-      <ReceiptListItem
-        receipt={receipt}
-        onPress={() => {}}
-        getReceiptItemLeftText={(currentReceipt) => {
-          return currentReceipt?.created_at
-            ? format(currentReceipt?.created_at, 'eeee dd MMMM, yyyy')
-            : '';
-        }}
-        getReceiptItemRightText={(currentReceipt) => {
-          return currentReceipt?.created_at
-            ? format(currentReceipt?.created_at, 'hh:mm aa')
-            : '';
-        }}
-      />
-    );
-  }, []);
+  const handleReceiptItemSelect = useCallback(
+    (receipt: IReceipt) => {
+      navigation.navigate('ReceiptDetails', {
+        id: receipt._id,
+        header: (
+          <Header
+            title={
+              customer.remainingCreditAmount
+                ? `Owes you: ${amountWithCurrency(
+                    customer.remainingCreditAmount,
+                  )}`
+                : `Total: ${amountWithCurrency(customer.totalAmount)}`
+            }
+            iconLeft={{}}
+          />
+        ),
+      });
+    },
+    [customer.remainingCreditAmount, customer.totalAmount, navigation],
+  );
+
+  const renderReceiptItem = useCallback(
+    ({item: receipt}: {item: IReceipt}) => {
+      return (
+        <ReceiptListItem
+          receipt={receipt}
+          onPress={() => handleReceiptItemSelect(receipt)}
+          getReceiptItemLeftText={(currentReceipt) => {
+            return currentReceipt?.created_at
+              ? format(currentReceipt?.created_at, 'eeee dd MMMM, yyyy')
+              : '';
+          }}
+          getReceiptItemRightText={(currentReceipt) => {
+            return currentReceipt?.created_at
+              ? format(currentReceipt?.created_at, 'hh:mm aa')
+              : '';
+          }}
+        />
+      );
+    },
+    [handleReceiptItemSelect],
+  );
 
   const handleReceiptSearch = useCallback((text) => {
     setSearchTerm(text);
