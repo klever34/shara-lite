@@ -1,5 +1,5 @@
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode, useRef, useState} from 'react';
 import {
   TextInput,
   View,
@@ -10,6 +10,8 @@ import {
   TextInputFocusEventData,
 } from 'react-native';
 import {Icon} from './Icon';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 export type AppInputProps = {
   label?: string;
@@ -45,6 +47,8 @@ export const AppInput = (props: AppInputProps) => {
     ? applyStyles('pr-56')
     : applyStyles('p4-16');
 
+  const inputRef = useRef(null);
+
   const handleFocus = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setBgStyle({
@@ -68,7 +72,9 @@ export const AppInput = (props: AppInputProps) => {
   );
 
   return (
-    <View style={applyStyles(containerStyle)}>
+    <KeyboardAwareScrollView
+      style={applyStyles(containerStyle)}
+      getTextInputRefs={() => [inputRef]}>
       {!!label && (
         <Text
           style={applyStyles(
@@ -99,6 +105,7 @@ export const AppInput = (props: AppInputProps) => {
           </View>
         )}
         <TextInput
+          ref={inputRef}
           onFocus={handleFocus}
           onBlur={handleBlur}
           style={applyStyles(
@@ -144,6 +151,6 @@ export const AppInput = (props: AppInputProps) => {
           {errorMessage}
         </Text>
       )}
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
