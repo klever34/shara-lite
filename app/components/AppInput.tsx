@@ -1,5 +1,5 @@
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode, useState} from 'react';
+import React, {ReactElement, ReactNode, useState} from 'react';
 import {
   TextInput,
   View,
@@ -13,6 +13,7 @@ import {Icon} from './Icon';
 
 export type AppInputProps = {
   label?: string;
+  action?: ReactElement;
   style?: ViewStyle;
   isInvalid?: boolean;
   errorMessage?: string;
@@ -32,6 +33,7 @@ export const AppInput = (props: AppInputProps) => {
     rightIcon,
     errorMessage,
     containerStyle,
+    action = null,
     ...rest
   } = props;
   let [bgStyle, setBgStyle] = useState({
@@ -66,14 +68,17 @@ export const AppInput = (props: AppInputProps) => {
 
   return (
     <View style={applyStyles(containerStyle)}>
-      {!!label && (
-        <Text
-          style={applyStyles(
-            'text-xs text-uppercase text-500 text-gray-100 pb-8',
-          )}>
-          {label}
-        </Text>
-      )}
+      <View style={applyStyles('flex-row')}>
+        {!!label && (
+          <Text
+            style={applyStyles(
+              'text-xs text-uppercase text-500 text-gray-100 pb-8 flex-1',
+            )}>
+            {label}
+          </Text>
+        )}
+        {action}
+      </View>
       <View>
         {leftIcon && (
           <View

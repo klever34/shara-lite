@@ -11,12 +11,14 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View} from 'react-native';
 import {AppInputProps} from './AppInput';
 import {ImageInput, ImageInputProps} from './ImageInput';
+import {RadioInput, RadioInputProps} from './RadioInput';
 
 type FormFieldProps = {
   text: AppInputProps;
   mobile: PhoneNumberFieldProps;
   password: AppInputProps;
   image: ImageInputProps;
+  radio: RadioInputProps;
 };
 
 export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
@@ -159,6 +161,19 @@ export const FormBuilder = <FieldNames extends keyof any>({
                   fieldProps.containerStyle,
                 )}
                 onChangeValue={onChangeValue(name)}
+              />
+            );
+          case 'radio':
+            fieldProps = field.props as RadioInputProps;
+            return (
+              <RadioInput
+                key={name as string}
+                {...fieldProps}
+                containerStyle={applyStyles(
+                  'mb-24 w-full',
+                  fieldProps.containerStyle,
+                )}
+                onChange={onChangeValue(name)}
               />
             );
           default:

@@ -9,7 +9,10 @@ export const useAddCustomer = () => {
   const customers = getCustomers({realm});
   return useCallback(
     (values: ICustomer) => {
-      if (customers.filtered('mobile = $0', values.mobile).length) {
+      if (
+        values.mobile &&
+        customers.filtered('mobile = $0', values.mobile).length
+      ) {
         Alert.alert(
           'Info',
           'Customer with the same phone number has been created.',
