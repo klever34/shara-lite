@@ -1,6 +1,12 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode, useCallback} from 'react';
+import React, {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useEffect,
+} from 'react';
 import {View} from 'react-native';
 import CountryPicker, {
   Country,
@@ -19,6 +25,7 @@ export type PhoneNumberFieldProps = {
   value?: PhoneNumber;
   onChangeText?(number: PhoneNumber): void;
   renderFlagButton?(props: FlagButtonProps): ReactNode;
+  getValueSetter?: (setter: Dispatch<SetStateAction<PhoneNumber>>) => void;
 } & Omit<AppInputProps, 'value' | 'onChangeText'>;
 
 export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
@@ -28,6 +35,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     onChangeText,
     renderFlagButton,
     containerStyle,
+    getValueSetter,
     ...rest
   } = props;
 
@@ -44,13 +52,17 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     [countryCode2],
   );
 
-  const [phoneNumber, setPhoneNumber] = React.useState<
-    PhoneNumber & {countryCode: CountryCode}
-  >(() => ({
+  const [phoneNumber, setPhoneNumber] = React.useState<PhoneNumber>(() => ({
     number: value?.number ?? '',
     callingCode: value?.callingCode ?? callingCode,
     countryCode: getCountryCode(value),
   }));
+
+  useEffect(() => {
+    if (getValueSetter) {
+      getValueSetter(setPhoneNumber);
+    }
+  }, [getValueSetter]);
 
   const onSelect = (nextCountry: Country) => {
     const nextCallingCode = nextCountry.callingCode[0];
@@ -77,7 +89,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     });
   };
 
-  const pickerStyles = !phoneNumber?.countryCode
+  const pickerStyles = !getCountryCode(phoneNumber)
     ? applyStyles({top: 0})
     : applyStyles({top: -3});
 
@@ -105,7 +117,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
               // @ts-ignore
               placeholder="Country"
               renderFlagButton={renderFlagButton}
-              countryCode={phoneNumber.countryCode}
+              countryCode={getCountryCode(phoneNumber)}
               preferredCountries={['NG', 'KE', 'ZA', 'ZW']}
               containerButtonStyle={applyStyles('w-full text-500')}
             />

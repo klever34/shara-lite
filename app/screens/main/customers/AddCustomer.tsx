@@ -1,6 +1,13 @@
 import {ICustomer} from '@/models';
 import {useNavigation} from '@react-navigation/native';
-import React, {useState, useMemo} from 'react';
+import React, {
+  useState,
+  useMemo,
+  Dispatch,
+  SetStateAction,
+  useRef,
+  useEffect,
+} from 'react';
 import {Text} from 'react-native';
 import {FormBuilder, FormFields, PhoneNumber} from '../../../components';
 import {applyStyles} from '@/styles';
@@ -25,6 +32,15 @@ export const AddCustomer = (props: AddCustomerProps) => {
   const [selectedMobile, setSelectedMobile] = useState<PhoneNumber | null>(
     null,
   );
+
+  const mobileSetterRef = useRef<Dispatch<SetStateAction<PhoneNumber>>>();
+
+  useEffect(() => {
+    const {current: mobileSetter} = mobileSetterRef;
+    if (mobileSetter && selectedMobile) {
+      mobileSetter(selectedMobile);
+    }
+  }, [selectedMobile]);
 
   const formFields: FormFields<FormFieldName> = useMemo(
     () => ({
@@ -67,7 +83,9 @@ export const AddCustomer = (props: AddCustomerProps) => {
               </Text>
             </Touchable>
           ),
-          value: selectedMobile ?? undefined,
+          getValueSetter: (mobileSetter) => {
+            mobileSetterRef.current = mobileSetter;
+          },
         },
       },
       email: {
@@ -86,7 +104,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
         },
       },
     }),
-    [selectedMobile],
+    [],
   );
 
   return (
