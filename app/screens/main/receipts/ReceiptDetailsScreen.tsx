@@ -1,18 +1,16 @@
-import {ReceiptPreview} from '@/components';
-import {Icon} from '@/components/Icon';
-import Touchable from '@/components/Touchable';
 import {IReceipt} from '@/models/Receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {getReceipt} from '@/services/ReceiptService';
-import {colors, applyStyles} from '@/styles';
+import {applyStyles, colors} from '@/styles';
+import {format} from 'date-fns';
 import React, {useEffect, useState} from 'react';
-import {ActivityIndicator, FlatList, View} from 'react-native';
+import {ActivityIndicator, View} from 'react-native';
+import {ReceiptDetails} from './ReceiptDetails';
 
 export const ReceiptDetailsScreen = ({route}: any) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
-
   const [receipt, setReceipt] = useState<IReceipt | undefined>();
 
   useEffect(() => {
@@ -29,36 +27,14 @@ export const ReceiptDetailsScreen = ({route}: any) => {
       <ActivityIndicator color={colors.primary} size={40} />
     </View>
   ) : (
-    <FlatList
-      data={[]}
-      style={applyStyles('py-sm flex-1', {
-        backgroundColor: colors.white,
-      })}
-      renderItem={undefined}
-      ListHeaderComponent={
-        <>
-          <View
-            style={applyStyles(
-              'px-xl mb-xs mb-xl flex-row justify-end w-full',
-            )}>
-            <Touchable onPress={() => navigation.goBack()}>
-              <View style={applyStyles('center', {height: 48, width: 48})}>
-                <Icon
-                  name="x"
-                  size={24}
-                  type="feathericons"
-                  color={colors['red-200']}
-                />
-              </View>
-            </Touchable>
-          </View>
-          <ReceiptPreview
-            isNew={false}
-            receipt={receipt}
-            onClose={() => navigation.goBack()}
-          />
-        </>
-      }
+    <ReceiptDetails
+      receipt={receipt}
+      headerLeftSection={{
+        heading: receipt?.customer?.name ?? 'No Customer',
+        subheading:
+          receipt?.created_at &&
+          format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
+      }}
     />
   );
 };

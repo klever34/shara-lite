@@ -40,6 +40,7 @@ const sizes = [
   24,
   28,
   32,
+  36,
   40,
   48,
   56,
@@ -48,6 +49,9 @@ const sizes = [
   72,
   80,
   96,
+  112,
+  120,
+  128,
 ];
 
 export const spacing: {[key: string]: number} = {

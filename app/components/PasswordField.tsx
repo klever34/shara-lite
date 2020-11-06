@@ -1,24 +1,14 @@
-import React, {useState} from 'react';
-import {StyleSheet, TouchableOpacity, View, ViewStyle} from 'react-native';
-import Icon from '../components/Icon';
-import {FloatingLabelInput} from './FloatingLabelInput';
 import {applyStyles, colors} from '@/styles';
+import React, {useState} from 'react';
+import {TouchableOpacity} from 'react-native';
+import Icon from '../components/Icon';
+import {AppInput, AppInputProps} from './AppInput';
 
-export type PasswordFieldProps = {
-  value?: string;
-  isInvalid?: boolean;
-  placeholder?: string;
-  errorMessage?: string;
-  containerStyle?: ViewStyle;
-  onChangeText(text: string): void;
-};
-
-export const PasswordField = (props: PasswordFieldProps) => {
+export const PasswordField = (props: AppInputProps) => {
   const {
-    value: initialValue = '',
     onChangeText,
-    placeholder = 'Password',
-    containerStyle,
+    value: initialValue = '',
+    label = 'Password',
     ...rest
   } = props;
   const [secure, setSecure] = React.useState(true);
@@ -29,56 +19,32 @@ export const PasswordField = (props: PasswordFieldProps) => {
   const [value, setValue] = useState(initialValue);
 
   return (
-    <View style={applyStyles(styles.container, containerStyle)}>
-      <View style={styles.inputFieldContainer}>
-        <FloatingLabelInput
-          value={value}
-          autoCapitalize="none"
-          secureTextEntry={secure}
-          label={placeholder}
-          style={styles.inputField}
-          placeholderTextColor={colors['gray-50']}
-          onChangeText={(text) => {
-            onChangeText(text);
-            setValue(text);
-          }}
-          {...rest}
-        />
-      </View>
-      <View style={styles.toggleButtonContainer}>
-        <TouchableOpacity style={styles.toggleButton} onPress={toggleSecure}>
-          <View style={applyStyles('px-md items-center justify-center')}>
-            <Icon
-              size={24}
-              type="octicons"
-              color="#a8a8a8"
-              name={secure ? 'eye' : 'eye-closed'}
-            />
-          </View>
+    <AppInput
+      value={value}
+      label={label}
+      autoCapitalize="none"
+      secureTextEntry={secure}
+      placeholder="**************"
+      placeholderTextColor={colors['gray-50']}
+      onChangeText={(text) => {
+        onChangeText && onChangeText(text);
+        setValue(text);
+      }}
+      rightIcon={
+        <TouchableOpacity
+          style={applyStyles({
+            height: 45,
+          })}
+          onPress={toggleSecure}>
+          <Icon
+            size={24}
+            type="octicons"
+            color="#a8a8a8"
+            name={secure ? 'eye' : 'eye-closed'}
+          />
         </TouchableOpacity>
-      </View>
-    </View>
+      }
+      {...rest}
+    />
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'relative',
-  },
-  inputFieldContainer: {},
-  inputField: {
-    fontSize: 18,
-    width: '100%',
-    borderBottomWidth: 1,
-    fontFamily: 'Rubik-Regular',
-    borderColor: colors['gray-200'],
-  },
-  toggleButtonContainer: {
-    top: 32,
-    right: 8,
-    position: 'absolute',
-  },
-  toggleButton: {
-    height: 45,
-  },
-});

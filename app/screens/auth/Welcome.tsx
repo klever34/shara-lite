@@ -9,7 +9,7 @@ export const Welcome = () => {
     <View style={styles.container}>
       <View style={styles.textSection}>
         <Text style={styles.headingText}>Shara</Text>
-        <Text style={styles.bodyText}>Connect. Share. Transact.</Text>
+        <Text style={styles.bodyText}>the last ledger you'll ever need</Text>
       </View>
       <View style={styles.buttonSection}>
         <TouchableHighlight

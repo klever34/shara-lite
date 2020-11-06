@@ -35,6 +35,11 @@ export type Requester = {
   ) => Promise<void>;
 };
 
+export type UserProfileFormPayload = Pick<
+  User,
+  'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+>;
+
 export interface IApiService {
   requester: Requester;
 
@@ -436,12 +441,7 @@ export class ApiService implements IApiService {
       throw error;
     }
   }
-  async userProfileUpdate(
-    payload: Pick<
-      User,
-      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
-    >,
-  ) {
+  async userProfileUpdate(payload: UserProfileFormPayload) {
     try {
       const fetchResponse = await this.requester.patch('/users/me', payload);
       const {

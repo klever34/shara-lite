@@ -1,5 +1,5 @@
 import React, {useCallback, useContext, useLayoutEffect, useMemo} from 'react';
-import {Text, View, Image, ScrollView} from 'react-native';
+import {Text, View, Image, ScrollView, Alert} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {
   HeaderBackButton,
@@ -21,7 +21,6 @@ export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
     MainStackParamList & MoreStackParamList
   >();
-  const user = getAuthService().getUser();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: applyStyles('border-b-1', {
@@ -87,19 +86,24 @@ export const MoreOptionsScreen = () => {
         },
       },
       {
-        title: 'Reminder Settings',
-        icon: 'users',
-        onPress: () => {},
-      },
-      {
         title: 'App Lock',
         icon: 'users',
-        onPress: () => {},
+        onPress: () => {
+          Alert.alert(
+            'Coming Soon',
+            'This feature is coming in the next update',
+          );
+        },
       },
       {
         title: 'Help & Support',
         icon: 'users',
-        onPress: () => {},
+        onPress: () => {
+          Alert.alert(
+            'Coming Soon',
+            'This feature is coming in the next update',
+          );
+        },
       },
     ];
   }, [navigation, onEditBusinessSettings]);
@@ -121,38 +125,74 @@ export const MoreOptionsScreen = () => {
       handleError(e);
     }
   }, [handleError, navigation, logoutFromRealm]);
-
+  const business = getAuthService().getBusinessInfo();
   return (
     <ScrollView>
       <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
-        {user && (
-          <View style={applyStyles('p-16 flex-row items-center')}>
+        {(!business.name || !business.address) && (
+          <Touchable onPress={onEditBusinessSettings}>
+            <View
+              style={applyStyles('my-lg mx-lg py-sm', {
+                fontSize: 14,
+                borderRadius: 8,
+                backgroundColor: colors['red-50'],
+              })}>
+              <Text
+                style={applyStyles('text-500 text-center', {
+                  color: colors['red-200'],
+                })}>
+                Tap here to complete your Business Settings
+              </Text>
+            </View>
+          </Touchable>
+        )}
+        {!!business.name && (
+          <View
+            style={applyStyles(
+              'p-16 flex-row items-center border-t-1 border-gray-20',
+            )}>
             <View style={applyStyles('w-80 h-80')}>
-              <Image
-                style={applyStyles('w-full h-full')}
-                source={{
-                  uri: 'https://reactnative.dev/img/tiny_logo.png',
-                }}
-              />
+              {business.profile_image ? (
+                <Image
+                  style={applyStyles('w-full h-full rounded-lg')}
+                  source={{
+                    uri: business.profile_image.url,
+                  }}
+                />
+              ) : (
+                <View
+                  style={applyStyles(
+                    'center w-full h-full border-4 rounded-lg border-gray-20',
+                  )}>
+                  <Icon
+                    type="feathericons"
+                    name="user"
+                    color={colors['gray-50']}
+                    size={24}
+                  />
+                </View>
+              )}
             </View>
             <View style={applyStyles('flex-1 px-12')}>
               <Text
                 style={applyStyles(
                   'text-700 uppercase text-sm leading-16 text-gray-300 mb-4',
                 )}>
-                {user.businesses[0].name}
+                {business.name}
               </Text>
-              <Text
-                style={applyStyles('text-400 text-sm leading-16 mb-4', {
-                  color: colors['gray-300'],
-                })}>
-                {user.mobile}
-              </Text>
+              {!!business.mobile && (
+                <Text
+                  style={applyStyles('text-400 text-sm leading-16 mb-4', {
+                    color: colors['gray-300'],
+                  })}>
+                  {`+${business.country_code}${business.mobile}`}
+                </Text>
+              )}
               <Text
                 style={applyStyles('text-400 text-xs leading-16 uppercase', {
                   color: colors['gray-100'],
                 })}>
-                ID: {user.id}
+                ID: {business.id}
               </Text>
             </View>
             <HeaderBackButton
