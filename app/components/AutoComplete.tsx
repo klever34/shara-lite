@@ -59,9 +59,10 @@ export function AutoComplete<T>({
   textInputProps,
   noResultsAction,
 }: AutoCompleteProps<T>) {
-  const [query, setQuery] = useState<string>(value || '');
   const [focus, setFocus] = useState(false);
+  const [query, setQuery] = useState<string>(value || '');
   const [listItems, setListItems] = useState(items || []);
+  const [inputBgStyle, setInputBgStyle] = useState({} as ViewStyle);
 
   const handleItemSelect = useCallback(
     (item) => {
@@ -74,9 +75,25 @@ export function AutoComplete<T>({
     [onItemSelect],
   );
 
-  const handleInputFocus = useCallback(() => {
-    setListItems(items);
-  }, [items]);
+  const handleInputFocus = useCallback(
+    (e) => {
+      textInputProps?.onFocus && textInputProps?.onFocus(e);
+      setInputBgStyle({
+        borderWidth: 1.5,
+        borderColor: colors['red-50'],
+      });
+      setListItems(items);
+    },
+    [items, textInputProps],
+  );
+
+  const handleInputBlur = useCallback(
+    (e) => {
+      textInputProps?.onBlur && textInputProps?.onBlur(e);
+      setInputBgStyle({});
+    },
+    [textInputProps],
+  );
 
   const handleNoResultsAction = useCallback(
     (result: string) => {
@@ -193,12 +210,13 @@ export function AutoComplete<T>({
             />
           )}
           <TextInput
+            {...textInputProps}
             value={query}
+            onBlur={handleInputBlur}
             onFocus={handleInputFocus}
             onChangeText={handleChangeText}
             placeholderTextColor={colors['gray-50']}
-            style={applyStyles('text-500', style, inputStyle)}
-            {...textInputProps}
+            style={applyStyles('text-500', inputBgStyle, style, inputStyle)}
           />
           {rightIcon && (
             <Icon
@@ -220,6 +238,8 @@ export function AutoComplete<T>({
     handleChangeText,
     inputStyle,
     textInputProps,
+    handleInputBlur,
+    inputBgStyle,
   ]);
 
   useEffect(() => {

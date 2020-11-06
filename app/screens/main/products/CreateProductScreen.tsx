@@ -57,6 +57,7 @@ export const CreateProductScreen = (props: Props) => {
     setPrice(0);
     setQuantity('');
     setItemToEdit(null);
+    Keyboard.dismiss();
   }, []);
 
   const handleGoBack = useCallback(() => {
@@ -113,12 +114,13 @@ export const CreateProductScreen = (props: Props) => {
           itemToEdit &&
           product._id?.toString() === itemToEdit?._id?.toString()
         ) {
-          return {...itemToEdit, price, quantity: parseFloat(quantity)};
+          return {...itemToEdit, name, price, quantity: parseFloat(quantity)};
         }
         return product;
       }),
     );
-  }, [itemToEdit, price, products, quantity]);
+    handleClearState();
+  }, [itemToEdit, price, products, name, quantity, handleClearState]);
 
   const handleRemoveProduct = useCallback(() => {
     setProducts(
@@ -126,7 +128,8 @@ export const CreateProductScreen = (props: Props) => {
         (product) => product._id?.toString() !== itemToEdit?._id?.toString(),
       ),
     );
-  }, [products, itemToEdit]);
+    handleClearState();
+  }, [products, itemToEdit, handleClearState]);
 
   const handleAddProduct = useCallback(() => {
     const priceCondition = price || price === 0 ? true : false;
@@ -143,9 +146,12 @@ export const CreateProductScreen = (props: Props) => {
 
       Keyboard.dismiss();
       handleClearState();
-      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
+        ToastAndroid.LONG,
+      );
     } else {
-      Alert.alert('Info', 'Please add product name, price & quantity');
+      Alert.alert('Info', 'Please add product/service name, price & quantity');
     }
   }, [price, quantity, name, products, handleClearState]);
 
@@ -168,13 +174,19 @@ export const CreateProductScreen = (props: Props) => {
       Keyboard.dismiss();
       handleClearState();
 
-      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
+        ToastAndroid.LONG,
+      );
 
       handleAddProducts([product, ...products]);
     } else if (items.length) {
       handleAddProducts(products);
     } else {
-      Alert.alert('Info', 'Please add at least one product item with quantity');
+      Alert.alert(
+        'Info',
+        'Please add at least one product/service item with quantity',
+      );
     }
   }, [
     products,
@@ -206,95 +218,116 @@ export const CreateProductScreen = (props: Props) => {
         iconRight={{iconName: 'x', onPress: handleGoBack}}
       />
       <View style={applyStyles('flex-1')}>
-        <View style={applyStyles('bg-gray-10 px-16 py-32')}>
-          <View style={applyStyles('pb-16')}>
-            <AppInput
-              value={name}
-              style={applyStyles('bg-white', {
-                borderWidth: 0,
-              })}
-              label="Product / service name"
-              onChangeText={handleNameChange}
-              placeholder="Enter product/service name here"
-            />
-          </View>
-          <View
-            style={applyStyles('pb-16 flex-row items-center justify-between')}>
-            <View style={applyStyles({width: '48%'})}>
-              <CurrencyInput
-                placeholder="0.00"
-                label="Unit Price"
-                value={price?.toString()}
-                style={applyStyles('bg-white', {
-                  borderWidth: 0,
-                })}
-                onChange={(text) => handlePriceChange(text)}
-              />
-            </View>
-            <View style={applyStyles({width: '48%'})}>
-              <AppInput
-                placeholder="0"
-                value={quantity}
-                label="Quantity"
-                keyboardType="numeric"
-                style={applyStyles('bg-white', {
-                  borderWidth: 0,
-                })}
-                onChangeText={handleQuantityChange}
-              />
-            </View>
-          </View>
-          {itemToEdit ? (
-            <View
-              style={applyStyles(
-                'flex-row items-center py-12 px-16 bg-white justify-between',
-              )}>
-              <Button
-                title="Delete"
-                variantColor="clear"
-                onPress={handleRemoveProduct}
-                style={applyStyles({
-                  width: '48%',
-                })}
-              />
-              <Button
-                title="Save"
-                variantColor="red"
-                onPress={handleUpdateProduct}
-                style={applyStyles({
-                  width: '48%',
-                })}
-              />
-            </View>
-          ) : (
-            <Button
-              variantColor="clear"
-              title="Add New Product"
-              onPress={handleAddProduct}
-            />
-          )}
-        </View>
         <FlatList
-          data={products}
+          data={[]}
           persistentScrollbar
-          style={applyStyles('bg-white')}
-          renderItem={renderReceiptItem}
+          renderItem={undefined}
           keyboardShouldPersistTaps="always"
           ListHeaderComponent={
-            products.length ? <ReceiptTableHeader type="product" /> : undefined
-          }
-          keyExtractor={(item, index) => `${item?.name?.toString()}-${index}`}
-          ListEmptyComponent={
-            <View style={applyStyles('py-96 center mx-auto')}>
-              <Text
-                style={applyStyles(
-                  'text-700 text-center text-gray-200 text-uppercase',
-                )}>
-                There are no items to add
-              </Text>
-            </View>
+            <>
+              <View style={applyStyles('bg-gray-10 px-16 py-32')}>
+                <View style={applyStyles('pb-16')}>
+                  <AppInput
+                    value={name}
+                    style={applyStyles('bg-white')}
+                    label="Product / service name"
+                    onChangeText={handleNameChange}
+                    placeholder="Enter product/service name here"
+                  />
+                </View>
+                <View
+                  style={applyStyles(
+                    'pb-16 flex-row items-center justify-between',
+                  )}>
+                  <View style={applyStyles({width: '48%'})}>
+                    <CurrencyInput
+                      placeholder="0.00"
+                      label="Unit Price"
+                      value={price?.toString()}
+                      style={applyStyles('bg-white')}
+                      onChange={(text) => handlePriceChange(text)}
+                    />
+                  </View>
+                  <View style={applyStyles({width: '48%'})}>
+                    <AppInput
+                      placeholder="0"
+                      value={quantity}
+                      label="Quantity"
+                      keyboardType="numeric"
+                      style={applyStyles('bg-white')}
+                      onChangeText={handleQuantityChange}
+                    />
+                  </View>
+                </View>
+                {itemToEdit ? (
+                  <View
+                    style={applyStyles(
+                      'flex-row items-center justify-between',
+                    )}>
+                    <Button
+                      title="Delete"
+                      variantColor="transparent"
+                      onPress={handleRemoveProduct}
+                      style={applyStyles({
+                        width: '48%',
+                      })}
+                    />
+                    <Button
+                      title="Save"
+                      variantColor="red"
+                      onPress={handleUpdateProduct}
+                      style={applyStyles({
+                        width: '48%',
+                      })}
+                    />
+                  </View>
+                ) : (
+                  <Button
+                    variantColor="clear"
+                    title="Add New Product/Service"
+                    onPress={handleAddProduct}
+                    style={applyStyles({
+                      shadowColor: 'red',
+                      shadowOffset: {
+                        width: 0,
+                        height: 4,
+                      },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 4.65,
+                      elevation: 8,
+                    })}
+                  />
+                )}
+              </View>
+              <FlatList
+                data={products}
+                persistentScrollbar
+                style={applyStyles('bg-white')}
+                renderItem={renderReceiptItem}
+                keyboardShouldPersistTaps="always"
+                ListHeaderComponent={
+                  products.length ? (
+                    <ReceiptTableHeader type="product" />
+                  ) : undefined
+                }
+                keyExtractor={(item, index) =>
+                  `${item?.name?.toString()}-${index}`
+                }
+                ListEmptyComponent={
+                  <View style={applyStyles('py-96 center mx-auto')}>
+                    <Text
+                      style={applyStyles(
+                        'px-48 text-700 text-center text-gray-200 text-uppercase',
+                      )}>
+                      There are no products/services to add
+                    </Text>
+                  </View>
+                }
+              />
+            </>
           }
         />
+
         <StickyFooter>
           <Button
             title="Finish"

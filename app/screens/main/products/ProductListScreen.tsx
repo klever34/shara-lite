@@ -89,7 +89,7 @@ export const ProductListScreen = withModal(() => {
                     type="feathericons"
                     color={colors['gray-300']}
                     name="box"
-                    size={28}
+                    size={22}
                     borderRadius={12}
                   />
                   <Text
@@ -163,7 +163,7 @@ export const ProductListScreen = withModal(() => {
               )}>
               <Button
                 title="Edit"
-                variantColor="clear"
+                variantColor="transparent"
                 style={applyStyles({
                   width: '48%',
                 })}

@@ -63,7 +63,7 @@ export const CurrencyInput = (props: Props) => {
   return (
     <AppInput
       value={value}
-      keyboardType="number-pad"
+      keyboardType="numeric"
       onChangeText={handleChange}
       leftIcon={
         <Text

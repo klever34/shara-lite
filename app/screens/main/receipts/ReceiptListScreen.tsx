@@ -178,7 +178,7 @@ export const ReceiptListScreen = withModal(() => {
                     type="feathericons"
                     color={colors['gray-300']}
                     name="file-text"
-                    size={28}
+                    size={22}
                     borderRadius={12}
                   />
                   <Text

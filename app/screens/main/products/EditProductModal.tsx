@@ -97,7 +97,7 @@ export const EditProductModal = (props: Props) => {
               )}>
               edit
             </Text>
-            <View style={applyStyles('mb-24')}>
+            <View style={applyStyles('mb-16')}>
               <AppInput
                 value={name}
                 label="Product / service"
@@ -105,10 +105,7 @@ export const EditProductModal = (props: Props) => {
                 placeholder="Enter product / service name here"
               />
             </View>
-            <View
-              style={applyStyles(
-                'flex-row items-center mb-24 justify-between',
-              )}>
+            <View style={applyStyles('flex-row items-center justify-between')}>
               <View
                 style={applyStyles({
                   width: '48%',
@@ -135,14 +132,10 @@ export const EditProductModal = (props: Props) => {
         </View>
         <View
           style={applyStyles(
-            'flex-row items-center py-12 px-16 bg-white justify-between',
-            {
-              borderTopWidth: 1,
-              borderTopColor: colors['gray-20'],
-            },
+            'flex-row items-center py-16 px-16 justify-between',
           )}>
           <Button
-            variantColor="clear"
+            variantColor="transparent"
             style={applyStyles({
               width: '48%',
             })}

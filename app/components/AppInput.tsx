@@ -13,7 +13,6 @@ import {Icon} from './Icon';
 
 export type AppInputProps = {
   label?: string;
-  style?: ViewStyle;
   isInvalid?: boolean;
   errorMessage?: string;
   containerStyle?: ViewStyle;
@@ -34,9 +33,11 @@ export const AppInput = (props: AppInputProps) => {
     containerStyle,
     ...rest
   } = props;
-  let [bgStyle, setBgStyle] = useState({
+  const [bgStyle, setBgStyle] = useState({
+    borderWidth: 1.5,
     backgroundColor: colors['gray-10'],
-  });
+  } as ViewStyle);
+
   const withLeftIconStyle = leftIcon
     ? applyStyles('pl-56')
     : applyStyles('pl-16');
@@ -47,6 +48,8 @@ export const AppInput = (props: AppInputProps) => {
   const handleFocus = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setBgStyle({
+        borderWidth: 1.5,
+        borderColor: colors['red-50'],
         backgroundColor: colors.white,
       });
       onFocus && onFocus(e);

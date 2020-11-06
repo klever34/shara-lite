@@ -199,9 +199,12 @@ export const CreateReceipt = (props: Props) => {
       setQuantity('');
       setSearchQuery('');
       setSelectedProduct(null);
-      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
+        ToastAndroid.LONG,
+      );
     } else {
-      Alert.alert('Info', 'Please add product quantity');
+      Alert.alert('Info', 'Please add product/service quantity');
     }
   }, [
     price,
@@ -254,7 +257,10 @@ export const CreateReceipt = (props: Props) => {
       setSearchQuery('');
       setSelectedProduct(null);
 
-      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
+        ToastAndroid.LONG,
+      );
 
       navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {
@@ -264,7 +270,7 @@ export const CreateReceipt = (props: Props) => {
     } else {
       Alert.alert(
         'Info',
-        'Please select at least one product item with quantity',
+        'Please select at least one product/service item with quantity',
       );
     }
   }, [
@@ -327,78 +333,95 @@ export const CreateReceipt = (props: Props) => {
 
   return (
     <View style={applyStyles('flex-1')}>
-      <View style={applyStyles('bg-gray-10 px-16 py-32')}>
-        <View style={applyStyles('pb-16')}>
-          <AutoComplete<IProduct>
-            rightIcon="box"
-            items={products}
-            value={searchQuery}
-            label="Product / Service"
-            setFilter={handleProductSearch}
-            onItemSelect={handleSelectProduct}
-            renderItem={renderSearchDropdownItem}
-            onChangeText={handleChangeSearchQuery}
-            noResultsAction={() => setIsNewProduct(true)}
-            textInputProps={{
-              placeholder: 'Search or enter product/service here',
-            }}
-          />
-        </View>
-        <View
-          style={applyStyles('pb-16 flex-row items-center justify-between')}>
-          <View style={applyStyles({width: '48%'})}>
-            <CurrencyInput
-              placeholder="0.00"
-              label="Unit Price"
-              value={price?.toString()}
-              style={applyStyles('bg-white', {
-                borderWidth: 0,
-              })}
-              onChange={(text) => handlePriceChange(text)}
-            />
-          </View>
-          <View style={applyStyles({width: '48%'})}>
-            <AppInput
-              placeholder="0"
-              value={quantity}
-              label="Quantity"
-              keyboardType="numeric"
-              style={applyStyles('bg-white', {
-                borderWidth: 0,
-              })}
-              onChangeText={handleQuantityChange}
-            />
-          </View>
-        </View>
-        <Button
-          variantColor="clear"
-          title="Add to Receipt"
-          onPress={handleAddReceiptItem}
-        />
-      </View>
       <FlatList
-        data={receiptItems}
+        data={[]}
         persistentScrollbar
-        style={applyStyles('bg-white')}
-        renderItem={renderReceiptItem}
+        renderItem={undefined}
         keyboardShouldPersistTaps="always"
         ListHeaderComponent={
-          receiptItems.length ? <ReceiptTableHeader /> : undefined
-        }
-        keyExtractor={(item) => `${item?.product._id?.toString()}`}
-        ListEmptyComponent={
-          <View style={applyStyles('py-96 center mx-auto')}>
-            <Text
-              style={applyStyles(
-                'text-700 text-center text-gray-200 text-uppercase',
-              )}>
-              There are no items in this receipt
-            </Text>
-          </View>
+          <>
+            <View style={applyStyles('bg-gray-10 px-16 py-32')}>
+              <View style={applyStyles('pb-16')}>
+                <AutoComplete<IProduct>
+                  rightIcon="box"
+                  items={products}
+                  value={searchQuery}
+                  label="Product / Service"
+                  setFilter={handleProductSearch}
+                  onItemSelect={handleSelectProduct}
+                  renderItem={renderSearchDropdownItem}
+                  onChangeText={handleChangeSearchQuery}
+                  noResultsAction={() => setIsNewProduct(true)}
+                  textInputProps={{
+                    placeholder: 'Search or enter product/service here',
+                  }}
+                />
+              </View>
+              <View
+                style={applyStyles(
+                  'pb-16 flex-row items-center justify-between',
+                )}>
+                <View style={applyStyles({width: '48%'})}>
+                  <CurrencyInput
+                    placeholder="0.00"
+                    label="Unit Price"
+                    value={price?.toString()}
+                    style={applyStyles('bg-white')}
+                    onChange={(text) => handlePriceChange(text)}
+                  />
+                </View>
+                <View style={applyStyles({width: '48%'})}>
+                  <AppInput
+                    placeholder="0"
+                    value={quantity}
+                    label="Quantity"
+                    keyboardType="numeric"
+                    style={applyStyles('bg-white')}
+                    onChangeText={handleQuantityChange}
+                  />
+                </View>
+              </View>
+              <Button
+                variantColor="clear"
+                title="Add to Receipt"
+                onPress={handleAddReceiptItem}
+                style={applyStyles({
+                  shadowColor: 'red',
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 4.65,
+                  elevation: 8,
+                })}
+              />
+            </View>
+            <FlatList
+              data={receiptItems}
+              style={applyStyles('bg-white')}
+              renderItem={renderReceiptItem}
+              ListHeaderComponent={
+                receiptItems.length ? <ReceiptTableHeader /> : undefined
+              }
+              keyExtractor={(item) => `${item?.product._id?.toString()}`}
+              ListEmptyComponent={
+                <View style={applyStyles('py-96 center mx-auto')}>
+                  <Text
+                    style={applyStyles(
+                      'px-48 text-700 text-center text-gray-200 text-uppercase',
+                    )}>
+                    There are no products/services in this receipt
+                  </Text>
+                </View>
+              }
+            />
+          </>
         }
       />
+
       <View
-        style={applyStyles('p-16 items-end bg-white w-full', {
+        style={applyStyles('px-16 items-end bg-white w-full', {
           elevation: 10,
           borderBottomWidth: 1,
           shadowRadius: 6.27,
