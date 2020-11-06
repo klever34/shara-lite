@@ -7,7 +7,6 @@ import {IReceipt} from '@/models/Receipt';
 import {getBaseModelValues} from '@/helpers/models';
 import {ICredit, modelName} from '@/models/Credit';
 import {getAnalyticsService, getAuthService} from '@/services';
-import {useCreditPayment} from '@/services/credit-payment';
 import perf from '@react-native-firebase/perf';
 
 interface saveCreditInterface {
@@ -35,7 +34,7 @@ interface useCreditInterface {
 
 export const useCredit = (): useCreditInterface => {
   const realm = useRealm();
-  const {deleteCreditPayment} = useCreditPayment();
+  // const {deleteCreditPayment} = useCreditPayment();
 
   const getCredits = (): ICredit[] => {
     return (realm
@@ -102,8 +101,8 @@ export const useCredit = (): useCreditInterface => {
       updates: {is_deleted: true},
     });
 
-    await BluebirdPromise.each(credit.payments || [], async (creditPayment) => {
-      await deleteCreditPayment({creditPayment});
+    await BluebirdPromise.each(credit.payments || [], async () => {
+      // await deleteCreditPayment({creditPayment});
     });
   };
 
