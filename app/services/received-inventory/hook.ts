@@ -11,6 +11,7 @@ import {getAnalyticsService, getGeolocationService} from '@/services';
 import {convertToLocationString} from '@/services/geolocation';
 import {useDeliveryAgent} from '@/services/delivery-agent';
 import {useStockItem} from '@/services/stock-item';
+import perf from '@react-native-firebase/perf';
 
 interface addNewInventoryInterface {
   delivery_agent?: IDeliveryAgent;
@@ -68,6 +69,7 @@ export const useReceivedInventory = (): useReceivedInventoryInterface => {
       receivedInventory.delivery_agent_mobile = savedDeliveryAgent.mobile;
     }
 
+    const trace = await perf().startTrace('saveReceivedInventory');
     realm.write(() => {
       realm.create<IReceivedInventory>(
         modelName,
@@ -75,6 +77,8 @@ export const useReceivedInventory = (): useReceivedInventoryInterface => {
         UpdateMode.Modified,
       );
     });
+    await trace.stop();
+
     getGeolocationService()
       .getCurrentPosition()
       .then((location) => {

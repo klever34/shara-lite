@@ -19,6 +19,7 @@ import {useProduct} from '@/services/product';
 import {usePayment} from '@/services/payment';
 import {useCredit} from '@/services/credit';
 import {useCreditPayment} from '@/services/credit-payment';
+import perf from '@react-native-firebase/perf';
 
 interface saveReceiptInterface {
   note?: string;
@@ -122,9 +123,11 @@ export const useReceipt = (): useReceiptInterface => {
     //@ts-ignore
     receipt.customer = receiptCustomer as ICustomer;
 
+    const trace = await perf().startTrace('saveReceipt');
     realm.write(() => {
       realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
     });
+    await trace.stop();
 
     await BluebirdPromise.each(
       receiptItems,
@@ -200,9 +203,11 @@ export const useReceipt = (): useReceiptInterface => {
       updated_at: new Date(),
     };
 
+    const trace = await perf().startTrace('updateReceipt');
     realm.write(() => {
       realm.create(modelName, updatedReceipt, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   const updateReceipt = async ({

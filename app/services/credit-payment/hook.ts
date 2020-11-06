@@ -11,6 +11,7 @@ import {IPayment} from '@/models/Payment';
 import {useCustomer} from '@/services/customer/hook';
 import {useCredit} from '@/services/credit';
 import {usePayment} from '@/services/payment';
+import perf from '@react-native-firebase/perf';
 
 interface saveCreditPaymentInterface {
   customer: ICustomer;
@@ -106,6 +107,7 @@ export const useCreditPayment = (): useCreditPayment => {
         ...getBaseModelValues(),
       };
 
+      const trace = await perf().startTrace('saveCreditPayment');
       realm.write(() => {
         realm.create<ICreditPayment>(
           modelName,
@@ -113,6 +115,7 @@ export const useCreditPayment = (): useCreditPayment => {
           UpdateMode.Modified,
         );
       });
+      await trace.stop();
 
       amountLeft = amountLeftFromDeduction <= 0 ? 0 : amountLeftFromDeduction;
       getAnalyticsService()
@@ -153,9 +156,11 @@ export const useCreditPayment = (): useCreditPayment => {
       updated_at: new Date(),
     };
 
+    const trace = await perf().startTrace('updateCreditPayment');
     realm.write(() => {
       realm.create(modelName, updatedCreditPayment, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   const deleteCreditPayment = async ({

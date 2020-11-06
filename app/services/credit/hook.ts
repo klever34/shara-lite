@@ -8,6 +8,7 @@ import {getBaseModelValues} from '@/helpers/models';
 import {ICredit, modelName} from '@/models/Credit';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {useCreditPayment} from '@/services/credit-payment';
+import perf from '@react-native-firebase/perf';
 
 interface saveCreditInterface {
   dueDate?: Date;
@@ -66,9 +67,11 @@ export const useCredit = (): useCreditInterface => {
       credit.customer = customer as ICustomer;
     }
 
+    const trace = await perf().startTrace('saveCredit');
     realm.write(() => {
       realm.create<ICredit>(modelName, credit, UpdateMode.Modified);
     });
+    await trace.stop();
 
     getAnalyticsService()
       .logEvent('creditAdded', {
@@ -86,9 +89,11 @@ export const useCredit = (): useCreditInterface => {
       updated_at: new Date(),
     };
 
+    const trace = await perf().startTrace('updateCredit');
     realm.write(() => {
       realm.create(modelName, updatedCredit, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   const deleteCredit = async ({credit}: deleteCreditInterface) => {

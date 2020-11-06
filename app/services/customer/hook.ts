@@ -5,6 +5,7 @@ import {useRealm} from '@/services/realm';
 import {ICustomer, modelName} from '@/models';
 import {getBaseModelValues} from '@/helpers/models';
 import {getAnalyticsService} from '@/services';
+import perf from '@react-native-firebase/perf';
 
 interface saveCustomerInterface {
   customer: ICustomer;
@@ -46,9 +47,11 @@ export const useCustomer = (): useCustomerInterface => {
       return existingCustomer;
     }
 
+    const trace = await perf().startTrace('saveCustomer');
     realm.write(() => {
       realm.create<ICustomer>(modelName, customerDetails, UpdateMode.Modified);
     });
+    await trace.stop();
 
     getAnalyticsService()
       .logEvent('customerAdded')

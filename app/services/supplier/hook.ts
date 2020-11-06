@@ -4,6 +4,7 @@ import {useRealm} from '@/services/realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {ISupplier, modelName} from '@/models/Supplier';
 import {getAnalyticsService} from '@/services';
+import perf from '@react-native-firebase/perf';
 
 interface saveSupplierInterface {
   supplier: ISupplier;
@@ -53,9 +54,11 @@ export const useSupplier = (): useSupplierInterface => {
       return existingSupplier;
     }
 
+    const trace = await perf().startTrace('saveSupplier');
     realm.write(() => {
       realm.create<ISupplier>(modelName, supplierDetails, UpdateMode.Modified);
     });
+    await trace.stop();
 
     getAnalyticsService()
       .logEvent('supplierAdded')

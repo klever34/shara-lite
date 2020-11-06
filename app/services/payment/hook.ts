@@ -5,6 +5,7 @@ import {Customer} from 'types/app';
 import {IReceipt} from '@/models/Receipt';
 import {getBaseModelValues} from '@/helpers/models';
 import {IPayment, modelName} from '@/models/Payment';
+import perf from '@react-native-firebase/perf';
 
 interface savePaymentInterface {
   customer: ICustomer | Customer;
@@ -66,9 +67,11 @@ export const usePayment = (): usePaymentInterface => {
       payment.customer = customer as ICustomer;
     }
 
+    const trace = await perf().startTrace('savePayment');
     realm.write(() => {
       realm.create<IPayment>(modelName, payment, UpdateMode.Modified);
     });
+    await trace.stop();
 
     return payment;
   };
@@ -79,9 +82,12 @@ export const usePayment = (): usePaymentInterface => {
       ...updates,
       updated_at: new Date(),
     };
+
+    const trace = await perf().startTrace('updatePayment');
     realm.write(() => {
       realm.create(modelName, updatedPayment, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   const deletePayment = async ({payment}: deletePaymentInterface) => {

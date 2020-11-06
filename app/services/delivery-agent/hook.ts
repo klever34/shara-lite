@@ -4,6 +4,7 @@ import {useRealm} from '@/services/realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {IDeliveryAgent, modelName} from '@/models/DeliveryAgent';
 import {getAnalyticsService} from '@/services';
+import perf from '@react-native-firebase/perf';
 
 interface saveDeliveryAgentInterface {
   delivery_agent: IDeliveryAgent;
@@ -69,6 +70,7 @@ export const useDeliveryAgent = (): useDeliveryAgentInterface => {
       return existingDeliveryAgent;
     }
 
+    const trace = await perf().startTrace('saveDeliveryAgent');
     realm.write(() => {
       realm.create<IDeliveryAgent>(
         modelName,
@@ -76,6 +78,7 @@ export const useDeliveryAgent = (): useDeliveryAgentInterface => {
         UpdateMode.Modified,
       );
     });
+    await trace.stop();
 
     getAnalyticsService()
       .logEvent('deliveryAgentAdded')
@@ -94,9 +97,11 @@ export const useDeliveryAgent = (): useDeliveryAgentInterface => {
       updated_at: new Date(),
     };
 
+    const trace = await perf().startTrace('updateDeliveryAgent');
     realm.write(() => {
       realm.create(modelName, updatedDeliveryAgent, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   const getDeliveryAgent = ({

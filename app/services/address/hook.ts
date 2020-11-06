@@ -1,6 +1,7 @@
 import {UpdateMode} from 'realm';
 import {useRealm} from '@/services/realm';
 import {IAddress} from '@/models/Address';
+import perf from '@react-native-firebase/perf';
 
 interface saveAddressInterface {
   address: IAddress;
@@ -18,9 +19,12 @@ export const useAddress = (): useAddressInterface => {
     if (!address._id) {
       return;
     }
+
+    const trace = await perf().startTrace('saveAddress');
     realm.write(() => {
       realm.create('Address', address, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   return {

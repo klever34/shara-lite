@@ -3,6 +3,7 @@ import {useRealm} from '@/services/realm';
 import {IReceipt} from '@/models/Receipt';
 import {getBaseModelValues} from '@/helpers/models';
 import {IReceiptItem, modelName} from '@/models/ReceiptItem';
+import perf from '@react-native-firebase/perf';
 
 interface saveReceiptItemInterface {
   receipt: IReceipt;
@@ -44,6 +45,7 @@ export const useReceiptItem = (): useReceiptItemInterface => {
       ...getBaseModelValues(),
     };
 
+    const trace = await perf().startTrace('saveReceiptItem');
     realm.write(() => {
       realm.create<IReceiptItem>(
         modelName,
@@ -51,6 +53,7 @@ export const useReceiptItem = (): useReceiptItemInterface => {
         UpdateMode.Modified,
       );
     });
+    await trace.stop();
   };
 
   const updateReceiptItem = async ({
@@ -63,9 +66,11 @@ export const useReceiptItem = (): useReceiptItemInterface => {
       updated_at: new Date(),
     };
 
+    const trace = await perf().startTrace('updateReceiptItem');
     realm.write(() => {
       realm.create(modelName, updatedReceiptItem, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   const deleteReceiptItem = async ({

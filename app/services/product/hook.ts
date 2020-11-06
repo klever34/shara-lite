@@ -2,6 +2,7 @@ import {UpdateMode} from 'realm';
 import {useRealm} from '@/services/realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {IProduct, modelName} from '@/models/Product';
+import perf from '@react-native-firebase/perf';
 
 interface saveProductInterface {
   product: IProduct;
@@ -51,9 +52,11 @@ export const useProduct = (): useProductInterface => {
       ...getBaseModelValues(),
     };
 
+    const trace = await perf().startTrace('saveProduct');
     realm.write(() => {
       realm.create<IProduct>(modelName, productToCreate, UpdateMode.Modified);
     });
+    await trace.stop();
 
     return productToCreate;
   };
@@ -65,9 +68,11 @@ export const useProduct = (): useProductInterface => {
       updated_at: new Date(),
     };
 
+    const trace = await perf().startTrace('updateProduct');
     realm.write(() => {
       realm.create(modelName, updatedProduct, UpdateMode.Modified);
     });
+    await trace.stop();
   };
 
   const restockProduct = async ({

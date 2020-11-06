@@ -2,6 +2,7 @@ import {UpdateMode} from 'realm';
 import {useRealm} from '@/services/realm';
 import {IStockItem, modelName} from '@/models/StockItem';
 import {useProduct} from '@/services/product';
+import perf from '@react-native-firebase/perf';
 
 interface addNewStockItemInterface {
   stockItem: IStockItem;
@@ -25,9 +26,11 @@ export const useStockItem = (): useStockItemInterface => {
   const addNewStockItem = async ({
     stockItem,
   }: addNewStockItemInterface): Promise<void> => {
+    const trace = await perf().startTrace('saveStockItem');
     realm.write(() => {
       realm.create<IStockItem>(modelName, stockItem, UpdateMode.Modified);
     });
+    await trace.stop();
 
     await restockProduct({
       product: stockItem.product,
