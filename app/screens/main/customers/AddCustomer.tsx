@@ -1,13 +1,8 @@
 import {ICustomer} from '@/models';
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useRef, useState, useMemo} from 'react';
+import React, {useState, useMemo} from 'react';
 import {Text} from 'react-native';
-import {
-  Button,
-  FormBuilder,
-  FormFields,
-  PhoneNumber,
-} from '../../../components';
+import {FormBuilder, FormFields, PhoneNumber} from '../../../components';
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
 import {useAddCustomer} from '@/services/customer/hooks';
@@ -87,45 +82,32 @@ export const AddCustomer = (props: AddCustomerProps) => {
         props: {
           label: 'Save to Phonebook',
           value: true,
-          disabled: true,
+          disabled: false,
         },
       },
     }),
     [selectedMobile],
   );
 
-  const formValuesRef = useRef<Record<FormFieldName, any>>();
-  const requiredFieldsFilledRef = useRef<boolean>(false);
-
-  const onFormSubmit = useCallback(() => {
-    const values = formValuesRef.current as ICustomer;
-    const requiredFieldsFilled = requiredFieldsFilledRef.current;
-    if (!requiredFieldsFilled) {
-      return;
-    }
-    addCustomer(values).then(() => {
-      onSubmit ? onSubmit(values) : navigation.goBack();
-    });
-  }, [addCustomer, onSubmit, navigation]);
-
-  const footer = <Button title="Add" onPress={onFormSubmit} />;
-
   return (
     <Page
       header={{title: 'Add Customer', iconLeft: {}}}
-      footer={footer}
       style={applyStyles('bg-white')}>
       <FormBuilder
         fields={formFields}
-        onInputChange={(values, required) => {
+        onSubmit={async (values) => {
           const phoneNumber = values.mobile as PhoneNumber;
-          formValuesRef.current = {
+          values = {
             ...values,
             mobile: phoneNumber.number
               ? `+${phoneNumber.callingCode}${phoneNumber.number}`
               : undefined,
           };
-          requiredFieldsFilledRef.current = required;
+          await addCustomer(values);
+          onSubmit ? onSubmit(values) : navigation.goBack();
+        }}
+        submitBtn={{
+          title: 'Add',
         }}
       />
     </Page>

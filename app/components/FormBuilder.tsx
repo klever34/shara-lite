@@ -12,6 +12,7 @@ import {View} from 'react-native';
 import {AppInputProps} from './AppInput';
 import {ImageInput, ImageInputProps} from './ImageInput';
 import {RadioInput, RadioInputProps} from './RadioInput';
+import {usePage} from '@/components/Page';
 
 type FormFieldProps = {
   text: AppInputProps;
@@ -48,6 +49,8 @@ export const FormBuilder = <FieldNames extends keyof any>({
   submitBtn,
   onSubmit,
 }: FormBuilderProps<FieldNames>) => {
+  const {setFooter} = usePage();
+
   const names = useMemo<FieldNames[]>(() => {
     return Object.keys(fields) as FieldNames[];
   }, [fields]);
@@ -104,6 +107,24 @@ export const FormBuilder = <FieldNames extends keyof any>({
     },
     [],
   );
+
+  const button = useMemo(
+    () => (
+      <Button
+        style={applyStyles('w-full')}
+        {...submitBtn}
+        onPress={runHandleSubmitBtnPress}
+        isLoading={loading}
+      />
+    ),
+    [loading, runHandleSubmitBtnPress, submitBtn],
+  );
+
+  useEffect(() => {
+    if (setFooter) {
+      setFooter(button);
+    }
+  }, [button, loading, runHandleSubmitBtnPress, setFooter, submitBtn]);
 
   return (
     <View style={applyStyles('flex-row flex-wrap')}>
@@ -180,14 +201,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
             return null;
         }
       })}
-      {submitBtn && (
-        <Button
-          style={applyStyles('w-full')}
-          {...submitBtn}
-          onPress={runHandleSubmitBtnPress}
-          isLoading={loading}
-        />
-      )}
+      {submitBtn && !setFooter && button}
     </View>
   );
 };
