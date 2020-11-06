@@ -3,8 +3,8 @@ import {getSummary, IFinanceSummary} from '@/services/FinanceService';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import React, {useCallback} from 'react';
-import {Alert, StyleSheet, Text, ToastAndroid, View} from 'react-native';
-import {ActionCard} from '@/components';
+import {Alert, Text, ToastAndroid, View} from 'react-native';
+import {HomeContainer} from '@/components';
 import {useReports} from '@/services/reports';
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
@@ -12,6 +12,7 @@ import {getAnalyticsService} from '@/services';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 import {TitleDivider} from '@/components';
+import {IReceipt} from '@/models/Receipt';
 
 export const ReportsScreen = () => {
   const realm = useRealm();
@@ -64,6 +65,7 @@ export const ReportsScreen = () => {
 
   return (
     <Page
+      style={applyStyles('px-0')}
       header={{title: 'Report', iconLeft: {}}}
       footer={
         <View
@@ -136,94 +138,17 @@ export const ReportsScreen = () => {
           </View>
         </View>
       }>
-      <View style={styles.container}>
-        <View style={applyStyles('mb-lg')}>
-          <ActionCard
-            style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
-            <Text
-              style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
-              My sales
-            </Text>
-            <Text
-              style={applyStyles(styles.cardContent, {color: colors.white})}>
-              {amountWithCurrency(financeSummary.totalSales)}
-            </Text>
-          </ActionCard>
-        </View>
-        <View style={applyStyles('flex-row', 'mb-lg', 'justify-between')}>
-          <ActionCard
-            style={applyStyles(styles.card, {
-              backgroundColor: colors.white,
-              width: '48%',
-            })}>
-            <Text
-              style={applyStyles(styles.cardTitle, {
-                color: colors['gray-100'],
-              })}>
-              Total credit
-            </Text>
-            <Text
-              style={applyStyles(styles.cardContent, {
-                color: colors['gray-300'],
-              })}>
-              {amountWithCurrency(financeSummary.totalCredit)}
-            </Text>
-          </ActionCard>
-          <ActionCard
-            style={applyStyles(styles.card, {
-              backgroundColor: colors.white,
-              width: '48%',
-            })}>
-            <Text
-              style={applyStyles(styles.cardTitle, {
-                color: colors['gray-100'],
-              })}>
-              Overdue credit
-            </Text>
-            <Text
-              style={applyStyles(styles.cardContent, {color: colors.primary})}>
-              {amountWithCurrency(financeSummary.overdueCredit)}
-            </Text>
-          </ActionCard>
-        </View>
-      </View>
+      <HomeContainer<IReceipt>
+        initialNumToRender={10}
+        headerTitle="total sales"
+        headerAmount={amountWithCurrency(financeSummary.totalSales)}
+        searchPlaceholderText="Search"
+        emptyStateProps={{
+          heading: 'Nothing to show',
+          text: 'No result found.',
+          source: undefined,
+        }}
+      />
     </Page>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingVertical: 32,
-    paddingHorizontal: 16,
-    backgroundColor: colors.white,
-  },
-  listItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  listItemIcon: {
-    height: 45,
-    width: 45,
-  },
-  listItemText: {
-    fontSize: 16,
-    paddingRight: 12,
-    color: colors['gray-300'],
-  },
-  card: {
-    padding: 16,
-    paddingTop: 16,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontSize: 12,
-    paddingBottom: 4,
-    fontFamily: 'Rubik-Medium',
-    textTransform: 'uppercase',
-  },
-  cardContent: {
-    fontSize: 16,
-    fontFamily: 'Rubik-Medium',
-  },
-});

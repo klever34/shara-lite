@@ -147,7 +147,12 @@ export const FormBuilder = <FieldNames extends keyof any>({
         }
       })}
       {submitBtn && (
-        <Button {...submitBtn} onPress={onSubmitBtnPress} isLoading={loading} />
+        <Button
+          style={applyStyles('w-full')}
+          {...submitBtn}
+          onPress={onSubmitBtnPress}
+          isLoading={loading}
+        />
       )}
     </View>
   );

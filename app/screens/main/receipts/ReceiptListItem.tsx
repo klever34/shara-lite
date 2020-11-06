@@ -4,7 +4,8 @@ import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {applyStyles, colors} from '@/styles';
-import React from 'react';
+import {format} from 'date-fns';
+import React, {useMemo} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 
 export type ReceiptListItemProps = {
@@ -13,6 +14,8 @@ export type ReceiptListItemProps = {
   receipt?: IReceipt;
   onPress?: () => void;
   leftSection?: {heading?: string; subheading?: string};
+  getReceiptItemLeftText?: (receipt?: IReceipt) => string;
+  getReceiptItemRightText?: (receipt?: IReceipt) => string;
 };
 
 export const ReceiptListItem = ({
@@ -21,6 +24,8 @@ export const ReceiptListItem = ({
   onPress,
   leftSection,
   isHeader = false,
+  getReceiptItemLeftText,
+  getReceiptItemRightText,
 }: ReceiptListItemProps) => {
   const hasCustomer = receipt?.hasCustomer;
   const statusText = receipt?.is_cancelled
@@ -32,6 +37,26 @@ export const ReceiptListItem = ({
     receipt?.isPaid || receipt?.is_cancelled ? 'text-400' : 'text-700';
   const statusTextColor =
     receipt?.isPaid || receipt?.is_cancelled ? 'text-gray-200' : 'text-red-100';
+
+  getReceiptItemLeftText = useMemo(() => {
+    if (!getReceiptItemLeftText) {
+      return (currentReceipt) => {
+        return currentReceipt?.customer?.name ?? 'No Customer';
+      };
+    }
+    return getReceiptItemLeftText;
+  }, [getReceiptItemLeftText]);
+
+  getReceiptItemRightText = useMemo(() => {
+    if (!getReceiptItemRightText) {
+      return (currentReceipt) => {
+        return currentReceipt?.created_at
+          ? format(currentReceipt?.created_at, 'MMM dd yyyy, hh:mmaa')
+          : '';
+      };
+    }
+    return getReceiptItemRightText;
+  }, [getReceiptItemRightText]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
@@ -87,13 +112,13 @@ export const ReceiptListItem = ({
                   style={applyStyles(
                     'pb-4 text-uppercase text-700 text-gray-300',
                   )}>
-                  {leftSection?.heading}
+                  {leftSection?.heading ?? getReceiptItemLeftText(receipt)}
                 </Text>
                 <Text
                   style={applyStyles(
                     'text-uppercase text-400 text-gray-200 text-xs',
                   )}>
-                  {leftSection?.subheading}
+                  {leftSection?.subheading ?? getReceiptItemRightText(receipt)}
                 </Text>
               </View>
             </>

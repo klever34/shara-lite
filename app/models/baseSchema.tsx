@@ -2,7 +2,7 @@ import {ObjectId} from 'bson';
 
 let partitionKey = '';
 
-export interface BaseModelInterface {
+export interface BaseModelInterface extends Partial<Realm.Object> {
   _id?: ObjectId;
   _partition?: string;
   is_deleted?: boolean;
