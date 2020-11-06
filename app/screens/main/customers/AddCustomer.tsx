@@ -54,8 +54,9 @@ export const AddCustomer = (props: AddCustomerProps) => {
     if (!requiredFieldsFilled) {
       return;
     }
-    addCustomer(values);
-    onSubmit ? onSubmit(values) : navigation.goBack();
+    addCustomer(values).then(() => {
+      onSubmit ? onSubmit(values) : navigation.goBack();
+    });
   }, [addCustomer, onSubmit, navigation]);
 
   const footer = <Button title="Add" onPress={onFormSubmit} />;

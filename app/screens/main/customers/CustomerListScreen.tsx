@@ -232,13 +232,13 @@ export const CustomerListScreen = withModal(
       openModal('options', {
         options: [
           {
-            text: 'Add',
+            text: 'Create a new customer',
             onPress: () => {
               navigation.navigate('AddCustomer');
             },
           },
           {
-            text: 'Import',
+            text: 'Add from your phone contacts',
             onPress: () => {
               selectContactPhone().then((selection) => {
                 if (!selection) {

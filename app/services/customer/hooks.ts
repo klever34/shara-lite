@@ -14,6 +14,7 @@ export const useAddCustomer = () => {
           'Info',
           'Customer with the same phone number has been created.',
         );
+        return Promise.reject();
       } else {
         saveCustomer({realm, customer: values});
         ToastAndroid.showWithGravityAndOffset(
@@ -23,6 +24,7 @@ export const useAddCustomer = () => {
           0,
           52,
         );
+        return Promise.resolve();
       }
     },
     [customers, realm],
