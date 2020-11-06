@@ -32,7 +32,10 @@ type FormBuilderProps<
   Fields = FormFields<FieldNames>
 > = {
   fields: Fields;
-  onInputChange?: (values: {[name in keyof Fields]: any}) => void;
+  onInputChange?: (
+    values: {[name in keyof Fields]: any},
+    error: boolean,
+  ) => void;
   submitBtn?: ButtonProps;
   onSubmit?: (values: {[name in keyof Fields]: any}) => Promise<any>;
 };
@@ -58,24 +61,40 @@ export const FormBuilder = <FieldNames extends keyof any>({
       };
     }, {} as FormValues),
   );
+
+  const requiredFieldsFilled = useMemo(() => {
+    return (Object.keys(values) as FieldNames[]).reduce((acc, name) => {
+      return acc && (!fields[name].required || !!values[name]);
+    }, true);
+  }, [fields, values]);
+
+  const handleSubmit = useCallback(
+    (submitFn?: (values: FormValues) => Promise<void>) => {
+      return () => {
+        if (!requiredFieldsFilled) {
+          return Promise.resolve();
+        }
+        return submitFn?.(values) ?? Promise.resolve();
+      };
+    },
+    [requiredFieldsFilled, values],
+  );
+
+  const handleSubmitBtnPress = useCallback(handleSubmit(onSubmit), [
+    onSubmit,
+    values,
+  ]);
+
+  const {loading, run: runHandleSubmitBtnPress} = useAsync(
+    handleSubmitBtnPress,
+    {
+      defer: true,
+    },
+  );
+
   useEffect(() => {
-    onInputChange?.(values);
-  }, [onInputChange, values]);
-  const _onSubmitBtnPress = useCallback(() => {
-    const formComplete = (Object.keys(values) as FieldNames[]).reduce(
-      (acc, name) => {
-        return acc && (!fields[name].required || !!values[name]);
-      },
-      true,
-    );
-    if (!formComplete) {
-      return Promise.resolve();
-    }
-    return onSubmit?.(values) ?? Promise.resolve();
-  }, [fields, onSubmit, values]);
-  const {loading, run: onSubmitBtnPress} = useAsync(_onSubmitBtnPress, {
-    defer: true,
-  });
+    onInputChange?.(values, requiredFieldsFilled);
+  }, [onInputChange, requiredFieldsFilled, values]);
 
   const onChangeValue = useCallback(
     (name) => (value: any) => {
@@ -150,7 +169,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
         <Button
           style={applyStyles('w-full')}
           {...submitBtn}
-          onPress={onSubmitBtnPress}
+          onPress={runHandleSubmitBtnPress}
           isLoading={loading}
         />
       )}

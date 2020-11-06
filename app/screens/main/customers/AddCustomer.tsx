@@ -1,9 +1,6 @@
 import {ICustomer} from '@/models';
-import {getCustomers, saveCustomer} from '@/services/customer/service';
-import {useRealm} from '@/services/realm';
 import {useNavigation} from '@react-navigation/native';
 import React, {useCallback, useRef} from 'react';
-import {Alert, ToastAndroid} from 'react-native';
 import {
   Button,
   FormBuilder,
@@ -12,16 +9,16 @@ import {
 } from '../../../components';
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
+import {useAddCustomer} from '@/services/customer/hooks';
 
-type Props = {
+type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
 };
 
-export const AddCustomer = (props: Props) => {
+export const AddCustomer = (props: AddCustomerProps) => {
   const {onSubmit} = props;
   const navigation = useNavigation();
-  const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
+  const addCustomer = useAddCustomer();
 
   type FormFieldName = 'name' | 'mobile' | 'email';
 
@@ -49,26 +46,17 @@ export const AddCustomer = (props: Props) => {
   };
 
   const formValuesRef = useRef<Record<FormFieldName, any>>();
+  const requiredFieldsFilledRef = useRef<boolean>(false);
 
   const onFormSubmit = useCallback(() => {
     const values = formValuesRef.current as ICustomer;
-    if (customers.filtered('mobile = $0', values.mobile).length) {
-      Alert.alert(
-        'Info',
-        'Customer with the same phone number has been created.',
-      );
-    } else {
-      saveCustomer({realm, customer: values});
-      onSubmit ? onSubmit(values) : navigation.goBack();
-      ToastAndroid.showWithGravityAndOffset(
-        'Customer added',
-        ToastAndroid.SHORT,
-        ToastAndroid.TOP,
-        0,
-        52,
-      );
+    const requiredFieldsFilled = requiredFieldsFilledRef.current;
+    if (!requiredFieldsFilled) {
+      return;
     }
-  }, [navigation, realm, onSubmit, customers]);
+    addCustomer(values);
+    onSubmit ? onSubmit(values) : navigation.goBack();
+  }, [addCustomer, onSubmit, navigation]);
 
   const footer = <Button title="Add" onPress={onFormSubmit} />;
 
@@ -79,12 +67,13 @@ export const AddCustomer = (props: Props) => {
       style={applyStyles('bg-white')}>
       <FormBuilder
         fields={formFields}
-        onInputChange={(values) => {
+        onInputChange={(values, required) => {
           const phoneNumber = values.mobile as PhoneNumber;
           formValuesRef.current = {
             ...values,
             mobile: `+${phoneNumber.callingCode}${phoneNumber.number}`,
           };
+          requiredFieldsFilledRef.current = required;
         }}
       />
     </Page>
