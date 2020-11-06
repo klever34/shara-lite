@@ -27,6 +27,21 @@ export const saveProduct = ({
   return productToCreate;
 };
 
+export const saveProducts = ({
+  realm,
+  products,
+}: {
+  realm: Realm;
+  products: IProduct[];
+}): void => {
+  products.forEach((product: IProduct) => {
+    saveProduct({
+      realm,
+      product,
+    });
+  });
+};
+
 export const updateProduct = ({
   realm,
   product,

@@ -10,7 +10,6 @@ import {
   StickyFooter,
 } from '@/components';
 import Touchable from '@/components/Touchable';
-import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
@@ -38,7 +37,7 @@ type Props = {
   receipt?: IReceipt;
 };
 
-export const CreateReceipt = withModal((props: Props) => {
+export const CreateReceipt = (props: Props) => {
   const {receipt} = props;
 
   const realm = useRealm();
@@ -287,7 +286,9 @@ export const CreateReceipt = withModal((props: Props) => {
       <ReceiptTableItem
         item={item}
         onPress={() => {
-          handleOpenEditReceiptItemModal(item);
+          if ('product' in item) {
+            handleOpenEditReceiptItemModal(item);
+          }
         }}
       />
     ),
@@ -425,4 +426,4 @@ export const CreateReceipt = withModal((props: Props) => {
       />
     </View>
   );
-});
+};

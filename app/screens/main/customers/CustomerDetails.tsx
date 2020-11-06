@@ -9,20 +9,18 @@ import {Icon} from '@/components/Icon';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {CreateReceipt} from '@/screens/main/receipts';
+import {CustomersStackParamList} from '@/screens/main/customers';
 import {getAnalyticsService} from '@/services';
 import {CustomerContext} from '@/services/customer';
 import {useErrorHandler} from '@/services/error-boundary';
 import {getReceiptsTotalAmount} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
 import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
 import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
 import {Text, TextStyle, View} from 'react-native';
 import {StatusFilter} from 'types/app';
-import {CustomersStackParamList} from '@/screens/main/customers';
-import {applyStyles} from '@/styles';
 
 const statusFilters: StatusFilter[] = [
   {label: 'All Sales', value: 'all'},
@@ -72,19 +70,6 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     },
     [],
   );
-
-  const handleOpenModal = useCallback(() => {
-    const closeModal = openModal('full', {
-      animationInTiming: 0.1,
-      animationOutTiming: 0.1,
-      renderContent: () => (
-        <CreateReceipt
-          initialCustomer={customer}
-          closeReceiptModal={closeModal}
-        />
-      ),
-    });
-  }, [customer, openModal]);
 
   const handleError = useErrorHandler();
 
@@ -206,9 +191,9 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     <CustomerContext.Provider value={customer}>
       <ReceiptingContainer
         receipts={filteredReceipts}
+        onCreateReceipt={undefined}
         emptyStateText="You have not created any receipt for this customer"
         getReceiptItemLeftText={getReceiptItemLeftText}
-        onCreateReceipt={handleOpenModal}
         handleListItemSelect={handleListItemSelect}>
         <View
           style={applyStyles('p-md center flex-row justify-between', {
