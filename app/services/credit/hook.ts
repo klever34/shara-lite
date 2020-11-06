@@ -8,7 +8,7 @@ import {getBaseModelValues} from '@/helpers/models';
 import {ICredit, modelName} from '@/models/Credit';
 import {getAnalyticsService, getAuthService} from '@/services';
 import perf from '@react-native-firebase/perf';
-import {useCreditPaymentDelete} from '@/services/credit-payment/delete-hook';
+import {useCreditProxy} from '@/services/credit/credit-proxy-hook';
 
 interface saveCreditInterface {
   dueDate?: Date;
@@ -17,7 +17,7 @@ interface saveCreditInterface {
   creditAmount: number;
 }
 
-interface updateCreditInterface {
+export interface updateCreditInterface {
   credit: ICredit;
   updates: object;
 }
@@ -35,7 +35,7 @@ interface useCreditInterface {
 
 export const useCredit = (): useCreditInterface => {
   const realm = useRealm();
-  const {deleteCreditPayment} = useCreditPaymentDelete();
+  const {deleteCreditPayment} = useCreditProxy();
 
   const getCredits = (): ICredit[] => {
     return (realm
