@@ -137,6 +137,19 @@ export const AddCustomer = (props: AddCustomerProps) => {
         submitBtn={{
           title: 'Add',
         }}
+        onInputChange={(values) => {
+          const phoneNumber = values.mobile as PhoneNumber;
+          const {current: mobileField} = mobileFieldRef;
+          if (mobileField) {
+            if (phoneNumber.number !== selectedMobile?.number) {
+              const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
+              if (saveToPhonebookField?.disabled) {
+                setSelectedMobile(null);
+                saveToPhonebookField?.setDisabled(false);
+              }
+            }
+          }
+        }}
       />
     </Page>
   );

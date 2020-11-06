@@ -10,6 +10,7 @@ import {applyStyles} from '@/styles';
 import {Text, View, ViewStyle} from 'react-native';
 
 export type RadioInputRef = {
+  disabled: boolean;
   setValue: (checked: boolean) => void;
   setDisabled: Dispatch<SetStateAction<boolean>>;
 };
@@ -45,10 +46,11 @@ export const RadioInput = ({
     if (innerRef) {
       innerRef({
         setValue: handleChange,
+        disabled,
         setDisabled,
       });
     }
-  }, [handleChange, innerRef]);
+  }, [disabled, handleChange, innerRef]);
 
   return (
     <View style={applyStyles(' w-full', containerStyle)}>

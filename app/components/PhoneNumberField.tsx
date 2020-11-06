@@ -16,6 +16,7 @@ export type PhoneNumber = {
 };
 
 export type PhoneNumberFieldRef = {
+  phoneNumber: PhoneNumber;
   setPhoneNumber: (phoneNumber: PhoneNumber) => void;
 };
 
@@ -58,13 +59,14 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
   useEffect(() => {
     if (innerRef) {
       innerRef({
+        phoneNumber,
         setPhoneNumber: (nextPhoneNumber) => {
           setPhoneNumber(nextPhoneNumber);
           onChangeText?.(nextPhoneNumber);
         },
       });
     }
-  }, [onChangeText, innerRef]);
+  }, [onChangeText, innerRef, phoneNumber]);
 
   const onSelect = (nextCountry: Country) => {
     const nextCallingCode = nextCountry.callingCode[0];
