@@ -5,8 +5,9 @@ import React, {useCallback} from 'react';
 import {SafeAreaView} from 'react-native';
 import {CreateReceipt} from './CreateReceipt';
 
-export const CreateReceiptScreen = () => {
+export const CreateReceiptScreen = ({route}: any) => {
   const navigation = useAppNavigation();
+  const receipt = route.params.receipt;
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
@@ -18,7 +19,7 @@ export const CreateReceiptScreen = () => {
         title="New Receipt"
         iconRight={{iconName: 'x', onPress: handleGoBack}}
       />
-      <CreateReceipt />
+      <CreateReceipt receipt={receipt} />
     </SafeAreaView>
   );
 };

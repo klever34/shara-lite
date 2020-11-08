@@ -122,6 +122,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
         </>
       ) : (
         <EmptyState
+          headingStyle={applyStyles('px-32')}
           imageStyle={applyStyles({width: 80, height: 80})}
           source={require('@/assets/images/emblem.png')}
           {...emptyStateProps}>

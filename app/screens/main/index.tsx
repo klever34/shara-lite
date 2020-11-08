@@ -1,4 +1,6 @@
 import EmptyState from '@/components/EmptyState';
+import {IProduct} from '@/models/Product';
+import {IReceipt} from '@/models/Receipt';
 import {HomeScreen} from '@/screens/main/HomeScreen';
 import {ReportsScreen} from '@/screens/main/more/reports';
 import {
@@ -24,7 +26,6 @@ import {CreateProductScreen} from './products/CreateProductScreen';
 import {InventoryOtherDetailsScreen} from './products/InventoryOtherDetailsScreen';
 import {CreateReceiptScreen} from './receipts/CreateReceiptScreen';
 import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
-import {IReceipt} from '@/models/Receipt';
 import {AddCustomer} from '@/screens/main/customers';
 import {ICustomer} from '@/models';
 import CustomerDetails from '@/screens/main/customers/CustomerDetails';
@@ -47,7 +48,7 @@ export type MainStackParamList = {
 
   //Product
   CreateProduct: undefined;
-  AddInventory: undefined;
+  AddInventory: {product?: IProduct};
   InventoryOtherDetails: undefined;
 
   // More

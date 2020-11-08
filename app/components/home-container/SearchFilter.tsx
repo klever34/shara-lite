@@ -1,7 +1,6 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {View} from 'react-native';
-import {TextInput} from 'react-native-gesture-handler';
+import {View, TextInput} from 'react-native';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 

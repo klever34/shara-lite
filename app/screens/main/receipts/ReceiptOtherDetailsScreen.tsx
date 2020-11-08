@@ -172,11 +172,13 @@ export const ReceiptOtherDetailsScreen = () => {
         Alert.alert('Error', error);
       }
     }
-    handleUpdateReceipt(receiptToCreate);
-    handleClearState();
-    const createdReceipt = saveReceipt(receiptToCreate);
-    setIsLoading(false);
-    navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
+    setTimeout(() => {
+      handleUpdateReceipt(receiptToCreate);
+      handleClearState();
+      const createdReceipt = saveReceipt(receiptToCreate);
+      setIsLoading(false);
+      navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
+    }, 100);
   }, [
     note,
     realm,

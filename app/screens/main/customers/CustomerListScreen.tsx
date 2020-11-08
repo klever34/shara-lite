@@ -145,7 +145,7 @@ export const CustomerListScreen = withModal(
                       type="feathericons"
                       color={colors['gray-300']}
                       name="users"
-                      size={28}
+                      size={22}
                       borderRadius={12}
                     />
                     <Text

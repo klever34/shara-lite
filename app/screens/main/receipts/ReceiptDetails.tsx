@@ -382,8 +382,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   }, [handleOpenPrinterModal, handlePrint, printer]);
 
   const handleReissueReceipt = useCallback(() => {
-    Alert.alert('Coming Soon', 'This feature is coming in the next update');
-  }, []);
+    navigation.navigate('CreateReceipt', {receipt});
+  }, [receipt, navigation]);
 
   const handleCancelReceipt = useCallback(
     (note) => {
@@ -495,8 +495,9 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       <ReceiptListItem
         isHeader
         style={applyStyles({
+          left: -14,
           borderBottomWidth: 0,
-          width: Dimensions.get('window').width - 48,
+          width: Dimensions.get('window').width - 34,
         })}
         receipt={receipt}
         leftSection={headerLeftSection}

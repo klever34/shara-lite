@@ -1,5 +1,5 @@
 import {applyStyles, colors} from '@/styles';
-import React, {ReactElement, ReactNode, useState} from 'react';
+import React, {ReactElement, ReactNode, useState, useRef} from 'react';
 import {
   TextInput,
   View,
@@ -10,6 +10,8 @@ import {
   TextInputFocusEventData,
 } from 'react-native';
 import {Icon} from './Icon';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 export type AppInputProps = {
   label?: string;
@@ -36,9 +38,11 @@ export const AppInput = (props: AppInputProps) => {
     action = null,
     ...rest
   } = props;
-  let [bgStyle, setBgStyle] = useState({
+  const [bgStyle, setBgStyle] = useState({
+    borderWidth: 1.5,
     backgroundColor: colors['gray-10'],
-  });
+  } as ViewStyle);
+
   const withLeftIconStyle = leftIcon
     ? applyStyles('pl-56')
     : applyStyles('pl-16');
@@ -46,9 +50,13 @@ export const AppInput = (props: AppInputProps) => {
     ? applyStyles('pr-56')
     : applyStyles('p4-16');
 
+  const inputRef = useRef(null);
+
   const handleFocus = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setBgStyle({
+        borderWidth: 1.5,
+        borderColor: colors['red-50'],
         backgroundColor: colors.white,
       });
       onFocus && onFocus(e);
@@ -67,7 +75,9 @@ export const AppInput = (props: AppInputProps) => {
   );
 
   return (
-    <View style={applyStyles(containerStyle)}>
+    <KeyboardAwareScrollView
+      style={applyStyles(containerStyle)}
+      getTextInputRefs={() => [inputRef]}>
       <View style={applyStyles('flex-row')}>
         {!!label && (
           <Text
@@ -101,6 +111,7 @@ export const AppInput = (props: AppInputProps) => {
           </View>
         )}
         <TextInput
+          ref={inputRef}
           onFocus={handleFocus}
           onBlur={handleBlur}
           style={applyStyles(
@@ -146,6 +157,6 @@ export const AppInput = (props: AppInputProps) => {
           {errorMessage}
         </Text>
       )}
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
