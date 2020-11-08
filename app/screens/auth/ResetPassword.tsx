@@ -1,5 +1,5 @@
 import React, {useRef} from 'react';
-import {AuthView, FormBuilder, FormFields} from '@/components';
+import {AuthView, FormBuilder, FormFields, required} from '@/components';
 import {getApiService} from '@/services';
 import {ToastAndroid} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -19,17 +19,17 @@ const ResetPassword = () => {
     otp: {
       type: 'text',
       props: {autoFocus: true, placeholder: 'OTP'},
-      required: true,
+      validations: [required()],
     },
     password: {
       type: 'password',
       props: {placeholder: 'Enter you new password'},
-      required: true,
+      validations: [required()],
     },
     repeat_password: {
       type: 'password',
       props: {placeholder: 'Enter your password again'},
-      required: true,
+      validations: [required()],
     },
   };
 

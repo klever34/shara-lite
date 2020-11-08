@@ -6,6 +6,7 @@ import {
   FormFields,
   PhoneNumber,
   PhoneNumberFieldRef,
+  required,
 } from '../../../components';
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
@@ -70,7 +71,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
             nameFieldRef.current = nameField;
           },
         },
-        required: true,
+        validations: [required()],
       },
       mobile: {
         type: 'mobile',

@@ -22,10 +22,21 @@ type FormFieldProps = {
   radio: RadioInputProps;
 };
 
+export type FormValidation = (
+  name: string,
+  values: {[name: string]: any},
+) => string | null;
+
+export const required: (message?: string) => FormValidation = (
+  message = 'This is a required field',
+) => (name, values) => {
+  return values[name] ? null : message;
+};
+
 export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
   type: K;
   props: FormFieldProps[K];
-  required?: boolean;
+  validations?: FormValidation[];
 };
 
 export type FormFields<T extends keyof any> = Record<T, FormField>;
@@ -35,10 +46,7 @@ type FormBuilderProps<
   Fields = FormFields<FieldNames>
 > = {
   fields: Fields;
-  onInputChange?: (
-    values: {[name in keyof Fields]: any},
-    error: boolean,
-  ) => void;
+  onInputChange?: (values: {[name in keyof Fields]: any}) => void;
   submitBtn?: ButtonProps;
   onSubmit?: (values: {[name in keyof Fields]: any}) => Promise<any>;
 };
@@ -54,6 +62,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
   const names = useMemo<FieldNames[]>(() => {
     return Object.keys(fields) as FieldNames[];
   }, [fields]);
+  type FormErrors = {[name: string]: string};
   type FormValues = Record<FieldNames, any>;
   const [values, setValues] = useState<FormValues>(
     names.reduce((acc, name) => {
@@ -67,22 +76,49 @@ export const FormBuilder = <FieldNames extends keyof any>({
     }, {} as FormValues),
   );
 
-  const requiredFieldsFilled = useMemo(() => {
-    return (Object.keys(values) as FieldNames[]).reduce((acc, name) => {
-      return acc && (!fields[name].required || !!values[name]);
+  const [errors, setErrors] = useState<FormErrors>(() => {
+    return names.reduce((acc, name) => {
+      return {
+        ...acc,
+        [name]: '',
+      };
+    }, {} as FormErrors);
+  });
+
+  const validateForm = useCallback(() => {
+    const nextErrors: FormErrors = (Object.keys(values) as FieldNames[]).reduce(
+      (acc, name) => {
+        const validations: FormValidation[] | undefined =
+          fields[name].validations;
+        return {
+          ...acc,
+          [name]:
+            validations?.reduce((error, validation) => {
+              if (error) {
+                return error;
+              }
+              return validation(name as string, values) ?? '';
+            }, '') ?? '',
+        };
+      },
+      {},
+    );
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).reduce((acc, name) => {
+      return acc && !!nextErrors[name];
     }, true);
   }, [fields, values]);
 
   const handleSubmit = useCallback(
     (submitFn?: (values: FormValues) => Promise<void>) => {
       return () => {
-        if (!requiredFieldsFilled) {
+        if (!validateForm()) {
           return Promise.resolve();
         }
         return submitFn?.(values) ?? Promise.resolve();
       };
     },
-    [requiredFieldsFilled, values],
+    [validateForm, values],
   );
 
   const handleSubmitBtnPress = useCallback(handleSubmit(onSubmit), [
@@ -98,8 +134,8 @@ export const FormBuilder = <FieldNames extends keyof any>({
   );
 
   useEffect(() => {
-    onInputChange?.(values, requiredFieldsFilled);
-  }, [onInputChange, requiredFieldsFilled, values]);
+    onInputChange?.(values);
+  }, [onInputChange, values]);
 
   const onChangeValue = useCallback(
     (name) => (value: any) => {
@@ -125,7 +161,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
       setFooter(button);
     }
   }, [button, loading, runHandleSubmitBtnPress, setFooter, submitBtn]);
-
+  console.log('errors', errors);
   return (
     <View style={applyStyles('flex-row flex-wrap')}>
       {names.map((name) => {
@@ -143,6 +179,8 @@ export const FormBuilder = <FieldNames extends keyof any>({
                   fieldProps.containerStyle,
                 )}
                 onChangeText={onChangeValue(name)}
+                isInvalid={!!errors[name as string]}
+                errorMessage={errors[name as string]}
               />
             );
           case 'mobile':
