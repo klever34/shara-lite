@@ -134,11 +134,11 @@ export const InventoryOtherDetailsScreen = () => {
     if (isNewSupplier && saveToPhoneBook) {
       try {
         await contactService.addContact({
-          givenName: supplier?.name,
+          givenName: supplier?.name ?? '',
           phoneNumbers: [
             {
               label: 'mobile',
-              number: supplier?.mobile,
+              number: supplier?.mobile ?? '',
             },
           ],
         });

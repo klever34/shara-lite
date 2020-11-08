@@ -105,7 +105,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
     );
     setErrors(nextErrors);
     return Object.keys(nextErrors).reduce((acc, name) => {
-      return acc && !!nextErrors[name];
+      return acc && !nextErrors[name];
     }, true);
   }, [fields, values]);
 
@@ -161,7 +161,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
       setFooter(button);
     }
   }, [button, loading, runHandleSubmitBtnPress, setFooter, submitBtn]);
-  console.log('errors', errors);
+
   return (
     <View style={applyStyles('flex-row flex-wrap')}>
       {names.map((name) => {

@@ -147,6 +147,14 @@ export const AddCustomer = (props: AddCustomerProps) => {
               : undefined,
           };
           await addCustomer(values);
+          if (values.saveToPhonebook && phoneNumber.number) {
+            await getContactService().addContact({
+              givenName: values.name,
+              phoneNumbers: [
+                `+${phoneNumber.callingCode}${phoneNumber.number}`,
+              ],
+            });
+          }
           onSubmit ? onSubmit(values) : navigation.goBack();
         }}
         submitBtn={{
