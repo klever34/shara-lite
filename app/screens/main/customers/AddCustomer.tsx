@@ -1,7 +1,6 @@
 import {ICustomer} from '@/models';
 import {useNavigation} from '@react-navigation/native';
-import React, {useState, useMemo, useRef, useEffect} from 'react';
-import {Text} from 'react-native';
+import React, {useState, useMemo, useRef, useEffect, useCallback} from 'react';
 import {
   FormBuilder,
   FormFields,
@@ -11,11 +10,11 @@ import {
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
 import {useAddCustomer} from '@/services/customer/hooks';
-import Touchable from '@/components/Touchable';
-import {selectContactPhone} from 'react-native-select-contact';
+import {Contact, selectContactPhone} from 'react-native-select-contact';
 import {getContactService} from '@/services';
 import parsePhoneNumberFromString from 'libphonenumber-js';
 import {RadioInputRef} from '@/components/RadioInput';
+import {TextInputFieldRef} from '@/components/TextInput';
 
 type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
@@ -28,27 +27,38 @@ export const AddCustomer = (props: AddCustomerProps) => {
 
   type FormFieldName = 'name' | 'mobile' | 'email' | 'saveToPhonebook';
 
-  const [selectedMobile, setSelectedMobile] = useState<PhoneNumber | null>(
-    null,
-  );
+  const [importSelection, setImportSelection] = useState<{
+    contact: Contact;
+    phoneNumber: PhoneNumber;
+  } | null>(null);
 
+  const nameFieldRef = useRef<TextInputFieldRef>();
+  const emailFieldRef = useRef<TextInputFieldRef>();
   const mobileFieldRef = useRef<PhoneNumberFieldRef>();
   const saveToPhonebookFieldRef = useRef<RadioInputRef>();
 
   useEffect(() => {
     const {current: mobileField} = mobileFieldRef;
-    if (mobileField && selectedMobile) {
-      mobileField.setPhoneNumber(selectedMobile);
+    const {current: nameField} = nameFieldRef;
+    const {current: emailField} = emailFieldRef;
+    if (mobileField && importSelection) {
+      mobileField.setPhoneNumber(importSelection.phoneNumber);
+      nameField?.onChangeText(importSelection.contact.name);
+      nameField?.onChangeText(importSelection.contact.name);
+      let emailEntry;
+      if ((emailEntry = importSelection.contact.emails[0])) {
+        emailField?.onChangeText(emailEntry.address);
+      }
     }
-  }, [selectedMobile]);
+  }, [importSelection]);
 
   useEffect(() => {
     const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
-    if (saveToPhonebookField && selectedMobile) {
+    if (saveToPhonebookField && importSelection) {
       saveToPhonebookField.setValue(false);
       saveToPhonebookField.setDisabled(true);
     }
-  }, [selectedMobile]);
+  }, [importSelection]);
 
   const formFields: FormFields<FormFieldName> = useMemo(
     () => ({
@@ -56,6 +66,9 @@ export const AddCustomer = (props: AddCustomerProps) => {
         type: 'text',
         props: {
           label: 'Customer Name',
+          innerRef: (nameField: TextInputFieldRef) => {
+            nameFieldRef.current = nameField;
+          },
         },
         required: true,
       },
@@ -63,34 +76,6 @@ export const AddCustomer = (props: AddCustomerProps) => {
         type: 'mobile',
         props: {
           label: 'Phone Number (Optional)',
-          action: (
-            <Touchable
-              onPress={() => {
-                selectContactPhone().then((selection) => {
-                  if (!selection) {
-                    return;
-                  }
-                  let {selectedPhone} = selection;
-                  const number = getContactService().formatPhoneNumber(
-                    selectedPhone?.number,
-                  );
-                  const phoneNumber = parsePhoneNumberFromString(number);
-                  if (phoneNumber) {
-                    setSelectedMobile({
-                      callingCode: String(phoneNumber.countryCallingCode),
-                      number: String(phoneNumber.nationalNumber),
-                    });
-                  }
-                });
-              }}>
-              <Text
-                style={applyStyles(
-                  'text-400 text-red-200 text-uppercase text-xs',
-                )}>
-                IMPORT FROM CONTACT
-              </Text>
-            </Touchable>
-          ),
           innerRef: (mobileField: PhoneNumberFieldRef) => {
             mobileFieldRef.current = mobileField;
           },
@@ -101,6 +86,9 @@ export const AddCustomer = (props: AddCustomerProps) => {
         props: {
           label: 'Email (Optional)',
           keyboardType: 'email-address',
+          innerRef: (emailField: TextInputFieldRef) => {
+            emailFieldRef.current = emailField;
+          },
         },
       },
       saveToPhonebook: {
@@ -117,9 +105,35 @@ export const AddCustomer = (props: AddCustomerProps) => {
     [],
   );
 
+  const handleImport = useCallback(() => {
+    selectContactPhone().then((selection) => {
+      if (!selection) {
+        return;
+      }
+      let {selectedPhone, contact} = selection;
+      const number = getContactService().formatPhoneNumber(
+        selectedPhone?.number,
+      );
+      const phoneNumber = parsePhoneNumberFromString(number);
+      if (phoneNumber) {
+        setImportSelection({
+          contact,
+          phoneNumber: {
+            callingCode: String(phoneNumber.countryCallingCode),
+            number: String(phoneNumber.nationalNumber),
+          },
+        });
+      }
+    });
+  }, []);
+
   return (
     <Page
-      header={{title: 'Add Customer', iconLeft: {}}}
+      header={{
+        title: 'Add Customer',
+        iconLeft: {},
+        iconRight: {iconName: 'book', onPress: handleImport},
+      }}
       style={applyStyles('bg-white')}>
       <FormBuilder
         fields={formFields}
@@ -141,10 +155,10 @@ export const AddCustomer = (props: AddCustomerProps) => {
           const phoneNumber = values.mobile as PhoneNumber;
           const {current: mobileField} = mobileFieldRef;
           if (mobileField) {
-            if (phoneNumber.number !== selectedMobile?.number) {
+            if (phoneNumber.number !== importSelection?.phoneNumber.number) {
               const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
               if (saveToPhonebookField?.disabled) {
-                setSelectedMobile(null);
+                setImportSelection(null);
                 saveToPhonebookField?.setDisabled(false);
               }
             }
