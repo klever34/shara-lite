@@ -11,7 +11,7 @@ import {IPayment} from '@/models/Payment';
 import {useCustomer} from '@/services/customer/hook';
 import {usePayment} from '@/services/payment';
 import perf from '@react-native-firebase/perf';
-import {useCreditProxy} from '@/services/credit/credit-proxy-hook';
+import {useCredit} from '@/services/credit';
 
 interface saveCreditPaymentInterface {
   customer: ICustomer;
@@ -44,7 +44,7 @@ interface useCreditPayment {
 export const useCreditPayment = (): useCreditPayment => {
   const realm = useRealm();
   const {getCustomer} = useCustomer();
-  const {updateCredit} = useCreditProxy();
+  const {updateCredit} = useCredit();
   const {savePayment} = usePayment();
 
   const getCreditPayments = (): ICreditPayment[] => {

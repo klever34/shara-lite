@@ -1,5 +1,4 @@
 import {UpdateMode} from 'realm';
-import BluebirdPromise from 'bluebird';
 import {useRealm} from '@/services/realm';
 import {ICustomer} from '@/models';
 import {Customer} from 'types/app';
@@ -8,7 +7,6 @@ import {getBaseModelValues} from '@/helpers/models';
 import {ICredit, modelName} from '@/models/Credit';
 import {getAnalyticsService, getAuthService} from '@/services';
 import perf from '@react-native-firebase/perf';
-import {useCreditProxy} from '@/services/credit/credit-proxy-hook';
 
 interface saveCreditInterface {
   dueDate?: Date;
@@ -35,7 +33,6 @@ interface useCreditInterface {
 
 export const useCredit = (): useCreditInterface => {
   const realm = useRealm();
-  const {deleteCreditPayment} = useCreditProxy();
 
   const getCredits = (): ICredit[] => {
     return (realm
@@ -100,10 +97,6 @@ export const useCredit = (): useCreditInterface => {
     await updateCredit({
       credit,
       updates: {is_deleted: true},
-    });
-
-    await BluebirdPromise.each(credit.payments || [], async (creditPayment) => {
-      await deleteCreditPayment({creditPayment});
     });
   };
 

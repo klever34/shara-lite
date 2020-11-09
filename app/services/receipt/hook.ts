@@ -71,7 +71,7 @@ export const useReceipt = (): useReceiptInterface => {
   const {restockProduct} = useProduct();
   const {savePayment, updatePayment, deletePayment} = usePayment();
   const {saveCredit, updateCredit, deleteCredit} = useCredit();
-  const {getPaymentsFromCredit} = useCreditPayment();
+  const {getPaymentsFromCredit, deleteCreditPayment} = useCreditPayment();
 
   const getReceipts = (): IReceipt[] => {
     return (realm
@@ -283,7 +283,15 @@ export const useReceipt = (): useReceiptInterface => {
 
     const revertCredit = async () => {
       if (receipt.credits && receipt.credits.length) {
-        await deleteCredit({credit: receipt.credits[0]});
+        const credit = receipt.credits[0];
+        await deleteCredit({credit});
+
+        await BluebirdPromise.each(
+          credit.payments || [],
+          async (creditPayment) => {
+            await deleteCreditPayment({creditPayment});
+          },
+        );
       }
     };
 
