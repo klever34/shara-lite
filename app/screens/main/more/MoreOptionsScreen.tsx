@@ -37,7 +37,7 @@ export const MoreOptionsScreen = () => {
                     type="feathericons"
                     color={colors['gray-300']}
                     name="menu"
-                    size={28}
+                    size={22}
                     borderRadius={12}
                   />
                   <Text

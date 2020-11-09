@@ -104,7 +104,7 @@ export const Register = () => {
 
   return (
     <AuthView
-      title="Sign up"
+      header={{title: 'Sign up', iconLeft: {}}}
       isLoading={loading}
       buttonTitle="Sign Up"
       onSubmit={handleSubmit}

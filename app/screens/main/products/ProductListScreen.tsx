@@ -27,9 +27,10 @@ export const ProductListScreen = withModal(() => {
   const navigation = useAppNavigation();
   const products = realm ? getProducts({realm}) : [];
 
-  const [allProducts, setAllProducts] = useState(products || []);
   const [searchTerm, setSearchTerm] = useState('');
   const [openEditModal, setOpenEditModal] = useState(false);
+  const [isUpdatingProduct, setIsUpdatingProduct] = useState(false);
+  const [allProducts, setAllProducts] = useState(products || []);
   const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
 
   const handleProductSearch = useCallback((text) => {
@@ -49,15 +50,22 @@ export const ProductListScreen = withModal(() => {
     navigation.navigate('CreateProduct');
   }, [navigation]);
 
-  const handleAddInventory = useCallback(() => {
-    navigation.navigate('AddInventory');
-  }, [navigation]);
+  const handleAddInventory = useCallback(
+    (product: IProduct) => {
+      navigation.navigate('AddInventory', {product});
+    },
+    [navigation],
+  );
 
   const handleUpdateProduct = useCallback(
     (payload) => {
       if (itemToEdit) {
-        updateProduct({realm, product: itemToEdit, updates: payload});
-        ToastAndroid.show('Product edited', ToastAndroid.SHORT);
+        setIsUpdatingProduct(true);
+        setTimeout(() => {
+          updateProduct({realm, product: itemToEdit, updates: payload});
+          setIsUpdatingProduct(false);
+          ToastAndroid.show('Product edited', ToastAndroid.SHORT);
+        }, 100);
       }
     },
     [itemToEdit, realm],
@@ -89,7 +97,7 @@ export const ProductListScreen = withModal(() => {
                     type="feathericons"
                     color={colors['gray-300']}
                     name="box"
-                    size={28}
+                    size={22}
                     borderRadius={12}
                   />
                   <Text
@@ -163,7 +171,7 @@ export const ProductListScreen = withModal(() => {
               )}>
               <Button
                 title="Edit"
-                variantColor="clear"
+                variantColor="transparent"
                 style={applyStyles({
                   width: '48%',
                 })}
@@ -172,7 +180,7 @@ export const ProductListScreen = withModal(() => {
               <Button
                 variantColor="red"
                 title="Receive Inventory"
-                onPress={handleAddInventory}
+                onPress={() => handleAddInventory(item)}
                 style={applyStyles({
                   width: '48%',
                 })}
@@ -216,6 +224,7 @@ export const ProductListScreen = withModal(() => {
       <EditProductModal
         item={itemToEdit}
         visible={openEditModal}
+        isLoading={isUpdatingProduct}
         onClose={handleCloseEditProductModal}
         onUpdateProductItem={handleUpdateProduct}
       />

@@ -2,7 +2,8 @@ import {Header, HeaderTitleProps} from '@/components/Header';
 import {applyStyles} from '@/styles';
 import React, {ReactNode} from 'react';
 import {View, ViewStyle} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 type PageProps = {
   header?: HeaderTitleProps;
@@ -16,12 +17,9 @@ export const Page = ({header, children, footer, style}: PageProps) => {
     <>
       {header && <Header {...header} />}
       <KeyboardAwareScrollView
-        enableAutomaticScroll
-        enableResetScrollToCoords
         persistentScrollbar={true}
         keyboardShouldPersistTaps="always"
-        resetScrollToCoords={{x: 0, y: 0}}
-        style={applyStyles('flex-1 px-16 py-16', style)}>
+        style={applyStyles('px-16 py-16', style)}>
         {children}
       </KeyboardAwareScrollView>
       {footer && (

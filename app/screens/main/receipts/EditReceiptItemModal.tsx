@@ -93,7 +93,7 @@ export const EditReceiptItemModal = (props: Props) => {
             </Text>
             <View
               style={applyStyles(
-                'flex-row items-center mb-24 justify-between',
+                'flex-row items-center mb-16 justify-between',
               )}>
               <View
                 style={applyStyles({
@@ -117,7 +117,7 @@ export const EditReceiptItemModal = (props: Props) => {
                 />
               </View>
             </View>
-            <View style={applyStyles('mb-24')}>
+            <View>
               <AppInput
                 label="Subtotal"
                 editable={false}
@@ -133,15 +133,11 @@ export const EditReceiptItemModal = (props: Props) => {
         </View>
         <View
           style={applyStyles(
-            'flex-row items-center py-12 px-16 bg-white justify-between',
-            {
-              borderTopWidth: 1,
-              borderTopColor: colors['gray-20'],
-            },
+            'flex-row items-center py-16 px-16 bg-white justify-between',
           )}>
           <Button
             title="Delete"
-            variantColor="clear"
+            variantColor="transparent"
             onPress={handleDelete}
             style={applyStyles({
               width: '48%',

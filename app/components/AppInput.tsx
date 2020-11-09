@@ -1,5 +1,5 @@
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode, useState} from 'react';
+import React, {ReactNode, useRef, useState} from 'react';
 import {
   TextInput,
   View,
@@ -10,10 +10,11 @@ import {
   TextInputFocusEventData,
 } from 'react-native';
 import {Icon} from './Icon';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 export type AppInputProps = {
   label?: string;
-  style?: ViewStyle;
   isInvalid?: boolean;
   errorMessage?: string;
   containerStyle?: ViewStyle;
@@ -34,9 +35,11 @@ export const AppInput = (props: AppInputProps) => {
     containerStyle,
     ...rest
   } = props;
-  let [bgStyle, setBgStyle] = useState({
+  const [bgStyle, setBgStyle] = useState({
+    borderWidth: 1.5,
     backgroundColor: colors['gray-10'],
-  });
+  } as ViewStyle);
+
   const withLeftIconStyle = leftIcon
     ? applyStyles('pl-56')
     : applyStyles('pl-16');
@@ -44,9 +47,13 @@ export const AppInput = (props: AppInputProps) => {
     ? applyStyles('pr-56')
     : applyStyles('p4-16');
 
+  const inputRef = useRef(null);
+
   const handleFocus = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setBgStyle({
+        borderWidth: 1.5,
+        borderColor: colors['red-50'],
         backgroundColor: colors.white,
       });
       onFocus && onFocus(e);
@@ -65,7 +72,9 @@ export const AppInput = (props: AppInputProps) => {
   );
 
   return (
-    <View style={applyStyles(containerStyle)}>
+    <KeyboardAwareScrollView
+      style={applyStyles(containerStyle)}
+      getTextInputRefs={() => [inputRef]}>
       {!!label && (
         <Text
           style={applyStyles(
@@ -96,6 +105,7 @@ export const AppInput = (props: AppInputProps) => {
           </View>
         )}
         <TextInput
+          ref={inputRef}
           onFocus={handleFocus}
           onBlur={handleBlur}
           style={applyStyles(
@@ -141,6 +151,6 @@ export const AppInput = (props: AppInputProps) => {
           {errorMessage}
         </Text>
       )}
-    </View>
+    </KeyboardAwareScrollView>
   );
 };

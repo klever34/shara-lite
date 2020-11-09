@@ -1,4 +1,5 @@
 import EmptyState from '@/components/EmptyState';
+import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {HomeScreen} from '@/screens/main/HomeScreen';
 import {ReportsScreen} from '@/screens/main/more/reports';
@@ -25,6 +26,9 @@ import {CreateProductScreen} from './products/CreateProductScreen';
 import {InventoryOtherDetailsScreen} from './products/InventoryOtherDetailsScreen';
 import {CreateReceiptScreen} from './receipts/CreateReceiptScreen';
 import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
+import {AddCustomer} from '@/screens/main/customers';
+import {ICustomer} from '@/models';
+import CustomerDetails from '@/screens/main/customers/CustomerDetails';
 import {ReceiptOtherDetailsScreen} from './receipts/ReceiptOtherDetailsScreen';
 import {ReceiptProvider} from './receipts/ReceiptProvider';
 import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
@@ -32,10 +36,9 @@ import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
 export type MainStackParamList = {
   Home: undefined;
 
-  // More
-  UserProfileSettings: undefined;
-  BusinessSettings: undefined;
-  Reports: undefined;
+  // Customers
+  AddCustomer: undefined;
+  CustomerDetails: {customer: ICustomer};
 
   // Receipt
   ReceiptOtherDetails: undefined;
@@ -45,8 +48,13 @@ export type MainStackParamList = {
 
   //Product
   CreateProduct: undefined;
-  AddInventory: undefined;
+  AddInventory: {product?: IProduct};
   InventoryOtherDetails: undefined;
+
+  // More
+  UserProfileSettings: undefined;
+  BusinessSettings: undefined;
+  Reports: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -126,6 +134,21 @@ const MainScreens = () => {
             name="Home"
             component={HomeScreen}
             options={{headerShown: false}}
+          />
+
+          {/* Customers */}
+          <MainStack.Screen
+            name="AddCustomer"
+            component={AddCustomer}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="CustomerDetails"
+            component={CustomerDetails}
+            options={({route}) => ({
+              title: route.params.customer.name,
+              headerShown: false,
+            })}
           />
 
           {/* More */}

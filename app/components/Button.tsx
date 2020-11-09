@@ -22,9 +22,8 @@ export type ButtonProps = Omit<BaseButtonProps, 'onPress'> & {
   style?: ViewStyle;
   isLoading?: boolean;
   children?: React.ReactNode;
-  variant?: 'filled' | 'clear';
-  variantColor?: 'red' | 'white' | 'clear';
   onPress?: () => Promise<void> | void;
+  variantColor?: 'red' | 'white' | 'clear' | 'transparent';
 };
 
 export const Button = ({
@@ -48,6 +47,10 @@ export const Button = ({
     clear: {
       button: styles.clearButton,
       text: styles.whiteButtonText,
+    },
+    transparent: {
+      button: styles.transparentButton,
+      text: applyStyles({color: colors['gray-300']}),
     },
   };
 
@@ -127,6 +130,12 @@ const styles = StyleSheet.create({
     elevation: 0,
     backgroundColor: colors.white,
   },
+  transparentButton: {
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+  },
   text: {
     fontSize: 16,
     fontWeight: '700',
@@ -178,8 +187,15 @@ export const baseButtonStyles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: colors.primary,
     alignItems: 'center',
-    elevation: 3,
     borderRadius: 36,
+    shadowColor: 'red',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   text: {
     fontSize: 14,

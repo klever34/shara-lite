@@ -32,22 +32,28 @@ import {
 } from 'react-native';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
 
-export const AddInventoryScreen = () => {
+export const AddInventoryScreen = ({route}: any) => {
   const realm = useRealm();
-  const handleError = useErrorHandler();
   const products = getProducts({realm});
+  const productToStartWith = route.params.product;
+
+  const handleError = useErrorHandler();
   const navigation = useAppNavigation();
   const {handleUpdateInventoryStock} = useReceiptProvider();
 
-  const [searchQuery, setSearchQuery] = useState('');
   const [isNewProduct, setIsNewProduct] = useState(false);
-  const [price, setPrice] = useState<number | undefined>();
-  const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
-  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
-  const [inventoryStock, setInventoryStock] = useState<IProduct[]>([]);
-  const [quantity, setQuantity] = useState<string | undefined>(
-    FormDefaults.get('quantity', ''),
+  const [price, setPrice] = useState<number | undefined>(
+    productToStartWith.price,
   );
+  const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
+  const [inventoryStock, setInventoryStock] = useState<IProduct[]>([]);
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(
+    productToStartWith || null,
+  );
+  const [quantity, setQuantity] = useState<string | undefined>(
+    productToStartWith.quantity.toString() || FormDefaults.get('quantity', ''),
+  );
+  const [searchQuery, setSearchQuery] = useState(productToStartWith.name || '');
 
   const handleClearState = useCallback(() => {
     setPrice(0);
@@ -55,6 +61,7 @@ export const AddInventoryScreen = () => {
     setSearchQuery('');
     setItemToEdit(null);
     setSelectedProduct(null);
+    Keyboard.dismiss();
   }, []);
 
   const handleGoBack = useCallback(() => {
@@ -186,9 +193,12 @@ export const AddInventoryScreen = () => {
 
       Keyboard.dismiss();
       handleClearState();
-      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
+        ToastAndroid.LONG,
+      );
     } else {
-      Alert.alert('Info', 'Please add product quantity');
+      Alert.alert('Info', 'Please add product/service quantity');
     }
   }, [
     selectedProduct,
@@ -230,7 +240,10 @@ export const AddInventoryScreen = () => {
       Keyboard.dismiss();
       handleClearState();
 
-      ToastAndroid.show('ITEM SUCCESSFULLY ADDED', ToastAndroid.LONG);
+      ToastAndroid.show(
+        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
+        ToastAndroid.LONG,
+      );
 
       handleUpdateInventoryStock([product, ...inventoryStock]);
 
@@ -242,7 +255,7 @@ export const AddInventoryScreen = () => {
     } else {
       Alert.alert(
         'Info',
-        'Please select at least one product item with quantity',
+        'Please select at least one product/service with quantity',
       );
     }
   }, [
@@ -294,98 +307,116 @@ export const AddInventoryScreen = () => {
         iconRight={{iconName: 'x', onPress: handleGoBack}}
       />
       <View style={applyStyles('flex-1')}>
-        <View style={applyStyles('bg-gray-10 px-16 py-32')}>
-          <View style={applyStyles('pb-16')}>
-            <AutoComplete<IProduct>
-              rightIcon="box"
-              items={products}
-              value={searchQuery}
-              label="Product / Service"
-              setFilter={handleProductSearch}
-              onItemSelect={handleSelectProduct}
-              renderItem={renderSearchDropdownItem}
-              onChangeText={handleChangeSearchQuery}
-              noResultsAction={() => setIsNewProduct(true)}
-              textInputProps={{
-                placeholder: 'Search or enter product/service here',
-              }}
-            />
-          </View>
-          <View
-            style={applyStyles('pb-16 flex-row items-center justify-between')}>
-            <View style={applyStyles({width: '48%'})}>
-              <CurrencyInput
-                placeholder="0.00"
-                label="Unit Price"
-                value={price?.toString()}
-                style={applyStyles('bg-white', {
-                  borderWidth: 0,
-                })}
-                onChange={(text) => handlePriceChange(text)}
-              />
-            </View>
-            <View style={applyStyles({width: '48%'})}>
-              <AppInput
-                placeholder="0"
-                value={quantity}
-                label="Quantity"
-                keyboardType="numeric"
-                style={applyStyles('bg-white', {
-                  borderWidth: 0,
-                })}
-                onChangeText={handleQuantityChange}
-              />
-            </View>
-          </View>
-          {itemToEdit ? (
-            <View
-              style={applyStyles(
-                'flex-row items-center py-12 px-16 bg-white justify-between',
-              )}>
-              <Button
-                title="Delete"
-                variantColor="clear"
-                onPress={handleRemoveInventoryStockItem}
-                style={applyStyles({
-                  width: '48%',
-                })}
-              />
-              <Button
-                title="Save"
-                variantColor="red"
-                onPress={handleUpdateInventoryStockItem}
-                style={applyStyles({
-                  width: '48%',
-                })}
-              />
-            </View>
-          ) : (
-            <Button
-              variantColor="clear"
-              title="Add Inventory"
-              onPress={handleAddReceiptItem}
-            />
-          )}
-        </View>
         <FlatList
+          data={[]}
+          renderItem={undefined}
           persistentScrollbar
-          data={inventoryStock}
-          style={applyStyles('bg-white')}
-          renderItem={renderInventoryStockItem}
           keyboardShouldPersistTaps="always"
           ListHeaderComponent={
-            inventoryStock.length ? <ReceiptTableHeader /> : undefined
-          }
-          keyExtractor={(item) => `${item?._id?.toString()}`}
-          ListEmptyComponent={
-            <View style={applyStyles('py-96 center mx-auto')}>
-              <Text
-                style={applyStyles(
-                  'text-700 text-center text-gray-200 text-uppercase',
-                )}>
-                There are no items to add
-              </Text>
-            </View>
+            <>
+              <View style={applyStyles('bg-gray-10 px-16 py-32')}>
+                <View style={applyStyles('pb-16')}>
+                  <AutoComplete<IProduct>
+                    rightIcon="box"
+                    items={products}
+                    value={searchQuery}
+                    label="Product / Service"
+                    setFilter={handleProductSearch}
+                    onItemSelect={handleSelectProduct}
+                    renderItem={renderSearchDropdownItem}
+                    onChangeText={handleChangeSearchQuery}
+                    noResultsAction={() => setIsNewProduct(true)}
+                    textInputProps={{
+                      placeholder: 'Search or enter product/service',
+                    }}
+                  />
+                </View>
+                <View
+                  style={applyStyles(
+                    'pb-16 flex-row items-center justify-between',
+                  )}>
+                  <View style={applyStyles({width: '48%'})}>
+                    <CurrencyInput
+                      placeholder="0.00"
+                      label="Unit Price"
+                      value={price?.toString()}
+                      style={applyStyles('bg-white')}
+                      onChange={(text) => handlePriceChange(text)}
+                    />
+                  </View>
+                  <View style={applyStyles({width: '48%'})}>
+                    <AppInput
+                      placeholder="0"
+                      value={quantity}
+                      label="Quantity"
+                      keyboardType="numeric"
+                      style={applyStyles('bg-white')}
+                      onChangeText={handleQuantityChange}
+                    />
+                  </View>
+                </View>
+                {itemToEdit ? (
+                  <View
+                    style={applyStyles(
+                      'flex-row items-center py-12 justify-between',
+                    )}>
+                    <Button
+                      title="Delete"
+                      variantColor="transparent"
+                      onPress={handleRemoveInventoryStockItem}
+                      style={applyStyles({
+                        width: '48%',
+                      })}
+                    />
+                    <Button
+                      title="Save"
+                      variantColor="red"
+                      onPress={handleUpdateInventoryStockItem}
+                      style={applyStyles({
+                        width: '48%',
+                      })}
+                    />
+                  </View>
+                ) : (
+                  <Button
+                    variantColor="clear"
+                    title="Add Inventory"
+                    onPress={handleAddReceiptItem}
+                    style={applyStyles({
+                      shadowColor: 'red',
+                      shadowOffset: {
+                        width: 0,
+                        height: 4,
+                      },
+                      shadowOpacity: 0.3,
+                      shadowRadius: 4.65,
+                      elevation: 8,
+                    })}
+                  />
+                )}
+              </View>
+              <FlatList
+                persistentScrollbar
+                data={inventoryStock}
+                style={applyStyles('bg-white')}
+                renderItem={renderInventoryStockItem}
+                keyboardShouldPersistTaps="always"
+                ListHeaderComponent={
+                  inventoryStock.length ? <ReceiptTableHeader /> : undefined
+                }
+                keyExtractor={(item) => `${item?._id?.toString()}`}
+                ListEmptyComponent={
+                  <View style={applyStyles('py-96 center mx-auto')}>
+                    <Text
+                      style={applyStyles(
+                        'px-48 text-700 text-center text-gray-200 text-uppercase',
+                      )}>
+                      There are no products/service to add
+                    </Text>
+                  </View>
+                }
+              />
+            </>
           }
         />
         <StickyFooter>
