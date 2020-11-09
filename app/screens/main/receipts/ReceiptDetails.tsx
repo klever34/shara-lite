@@ -504,48 +504,64 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
           onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
         />
       </View>
-      <View style={applyStyles('bg-white flex-1 pt-24')}>
-        {!isFulfilled && !receipt?.is_cancelled && (
-          <View style={applyStyles('p-16')}>
-            <Text
-              style={applyStyles(
-                'text-xs text-uppercase text-500 text-gray-100 pb-8',
-              )}>
-              how much has been paid?
-            </Text>
-            <View
-              style={applyStyles('pb-8 flex-row items-center justify-between')}>
-              <View style={applyStyles({width: '48%'})}>
-                <CurrencyInput
-                  value={creditPaymentAmount.toString()}
-                  onChange={(value) => handleCreditPaymentAmountChange(value)}
-                />
-              </View>
-              <View style={applyStyles({width: '48%'})}>
-                <Button
-                  isLoading={isLoading}
-                  title="record payment"
-                  disabled={!creditPaymentAmount}
-                  onPress={handleCreditPaymentSubmit}
-                />
-              </View>
-            </View>
-          </View>
-        )}
+      <View style={applyStyles('bg-white flex-1 pt-4')}>
         <FlatList
+          data={[]}
           persistentScrollbar
-          data={receipt?.items}
-          renderItem={renderItem}
+          renderItem={undefined}
           keyboardShouldPersistTaps="always"
           ListHeaderComponent={
-            <ReceiptTableHeader
-              style={applyStyles({
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}
-            />
+            <>
+              {!isFulfilled && !receipt?.is_cancelled && (
+                <View style={applyStyles('p-16')}>
+                  <Text
+                    style={applyStyles(
+                      'text-xs text-uppercase text-500 text-gray-100 pb-8',
+                    )}>
+                    how much has been paid?
+                  </Text>
+                  <View
+                    style={applyStyles(
+                      'pb-8 flex-row items-center justify-between',
+                    )}>
+                    <View style={applyStyles({width: '48%'})}>
+                      <CurrencyInput
+                        value={creditPaymentAmount.toString()}
+                        onChange={(value) =>
+                          handleCreditPaymentAmountChange(value)
+                        }
+                      />
+                    </View>
+                    <View style={applyStyles({width: '48%'})}>
+                      <Button
+                        isLoading={isLoading}
+                        title="record payment"
+                        disabled={!creditPaymentAmount}
+                        onPress={handleCreditPaymentSubmit}
+                      />
+                    </View>
+                  </View>
+                </View>
+              )}
+              <FlatList
+                persistentScrollbar
+                data={receipt?.items}
+                renderItem={renderItem}
+                keyboardShouldPersistTaps="always"
+                ListHeaderComponent={
+                  <ReceiptTableHeader
+                    style={applyStyles({
+                      borderTopWidth: 1,
+                      borderTopColor: colors['gray-10'],
+                    })}
+                  />
+                }
+                keyExtractor={(item, index) =>
+                  `${item?._id?.toString()}-${index}`
+                }
+              />
+            </>
           }
-          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         />
         <>
           {!receipt?.is_cancelled && (
