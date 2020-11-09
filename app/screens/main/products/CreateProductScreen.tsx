@@ -88,7 +88,11 @@ export const CreateProductScreen = (props: Props) => {
       setItemToEdit(item);
       setName(item.name);
       setPrice(item.price);
-      setQuantity(item?.quantity?.toString());
+      if (item && item?.quantity && item?.quantity > 0) {
+        setQuantity(item?.quantity?.toString());
+      } else {
+        setQuantity('');
+      }
     },
     [handleError],
   );
