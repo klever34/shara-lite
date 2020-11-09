@@ -4,7 +4,7 @@
 */
 
 import {applyStyles, colors} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
   Keyboard,
@@ -17,6 +17,8 @@ import {
 } from 'react-native';
 import Icon from './Icon';
 import Touchable from './Touchable';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 export type AutoCompleteProps<T extends any = any> = {
   items: T[];
@@ -63,6 +65,8 @@ export function AutoComplete<T>({
   const [query, setQuery] = useState<string>(value || '');
   const [listItems, setListItems] = useState(items || []);
   const [inputBgStyle, setInputBgStyle] = useState({} as ViewStyle);
+
+  const inputRef = useRef(null);
 
   const handleItemSelect = useCallback(
     (item) => {
@@ -212,6 +216,7 @@ export function AutoComplete<T>({
           <TextInput
             {...textInputProps}
             value={query}
+            ref={inputRef}
             onBlur={handleInputBlur}
             onFocus={handleInputFocus}
             onChangeText={handleChangeText}
@@ -255,7 +260,7 @@ export function AutoComplete<T>({
   }, [value]);
 
   return (
-    <View>
+    <KeyboardAwareScrollView getTextInputRefs={() => [inputRef]}>
       {!!label && (
         <Text
           style={applyStyles(
@@ -266,7 +271,7 @@ export function AutoComplete<T>({
       )}
       {renderTextInput()}
       {renderFlatList()}
-    </View>
+    </KeyboardAwareScrollView>
   );
 }
 

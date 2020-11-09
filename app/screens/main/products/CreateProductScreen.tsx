@@ -91,7 +91,7 @@ export const CreateProductScreen = (props: Props) => {
       if (item && item?.quantity && item?.quantity > 0) {
         setQuantity(item?.quantity?.toString());
       } else {
-        setQuantity('');
+        setQuantity('0');
       }
     },
     [handleError],

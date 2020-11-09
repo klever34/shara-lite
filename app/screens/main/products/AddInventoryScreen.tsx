@@ -53,7 +53,7 @@ export const AddInventoryScreen = ({route}: any) => {
   const [quantity, setQuantity] = useState<string | undefined>(
     productToStartWith.quantity > 0
       ? productToStartWith.quantity.toString()
-      : '' || FormDefaults.get('quantity', ''),
+      : '0' || FormDefaults.get('quantity', ''),
   );
   const [searchQuery, setSearchQuery] = useState(productToStartWith.name || '');
 
