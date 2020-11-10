@@ -1,6 +1,6 @@
 import {Header, HeaderTitleProps} from '@/components/Header';
 import {applyStyles} from '@/styles';
-import React, {ReactNode, useContext, useState} from 'react';
+import React, {ReactNode, useContext, useEffect, useState} from 'react';
 import {View, ViewStyle} from 'react-native';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
@@ -23,6 +23,12 @@ export const Page = ({
   style,
 }: PageProps) => {
   const [footer, setFooter] = useState<ReactNode>(initialFooter);
+
+  useEffect(() => {
+    if (initialFooter) {
+      setFooter(initialFooter);
+    }
+  }, [initialFooter]);
 
   return (
     <PageContext.Provider value={{setFooter}}>
