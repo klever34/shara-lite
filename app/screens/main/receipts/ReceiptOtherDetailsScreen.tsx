@@ -151,11 +151,11 @@ export const ReceiptOtherDetailsScreen = () => {
       note,
       realm,
       dueDate,
-      customer,
       amountPaid,
       creditAmount,
       totalAmount,
       payments: [{method: '', amount: amountPaid}],
+      customer: customer ? customer : ({} as ICustomer),
     };
     if (isNewCustomer && saveToPhoneBook) {
       try {

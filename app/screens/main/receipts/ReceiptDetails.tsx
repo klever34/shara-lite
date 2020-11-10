@@ -510,33 +510,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     <>
       {header}
       <View style={applyStyles('bg-white flex-1 pt-4')}>
-        {!isFulfilled && !receipt?.is_cancelled && (
-          <View style={applyStyles('p-16')}>
-            <Text
-              style={applyStyles(
-                'text-xs text-uppercase text-500 text-gray-100 pb-8',
-              )}>
-              how much has been paid?
-            </Text>
-            <View
-              style={applyStyles('pb-8 flex-row items-center justify-between')}>
-              <View style={applyStyles({width: '48%'})}>
-                <CurrencyInput
-                  value={creditPaymentAmount.toString()}
-                  onChange={(value) => handleCreditPaymentAmountChange(value)}
-                />
-              </View>
-              <View style={applyStyles({width: '48%'})}>
-                <Button
-                  isLoading={isLoading}
-                  title="record payment"
-                  disabled={!creditPaymentAmount}
-                  onPress={handleCreditPaymentSubmit}
-                />
-              </View>
-            </View>
-          </View>
-        )}
         <FlatList
           data={[]}
           persistentScrollbar
