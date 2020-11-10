@@ -168,6 +168,7 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         footer={footer}
         style={applyStyles('px-0 py-0')}>
         <HomeContainer<IReceipt>
+          headerImage={require('@/assets/images/shara-user-img.png')}
           initialNumToRender={10}
           createEntityButtonIcon="file-text"
           data={(filteredReceipts as unknown) as IReceipt[]}

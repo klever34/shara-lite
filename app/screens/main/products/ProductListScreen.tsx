@@ -204,6 +204,7 @@ export const ProductListScreen = withModal(() => {
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <HomeContainer<IProduct>
+        headerImage={require('@/assets/images/shara-user-img.png')}
         data={filteredProducts}
         initialNumToRender={10}
         headerTitle="total products"
