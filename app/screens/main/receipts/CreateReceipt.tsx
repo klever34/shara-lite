@@ -10,7 +10,7 @@ import {
   StickyFooter,
 } from '@/components';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency} from '@/helpers/utils';
+import {amountWithCurrency, showToast} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
@@ -22,14 +22,7 @@ import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  Keyboard,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import {Alert, FlatList, Keyboard, Text, View} from 'react-native';
 import {EditReceiptItemModal} from './EditReceiptItemModal';
 import {useReceiptProvider} from './ReceiptProvider';
 
@@ -199,10 +192,7 @@ export const CreateReceipt = (props: Props) => {
       setQuantity('');
       setSearchQuery('');
       setSelectedProduct(null);
-      ToastAndroid.show(
-        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
-        ToastAndroid.LONG,
-      );
+      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
     } else {
       Alert.alert('Info', 'Please add product/service, quantity & price');
     }
@@ -258,10 +248,7 @@ export const CreateReceipt = (props: Props) => {
       setSearchQuery('');
       setSelectedProduct(null);
 
-      ToastAndroid.show(
-        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
-        ToastAndroid.LONG,
-      );
+      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
 
       navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {

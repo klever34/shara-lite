@@ -8,6 +8,7 @@ import {
 } from '@/components';
 import {Page} from '@/components/Page';
 import Touchable from '@/components/Touchable';
+import {showToast} from '@/helpers/utils';
 import {ISupplier} from '@/models/Supplier';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -147,6 +148,7 @@ export const InventoryOtherDetailsScreen = () => {
 
       handleClearState();
       handleClearInventoryStock();
+      showToast({message: 'INVENTORY RECEIVED SUCCESSFULLY'});
 
       navigation.navigate('ProductsTab');
     }, 100);

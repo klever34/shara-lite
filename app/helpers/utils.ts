@@ -10,7 +10,7 @@ import ImagePicker, {
   ImagePickerOptions,
   ImagePickerResponse,
 } from 'react-native-image-picker';
-import {Alert} from 'react-native';
+import {Alert, ToastAndroid} from 'react-native';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -134,4 +134,30 @@ export const prepareValueForSearch = (text: any): string => {
     return '';
   }
   return String(text).toLowerCase();
+};
+
+type ToastPayload = {
+  message: string;
+  duration?: 'short' | 'long';
+  gravity?: 'top' | 'center' | 'bottom';
+};
+
+export const showToast = (payload: ToastPayload) => {
+  const {message, duration = 'short', gravity = 'top'} = payload;
+  const durationType = {
+    long: ToastAndroid.LONG,
+    short: ToastAndroid.SHORT,
+  } as {[key: string]: number};
+  const gravityType = {
+    top: ToastAndroid.TOP,
+    center: ToastAndroid.CENTER,
+    bottom: ToastAndroid.BOTTOM,
+  } as {[key: string]: number};
+  ToastAndroid.showWithGravityAndOffset(
+    message,
+    durationType[duration],
+    gravityType[gravity],
+    0,
+    52,
+  );
 };

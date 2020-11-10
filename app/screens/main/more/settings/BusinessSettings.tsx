@@ -5,14 +5,15 @@ import {
   FormFields,
   PhoneNumber,
 } from '@/components';
+import {Page} from '@/components/Page';
+import {showToast} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
+import {applyStyles} from '@/styles';
 import React, {useCallback, useMemo, useRef} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {Alert, ToastAndroid} from 'react-native';
-import {applyStyles} from '@/styles';
-import {Page} from '@/components/Page';
+import {Alert} from 'react-native';
 
 export const BusinessSettings = () => {
   const handleError = useErrorHandler();
@@ -45,7 +46,12 @@ export const BusinessSettings = () => {
       mobile: {
         type: 'mobile',
         props: {
-          value: {number: mobile, callingCode: callingCode},
+          value: {
+            number: mobile?.startsWith(callingCode)
+              ? mobile.replace(callingCode, '')
+              : mobile,
+            callingCode: callingCode,
+          },
           label: "What's your business phone number",
         },
       },
@@ -91,10 +97,7 @@ export const BusinessSettings = () => {
       getAnalyticsService()
         .logEvent('businessSetupComplete')
         .catch(handleError);
-      ToastAndroid.show(
-        'Business settings update successful',
-        ToastAndroid.SHORT,
-      );
+      showToast({message: 'Business settings update successful'});
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);

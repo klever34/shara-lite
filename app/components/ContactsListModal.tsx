@@ -1,9 +1,10 @@
+import {showToast} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
@@ -14,15 +15,13 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  ToastAndroid,
   View,
 } from 'react-native';
 import {Button} from './Button';
 import EmptyState from './EmptyState';
 import Icon from './Icon';
-import Touchable from './Touchable';
-import {applyStyles} from '@/styles';
 import PlaceholderImage from './PlaceholderImage';
+import Touchable from './Touchable';
 
 type Props<T> = {
   entity?: string;
@@ -163,7 +162,7 @@ export function ContactsListModal<T>({
           (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
         );
       });
-      ToastAndroid.show('Customer added', ToastAndroid.SHORT);
+      showToast({message: 'CUSTOMER ADDED'});
     },
     [realm],
   );

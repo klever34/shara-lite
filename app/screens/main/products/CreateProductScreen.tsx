@@ -8,6 +8,7 @@ import {
   ReceiptTableItemProps,
   StickyFooter,
 } from '@/components';
+import {showToast} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
@@ -24,7 +25,6 @@ import {
   Keyboard,
   SafeAreaView,
   Text,
-  ToastAndroid,
   View,
 } from 'react-native';
 
@@ -151,10 +151,7 @@ export const CreateProductScreen = (props: Props) => {
 
       Keyboard.dismiss();
       handleClearState();
-      ToastAndroid.show(
-        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
-        ToastAndroid.LONG,
-      );
+      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
     } else {
       Alert.alert('Info', 'Please add product/service name, price & quantity');
     }
@@ -179,10 +176,7 @@ export const CreateProductScreen = (props: Props) => {
       Keyboard.dismiss();
       handleClearState();
 
-      ToastAndroid.show(
-        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
-        ToastAndroid.LONG,
-      );
+      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
 
       handleAddProducts([product, ...products]);
     } else if (items.length) {

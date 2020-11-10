@@ -16,7 +16,7 @@ import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
+import {amountWithCurrency, numberWithCommas, showToast} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {
@@ -390,7 +390,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
         navigation.goBack();
-        ToastAndroid.show('Receipt cancelled', ToastAndroid.SHORT);
+        showToast({message: 'RECEIPT CANCELLED'});
       }, 50);
     },
     [receipt, realm, navigation],
@@ -425,7 +425,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
           amount: creditPaymentAmount,
         });
         setCreditPaymentAmount(0);
-        ToastAndroid.show('Credit payment recorded', ToastAndroid.SHORT);
+        showToast({message: 'CREDIT PAYMENT RECORDED'});
       }, 50);
     } else {
       Alert.alert('Info', 'Please select a customer');

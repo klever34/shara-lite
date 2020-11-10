@@ -36,6 +36,7 @@ export const Page = ({
       <KeyboardAwareScrollView
         nestedScrollEnabled
         persistentScrollbar={true}
+        style={applyStyles('flex-1 bg-white')}
         keyboardShouldPersistTaps="always">
         <View style={applyStyles('px-16 py-16', style)}>{children}</View>
       </KeyboardAwareScrollView>

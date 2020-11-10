@@ -131,7 +131,7 @@ export const MoreOptionsScreen = () => {
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
     if (business.mobile?.startsWith(code)) {
-      return business.mobile.replace(code, '');
+      return `+${code}${business.mobile.replace(code, '')}`;
     }
     return `+${code}${business.mobile}`;
   }, [business.country_code, business.mobile, callingCode]);

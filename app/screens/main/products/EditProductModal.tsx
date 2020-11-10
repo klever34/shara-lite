@@ -1,9 +1,10 @@
 import {AppInput, Button, CurrencyInput} from '@/components';
+import {showToast} from '@/helpers/utils';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {IProduct} from '@/models/Product';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Text, ToastAndroid, View} from 'react-native';
+import {Text, View} from 'react-native';
 
 type Props = {
   visible: boolean;
@@ -27,22 +28,24 @@ export const EditProductModal = (props: Props) => {
   } = props;
 
   const [name, setName] = useState(item?.name);
-  const [quantity, setQuantity] = useState<string | undefined>(
-    item && item?.quantity && !(item?.quantity < 0)
-      ? item?.quantity?.toString()
-      : '0',
-  );
   const [price, setPrice] = useState<number | undefined>(item?.price);
+  const [quantity, setQuantity] = useState<string | undefined>(
+    item?.quantity && !(item?.quantity < 0) ? item?.quantity?.toString() : '0',
+  );
 
   useEffect(() => {
     setName(item?.name);
     setPrice(item?.price);
+  }, [item]);
+
+  useEffect(() => {
     setQuantity(
-      item && item?.quantity && !(item?.quantity < 0)
+      item?.quantity && !(item?.quantity < 0)
         ? item?.quantity?.toString()
         : '0',
     );
-  }, [item]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [item?.quantity]);
 
   const handleNameChange = useCallback((text) => {
     setName(text);
@@ -67,7 +70,7 @@ export const EditProductModal = (props: Props) => {
     if (item) {
       onRemoveProductItem && onRemoveProductItem(item);
       handleClose();
-      ToastAndroid.show('PRODUCT REMOVED FROM RECEIPT', ToastAndroid.SHORT);
+      showToast({message: 'PRODUCT/SERVICE REMOVED FROM RECEIPT'});
     }
   }, [handleClose, item, onRemoveProductItem]);
 
@@ -80,7 +83,7 @@ export const EditProductModal = (props: Props) => {
     } as IProduct;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
-    ToastAndroid.show('PRODUCT EDITED', ToastAndroid.SHORT);
+    showToast({message: 'PRODUCT/SERVICE UPDATED SUCCESSFULLY'});
   }, [item, name, price, quantity, onUpdateProductItem, handleClose]);
 
   return (

@@ -1,4 +1,5 @@
 import {Button} from '@/components';
+import {showToast} from '@/helpers/utils';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {ICustomer} from '@/models';
 import {getContactService} from '@/services';
@@ -8,7 +9,7 @@ import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, Text, ToastAndroid, View} from 'react-native';
+import {Alert, Text, View} from 'react-native';
 import {AutoComplete} from './AutoComplete';
 import {PhoneNumber, PhoneNumberField} from './PhoneNumberField';
 import {RadioButton} from './RadioButton';
@@ -106,7 +107,7 @@ export const AddCustomerModal = (props: Props) => {
     }
     onAddCustomer && onAddCustomer(customer);
     handleClose();
-    ToastAndroid.show('CUSTOMER ADDED', ToastAndroid.SHORT);
+    showToast({message: 'CUSTOMER ADDED'});
   }, [
     contactService,
     customer,

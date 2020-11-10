@@ -19,7 +19,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {KeyboardAvoidingView, Text, ToastAndroid, View} from 'react-native';
+import {KeyboardAvoidingView, Text, View} from 'react-native';
 import {EditProductModal} from './EditProductModal';
 
 export const ProductListScreen = withModal(() => {
@@ -29,7 +29,6 @@ export const ProductListScreen = withModal(() => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [openEditModal, setOpenEditModal] = useState(false);
-  const [isUpdatingProduct, setIsUpdatingProduct] = useState(false);
   const [allProducts, setAllProducts] = useState(products || []);
   const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
 
@@ -60,12 +59,7 @@ export const ProductListScreen = withModal(() => {
   const handleUpdateProduct = useCallback(
     (payload) => {
       if (itemToEdit) {
-        setIsUpdatingProduct(true);
-        setTimeout(() => {
-          updateProduct({realm, product: itemToEdit, updates: payload});
-          setIsUpdatingProduct(false);
-          ToastAndroid.show('Product edited', ToastAndroid.SHORT);
-        }, 100);
+        updateProduct({realm, product: itemToEdit, updates: payload});
       }
     },
     [itemToEdit, realm],
@@ -225,7 +219,6 @@ export const ProductListScreen = withModal(() => {
       <EditProductModal
         item={itemToEdit}
         visible={openEditModal}
-        isLoading={isUpdatingProduct}
         onClose={handleCloseEditProductModal}
         onUpdateProductItem={handleUpdateProduct}
       />

@@ -1,11 +1,11 @@
 import {AppInput, Button, CurrencyInput} from '@/components';
-import {numberWithCommas} from '@/helpers/utils';
+import {numberWithCommas, showToast} from '@/helpers/utils';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Text, ToastAndroid, View} from 'react-native';
+import {Text, View} from 'react-native';
 
 type Props = {
   visible: boolean;
@@ -53,7 +53,7 @@ export const EditReceiptItemModal = (props: Props) => {
     if (item) {
       onRemoveProductItem(item);
       handleClose();
-      ToastAndroid.show('PRODUCT REMOVED FROM RECEIPT', ToastAndroid.SHORT);
+      showToast({message: 'PRODUCT REMOVED FROM RECEIPT'});
     }
   }, [handleClose, item, onRemoveProductItem]);
 
@@ -65,7 +65,7 @@ export const EditReceiptItemModal = (props: Props) => {
     } as IReceiptItem;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
-    ToastAndroid.show('PRODUCT EDITED', ToastAndroid.SHORT);
+    showToast({message: 'PRODUCT EDITED'});
   }, [item, price, quantity, onUpdateProductItem, handleClose]);
 
   const getSubtotal = useCallback(() => {

@@ -9,7 +9,7 @@ import {
   StickyFooter,
 } from '@/components';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency} from '@/helpers/utils';
+import {amountWithCurrency, showToast} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IStockItem} from '@/models/StockItem';
 import {getAnalyticsService} from '@/services';
@@ -26,7 +26,6 @@ import {
   Keyboard,
   SafeAreaView,
   Text,
-  ToastAndroid,
   View,
 } from 'react-native';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
@@ -197,10 +196,7 @@ export const AddInventoryScreen = ({route}: any) => {
 
       Keyboard.dismiss();
       handleClearState();
-      ToastAndroid.show(
-        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
-        ToastAndroid.LONG,
-      );
+      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
     } else {
       Alert.alert('Info', 'Please add product/service quantity');
     }
@@ -243,10 +239,7 @@ export const AddInventoryScreen = ({route}: any) => {
       Keyboard.dismiss();
       handleClearState();
 
-      ToastAndroid.show(
-        'PRODUCT/SERVICE SUCCESSFULLY ADDED',
-        ToastAndroid.LONG,
-      );
+      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
 
       handleUpdateInventoryStock([product, ...inventoryStock]);
 
