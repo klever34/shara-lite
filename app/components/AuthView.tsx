@@ -62,12 +62,8 @@ export const AuthView = ({
       </View>
       {children}
       {showEmblem && (
-        <View style={applyStyles('flex-row center')}>
-          <SecureEmblem
-            style={applyStyles({
-              top: -40,
-            })}
-          />
+        <View style={applyStyles('flex-row center pt-24')}>
+          <SecureEmblem />
         </View>
       )}
     </Page>
