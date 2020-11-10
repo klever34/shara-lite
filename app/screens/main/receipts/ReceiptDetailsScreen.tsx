@@ -3,7 +3,6 @@ import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {getReceipt} from '@/services/ReceiptService';
 import {applyStyles, colors} from '@/styles';
-import {format} from 'date-fns';
 import React, {useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import {ReceiptDetails} from './ReceiptDetails';
@@ -27,15 +26,6 @@ export const ReceiptDetailsScreen = ({route}: any) => {
       <ActivityIndicator color={colors.primary} size={40} />
     </View>
   ) : (
-    <ReceiptDetails
-      receipt={receipt}
-      headerLeftSection={{
-        heading: receipt?.customer?.name ?? 'No Customer',
-        subheading:
-          receipt?.created_at &&
-          format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
-      }}
-      header={route.params.header}
-    />
+    <ReceiptDetails receipt={receipt} header={route.params.header} />
   );
 };

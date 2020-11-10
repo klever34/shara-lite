@@ -49,16 +49,15 @@ import {
   BluetoothEscposPrinter,
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
-import {ReceiptListItem, ReceiptListItemProps} from './ReceiptListItem';
+import {ReceiptListItem} from './ReceiptListItem';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
-  headerLeftSection?: ReceiptListItemProps['leftSection'];
   header?: ReactNode;
 };
 
 export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
-  let {receipt, openModal, headerLeftSection, header} = props;
+  let {receipt, openModal, header} = props;
 
   const realm = useRealm();
   const navigation = useAppNavigation();
@@ -500,7 +499,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
           width: Dimensions.get('window').width - 34,
         })}
         receipt={receipt}
-        leftSection={headerLeftSection}
         onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
       />
     </View>

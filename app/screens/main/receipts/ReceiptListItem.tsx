@@ -13,7 +13,6 @@ export type ReceiptListItemProps = {
   isHeader?: boolean;
   receipt?: IReceipt;
   onPress?: () => void;
-  leftSection?: {heading?: string; subheading?: string};
   getReceiptItemLeftText?: (receipt?: IReceipt) => string;
   getReceiptItemRightText?: (receipt?: IReceipt) => string;
 };
@@ -22,7 +21,6 @@ export const ReceiptListItem = ({
   style,
   receipt,
   onPress,
-  leftSection,
   isHeader = false,
   getReceiptItemLeftText,
   getReceiptItemRightText,
@@ -99,7 +97,7 @@ export const ReceiptListItem = ({
                   style={applyStyles(
                     'text-uppercase text-400 text-gray-200 text-xs',
                   )}>
-                  {leftSection?.subheading}
+                  {getReceiptItemRightText(receipt)}
                 </Text>
               </View>
             </View>
@@ -112,13 +110,13 @@ export const ReceiptListItem = ({
                   style={applyStyles(
                     'pb-4 text-uppercase text-700 text-gray-300',
                   )}>
-                  {leftSection?.heading ?? getReceiptItemLeftText(receipt)}
+                  {getReceiptItemLeftText(receipt)}
                 </Text>
                 <Text
                   style={applyStyles(
                     'text-uppercase text-400 text-gray-200 text-xs',
                   )}>
-                  {leftSection?.subheading ?? getReceiptItemRightText(receipt)}
+                  {getReceiptItemRightText(receipt)}
                 </Text>
               </View>
             </>

@@ -16,11 +16,13 @@ import {getAnalyticsService} from '@/services';
 import {version} from '../../../../package.json';
 import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
+import {useIPGeolocation} from '@/services/ip-geolocation';
 
 export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
     MainStackParamList & MoreStackParamList
   >();
+  const {callingCode} = useIPGeolocation();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: applyStyles('border-b-1', {
@@ -185,7 +187,7 @@ export const MoreOptionsScreen = () => {
                   style={applyStyles('text-400 text-sm leading-16 mb-4', {
                     color: colors['gray-300'],
                   })}>
-                  {`+${business.country_code}${business.mobile}`}
+                  {`+${business.country_code || callingCode}${business.mobile}`}
                 </Text>
               )}
               <Text

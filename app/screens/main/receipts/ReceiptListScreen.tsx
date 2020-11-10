@@ -11,7 +11,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
-import {endOfDay, format, startOfDay, subMonths} from 'date-fns';
+import {endOfDay, startOfDay, subMonths} from 'date-fns';
 import {subDays, subWeeks, subYears} from 'date-fns/esm';
 import React, {
   useCallback,
@@ -190,12 +190,6 @@ export const ReceiptListScreen = withModal(() => {
       return (
         <ReceiptListItem
           receipt={receipt}
-          leftSection={{
-            heading: receipt?.customer?.name ?? 'No Customer',
-            subheading:
-              receipt?.created_at &&
-              format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
-          }}
           onPress={() => handleReceiptItemSelect(receipt)}
         />
       );
