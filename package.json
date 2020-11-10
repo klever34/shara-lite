@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.3.13-feature.v3-design-create-receipt+build.4525",
+  "version": "0.3.13-feature.v3-design-create-receipt+build.4533",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -28,6 +28,7 @@
     "@react-navigation/stack": "^5.5.1",
     "@segment/analytics-react-native": "^1.2.1",
     "@sentry/react-native": "^1.9.0",
+    "@types/bluebird": "^3.5.33",
     "@types/bson": "^4.0.2",
     "@types/yup": "^0.29.6",
     "add": "^2.0.6",
