@@ -128,6 +128,13 @@ export const MoreOptionsScreen = () => {
     }
   }, [handleError, navigation, logoutFromRealm]);
   const business = getAuthService().getBusinessInfo();
+  const getMobieNumber = useCallback(() => {
+    const code = business.country_code || callingCode;
+    if (business.mobile?.startsWith(code)) {
+      return business.mobile.replace(code, '');
+    }
+    return `+${code}${business.mobile}`;
+  }, [business.country_code, business.mobile, callingCode]);
   return (
     <ScrollView>
       <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
@@ -187,7 +194,7 @@ export const MoreOptionsScreen = () => {
                   style={applyStyles('text-400 text-sm leading-16 mb-4', {
                     color: colors['gray-300'],
                   })}>
-                  {`+${business.country_code || callingCode}${business.mobile}`}
+                  {getMobieNumber()}
                 </Text>
               )}
               <Text
