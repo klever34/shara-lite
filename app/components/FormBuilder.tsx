@@ -157,7 +157,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
   );
 
   useEffect(() => {
-    if (setFooter) {
+    if (submitBtn && setFooter) {
       setFooter(button);
     }
   }, [button, loading, runHandleSubmitBtnPress, setFooter, submitBtn]);
