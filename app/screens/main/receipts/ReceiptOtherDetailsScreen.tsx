@@ -4,9 +4,9 @@ import {
   Button,
   CurrencyInput,
   DatePicker,
+  PhoneNumber,
   PhoneNumberField,
   RadioButton,
-  PhoneNumber,
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
@@ -19,12 +19,12 @@ import {getCustomers} from '@/services/customer';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {saveReceipt} from '@/services/ReceiptService';
 import {applyStyles, colors} from '@/styles';
 import {addDays, format} from 'date-fns';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Alert, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptProvider} from './ReceiptProvider';
+import {useReceipt} from '@/services/receipt';
 
 type CustomerListItem =
   | Pick<ICustomer, 'name' | 'mobile' | '_id'>
@@ -35,6 +35,7 @@ type CustomerListItem =
 
 export const ReceiptOtherDetailsScreen = () => {
   const realm = useRealm() as Realm;
+  const {saveReceipt} = useReceipt();
   const navigation = useAppNavigation();
   const customers = getCustomers({realm});
   const contactService = getContactService();
@@ -175,7 +176,7 @@ export const ReceiptOtherDetailsScreen = () => {
       }
       setIsLoading(true);
       handleUpdateReceipt(receiptToCreate);
-      const createdReceipt = saveReceipt(receiptToCreate);
+      const createdReceipt = await saveReceipt(receiptToCreate);
       setIsLoading(false);
       handleClearState();
       navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
@@ -195,6 +196,7 @@ export const ReceiptOtherDetailsScreen = () => {
     saveToPhoneBook,
     handleClearState,
     handleUpdateReceipt,
+    saveReceipt,
   ]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
