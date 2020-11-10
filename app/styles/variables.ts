@@ -23,6 +23,7 @@ export const colors: {[key: string]: string} = {
   green: '#20C720',
   black: '#222222',
   whatsapp: '#1BA058',
+  blue: '#386EC4',
 };
 
 const sizes = [

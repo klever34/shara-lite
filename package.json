@@ -31,6 +31,7 @@
     "@types/bluebird": "^3.5.33",
     "@types/bson": "^4.0.2",
     "@types/yup": "^0.29.6",
+    "add": "^2.0.6",
     "bluebird": "^3.7.2",
     "bson": "^4.0.4",
     "country-currency-map": "^2.1.7",
@@ -61,6 +62,7 @@
     "react-native-gesture-handler": "^1.6.1",
     "react-native-get-random-values": "^1.4.0",
     "react-native-image-picker": "^2.3.3",
+    "react-native-input-scroll-view": "^1.11.0",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
     "react-native-location": "^2.5.0",
     "react-native-modal": "^11.5.6",
@@ -70,6 +72,7 @@
     "react-native-reanimated": "^1.9.0",
     "react-native-safe-area-context": "^3.0.5",
     "react-native-screens": "^2.9.0",
+    "react-native-select-contact": "^1.5.0",
     "react-native-share": "^3.6.0",
     "react-native-signature-capture": "^0.4.10",
     "react-native-tab-view": "^2.14.4",
@@ -84,6 +87,7 @@
     "uuid": "^8.2.0",
     "uuid-by-string": "^3.0.2",
     "xlsx": "^0.16.8",
+    "yarn": "^1.22.10",
     "yup": "^0.29.3"
   },
   "devDependencies": {

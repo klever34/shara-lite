@@ -92,11 +92,11 @@ export const AddCustomerModal = (props: Props) => {
     if (isNewCustomer && saveToPhoneBook) {
       try {
         await contactService.addContact({
-          givenName: customer?.name,
+          givenName: customer?.name ?? '',
           phoneNumbers: [
             {
               label: 'mobile',
-              number: customer?.mobile,
+              number: customer?.mobile ?? '',
             },
           ],
         });

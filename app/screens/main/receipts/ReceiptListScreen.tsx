@@ -23,12 +23,11 @@ import React, {
 import {KeyboardAvoidingView, Text, View} from 'react-native';
 import {ReceiptListItem} from './ReceiptListItem';
 
-export const ReceiptListScreen = withModal(() => {
+export const useReceiptList = ({initialFilter = 'today'} = {}) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const receipts = realm ? getReceipts({realm}) : [];
-
-  const [filter, setFilter] = useState('today');
+  const [filter, setFilter] = useState(initialFilter);
   const [searchTerm, setSearchTerm] = useState('');
   const [allReceipts, setAllReceipts] = useState(receipts || []);
 
@@ -36,25 +35,22 @@ export const ReceiptListScreen = withModal(() => {
     setFilter(status);
   }, []);
 
-  const filterOptions = [
-    {text: 'Today', onSelect: () => handleStatusFilter('today')},
-    {text: '3 Days', onSelect: () => handleStatusFilter('3-days')},
-    {text: '1 Week', onSelect: () => handleStatusFilter('1-week')},
-    {text: '1 Month', onSelect: () => handleStatusFilter('1-month')},
-    {text: '3 Months', onSelect: () => handleStatusFilter('3-months')},
-    {text: '1 Year', onSelect: () => handleStatusFilter('1-year')},
-    {text: 'All Time', onSelect: () => handleStatusFilter('all')},
-  ];
+  const filterOptions = useMemo(
+    () => [
+      {text: 'Today', onSelect: () => handleStatusFilter('today')},
+      {text: '3 Days', onSelect: () => handleStatusFilter('3-days')},
+      {text: '1 Week', onSelect: () => handleStatusFilter('1-week')},
+      {text: '1 Month', onSelect: () => handleStatusFilter('1-month')},
+      {text: '3 Months', onSelect: () => handleStatusFilter('3-months')},
+      {text: '1 Year', onSelect: () => handleStatusFilter('1-year')},
+      {text: 'All Time', onSelect: () => handleStatusFilter('all')},
+    ],
+    [handleStatusFilter],
+  );
 
-  const filterOptionLabels = {
-    today: 'Today',
-    '3-days': '3 Days',
-    '1-week': '1 Week',
-    '1-month': '1 Month',
-    '3-months': '3 Months',
-    '1-year': '1 Year',
-    all: 'All Time',
-  } as {[key: string]: string};
+  const handleReceiptSearch = useCallback((text) => {
+    setSearchTerm(text);
+  }, []);
 
   const filteredReceipts = useMemo(() => {
     let userReceipts = (allReceipts as unknown) as Realm.Results<
@@ -120,6 +116,16 @@ export const ReceiptListScreen = withModal(() => {
     return (userReceipts.sorted('created_at', true) as unknown) as IReceipt[];
   }, [allReceipts, searchTerm, filter]);
 
+  const filterOptionLabels = {
+    today: 'Today',
+    '3-days': '3 Days',
+    '1-week': '1 Week',
+    '1-month': '1 Month',
+    '3-months': '3 Months',
+    '1-year': '1 Year',
+    all: 'All Time',
+  } as {[key: string]: string};
+
   const totalAmount = useMemo(() => {
     if (filter || searchTerm) {
       //@ts-ignore
@@ -129,9 +135,44 @@ export const ReceiptListScreen = withModal(() => {
     return 0;
   }, [filter, searchTerm, filteredReceipts]);
 
-  const handleReceiptSearch = useCallback((text) => {
-    setSearchTerm(text);
-  }, []);
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      const myReceipts = realm ? getReceipts({realm}) : [];
+      setAllReceipts(myReceipts);
+    });
+  }, [navigation, realm]);
+
+  return useMemo(
+    () => ({
+      filter,
+      filterOptionLabels,
+      filteredReceipts,
+      totalAmount,
+      filterOptions,
+      handleReceiptSearch,
+    }),
+    [
+      filter,
+      filterOptionLabels,
+      filterOptions,
+      totalAmount,
+      filteredReceipts,
+      handleReceiptSearch,
+    ],
+  );
+};
+
+export const ReceiptListScreen = withModal(() => {
+  const navigation = useAppNavigation();
+
+  const {
+    filter,
+    filteredReceipts,
+    filterOptionLabels,
+    filterOptions,
+    handleReceiptSearch,
+    totalAmount,
+  } = useReceiptList();
 
   const handleCreateReceipt = useCallback(() => {
     navigation.navigate('CreateReceipt', {});
@@ -211,19 +252,13 @@ export const ReceiptListScreen = withModal(() => {
     });
   }, [navigation]);
 
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      const myReceipts = realm ? getReceipts({realm}) : [];
-      setAllReceipts(myReceipts);
-    });
-  }, [navigation, realm]);
-
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {
         backgroundColor: colors.white,
       })}>
       <HomeContainer<IReceipt>
+        headerImage={require('@/assets/images/shara-user-img.png')}
         initialNumToRender={10}
         headerTitle="total sales"
         filterOptions={filterOptions}

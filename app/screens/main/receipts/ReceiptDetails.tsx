@@ -36,7 +36,7 @@ import {
 import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState, ReactNode} from 'react';
 import {
   Alert,
   Dimensions,
@@ -54,10 +54,11 @@ import {ReceiptListItem, ReceiptListItemProps} from './ReceiptListItem';
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
   headerLeftSection?: ReceiptListItemProps['leftSection'];
+  header?: ReactNode;
 };
 
 export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
-  const {receipt, openModal, headerLeftSection} = props;
+  let {receipt, openModal, headerLeftSection, header} = props;
 
   const realm = useRealm();
   const navigation = useAppNavigation();
@@ -475,36 +476,40 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     setCustomer(receipt?.customer);
   }, [receipt]);
 
+  header = header ?? (
+    <View
+      style={applyStyles('flex-row bg-white items-center', {
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
+        elevation: 10,
+        borderBottomColor: colors['gray-10'],
+      })}>
+      <HeaderBackButton
+        {...{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
+      />
+      <ReceiptListItem
+        isHeader
+        style={applyStyles({
+          left: -14,
+          borderBottomWidth: 0,
+          width: Dimensions.get('window').width - 34,
+        })}
+        receipt={receipt}
+        leftSection={headerLeftSection}
+        onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
+      />
+    </View>
+  );
+
   return (
     <>
-      <View
-        style={applyStyles('flex-row bg-white items-center', {
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.34,
-          shadowRadius: 6.27,
-          elevation: 10,
-          borderBottomColor: colors['gray-10'],
-        })}>
-        <HeaderBackButton
-          {...{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
-        />
-        <ReceiptListItem
-          isHeader
-          style={applyStyles({
-            left: -14,
-            borderBottomWidth: 0,
-            width: Dimensions.get('window').width - 34,
-          })}
-          receipt={receipt}
-          leftSection={headerLeftSection}
-          onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
-        />
-      </View>
-      <View style={applyStyles('bg-white flex-1 pt-24')}>
+      {header}
+      <View style={applyStyles('bg-white flex-1 pt-4')}>
         {!isFulfilled && !receipt?.is_cancelled && (
           <View style={applyStyles('p-16')}>
             <Text
@@ -533,19 +538,62 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
           </View>
         )}
         <FlatList
+          data={[]}
           persistentScrollbar
-          data={receipt?.items}
-          renderItem={renderItem}
+          renderItem={undefined}
           keyboardShouldPersistTaps="always"
           ListHeaderComponent={
-            <ReceiptTableHeader
-              style={applyStyles({
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}
-            />
+            <>
+              {!isFulfilled && !receipt?.is_cancelled && (
+                <View style={applyStyles('p-16')}>
+                  <Text
+                    style={applyStyles(
+                      'text-xs text-uppercase text-500 text-gray-100 pb-8',
+                    )}>
+                    how much has been paid?
+                  </Text>
+                  <View
+                    style={applyStyles(
+                      'pb-8 flex-row items-center justify-between',
+                    )}>
+                    <View style={applyStyles({width: '48%'})}>
+                      <CurrencyInput
+                        value={creditPaymentAmount.toString()}
+                        onChange={(value) =>
+                          handleCreditPaymentAmountChange(value)
+                        }
+                      />
+                    </View>
+                    <View style={applyStyles({width: '48%'})}>
+                      <Button
+                        isLoading={isLoading}
+                        title="record payment"
+                        disabled={!creditPaymentAmount}
+                        onPress={handleCreditPaymentSubmit}
+                      />
+                    </View>
+                  </View>
+                </View>
+              )}
+              <FlatList
+                persistentScrollbar
+                data={receipt?.items}
+                renderItem={renderItem}
+                keyboardShouldPersistTaps="always"
+                ListHeaderComponent={
+                  <ReceiptTableHeader
+                    style={applyStyles({
+                      borderTopWidth: 1,
+                      borderTopColor: colors['gray-10'],
+                    })}
+                  />
+                }
+                keyExtractor={(item, index) =>
+                  `${item?._id?.toString()}-${index}`
+                }
+              />
+            </>
           }
-          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         />
         <>
           {!receipt?.is_cancelled && (

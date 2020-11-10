@@ -27,10 +27,6 @@ const useRealmSyncLoader = () => {
   const updateRealm = useCallback(
     async () => {
       const realmCredentials = authService.getRealmCredentials();
-      if (realmCredentials) {
-        return;
-      }
-
       if (!realmCredentials) {
         retryUpdate();
         return;

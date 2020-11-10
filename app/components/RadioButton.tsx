@@ -3,16 +3,24 @@ import React, {ReactNode, useCallback} from 'react';
 import {View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
 
-type Props = {
+export type RadioButtonProps = {
   style?: ViewStyle;
   isChecked?: boolean;
   children?: ReactNode;
   containerStyle?: ViewStyle;
   onChange?: (value: boolean) => void;
+  disabled?: boolean;
 };
 
-export const RadioButton = (props: Props) => {
-  const {children, style, onChange, isChecked, containerStyle} = props;
+export const RadioButton = (props: RadioButtonProps) => {
+  const {
+    children,
+    style,
+    onChange,
+    isChecked,
+    containerStyle,
+    disabled = false,
+  } = props;
   const borderStyles = isChecked
     ? {borderWidth: 2, borderColor: colors['red-50']}
     : {borderWidth: 2, borderColor: colors['gray-50']};
@@ -22,7 +30,7 @@ export const RadioButton = (props: Props) => {
   }, [isChecked, onChange]);
 
   return (
-    <Touchable onPress={onPress}>
+    <Touchable onPress={disabled ? undefined : onPress}>
       <View style={applyStyles(containerStyle)}>
         <View style={applyStyles('flex-row items-center')}>
           <View

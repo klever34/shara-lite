@@ -66,7 +66,7 @@ export function AutoComplete<T>({
 
   const handleItemSelect = useCallback(
     (item) => {
-      Keyboard.dismiss();
+      // Keyboard.dismiss();
       setFocus(false);
       if (onItemSelect) {
         onItemSelect(item);

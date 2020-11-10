@@ -35,6 +35,7 @@ export const ReceiptDetailsScreen = ({route}: any) => {
           receipt?.created_at &&
           format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa'),
       }}
+      header={route.params.header}
     />
   );
 };

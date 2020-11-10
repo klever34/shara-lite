@@ -51,9 +51,7 @@ export const InventoryOtherDetailsScreen = () => {
   const [countryCode, setCountryCode] = useState(callingCode || '');
   const [supplierSearchQuery, setSupplierSearchQuery] = useState('');
   const [allSuppliers, setAllSuppliers] = useState<SupplierListItem[]>([]);
-  const [supplier, setSupplier] = useState<ISupplier | undefined>(
-    {} as ISupplier,
-  );
+  const [supplier, setSupplier] = useState<ISupplier | undefined>();
 
   const handleError = useErrorHandler();
 
@@ -134,11 +132,11 @@ export const InventoryOtherDetailsScreen = () => {
     if (isNewSupplier && saveToPhoneBook) {
       try {
         await contactService.addContact({
-          givenName: supplier?.name,
+          givenName: supplier?.name ?? '',
           phoneNumbers: [
             {
               label: 'mobile',
-              number: supplier?.mobile,
+              number: supplier?.mobile ?? '',
             },
           ],
         });

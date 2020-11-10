@@ -4,12 +4,12 @@ import {IStockItem} from './StockItem';
 import {IDeliveryAgent} from './DeliveryAgent';
 
 export interface IReceivedInventory extends BaseModelInterface {
-  supplier_name: string;
+  supplier_name?: string;
   batch_id: string;
   total_amount: number;
   delivery_agent_full_name?: string;
   delivery_agent_mobile?: string;
-  supplier: ISupplier;
+  supplier?: ISupplier;
   suppliedStockItems?: IStockItem[];
   delivery_agent?: IDeliveryAgent;
   coordinates?: string;

@@ -4,6 +4,7 @@ import React from 'react';
 import {
   DefaultSectionT,
   FlatList,
+  ImageSourcePropType,
   SectionList,
   SectionListData,
   SectionListProps,
@@ -22,6 +23,7 @@ type HomeContainerProps<T> = {
   activeFilter?: string;
   headerTitle?: string;
   headerAmount?: string;
+  headerImage?: ImageSourcePropType;
   hasSections?: boolean;
   placeholderText?: string;
   onOpenFilter?: () => void;
@@ -62,6 +64,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
     createEntityButtonText,
     createEntityButtonIcon,
     showFAB = true,
+    headerImage,
   } = props;
 
   return (
@@ -72,6 +75,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
           amount={headerAmount}
           activeFilter={activeFilter}
           menuOptions={filterOptions}
+          image={headerImage}
         />
       )}
       <SearchFilter
