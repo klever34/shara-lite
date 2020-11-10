@@ -44,6 +44,12 @@ export const CustomerListScreen = withModal(
     const navigation = useAppNavigation();
     const realm = useRealm();
     const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
+    const reloadMyCustomers = useCallback(() => {
+      if (realm) {
+        const nextMyCustomers = getCustomers({realm});
+        setMyCustomers(nextMyCustomers);
+      }
+    }, [realm]);
     const analyticsService = getAnalyticsService();
     const financeSummary: IFinanceSummary = getSummary({realm});
     const [searchTerm, setSearchTerm] = useState('');
@@ -234,6 +240,7 @@ export const CustomerListScreen = withModal(
       ]);
     }, [filter, myCustomers, searchTerm]);
     const addCustomer = useAddCustomer();
+
     const handleAddCustomer = useCallback(() => {
       openModal('options', {
         options: [
@@ -256,21 +263,17 @@ export const CustomerListScreen = withModal(
                   mobile: selectedPhone.number,
                   email: contact.emails[0]?.address,
                 });
+                reloadMyCustomers();
               });
             },
           },
         ],
       });
-    }, [addCustomer, navigation, openModal]);
+    }, [addCustomer, navigation, openModal, reloadMyCustomers]);
 
     useEffect(() => {
-      return navigation.addListener('focus', () => {
-        if (realm) {
-          const nextMyCustomers = getCustomers({realm});
-          setMyCustomers(nextMyCustomers);
-        }
-      });
-    }, [navigation, realm]);
+      return navigation.addListener('focus', reloadMyCustomers);
+    }, [navigation, realm, reloadMyCustomers]);
 
     return (
       <KeyboardAvoidingView
