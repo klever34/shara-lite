@@ -1,6 +1,6 @@
 import {Header, HeaderTitleProps} from '@/components/Header';
 import {applyStyles} from '@/styles';
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useContext, useState} from 'react';
 import {View, ViewStyle} from 'react-native';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
@@ -12,9 +12,20 @@ type PageProps = {
   style?: ViewStyle;
 };
 
-export const Page = ({header, children, footer, style}: PageProps) => {
+export type PageContextProps = {setFooter?: (footer: ReactNode) => void};
+
+export const PageContext = React.createContext<PageContextProps>({});
+
+export const Page = ({
+  header,
+  children,
+  footer: initialFooter = null,
+  style,
+}: PageProps) => {
+  const [footer, setFooter] = useState<ReactNode>(initialFooter);
+
   return (
-    <>
+    <PageContext.Provider value={{setFooter}}>
       {header && <Header {...header} />}
       <KeyboardAwareScrollView
         persistentScrollbar={true}
@@ -37,6 +48,10 @@ export const Page = ({header, children, footer, style}: PageProps) => {
           {footer}
         </View>
       )}
-    </>
+    </PageContext.Provider>
   );
+};
+
+export const usePage = () => {
+  return useContext(PageContext);
 };

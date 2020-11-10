@@ -11,18 +11,32 @@ import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {View} from 'react-native';
 import {AppInputProps} from './AppInput';
 import {ImageInput, ImageInputProps} from './ImageInput';
+import {RadioInput, RadioInputProps} from './RadioInput';
+import {usePage} from '@/components/Page';
 
 type FormFieldProps = {
   text: AppInputProps;
   mobile: PhoneNumberFieldProps;
   password: AppInputProps;
   image: ImageInputProps;
+  radio: RadioInputProps;
+};
+
+export type FormValidation = (
+  name: string,
+  values: {[name: string]: any},
+) => string | null;
+
+export const required: (message?: string) => FormValidation = (
+  message = 'This is a required field',
+) => (name, values) => {
+  return values[name] ? null : message;
 };
 
 export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
   type: K;
   props: FormFieldProps[K];
-  required?: boolean;
+  validations?: FormValidation[];
 };
 
 export type FormFields<T extends keyof any> = Record<T, FormField>;
@@ -43,9 +57,12 @@ export const FormBuilder = <FieldNames extends keyof any>({
   submitBtn,
   onSubmit,
 }: FormBuilderProps<FieldNames>) => {
+  const {setFooter} = usePage();
+
   const names = useMemo<FieldNames[]>(() => {
     return Object.keys(fields) as FieldNames[];
   }, [fields]);
+  type FormErrors = {[name: string]: string};
   type FormValues = Record<FieldNames, any>;
   const [values, setValues] = useState<FormValues>(
     names.reduce((acc, name) => {
@@ -58,24 +75,67 @@ export const FormBuilder = <FieldNames extends keyof any>({
       };
     }, {} as FormValues),
   );
+
+  const [errors, setErrors] = useState<FormErrors>(() => {
+    return names.reduce((acc, name) => {
+      return {
+        ...acc,
+        [name]: '',
+      };
+    }, {} as FormErrors);
+  });
+
+  const validateForm = useCallback(() => {
+    const nextErrors: FormErrors = (Object.keys(values) as FieldNames[]).reduce(
+      (acc, name) => {
+        const validations: FormValidation[] | undefined =
+          fields[name].validations;
+        return {
+          ...acc,
+          [name]:
+            validations?.reduce((error, validation) => {
+              if (error) {
+                return error;
+              }
+              return validation(name as string, values) ?? '';
+            }, '') ?? '',
+        };
+      },
+      {},
+    );
+    setErrors(nextErrors);
+    return Object.keys(nextErrors).reduce((acc, name) => {
+      return acc && !nextErrors[name];
+    }, true);
+  }, [fields, values]);
+
+  const handleSubmit = useCallback(
+    (submitFn?: (values: FormValues) => Promise<void>) => {
+      return () => {
+        if (!validateForm()) {
+          return Promise.resolve();
+        }
+        return submitFn?.(values) ?? Promise.resolve();
+      };
+    },
+    [validateForm, values],
+  );
+
+  const handleSubmitBtnPress = useCallback(handleSubmit(onSubmit), [
+    onSubmit,
+    values,
+  ]);
+
+  const {loading, run: runHandleSubmitBtnPress} = useAsync(
+    handleSubmitBtnPress,
+    {
+      defer: true,
+    },
+  );
+
   useEffect(() => {
     onInputChange?.(values);
   }, [onInputChange, values]);
-  const _onSubmitBtnPress = useCallback(() => {
-    const formComplete = (Object.keys(values) as FieldNames[]).reduce(
-      (acc, name) => {
-        return acc && (!fields[name].required || !!values[name]);
-      },
-      true,
-    );
-    if (!formComplete) {
-      return Promise.resolve();
-    }
-    return onSubmit?.(values) ?? Promise.resolve();
-  }, [fields, onSubmit, values]);
-  const {loading, run: onSubmitBtnPress} = useAsync(_onSubmitBtnPress, {
-    defer: true,
-  });
 
   const onChangeValue = useCallback(
     (name) => (value: any) => {
@@ -83,6 +143,24 @@ export const FormBuilder = <FieldNames extends keyof any>({
     },
     [],
   );
+
+  const button = useMemo(
+    () => (
+      <Button
+        style={applyStyles('w-full')}
+        {...submitBtn}
+        onPress={runHandleSubmitBtnPress}
+        isLoading={loading}
+      />
+    ),
+    [loading, runHandleSubmitBtnPress, submitBtn],
+  );
+
+  useEffect(() => {
+    if (setFooter) {
+      setFooter(button);
+    }
+  }, [button, loading, runHandleSubmitBtnPress, setFooter, submitBtn]);
 
   return (
     <View style={applyStyles('flex-row flex-wrap')}>
@@ -101,6 +179,8 @@ export const FormBuilder = <FieldNames extends keyof any>({
                   fieldProps.containerStyle,
                 )}
                 onChangeText={onChangeValue(name)}
+                isInvalid={!!errors[name as string]}
+                errorMessage={errors[name as string]}
               />
             );
           case 'mobile':
@@ -142,18 +222,24 @@ export const FormBuilder = <FieldNames extends keyof any>({
                 onChangeValue={onChangeValue(name)}
               />
             );
+          case 'radio':
+            fieldProps = field.props as RadioInputProps;
+            return (
+              <RadioInput
+                key={name as string}
+                {...fieldProps}
+                containerStyle={applyStyles(
+                  'mb-24 w-full',
+                  fieldProps.containerStyle,
+                )}
+                onChange={onChangeValue(name)}
+              />
+            );
           default:
             return null;
         }
       })}
-      {submitBtn && (
-        <Button
-          style={applyStyles('w-full')}
-          {...submitBtn}
-          onPress={onSubmitBtnPress}
-          isLoading={loading}
-        />
-      )}
+      {submitBtn && !setFooter && button}
     </View>
   );
 };

@@ -1,5 +1,11 @@
 import React, {useRef} from 'react';
-import {AuthView, FormBuilder, FormFields, PhoneNumber} from '@/components';
+import {
+  AuthView,
+  FormBuilder,
+  FormFields,
+  PhoneNumber,
+  required,
+} from '@/components';
 import {getApiService} from '@/services';
 import {ToastAndroid} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -23,7 +29,7 @@ const ForgotPassword = () => {
         placeholder: '',
         value: params.mobile,
       },
-      required: true,
+      validations: [required()],
     },
   };
 

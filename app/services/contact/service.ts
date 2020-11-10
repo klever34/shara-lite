@@ -31,7 +31,10 @@ export interface IContactService {
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
   formatPhoneNumber(number: string): string;
-  addContact(contact: any): any;
+  addContact(contact: {
+    givenName: string;
+    phoneNumbers: string[] | {label: string; number: string}[];
+  }): Promise<void>;
 }
 
 const parseDateString = (dateString: string) => {
@@ -157,15 +160,32 @@ export class ContactService implements IContactService {
     return String(phoneNumberDetails.number);
   }
 
-  public async addContact(contact: any) {
+  public async addContact(contact: {
+    givenName: string;
+    phoneNumbers: (string | {label: string; number: string})[];
+  }) {
     if (await this.checkWritePermission()) {
-      return new Promise<PhoneContact[]>((resolve, reject) => {
-        RNContacts.addContact(contact, (err) => {
-          if (err) {
-            reject(err);
-          }
-          resolve(contact);
-        });
+      return new Promise<void>((resolve, reject) => {
+        RNContacts.addContact(
+          {
+            givenName: contact.givenName,
+            phoneNumbers: contact.phoneNumbers.map((number) => {
+              if (typeof number === 'string') {
+                return {
+                  label: 'mobile',
+                  number,
+                };
+              }
+              return number;
+            }),
+          } as RNContacts.Contact,
+          (err) => {
+            if (err) {
+              reject(err);
+            }
+            resolve();
+          },
+        );
       });
     }
     throw new Error('We are unable to access your contacts.');

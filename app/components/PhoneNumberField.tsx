@@ -1,6 +1,6 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode, useCallback} from 'react';
+import React, {ReactNode, useCallback, useEffect, useState} from 'react';
 import {View} from 'react-native';
 import CountryPicker, {
   Country,
@@ -8,17 +8,23 @@ import CountryPicker, {
 } from 'react-native-country-picker-modal';
 import {FlagButtonProps} from 'react-native-country-picker-modal/lib/FlagButton';
 import {AppInput, AppInputProps} from './AppInput';
-import {parsePhoneNumberFromString} from 'libphonenumber-js';
+import parsePhoneNumberFromString from 'libphonenumber-js';
 
 export type PhoneNumber = {
   callingCode: string;
   number: string;
 };
 
+export type PhoneNumberFieldRef = {
+  phoneNumber: PhoneNumber;
+  setPhoneNumber: (phoneNumber: PhoneNumber) => void;
+};
+
 export type PhoneNumberFieldProps = {
   value?: PhoneNumber;
   onChangeText?(number: PhoneNumber): void;
   renderFlagButton?(props: FlagButtonProps): ReactNode;
+  innerRef?: (node: PhoneNumberFieldRef) => void;
 } & Omit<AppInputProps, 'value' | 'onChangeText'>;
 
 export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
@@ -28,6 +34,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     onChangeText,
     renderFlagButton,
     containerStyle,
+    innerRef,
     ...rest
   } = props;
 
@@ -35,31 +42,44 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
 
   const getCountryCode = useCallback(
     (phoneNumber?: PhoneNumber): CountryCode => {
-      return ((phoneNumber &&
-        parsePhoneNumberFromString(
-          `+${phoneNumber.callingCode}${phoneNumber.number}`,
-        )?.country) ??
-        countryCode2) as CountryCode;
+      if (!phoneNumber) {
+        return countryCode2 as CountryCode;
+      }
+      return (parsePhoneNumberFromString(
+        `+${phoneNumber.callingCode} ${
+          phoneNumber.number.length >= 4 ? phoneNumber.number : '1234'
+        }`,
+      )?.country ?? countryCode2) as CountryCode;
     },
     [countryCode2],
   );
 
-  const [phoneNumber, setPhoneNumber] = React.useState<
-    PhoneNumber & {countryCode: CountryCode}
-  >(() => ({
+  const [phoneNumber, setPhoneNumber] = React.useState<PhoneNumber>(() => ({
     number: value?.number ?? '',
     callingCode: value?.callingCode ?? callingCode,
-    countryCode: getCountryCode(value),
   }));
+
+  const [country, setCountry] = useState(getCountryCode(phoneNumber));
+
+  useEffect(() => {
+    if (innerRef) {
+      innerRef({
+        phoneNumber,
+        setPhoneNumber: (nextPhoneNumber) => {
+          setPhoneNumber(nextPhoneNumber);
+          onChangeText?.(nextPhoneNumber);
+        },
+      });
+    }
+  }, [onChangeText, innerRef, phoneNumber]);
 
   const onSelect = (nextCountry: Country) => {
     const nextCallingCode = nextCountry.callingCode[0];
-    const nextCountryCode = nextCountry.cca2;
+    setCountry(nextCountry.cca2);
     setPhoneNumber((prevPhoneNumber) => {
       let nextPhoneNumber = {
         ...prevPhoneNumber,
         callingCode: nextCallingCode,
-        countryCode: nextCountryCode,
       };
       onChangeText?.(nextPhoneNumber);
       return nextPhoneNumber;
@@ -77,7 +97,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
     });
   };
 
-  const pickerStyles = !phoneNumber?.countryCode
+  const pickerStyles = !country
     ? applyStyles({top: 0})
     : applyStyles({top: -3});
 
@@ -89,7 +109,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
         keyboardType="phone-pad"
         placeholder="Phone Number"
         value={phoneNumber.number}
-        style={applyStyles('pl-96', style)}
+        style={applyStyles({paddingLeft: 104}, style)}
         placeholderTextColor={colors['gray-50']}
         onChangeText={(text) => onInputChangeText(text)}
         leftIcon={
@@ -105,7 +125,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
               // @ts-ignore
               placeholder="Country"
               renderFlagButton={renderFlagButton}
-              countryCode={phoneNumber.countryCode}
+              countryCode={country}
               preferredCountries={['NG', 'KE', 'ZA', 'ZW']}
               containerButtonStyle={applyStyles('w-full text-500')}
             />

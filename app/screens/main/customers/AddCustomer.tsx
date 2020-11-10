@@ -1,90 +1,177 @@
 import {ICustomer} from '@/models';
-import {getCustomers, saveCustomer} from '@/services/customer/service';
-import {useRealm} from '@/services/realm';
 import {useNavigation} from '@react-navigation/native';
-import React, {useCallback, useRef} from 'react';
-import {Alert, ToastAndroid} from 'react-native';
+import React, {useState, useMemo, useRef, useEffect, useCallback} from 'react';
 import {
-  Button,
   FormBuilder,
   FormFields,
   PhoneNumber,
+  PhoneNumberFieldRef,
+  required,
 } from '../../../components';
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
+import {useAddCustomer} from '@/services/customer/hooks';
+import {Contact, selectContactPhone} from 'react-native-select-contact';
+import {getContactService} from '@/services';
+import parsePhoneNumberFromString from 'libphonenumber-js';
+import {RadioInputRef} from '@/components/RadioInput';
+import {TextInputFieldRef} from '@/components/TextInput';
 
-type Props = {
+type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
 };
 
-export const AddCustomer = (props: Props) => {
+export const AddCustomer = (props: AddCustomerProps) => {
   const {onSubmit} = props;
   const navigation = useNavigation();
-  const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
+  const addCustomer = useAddCustomer();
 
-  type FormFieldName = 'name' | 'mobile' | 'email';
+  type FormFieldName = 'name' | 'mobile' | 'email' | 'saveToPhonebook';
 
-  const formFields: FormFields<FormFieldName> = {
-    name: {
-      type: 'text',
-      props: {
-        label: 'Customer Name',
-      },
-      required: true,
-    },
-    mobile: {
-      type: 'mobile',
-      props: {
-        label: 'Phone Number (Optional)',
-      },
-    },
-    email: {
-      type: 'text',
-      props: {
-        label: 'Email (Optional)',
-        keyboardType: 'email-address',
-      },
-    },
-  };
+  const [importSelection, setImportSelection] = useState<{
+    contact: Contact;
+    phoneNumber: PhoneNumber;
+  } | null>(null);
 
-  const formValuesRef = useRef<Record<FormFieldName, any>>();
+  const nameFieldRef = useRef<TextInputFieldRef>();
+  const emailFieldRef = useRef<TextInputFieldRef>();
+  const mobileFieldRef = useRef<PhoneNumberFieldRef>();
+  const saveToPhonebookFieldRef = useRef<RadioInputRef>();
 
-  const onFormSubmit = useCallback(() => {
-    const values = formValuesRef.current as ICustomer;
-    if (customers.filtered('mobile = $0', values.mobile).length) {
-      Alert.alert(
-        'Info',
-        'Customer with the same phone number has been created.',
-      );
-    } else {
-      saveCustomer({realm, customer: values});
-      onSubmit ? onSubmit(values) : navigation.goBack();
-      ToastAndroid.showWithGravityAndOffset(
-        'Customer added',
-        ToastAndroid.SHORT,
-        ToastAndroid.TOP,
-        0,
-        52,
-      );
+  useEffect(() => {
+    const {current: mobileField} = mobileFieldRef;
+    const {current: nameField} = nameFieldRef;
+    const {current: emailField} = emailFieldRef;
+    if (mobileField && importSelection) {
+      mobileField.setPhoneNumber(importSelection.phoneNumber);
+      nameField?.onChangeText(importSelection.contact.name);
+      nameField?.onChangeText(importSelection.contact.name);
+      let emailEntry;
+      if ((emailEntry = importSelection.contact.emails[0])) {
+        emailField?.onChangeText(emailEntry.address);
+      }
     }
-  }, [navigation, realm, onSubmit, customers]);
+  }, [importSelection]);
 
-  const footer = <Button title="Add" onPress={onFormSubmit} />;
+  useEffect(() => {
+    const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
+    if (saveToPhonebookField && importSelection) {
+      saveToPhonebookField.setValue(false);
+      saveToPhonebookField.setDisabled(true);
+    }
+  }, [importSelection]);
+
+  const formFields: FormFields<FormFieldName> = useMemo(
+    () => ({
+      name: {
+        type: 'text',
+        props: {
+          label: 'Customer Name',
+          innerRef: (nameField: TextInputFieldRef) => {
+            nameFieldRef.current = nameField;
+          },
+        },
+        validations: [required()],
+      },
+      mobile: {
+        type: 'mobile',
+        props: {
+          label: 'Phone Number (Optional)',
+          innerRef: (mobileField: PhoneNumberFieldRef) => {
+            mobileFieldRef.current = mobileField;
+          },
+        },
+      },
+      email: {
+        type: 'text',
+        props: {
+          label: 'Email (Optional)',
+          keyboardType: 'email-address',
+          innerRef: (emailField: TextInputFieldRef) => {
+            emailFieldRef.current = emailField;
+          },
+        },
+      },
+      saveToPhonebook: {
+        type: 'radio',
+        props: {
+          label: 'Save to Phonebook',
+          value: true,
+          innerRef: (saveToPhonebookField: RadioInputRef) => {
+            saveToPhonebookFieldRef.current = saveToPhonebookField;
+          },
+        },
+      },
+    }),
+    [],
+  );
+
+  const handleImport = useCallback(() => {
+    selectContactPhone().then((selection) => {
+      if (!selection) {
+        return;
+      }
+      let {selectedPhone, contact} = selection;
+      const number = getContactService().formatPhoneNumber(
+        selectedPhone?.number,
+      );
+      const phoneNumber = parsePhoneNumberFromString(number);
+      if (phoneNumber) {
+        setImportSelection({
+          contact,
+          phoneNumber: {
+            callingCode: String(phoneNumber.countryCallingCode),
+            number: String(phoneNumber.nationalNumber),
+          },
+        });
+      }
+    });
+  }, []);
 
   return (
     <Page
-      header={{title: 'Add Customer', iconLeft: {}}}
-      footer={footer}
+      header={{
+        title: 'Add Customer',
+        iconLeft: {},
+        iconRight: {iconName: 'book', onPress: handleImport},
+      }}
       style={applyStyles('bg-white')}>
       <FormBuilder
         fields={formFields}
+        onSubmit={async (values) => {
+          const phoneNumber = values.mobile as PhoneNumber;
+          values = {
+            ...values,
+            mobile: phoneNumber.number
+              ? `+${phoneNumber.callingCode}${phoneNumber.number}`
+              : undefined,
+          };
+          await addCustomer(values);
+          if (values.saveToPhonebook && phoneNumber.number) {
+            await getContactService().addContact({
+              givenName: values.name,
+              phoneNumbers: [
+                `+${phoneNumber.callingCode}${phoneNumber.number}`,
+              ],
+            });
+          }
+          onSubmit ? onSubmit(values) : navigation.goBack();
+        }}
+        submitBtn={{
+          title: 'Add',
+        }}
         onInputChange={(values) => {
           const phoneNumber = values.mobile as PhoneNumber;
-          formValuesRef.current = {
-            ...values,
-            mobile: `+${phoneNumber.callingCode}${phoneNumber.number}`,
-          };
+          const {current: mobileField} = mobileFieldRef;
+          if (mobileField) {
+            if (phoneNumber.number !== importSelection?.phoneNumber.number) {
+              const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
+              if (saveToPhonebookField?.disabled) {
+                setImportSelection(null);
+                saveToPhonebookField?.setDisabled(false);
+              }
+            }
+          }
         }}
       />
     </Page>
