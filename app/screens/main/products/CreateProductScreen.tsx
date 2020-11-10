@@ -43,6 +43,7 @@ export const CreateProductScreen = (props: Props) => {
   const [isLoading, setIsLoading] = useState(false);
   const [price, setPrice] = useState<number | undefined>();
   const [products, setProducts] = useState<IProduct[]>([]);
+  const [showContinueBtn, setShowContinueBtn] = useState(true);
   const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
   const [quantity, setQuantity] = useState<string | undefined>(
     FormDefaults.get('quantity', ''),
@@ -215,6 +216,25 @@ export const CreateProductScreen = (props: Props) => {
     [handleStartEdit],
   );
 
+  const _keyboardDidShow = () => {
+    setShowContinueBtn(false);
+  };
+
+  const _keyboardDidHide = () => {
+    setShowContinueBtn(true);
+  };
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+    };
+  }, []);
+
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header
@@ -332,14 +352,16 @@ export const CreateProductScreen = (props: Props) => {
           }
         />
 
-        <StickyFooter>
-          <Button
-            title="Finish"
-            onPress={handleDone}
-            isLoading={isLoading}
-            disabled={!products.length}
-          />
-        </StickyFooter>
+        {showContinueBtn && (
+          <StickyFooter>
+            <Button
+              title="Finish"
+              onPress={handleDone}
+              isLoading={isLoading}
+              disabled={!products.length}
+            />
+          </StickyFooter>
+        )}
       </View>
     </SafeAreaView>
   );

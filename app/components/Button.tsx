@@ -23,7 +23,7 @@ export type ButtonProps = Omit<BaseButtonProps, 'onPress'> & {
   isLoading?: boolean;
   children?: React.ReactNode;
   onPress?: () => Promise<void> | void;
-  variantColor?: 'red' | 'white' | 'clear' | 'transparent';
+  variantColor?: 'red' | 'blue' | 'white' | 'clear' | 'transparent';
 };
 
 export const Button = ({
@@ -38,19 +38,25 @@ export const Button = ({
   const variantColorStyles: variantColorStylesOptions = {
     white: {
       button: styles.whiteButton,
-      text: styles.whiteButtonText,
+      text: disabled ? styles.buttonTextDisabled : styles.whiteButtonText,
     },
     red: {
       button: styles.redButton,
-      text: disabled ? styles.redButtonTextDisabled : styles.redButtonText,
+      text: disabled ? styles.buttonTextDisabled : styles.redButtonText,
+    },
+    blue: {
+      button: styles.blueButton,
+      text: disabled ? styles.buttonTextDisabled : styles.redButtonText,
     },
     clear: {
       button: styles.clearButton,
-      text: styles.whiteButtonText,
+      text: disabled ? styles.buttonTextDisabled : styles.whiteButtonText,
     },
     transparent: {
       button: styles.transparentButton,
-      text: applyStyles({color: colors['gray-300']}),
+      text: disabled
+        ? styles.buttonTextDisabled
+        : applyStyles({color: colors['gray-300']}),
     },
   };
 
@@ -126,6 +132,9 @@ const styles = StyleSheet.create({
   redButton: {
     backgroundColor: colors.primary,
   },
+  blueButton: {
+    backgroundColor: colors.blue,
+  },
   clearButton: {
     elevation: 0,
     backgroundColor: colors.white,
@@ -147,7 +156,7 @@ const styles = StyleSheet.create({
   redButtonText: {
     color: colors.white,
   },
-  redButtonTextDisabled: {
+  buttonTextDisabled: {
     color: colors['gray-100'],
   },
 });

@@ -178,7 +178,7 @@ export const ProductListScreen = withModal(() => {
                 onPress={() => setOpenEditModal(true)}
               />
               <Button
-                variantColor="red"
+                variantColor="blue"
                 title="Receive Inventory"
                 onPress={() => handleAddInventory(item)}
                 style={applyStyles({

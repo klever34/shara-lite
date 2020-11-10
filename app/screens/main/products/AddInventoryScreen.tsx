@@ -20,7 +20,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   FlatList,
@@ -42,6 +42,7 @@ export const AddInventoryScreen = ({route}: any) => {
   const {handleUpdateInventoryStock} = useReceiptProvider();
 
   const [isNewProduct, setIsNewProduct] = useState(false);
+  const [showContinueBtn, setShowContinueBtn] = useState(true);
   const [price, setPrice] = useState<number | undefined>(
     productToStartWith.price,
   );
@@ -51,9 +52,7 @@ export const AddInventoryScreen = ({route}: any) => {
     productToStartWith || null,
   );
   const [quantity, setQuantity] = useState<string | undefined>(
-    productToStartWith.quantity > 0
-      ? productToStartWith.quantity.toString()
-      : '0' || FormDefaults.get('quantity', ''),
+    '' || FormDefaults.get('quantity', ''),
   );
   const [searchQuery, setSearchQuery] = useState(productToStartWith.name || '');
 
@@ -252,7 +251,7 @@ export const AddInventoryScreen = ({route}: any) => {
       navigation.navigate('InventoryOtherDetails');
     } else if (items.length) {
       handleClearState();
-      handleUpdateInventoryStock(products);
+      handleUpdateInventoryStock(items);
       navigation.navigate('InventoryOtherDetails');
     } else {
       Alert.alert(
@@ -271,7 +270,6 @@ export const AddInventoryScreen = ({route}: any) => {
     handleClearState,
     handleUpdateInventoryStock,
     navigation,
-    products,
   ]);
 
   const renderInventoryStockItem = useCallback(
@@ -300,6 +298,25 @@ export const AddInventoryScreen = ({route}: any) => {
         </View>
       </Touchable>
     );
+  }, []);
+
+  const _keyboardDidShow = () => {
+    setShowContinueBtn(false);
+  };
+
+  const _keyboardDidHide = () => {
+    setShowContinueBtn(true);
+  };
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+    };
   }, []);
 
   return (
@@ -421,13 +438,15 @@ export const AddInventoryScreen = ({route}: any) => {
             </>
           }
         />
-        <StickyFooter>
-          <Button
-            title="Continue"
-            onPress={handleDone}
-            disabled={!products.length}
-          />
-        </StickyFooter>
+        {showContinueBtn && (
+          <StickyFooter>
+            <Button
+              title="Continue"
+              onPress={handleDone}
+              disabled={!products.length}
+            />
+          </StickyFooter>
+        )}
       </View>
     </SafeAreaView>
   );

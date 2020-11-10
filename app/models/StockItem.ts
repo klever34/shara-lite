@@ -4,7 +4,7 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IReceivedInventory} from './ReceivedInventory';
 
 export interface IStockItem extends BaseModelInterface {
-  supplier_name: string;
+  supplier_name?: string;
   batch_id?: string;
   name: string;
   sku?: string;
@@ -12,7 +12,7 @@ export interface IStockItem extends BaseModelInterface {
   quantity: number;
   cost_price?: number;
   total_cost_price?: number;
-  supplier: ISupplier;
+  supplier?: ISupplier;
   product: IProduct;
   receivedInventory?: IReceivedInventory;
 }
