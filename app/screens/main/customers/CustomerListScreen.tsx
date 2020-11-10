@@ -281,6 +281,7 @@ export const CustomerListScreen = withModal(
           backgroundColor: colors.white,
         })}>
         <HomeContainer<ICustomer>
+          headerImage={require('@/assets/images/shara-user-img.png')}
           initialNumToRender={10}
           headerTitle="total credit"
           createEntityButtonIcon="users"

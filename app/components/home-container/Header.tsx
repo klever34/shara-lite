@@ -1,13 +1,13 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Image, Text, View} from 'react-native';
+import {Image, ImageSourcePropType, Text, View} from 'react-native';
 import {
   Menu,
   MenuOption,
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {HeaderRightMenuOption} from '../HeaderRight';
+import {HeaderRightMenuOption} from '@/components';
 import {Icon} from '../Icon';
 
 export const HomeContainerHeader = ({
@@ -15,11 +15,13 @@ export const HomeContainerHeader = ({
   amount,
   activeFilter,
   menuOptions = [],
+  image,
 }: {
   title?: string;
   amount?: string;
   activeFilter?: string;
   menuOptions?: HeaderRightMenuOption[];
+  image?: ImageSourcePropType;
 }) => {
   return (
     <View
@@ -30,14 +32,16 @@ export const HomeContainerHeader = ({
         },
       )}>
       <View style={applyStyles('flex-row items-center')}>
-        <Image
-          resizeMode="contain"
-          style={applyStyles('w-full rounded-8', {
-            width: 32,
-            height: 32,
-          })}
-          source={require('@/assets/images/shara-user-img.png')}
-        />
+        {image && (
+          <Image
+            resizeMode="contain"
+            style={applyStyles('w-full rounded-8', {
+              width: 32,
+              height: 32,
+            })}
+            source={image}
+          />
+        )}
         <View style={applyStyles('pl-8')}>
           <Text
             style={applyStyles(
