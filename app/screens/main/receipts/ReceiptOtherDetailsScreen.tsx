@@ -144,35 +144,36 @@ export const ReceiptOtherDetailsScreen = () => {
     }
   };
 
-  const handleFinish = useCallback(async () => {
+  const handleFinish = useCallback(() => {
     setIsLoading(true);
-    let receiptToCreate: any = {
-      ...receipt,
-      note,
-      realm,
-      dueDate,
-      amountPaid,
-      creditAmount,
-      totalAmount,
-      payments: [{method: '', amount: amountPaid}],
-      customer: customer ? customer : ({} as ICustomer),
-    };
-    if (isNewCustomer && saveToPhoneBook) {
-      try {
-        await contactService.addContact({
-          givenName: customer?.name ?? '',
-          phoneNumbers: [
-            {
-              label: 'mobile',
-              number: customer?.mobile ?? '',
-            },
-          ],
-        });
-      } catch (error) {
-        Alert.alert('Error', error);
+    setTimeout(async () => {
+      let receiptToCreate: any = {
+        ...receipt,
+        note,
+        realm,
+        dueDate,
+        amountPaid,
+        creditAmount,
+        totalAmount,
+        payments: [{method: '', amount: amountPaid}],
+        customer: customer ? customer : ({} as ICustomer),
+      };
+      if (isNewCustomer && saveToPhoneBook) {
+        try {
+          await contactService.addContact({
+            givenName: customer?.name ?? '',
+            phoneNumbers: [
+              {
+                label: 'mobile',
+                number: customer?.mobile ?? '',
+              },
+            ],
+          });
+        } catch (error) {
+          Alert.alert('Error', error);
+        }
       }
-    }
-    setTimeout(() => {
+      setIsLoading(true);
       handleUpdateReceipt(receiptToCreate);
       const createdReceipt = saveReceipt(receiptToCreate);
       setIsLoading(false);

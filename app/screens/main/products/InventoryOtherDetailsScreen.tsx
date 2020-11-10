@@ -108,38 +108,35 @@ export const InventoryOtherDetailsScreen = () => {
     }
   };
 
-  const handleFinish = useCallback(async () => {
-    setIsLoading(true);
-
+  const handleFinish = useCallback(() => {
     let payload: any = {
       supplier,
       stockItems: inventoryStock,
     };
+    setIsLoading(true);
 
-    console.log(payload, '&&&&&');
-
-    if (isNewSupplier && saveToPhoneBook) {
-      try {
-        await contactService.addContact({
-          givenName: supplier?.name ?? '',
-          phoneNumbers: [
-            {
-              label: 'mobile',
-              number: supplier?.mobile ?? '',
-            },
-          ],
-        });
-        const newSupplier = saveSupplier({
-          realm,
-          supplier: {name: supplier?.name ?? '', mobile: supplier?.mobile},
-        });
-        payload.supplier = newSupplier;
-      } catch (error) {
-        Alert.alert('Error', error);
+    setTimeout(async () => {
+      if (isNewSupplier && saveToPhoneBook) {
+        try {
+          await contactService.addContact({
+            givenName: supplier?.name ?? '',
+            phoneNumbers: [
+              {
+                label: 'mobile',
+                number: supplier?.mobile ?? '',
+              },
+            ],
+          });
+        } catch (error) {
+          Alert.alert('Error', error);
+        }
       }
-    }
-
-    setTimeout(() => {
+      setIsLoading(true);
+      const newSupplier = saveSupplier({
+        realm,
+        supplier: {name: supplier?.name ?? '', mobile: supplier?.mobile},
+      });
+      payload.supplier = newSupplier;
       addNewInventory({
         realm,
         ...payload,
