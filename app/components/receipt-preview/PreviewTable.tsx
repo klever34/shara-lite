@@ -9,7 +9,7 @@ import Touchable from '../Touchable';
 
 export type ReceiptTableItemProps = {
   item: IReceiptItem | IProduct;
-  type?: 'receipt' | 'product';
+  type?: 'receipt' | 'product' | 'stockItem';
 };
 
 export const receiptTableStyles = StyleSheet.create({

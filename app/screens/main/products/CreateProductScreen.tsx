@@ -244,6 +244,7 @@ export const CreateProductScreen = (props: Props) => {
       <View style={applyStyles('flex-1')}>
         <FlatList
           data={[]}
+          nestedScrollEnabled
           persistentScrollbar
           renderItem={undefined}
           keyboardShouldPersistTaps="always"

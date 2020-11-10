@@ -6,13 +6,12 @@ import {
   Header,
   ReceiptTableHeader,
   ReceiptTableItem,
-  ReceiptTableItemProps,
   StickyFooter,
 } from '@/components';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
-import {IReceiptItem} from '@/models/ReceiptItem';
+import {IStockItem} from '@/models/StockItem';
 import {getAnalyticsService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
@@ -47,7 +46,7 @@ export const AddInventoryScreen = ({route}: any) => {
     productToStartWith.price,
   );
   const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
-  const [inventoryStock, setInventoryStock] = useState<IProduct[]>([]);
+  const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
   const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(
     productToStartWith || null,
   );
@@ -118,7 +117,12 @@ export const AddInventoryScreen = ({route}: any) => {
           itemToEdit &&
           inventoryStockItem._id?.toString() === itemToEdit?._id?.toString()
         ) {
-          return {...itemToEdit, price, quantity: parseFloat(quantity)};
+          return {
+            ...itemToEdit,
+            cost_price: price,
+            product: itemToEdit,
+            quantity: parseFloat(quantity),
+          };
         }
         return inventoryStockItem;
       }),
@@ -161,12 +165,11 @@ export const AddInventoryScreen = ({route}: any) => {
 
       const product = {
         ...payload,
-        price,
         product: payload,
-        _id: payload?._id,
+        cost_price: price,
         name: payload?.name,
         quantity: parseFloat(quantity),
-      } as IReceiptItem;
+      } as IStockItem;
 
       getAnalyticsService()
         .logEvent('productAddedToReceipt')
@@ -231,10 +234,9 @@ export const AddInventoryScreen = ({route}: any) => {
         ...payload,
         price,
         product: payload,
-        _id: payload?._id,
         name: payload?.name,
         quantity: parseFloat(quantity),
-      } as IReceiptItem;
+      } as IStockItem;
 
       setInventoryStock([product, ...inventoryStock]);
 
@@ -273,15 +275,20 @@ export const AddInventoryScreen = ({route}: any) => {
   ]);
 
   const renderInventoryStockItem = useCallback(
-    ({item}: ReceiptTableItemProps) => (
-      <ReceiptTableItem
-        item={item}
-        onPress={() => {
+    ({item}: {item: IStockItem}) => {
+      const itemToRender = {...item, price: item.cost_price};
+      return (
+        <ReceiptTableItem
           //@ts-ignore
-          handleStartEdit(item);
-        }}
-      />
-    ),
+          item={itemToRender}
+          type="stockItem"
+          onPress={() => {
+            //@ts-ignore
+            handleStartEdit(item);
+          }}
+        />
+      );
+    },
     [handleStartEdit],
   );
 
@@ -328,8 +335,9 @@ export const AddInventoryScreen = ({route}: any) => {
       <View style={applyStyles('flex-1')}>
         <FlatList
           data={[]}
-          renderItem={undefined}
+          nestedScrollEnabled
           persistentScrollbar
+          renderItem={undefined}
           keyboardShouldPersistTaps="always"
           ListHeaderComponent={
             <>
@@ -416,6 +424,7 @@ export const AddInventoryScreen = ({route}: any) => {
               </View>
               <FlatList
                 persistentScrollbar
+                //@ts-ignore
                 data={inventoryStock}
                 style={applyStyles('bg-white')}
                 renderItem={renderInventoryStockItem}

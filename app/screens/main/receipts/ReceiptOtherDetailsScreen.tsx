@@ -75,7 +75,7 @@ export const ReceiptOtherDetailsScreen = () => {
     receipt?.dueDate || addDays(new Date(), 7),
   );
   const [customer, setCustomer] = useState<ICustomer | undefined>(
-    receipt?.customer || ({} as ICustomer),
+    receipt?.customer,
   );
 
   const creditAmount = useMemo(() => totalAmount - amountPaid, [
@@ -174,9 +174,9 @@ export const ReceiptOtherDetailsScreen = () => {
     }
     setTimeout(() => {
       handleUpdateReceipt(receiptToCreate);
-      handleClearState();
       const createdReceipt = saveReceipt(receiptToCreate);
       setIsLoading(false);
+      handleClearState();
       navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
     }, 100);
   }, [

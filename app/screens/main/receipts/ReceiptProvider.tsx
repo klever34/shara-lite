@@ -1,6 +1,6 @@
 import {ICustomer} from '@/models';
-import {IProduct} from '@/models/Product';
 import {IReceiptItem} from '@/models/ReceiptItem';
+import {IStockItem} from '@/models/StockItem';
 import React, {
   createContext,
   ReactNode,
@@ -25,11 +25,11 @@ interface Receipt {
 
 const ReceiptContext = createContext<{
   receipt: Receipt;
-  inventoryStock: IProduct[];
+  inventoryStock: IStockItem[];
   handleClearReceipt: () => void;
   handleClearInventoryStock: () => void;
   handleUpdateReceipt: (data: any) => void;
-  handleUpdateInventoryStock: (data: IProduct[]) => void;
+  handleUpdateInventoryStock: (data: IStockItem[]) => void;
 }>({
   inventoryStock: [],
   receipt: {} as Receipt,
@@ -45,7 +45,7 @@ export const useReceiptProvider = () => {
 
 export const ReceiptProvider = ({children}: {children: ReactNode}) => {
   const [receipt, setReceipt] = useState<Receipt>({} as Receipt);
-  const [inventoryStock, setInventoryStock] = useState<IProduct[]>([]);
+  const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
 
   const handleClearReceipt = useCallback(() => {
     setReceipt({} as Receipt);
@@ -65,7 +65,7 @@ export const ReceiptProvider = ({children}: {children: ReactNode}) => {
   );
 
   const handleUpdateInventoryStock = useCallback(
-    (data: IProduct[]) => {
+    (data: IStockItem[]) => {
       if (data) {
         setInventoryStock([...inventoryStock, ...data]);
       }

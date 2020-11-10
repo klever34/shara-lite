@@ -157,11 +157,10 @@ export const CreateReceipt = (props: Props) => {
     let payload = selectedProduct;
     const priceCondition = price || price === 0 ? true : false;
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
-    if (priceCondition && quantityCondition && quantity) {
-      if (isNewProduct) {
-        payload = handleAddProduct({name: searchQuery, price});
-      }
-
+    if (isNewProduct) {
+      payload = handleAddProduct({name: searchQuery, price});
+    }
+    if (payload && priceCondition && quantityCondition && quantity) {
       const product = {
         ...payload,
         price,
@@ -205,7 +204,7 @@ export const CreateReceipt = (props: Props) => {
         ToastAndroid.LONG,
       );
     } else {
-      Alert.alert('Info', 'Please add product/service quantity');
+      Alert.alert('Info', 'Please add product/service, quantity & price');
     }
   }, [
     price,
@@ -363,6 +362,7 @@ export const CreateReceipt = (props: Props) => {
       <FlatList
         data={[]}
         persistentScrollbar
+        nestedScrollEnabled
         renderItem={undefined}
         keyboardShouldPersistTaps="always"
         ListHeaderComponent={

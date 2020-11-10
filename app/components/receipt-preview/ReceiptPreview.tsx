@@ -480,7 +480,7 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
         <View style={applyStyles('px-16')}>
           <Text
             style={applyStyles(
-              'pb-16 px-96 text-700 text-gray-200 text-center text-uppercase',
+              'pb-16 px-48 text-700 text-gray-200 text-center text-uppercase',
             )}>
             Share this receipt with your customer
           </Text>

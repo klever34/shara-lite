@@ -8,7 +8,6 @@ import {
 } from '@/components';
 import {Page} from '@/components/Page';
 import Touchable from '@/components/Touchable';
-import {IStockItem} from '@/models/StockItem';
 import {ISupplier} from '@/models/Supplier';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -114,20 +113,10 @@ export const InventoryOtherDetailsScreen = () => {
 
     let payload: any = {
       supplier,
-      stockItems: inventoryStock.map((item) => {
-        const itemPrice = item.price ? item.price : 0;
-        const itemQuantity = item?.quantity ? item.quantity : 0;
-        return {
-          supplier,
-          product: item,
-          sku: item?.sku,
-          name: item?.name,
-          cost_price: itemPrice,
-          quantity: itemQuantity,
-          total_cost_price: itemPrice * itemQuantity,
-        } as IStockItem;
-      }),
+      stockItems: inventoryStock,
     };
+
+    console.log(payload, '&&&&&');
 
     if (isNewSupplier && saveToPhoneBook) {
       try {

@@ -28,25 +28,26 @@ export const Page = ({
     <PageContext.Provider value={{setFooter}}>
       {header && <Header {...header} />}
       <KeyboardAwareScrollView
+        nestedScrollEnabled
         persistentScrollbar={true}
         keyboardShouldPersistTaps="always">
         <View style={applyStyles('px-16 py-16', style)}>{children}</View>
-        {footer && (
-          <View
-            style={applyStyles('w-full p-16 bg-white', {
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 5,
-              },
-              shadowOpacity: 0.34,
-              shadowRadius: 6.27,
-              elevation: 10,
-            })}>
-            {footer}
-          </View>
-        )}
       </KeyboardAwareScrollView>
+      {footer && (
+        <View
+          style={applyStyles('w-full p-16 bg-white', {
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 5,
+            },
+            shadowOpacity: 0.34,
+            shadowRadius: 6.27,
+            elevation: 10,
+          })}>
+          {footer}
+        </View>
+      )}
     </PageContext.Provider>
   );
 };
