@@ -50,7 +50,7 @@ const RealmProvider = (props: any) => {
     const storedSyncDate = await getLocalLastSync();
 
     if (!storedSyncDate) {
-      setIsSyncCompleted(false);
+      setIsSyncCompleted(true);
     }
   }, [setIsSyncCompleted]);
 
