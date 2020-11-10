@@ -9,7 +9,13 @@ import {getCustomers} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
-import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   KeyboardAvoidingView,
   ListRenderItemInfo,
@@ -37,7 +43,7 @@ export const CustomerListScreen = withModal(
   ({openModal}: CustomerListScreenProps) => {
     const navigation = useAppNavigation();
     const realm = useRealm();
-    const myCustomers = getCustomers({realm});
+    const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
     const analyticsService = getAnalyticsService();
     const financeSummary: IFinanceSummary = getSummary({realm});
     const [searchTerm, setSearchTerm] = useState('');
@@ -256,6 +262,15 @@ export const CustomerListScreen = withModal(
         ],
       });
     }, [addCustomer, navigation, openModal]);
+
+    useEffect(() => {
+      return navigation.addListener('focus', () => {
+        if (realm) {
+          const nextMyCustomers = getCustomers({realm});
+          setMyCustomers(nextMyCustomers);
+        }
+      });
+    }, [navigation, realm]);
 
     return (
       <KeyboardAvoidingView
