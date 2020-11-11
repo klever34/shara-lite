@@ -12,7 +12,7 @@ export const Welcome = () => {
           source={require('../../assets/images/shara_logo_white.png')}
           style={styles.image}
         />
-        <Text style={styles.bodyText}>the last ledger you'll ever need</Text>
+        <Text style={styles.bodyText}>The Last Ledger You'll Ever Need</Text>
       </View>
       <View style={styles.buttonSection}>
         <TouchableHighlight

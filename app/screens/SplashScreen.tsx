@@ -85,7 +85,7 @@ const SplashScreen = () => {
         source={require('../assets/images/shara_logo_white.png')}
         style={styles.image}
       />
-      <Text style={styles.text}>the last ledger you'll ever need</Text>
+      <Text style={styles.text}>The Last Ledger You'll Ever Need</Text>
     </View>
   );
 };
