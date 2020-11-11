@@ -1,9 +1,8 @@
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/helpers/utils';
 import {getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {Text, View} from 'react-native';
 import {BottomHalfContentProps} from 'types/modal';

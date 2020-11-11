@@ -1,8 +1,8 @@
 import {AuthView, BusinessForm, BusinessFormPayload} from '@/components';
-import {applyStyles} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
+import {applyStyles} from '@/styles';
 import React, {useCallback, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert, ToastAndroid} from 'react-native';
@@ -18,8 +18,9 @@ export const BusinessSettings = () => {
   const businessInfo = authService.getBusinessInfo();
   const {name, id, mobile, address, country_code, profile_image} = businessInfo;
   const code = country_code || callingCode;
-  const businessMobile =
-    code && mobile?.startsWith(code) ? mobile.replace(code, '') : mobile;
+  const businessMobile = mobile?.startsWith(code)
+    ? mobile.replace(code, '')
+    : mobile;
   const businessFormIntialValues = {
     name,
     address,
@@ -64,7 +65,7 @@ export const BusinessSettings = () => {
 
   return (
     <AuthView
-      title="Business Settings"
+      heading="Business Settings"
       style={applyStyles({paddingBottom: 100})}
       description="Create an account to do business faster and better.">
       <BusinessForm

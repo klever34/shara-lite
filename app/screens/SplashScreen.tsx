@@ -85,7 +85,7 @@ const SplashScreen = () => {
         source={require('../assets/images/shara_logo_white.png')}
         style={styles.image}
       />
-      <Text style={styles.text}>Connect. Share. Transact.</Text>
+      <Text style={styles.text}>The Last Ledger You'll Ever Need</Text>
     </View>
   );
 };
@@ -105,7 +105,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     resizeMode: 'contain',
   },
-  text: {color: colors.white, fontSize: 16, fontFamily: 'Rubik-Light'},
+  text: {color: colors.white, fontSize: 12, fontFamily: 'CocogoosePro-Regular'},
 });
 
 export default SplashScreen;

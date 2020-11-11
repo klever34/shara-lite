@@ -2,31 +2,17 @@ import 'react-native-get-random-values';
 import {v4 as uuidV4} from 'uuid';
 import promiseRetry from 'promise-retry';
 import addDays from 'date-fns/addDays';
-import {globalStyles} from '@/styles';
 import CryptoJS from 'crypto-js';
 import Config from 'react-native-config';
-import {TextStyle, ViewStyle} from 'react-native';
 import {getAuthService} from '@/services';
-import {Falsy} from 'types/app';
-import {ReactElement} from 'react';
+import {useCallback, useMemo, useState} from 'react';
+import ImagePicker, {
+  ImagePickerOptions,
+  ImagePickerResponse,
+} from 'react-native-image-picker';
+import {Alert, ToastAndroid} from 'react-native';
 
 export const generateUniqueId = () => uuidV4();
-
-export const applyStyles = (
-  ...styles: ({[key: string]: any} | ViewStyle | TextStyle | string | Falsy)[]
-): {[key: string]: any} =>
-  styles.reduce<{[key: string]: any}>((acc, curr) => {
-    if (typeof curr === 'string') {
-      const classNames = curr.split(' ');
-      if (!classNames.length) {
-        return acc;
-      } else if (classNames.length === 1) {
-        return {...acc, ...globalStyles[classNames[0]]};
-      }
-      return applyStyles(...classNames);
-    }
-    return {...acc, ...curr};
-  }, {});
 
 export const numberWithCommas = (x: number | undefined) =>
   x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
@@ -100,16 +86,47 @@ export const getCustomerWhatsappNumber = (
   }
 };
 
-export const renderList = <T extends {}>(
-  list: T[],
-  renderItem: (item: T, index: number, list: T[]) => ReactElement,
-  emptyState?: ReactElement,
+export type ImagePickerResult = Pick<ImagePickerResponse, 'uri'> & {
+  type?: string;
+  name?: string;
+};
+
+export const useImageInput = (
+  initialUrl?: ImagePickerResult,
+  options: ImagePickerOptions = {},
 ) => {
-  if (!list.length) {
-    return emptyState ?? null;
-  } else {
-    return list.map((...args) => renderItem(...args));
-  }
+  const [imageUrl, setImageUrl] = useState(initialUrl);
+  const handleImageInputChange = useCallback(() => {
+    ImagePicker.showImagePicker(options, (response) => {
+      if (response.didCancel) {
+        // do nothing
+      } else if (response.error) {
+        Alert.alert('Error', response.error);
+      } else {
+        const {uri, type, fileName} = response;
+        const extensionIndex = uri.lastIndexOf('.');
+        const extension = uri.slice(extensionIndex + 1);
+        const allowedExtensions = ['jpg', 'jpeg', 'png'];
+        if (!allowedExtensions.includes(extension)) {
+          return Alert.alert('Error', 'That file type is not allowed.');
+        }
+        const image = {
+          uri,
+          type,
+          name: fileName ?? '',
+        };
+        setImageUrl(image);
+      }
+    });
+  }, [options]);
+  return useMemo(
+    () => ({
+      imageUrl,
+      setImageUrl,
+      handleImageInputChange,
+    }),
+    [handleImageInputChange, imageUrl],
+  );
 };
 
 export const prepareValueForSearch = (text: any): string => {
@@ -117,4 +134,30 @@ export const prepareValueForSearch = (text: any): string => {
     return '';
   }
   return String(text).toLowerCase();
+};
+
+type ToastPayload = {
+  message: string;
+  duration?: 'short' | 'long';
+  gravity?: 'top' | 'center' | 'bottom';
+};
+
+export const showToast = (payload: ToastPayload) => {
+  const {message, duration = 'short', gravity = 'top'} = payload;
+  const durationType = {
+    long: ToastAndroid.LONG,
+    short: ToastAndroid.SHORT,
+  } as {[key: string]: number};
+  const gravityType = {
+    top: ToastAndroid.TOP,
+    center: ToastAndroid.CENTER,
+    bottom: ToastAndroid.BOTTOM,
+  } as {[key: string]: number};
+  ToastAndroid.showWithGravityAndOffset(
+    message,
+    durationType[duration],
+    gravityType[gravity],
+    0,
+    52,
+  );
 };

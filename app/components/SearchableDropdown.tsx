@@ -1,3 +1,8 @@
+/*
+  Code inspired by work done here
+  https://github.com/zubairpaizer/react-native-searchable-dropdown/blob/master/index.js
+*/
+
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,
@@ -8,8 +13,7 @@ import {
   View,
   TextInputProps,
 } from 'react-native';
-import {applyStyles} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import debounce from 'lodash/debounce';

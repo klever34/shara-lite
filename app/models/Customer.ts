@@ -13,16 +13,17 @@ export enum DEBT_LEVEL {
 export interface ICustomer extends BaseModelInterface {
   name: string;
   mobile?: string;
-  receipts?: IReceipt[];
+  email?: string;
+  receipts?: Realm.Results<IReceipt & Realm.Object>;
   payments?: IPayment[];
-  credits?: ICredit[];
+  credits?: Realm.Results<ICredit & Realm.Object>;
   addresses?: IAddress[];
 
   // Getters
   totalAmount?: number;
-  overdueCredit?: ICredit[];
+  overdueCredit?: Realm.Results<ICredit & Realm.Object>;
   overdueCreditAmount?: number;
-  remainingCredit?: ICredit[];
+  remainingCredit?: Realm.Results<ICredit & Realm.Object>;
   remainingCreditAmount?: number;
   debtLevel?: DEBT_LEVEL;
 }
@@ -37,6 +38,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       ...baseModelSchema,
       name: 'string?',
       mobile: {type: 'string?', indexed: true},
+      email: 'string?',
       receipts: {
         type: 'linkingObjects',
         objectType: 'Receipt',
@@ -59,37 +61,38 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       },
     },
   };
-  public receipts: IReceipt[] | undefined;
-  public credits: ICredit[] | undefined;
-  public get overdueCredit() {
-    const today = new Date();
-    return (this.credits || []).filter(
-      ({fulfilled, due_date}) =>
-        !fulfilled && due_date && due_date.getTime() < today.getTime(),
-    );
-  }
+  public receipts: Realm.Results<IReceipt & Realm.Object> | undefined;
+  public credits: Realm.Results<ICredit & Realm.Object> | undefined;
 
   public get totalAmount() {
-    return (this.receipts || []).reduce(
-      (acc, receipt) => acc + receipt.total_amount,
-      0,
-    );
-  }
-
-  public get overdueCreditAmount() {
-    return (this.overdueCredit || []).reduce(
-      (total, {amount_left}) => total + amount_left,
-      0,
+    return (
+      this.receipts?.reduce((acc, receipt) => acc + receipt.total_amount, 0) ??
+      0
     );
   }
 
   public get remainingCredit() {
-    return (this.credits || []).filter((item) => item.amount_left > 0);
+    return this.credits?.filtered('amount_left > 0');
   }
 
   public get remainingCreditAmount() {
-    return (this.remainingCredit || []).reduce(
+    return this.remainingCredit?.reduce(
       (acc, item) => acc + item.amount_left,
+      0,
+    );
+  }
+
+  public get overdueCredit() {
+    const today = new Date();
+    return this.credits?.filtered(
+      'fulfilled = false AND due_date != null AND due_date < $0',
+      today.toISOString(),
+    );
+  }
+
+  public get overdueCreditAmount() {
+    return this.overdueCredit?.reduce(
+      (total, {amount_left}) => total + amount_left,
       0,
     );
   }

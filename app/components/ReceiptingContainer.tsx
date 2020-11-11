@@ -1,13 +1,12 @@
 import EmptyState from '@/components/EmptyState';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency, applyStyles} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {getAllPayments} from '@/services/ReceiptService';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React, {ReactNode, useCallback} from 'react';
 import {SafeAreaView, Text, TextStyle, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
-import {HomeContainer} from './HomeContainer';
 
 type ReceiptingContainerProps = {
   handleListItemSelect?: (receiptId: IReceipt['_id']) => void;
@@ -25,7 +24,6 @@ export const ReceiptingContainer = ({
   receipts,
   children,
   emptyStateText,
-  onCreateReceipt,
   handleListItemSelect,
   getReceiptItemLeftText,
 }: ReceiptingContainerProps) => {
@@ -42,30 +40,24 @@ export const ReceiptingContainer = ({
     [getReceiptItemLeftText, handleListItemSelect],
   );
 
-  const handleCreateReceipt = useCallback(() => {
-    onCreateReceipt && onCreateReceipt();
-  }, [onCreateReceipt]);
-
   return (
     <SafeAreaView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
-      <HomeContainer onCreateReceipt={handleCreateReceipt}>
-        {children}
-        <FlatList
-          data={receipts}
-          initialNumToRender={10}
-          renderItem={renderReceiptItem}
-          keyboardShouldPersistTaps="always"
-          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
-          ListEmptyComponent={
-            <EmptyState
-              heading="No Sales"
-              text={emptyStateText}
-              style={applyStyles({paddingTop: 100})}
-            />
-          }
-        />
-      </HomeContainer>
+      {children}
+      <FlatList
+        data={receipts}
+        initialNumToRender={10}
+        renderItem={renderReceiptItem}
+        keyboardShouldPersistTaps="always"
+        keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+        ListEmptyComponent={
+          <EmptyState
+            heading="No Sales"
+            text={emptyStateText}
+            style={applyStyles({paddingTop: 100})}
+          />
+        }
+      />
     </SafeAreaView>
   );
 };

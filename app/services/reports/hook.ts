@@ -1,17 +1,17 @@
 import {useCallback} from 'react';
 import {exportToExcel} from '@/services/file-exports';
-import {useRealm} from '@/services/realm';
-import {getAllPayments, getReceipts} from '@/services/ReceiptService';
+import {getAllPayments} from '@/services/ReceiptService';
 import {format} from 'date-fns';
 import {numberWithCommas} from '@/helpers/utils';
 import {getAuthService} from '@/services';
+import {useReceipt} from '@/services/receipt';
 
 export const useReports = () => {
-  const realm = useRealm();
+  const {getReceipts} = useReceipt();
   const currencyCode = getAuthService().getUserCurrencyCode();
 
   const getReceiptsData = useCallback(() => {
-    const receipts = getReceipts({realm});
+    const receipts = getReceipts();
     const data = [
       [
         'Date',
@@ -65,7 +65,7 @@ export const useReports = () => {
     ];
 
     return {columns, data};
-  }, [currencyCode, realm]);
+  }, [getReceipts, currencyCode]);
 
   const exportReportsToExcel = useCallback(async () => {
     const {data, columns} = getReceiptsData();
@@ -74,7 +74,7 @@ export const useReports = () => {
     await exportToExcel({
       data,
       columns,
-      filename: `Shara Receipts - ${date}`,
+      filename: `Shara/Receipts/Shara Receipts - ${date}`,
       notificationTitle: 'Report exported successfully',
     });
   }, [getReceiptsData]);

@@ -1,18 +1,36 @@
 import React from 'react';
-import {Image, StyleSheet, Text, View, ImageProps} from 'react-native';
-import {applyStyles} from '../helpers/utils';
-import {colors} from '../styles';
+import {
+  Image,
+  Text,
+  View,
+  ImageProps,
+  ImageStyle,
+  TextStyle,
+} from 'react-native';
+import {applyStyles} from '../styles';
 
-type Props = {
+export type EmptyStateProps = {
   text?: string;
   heading?: string;
   children?: React.ReactNode;
+  imageStyle?: ImageStyle;
+  headingStyle?: TextStyle;
+  textStyle?: TextStyle;
   style?: string | {[key: string]: any};
   source?: ImageProps['source'];
 };
 
-const EmptyState = (props: Props) => {
-  const {style, children, heading, source, text} = props;
+const EmptyState = (props: EmptyStateProps) => {
+  const {
+    style,
+    children,
+    heading,
+    source,
+    text,
+    imageStyle,
+    headingStyle,
+    textStyle,
+  } = props;
   return (
     <View
       style={applyStyles(
@@ -22,44 +40,36 @@ const EmptyState = (props: Props) => {
         style,
       )}>
       {source && (
-        <Image style={applyStyles('pb-xl', styles.image)} source={source} />
+        <Image
+          source={source}
+          style={applyStyles('mb-md', {width: 140, height: 140}, imageStyle)}
+        />
       )}
       {!!heading && (
         <Text
           style={applyStyles(
-            'pb-xs',
-            'heading-700 text-center',
-            styles.heading,
+            'pb-xs text-700 text-gray-300 text-2xl text-center',
+            headingStyle,
           )}>
           {heading}
         </Text>
       )}
       {!!text && (
-        <Text style={applyStyles(styles.text, 'text-400')}>{text}</Text>
+        <Text
+          style={applyStyles(
+            'text-400 text-sm text-gray-200 text-center',
+            {
+              maxWidth: 300,
+              marginHorizontal: 'auto',
+            },
+            textStyle,
+          )}>
+          {text}
+        </Text>
       )}
       {children}
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  heading: {
-    fontSize: 24,
-    color: colors['gray-300'],
-  },
-  text: {
-    fontSize: 16,
-    maxWidth: 300,
-    lineHeight: 27,
-    textAlign: 'center',
-    color: colors['gray-200'],
-    marginHorizontal: 'auto',
-  },
-  image: {
-    width: 140,
-    height: 140,
-    marginBottom: 24,
-  },
-});
 
 export default EmptyState;

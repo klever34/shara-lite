@@ -1,53 +1,71 @@
+import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
-import {ScrollView, Text, View, ViewStyle} from 'react-native';
-import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/helpers/utils';
-import Icon from '@/components/Icon';
-import {useNavigation} from '@react-navigation/native';
-import {colors} from '@/styles';
+import {Text, View, ViewStyle} from 'react-native';
+import {Button} from './Button';
+import {Page} from './Page';
+import {SecureEmblem} from './SecureEmblem';
+import {HeaderTitleProps} from '@/components/Header';
 
 export type AuthViewProps = {
-  title: string;
+  header?: HeaderTitleProps;
+  heading?: string;
   style?: ViewStyle;
   children: ReactNode;
+  isLoading?: boolean;
   description?: string;
-  showBackButton?: boolean;
+  buttonTitle?: string;
+  showButton?: boolean;
+  showEmblem?: boolean;
+  onSubmit?: () => void;
 };
 
 export const AuthView = ({
-  title,
   style,
+  header,
+  heading,
+  onSubmit,
   children,
+  isLoading,
   description,
-  showBackButton = true,
+  buttonTitle,
+  showButton = true,
+  showEmblem = true,
 }: AuthViewProps) => {
-  const navigation = useNavigation();
   return (
-    <ScrollView
-      style={applyStyles('flex-1 py-32', {backgroundColor: colors.white})}
-      keyboardShouldPersistTaps="always"
-      persistentScrollbar={true}>
-      {showBackButton && (
-        <View style={applyStyles('mb-32')}>
-          <Touchable onPress={() => navigation.goBack()}>
-            <View style={applyStyles('h-48 w-48 center ml-16')}>
-              <Icon size={24} type="feathericons" name="arrow-left" />
-            </View>
-          </Touchable>
-        </View>
-      )}
-      <View style={applyStyles('mb-24 px-32')}>
-        <Text style={applyStyles('text-2xl pb-8 text-black heading-700')}>
-          {title}
+    <Page
+      style={style}
+      header={header}
+      footer={
+        showButton ? (
+          <Button
+            variantColor="red"
+            onPress={onSubmit}
+            title={buttonTitle}
+            isLoading={isLoading}
+            style={applyStyles('w-full')}
+          />
+        ) : undefined
+      }>
+      <View style={applyStyles('mb-32 pt-24 center')}>
+        <Text
+          style={applyStyles('text-2xl pb-8 text-700 text-center', {
+            color: colors['gray-300'],
+          })}>
+          {heading}
         </Text>
         <Text
-          style={applyStyles(
-            'text-base leading-28 pb-8 text-gray-300 text-400',
-          )}>
+          style={applyStyles('text-400 text-center text-sm', {
+            color: colors['gray-300'],
+          })}>
           {description}
         </Text>
       </View>
-      <View style={applyStyles('px-32', style)}>{children}</View>
-    </ScrollView>
+      {children}
+      {showEmblem && (
+        <View style={applyStyles('flex-row center pt-24')}>
+          <SecureEmblem />
+        </View>
+      )}
+    </Page>
   );
 };

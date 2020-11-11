@@ -1,4 +1,4 @@
-import React, {useCallback, ReactNode} from 'react';
+import React, {useCallback, ReactNode, useEffect, useState} from 'react';
 import {
   ActivityIndicator,
   StyleSheet,
@@ -8,7 +8,7 @@ import {
 } from 'react-native';
 import {colors} from '@/styles';
 import Touchable from './Touchable';
-import {applyStyles} from '@/helpers/utils';
+import {applyStyles} from '@/styles';
 
 interface variantColorStylesOptions {
   [key: string]: any;
@@ -18,12 +18,12 @@ interface variantColorHexColorOptions {
   [key: string]: string;
 }
 
-export type ButtonProps = BaseButtonProps & {
+export type ButtonProps = Omit<BaseButtonProps, 'onPress'> & {
   style?: ViewStyle;
   isLoading?: boolean;
   children?: React.ReactNode;
-  variant?: 'filled' | 'clear';
-  variantColor?: 'red' | 'white' | 'clear';
+  onPress?: () => Promise<void> | void;
+  variantColor?: 'red' | 'blue' | 'white' | 'clear' | 'transparent';
 };
 
 export const Button = ({
@@ -38,15 +38,25 @@ export const Button = ({
   const variantColorStyles: variantColorStylesOptions = {
     white: {
       button: styles.whiteButton,
-      text: styles.whiteButtonText,
+      text: disabled ? styles.buttonTextDisabled : styles.whiteButtonText,
     },
     red: {
       button: styles.redButton,
-      text: styles.redButtonText,
+      text: disabled ? styles.buttonTextDisabled : styles.redButtonText,
+    },
+    blue: {
+      button: styles.blueButton,
+      text: disabled ? styles.buttonTextDisabled : styles.redButtonText,
     },
     clear: {
       button: styles.clearButton,
-      text: styles.whiteButtonText,
+      text: disabled ? styles.buttonTextDisabled : styles.whiteButtonText,
+    },
+    transparent: {
+      button: styles.transparentButton,
+      text: disabled
+        ? styles.buttonTextDisabled
+        : applyStyles({color: colors['gray-300']}),
     },
   };
 
@@ -54,6 +64,24 @@ export const Button = ({
     white: colors.primary,
     red: colors.white,
   };
+
+  const [loading, setLoading] = useState(isLoading);
+
+  useEffect(() => {
+    setLoading(isLoading);
+  }, [isLoading]);
+
+  const handlePress = useCallback(() => {
+    if (onPress) {
+      const result = onPress();
+      if (result) {
+        setLoading(true);
+        result.finally(() => {
+          setLoading(false);
+        });
+      }
+    }
+  }, [onPress]);
 
   const renderContent = useCallback(() => {
     if (title) {
@@ -71,16 +99,16 @@ export const Button = ({
 
   return (
     <BaseButton
-      onPress={onPress}
-      disabled={disabled || isLoading}
+      onPress={handlePress}
+      disabled={disabled || loading}
       style={applyStyles(
         styles.button,
         variantColorStyles[variantColor].button,
         {...style},
       )}>
-      {isLoading ? (
+      {loading ? (
         <ActivityIndicator
-          animating={isLoading}
+          animating={loading}
           color={activityIndicatorColor[variantColor]}
         />
       ) : (
@@ -104,20 +132,32 @@ const styles = StyleSheet.create({
   redButton: {
     backgroundColor: colors.primary,
   },
+  blueButton: {
+    backgroundColor: colors.blue,
+  },
   clearButton: {
     elevation: 0,
     backgroundColor: colors.white,
   },
+  transparentButton: {
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+  },
   text: {
     fontSize: 16,
-    fontFamily: 'Rubik-Regular',
-    textTransform: 'uppercase',
+    fontWeight: '700',
+    textTransform: 'capitalize',
   },
   whiteButtonText: {
     color: colors.primary,
   },
   redButtonText: {
     color: colors.white,
+  },
+  buttonTextDisabled: {
+    color: colors['gray-100'],
   },
 });
 
@@ -137,10 +177,14 @@ export const BaseButton = ({
   disabled,
 }: BaseButtonProps) => {
   const disabledStyle = disabled ? baseButtonStyles.disabled : {};
+  const textStyle = disabled
+    ? baseButtonStyles.disabledText
+    : baseButtonStyles.text;
+
   return (
     <Touchable onPress={onPress} disabled={disabled}>
       <View style={{...baseButtonStyles.container, ...style, ...disabledStyle}}>
-        {children || <Text style={baseButtonStyles.text}>{title}</Text>}
+        {children || <Text style={textStyle}>{title}</Text>}
       </View>
     </Touchable>
   );
@@ -152,15 +196,27 @@ export const baseButtonStyles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: colors.primary,
     alignItems: 'center',
-    elevation: 3,
     borderRadius: 36,
+    shadowColor: 'red',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   text: {
-    color: colors.white,
-    textTransform: 'uppercase',
     fontSize: 14,
     lineHeight: 20,
-    fontFamily: 'Rubik-Light',
+    color: colors.white,
+    textTransform: 'capitalize',
+  },
+  disabledText: {
+    fontSize: 14,
+    lineHeight: 20,
+    color: colors['gray-100'],
+    textTransform: 'capitalize',
   },
   icon: {
     color: colors.white,
@@ -168,6 +224,7 @@ export const baseButtonStyles = StyleSheet.create({
     lineHeight: 24,
   },
   disabled: {
-    opacity: 0.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: colors['gray-20'],
   },
 });

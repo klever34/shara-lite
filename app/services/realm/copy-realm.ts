@@ -22,16 +22,6 @@ const copyObject = ({
   isLocal: boolean;
 }) => {
   const copy = getRealmObjectCopy({obj, objSchema}) as BaseModelInterface;
-  const updateRealmObject = shouldUpdateRealmObject({
-    sourceObject: obj,
-    targetRealm,
-    modelName: objSchema.name,
-  });
-
-  if (!updateRealmObject) {
-    return;
-  }
-
   const copyItem = () => {
     try {
       const writeItem = () => {
@@ -54,11 +44,22 @@ const copyObject = ({
     }
   };
 
-  if (useQueue) {
-    addItemToQueue(copyItem);
-  } else {
+  if (!useQueue) {
     copyItem();
+    return;
   }
+
+  const updateRealmObject = shouldUpdateRealmObject({
+    sourceObject: obj,
+    targetRealm,
+    modelName: objSchema.name,
+  });
+
+  if (!updateRealmObject) {
+    return;
+  }
+
+  addItemToQueue(copyItem);
 };
 
 export const copyRealm = ({

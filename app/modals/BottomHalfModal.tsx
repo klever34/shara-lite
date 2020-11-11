@@ -1,10 +1,39 @@
-import React, {useCallback} from 'react';
+import React, {ReactNode, useCallback} from 'react';
 import Modal from 'react-native-modal';
 import {BaseModalProps, ModalOptionsList} from 'types/modal';
-import {applyStyles} from '@/helpers/utils';
 import {View, StyleSheet} from 'react-native';
+import {applyStyles} from '@/styles';
 
 type BottomHalfModalProps = ModalOptionsList['bottom-half'] & BaseModalProps;
+
+export const BottomHalfModalContainer = ({
+  visible,
+  onClose,
+  children,
+  swipeDirection = ['down'],
+}: Pick<BottomHalfModalProps, 'visible' | 'swipeDirection'> & {
+  children: ReactNode;
+  onClose: () => void;
+}) => {
+  return (
+    <Modal
+      isVisible={visible}
+      onSwipeComplete={onClose}
+      onBackdropPress={onClose}
+      onBackButtonPress={onClose}
+      swipeDirection={swipeDirection}
+      style={applyStyles('justify-end m-0')}>
+      <View style={styles.content}>
+        <View
+          style={applyStyles(
+            'w-60 h-4 bg-gray-20 self-center rounded-8 mt-24 mb-16',
+          )}
+        />
+        {children}
+      </View>
+    </Modal>
+  );
+};
 
 const BottomHalfModal = ({
   visible,
@@ -27,7 +56,9 @@ const BottomHalfModal = ({
       style={applyStyles('justify-end m-0')}>
       <View style={styles.content}>
         <View
-          style={applyStyles('w-72 h-4 bg-gray-50 self-center rounded-8 my-6')}
+          style={applyStyles(
+            'w-60 h-4 bg-gray-20 self-center rounded-8 mt-24 mb-16',
+          )}
         />
         {renderContent({closeModal: handleCloseModal})}
       </View>

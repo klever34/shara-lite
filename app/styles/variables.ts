@@ -23,6 +23,7 @@ export const colors: {[key: string]: string} = {
   green: '#20C720',
   black: '#222222',
   whatsapp: '#1BA058',
+  blue: '#386EC4',
 };
 
 const sizes = [
@@ -40,6 +41,7 @@ const sizes = [
   24,
   28,
   32,
+  36,
   40,
   48,
   56,
@@ -48,6 +50,9 @@ const sizes = [
   72,
   80,
   96,
+  112,
+  120,
+  128,
 ];
 
 export const spacing: {[key: string]: number} = {

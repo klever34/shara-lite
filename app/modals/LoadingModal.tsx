@@ -1,7 +1,6 @@
 import React from 'react';
-import {applyStyles} from '@/helpers/utils';
 import {ActivityIndicator, Text, View} from 'react-native';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import Modal from 'react-native-modal';
 import {BaseModalProps, ModalOptionsList} from 'types/modal';
 
