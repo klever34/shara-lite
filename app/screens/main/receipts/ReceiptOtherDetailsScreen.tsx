@@ -62,7 +62,6 @@ export const ReceiptOtherDetailsScreen = () => {
 
   const [note, setNote] = useState('');
   const [mobile, setMobile] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isNewCustomer, setIsNewCustomer] = useState(false);
   const [saveToPhoneBook, setSaveToPhoneBook] = useState(true);
   const [amountPaid, setAmountPaid] = useState(totalAmount || 0);
@@ -145,42 +144,37 @@ export const ReceiptOtherDetailsScreen = () => {
     }
   };
 
-  const handleFinish = useCallback(() => {
-    setIsLoading(true);
-    setTimeout(async () => {
-      let receiptToCreate: any = {
-        ...receipt,
-        note,
-        realm,
-        dueDate,
-        amountPaid,
-        creditAmount,
-        totalAmount,
-        payments: [{method: '', amount: amountPaid}],
-        customer: customer ? customer : ({} as ICustomer),
-      };
-      if (isNewCustomer && saveToPhoneBook) {
-        try {
-          await contactService.addContact({
-            givenName: customer?.name ?? '',
-            phoneNumbers: [
-              {
-                label: 'mobile',
-                number: customer?.mobile ?? '',
-              },
-            ],
-          });
-        } catch (error) {
-          Alert.alert('Error', error);
-        }
+  const handleFinish = useCallback(async () => {
+    let receiptToCreate: any = {
+      ...receipt,
+      note,
+      realm,
+      dueDate,
+      amountPaid,
+      creditAmount,
+      totalAmount,
+      payments: [{method: '', amount: amountPaid}],
+      customer: customer ? customer : ({} as ICustomer),
+    };
+    if (isNewCustomer && saveToPhoneBook) {
+      try {
+        await contactService.addContact({
+          givenName: customer?.name ?? '',
+          phoneNumbers: [
+            {
+              label: 'mobile',
+              number: customer?.mobile ?? '',
+            },
+          ],
+        });
+      } catch (error) {
+        Alert.alert('Error', error);
       }
-      setIsLoading(true);
-      handleUpdateReceipt(receiptToCreate);
-      const createdReceipt = await saveReceipt(receiptToCreate);
-      setIsLoading(false);
-      handleClearState();
-      navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
-    }, 100);
+    }
+    handleUpdateReceipt(receiptToCreate);
+    const createdReceipt = await saveReceipt(receiptToCreate);
+    handleClearState();
+    navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
   }, [
     note,
     realm,
@@ -252,7 +246,6 @@ export const ReceiptOtherDetailsScreen = () => {
           <Button
             title="Finish"
             variantColor="red"
-            isLoading={isLoading}
             onPress={handleFinish}
             style={applyStyles('w-full')}
           />

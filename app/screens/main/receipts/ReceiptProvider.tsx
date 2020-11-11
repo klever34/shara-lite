@@ -29,14 +29,18 @@ const ReceiptContext = createContext<{
   handleClearReceipt: () => void;
   handleClearInventoryStock: () => void;
   handleUpdateReceipt: (data: any) => void;
+  createReceiptFromCustomer: ICustomer | undefined;
   handleUpdateInventoryStock: (data: IStockItem[]) => void;
+  handleUpdateCreateReceiptFromCustomer: (data: ICustomer) => void;
 }>({
   inventoryStock: [],
   receipt: {} as Receipt,
   handleClearReceipt: () => {},
   handleClearInventoryStock: () => {},
+  createReceiptFromCustomer: undefined,
   handleUpdateReceipt: (data) => console.log(data),
   handleUpdateInventoryStock: (data) => console.log(data),
+  handleUpdateCreateReceiptFromCustomer: (data) => console.log(data),
 });
 
 export const useReceiptProvider = () => {
@@ -46,9 +50,13 @@ export const useReceiptProvider = () => {
 export const ReceiptProvider = ({children}: {children: ReactNode}) => {
   const [receipt, setReceipt] = useState<Receipt>({} as Receipt);
   const [inventoryStock, setInventoryStock] = useState<IStockItem[]>([]);
+  const [createReceiptFromCustomer, setCreateReceiptFromCustomer] = useState<
+    ICustomer | undefined
+  >();
 
   const handleClearReceipt = useCallback(() => {
     setReceipt({} as Receipt);
+    setCreateReceiptFromCustomer(undefined);
   }, []);
 
   const handleClearInventoryStock = useCallback(() => {
@@ -73,6 +81,15 @@ export const ReceiptProvider = ({children}: {children: ReactNode}) => {
     [inventoryStock],
   );
 
+  const handleUpdateCreateReceiptFromCustomer = useCallback(
+    (customer: ICustomer) => {
+      if (customer) {
+        setCreateReceiptFromCustomer(customer);
+      }
+    },
+    [],
+  );
+
   return (
     <ReceiptContext.Provider
       value={{
@@ -81,7 +98,9 @@ export const ReceiptProvider = ({children}: {children: ReactNode}) => {
         handleClearReceipt,
         handleUpdateReceipt,
         handleClearInventoryStock,
+        createReceiptFromCustomer,
         handleUpdateInventoryStock,
+        handleUpdateCreateReceiptFromCustomer,
       }}>
       {children}
     </ReceiptContext.Provider>

@@ -12,13 +12,20 @@ import {useReceiptProvider} from './ReceiptProvider';
 export const ReceiptSuccessScreen = ({route}: any) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
-  const {handleClearReceipt} = useReceiptProvider();
+  const {handleClearReceipt, createReceiptFromCustomer} = useReceiptProvider();
   const [receipt, setReceipt] = useState<IReceipt | undefined>();
 
   const handleClose = useCallback(() => {
-    handleClearReceipt();
-    navigation.navigate('Home');
-  }, [navigation, handleClearReceipt]);
+    if (createReceiptFromCustomer) {
+      handleClearReceipt();
+      navigation.navigate('CustomerDetails', {
+        customer: createReceiptFromCustomer,
+      });
+    } else {
+      handleClearReceipt();
+      navigation.navigate('Home');
+    }
+  }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {

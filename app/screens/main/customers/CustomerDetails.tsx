@@ -15,6 +15,7 @@ import {MainStackParamList} from '..';
 import {Page} from '@/components/Page';
 import {ReceiptListItem} from '@/screens/main/receipts/ReceiptListItem';
 import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
+import {useReceiptProvider} from '../receipts/ReceiptProvider';
 
 type CustomerDetailsProps = ModalWrapperFields & {
   route: RouteProp<
@@ -26,6 +27,7 @@ type CustomerDetailsProps = ModalWrapperFields & {
 const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   const navigation = useNavigation();
   const {customer} = route.params;
+  const {handleUpdateCreateReceiptFromCustomer} = useReceiptProvider();
 
   const getReceiptItemLeftText = useCallback(
     (receipt: IReceipt, baseStyle: TextStyle) => {
@@ -154,8 +156,9 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   }, []);
 
   const handleCreateReceipt = useCallback(() => {
+    handleUpdateCreateReceiptFromCustomer(customer);
     navigation.navigate('CreateReceipt', {receipt: {customer}});
-  }, [customer, navigation]);
+  }, [customer, navigation, handleUpdateCreateReceiptFromCustomer]);
 
   const footer = filteredReceipts?.length ? (
     <Button title="Create Receipt" onPress={handleCreateReceipt} />
