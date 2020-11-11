@@ -66,7 +66,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const currencyCode = getAuthService().getUserCurrencyCode();
   const {creditAmountLeft, totalAmountPaid} = getReceiptAmounts(receipt);
 
-  const [isLoading, setIsLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState('');
   const [printer, setPrinter] = useState<{address: string}>(
     {} as {address: string},
@@ -396,31 +395,18 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
 
   const handleCreditPaymentSubmit = useCallback(() => {
     if (customer?.name) {
-      setIsLoading(true);
-      setTimeout(() => {
-        setIsLoading(false);
-        const newCustomer = customer._id
-          ? customer
-          : saveCustomer({realm, customer});
-        receipt &&
-          updateReceipt({
-            realm,
-            receipt,
-            customer: newCustomer,
-          });
-        saveCreditPayment({
-          realm,
-          customer,
-          method: '',
-          amount: creditPaymentAmount,
-        });
-        setCreditPaymentAmount(0);
-        showToast({message: 'CREDIT PAYMENT RECORDED'});
-      }, 50);
+      saveCreditPayment({
+        realm,
+        customer,
+        method: '',
+        amount: creditPaymentAmount,
+      });
+      setCreditPaymentAmount(0);
+      showToast({message: 'CREDIT PAYMENT RECORDED'});
     } else {
       Alert.alert('Info', 'Please select a customer');
     }
-  }, [creditPaymentAmount, customer, realm, receipt]);
+  }, [creditPaymentAmount, customer, realm]);
 
   const handleOpenContactList = useCallback(() => {
     const closeContactListModal = openModal('bottom-half', {
@@ -527,7 +513,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                     </View>
                     <View style={applyStyles({width: '48%'})}>
                       <Button
-                        isLoading={isLoading}
                         title="record payment"
                         disabled={!creditPaymentAmount}
                         onPress={handleCreditPaymentSubmit}
