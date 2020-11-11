@@ -1,6 +1,6 @@
 import {FAButton} from '@/components';
 import {applyStyles} from '@/styles';
-import React from 'react';
+import React, {ReactNode} from 'react';
 import {
   DefaultSectionT,
   FlatList,
@@ -11,6 +11,7 @@ import {
   SectionListRenderItem,
   Text,
   View,
+  ViewStyle,
   VirtualizedListProps,
 } from 'react-native';
 import {Button} from '../Button';
@@ -41,6 +42,8 @@ type HomeContainerProps<T> = {
   initialNumToRender?: VirtualizedListProps<T>['initialNumToRender'];
   renderSectionListItem?: SectionListRenderItem<T, DefaultSectionT>;
   showFAB?: boolean;
+  moreHeader?: ReactNode;
+  headerStyle?: ViewStyle;
 };
 
 export function HomeContainer<T>(props: HomeContainerProps<T>) {
@@ -65,6 +68,8 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
     createEntityButtonIcon,
     showFAB = true,
     headerImage,
+    moreHeader = null,
+    headerStyle,
   } = props;
 
   return (
@@ -76,8 +81,10 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
           activeFilter={activeFilter}
           menuOptions={filterOptions}
           image={headerImage}
+          style={headerStyle}
         />
       )}
+      {moreHeader}
       <SearchFilter
         onSearch={onSearch}
         onOpenFilter={onOpenFilter}
