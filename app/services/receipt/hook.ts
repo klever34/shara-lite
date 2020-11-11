@@ -62,6 +62,9 @@ interface useReceiptInterface {
   getReceipt: (params: getReceiptInterface) => IReceipt;
   getReceiptsTotalAmount: (receipt: IReceipt[]) => number;
   getReceiptsTotalProductQuantity: (receiptsData: IReceipt[]) => number;
+  getReceiptAmounts: (
+    receiptData?: IReceipt,
+  ) => {totalAmountPaid: number; creditAmountLeft?: number};
 }
 
 export const useReceipt = (): useReceiptInterface => {
@@ -325,6 +328,21 @@ export const useReceipt = (): useReceiptInterface => {
       )
       .reduce((acc, recepitItem) => acc + recepitItem.quantity, 0);
 
+  const getReceiptAmounts = (receiptData?: IReceipt) => {
+    const allPayments = receiptData
+      ? getAllPayments({receipt: receiptData})
+      : [];
+    const totalAmountPaid: number = allPayments.reduce(
+      (total, payment) => total + payment.amount_paid,
+      0,
+    );
+    const creditAmountLeft = receiptData?.credits?.reduce(
+      (acc, item) => acc + item.amount_left,
+      0,
+    );
+    return {totalAmountPaid, creditAmountLeft};
+  };
+
   return {
     getReceipts,
     saveReceipt,
@@ -334,5 +352,6 @@ export const useReceipt = (): useReceiptInterface => {
     getReceipt,
     getReceiptsTotalAmount,
     getReceiptsTotalProductQuantity,
+    getReceiptAmounts,
   };
 };

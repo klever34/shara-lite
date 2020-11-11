@@ -3,6 +3,7 @@ import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useMemo} from 'react';
@@ -25,16 +26,22 @@ export const ReceiptListItem = ({
   getReceiptItemLeftText,
   getReceiptItemRightText,
 }: ReceiptListItemProps) => {
+  const {getReceiptAmounts} = useReceipt();
+  const {creditAmountLeft} = getReceiptAmounts(receipt);
   const hasCustomer = receipt?.hasCustomer;
   const statusText = receipt?.is_cancelled
     ? 'Cancelled'
-    : receipt?.isPaid
+    : !creditAmountLeft
     ? 'Paid'
-    : 'owes you';
+    : isHeader
+    ? 'owes you'
+    : `owes ${amountWithCurrency(creditAmountLeft)}`;
   const statusTextWeight =
-    receipt?.isPaid || receipt?.is_cancelled ? 'text-400' : 'text-700';
+    !creditAmountLeft || receipt?.is_cancelled ? 'text-400' : 'text-700';
   const statusTextColor =
-    receipt?.isPaid || receipt?.is_cancelled ? 'text-gray-200' : 'text-red-100';
+    !creditAmountLeft || receipt?.is_cancelled
+      ? 'text-gray-200'
+      : 'text-red-100';
 
   getReceiptItemLeftText = useMemo(() => {
     if (!getReceiptItemLeftText) {

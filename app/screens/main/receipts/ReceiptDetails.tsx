@@ -28,15 +28,12 @@ import {saveCreditPayment} from '@/services/CreditPaymentService';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {
-  cancelReceipt,
-  getAllPayments,
-  updateReceipt,
-} from '@/services/ReceiptService';
+import {useReceipt} from '@/services/receipt';
+import {cancelReceipt, updateReceipt} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useState, ReactNode} from 'react';
+import React, {ReactNode, useCallback, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -61,11 +58,13 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
 
   const realm = useRealm();
   const navigation = useAppNavigation();
+  const {getReceiptAmounts} = useReceipt();
   const customers = getCustomers({realm});
   const user = getAuthService().getUser();
   const storageService = getStorageService();
   const analyticsService = getAnalyticsService();
   const currencyCode = getAuthService().getUserCurrencyCode();
+  const {creditAmountLeft, totalAmountPaid} = getReceiptAmounts(receipt);
 
   const [isLoading, setIsLoading] = useState(false);
   const [receiptImage, setReceiptImage] = useState('');
@@ -85,15 +84,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const hasCustomerMobile = customer?.mobile;
   const receiptDate = receipt?.created_at ?? new Date();
   const businessInfo = getAuthService().getBusinessInfo();
-  const allPayments = receipt ? getAllPayments({receipt}) : [];
-  const totalAmountPaid = allPayments.reduce(
-    (total, payment) => total + payment.amount_paid,
-    0,
-  );
-  const creditAmountLeft = receipt?.credits?.reduce(
-    (acc, item) => acc + item.amount_left,
-    0,
-  );
   const isFulfilled = receipt?.total_amount === totalAmountPaid;
 
   const paymentReminderMessage = `Hello, you purchased some items from ${
