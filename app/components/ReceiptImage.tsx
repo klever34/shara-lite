@@ -2,6 +2,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
+import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback} from 'react';
@@ -41,6 +42,16 @@ export const ReceiptImage = (props: Props) => {
   } = props;
 
   const businessInfo = getAuthService().getBusinessInfo();
+  const {callingCode} = useIPGeolocation();
+  const code = businessInfo.country_code || callingCode;
+  const getBusinessMobile = useCallback(() => {
+    if (businessInfo.mobile) {
+      return businessInfo.mobile.startsWith(code)
+        ? `+${code}${businessInfo.mobile.replace(code, '')}`
+        : `+${code}${businessInfo.mobile}`;
+    }
+    return `+${code}${user?.mobile}`;
+  }, [businessInfo.mobile, code, user]);
 
   const onCapture = useCallback(
     async (uri: any) => {
@@ -98,7 +109,7 @@ export const ReceiptImage = (props: Props) => {
                   style={applyStyles(
                     'print-text-400 pb-xs text-base text-center text-black',
                   )}>
-                  Tel: +{businessInfo?.mobile || user?.mobile}
+                  Tel: {getBusinessMobile()}
                 </Text>
               )}
               {!!businessInfo.address && (

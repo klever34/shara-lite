@@ -1,9 +1,10 @@
+import {showToast} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
 import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
 import {
@@ -14,14 +15,13 @@ import {
   StyleSheet,
   Text,
   TextInput,
-  ToastAndroid,
   View,
 } from 'react-native';
 import {Button} from './Button';
 import EmptyState from './EmptyState';
 import Icon from './Icon';
+import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
-import {applyStyles} from '@/styles';
 
 type Props<T> = {
   entity?: string;
@@ -64,13 +64,16 @@ const ContactListItem = memo(
         style={applyStyles(
           'flex-row items-center border-b-1 border-gray-20 p-16',
         )}>
-        <View style={applyStyles('flex-1')}>
-          <Text style={applyStyles('text-sm text-700 text-gray-300')}>
-            {customer.name}
-          </Text>
-          <Text style={applyStyles('text-sm text-400 text-gray-300')}>
-            {customer.mobile}
-          </Text>
+        <View style={applyStyles('flex-1 flex-row items-center')}>
+          <PlaceholderImage text={customer?.name ?? ''} />
+          <View style={applyStyles('pl-8')}>
+            <Text style={applyStyles('text-sm text-700 text-gray-300')}>
+              {customer.name}
+            </Text>
+            <Text style={applyStyles('text-sm text-400 text-gray-300')}>
+              {customer.mobile}
+            </Text>
+          </View>
         </View>
         {'_id' in customer ? null : (
           <Touchable onPress={() => onContactSelect(customer)}>
@@ -159,7 +162,7 @@ export function ContactsListModal<T>({
           (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
         );
       });
-      ToastAndroid.show('Customer added', ToastAndroid.SHORT);
+      showToast({message: 'CUSTOMER ADDED'});
     },
     [realm],
   );
@@ -338,7 +341,7 @@ export function ContactsListModal<T>({
                         color={colors.white}
                       />
                       <Text
-                        style={applyStyles('text-400 text-xs text-uppercase ', {
+                        style={applyStyles('pl-4 text-700 text-xs', {
                           color: colors.white,
                         })}>
                         Create {entity}

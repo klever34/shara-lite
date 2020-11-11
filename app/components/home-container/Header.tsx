@@ -1,13 +1,13 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Image, Text, View} from 'react-native';
+import {Image, ImageSourcePropType, Text, View, ViewStyle} from 'react-native';
 import {
   Menu,
   MenuOption,
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {HeaderRightMenuOption} from '../HeaderRight';
+import {HeaderRightMenuOption} from '@/components';
 import {Icon} from '../Icon';
 
 export const HomeContainerHeader = ({
@@ -15,29 +15,32 @@ export const HomeContainerHeader = ({
   amount,
   activeFilter,
   menuOptions = [],
+  image,
+  style = applyStyles('bg-white'),
 }: {
   title?: string;
   amount?: string;
   activeFilter?: string;
   menuOptions?: HeaderRightMenuOption[];
+  image?: ImageSourcePropType;
+  style?: ViewStyle;
 }) => {
   return (
     <View
-      style={applyStyles(
-        'p-16 flex-row items-center justify-between bg-white',
-        {
-          zIndex: 10,
-        },
-      )}>
+      style={applyStyles('p-16 flex-row items-center justify-between', style, {
+        zIndex: 10,
+      })}>
       <View style={applyStyles('flex-row items-center')}>
-        <Image
-          resizeMode="contain"
-          style={applyStyles('w-full rounded-8', {
-            width: 32,
-            height: 32,
-          })}
-          source={require('@/assets/images/shara-user-img.png')}
-        />
+        {image && (
+          <Image
+            resizeMode="contain"
+            style={applyStyles('w-full rounded-8', {
+              width: 32,
+              height: 32,
+            })}
+            source={image}
+          />
+        )}
         <View style={applyStyles('pl-8')}>
           <Text
             style={applyStyles(
@@ -59,7 +62,9 @@ export const HomeContainerHeader = ({
           <Menu>
             <MenuTrigger
               customStyles={{
-                triggerWrapper: applyStyles('mr-sm', {borderRadius: 12}),
+                triggerWrapper: applyStyles('mr-sm p-8 pr-0', {
+                  borderRadius: 12,
+                }),
               }}>
               <View style={applyStyles('flex-row items-center')}>
                 <Text

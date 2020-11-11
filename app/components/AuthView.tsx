@@ -4,9 +4,10 @@ import {Text, View, ViewStyle} from 'react-native';
 import {Button} from './Button';
 import {Page} from './Page';
 import {SecureEmblem} from './SecureEmblem';
+import {HeaderTitleProps} from '@/components/Header';
 
 export type AuthViewProps = {
-  title?: string;
+  header?: HeaderTitleProps;
   heading?: string;
   style?: ViewStyle;
   children: ReactNode;
@@ -14,12 +15,13 @@ export type AuthViewProps = {
   description?: string;
   buttonTitle?: string;
   showButton?: boolean;
-  onSubmit?: (data?: any) => void;
+  showEmblem?: boolean;
+  onSubmit?: () => void;
 };
 
 export const AuthView = ({
   style,
-  title,
+  header,
   heading,
   onSubmit,
   children,
@@ -27,11 +29,12 @@ export const AuthView = ({
   description,
   buttonTitle,
   showButton = true,
+  showEmblem = true,
 }: AuthViewProps) => {
   return (
     <Page
       style={style}
-      header={title ? {title} : undefined}
+      header={header}
       footer={
         showButton ? (
           <Button
@@ -58,13 +61,11 @@ export const AuthView = ({
         </Text>
       </View>
       {children}
-      <View style={applyStyles('flex-row center')}>
-        <SecureEmblem
-          style={applyStyles({
-            top: -40,
-          })}
-        />
-      </View>
+      {showEmblem && (
+        <View style={applyStyles('flex-row center pt-24')}>
+          <SecureEmblem />
+        </View>
+      )}
     </Page>
   );
 };

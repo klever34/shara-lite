@@ -16,7 +16,12 @@ const OptionsModal = ({visible, closeModal, options}: OptionsModalProps) => {
       <View style={styles.content}>
         {options.map((option) => {
           return (
-            <Touchable onPress={option.onPress} key={option.text}>
+            <Touchable
+              onPress={() => {
+                option.onPress();
+                closeModal();
+              }}
+              key={option.text}>
               <View style={applyStyles('p-lg')}>
                 <Text style={applyStyles('text-base')}>{option.text}</Text>
               </View>

@@ -1,5 +1,5 @@
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode, useState} from 'react';
+import React, {ReactElement, ReactNode, useState, useRef} from 'react';
 import {
   TextInput,
   View,
@@ -10,9 +10,12 @@ import {
   TextInputFocusEventData,
 } from 'react-native';
 import {Icon} from './Icon';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 export type AppInputProps = {
   label?: string;
+  action?: ReactElement;
   style?: ViewStyle;
   isInvalid?: boolean;
   errorMessage?: string;
@@ -32,11 +35,14 @@ export const AppInput = (props: AppInputProps) => {
     rightIcon,
     errorMessage,
     containerStyle,
+    action = null,
     ...rest
   } = props;
-  let [bgStyle, setBgStyle] = useState({
+  const [bgStyle, setBgStyle] = useState({
+    borderWidth: 1.5,
     backgroundColor: colors['gray-10'],
-  });
+  } as ViewStyle);
+
   const withLeftIconStyle = leftIcon
     ? applyStyles('pl-56')
     : applyStyles('pl-16');
@@ -44,9 +50,13 @@ export const AppInput = (props: AppInputProps) => {
     ? applyStyles('pr-56')
     : applyStyles('p4-16');
 
+  const inputRef = useRef(null);
+
   const handleFocus = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setBgStyle({
+        borderWidth: 1.5,
+        borderColor: colors['red-50'],
         backgroundColor: colors.white,
       });
       onFocus && onFocus(e);
@@ -65,13 +75,20 @@ export const AppInput = (props: AppInputProps) => {
   );
 
   return (
-    <View style={applyStyles(containerStyle)}>
-      <Text
-        style={applyStyles(
-          'text-xs text-uppercase text-500 text-gray-100 pb-8',
-        )}>
-        {label}
-      </Text>
+    <KeyboardAwareScrollView
+      style={applyStyles(containerStyle)}
+      getTextInputRefs={() => [inputRef]}>
+      <View style={applyStyles('flex-row')}>
+        {!!label && (
+          <Text
+            style={applyStyles(
+              'text-xs text-uppercase text-500 text-gray-100 pb-8 flex-1',
+            )}>
+            {label}
+          </Text>
+        )}
+        {action}
+      </View>
       <View>
         {leftIcon && (
           <View
@@ -94,6 +111,7 @@ export const AppInput = (props: AppInputProps) => {
           </View>
         )}
         <TextInput
+          ref={inputRef}
           onFocus={handleFocus}
           onBlur={handleBlur}
           style={applyStyles(
@@ -110,6 +128,7 @@ export const AppInput = (props: AppInputProps) => {
             withRightIconStyle,
             style,
           )}
+          placeholderTextColor={colors['gray-50']}
           {...rest}
         />
         {rightIcon && (
@@ -138,6 +157,6 @@ export const AppInput = (props: AppInputProps) => {
           {errorMessage}
         </Text>
       )}
-    </View>
+    </KeyboardAwareScrollView>
   );
 };

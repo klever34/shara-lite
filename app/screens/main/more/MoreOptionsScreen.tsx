@@ -1,4 +1,11 @@
-import React, {useCallback, useContext, useLayoutEffect, useMemo} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {Text, View, Image, ScrollView, Alert} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {
@@ -16,11 +23,13 @@ import {getAnalyticsService} from '@/services';
 import {version} from '../../../../package.json';
 import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
+import {useIPGeolocation} from '@/services/ip-geolocation';
 
 export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
     MainStackParamList & MoreStackParamList
   >();
+  const {callingCode} = useIPGeolocation();
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: applyStyles('border-b-1', {
@@ -37,7 +46,7 @@ export const MoreOptionsScreen = () => {
                     type="feathericons"
                     color={colors['gray-300']}
                     name="menu"
-                    size={28}
+                    size={22}
                     borderRadius={12}
                   />
                   <Text
@@ -125,7 +134,21 @@ export const MoreOptionsScreen = () => {
       handleError(e);
     }
   }, [handleError, navigation, logoutFromRealm]);
-  const business = getAuthService().getBusinessInfo();
+  const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+  const getMobieNumber = useCallback(() => {
+    const code = business.country_code || callingCode;
+    if (business.mobile?.startsWith(code)) {
+      return `+${code}${business.mobile.replace(code, '')}`;
+    }
+    return `+${code}${business.mobile}`;
+  }, [business.country_code, business.mobile, callingCode]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      setBusiness(getAuthService().getBusinessInfo());
+    });
+  }, [navigation]);
+
   return (
     <ScrollView>
       <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
@@ -185,7 +208,7 @@ export const MoreOptionsScreen = () => {
                   style={applyStyles('text-400 text-sm leading-16 mb-4', {
                     color: colors['gray-300'],
                   })}>
-                  {`+${business.country_code}${business.mobile}`}
+                  {getMobieNumber()}
                 </Text>
               )}
               <Text

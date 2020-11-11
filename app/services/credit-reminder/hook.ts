@@ -3,12 +3,13 @@ import {isTomorrow} from 'date-fns';
 import {useCallback, useEffect} from 'react';
 import BackgroundFetch from 'react-native-background-fetch';
 import {getNotificationService} from '..';
-import {getCredits} from '../CreditService';
 import {useRealm} from '../realm';
+import {useCredit} from '@/services/credit';
 
 export const useCreditReminder = () => {
   const realm = useRealm();
-  const credits = realm ? getCredits({realm}) : [];
+  const {getCredits} = useCredit();
+  const credits = realm ? getCredits() : [];
   const navigation = useNavigation();
   const notificationService = getNotificationService();
 

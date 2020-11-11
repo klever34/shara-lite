@@ -3,59 +3,111 @@ import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React from 'react';
-import {Text, View} from 'react-native';
+import React, {useMemo} from 'react';
+import {Text, View, ViewStyle} from 'react-native';
 
-export const ReceiptListItem = ({
-  receipt,
-  onPress,
-  isHeader = false,
-}: {
+export type ReceiptListItemProps = {
+  style?: ViewStyle;
   isHeader?: boolean;
   receipt?: IReceipt;
   onPress?: () => void;
-}) => {
+  getReceiptItemLeftText?: (receipt?: IReceipt) => string;
+  getReceiptItemRightText?: (receipt?: IReceipt) => string;
+};
+
+export const ReceiptListItem = ({
+  style,
+  receipt,
+  onPress,
+  isHeader = false,
+  getReceiptItemLeftText,
+  getReceiptItemRightText,
+}: ReceiptListItemProps) => {
+  const {getReceiptAmounts} = useReceipt();
+  const {creditAmountLeft} = getReceiptAmounts(receipt);
   const hasCustomer = receipt?.hasCustomer;
   const statusText = receipt?.is_cancelled
     ? 'Cancelled'
-    : receipt?.isPaid
+    : !creditAmountLeft
     ? 'Paid'
-    : 'owes you';
+    : isHeader
+    ? 'owes you'
+    : `owes ${amountWithCurrency(creditAmountLeft)}`;
   const statusTextWeight =
-    receipt?.isPaid || receipt?.is_cancelled ? 'text-400' : 'text-700';
+    !creditAmountLeft || receipt?.is_cancelled ? 'text-400' : 'text-700';
   const statusTextColor =
-    receipt?.isPaid || receipt?.is_cancelled ? 'text-gray-200' : 'text-red-100';
+    !creditAmountLeft || receipt?.is_cancelled
+      ? 'text-gray-200'
+      : 'text-red-100';
+
+  getReceiptItemLeftText = useMemo(() => {
+    if (!getReceiptItemLeftText) {
+      return (currentReceipt) => {
+        return currentReceipt?.customer?.name ?? 'No Customer';
+      };
+    }
+    return getReceiptItemLeftText;
+  }, [getReceiptItemLeftText]);
+
+  getReceiptItemRightText = useMemo(() => {
+    if (!getReceiptItemRightText) {
+      return (currentReceipt) => {
+        return currentReceipt?.created_at
+          ? format(currentReceipt?.created_at, 'MMM dd yyyy, hh:mmaa')
+          : '';
+      };
+    }
+    return getReceiptItemRightText;
+  }, [getReceiptItemRightText]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
       <View
         style={applyStyles(
-          'px-16 pt-16 flex-row items-center justify-between flex-wrap',
+          'px-16 py-16 flex-row items-center justify-between',
           {
             borderBottomWidth: 1,
             borderBottomColor: colors['gray-10'],
           },
+          style,
         )}>
-        <View style={applyStyles('pb-16 flex-row items-center')}>
+        <View style={applyStyles('flex-row items-center', {width: '48%'})}>
           {!hasCustomer && isHeader ? (
-            <>
-              <View style={applyStyles('flex-row items-center')}>
+            <View style={applyStyles('flex-row items-center')}>
+              <View
+                style={applyStyles('center bg-gray-20', {
+                  width: 30,
+                  height: 30,
+                  borderRadius: 15,
+                })}>
                 <Icon
-                  size={20}
+                  size={16}
                   name="plus"
                   type="feathericons"
-                  color={colors.primary}
+                  color={colors['gray-50']}
                 />
+              </View>
+              <View style={applyStyles('pl-8')}>
                 <Text
-                  style={applyStyles('pl-4 text-700 text-sm', {
-                    color: colors.primary,
-                  })}>
-                  Add Customer
+                  style={applyStyles(
+                    'pb-4 text-700 text-sm text-primary text-uppercase',
+                    {
+                      textDecorationLine: 'underline',
+                    },
+                  )}>
+                  Add Customer details
+                </Text>
+                <Text
+                  style={applyStyles(
+                    'text-uppercase text-400 text-gray-200 text-xs',
+                  )}>
+                  {getReceiptItemRightText(receipt)}
                 </Text>
               </View>
-            </>
+            </View>
           ) : (
             <>
               <PlaceholderImage text={receipt?.customer?.name ?? ''} />
@@ -65,20 +117,19 @@ export const ReceiptListItem = ({
                   style={applyStyles(
                     'pb-4 text-uppercase text-700 text-gray-300',
                   )}>
-                  {receipt?.customer?.name ?? 'No Customer'}
+                  {getReceiptItemLeftText(receipt)}
                 </Text>
                 <Text
                   style={applyStyles(
                     'text-uppercase text-400 text-gray-200 text-xs',
                   )}>
-                  {receipt?.created_at &&
-                    format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa')}
+                  {getReceiptItemRightText(receipt)}
                 </Text>
               </View>
             </>
           )}
         </View>
-        <View style={applyStyles('pb-16 items-end')}>
+        <View style={applyStyles('items-end', {width: '48%'})}>
           <Text style={applyStyles('pb-4 text-700 text-gray-300')}>
             {amountWithCurrency(receipt?.total_amount)}
           </Text>

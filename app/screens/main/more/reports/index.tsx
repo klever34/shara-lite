@@ -1,10 +1,14 @@
 import {amountWithCurrency} from '@/helpers/utils';
-import {getSummary, IFinanceSummary} from '@/services/FinanceService';
-import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
-import React, {useCallback} from 'react';
-import {Alert, StyleSheet, Text, ToastAndroid, View} from 'react-native';
-import {ActionCard} from '@/components';
+import React, {useCallback, useMemo} from 'react';
+import {
+  Alert,
+  ListRenderItemInfo,
+  Text,
+  ToastAndroid,
+  View,
+} from 'react-native';
+import {HomeContainer} from '@/components';
 import {useReports} from '@/services/reports';
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
@@ -12,11 +16,22 @@ import {getAnalyticsService} from '@/services';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 import {TitleDivider} from '@/components';
+import {IReceipt} from '@/models/Receipt';
+import {useReceiptList} from '@/screens/main/receipts/ReceiptListScreen';
+import {format} from 'date-fns';
+import {useAppNavigation} from '@/services/navigation';
 
 export const ReportsScreen = () => {
-  const realm = useRealm();
   const {exportReportsToExcel} = useReports();
-  const financeSummary: IFinanceSummary = getSummary({realm});
+
+  const {
+    filter,
+    filterOptionLabels,
+    filteredReceipts,
+    filterOptions,
+    handleReceiptSearch,
+    totalAmount,
+  } = useReceiptList({initialFilter: 'all'});
 
   const handleExport = useCallback(async () => {
     try {
@@ -49,6 +64,7 @@ export const ReportsScreen = () => {
       })
       .then(() => {});
     // handleEmailShare();
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, [analyticsService]);
 
   const onWhatsappShare = useCallback(() => {
@@ -60,10 +76,114 @@ export const ReportsScreen = () => {
       })
       .then(() => {});
     // handleWhatsappShare();
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, [analyticsService]);
+
+  const navigation = useAppNavigation();
+
+  const handleReceiptItemSelect = useCallback(
+    (receipt: IReceipt) => {
+      navigation.navigate('ReceiptDetails', {id: receipt._id});
+    },
+    [navigation],
+  );
+
+  const renderReceiptItem = useCallback(
+    ({item: receipt, index}: ListRenderItemInfo<IReceipt>) => {
+      return (
+        <Touchable onPress={() => handleReceiptItemSelect(receipt)}>
+          <View
+            style={applyStyles(
+              'flex-row py-8 px-16',
+              index % 2 === 0 ? 'bg-white' : 'bg-gray-10',
+            )}>
+            <View style={applyStyles('flex-1')}>
+              <Text
+                numberOfLines={1}
+                style={applyStyles(
+                  'text-700 font-bold text-xs text-uppercase text-gray-300',
+                )}>
+                {receipt.customer?.name ?? 'No Customer'}
+              </Text>
+              {receipt?.created_at && (
+                <Text
+                  numberOfLines={1}
+                  style={applyStyles(
+                    'text-400 text-xxs text-uppercase text-gray-100',
+                  )}>
+                  {format(receipt?.created_at, 'MMM dd yyyy, hh:mmaa')}
+                </Text>
+              )}
+            </View>
+            <View style={applyStyles('flex-1')}>
+              <Text
+                style={applyStyles(
+                  'text-700 font-bold text-xs text-uppercase text-gray-300 text-center',
+                )}>
+                {amountWithCurrency(receipt.total_amount)}
+              </Text>
+            </View>
+            <View style={applyStyles('flex-1')}>
+              <Text
+                style={applyStyles(
+                  'text-700 font-bold text-xs text-uppercase text-right',
+                  receipt.credit_amount === 0
+                    ? 'text-gray-100'
+                    : 'text-red-100',
+                )}>
+                {receipt.credit_amount === 0 ? 'Paid' : 'Owes you'}
+              </Text>
+            </View>
+          </View>
+        </Touchable>
+      );
+    },
+    [handleReceiptItemSelect],
+  );
+
+  const totalCreditAmount = useMemo(
+    () =>
+      filteredReceipts.reduce((acc, receipt) => acc + receipt.credit_amount, 0),
+    [filteredReceipts],
+  );
+
+  const moreHeader = (
+    <View style={applyStyles('flex-row py-16 px-16 bg-white')}>
+      <View style={applyStyles('flex-1')}>
+        <Text
+          numberOfLines={1}
+          style={applyStyles('text-400 text-xs text-uppercase text-gray-200')}>
+          {"You've received"}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={applyStyles(
+            'text-700 font-bold text-sm text-uppercase text-gray-300',
+          )}>
+          {amountWithCurrency(totalAmount - totalCreditAmount)}
+        </Text>
+      </View>
+      <View style={applyStyles('flex-1')}>
+        <Text
+          style={applyStyles(
+            'text-400 text-xs text-uppercase text-gray-200 self-end',
+          )}>
+          {"You're owed"}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={applyStyles(
+            'text-700 font-bold text-sm text-uppercase text-red-100 self-end',
+          )}>
+          {amountWithCurrency(totalCreditAmount)}
+        </Text>
+      </View>
+    </View>
+  );
 
   return (
     <Page
+      style={applyStyles('px-0 pt-0')}
       header={{title: 'Report', iconLeft: {}}}
       footer={
         <View
@@ -136,94 +256,26 @@ export const ReportsScreen = () => {
           </View>
         </View>
       }>
-      <View style={styles.container}>
-        <View style={applyStyles('mb-lg')}>
-          <ActionCard
-            style={applyStyles(styles.card, {backgroundColor: colors.primary})}>
-            <Text
-              style={applyStyles(styles.cardTitle, {color: colors['red-50']})}>
-              My sales
-            </Text>
-            <Text
-              style={applyStyles(styles.cardContent, {color: colors.white})}>
-              {amountWithCurrency(financeSummary.totalSales)}
-            </Text>
-          </ActionCard>
-        </View>
-        <View style={applyStyles('flex-row', 'mb-lg', 'justify-between')}>
-          <ActionCard
-            style={applyStyles(styles.card, {
-              backgroundColor: colors.white,
-              width: '48%',
-            })}>
-            <Text
-              style={applyStyles(styles.cardTitle, {
-                color: colors['gray-100'],
-              })}>
-              Total credit
-            </Text>
-            <Text
-              style={applyStyles(styles.cardContent, {
-                color: colors['gray-300'],
-              })}>
-              {amountWithCurrency(financeSummary.totalCredit)}
-            </Text>
-          </ActionCard>
-          <ActionCard
-            style={applyStyles(styles.card, {
-              backgroundColor: colors.white,
-              width: '48%',
-            })}>
-            <Text
-              style={applyStyles(styles.cardTitle, {
-                color: colors['gray-100'],
-              })}>
-              Overdue credit
-            </Text>
-            <Text
-              style={applyStyles(styles.cardContent, {color: colors.primary})}>
-              {amountWithCurrency(financeSummary.overdueCredit)}
-            </Text>
-          </ActionCard>
-        </View>
-      </View>
+      <HomeContainer<IReceipt>
+        initialNumToRender={10}
+        headerTitle="total sales"
+        headerAmount={amountWithCurrency(totalAmount)}
+        searchPlaceholderText="Search"
+        emptyStateProps={{
+          heading: 'Nothing to show',
+          text: 'No result found.',
+          source: undefined,
+        }}
+        data={filteredReceipts}
+        onSearch={handleReceiptSearch}
+        filterOptions={filterOptions}
+        activeFilter={filterOptionLabels[filter]}
+        renderListItem={renderReceiptItem}
+        keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+        showFAB={false}
+        moreHeader={moreHeader}
+        headerStyle={applyStyles('bg-gray-10 px-8')}
+      />
     </Page>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingVertical: 32,
-    paddingHorizontal: 16,
-    backgroundColor: colors.white,
-  },
-  listItem: {
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  listItemIcon: {
-    height: 45,
-    width: 45,
-  },
-  listItemText: {
-    fontSize: 16,
-    paddingRight: 12,
-    color: colors['gray-300'],
-  },
-  card: {
-    padding: 16,
-    paddingTop: 16,
-    elevation: 3,
-  },
-  cardTitle: {
-    fontSize: 12,
-    paddingBottom: 4,
-    fontFamily: 'Rubik-Medium',
-    textTransform: 'uppercase',
-  },
-  cardContent: {
-    fontSize: 16,
-    fontFamily: 'Rubik-Medium',
-  },
-});

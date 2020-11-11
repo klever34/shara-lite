@@ -1,3 +1,8 @@
+/*
+  Code inspired by work done here
+  https://github.com/zubairpaizer/react-native-searchable-dropdown/blob/master/index.js
+*/
+
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   FlatList,

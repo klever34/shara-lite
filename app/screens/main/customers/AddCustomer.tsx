@@ -1,112 +1,179 @@
 import {ICustomer} from '@/models';
-import {getCustomers, saveCustomer} from '@/services/customer/service';
-import {FormDefaults} from '@/services/FormDefaults';
-import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
 import {useNavigation} from '@react-navigation/native';
-import {Formik, FormikHelpers} from 'formik';
-import React, {useCallback} from 'react';
-import {Alert, ScrollView, StyleSheet, ToastAndroid, View} from 'react-native';
-import * as yup from 'yup';
-import {Button, FloatingLabelInput} from '../../../components';
+import React, {useState, useMemo, useRef, useEffect, useCallback} from 'react';
+import {
+  FormBuilder,
+  FormFields,
+  PhoneNumber,
+  PhoneNumberFieldRef,
+  required,
+} from '../../../components';
 import {applyStyles} from '@/styles';
+import {Page} from '@/components/Page';
+import {useAddCustomer} from '@/services/customer/hooks';
+import {Contact, selectContactPhone} from 'react-native-select-contact';
+import {getContactService} from '@/services';
+import parsePhoneNumberFromString from 'libphonenumber-js';
+import {RadioInputRef} from '@/components/RadioInput';
+import {TextInputFieldRef} from '@/components/TextInput';
 
-type Props = {
+type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
 };
 
-type FormValues = {name: string; mobile?: string};
-
-const formValidation = yup.object().shape({
-  name: yup.string().required('Customer name is required'),
-});
-
-export const AddCustomer = (props: Props) => {
+export const AddCustomer = (props: AddCustomerProps) => {
   const {onSubmit} = props;
   const navigation = useNavigation();
-  const realm = useRealm() as Realm;
-  const customers = getCustomers({realm});
+  const addCustomer = useAddCustomer();
 
-  const onFormSubmit = useCallback(
-    (values: FormValues, {resetForm}: FormikHelpers<FormValues>) => {
-      if (customers.map((item) => item.mobile).includes(values.mobile)) {
-        Alert.alert(
-          'Info',
-          'Customer with the same phone number has been created.',
-        );
-      } else {
-        saveCustomer({realm, customer: values});
-        onSubmit ? onSubmit(values) : navigation.goBack();
-        resetForm();
-        ToastAndroid.show('Customer added', ToastAndroid.SHORT);
+  type FormFieldName = 'name' | 'mobile' | 'email' | 'saveToPhonebook';
+
+  const [importSelection, setImportSelection] = useState<{
+    contact: Contact;
+    phoneNumber: PhoneNumber;
+  } | null>(null);
+
+  const nameFieldRef = useRef<TextInputFieldRef>();
+  const emailFieldRef = useRef<TextInputFieldRef>();
+  const mobileFieldRef = useRef<PhoneNumberFieldRef>();
+  const saveToPhonebookFieldRef = useRef<RadioInputRef>();
+
+  useEffect(() => {
+    const {current: mobileField} = mobileFieldRef;
+    const {current: nameField} = nameFieldRef;
+    const {current: emailField} = emailFieldRef;
+    if (mobileField && importSelection) {
+      mobileField.setPhoneNumber(importSelection.phoneNumber);
+      nameField?.onChangeText(importSelection.contact.name);
+      nameField?.onChangeText(importSelection.contact.name);
+      let emailEntry;
+      if ((emailEntry = importSelection.contact.emails[0])) {
+        emailField?.onChangeText(emailEntry.address);
       }
-    },
-    [navigation, realm, onSubmit, customers],
+    }
+  }, [importSelection]);
+
+  useEffect(() => {
+    const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
+    if (saveToPhonebookField && importSelection) {
+      saveToPhonebookField.setValue(false);
+      saveToPhonebookField.setDisabled(true);
+    }
+  }, [importSelection]);
+
+  const formFields: FormFields<FormFieldName> = useMemo(
+    () => ({
+      name: {
+        type: 'text',
+        props: {
+          label: 'Customer Name',
+          innerRef: (nameField: TextInputFieldRef) => {
+            nameFieldRef.current = nameField;
+          },
+        },
+        validations: [required()],
+      },
+      mobile: {
+        type: 'mobile',
+        props: {
+          label: 'Phone Number (Optional)',
+          innerRef: (mobileField: PhoneNumberFieldRef) => {
+            mobileFieldRef.current = mobileField;
+          },
+        },
+      },
+      email: {
+        type: 'text',
+        props: {
+          label: 'Email (Optional)',
+          keyboardType: 'email-address',
+          innerRef: (emailField: TextInputFieldRef) => {
+            emailFieldRef.current = emailField;
+          },
+        },
+      },
+      saveToPhonebook: {
+        type: 'radio',
+        props: {
+          label: 'Save to Phonebook',
+          value: true,
+          innerRef: (saveToPhonebookField: RadioInputRef) => {
+            saveToPhonebookFieldRef.current = saveToPhonebookField;
+          },
+        },
+      },
+    }),
+    [],
   );
+
+  const handleImport = useCallback(() => {
+    selectContactPhone().then((selection) => {
+      if (!selection) {
+        return;
+      }
+      let {selectedPhone, contact} = selection;
+      const number = getContactService().formatPhoneNumber(
+        selectedPhone?.number,
+      );
+      const phoneNumber = parsePhoneNumberFromString(number);
+      if (phoneNumber) {
+        setImportSelection({
+          contact,
+          phoneNumber: {
+            callingCode: String(phoneNumber.countryCallingCode),
+            number: String(phoneNumber.nationalNumber),
+          },
+        });
+      }
+    });
+  }, []);
 
   return (
-    <ScrollView
-      persistentScrollbar={true}
-      style={styles.container}
-      keyboardShouldPersistTaps="always">
-      <Formik
-        onSubmit={onFormSubmit}
-        validationSchema={formValidation}
-        initialValues={{name: ''} || FormDefaults.get('newCustomerMobile', '')}>
-        {({
-          values,
-          errors,
-          touched,
-          isSubmitting,
-          handleChange,
-          handleSubmit,
-        }) => (
-          <View>
-            <View style={styles.formInputs}>
-              <FloatingLabelInput
-                label="Name"
-                value={values.name}
-                errorMessage={errors.name}
-                onChangeText={handleChange('name')}
-                containerStyle={applyStyles('mb-xl')}
-                isInvalid={touched.name && !!errors.name}
-              />
-              <FloatingLabelInput
-                label="Phone Number (optional)"
-                autoCompleteType="tel"
-                value={values.mobile}
-                keyboardType="phone-pad"
-                containerStyle={styles.input}
-                onChangeText={handleChange('mobile')}
-              />
-            </View>
-            <Button
-              title="Save"
-              variantColor="red"
-              style={styles.button}
-              onPress={handleSubmit}
-              isLoading={isSubmitting}
-            />
-          </View>
-        )}
-      </Formik>
-    </ScrollView>
+    <Page
+      header={{
+        title: 'Add Customer',
+        iconLeft: {},
+        iconRight: {iconName: 'book', onPress: handleImport},
+      }}
+      style={applyStyles('bg-white')}>
+      <FormBuilder
+        fields={formFields}
+        onSubmit={async (values) => {
+          const phoneNumber = values.mobile as PhoneNumber;
+          values = {
+            ...values,
+            mobile: phoneNumber.number
+              ? `+${phoneNumber.callingCode}${phoneNumber.number}`
+              : undefined,
+          };
+          await addCustomer(values);
+          if (values.saveToPhonebook && phoneNumber.number) {
+            await getContactService().addContact({
+              givenName: values.name,
+              phoneNumbers: [
+                `+${phoneNumber.callingCode}${phoneNumber.number}`,
+              ],
+            });
+          }
+          onSubmit ? onSubmit(values) : navigation.goBack();
+        }}
+        submitBtn={{
+          title: 'Add',
+        }}
+        onInputChange={(values) => {
+          const phoneNumber = values.mobile as PhoneNumber;
+          const {current: mobileField} = mobileFieldRef;
+          if (mobileField) {
+            if (phoneNumber.number !== importSelection?.phoneNumber.number) {
+              const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
+              if (saveToPhonebookField?.disabled) {
+                setImportSelection(null);
+                saveToPhonebookField?.setDisabled(false);
+              }
+            }
+          }
+        }}
+      />
+    </Page>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 24,
-    backgroundColor: colors.white,
-  },
-  formInputs: {
-    marginBottom: 24,
-  },
-  input: {
-    marginBottom: 24,
-  },
-  button: {
-    marginBottom: 40,
-  },
-});

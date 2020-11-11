@@ -22,7 +22,7 @@ const PlaceholderImage = ({
   if (text && text[0].match(/[A-Za-z]/)) {
     const splitText = text.split(' ');
     if (splitText.length > 1) {
-      displayLetter = upperCase(`${splitText[0][0]}${splitText[1][0]}`);
+      displayLetter = upperCase(`${splitText[0][0]}${splitText[1][0] ?? ''}`);
     } else {
       displayLetter = upperCase(text[0]);
     }
