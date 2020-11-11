@@ -95,6 +95,8 @@ export const useReceipt = (): useReceiptInterface => {
     local_image_url,
     image_url,
   }: saveReceiptInterface) => {
+    const fullTrace = await perf().startTrace('saveReceiptFullFlow');
+
     const receipt: IReceipt = {
       tax,
       note,
@@ -189,6 +191,8 @@ export const useReceipt = (): useReceiptInterface => {
         receipt,
       });
     }
+
+    await fullTrace.stop();
 
     return receipt;
   };

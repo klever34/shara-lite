@@ -16,7 +16,7 @@ import {ReceivedInventory} from '@/services/realm/migrations/1599826529206-custo
 
 import {Receipt} from '@/services/realm/migrations/1603716195553-add-receipt-note-field/models/Receipt';
 
-import {Customer} from '@/services/realm/migrations/1604671961817-add-receipt-note-field/models/Customer';
+import {Customer} from '@/services/realm/migrations/1604671961817-add-email-to-customer/models/Customer';
 
 const schema = [
   Address,
