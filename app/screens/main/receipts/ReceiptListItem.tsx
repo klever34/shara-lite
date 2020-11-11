@@ -74,7 +74,7 @@ export const ReceiptListItem = ({
           },
           style,
         )}>
-        <View style={applyStyles('flex-row items-center')}>
+        <View style={applyStyles('flex-row items-center', {width: '48%'})}>
           {!hasCustomer && isHeader ? (
             <View style={applyStyles('flex-row items-center')}>
               <View
@@ -129,7 +129,7 @@ export const ReceiptListItem = ({
             </>
           )}
         </View>
-        <View style={applyStyles('items-end')}>
+        <View style={applyStyles('items-end', {width: '48%'})}>
           <Text style={applyStyles('pb-4 text-700 text-gray-300')}>
             {amountWithCurrency(receipt?.total_amount)}
           </Text>
