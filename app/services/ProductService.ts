@@ -77,7 +77,9 @@ export const restockProduct = ({
   product: IProduct;
   quantity: number;
 }) => {
-  let updatedQuantity = quantity + (product.quantity || 0);
+  const productQuantity =
+    (product.quantity || 0) < 0 ? 0 : product.quantity || 0;
+  let updatedQuantity = quantity + productQuantity;
   updatedQuantity = updatedQuantity < 0 ? 0 : updatedQuantity;
   const updates = {
     quantity: updatedQuantity,
