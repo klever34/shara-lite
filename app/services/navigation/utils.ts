@@ -8,8 +8,8 @@ import {NavigationProp} from '@react-navigation/core/lib/typescript/src/types';
 import {ParamListBase} from '@react-navigation/routers';
 import {BackHandler, ToastAndroid} from 'react-native';
 
-export const useAppNavigation = <T extends NavigationProp<ParamListBase>>() => {
-  const navigation = useNavigation<T>();
+export const useAppNavigation = <T extends ParamListBase>() => {
+  const navigation = useNavigation<NavigationProp<T>>();
   const replace = useCallback(
     (route: string, params?: {[key: string]: any}) => {
       navigation.dispatch(StackActions.replace(route, params));

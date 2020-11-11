@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, View, TouchableHighlight, StyleSheet} from 'react-native';
+import {Text, View, TouchableHighlight, StyleSheet, Image} from 'react-native';
 import {colors} from '@/styles';
 import {useAppNavigation} from '@/services/navigation';
 
@@ -8,8 +8,11 @@ export const Welcome = () => {
   return (
     <View style={styles.container}>
       <View style={styles.textSection}>
-        <Text style={styles.headingText}>Shara</Text>
-        <Text style={styles.bodyText}>Connect. Share. Transact.</Text>
+        <Image
+          source={require('../../assets/images/shara_logo_white.png')}
+          style={styles.image}
+        />
+        <Text style={styles.bodyText}>The Last Ledger You'll Ever Need</Text>
       </View>
       <View style={styles.buttonSection}>
         <TouchableHighlight
@@ -44,11 +47,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headingText: {
-    color: 'white',
-    fontSize: 60,
-    textTransform: 'uppercase',
-    fontFamily: 'CocogoosePro-Regular',
+  image: {
+    width: '75%',
+    height: '9%',
+    marginBottom: 16,
+    resizeMode: 'contain',
   },
   bodyText: {
     color: 'white',

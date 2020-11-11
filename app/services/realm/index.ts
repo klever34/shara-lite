@@ -2,7 +2,7 @@ import {useContext, useEffect, useState} from 'react';
 import Realm from 'realm';
 import Config from 'react-native-config';
 import perf from '@react-native-firebase/perf';
-import {Contact, Message, Conversation, Customer} from '../../models';
+import {Contact, Conversation, Customer, Message} from '../../models';
 import {Payment} from '@/models/Payment';
 import {Credit} from '@/models/Credit';
 import {CreditPayment} from '@/models/CreditPayment';
@@ -66,6 +66,7 @@ export const createRealm = async (options?: any): Promise<Realm> => {
       partitionValue,
     };
     config.path = `sync-user-data-${partitionValue}-v2`;
+    Realm.Sync.setLogLevel('all');
   }
 
   if (options && options.schemaVersion) {

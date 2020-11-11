@@ -15,12 +15,12 @@ import {
 // @ts-ignore
 import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
 import Modal from 'react-native-modal';
-import {applyStyles} from '../helpers/utils';
 import {colors} from '../styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
 import {getAnalyticsService, getStorageService} from '../services';
+import {applyStyles} from '@/styles';
 
 type BluetoothDevice = {address: string; name?: string};
 type BluetoothModalProps = {
@@ -231,35 +231,52 @@ export const BluetoothModal = ({
 
   const renderSetupBluetooth = useCallback(() => {
     return (
-      <View style={applyStyles('px-lg py-xl items-center justify-center')}>
+      <View style={applyStyles('px-8 py-xl items-center justify-center')}>
         <View
           style={applyStyles('items-center justify-center', {
             maxWidth: 240,
           })}>
+          <Text
+            style={applyStyles(
+              'pb-xl text-700 text-center text-uppercase text-sm text-gray-300',
+            )}>
+            bluetooth settings
+          </Text>
           <Icon
-            size={48}
+            size={24}
             name="bluetooth"
             type="feathericons"
-            color={colors['gray-50']}
+            color={colors.primary}
             style={applyStyles('mb-xl')}
           />
           <Text
-            style={applyStyles('pb-xl text-400 text-center', {
-              fontSize: 16,
-              color: colors['gray-200'],
-            })}>
-            Your Bluetooth is disabled. It needs to be enabled for print.
+            style={applyStyles(
+              'pb-xl text-400 text-center text-base text-gray-300',
+            )}>
+            Enable the bluetooth on you device to start printing.
           </Text>
         </View>
-        <Button
-          variantColor="red"
-          title="Enable bluetooth"
-          style={applyStyles('w-full')}
-          onPress={handleEnableBluetooth}
-        />
+        <View style={applyStyles('flex-row items-center justify-between')}>
+          <View style={applyStyles('mr-8', {width: '48%'})}>
+            <Button
+              title="Cancel"
+              onPress={onClose}
+              variantColor="white"
+              style={applyStyles('w-full')}
+            />
+          </View>
+          <View style={applyStyles({width: '48%'})}>
+            <Button
+              title="Enable"
+              variantColor="red"
+              style={applyStyles('w-full')}
+              onPress={handleEnableBluetooth}
+            />
+          </View>
+        </View>
       </View>
     );
-  }, [handleEnableBluetooth]);
+  }, [onClose, handleEnableBluetooth]);
 
   const renderDeviceList = useCallback(() => {
     return (
@@ -273,7 +290,7 @@ export const BluetoothModal = ({
             style={applyStyles('text-500 text-center text-uppercase', {
               fontSize: 12,
             })}>
-            Bluetooth device list
+            Select printer
           </Text>
         </View>
         <SectionList
@@ -305,12 +322,29 @@ export const BluetoothModal = ({
             </View>
           }
         />
-        <View style={applyStyles('py-md px-lg')}>
-          <Button title="Scan" onPress={handleBluetoothScan} />
+        <View
+          style={applyStyles(
+            'py-md px-lg flex-row items-center justify-between',
+          )}>
+          <View style={applyStyles('mr-8', {width: '48%'})}>
+            <Button
+              title="Cancel"
+              onPress={onClose}
+              variantColor="white"
+              style={applyStyles('w-full')}
+            />
+          </View>
+          <View style={applyStyles({width: '48%'})}>
+            <Button
+              title="Scan"
+              style={applyStyles('w-full')}
+              onPress={handleBluetoothScan}
+            />
+          </View>
         </View>
       </ScrollView>
     );
-  }, [devices, handleBluetoothScan, renderBluetoothDevice]);
+  }, [devices, onClose, handleBluetoothScan, renderBluetoothDevice]);
 
   useEffect(() => {
     BluetoothManager.isBluetoothEnabled().then(
@@ -397,6 +431,8 @@ export const BluetoothModal = ({
       })}>
       <View
         style={applyStyles({
+          borderTopLeftRadius: 24,
+          borderTopRightRadius: 24,
           backgroundColor: colors.white,
         })}>
         {isScanning ? (

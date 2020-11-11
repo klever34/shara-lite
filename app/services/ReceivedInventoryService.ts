@@ -10,6 +10,7 @@ import {addNewStockItem} from './StockItemService';
 import {getGeolocationService} from '@/services';
 import {convertToLocationString} from '@/services/geolocation';
 import {getAnalyticsService} from '@/services';
+import {saveSupplier} from './SupplierService';
 
 export const getReceivedInventories = ({
   realm,
@@ -29,7 +30,7 @@ export const addNewInventory = ({
 }: {
   realm: Realm;
   delivery_agent?: IDeliveryAgent;
-  supplier: ISupplier;
+  supplier?: ISupplier;
   stockItems: IStockItem[];
 }): void => {
   const batch_id = generateUniqueId();
@@ -42,16 +43,20 @@ export const addNewInventory = ({
     batch_id,
     total_amount,
     suppliedStockItems: stockItems,
-    supplier_name: supplier.name,
-    supplier: supplier,
     ...getBaseModelValues(),
   };
 
   let savedDeliveryAgent: IDeliveryAgent;
+  let savedSupplier: ISupplier;
+
   if (delivery_agent) {
     savedDeliveryAgent = delivery_agent._id
       ? delivery_agent
       : saveDeliveryAgent({realm, delivery_agent});
+  }
+
+  if (supplier) {
+    savedSupplier = supplier._id ? supplier : saveSupplier({realm, supplier});
   }
 
   // @ts-ignore
@@ -59,6 +64,12 @@ export const addNewInventory = ({
     receivedInventory.delivery_agent = savedDeliveryAgent;
     receivedInventory.delivery_agent_full_name = savedDeliveryAgent.full_name;
     receivedInventory.delivery_agent_mobile = savedDeliveryAgent.mobile;
+  }
+
+  // @ts-ignore
+  if (savedSupplier) {
+    receivedInventory.supplier_name = savedSupplier.name;
+    receivedInventory.supplier = savedSupplier;
   }
 
   realm.write(() => {
@@ -90,7 +101,7 @@ export const addNewInventory = ({
 
     const newStockItem: IStockItem = {
       batch_id,
-      supplier_name: supplier.name,
+      supplier_name: supplier?.name,
       cost_price,
       quantity,
       total_cost_price,

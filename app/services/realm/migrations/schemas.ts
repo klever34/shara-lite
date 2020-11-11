@@ -4,6 +4,8 @@ import schema3 from './1599807779969-decimal-quantity';
 import schema4 from './1599826529206-customer-address';
 import schema5 from './1601307197690-add-receipt-image-cancellation-fields';
 import schema6 from './1603716195553-add-receipt-note-field';
+import schema7 from './1603716195553-add-receipt-note-field';
+import schema8 from './1604671961817-add-email-to-customer';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -12,6 +14,8 @@ const schemas: any[] = [
   {schemaVersion: 4, ...schema4},
   {schemaVersion: 5, ...schema5},
   {schemaVersion: 6, ...schema6},
+  {schemaVersion: 7, ...schema7},
+  {schemaVersion: 8, ...schema8},
 ];
 
 export default schemas;

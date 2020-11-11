@@ -1,17 +1,13 @@
-import React, {useCallback, useState} from 'react';
-import {
-  StyleSheet,
-  TextInputProps as RNTextInputProps,
-  View,
-  ViewStyle,
-} from 'react-native';
-import {colors} from '@/styles';
-import {applyStyles} from '@/helpers/utils';
+import React, {useCallback, useEffect, useState} from 'react';
+import {View, ViewStyle} from 'react-native';
+import {applyStyles} from '@/styles';
 import {Icon, IconProps} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {FloatingLabelInput} from '@/components/FloatingLabelInput';
+import {AppInput, AppInputProps} from '@/components/AppInput';
 
-export type TextInputProps = Omit<RNTextInputProps, 'style'> & {
+export type TextInputFieldRef = {onChangeText: (value: string) => void};
+
+export type TextInputProps = Omit<AppInputProps, 'style'> & {
   icon?: IconProps & {
     activeStyle?: string;
     inactiveStyle?: string;
@@ -19,6 +15,7 @@ export type TextInputProps = Omit<RNTextInputProps, 'style'> & {
   };
   initialToggle?: boolean;
   containerStyle?: ViewStyle;
+  innerRef?: (node: TextInputFieldRef) => void;
 };
 
 const TextInput = ({
@@ -26,10 +23,12 @@ const TextInput = ({
   icon,
   initialToggle = false,
   containerStyle,
+  innerRef,
   ...restProps
 }: TextInputProps) => {
   const [iconActive, setIconActive] = useState(initialToggle);
   const [value, setValue] = useState(initialValue);
+
   const onIconPress = useCallback(() => {
     setIconActive((prevActive) => {
       const nextActive = !prevActive;
@@ -37,21 +36,30 @@ const TextInput = ({
       return nextActive;
     });
   }, [icon]);
+
+  const onChangeText = useCallback(
+    (nextValue: string) => {
+      restProps.onChangeText?.(nextValue);
+      setValue(nextValue);
+    },
+    [restProps.onChangeText],
+  );
+
+  useEffect(() => {
+    if (innerRef) {
+      innerRef({
+        onChangeText,
+      });
+    }
+  }, [innerRef, onChangeText]);
+
   return (
-    <View
-      style={applyStyles(
-        'flex-row w-full border-b-1 border-gray-300',
-        containerStyle,
-      )}>
-      <FloatingLabelInput
+    <View style={applyStyles('flex-row w-full', containerStyle)}>
+      <AppInput
         {...restProps}
         value={value}
-        onChangeText={(nextValue) => {
-          restProps.onChangeText?.(nextValue);
-          setValue(nextValue);
-        }}
-        containerStyle={applyStyles(icon && 'flex-1')}
-        inputStyle={applyStyles(styles.inputField, 'border-b-0')}
+        onChangeText={onChangeText}
+        containerStyle={applyStyles('flex-1')}
       />
       {icon && (
         <Touchable onPress={icon.onPress ? onIconPress : undefined}>
@@ -71,15 +79,5 @@ const TextInput = ({
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  inputField: {
-    fontSize: 18,
-    width: '100%',
-    borderBottomWidth: 1,
-    fontFamily: 'Rubik-Regular',
-    borderColor: colors['gray-300'],
-  },
-});
 
 export default TextInput;
