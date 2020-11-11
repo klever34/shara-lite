@@ -43,6 +43,15 @@ export const ReceiptImage = (props: Props) => {
 
   const businessInfo = getAuthService().getBusinessInfo();
   const {callingCode} = useIPGeolocation();
+  const code = businessInfo.country_code || callingCode;
+  const getBusinessMobile = useCallback(() => {
+    if (businessInfo.mobile) {
+      return businessInfo.mobile.startsWith(code)
+        ? `+${code}${businessInfo.mobile.replace(code, '')}`
+        : `+${code}${businessInfo.mobile}`;
+    }
+    return `+${code}${user?.mobile}`;
+  }, [businessInfo.mobile, code, user]);
 
   const onCapture = useCallback(
     async (uri: any) => {
@@ -100,8 +109,7 @@ export const ReceiptImage = (props: Props) => {
                   style={applyStyles(
                     'print-text-400 pb-xs text-base text-center text-black',
                   )}>
-                  Tel: +
-                  {businessInfo?.mobile || `${callingCode}${user?.mobile}`}
+                  Tel: {getBusinessMobile()}
                 </Text>
               )}
               {!!businessInfo.address && (

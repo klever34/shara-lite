@@ -173,7 +173,7 @@ export const ReportsScreen = () => {
         <Text
           numberOfLines={1}
           style={applyStyles(
-            'text-700 font-bold text-sm text-uppercase text-green self-end',
+            'text-700 font-bold text-sm text-uppercase text-red-100 self-end',
           )}>
           {amountWithCurrency(totalCreditAmount)}
         </Text>
