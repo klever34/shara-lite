@@ -1,6 +1,6 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Image, ImageSourcePropType, Text, View} from 'react-native';
+import {Image, ImageSourcePropType, Text, View, ViewStyle} from 'react-native';
 import {
   Menu,
   MenuOption,
@@ -16,21 +16,20 @@ export const HomeContainerHeader = ({
   activeFilter,
   menuOptions = [],
   image,
+  style = applyStyles('bg-white'),
 }: {
   title?: string;
   amount?: string;
   activeFilter?: string;
   menuOptions?: HeaderRightMenuOption[];
   image?: ImageSourcePropType;
+  style?: ViewStyle;
 }) => {
   return (
     <View
-      style={applyStyles(
-        'p-16 flex-row items-center justify-between bg-white',
-        {
-          zIndex: 10,
-        },
-      )}>
+      style={applyStyles('p-16 flex-row items-center justify-between', style, {
+        zIndex: 10,
+      })}>
       <View style={applyStyles('flex-row items-center')}>
         {image && (
           <Image

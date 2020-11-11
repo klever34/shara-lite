@@ -1,8 +1,6 @@
 import {amountWithCurrency} from '@/helpers/utils';
-import {getSummary, IFinanceSummary} from '@/services/FinanceService';
-import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {
   Alert,
   ListRenderItemInfo,
@@ -24,9 +22,7 @@ import {format} from 'date-fns';
 import {useAppNavigation} from '@/services/navigation';
 
 export const ReportsScreen = () => {
-  const realm = useRealm();
   const {exportReportsToExcel} = useReports();
-  const financeSummary: IFinanceSummary = getSummary({realm});
 
   const {
     filter,
@@ -34,6 +30,7 @@ export const ReportsScreen = () => {
     filteredReceipts,
     filterOptions,
     handleReceiptSearch,
+    totalAmount,
   } = useReceiptList({initialFilter: 'all'});
 
   const handleExport = useCallback(async () => {
@@ -67,6 +64,7 @@ export const ReportsScreen = () => {
       })
       .then(() => {});
     // handleEmailShare();
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, [analyticsService]);
 
   const onWhatsappShare = useCallback(() => {
@@ -78,6 +76,7 @@ export const ReportsScreen = () => {
       })
       .then(() => {});
     // handleWhatsappShare();
+    Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, [analyticsService]);
 
   const navigation = useAppNavigation();
@@ -132,7 +131,7 @@ export const ReportsScreen = () => {
                     ? 'text-gray-100'
                     : 'text-red-100',
                 )}>
-                {receipt.credit_amount === 0 ? 'Owes you' : 'Paid'}
+                {receipt.credit_amount === 0 ? 'Paid' : 'Owes you'}
               </Text>
             </View>
           </View>
@@ -142,9 +141,49 @@ export const ReportsScreen = () => {
     [handleReceiptItemSelect],
   );
 
+  const totalCreditAmount = useMemo(
+    () =>
+      filteredReceipts.reduce((acc, receipt) => acc + receipt.credit_amount, 0),
+    [filteredReceipts],
+  );
+
+  const moreHeader = (
+    <View style={applyStyles('flex-row py-16 px-16 bg-white')}>
+      <View style={applyStyles('flex-1')}>
+        <Text
+          numberOfLines={1}
+          style={applyStyles('text-400 text-xs text-uppercase text-gray-200')}>
+          {"You've received"}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={applyStyles(
+            'text-700 font-bold text-sm text-uppercase text-gray-300',
+          )}>
+          {amountWithCurrency(totalAmount - totalCreditAmount)}
+        </Text>
+      </View>
+      <View style={applyStyles('flex-1')}>
+        <Text
+          style={applyStyles(
+            'text-400 text-xs text-uppercase text-gray-200 self-end',
+          )}>
+          {"You're owed"}
+        </Text>
+        <Text
+          numberOfLines={1}
+          style={applyStyles(
+            'text-700 font-bold text-sm text-uppercase text-green self-end',
+          )}>
+          {amountWithCurrency(totalCreditAmount)}
+        </Text>
+      </View>
+    </View>
+  );
+
   return (
     <Page
-      style={applyStyles('px-0')}
+      style={applyStyles('px-0 pt-0')}
       header={{title: 'Report', iconLeft: {}}}
       footer={
         <View
@@ -220,7 +259,7 @@ export const ReportsScreen = () => {
       <HomeContainer<IReceipt>
         initialNumToRender={10}
         headerTitle="total sales"
-        headerAmount={amountWithCurrency(financeSummary.totalSales)}
+        headerAmount={amountWithCurrency(totalAmount)}
         searchPlaceholderText="Search"
         emptyStateProps={{
           heading: 'Nothing to show',
@@ -234,6 +273,8 @@ export const ReportsScreen = () => {
         renderListItem={renderReceiptItem}
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         showFAB={false}
+        moreHeader={moreHeader}
+        headerStyle={applyStyles('bg-gray-10 px-8')}
       />
     </Page>
   );

@@ -1,4 +1,11 @@
-import React, {useCallback, useContext, useLayoutEffect, useMemo} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {Text, View, Image, ScrollView, Alert} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {
@@ -127,7 +134,7 @@ export const MoreOptionsScreen = () => {
       handleError(e);
     }
   }, [handleError, navigation, logoutFromRealm]);
-  const business = getAuthService().getBusinessInfo();
+  const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
     if (business.mobile?.startsWith(code)) {
@@ -135,6 +142,13 @@ export const MoreOptionsScreen = () => {
     }
     return `+${code}${business.mobile}`;
   }, [business.country_code, business.mobile, callingCode]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      setBusiness(getAuthService().getBusinessInfo());
+    });
+  }, [navigation]);
+
   return (
     <ScrollView>
       <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
