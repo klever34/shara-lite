@@ -21,7 +21,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {KeyboardAvoidingView, Text, View} from 'react-native';
+import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
 import {ReceiptListItem} from './ReceiptListItem';
 
 export const useReceiptList = ({initialFilter = 'today'} = {}) => {
@@ -247,7 +247,12 @@ export const ReceiptListScreen = withModal(() => {
           menuOptions={[
             {
               text: 'Help',
-              onSelect: () => {},
+              onSelect: () => {
+                Alert.alert(
+                  'Coming Soon',
+                  'This feature is coming in the next update',
+                );
+              },
             },
           ]}
         />
@@ -276,7 +281,7 @@ export const ReceiptListScreen = withModal(() => {
         renderListItem={renderReceiptItem}
         data={filteredReceipts as IReceipt[]}
         onCreateEntity={handleCreateReceipt}
-        searchPlaceholderText="Search Receipts"
+        searchPlaceholderText="Search by customer name"
         createEntityButtonText="Create Receipt"
         activeFilter={filterOptionLabels[filter]}
         headerAmount={amountWithCurrency(totalAmount)}

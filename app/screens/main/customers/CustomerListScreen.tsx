@@ -17,6 +17,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   ListRenderItemInfo,
   Text,
@@ -189,7 +190,19 @@ export const CustomerListScreen = withModal(
         },
         headerTitle: () => null,
         headerRight: () => (
-          <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+          <HeaderRight
+            menuOptions={[
+              {
+                text: 'Help',
+                onSelect: () => {
+                  Alert.alert(
+                    'Coming Soon',
+                    'This feature is coming in the next update',
+                  );
+                },
+              },
+            ]}
+          />
         ),
       });
     }, [myCustomers, navigation, renderCustomerListItem]);
