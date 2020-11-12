@@ -33,7 +33,6 @@ export const HomeContainerHeader = ({
       <View style={applyStyles('flex-row items-center')}>
         {image && (
           <Image
-            resizeMode="contain"
             style={applyStyles('w-full rounded-8', {
               width: 32,
               height: 32,
