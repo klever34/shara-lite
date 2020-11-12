@@ -4,7 +4,7 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {getCustomers} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
@@ -44,17 +44,28 @@ export const CustomerListScreen = withModal(
     const navigation = useAppNavigation();
     const realm = useRealm();
     const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
+    const [business, setBusiness] = useState(
+      getAuthService().getBusinessInfo(),
+    );
     const reloadMyCustomers = useCallback(() => {
       if (realm) {
         const nextMyCustomers = getCustomers({realm});
         setMyCustomers(nextMyCustomers);
+        setBusiness(getAuthService().getBusinessInfo());
       }
     }, [realm]);
+
     const analyticsService = getAnalyticsService();
     const financeSummary: IFinanceSummary = getSummary({realm});
     const [searchTerm, setSearchTerm] = useState('');
     type Filter = 'all' | 'paid' | 'owes';
     const [filter, setFilter] = useState<Filter>('all');
+
+    const headerImage = business.profile_image?.url
+      ? {
+          uri: business.profile_image.url,
+        }
+      : require('@/assets/images/shara-user-img.png');
 
     const handleSelectCustomer = useCallback(
       (item?: ICustomer) => {
@@ -281,7 +292,7 @@ export const CustomerListScreen = withModal(
           backgroundColor: colors.white,
         })}>
         <HomeContainer<ICustomer>
-          headerImage={require('@/assets/images/shara-user-img.png')}
+          headerImage={headerImage}
           initialNumToRender={10}
           headerTitle="total credit"
           createEntityButtonIcon="users"

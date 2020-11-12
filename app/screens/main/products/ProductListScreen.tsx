@@ -4,6 +4,7 @@ import Touchable from '@/components/Touchable';
 import {withModal} from '@/helpers/hocs';
 import {numberWithCommas} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
+import {getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {getProducts, updateProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
@@ -31,6 +32,13 @@ export const ProductListScreen = withModal(() => {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [allProducts, setAllProducts] = useState(products || []);
   const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
+  const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+
+  const headerImage = business.profile_image?.url
+    ? {
+        uri: business.profile_image.url,
+      }
+    : require('@/assets/images/shara-user-img.png');
 
   const handleProductSearch = useCallback((text) => {
     setSearchTerm(text);
@@ -191,6 +199,7 @@ export const ProductListScreen = withModal(() => {
     return navigation.addListener('focus', () => {
       const myProducts = realm ? getProducts({realm}) : [];
       setAllProducts(myProducts);
+      setBusiness(getAuthService().getBusinessInfo());
     });
   }, [navigation, realm]);
 
@@ -198,9 +207,9 @@ export const ProductListScreen = withModal(() => {
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {backgroundColor: colors.white})}>
       <HomeContainer<IProduct>
-        headerImage={require('@/assets/images/shara-user-img.png')}
         data={filteredProducts}
         initialNumToRender={10}
+        headerImage={headerImage}
         headerTitle="total products"
         createEntityButtonIcon="box"
         onSearch={handleProductSearch}

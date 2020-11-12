@@ -3,6 +3,7 @@ import {Icon} from '@/components/Icon';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {getReceipts, getReceiptsTotalAmount} from '@/services/ReceiptService';
@@ -27,8 +28,9 @@ export const useReceiptList = ({initialFilter = 'today'} = {}) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const receipts = realm ? getReceipts({realm}) : [];
-  const [filter, setFilter] = useState(initialFilter);
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState(initialFilter);
   const [allReceipts, setAllReceipts] = useState(receipts || []);
 
   const handleStatusFilter = useCallback((status: any) => {
@@ -164,6 +166,13 @@ export const useReceiptList = ({initialFilter = 'today'} = {}) => {
 
 export const ReceiptListScreen = withModal(() => {
   const navigation = useAppNavigation();
+  const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+
+  const headerImage = business.profile_image?.url
+    ? {
+        uri: business.profile_image.url,
+      }
+    : require('@/assets/images/shara-user-img.png');
 
   const {
     filter,
@@ -246,15 +255,21 @@ export const ReceiptListScreen = withModal(() => {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      setBusiness(getAuthService().getBusinessInfo());
+    });
+  }, [navigation]);
+
   return (
     <KeyboardAvoidingView
       style={applyStyles('flex-1', {
         backgroundColor: colors.white,
       })}>
       <HomeContainer<IReceipt>
-        headerImage={require('@/assets/images/shara-user-img.png')}
         initialNumToRender={10}
         headerTitle="total sales"
+        headerImage={headerImage}
         filterOptions={filterOptions}
         onSearch={handleReceiptSearch}
         createEntityButtonIcon="file-text"
