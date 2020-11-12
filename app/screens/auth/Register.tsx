@@ -31,14 +31,10 @@ const validationSchema = yup.object().shape({
     .required('Number is required'),
   password: yup
     .string()
-    .strict(true)
-    .trim("Password shouldn't contain spaces")
     .oneOf([yup.ref('confirmPassword'), undefined], 'Passwords must match')
     .required('Password is required'),
   confirmPassword: yup
     .string()
-    .strict(true)
-    .trim("Password shouldn't contain spaces")
     .oneOf([yup.ref('password'), undefined], 'Passwords must match')
     .required('Password is required'),
 });
@@ -71,10 +67,10 @@ export const Register = () => {
   };
   const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
-    const {mobile, countryCode, ...rest} = data;
+    const {mobile, countryCode, password} = data;
     const payload = {
-      ...rest,
       country_code: countryCode,
+      password: password.trim(),
       mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();

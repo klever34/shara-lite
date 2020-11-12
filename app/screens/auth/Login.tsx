@@ -28,11 +28,7 @@ const validationSchema = yup.object().shape({
     .string()
     .min(5, 'Number should be minimum of 5 digits')
     .required('Number is required'),
-  password: yup
-    .string()
-    .strict(true)
-    .trim("Password shouldn't contain spaces")
-    .required('Password is required'),
+  password: yup.string().required('Password is required'),
 });
 
 export const Login = () => {
@@ -62,9 +58,9 @@ export const Login = () => {
   };
   const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
-    const {mobile, countryCode, ...rest} = data;
+    const {mobile, countryCode, password} = data;
     const payload = {
-      ...rest,
+      password: password.trim(),
       mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
