@@ -11,7 +11,7 @@ import {
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency} from '@/helpers/utils';
+import {amountWithCurrency, showToast} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -187,7 +187,8 @@ export const ReceiptOtherDetailsScreen = () => {
     handleUpdateReceipt(receiptToCreate);
     const createdReceipt = await saveReceipt(receiptToCreate);
     handleClearState();
-    navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
+    showToast({message: 'RECEIPT SUCCESSFULLY CREATED'});
+    navigation.navigate('ReceiptDetails', {id: createdReceipt._id});
   }, [
     receipt,
     note,
@@ -254,15 +255,7 @@ export const ReceiptOtherDetailsScreen = () => {
         header={{
           title: `Total: ${amountWithCurrency(totalAmount)}`,
           iconLeft: {iconName: 'arrow-left', onPress: handleGoBack},
-        }}
-        footer={
-          <Button
-            title="Finish"
-            variantColor="red"
-            onPress={handleFinish}
-            style={applyStyles('w-full')}
-          />
-        }>
+        }}>
         <View style={applyStyles('pt-24')}>
           <RadioButton
             isChecked={isPartialPayment}
@@ -393,8 +386,14 @@ export const ReceiptOtherDetailsScreen = () => {
             value={note}
             label="Notes (optional)"
             onChangeText={handleNoteChange}
-            style={applyStyles('pt-0 mb-96', {height: 96})}
+            style={applyStyles('pt-0 mb-16', {height: 96})}
             placeholder="Any other information about this transaction?"
+          />
+          <Button
+            title="Finish"
+            variantColor="red"
+            onPress={handleFinish}
+            style={applyStyles('w-full')}
           />
         </View>
       </Page>
