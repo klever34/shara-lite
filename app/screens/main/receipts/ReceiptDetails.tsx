@@ -47,6 +47,7 @@ import {
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
 import {ReceiptListItem} from './ReceiptListItem';
+import {useReceiptProvider} from './ReceiptProvider';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
@@ -59,6 +60,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const {getReceiptAmounts} = useReceipt();
+  const {handleClearReceipt, createReceiptFromCustomer} = useReceiptProvider();
+
   const customers = getCustomers({realm});
   const user = getAuthService().getUser();
   const storageService = getStorageService();
@@ -425,6 +428,18 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     });
   }, [customers, handleSetCustomer, openModal]);
 
+  const handleClose = useCallback(() => {
+    if (createReceiptFromCustomer) {
+      handleClearReceipt();
+      navigation.navigate('CustomerDetails', {
+        customer: createReceiptFromCustomer,
+      });
+    } else {
+      handleClearReceipt();
+      navigation.navigate('Home');
+    }
+  }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
+
   const receiptActions = [
     {
       label: 'Cancel',
@@ -464,9 +479,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         elevation: 10,
         borderBottomColor: colors['gray-10'],
       })}>
-      <HeaderBackButton
-        {...{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
-      />
+      <HeaderBackButton {...{iconName: 'arrow-left', onPress: handleClose}} />
       <ReceiptListItem
         isHeader
         style={applyStyles({
