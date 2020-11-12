@@ -64,8 +64,9 @@ export const ReceiptOtherDetailsScreen = () => {
   const [mobile, setMobile] = useState('');
   const [isNewCustomer, setIsNewCustomer] = useState(false);
   const [saveToPhoneBook, setSaveToPhoneBook] = useState(true);
-  const [amountPaid, setAmountPaid] = useState(totalAmount || 0);
   const [isPartialPayment, setIsPartialPayment] = useState(false);
+  const [amountOwed, setAmountOwed] = useState<number | undefined>();
+  const [amountPaid, setAmountPaid] = useState<number | undefined>();
   const [countryCode, setCountryCode] = useState(callingCode || '');
   const [customerSearchQuery, setCustomerSearchQuery] = useState(
     receipt?.customer?.name ?? '',
@@ -78,10 +79,10 @@ export const ReceiptOtherDetailsScreen = () => {
     receipt?.customer,
   );
 
-  const creditAmount = useMemo(() => totalAmount - amountPaid, [
-    amountPaid,
-    totalAmount,
-  ]);
+  // const creditAmount = useMemo(() => totalAmount - amountPaid ?? 0, [
+  //   amountPaid,
+  //   totalAmount,
+  // ]);
 
   const handleClearState = useCallback(() => {
     setNote('');
@@ -111,9 +112,21 @@ export const ReceiptOtherDetailsScreen = () => {
     setCustomerSearchQuery(searchValue);
   }, []);
 
-  const handleAmountPaidChange = useCallback((text) => {
-    setAmountPaid(text);
-  }, []);
+  const handleAmountPaidChange = useCallback(
+    (text) => {
+      setAmountPaid(text);
+      setAmountOwed(totalAmount - parseFloat(text));
+    },
+    [totalAmount],
+  );
+
+  const handleAmountOwedChange = useCallback(
+    (text) => {
+      setAmountOwed(text);
+      setAmountPaid(totalAmount - parseFloat(text));
+    },
+    [totalAmount],
+  );
 
   const handleNoteChange = useCallback((text: string) => {
     setNote(text);
@@ -151,8 +164,8 @@ export const ReceiptOtherDetailsScreen = () => {
       realm,
       dueDate,
       amountPaid,
-      creditAmount,
       totalAmount,
+      creditAmount: amountOwed,
       payments: [{method: '', amount: amountPaid}],
       customer: customer ? customer : ({} as ICustomer),
     };
@@ -176,21 +189,21 @@ export const ReceiptOtherDetailsScreen = () => {
     handleClearState();
     navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
   }, [
+    receipt,
     note,
     realm,
-    receipt,
     dueDate,
-    customer,
     amountPaid,
-    navigation,
     totalAmount,
-    creditAmount,
+    amountOwed,
+    customer,
     isNewCustomer,
-    contactService,
     saveToPhoneBook,
-    handleClearState,
     handleUpdateReceipt,
     saveReceipt,
+    handleClearState,
+    navigation,
+    contactService,
   ]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {
@@ -275,10 +288,10 @@ export const ReceiptOtherDetailsScreen = () => {
                 </View>
                 <View style={applyStyles({width: '48%'})}>
                   <CurrencyInput
-                    editable={false}
                     placeholder="0.00"
                     label="Customer owes"
-                    value={(totalAmount - amountPaid)?.toString()}
+                    value={amountOwed?.toString()}
+                    onChange={(text) => handleAmountOwedChange(text)}
                   />
                 </View>
               </View>
