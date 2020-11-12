@@ -52,8 +52,8 @@ export const CustomerListScreen = withModal(
       if (realm) {
         const nextMyCustomers = getCustomers({realm});
         setMyCustomers(nextMyCustomers);
-        setBusiness(getAuthService().getBusinessInfo());
       }
+      setBusiness(getAuthService().getBusinessInfo());
     }, [realm]);
 
     const analyticsService = getAnalyticsService();
