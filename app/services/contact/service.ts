@@ -3,7 +3,7 @@ import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
 import {IAuthService} from '../auth';
-import {Contact, IContact} from '@/models';
+import {IContact} from '@/models';
 import {IRealmService} from '../realm';
 import omit from 'lodash/omit';
 import {UpdateMode} from 'realm';
@@ -12,6 +12,7 @@ import {User} from 'types/app';
 import {uniqBy} from 'lodash';
 import parsePhoneNumber from 'libphonenumber-js';
 import {IIPGeolocationService} from '@/services/ip-geolocation';
+import * as RNSelectContact from 'react-native-select-contact';
 
 export type PhoneContact = Omit<RNContacts.Contact, 'phoneNumbers'> & {
   phoneNumber: RNContacts.PhoneNumber;
@@ -35,6 +36,7 @@ export interface IContactService {
     givenName: string;
     phoneNumbers: string[] | {label: string; number: string}[];
   }): Promise<void>;
+  selectContactPhone(): Promise<RNSelectContact.ContactPhoneSelection | null>;
 }
 
 const parseDateString = (dateString: string) => {
@@ -53,7 +55,7 @@ export class ContactService implements IContactService {
   private permissionGranted: boolean = false;
   private writePermissionGranted: boolean = false;
 
-  private async checkPermission() {
+  private async checkReadPermission() {
     this.permissionGranted = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
     );
@@ -192,7 +194,7 @@ export class ContactService implements IContactService {
   }
 
   public async getPhoneContacts() {
-    if (await this.checkPermission()) {
+    if (await this.checkReadPermission()) {
       return new Promise<PhoneContact[]>((resolve, reject) => {
         RNContacts.getAll((err, phoneContacts) => {
           if (err) {
@@ -335,5 +337,13 @@ export class ContactService implements IContactService {
 
   updateMultipleContacts(contacts: Partial<IContact[]>): Promise<IContact[]> {
     return this.createMultipleContacts(contacts as IContact[]);
+  }
+
+  public async selectContactPhone(): Promise<RNSelectContact.ContactPhoneSelection | null> {
+    if (await this.checkReadPermission()) {
+      return RNSelectContact.selectContactPhone();
+    } else {
+      throw new Error('We are unable to access your contacts.');
+    }
   }
 }
