@@ -53,6 +53,15 @@ export const CreateReceipt = (props: Props) => {
     FormDefaults.get('quantity', ''),
   );
 
+  const handleClearState = useCallback(() => {
+    setPrice(0);
+    setQuantity('');
+    setSearchQuery('');
+    setItemToEdit(null);
+    setSelectedProduct(null);
+    Keyboard.dismiss();
+  }, []);
+
   useEffect(() => {
     getAnalyticsService().logEvent('receiptStart').catch(handleError);
   }, [handleError, receipt]);
@@ -362,6 +371,7 @@ export const CreateReceipt = (props: Props) => {
                   value={searchQuery}
                   label="Product / Service"
                   setFilter={handleProductSearch}
+                  onClearInput={handleClearState}
                   onItemSelect={handleSelectProduct}
                   renderItem={renderSearchDropdownItem}
                   onChangeText={handleChangeSearchQuery}

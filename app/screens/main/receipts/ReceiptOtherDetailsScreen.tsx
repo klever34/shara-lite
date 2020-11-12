@@ -79,11 +79,6 @@ export const ReceiptOtherDetailsScreen = () => {
     receipt?.customer,
   );
 
-  // const creditAmount = useMemo(() => totalAmount - amountPaid ?? 0, [
-  //   amountPaid,
-  //   totalAmount,
-  // ]);
-
   const handleClearState = useCallback(() => {
     setNote('');
     setMobile('');
@@ -158,17 +153,19 @@ export const ReceiptOtherDetailsScreen = () => {
   };
 
   const handleFinish = useCallback(async () => {
-    let receiptToCreate: any = {
+    const paid = amountOwed ? amountPaid : totalAmount;
+    const receiptToCreate: any = {
       ...receipt,
       note,
       realm,
       dueDate,
-      amountPaid,
       totalAmount,
+      amountPaid: paid,
       creditAmount: amountOwed,
-      payments: [{method: '', amount: amountPaid}],
+      payments: [{method: '', amount: paid}],
       customer: customer ? customer : ({} as ICustomer),
     };
+
     if (isNewCustomer && saveToPhoneBook) {
       try {
         await contactService.addContact({

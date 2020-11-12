@@ -16,6 +16,8 @@ import {Page} from '@/components/Page';
 import {ReceiptListItem} from '@/screens/main/receipts/ReceiptListItem';
 import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
+import {getReceipts} from '@/services/ReceiptService';
+import {useRealm} from '@/services/realm';
 
 type CustomerDetailsProps = ModalWrapperFields & {
   route: RouteProp<
@@ -25,9 +27,13 @@ type CustomerDetailsProps = ModalWrapperFields & {
 };
 
 const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
+  const realm = useRealm();
   const navigation = useNavigation();
-  const {customer} = route.params;
   const {handleUpdateCreateReceiptFromCustomer} = useReceiptProvider();
+
+  const receipts = realm ? getReceipts({realm}) : [];
+
+  const {customer} = route.params;
 
   const getReceiptItemLeftText = useCallback(
     (receipt: IReceipt, baseStyle: TextStyle) => {
@@ -156,9 +162,19 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   }, []);
 
   const handleCreateReceipt = useCallback(() => {
-    handleUpdateCreateReceiptFromCustomer(customer);
-    navigation.navigate('CreateReceipt', {receipt: {customer}});
-  }, [customer, navigation, handleUpdateCreateReceiptFromCustomer]);
+    if (!receipts.length) {
+      handleUpdateCreateReceiptFromCustomer(customer);
+      navigation.navigate('BuildReceipt');
+    } else {
+      handleUpdateCreateReceiptFromCustomer(customer);
+      navigation.navigate('CreateReceipt', {receipt: {customer}});
+    }
+  }, [
+    receipts.length,
+    handleUpdateCreateReceiptFromCustomer,
+    customer,
+    navigation,
+  ]);
 
   const footer = filteredReceipts?.length ? (
     <Button title="Create Receipt" onPress={handleCreateReceipt} />

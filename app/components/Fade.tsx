@@ -1,3 +1,7 @@
+/**
+ * https://goshakkk.name/react-native-animated-appearance-disappearance/
+ */
+
 import React, {Component, ReactNode} from 'react';
 import {Animated, ViewStyle} from 'react-native';
 
@@ -39,7 +43,7 @@ export class Fade extends Component<Props, State> {
   }
 
   render() {
-    const {style, children, ...rest} = this.props;
+    const {style, children} = this.props;
 
     const containerStyle = {
       opacity: this._visibility.interpolate({
@@ -51,8 +55,7 @@ export class Fade extends Component<Props, State> {
     const combinedStyle = [containerStyle, style];
     return (
       <Animated.View
-        style={this.state.visible ? combinedStyle : containerStyle}
-        {...rest}>
+        style={this.state.visible ? combinedStyle : containerStyle}>
         {this.state.visible ? children : null}
       </Animated.View>
     );

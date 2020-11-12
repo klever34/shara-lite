@@ -342,6 +342,7 @@ export const AddInventoryScreen = ({route}: any) => {
                     value={searchQuery}
                     label="Product / Service"
                     setFilter={handleProductSearch}
+                    onClearInput={handleClearState}
                     onItemSelect={handleSelectProduct}
                     renderItem={renderSearchDropdownItem}
                     onChangeText={handleChangeSearchQuery}
