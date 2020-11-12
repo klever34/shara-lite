@@ -1,29 +1,26 @@
 import React, {
   useCallback,
-  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
-import {Text, View, Image, ScrollView, Alert} from 'react-native';
+import {Alert, Image, ScrollView, Text, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
 import {Icon} from '@/components/Icon';
-import {colors, dimensions} from '@/styles';
-import {getAuthService} from '@/services';
+import {applyStyles, colors, dimensions} from '@/styles';
+import {getAnalyticsService, getAuthService} from '@/services';
 import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/styles';
-import {RealmContext} from '@/services/realm/provider';
 import {useErrorHandler} from '@/services/error-boundary';
-import {getAnalyticsService} from '@/services';
 import {version} from '../../../../package.json';
 import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
 import {useIPGeolocation} from '@/services/ip-geolocation';
+import {useRealmLogout} from '@/services/realm';
 
 export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
@@ -117,7 +114,7 @@ export const MoreOptionsScreen = () => {
     ];
   }, [navigation, onEditBusinessSettings]);
 
-  const {logoutFromRealm} = useContext(RealmContext);
+  const {logoutFromRealm} = useRealmLogout();
   const handleError = useErrorHandler();
 
   const handleLogout = useCallback(async () => {
@@ -129,7 +126,7 @@ export const MoreOptionsScreen = () => {
         index: 0,
         routes: [{name: 'Auth'}],
       });
-      logoutFromRealm && logoutFromRealm();
+      logoutFromRealm();
     } catch (e) {
       handleError(e);
     }

@@ -20,7 +20,6 @@ import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {getAuthService, getPubNubService} from '../../services';
-import useRealmSyncLoader from '../../services/realm/useRealmSyncLoader';
 import {AddInventoryScreen} from './products/AddInventoryScreen';
 import {CreateProductScreen} from './products/CreateProductScreen';
 import {InventoryOtherDetailsScreen} from './products/InventoryOtherDetailsScreen';
@@ -32,6 +31,7 @@ import CustomerDetails from '@/screens/main/customers/CustomerDetails';
 import {ReceiptOtherDetailsScreen} from './receipts/ReceiptOtherDetailsScreen';
 import {ReceiptProvider} from './receipts/ReceiptProvider';
 import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
+import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -64,7 +64,7 @@ const MainScreens = () => {
   const realm = useRealm();
   const {isSyncCompleted} = useContext(RealmContext);
 
-  useRealmSyncLoader();
+  useSyncLoader();
   useCreditReminder();
 
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
