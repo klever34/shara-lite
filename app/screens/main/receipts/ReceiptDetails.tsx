@@ -398,6 +398,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       saveCreditPayment({
         realm,
         customer,
+        receipt,
         method: '',
         amount: creditPaymentAmount,
       });
@@ -406,7 +407,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     } else {
       Alert.alert('Info', 'Please select a customer');
     }
-  }, [creditPaymentAmount, customer, realm]);
+  }, [creditPaymentAmount, customer, receipt, realm]);
 
   const handleOpenContactList = useCallback(() => {
     const closeContactListModal = openModal('bottom-half', {
