@@ -253,7 +253,7 @@ export const ReceiptOtherDetailsScreen = () => {
           title: `Total: ${amountWithCurrency(totalAmount)}`,
           iconLeft: {iconName: 'arrow-left', onPress: handleGoBack},
         }}>
-        <View style={applyStyles('pt-24')}>
+        <View>
           <RadioButton
             isChecked={isPartialPayment}
             containerStyle={applyStyles('py-16 mb-24 center')}
