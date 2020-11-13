@@ -2,7 +2,7 @@ import {PermissionsAndroid} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import Realm from 'realm';
 import {getApiService} from '@/services';
-import {getRealmObjectCopy} from '@/services/realm/utils';
+import {getRealmObjectCopy} from '@/services/realm/utils/copy-realm';
 
 export const runDbBackup = async ({
   realm,

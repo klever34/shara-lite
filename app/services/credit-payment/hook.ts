@@ -12,9 +12,11 @@ import {useCustomer} from '@/services/customer/hook';
 import {usePayment} from '@/services/payment';
 import perf from '@react-native-firebase/perf';
 import {useCredit} from '@/services/credit';
+import {IReceipt} from '@/models/Receipt';
 
 interface saveCreditPaymentInterface {
   customer: ICustomer;
+  receipt?: IReceipt;
   amount: number;
   method: string;
   note?: string;
@@ -55,6 +57,7 @@ export const useCreditPayment = (): useCreditPayment => {
 
   const saveCreditPayment = async ({
     customer,
+    receipt,
     amount,
     method,
     note,
@@ -62,7 +65,16 @@ export const useCreditPayment = (): useCreditPayment => {
     const updatedCustomer = getCustomer({
       customerId: customer._id as ObjectId,
     });
-    const credits = updatedCustomer.credits;
+    const receiptCredits = receipt && receipt.credits ? receipt.credits : [];
+    const customerCredits = updatedCustomer.credits || [];
+    const otherCredits = customerCredits.filter(
+      (credit) =>
+        !receiptCredits.find(
+          (receiptCredit) => receiptCredit._id === credit._id,
+        ),
+    );
+
+    const credits = [...receiptCredits, ...otherCredits];
     let amountLeft = amount;
 
     await BluebirdPromise.each(credits || [], async (credit) => {

@@ -1,9 +1,7 @@
 import Realm from 'realm';
-import {
-  saveLastLocalSync,
-  shouldUpdateRealmObject,
-} from '@/services/realm/utils';
-import {addItemToQueue} from '@/services/realm/queue';
+import {shouldUpdateRealmObject} from '@/services/realm/utils';
+import {addItemToQueue} from '@/services/realm/utils/queue';
+import {saveLastLocalSync} from '@/services/realm/utils/sync-storage';
 
 export const syncRealmDbs = ({
   sourceRealm,

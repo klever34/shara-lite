@@ -4,7 +4,11 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getAnalyticsService, getContactService} from '@/services';
+import {
+  getAnalyticsService,
+  getContactService,
+  getAuthService,
+} from '@/services';
 import {getCustomers} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
@@ -17,6 +21,7 @@ import React, {
   useState,
 } from 'react';
 import {
+  Alert,
   KeyboardAvoidingView,
   ListRenderItemInfo,
   Text,
@@ -44,17 +49,28 @@ export const CustomerListScreen = withModal(
     const navigation = useAppNavigation();
     const realm = useRealm();
     const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
+    const [business, setBusiness] = useState(
+      getAuthService().getBusinessInfo(),
+    );
     const reloadMyCustomers = useCallback(() => {
       if (realm) {
         const nextMyCustomers = getCustomers({realm});
         setMyCustomers(nextMyCustomers);
       }
+      setBusiness(getAuthService().getBusinessInfo());
     }, [realm]);
+
     const analyticsService = getAnalyticsService();
     const financeSummary: IFinanceSummary = getSummary({realm});
     const [searchTerm, setSearchTerm] = useState('');
     type Filter = 'all' | 'paid' | 'owes';
     const [filter, setFilter] = useState<Filter>('all');
+
+    const headerImage = business.profile_image?.url
+      ? {
+          uri: business.profile_image.url,
+        }
+      : require('@/assets/images/shara-user-img.png');
 
     const handleSelectCustomer = useCallback(
       (item?: ICustomer) => {
@@ -178,7 +194,19 @@ export const CustomerListScreen = withModal(
         },
         headerTitle: () => null,
         headerRight: () => (
-          <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+          <HeaderRight
+            menuOptions={[
+              {
+                text: 'Help',
+                onSelect: () => {
+                  Alert.alert(
+                    'Coming Soon',
+                    'This feature is coming in the next update',
+                  );
+                },
+              },
+            ]}
+          />
         ),
       });
     }, [myCustomers, navigation, renderCustomerListItem]);
@@ -284,7 +312,7 @@ export const CustomerListScreen = withModal(
           backgroundColor: colors.white,
         })}>
         <HomeContainer<ICustomer>
-          headerImage={require('@/assets/images/shara-user-img.png')}
+          headerImage={headerImage}
           initialNumToRender={10}
           headerTitle="total credit"
           createEntityButtonIcon="users"

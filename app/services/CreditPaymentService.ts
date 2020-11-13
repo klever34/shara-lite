@@ -9,6 +9,7 @@ import {updateCredit} from './CreditService';
 import {IPayment} from '@/models/Payment';
 import {getCustomer} from './customer/service';
 import {getAnalyticsService, getAuthService} from '@/services';
+import {IReceipt} from '@/models/Receipt';
 
 export const getCreditPayments = ({
   realm,
@@ -23,12 +24,14 @@ export const getCreditPayments = ({
 export const saveCreditPayment = ({
   realm,
   customer,
+  receipt,
   amount,
   method,
   note,
 }: {
   realm: Realm;
   customer: ICustomer;
+  receipt?: IReceipt;
   amount: number;
   method: string;
   note?: string;
@@ -37,10 +40,17 @@ export const saveCreditPayment = ({
     realm,
     customerId: customer._id as ObjectId,
   });
-  const credits = updatedCustomer.credits;
+  const receiptCredits = receipt && receipt.credits ? receipt.credits : [];
+  const customerCredits = updatedCustomer.credits || [];
+  const otherCredits = customerCredits.filter(
+    (credit) =>
+      !receiptCredits.find((receiptCredit) => receiptCredit._id === credit._id),
+  );
+
+  const credits = [...receiptCredits, ...otherCredits];
   let amountLeft = amount;
 
-  credits?.forEach((credit) => {
+  credits.forEach((credit) => {
     if (amountLeft <= 0 || credit.fulfilled) {
       return;
     }
