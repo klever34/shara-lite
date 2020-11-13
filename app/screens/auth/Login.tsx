@@ -4,18 +4,17 @@ import {
   PhoneNumber,
   PhoneNumberField,
 } from '@/components';
-import {getAnalyticsService, getApiService, getRealmService} from '@/services';
+import {getAnalyticsService, getApiService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
-import {initLocalRealm} from '@/services/realm';
-import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
+import {useInitRealm} from '@/services/realm';
 
 type Fields = {
   mobile: string;
@@ -32,7 +31,7 @@ const validationSchema = yup.object().shape({
 });
 
 export const Login = () => {
-  const {updateLocalRealm} = useContext(RealmContext);
+  const {initRealm} = useInitRealm();
   const {callingCode} = useIPGeolocation();
   const {
     errors,
@@ -67,10 +66,7 @@ export const Login = () => {
     setLoading(true);
     try {
       await apiService.logIn(payload);
-      const createdLocalRealm = await initLocalRealm();
-      updateLocalRealm && updateLocalRealm(createdLocalRealm);
-      const realmService = getRealmService();
-      realmService.setInstance(createdLocalRealm);
+      await initRealm();
 
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
