@@ -32,6 +32,8 @@ type Props = {
   receipt?: IReceipt;
 };
 
+type NewProduct = IProduct & {id?: number};
+
 export const CreateProductScreen = (props: Props) => {
   const {receipt} = props;
 
@@ -42,9 +44,9 @@ export const CreateProductScreen = (props: Props) => {
   const [name, setName] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [price, setPrice] = useState<number | undefined>();
-  const [products, setProducts] = useState<IProduct[]>([]);
+  const [products, setProducts] = useState<NewProduct[]>([]);
   const [showContinueBtn, setShowContinueBtn] = useState(true);
-  const [itemToEdit, setItemToEdit] = useState<IProduct | null>(null);
+  const [itemToEdit, setItemToEdit] = useState<NewProduct | null>(null);
   const [quantity, setQuantity] = useState<string | undefined>(
     FormDefaults.get('quantity', ''),
   );
@@ -78,31 +80,28 @@ export const CreateProductScreen = (props: Props) => {
     setQuantity(item);
   }, []);
 
-  const handleStartEdit = useCallback(
-    (item: IProduct) => {
-      getAnalyticsService()
-        .logEvent('selectContent', {
-          item_id: String(item._id),
-          content_type: 'Product',
-        })
-        .catch(handleError);
-      setItemToEdit(item);
-      setName(item.name);
-      setPrice(item.price);
-      if (item && item?.quantity && item?.quantity > 0) {
-        setQuantity(item?.quantity?.toString());
-      } else {
-        setQuantity('0');
-      }
-    },
-    [handleError],
-  );
+  const handleStartEdit = useCallback((item: NewProduct) => {
+    setItemToEdit(item);
+    setName(item.name);
+    setPrice(item.price);
+    if (item && item?.quantity && item?.quantity > 0) {
+      setQuantity(item?.quantity?.toString());
+    } else {
+      setQuantity('0');
+    }
+  }, []);
 
   const handleAddProducts = useCallback(
-    (payload: IProduct[]) => {
+    (payload: NewProduct[]) => {
       setIsLoading(true);
       setTimeout(() => {
-        saveProducts({realm, products: payload});
+        saveProducts({
+          realm,
+          products: payload.map((item) => {
+            delete item.id;
+            return item;
+          }),
+        });
       }, 100);
       setIsLoading(false);
       navigation.navigate('ProductsTab');
@@ -113,12 +112,7 @@ export const CreateProductScreen = (props: Props) => {
   const handleUpdateProduct = useCallback(() => {
     setProducts(
       products.map((product) => {
-        if (
-          price &&
-          quantity &&
-          itemToEdit &&
-          product._id?.toString() === itemToEdit?._id?.toString()
-        ) {
+        if (price && quantity && itemToEdit && product.id === itemToEdit?.id) {
           return {...itemToEdit, name, price, quantity: parseFloat(quantity)};
         }
         return product;
@@ -128,11 +122,7 @@ export const CreateProductScreen = (props: Props) => {
   }, [itemToEdit, price, products, name, quantity, handleClearState]);
 
   const handleRemoveProduct = useCallback(() => {
-    setProducts(
-      products.filter(
-        (product) => product._id?.toString() !== itemToEdit?._id?.toString(),
-      ),
-    );
+    setProducts(products.filter((product) => product?.id !== itemToEdit?.id));
     handleClearState();
   }, [products, itemToEdit, handleClearState]);
 
@@ -144,8 +134,9 @@ export const CreateProductScreen = (props: Props) => {
       const product = {
         name,
         price,
+        id: Date.now(),
         quantity: parseFloat(quantity),
-      } as IProduct;
+      } as NewProduct;
 
       setProducts([product, ...products]);
 
