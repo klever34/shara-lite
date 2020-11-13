@@ -1,4 +1,4 @@
-import {AppInput, Button, PhoneNumberField} from '@/components';
+import {AppInput, Button, PhoneNumberField, SecureEmblem} from '@/components';
 import {Page} from '@/components/Page';
 import {getAnalyticsService, getApiService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -161,6 +161,9 @@ export const BuildReceiptScreen = () => {
           label="where is your business located?"
           isInvalid={touched.address && !!errors.address}
         />
+      </View>
+      <View style={applyStyles('flex-row center pt-32')}>
+        <SecureEmblem />
       </View>
     </Page>
   );

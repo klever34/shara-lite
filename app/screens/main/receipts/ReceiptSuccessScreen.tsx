@@ -1,52 +1,33 @@
-import {Header, ReceiptPreview} from '@/components';
-import {amountWithCurrency} from '@/helpers/utils';
-import {IReceipt} from '@/models/Receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {getReceipt} from '@/services/ReceiptService';
-import {applyStyles, colors} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator, View} from 'react-native';
-import {useReceiptProvider} from './ReceiptProvider';
+import {applyStyles} from '@/styles';
+import LottieView from 'lottie-react-native';
+import React, {useEffect} from 'react';
+import {Text, View} from 'react-native';
 
 export const ReceiptSuccessScreen = ({route}: any) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
-  const {handleClearReceipt, createReceiptFromCustomer} = useReceiptProvider();
-  const [receipt, setReceipt] = useState<IReceipt | undefined>();
-
-  const handleClose = useCallback(() => {
-    if (createReceiptFromCustomer) {
-      handleClearReceipt();
-      navigation.navigate('CustomerDetails', {
-        customer: createReceiptFromCustomer,
-      });
-    } else {
-      handleClearReceipt();
-      navigation.navigate('Home');
-    }
-  }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const timeout = setTimeout(() => {
       const receiptId = route.params.id;
-      const retrievedRecipt = getReceipt({realm, receiptId});
-      setReceipt(retrievedRecipt);
-    });
-    return unsubscribe;
+      navigation.navigate('ReceiptDetails', {id: receiptId});
+    }, 1000);
+    return () => clearTimeout(timeout);
   }, [realm, navigation, route.params.id]);
 
-  return !receipt ? (
-    <View style={applyStyles('flex-1 center bg-white')}>
-      <ActivityIndicator color={colors.primary} size={40} />
+  return (
+    <View style={applyStyles('bg-white center flex-1')}>
+      <View style={applyStyles({width: 300, height: 300})}>
+        <LottieView
+          autoPlay
+          source={require('@/assets/animations/success.json')}
+        />
+      </View>
+      <Text style={applyStyles('text-gray-300 text-400 text-xl text-center')}>
+        Receipt created successfully
+      </Text>
     </View>
-  ) : (
-    <>
-      <Header
-        title={`Total: ${amountWithCurrency(receipt.total_amount)}`}
-        iconRight={{iconName: 'x', onPress: handleClose}}
-      />
-      <ReceiptPreview receipt={receipt} onClose={handleClose} />
-    </>
   );
 };

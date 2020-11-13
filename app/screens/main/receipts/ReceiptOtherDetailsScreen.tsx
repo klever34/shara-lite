@@ -11,7 +11,7 @@ import {
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency, showToast} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -19,12 +19,12 @@ import {getCustomers} from '@/services/customer';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
+import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
 import {addDays, format} from 'date-fns';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Alert, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptProvider} from './ReceiptProvider';
-import {useReceipt} from '@/services/receipt';
 
 type CustomerListItem =
   | Pick<ICustomer, 'name' | 'mobile' | '_id'>
@@ -184,16 +184,15 @@ export const ReceiptOtherDetailsScreen = () => {
     handleUpdateReceipt(receiptToCreate);
     const createdReceipt = await saveReceipt(receiptToCreate);
     handleClearState();
-    showToast({message: 'RECEIPT SUCCESSFULLY CREATED'});
-    navigation.navigate('ReceiptDetails', {id: createdReceipt._id});
+    navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
   }, [
+    amountOwed,
+    amountPaid,
+    totalAmount,
     receipt,
     note,
     realm,
     dueDate,
-    amountPaid,
-    totalAmount,
-    amountOwed,
     customer,
     isNewCustomer,
     saveToPhoneBook,
