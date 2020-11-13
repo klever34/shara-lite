@@ -22,7 +22,6 @@ import React, {
   useState,
 } from 'react';
 import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
-import LottieView from 'lottie-react-native';
 import {ReceiptListItem} from './ReceiptListItem';
 
 export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
