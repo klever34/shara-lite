@@ -380,7 +380,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
-        navigation.goBack();
+        navigation.navigate('Home');
         showToast({message: 'RECEIPT CANCELLED'});
       }, 50);
     },
