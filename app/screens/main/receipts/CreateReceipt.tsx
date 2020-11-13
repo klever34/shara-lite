@@ -318,18 +318,6 @@ export const CreateReceipt = (props: Props) => {
     );
   }, []);
 
-  useEffect(() => {
-    const total = receiptItems
-      .map(({quantity: q, price: p}) => {
-        const itemPrice = p ? p : 0;
-        const itemQuantity = q ? q : 0;
-        return itemPrice * itemQuantity;
-      })
-      .reduce((acc, curr) => acc + curr, 0);
-
-    setTotalAmount(total);
-  }, [receiptItems]);
-
   const handleChangeSearchQuery = useCallback((searchValue) => {
     setSearchQuery(searchValue);
   }, []);
@@ -341,6 +329,18 @@ export const CreateReceipt = (props: Props) => {
   const _keyboardDidHide = () => {
     setShowContinueBtn(true);
   };
+
+  useEffect(() => {
+    const total = receiptItems
+      .map(({quantity: q, price: p}) => {
+        const itemPrice = p ? p : 0;
+        const itemQuantity = q ? q : 0;
+        return itemPrice * itemQuantity;
+      })
+      .reduce((acc, curr) => acc + curr, 0);
+
+    setTotalAmount(total);
+  }, [receiptItems]);
 
   useEffect(() => {
     Keyboard.addListener('keyboardDidShow', _keyboardDidShow);

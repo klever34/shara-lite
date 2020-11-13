@@ -38,6 +38,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  Keyboard,
   Text,
   ToastAndroid,
   View,
@@ -73,6 +74,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const [printer, setPrinter] = useState<{address: string}>(
     {} as {address: string},
   );
+  const [showActionBtns, setShowActionBtns] = useState(true);
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer,
   );
@@ -418,6 +420,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       });
       setCreditPaymentAmount(0);
       showToast({message: 'CREDIT PAYMENT RECORDED'});
+      Keyboard.dismiss();
     } else {
       Alert.alert('Info', 'Please select a customer');
     }
@@ -439,6 +442,14 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       ),
     });
   }, [customers, handleSetCustomer, openModal]);
+
+  const _keyboardDidShow = () => {
+    setShowActionBtns(false);
+  };
+
+  const _keyboardDidHide = () => {
+    setShowActionBtns(true);
+  };
 
   const receiptActions = [
     {
@@ -465,6 +476,17 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   useEffect(() => {
     setCustomer(receipt?.customer);
   }, [receipt]);
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+    };
+  }, []);
 
   header = header ?? (
     <View
@@ -581,153 +603,155 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
             </>
           }
         />
-        <>
-          {!!receipt?.note && (
-            <View
-              style={applyStyles('px-16 py-8', {
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}>
-              <Text
-                style={applyStyles(
-                  'pb-4 text-700 text-uppercase text-xs text-gray-100',
-                )}>
-                Notes
-              </Text>
-              <Text style={applyStyles('text-400 text-sm text-gray-300')}>
-                {receipt?.note}
-              </Text>
-            </View>
-          )}
-          {!!receipt?.is_cancelled && (
-            <View
-              style={applyStyles('px-16 py-8', {
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}>
-              <Text
-                style={applyStyles(
-                  'pb-4 text-700 text-uppercase text-xs text-gray-100',
-                )}>
-                Cancellation Reason
-              </Text>
-              <Text style={applyStyles('text-400 text-sm text-gray-300')}>
-                {receipt?.cancellation_reason}
-              </Text>
-            </View>
-          )}
-          {!receipt?.is_cancelled && (
-            <View
-              style={applyStyles(
-                'pt-8 pb-8 flex-row w-full justify-space-between flex-wrap',
-                {
+        {showActionBtns && (
+          <>
+            {!!receipt?.note && (
+              <View
+                style={applyStyles('px-16 py-8', {
                   borderTopWidth: 1,
                   borderTopColor: colors['gray-10'],
-                },
-              )}>
-              {receiptActions.map((item, index) => (
-                <View
-                  key={index.toString()}
-                  style={applyStyles('center', {width: '25%'})}>
-                  <PreviewActionButton {...item} />
-                </View>
-              ))}
-            </View>
-          )}
-          {!receipt?.is_cancelled && (
-            <StickyFooter style={applyStyles('py-16 px-24 bg-white')}>
-              <Text
-                style={applyStyles(
-                  'text-center text-700 text-gray-200 text-uppercase',
-                )}>
-                {isFulfilled ? 'Send via' : 'Send reminder'}
-              </Text>
+                })}>
+                <Text
+                  style={applyStyles(
+                    'pb-4 text-700 text-uppercase text-xs text-gray-100',
+                  )}>
+                  Notes
+                </Text>
+                <Text style={applyStyles('text-400 text-sm text-gray-300')}>
+                  {receipt?.note}
+                </Text>
+              </View>
+            )}
+            {!!receipt?.is_cancelled && (
+              <View
+                style={applyStyles('px-16 py-8', {
+                  borderTopWidth: 1,
+                  borderTopColor: colors['gray-10'],
+                })}>
+                <Text
+                  style={applyStyles(
+                    'pb-4 text-700 text-uppercase text-xs text-gray-100',
+                  )}>
+                  Cancellation Reason
+                </Text>
+                <Text style={applyStyles('text-400 text-sm text-gray-300')}>
+                  {receipt?.cancellation_reason}
+                </Text>
+              </View>
+            )}
+            {!receipt?.is_cancelled && (
               <View
                 style={applyStyles(
-                  'flex-row w-full items-center justify-space-between flex-wrap',
+                  'pt-8 pb-8 flex-row w-full justify-space-between flex-wrap',
+                  {
+                    borderTopWidth: 1,
+                    borderTopColor: colors['gray-10'],
+                  },
                 )}>
-                <View style={applyStyles('center', {width: '33%'})}>
-                  <Touchable onPress={onWhatsappShare}>
-                    <View
-                      style={applyStyles('w-full', 'flex-row', 'center', {
-                        height: 48,
-                      })}>
-                      <Icon
-                        size={24}
-                        type="ionicons"
-                        name="logo-whatsapp"
-                        color={colors.whatsapp}
-                      />
-                      <Text
-                        style={applyStyles(
-                          'pl-sm',
-                          'text-400',
-                          'text-uppercase',
-                          {
-                            color: colors['gray-200'],
-                          },
-                        )}>
-                        whatsapp
-                      </Text>
-                    </View>
-                  </Touchable>
-                </View>
-                <View style={applyStyles('center', {width: '33%'})}>
-                  <Touchable onPress={onSmsShare}>
-                    <View
-                      style={applyStyles('w-full', 'flex-row', 'center', {
-                        height: 48,
-                      })}>
-                      <Icon
-                        size={24}
-                        name="message-circle"
-                        type="feathericons"
-                        color={colors.primary}
-                      />
-                      <Text
-                        style={applyStyles(
-                          'pl-sm',
-                          'text-400',
-                          'text-uppercase',
-                          {
-                            color: colors['gray-200'],
-                          },
-                        )}>
-                        sms
-                      </Text>
-                    </View>
-                  </Touchable>
-                </View>
-                <View style={applyStyles('center', {width: '33%'})}>
-                  <Touchable onPress={onEmailShare}>
-                    <View
-                      style={applyStyles('w-full', 'flex-row', 'center', {
-                        height: 48,
-                      })}>
-                      <Icon
-                        size={24}
-                        name="menu"
-                        type="feathericons"
-                        color={colors.primary}
-                      />
-                      <Text
-                        style={applyStyles(
-                          'pl-sm',
-                          'text-400',
-                          'text-uppercase',
-                          {
-                            color: colors['gray-200'],
-                          },
-                        )}>
-                        others
-                      </Text>
-                    </View>
-                  </Touchable>
-                </View>
+                {receiptActions.map((item, index) => (
+                  <View
+                    key={index.toString()}
+                    style={applyStyles('center', {width: '25%'})}>
+                    <PreviewActionButton {...item} />
+                  </View>
+                ))}
               </View>
-            </StickyFooter>
-          )}
-        </>
+            )}
+            {!receipt?.is_cancelled && (
+              <StickyFooter style={applyStyles('py-16 px-24 bg-white')}>
+                <Text
+                  style={applyStyles(
+                    'text-center text-700 text-gray-200 text-uppercase',
+                  )}>
+                  {isFulfilled ? 'Send via' : 'Send reminder'}
+                </Text>
+                <View
+                  style={applyStyles(
+                    'flex-row w-full items-center justify-space-between flex-wrap',
+                  )}>
+                  <View style={applyStyles('center', {width: '33%'})}>
+                    <Touchable onPress={onWhatsappShare}>
+                      <View
+                        style={applyStyles('w-full', 'flex-row', 'center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={24}
+                          type="ionicons"
+                          name="logo-whatsapp"
+                          color={colors.whatsapp}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-sm',
+                            'text-400',
+                            'text-uppercase',
+                            {
+                              color: colors['gray-200'],
+                            },
+                          )}>
+                          whatsapp
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
+                  <View style={applyStyles('center', {width: '33%'})}>
+                    <Touchable onPress={onSmsShare}>
+                      <View
+                        style={applyStyles('w-full', 'flex-row', 'center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={24}
+                          name="message-circle"
+                          type="feathericons"
+                          color={colors.primary}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-sm',
+                            'text-400',
+                            'text-uppercase',
+                            {
+                              color: colors['gray-200'],
+                            },
+                          )}>
+                          sms
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
+                  <View style={applyStyles('center', {width: '33%'})}>
+                    <Touchable onPress={onEmailShare}>
+                      <View
+                        style={applyStyles('w-full', 'flex-row', 'center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={24}
+                          name="menu"
+                          type="feathericons"
+                          color={colors.primary}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-sm',
+                            'text-400',
+                            'text-uppercase',
+                            {
+                              color: colors['gray-200'],
+                            },
+                          )}>
+                          others
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
+                </View>
+              </StickyFooter>
+            )}
+          </>
+        )}
       </View>
 
       <View style={applyStyles({opacity: 0, height: 0})}>
