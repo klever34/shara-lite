@@ -1,45 +1,44 @@
 import Realm from 'realm';
 import React, {
   createContext,
+  MutableRefObject,
   useCallback,
   useEffect,
   useRef,
   useState,
 } from 'react';
-import {copyRealm} from '@/services/realm/copy-realm';
-import {syncRealmDbs} from '@/services/realm/sync-realm-dbs';
-import perf from '@react-native-firebase/perf';
-import {normalizeDb} from '@/services/realm/normalizations';
-import {
-  getLocalLastSync,
-  initLocalLastSyncStorage,
-} from '@/services/realm/utils';
+import {getLocalLastSync} from '@/services/realm/utils/sync-storage';
 
 type RealmObject = {
-  realm?: Realm;
-  isSyncCompleted?: Boolean;
-  isRealmSyncLoaderInitiated?: Boolean;
-  updateLocalRealm?: (realm: Realm) => void;
-  updateSyncRealm?: ({
-    newRealm,
-    realmUser,
-    partitionValue,
-  }: {
-    newRealm: Realm;
-    realmUser: any;
-    partitionValue: string;
-  }) => void;
-  logoutFromRealm?: () => void;
-  setIsRealmSyncLoaderInitiated?: (isLoaded: Boolean) => void;
-  setIsSyncCompleted?: (isLoaded: Boolean) => void;
+  realm: Realm | undefined;
+  realmUser: any;
+  localRealm: MutableRefObject<Realm | undefined>;
+  syncRealm: MutableRefObject<Realm | undefined>;
+  isSyncCompleted: Boolean;
+  isSyncInProgress: Boolean;
+  setRealm: (realm: Realm | undefined) => void;
+  setRealmUser: (realmUser: any) => void;
+  setIsSyncInProgress: (isLoaded: Boolean) => void;
+  setIsSyncCompleted: (isLoaded: Boolean) => void;
 };
 
-export const RealmContext = createContext<RealmObject>({});
+const noop = () => {};
+
+export const RealmContext = createContext<RealmObject>({
+  realm: undefined,
+  realmUser: undefined,
+  localRealm: (undefined as unknown) as MutableRefObject<Realm>,
+  syncRealm: (undefined as unknown) as MutableRefObject<Realm>,
+  isSyncCompleted: false,
+  isSyncInProgress: false,
+  setRealm: noop,
+  setRealmUser: noop,
+  setIsSyncInProgress: noop,
+  setIsSyncCompleted: noop,
+});
 
 const RealmProvider = (props: any) => {
-  const [isRealmSyncLoaderInitiated, setIsRealmSyncLoaderInitiated] = useState<
-    Boolean
-  >(false);
+  const [isSyncInProgress, setIsSyncInProgress] = useState<Boolean>(false);
   const [isSyncCompleted, setIsSyncCompleted] = useState<Boolean>(true);
   const [realm, setRealm] = useState<Realm>();
   const [realmUser, setRealmUser] = useState<any>(false);
@@ -55,137 +54,26 @@ const RealmProvider = (props: any) => {
   }, [setIsSyncCompleted]);
 
   useEffect(() => {
-    updateSyncCompleteStatus();
+    updateSyncCompleteStatus().then(noop);
   }, [updateSyncCompleteStatus]);
-
-  const updateSyncRealm = async ({
-    newRealm,
-    realmUser: user,
-    partitionValue,
-  }: {
-    newRealm: Realm;
-    realmUser: any;
-    partitionValue: string;
-  }) => {
-    // TODO Sync trace
-    const trace = await perf().startTrace('updateSyncRealm');
-    setRealmUser(user);
-
-    const lastLocalSync = await getLocalLastSync();
-    localRealm.current &&
-      (await initLocalLastSyncStorage({realm: localRealm.current}));
-
-    syncLocalData({
-      syncRealm: newRealm,
-      localRealm: localRealm.current,
-      partitionValue,
-      lastLocalSync,
-    });
-
-    setTimeout(() => {
-      setIsSyncCompleted(true);
-    }, 2000);
-    syncRealm.current = newRealm;
-    await trace.stop();
-  };
-
-  const updateLocalRealm = (newRealm: Realm) => {
-    localRealm.current = newRealm;
-    setRealm(newRealm);
-  };
-
-  const logoutFromRealm = () => {
-    setIsRealmSyncLoaderInitiated(false);
-    setRealm(undefined);
-    setIsSyncCompleted(true);
-
-    if (localRealm.current) {
-      localRealm.current?.removeAllListeners();
-
-      localRealm.current.write(() => {
-        localRealm.current?.deleteAll();
-      });
-    }
-
-    if (syncRealm.current) {
-      syncRealm.current?.removeAllListeners();
-
-      if (realmUser) {
-        // @ts-ignore
-        realmUser.logOut();
-        setRealmUser(undefined);
-      }
-    }
-
-    setIsSyncCompleted(false);
-  };
 
   return (
     <RealmContext.Provider
       value={{
         realm,
+        realmUser,
+        syncRealm,
+        localRealm,
         isSyncCompleted,
-        isRealmSyncLoaderInitiated,
-        logoutFromRealm,
-        updateLocalRealm,
-        updateSyncRealm,
-        setIsRealmSyncLoaderInitiated,
+        isSyncInProgress,
+        setRealm,
+        setRealmUser,
+        setIsSyncInProgress,
         setIsSyncCompleted,
       }}>
       {props.children}
     </RealmContext.Provider>
   );
-};
-
-const syncLocalData = ({
-  syncRealm,
-  localRealm,
-  partitionValue,
-  lastLocalSync,
-}: {
-  syncRealm?: Realm;
-  localRealm?: Realm;
-  partitionValue: string;
-  lastLocalSync: any | undefined;
-}) => {
-  if (!syncRealm || !localRealm) {
-    return;
-  }
-
-  const useQueue = !!lastLocalSync;
-
-  normalizeDb({partitionKey: partitionValue, realm: localRealm});
-
-  copyRealm({
-    sourceRealm: localRealm,
-    targetRealm: syncRealm,
-    partitionValue,
-    lastLocalSync,
-    useQueue,
-    isLocal: true,
-  });
-
-  copyRealm({
-    sourceRealm: syncRealm,
-    targetRealm: localRealm,
-    partitionValue,
-    lastLocalSync,
-    useQueue,
-    isLocal: false,
-  });
-
-  syncRealmDbs({
-    sourceRealm: localRealm,
-    targetRealm: syncRealm,
-    partitionValue,
-    isLocal: true,
-  });
-
-  syncRealmDbs({
-    sourceRealm: syncRealm,
-    targetRealm: localRealm,
-    partitionValue,
-  });
 };
 
 export default RealmProvider;

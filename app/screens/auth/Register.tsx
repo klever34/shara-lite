@@ -4,18 +4,17 @@ import {
   PhoneNumber,
   PhoneNumberField,
 } from '@/components';
-import {getAnalyticsService, getApiService, getRealmService} from '@/services';
+import {getAnalyticsService, getApiService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
-import {initLocalRealm} from '@/services/realm';
-import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useContext, useState} from 'react';
+import React, {useState} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
+import {useInitRealm} from '@/services/realm';
 
 type Fields = {
   mobile: string;
@@ -31,14 +30,10 @@ const validationSchema = yup.object().shape({
     .required('Number is required'),
   password: yup
     .string()
-    .strict(true)
-    .trim("Password shouldn't contain spaces")
     .oneOf([yup.ref('confirmPassword'), undefined], 'Passwords must match')
     .required('Password is required'),
   confirmPassword: yup
     .string()
-    .strict(true)
-    .trim("Password shouldn't contain spaces")
     .oneOf([yup.ref('password'), undefined], 'Passwords must match')
     .required('Password is required'),
 });
@@ -46,7 +41,7 @@ const validationSchema = yup.object().shape({
 export const Register = () => {
   const navigation = useAppNavigation();
   const {callingCode} = useIPGeolocation();
-  const {updateLocalRealm, setIsSyncCompleted} = useContext(RealmContext);
+  const {initRealm} = useInitRealm();
   const {
     errors,
     values,
@@ -71,10 +66,10 @@ export const Register = () => {
   };
   const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
-    const {mobile, countryCode, ...rest} = data;
+    const {mobile, countryCode, password} = data;
     const payload = {
-      ...rest,
       country_code: countryCode,
+      password: password.trim(),
       mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
     };
     const apiService = getApiService();
@@ -82,11 +77,7 @@ export const Register = () => {
 
     try {
       await apiService.register(payload);
-      const createdLocalRealm = await initLocalRealm();
-      updateLocalRealm && updateLocalRealm(createdLocalRealm);
-      setIsSyncCompleted && setIsSyncCompleted(true);
-      const realmService = getRealmService();
-      realmService.setInstance(createdLocalRealm);
+      await initRealm({isNewUser: true});
 
       getAnalyticsService()
         .logEvent('signup', {method: 'mobile'})

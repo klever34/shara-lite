@@ -1,12 +1,9 @@
 import Realm from 'realm';
-import {
-  getRealmObjectCopy,
-  saveLastLocalSync,
-  shouldUpdateRealmObject,
-} from '@/services/realm/utils';
-import {addItemToQueue} from '@/services/realm/queue';
 import subWeeks from 'date-fns/subWeeks';
+import {shouldUpdateRealmObject} from '@/services/realm/utils';
+import {addItemToQueue} from '@/services/realm/utils/queue';
 import {BaseModelInterface} from '@/models/baseSchema';
+import {saveLastLocalSync} from '@/services/realm/utils/sync-storage';
 
 const copyObject = ({
   obj,
@@ -22,6 +19,7 @@ const copyObject = ({
   isLocal: boolean;
 }) => {
   const copy = getRealmObjectCopy({obj, objSchema}) as BaseModelInterface;
+
   const copyItem = () => {
     try {
       const writeItem = () => {
@@ -60,6 +58,31 @@ const copyObject = ({
   }
 
   addItemToQueue(copyItem);
+};
+
+export const getRealmObjectCopy = ({
+  obj,
+  objSchema,
+  extractObjectId,
+}: {
+  obj: any;
+  objSchema: any;
+  extractObjectId?: boolean;
+}) => {
+  const copy = {};
+  for (let key in objSchema.properties) {
+    const prop = objSchema.properties[key];
+    if (prop.type !== 'linkingObjects') {
+      if (extractObjectId && obj[key] && obj[key]._id) {
+        // @ts-ignore
+        copy[key] = obj[key]._id;
+      } else {
+        // @ts-ignore
+        copy[key] = obj[key];
+      }
+    }
+  }
+  return copy;
 };
 
 export const copyRealm = ({

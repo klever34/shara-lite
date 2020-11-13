@@ -1,10 +1,12 @@
 import {FAButton} from '@/components';
 import {applyStyles} from '@/styles';
-import React, {ReactNode} from 'react';
+import React, {ReactNode, useCallback, useState} from 'react';
 import {
   DefaultSectionT,
   FlatList,
   ImageSourcePropType,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
   SectionList,
   SectionListData,
   SectionListProps,
@@ -19,6 +21,7 @@ import EmptyState, {EmptyStateProps} from '../EmptyState';
 import {HeaderRightMenuOption, SearchFilter} from '@/components';
 import {Icon} from '../Icon';
 import {HomeContainerHeader} from './Header';
+import {Fade} from '../Fade';
 
 type HomeContainerProps<T> = {
   activeFilter?: string;
@@ -72,17 +75,32 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
     headerStyle,
   } = props;
 
+  const [isHeaderShown, setIsHeaderShown] = useState(true);
+
+  const handleShowHeader = useCallback(
+    (e: NativeSyntheticEvent<NativeScrollEvent>) => {
+      if (e.nativeEvent.contentOffset.y > 0) {
+        setIsHeaderShown(false);
+      } else {
+        setIsHeaderShown(true);
+      }
+    },
+    [],
+  );
+
   return (
     <View style={applyStyles('flex-1 bg-white')}>
       {headerTitle && (
-        <HomeContainerHeader
-          title={headerTitle}
-          amount={headerAmount}
-          activeFilter={activeFilter}
-          menuOptions={filterOptions}
-          image={headerImage}
-          style={headerStyle}
-        />
+        <Fade visible={isHeaderShown}>
+          <HomeContainerHeader
+            title={headerTitle}
+            amount={headerAmount}
+            activeFilter={activeFilter}
+            menuOptions={filterOptions}
+            image={headerImage}
+            style={headerStyle}
+          />
+        </Fade>
       )}
       {moreHeader}
       <SearchFilter
@@ -97,6 +115,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
               //@ts-ignore
               sections={data}
               keyExtractor={keyExtractor}
+              onScroll={handleShowHeader}
               renderItem={renderSectionListItem}
               initialNumToRender={initialNumToRender}
               renderSectionHeader={renderSectionHeader}
@@ -107,6 +126,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
               data={data}
               renderItem={renderListItem}
               keyExtractor={keyExtractor}
+              onScroll={handleShowHeader}
               initialNumToRender={initialNumToRender}
             />
           )}

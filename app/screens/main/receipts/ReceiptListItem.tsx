@@ -33,8 +33,6 @@ export const ReceiptListItem = ({
     ? 'Cancelled'
     : !creditAmountLeft
     ? 'Paid'
-    : isHeader
-    ? 'owes you'
     : `owes ${amountWithCurrency(creditAmountLeft)}`;
   const statusTextWeight =
     !creditAmountLeft || receipt?.is_cancelled ? 'text-400' : 'text-700';

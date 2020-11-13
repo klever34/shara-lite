@@ -38,6 +38,7 @@ import {
   Alert,
   Dimensions,
   FlatList,
+  Keyboard,
   Text,
   ToastAndroid,
   View,
@@ -47,6 +48,7 @@ import {
   BluetoothManager, //@ts-ignore
 } from 'react-native-bluetooth-escpos-printer';
 import {ReceiptListItem} from './ReceiptListItem';
+import {useReceiptProvider} from './ReceiptProvider';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
@@ -59,6 +61,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const {getReceiptAmounts} = useReceipt();
+  const {handleClearReceipt, createReceiptFromCustomer} = useReceiptProvider();
+
   const customers = getCustomers({realm});
   const user = getAuthService().getUser();
   const storageService = getStorageService();
@@ -70,6 +74,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const [printer, setPrinter] = useState<{address: string}>(
     {} as {address: string},
   );
+  const [showActionBtns, setShowActionBtns] = useState(true);
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer,
   );
@@ -80,7 +85,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   );
 
   const creditDueDate = receipt?.dueDate;
-  const hasCustomerMobile = customer?.mobile;
   const receiptDate = receipt?.created_at ?? new Date();
   const businessInfo = getAuthService().getBusinessInfo();
   const isFulfilled = receipt?.total_amount === totalAmountPaid;
@@ -373,16 +377,28 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     navigation.navigate('CreateReceipt', {receipt});
   }, [receipt, navigation]);
 
+  const handleClose = useCallback(() => {
+    if (createReceiptFromCustomer) {
+      handleClearReceipt();
+      navigation.navigate('CustomerDetails', {
+        customer: createReceiptFromCustomer,
+      });
+    } else {
+      handleClearReceipt();
+      navigation.navigate('Home');
+    }
+  }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
+
   const handleCancelReceipt = useCallback(
     (note) => {
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
-        navigation.goBack();
+        handleClose();
         showToast({message: 'RECEIPT CANCELLED'});
       }, 50);
     },
-    [receipt, realm, navigation],
+    [receipt, realm, handleClose],
   );
 
   const handleEditReceipt = useCallback(() => {
@@ -398,15 +414,17 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       saveCreditPayment({
         realm,
         customer,
+        receipt,
         method: '',
         amount: creditPaymentAmount,
       });
       setCreditPaymentAmount(0);
       showToast({message: 'CREDIT PAYMENT RECORDED'});
+      Keyboard.dismiss();
     } else {
       Alert.alert('Info', 'Please select a customer');
     }
-  }, [creditPaymentAmount, customer, realm]);
+  }, [creditPaymentAmount, customer, receipt, realm]);
 
   const handleOpenContactList = useCallback(() => {
     const closeContactListModal = openModal('bottom-half', {
@@ -424,6 +442,14 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       ),
     });
   }, [customers, handleSetCustomer, openModal]);
+
+  const _keyboardDidShow = () => {
+    setShowActionBtns(false);
+  };
+
+  const _keyboardDidHide = () => {
+    setShowActionBtns(true);
+  };
 
   const receiptActions = [
     {
@@ -451,6 +477,17 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     setCustomer(receipt?.customer);
   }, [receipt]);
 
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
+
+    // cleanup function
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
+    };
+  }, []);
+
   header = header ?? (
     <View
       style={applyStyles('flex-row bg-white items-center', {
@@ -464,9 +501,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         elevation: 10,
         borderBottomColor: colors['gray-10'],
       })}>
-      <HeaderBackButton
-        {...{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
-      />
+      <HeaderBackButton {...{iconName: 'arrow-left', onPress: handleClose}} />
       <ReceiptListItem
         isHeader
         style={applyStyles({
@@ -537,99 +572,103 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                 keyExtractor={(item, index) =>
                   `${item?._id?.toString()}-${index}`
                 }
+                ListFooterComponent={
+                  <>
+                    {!receipt?.is_cancelled && (
+                      <View
+                        style={applyStyles('px-16 items-end', {
+                          borderTopWidth: 1,
+                          borderTopColor: colors['gray-10'],
+                        })}>
+                        <ReceiptTableFooterItem
+                          title="Total"
+                          value={amountWithCurrency(receipt?.total_amount)}
+                        />
+                        <ReceiptTableFooterItem
+                          title="Paid"
+                          value={amountWithCurrency(totalAmountPaid)}
+                        />
+                        {!isFulfilled && (
+                          <ReceiptTableFooterItem
+                            title="Owes"
+                            valueTextStyle={applyStyles('text-red-200')}
+                            value={amountWithCurrency(creditAmountLeft)}
+                          />
+                        )}
+                      </View>
+                    )}
+                  </>
+                }
               />
             </>
           }
         />
-        <>
-          {!receipt?.is_cancelled && (
-            <View
-              style={applyStyles('px-16 items-end', {
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}>
-              <ReceiptTableFooterItem
-                title="Total"
-                value={amountWithCurrency(receipt?.total_amount)}
-              />
-              <ReceiptTableFooterItem
-                title="Paid"
-                value={amountWithCurrency(totalAmountPaid)}
-              />
-              {!isFulfilled && (
-                <ReceiptTableFooterItem
-                  title="Owes"
-                  valueTextStyle={applyStyles('text-red-200')}
-                  value={amountWithCurrency(creditAmountLeft)}
-                />
-              )}
-            </View>
-          )}
-          {!receipt?.is_cancelled && (
-            <View
-              style={applyStyles(
-                'pt-8 pb-8 flex-row w-full justify-space-between flex-wrap',
-                {
+        {showActionBtns && (
+          <>
+            {!!receipt?.note && (
+              <View
+                style={applyStyles('px-16 py-8', {
                   borderTopWidth: 1,
                   borderTopColor: colors['gray-10'],
-                },
-              )}>
-              {receiptActions.map((item, index) => (
-                <View
-                  key={index.toString()}
-                  style={applyStyles('center', {width: '25%'})}>
-                  <PreviewActionButton {...item} />
-                </View>
-              ))}
-            </View>
-          )}
-          {!!receipt?.note && (
-            <View
-              style={applyStyles('px-16 py-8', {
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}>
-              <Text
-                style={applyStyles(
-                  'pb-4 text-700 text-uppercase text-xs text-gray-100',
-                )}>
-                Notes
-              </Text>
-              <Text style={applyStyles('text-400 text-sm text-gray-300')}>
-                {receipt?.note}
-              </Text>
-            </View>
-          )}
-          {!!receipt?.is_cancelled && (
-            <View
-              style={applyStyles('px-16 py-8', {
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}>
-              <Text
-                style={applyStyles(
-                  'pb-4 text-700 text-uppercase text-xs text-gray-100',
-                )}>
-                Cancellation Reason
-              </Text>
-              <Text style={applyStyles('text-400 text-sm text-gray-300')}>
-                {receipt?.cancellation_reason}
-              </Text>
-            </View>
-          )}
-          {!receipt?.is_cancelled && (
-            <StickyFooter style={applyStyles('py-16 px-24 bg-white')}>
-              <Text
-                style={applyStyles(
-                  'text-center text-700 text-gray-200 text-uppercase',
-                )}>
-                {isFulfilled ? 'Send via' : 'Send reminder'}
-              </Text>
+                })}>
+                <Text
+                  style={applyStyles(
+                    'pb-4 text-700 text-uppercase text-xs text-gray-100',
+                  )}>
+                  Notes
+                </Text>
+                <Text style={applyStyles('text-400 text-sm text-gray-300')}>
+                  {receipt?.note}
+                </Text>
+              </View>
+            )}
+            {!!receipt?.is_cancelled && (
+              <View
+                style={applyStyles('px-16 py-8', {
+                  borderTopWidth: 1,
+                  borderTopColor: colors['gray-10'],
+                })}>
+                <Text
+                  style={applyStyles(
+                    'pb-4 text-700 text-uppercase text-xs text-gray-100',
+                  )}>
+                  Cancellation Reason
+                </Text>
+                <Text style={applyStyles('text-400 text-sm text-gray-300')}>
+                  {receipt?.cancellation_reason}
+                </Text>
+              </View>
+            )}
+            {!receipt?.is_cancelled && (
               <View
                 style={applyStyles(
-                  'flex-row w-full items-center justify-space-between flex-wrap',
+                  'pt-8 pb-8 flex-row w-full justify-space-between flex-wrap',
+                  {
+                    borderTopWidth: 1,
+                    borderTopColor: colors['gray-10'],
+                  },
                 )}>
-                {hasCustomerMobile && (
+                {receiptActions.map((item, index) => (
+                  <View
+                    key={index.toString()}
+                    style={applyStyles('center', {width: '25%'})}>
+                    <PreviewActionButton {...item} />
+                  </View>
+                ))}
+              </View>
+            )}
+            {!receipt?.is_cancelled && (
+              <StickyFooter style={applyStyles('py-16 px-24 bg-white')}>
+                <Text
+                  style={applyStyles(
+                    'text-center text-700 text-gray-200 text-uppercase',
+                  )}>
+                  {isFulfilled ? 'Send via' : 'Send reminder'}
+                </Text>
+                <View
+                  style={applyStyles(
+                    'flex-row w-full items-center justify-space-between flex-wrap',
+                  )}>
                   <View style={applyStyles('center', {width: '33%'})}>
                     <Touchable onPress={onWhatsappShare}>
                       <View
@@ -656,8 +695,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                       </View>
                     </Touchable>
                   </View>
-                )}
-                {hasCustomerMobile && (
                   <View style={applyStyles('center', {width: '33%'})}>
                     <Touchable onPress={onSmsShare}>
                       <View
@@ -684,37 +721,37 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                       </View>
                     </Touchable>
                   </View>
-                )}
-                <View style={applyStyles('center', {width: '33%'})}>
-                  <Touchable onPress={onEmailShare}>
-                    <View
-                      style={applyStyles('w-full', 'flex-row', 'center', {
-                        height: 48,
-                      })}>
-                      <Icon
-                        size={24}
-                        name="menu"
-                        type="feathericons"
-                        color={colors.primary}
-                      />
-                      <Text
-                        style={applyStyles(
-                          'pl-sm',
-                          'text-400',
-                          'text-uppercase',
-                          {
-                            color: colors['gray-200'],
-                          },
-                        )}>
-                        others
-                      </Text>
-                    </View>
-                  </Touchable>
+                  <View style={applyStyles('center', {width: '33%'})}>
+                    <Touchable onPress={onEmailShare}>
+                      <View
+                        style={applyStyles('w-full', 'flex-row', 'center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={24}
+                          name="menu"
+                          type="feathericons"
+                          color={colors.primary}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-sm',
+                            'text-400',
+                            'text-uppercase',
+                            {
+                              color: colors['gray-200'],
+                            },
+                          )}>
+                          others
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
                 </View>
-              </View>
-            </StickyFooter>
-          )}
-        </>
+              </StickyFooter>
+            )}
+          </>
+        )}
       </View>
 
       <View style={applyStyles({opacity: 0, height: 0})}>

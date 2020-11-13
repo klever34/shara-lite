@@ -1,4 +1,4 @@
-import React, {useCallback, useContext, useEffect} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {
   Alert,
   BackHandler,
@@ -9,18 +9,13 @@ import {
   View,
 } from 'react-native';
 import {colors, dimensions} from '../styles';
-import {
-  getAuthService,
-  getNavigationService,
-  getRealmService,
-} from '../services';
+import {getAuthService, getNavigationService} from '../services';
 import {useNavigation} from '@react-navigation/native';
-import {RealmContext} from '../services/realm/provider';
-import {initLocalRealm} from '../services/realm';
+import {useInitRealm} from '@/services/realm';
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  const {updateLocalRealm} = useContext(RealmContext);
+  const {initRealm} = useInitRealm();
 
   useEffect(() => {
     const navigationService = getNavigationService();
@@ -33,11 +28,9 @@ const SplashScreen = () => {
 
       if (authService.isLoggedIn()) {
         try {
-          const createdRealm = await initLocalRealm();
-          updateLocalRealm && updateLocalRealm(createdRealm);
-          const realmService = getRealmService();
-          realmService.setInstance(createdRealm);
+          initRealm();
         } catch (e) {
+          console.log('****', e);
           Alert.alert(
             'Oops! Something went wrong.',
             'Try clearing app data from application settings',

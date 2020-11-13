@@ -19,6 +19,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles} from '@/styles';
+import {omit} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   Alert,
@@ -157,13 +158,13 @@ export const AddInventoryScreen = ({route}: any) => {
     let payload = selectedProduct;
     const priceCondition = price || price === 0 ? true : false;
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
-    if (priceCondition && quantityCondition && quantity) {
+    if (payload && priceCondition && quantityCondition && quantity) {
       if (isNewProduct) {
         payload = handleAddProduct({name: searchQuery, price});
       }
 
       const product = {
-        ...payload,
+        ...omit(payload),
         product: payload,
         cost_price: price,
         name: payload?.name,
@@ -198,7 +199,10 @@ export const AddInventoryScreen = ({route}: any) => {
       handleClearState();
       showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
     } else {
-      Alert.alert('Info', 'Please add product/service quantity');
+      Alert.alert(
+        'Info',
+        'Please select at least one product/service with quantity',
+      );
     }
   }, [
     selectedProduct,
@@ -342,6 +346,7 @@ export const AddInventoryScreen = ({route}: any) => {
                     value={searchQuery}
                     label="Product / Service"
                     setFilter={handleProductSearch}
+                    onClearInput={handleClearState}
                     onItemSelect={handleSelectProduct}
                     renderItem={renderSearchDropdownItem}
                     onChangeText={handleChangeSearchQuery}

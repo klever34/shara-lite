@@ -28,6 +28,7 @@ export type AutoCompleteProps<T extends any = any> = {
   selectionKey?: string;
   inputStyle?: ViewStyle;
   emptyStateText?: string;
+  onClearInput?: () => void;
   textInputProps?: TextInputProps;
   onBlur?: (query: string) => void;
   onItemSelect?: (item: T) => void;
@@ -56,6 +57,7 @@ export function AutoComplete<T>({
   renderItem,
   onChangeText,
   onItemSelect,
+  onClearInput,
   textInputProps,
   noResultsAction,
 }: AutoCompleteProps<T>) {
@@ -125,12 +127,19 @@ export function AutoComplete<T>({
     [items, onChangeText, setFilter, textInputProps],
   );
 
+  const handleClearInput = useCallback(() => {
+    setQuery('');
+    setFocus(false);
+    setListItems(items);
+    onClearInput && onClearInput();
+  }, [items, onClearInput]);
+
   const renderFlatList = useCallback(() => {
     if (focus) {
       return (
         <View
           style={applyStyles('bg-white', {
-            top: 60,
+            top: 82,
             zIndex: 100,
             width: '100%',
             elevation: 10,
@@ -219,15 +228,26 @@ export function AutoComplete<T>({
             placeholderTextColor={colors['gray-50']}
             style={applyStyles('text-500', inputBgStyle, style, inputStyle)}
           />
-          {rightIcon && (
-            <Icon
-              size={24}
-              name={rightIcon}
-              type="feathericons"
-              style={styles.iconRight}
-              color={colors['gray-50']}
-            />
-          )}
+          {rightIcon &&
+            (!query ? (
+              <Icon
+                size={24}
+                name={rightIcon}
+                type="feathericons"
+                style={styles.iconRight}
+                color={colors['gray-50']}
+              />
+            ) : (
+              <Touchable onPress={handleClearInput}>
+                <Icon
+                  size={24}
+                  name="x-circle"
+                  type="feathericons"
+                  style={styles.iconRight}
+                  color={colors['gray-50']}
+                />
+              </Touchable>
+            ))}
         </View>
       </View>
     );
@@ -241,6 +261,7 @@ export function AutoComplete<T>({
     textInputProps,
     handleInputBlur,
     inputBgStyle,
+    handleClearInput,
   ]);
 
   useEffect(() => {
