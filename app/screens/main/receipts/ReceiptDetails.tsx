@@ -375,16 +375,28 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     navigation.navigate('CreateReceipt', {receipt});
   }, [receipt, navigation]);
 
+  const handleClose = useCallback(() => {
+    if (createReceiptFromCustomer) {
+      handleClearReceipt();
+      navigation.navigate('CustomerDetails', {
+        customer: createReceiptFromCustomer,
+      });
+    } else {
+      handleClearReceipt();
+      navigation.navigate('Home');
+    }
+  }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
+
   const handleCancelReceipt = useCallback(
     (note) => {
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
-        navigation.navigate('Home');
+        handleClose();
         showToast({message: 'RECEIPT CANCELLED'});
       }, 50);
     },
-    [receipt, realm, navigation],
+    [receipt, realm, handleClose],
   );
 
   const handleEditReceipt = useCallback(() => {
@@ -427,18 +439,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       ),
     });
   }, [customers, handleSetCustomer, openModal]);
-
-  const handleClose = useCallback(() => {
-    if (createReceiptFromCustomer) {
-      handleClearReceipt();
-      navigation.navigate('CustomerDetails', {
-        customer: createReceiptFromCustomer,
-      });
-    } else {
-      handleClearReceipt();
-      navigation.navigate('Home');
-    }
-  }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
 
   const receiptActions = [
     {
@@ -550,52 +550,38 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                 keyExtractor={(item, index) =>
                   `${item?._id?.toString()}-${index}`
                 }
+                ListFooterComponent={
+                  <>
+                    {!receipt?.is_cancelled && (
+                      <View
+                        style={applyStyles('px-16 items-end', {
+                          borderTopWidth: 1,
+                          borderTopColor: colors['gray-10'],
+                        })}>
+                        <ReceiptTableFooterItem
+                          title="Total"
+                          value={amountWithCurrency(receipt?.total_amount)}
+                        />
+                        <ReceiptTableFooterItem
+                          title="Paid"
+                          value={amountWithCurrency(totalAmountPaid)}
+                        />
+                        {!isFulfilled && (
+                          <ReceiptTableFooterItem
+                            title="Owes"
+                            valueTextStyle={applyStyles('text-red-200')}
+                            value={amountWithCurrency(creditAmountLeft)}
+                          />
+                        )}
+                      </View>
+                    )}
+                  </>
+                }
               />
             </>
           }
         />
         <>
-          {!receipt?.is_cancelled && (
-            <View
-              style={applyStyles('px-16 items-end', {
-                borderTopWidth: 1,
-                borderTopColor: colors['gray-10'],
-              })}>
-              <ReceiptTableFooterItem
-                title="Total"
-                value={amountWithCurrency(receipt?.total_amount)}
-              />
-              <ReceiptTableFooterItem
-                title="Paid"
-                value={amountWithCurrency(totalAmountPaid)}
-              />
-              {!isFulfilled && (
-                <ReceiptTableFooterItem
-                  title="Owes"
-                  valueTextStyle={applyStyles('text-red-200')}
-                  value={amountWithCurrency(creditAmountLeft)}
-                />
-              )}
-            </View>
-          )}
-          {!receipt?.is_cancelled && (
-            <View
-              style={applyStyles(
-                'pt-8 pb-8 flex-row w-full justify-space-between flex-wrap',
-                {
-                  borderTopWidth: 1,
-                  borderTopColor: colors['gray-10'],
-                },
-              )}>
-              {receiptActions.map((item, index) => (
-                <View
-                  key={index.toString()}
-                  style={applyStyles('center', {width: '25%'})}>
-                  <PreviewActionButton {...item} />
-                </View>
-              ))}
-            </View>
-          )}
           {!!receipt?.note && (
             <View
               style={applyStyles('px-16 py-8', {
@@ -628,6 +614,24 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
               <Text style={applyStyles('text-400 text-sm text-gray-300')}>
                 {receipt?.cancellation_reason}
               </Text>
+            </View>
+          )}
+          {!receipt?.is_cancelled && (
+            <View
+              style={applyStyles(
+                'pt-8 pb-8 flex-row w-full justify-space-between flex-wrap',
+                {
+                  borderTopWidth: 1,
+                  borderTopColor: colors['gray-10'],
+                },
+              )}>
+              {receiptActions.map((item, index) => (
+                <View
+                  key={index.toString()}
+                  style={applyStyles('center', {width: '25%'})}>
+                  <PreviewActionButton {...item} />
+                </View>
+              ))}
             </View>
           )}
           {!receipt?.is_cancelled && (
