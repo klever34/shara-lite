@@ -4,7 +4,11 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getAnalyticsService, getAuthService} from '@/services';
+import {
+  getAnalyticsService,
+  getContactService,
+  getAuthService,
+} from '@/services';
 import {getCustomers} from '@/services/customer/service';
 import {useRealm} from '@/services/realm';
 import {colors} from '@/styles';
@@ -33,8 +37,8 @@ import {HomeContainer} from '@/components';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import {getSummary, IFinanceSummary} from '@/services/FinanceService';
 import {withModal, ModalWrapperFields} from '@/helpers/hocs';
-import {selectContactPhone} from 'react-native-select-contact';
 import {useAddCustomer} from '@/services/customer/hooks';
+import {handleError} from '@/services/error-boundary';
 
 type CustomerListItem = ICustomer;
 
@@ -277,18 +281,21 @@ export const CustomerListScreen = withModal(
           {
             text: 'Add from your phone contacts',
             onPress: () => {
-              selectContactPhone().then((selection) => {
-                if (!selection) {
-                  return;
-                }
-                let {contact, selectedPhone} = selection;
-                addCustomer({
-                  name: contact.name,
-                  mobile: selectedPhone.number,
-                  email: contact.emails[0]?.address,
-                });
-                reloadMyCustomers();
-              });
+              getContactService()
+                .selectContactPhone()
+                .then((selection) => {
+                  if (!selection) {
+                    return;
+                  }
+                  let {contact, selectedPhone} = selection;
+                  addCustomer({
+                    name: contact.name,
+                    mobile: selectedPhone.number,
+                    email: contact.emails[0]?.address,
+                  });
+                  reloadMyCustomers();
+                })
+                .catch(handleError);
             },
           },
         ],
