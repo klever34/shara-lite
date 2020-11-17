@@ -101,9 +101,9 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
 
   const receiptShareMessage = `Hi ${
     customer?.name ?? ''
-  }, thank you for your recent purchase of ${
-    receipt?.items?.length
-  } item(s) from ${businessInfo.name}. You paid ${amountWithCurrency(
+  }, thank you for your recent purchase from ${
+    businessInfo.name
+  }. You paid ${amountWithCurrency(
     totalAmountPaid,
   )} and owe ${amountWithCurrency(creditAmountLeft)}${
     creditDueDate
@@ -127,34 +127,34 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     analyticsService
       .logEvent('share', {
         method: 'sms',
-        content_type: 'debit-reminder',
+        content_type: isFulfilled ? 'share-receipt' : 'debit-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
     handleSmsShare();
-  }, [analyticsService, handleSmsShare, receipt]);
+  }, [analyticsService, isFulfilled, handleSmsShare, receipt]);
 
   const onEmailShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
         method: 'email',
-        content_type: 'debit-reminder',
+        content_type: isFulfilled ? 'share-receipt' : 'debit-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
     handleEmailShare();
-  }, [analyticsService, receipt, handleEmailShare]);
+  }, [analyticsService, isFulfilled, receipt, handleEmailShare]);
 
   const onWhatsappShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
         method: 'whatsapp',
-        content_type: 'debit-reminder',
+        content_type: isFulfilled ? 'share-receipt' : 'debit-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
     handleWhatsappShare();
-  }, [analyticsService, receipt, handleWhatsappShare]);
+  }, [analyticsService, isFulfilled, receipt, handleWhatsappShare]);
 
   const handleSetCustomer = useCallback(
     (value?: ICustomer, callback?: () => void) => {
