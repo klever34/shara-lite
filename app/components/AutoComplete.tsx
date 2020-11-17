@@ -132,14 +132,13 @@ export function AutoComplete<T>({
     if (focus) {
       return (
         <View
-          style={applyStyles('bg-white', {
-            top: 82,
+          style={applyStyles('bg-white pb-16', {
+            top: 0,
             zIndex: 100,
             width: '100%',
             elevation: 10,
             borderRadius: 8,
             shadowRadius: 6.27,
-            position: 'absolute',
             shadowOpacity: 0.34,
             shadowColor: '#000',
             shadowOffset: {

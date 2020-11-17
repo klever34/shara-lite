@@ -221,7 +221,7 @@ export const CreateProductScreen = (props: Props) => {
   }, []);
 
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
         title="create product"
         iconRight={{iconName: 'x', onPress: handleGoBack}}

@@ -324,7 +324,7 @@ export const AddInventoryScreen = ({route}: any) => {
   }, []);
 
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
         title="add inventory"
         iconRight={{iconName: 'x', onPress: handleGoBack}}

@@ -22,7 +22,15 @@ import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, BackHandler, FlatList, Keyboard, Text, View} from 'react-native';
+import {
+  Alert,
+  BackHandler,
+  FlatList,
+  Keyboard,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import {EditReceiptItemModal} from './EditReceiptItemModal';
 import {useReceiptProvider} from './ReceiptProvider';
 
@@ -372,7 +380,6 @@ export const CreateReceipt = (props: Props) => {
     Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
 
-    // cleanup function
     return () => {
       Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
       Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
@@ -390,33 +397,32 @@ export const CreateReceipt = (props: Props) => {
   }, [handleBackButtonPress]);
 
   return (
-    <View style={applyStyles('flex-1')}>
-      <FlatList
-        data={[]}
-        persistentScrollbar
+    <>
+      <ScrollView
         nestedScrollEnabled
-        renderItem={undefined}
+        persistentScrollbar={true}
         keyboardShouldPersistTaps="always"
-        ListHeaderComponent={
-          <>
-            <View style={applyStyles('bg-gray-10 px-16 py-32 elevation-2')}>
-              <View style={applyStyles('pb-16')}>
-                <AutoComplete<IProduct>
-                  rightIcon="box"
-                  items={products}
-                  value={searchQuery}
-                  label="Product / Service"
-                  setFilter={handleProductSearch}
-                  onClearInput={handleClearState}
-                  onItemSelect={handleSelectProduct}
-                  renderItem={renderSearchDropdownItem}
-                  onChangeText={handleChangeSearchQuery}
-                  noResultsAction={() => setIsNewProduct(true)}
-                  textInputProps={{
-                    placeholder: 'Search or enter product/service',
-                  }}
-                />
-              </View>
+        style={applyStyles('bg-white flex-1')}>
+        <View style={applyStyles('bg-gray-10 px-16 py-32')}>
+          <View style={selectedProduct && applyStyles('pb-16')}>
+            <AutoComplete<IProduct>
+              rightIcon="box"
+              items={products}
+              value={searchQuery}
+              label="Product / Service"
+              setFilter={handleProductSearch}
+              onClearInput={handleClearState}
+              onItemSelect={handleSelectProduct}
+              renderItem={renderSearchDropdownItem}
+              onChangeText={handleChangeSearchQuery}
+              noResultsAction={() => setIsNewProduct(true)}
+              textInputProps={{
+                placeholder: 'Search or enter product/service',
+              }}
+            />
+          </View>
+          {selectedProduct && (
+            <>
               <View
                 style={applyStyles(
                   'pb-16 flex-row items-center justify-between',
@@ -456,33 +462,31 @@ export const CreateReceipt = (props: Props) => {
                   elevation: 8,
                 })}
               />
+            </>
+          )}
+        </View>
+        <FlatList
+          data={receiptItems}
+          persistentScrollbar
+          style={applyStyles('bg-white')}
+          renderItem={renderReceiptItem}
+          keyboardShouldPersistTaps="always"
+          ListHeaderComponent={
+            receiptItems.length ? <ReceiptTableHeader /> : undefined
+          }
+          keyExtractor={(item) => `${item?.product._id?.toString()}`}
+          ListEmptyComponent={
+            <View style={applyStyles('py-96 center mx-auto')}>
+              <Text
+                style={applyStyles(
+                  'px-48 text-700 text-center text-gray-200 text-uppercase',
+                )}>
+                There are no products/services in this receipt
+              </Text>
             </View>
-
-            <FlatList
-              data={receiptItems}
-              persistentScrollbar
-              style={applyStyles('bg-white elevation-1')}
-              renderItem={renderReceiptItem}
-              keyboardShouldPersistTaps="always"
-              ListHeaderComponent={
-                receiptItems.length ? <ReceiptTableHeader /> : undefined
-              }
-              keyExtractor={(item) => `${item?.product._id?.toString()}`}
-              ListEmptyComponent={
-                <View style={applyStyles('py-96 center mx-auto')}>
-                  <Text
-                    style={applyStyles(
-                      'px-48 text-700 text-center text-gray-200 text-uppercase',
-                    )}>
-                    There are no products/services in this receipt
-                  </Text>
-                </View>
-              }
-            />
-          </>
-        }
-      />
-
+          }
+        />
+      </ScrollView>
       <View
         style={applyStyles('px-16 items-end bg-white w-full', {
           elevation: 10,
@@ -517,6 +521,6 @@ export const CreateReceipt = (props: Props) => {
         onRemoveProductItem={handleRemoveReceiptItem}
         onUpdateProductItem={handleUpdateReceiptItem}
       />
-    </View>
+    </>
   );
 };
