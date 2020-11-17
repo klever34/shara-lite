@@ -321,7 +321,7 @@ export const AddInventoryScreen = ({route}: any) => {
     if (inventoryStock.length) {
       Alert.alert(
         'Warning',
-        'Press CONTINUE to keep receipting or CANCEL to stop receipt creation.',
+        'Press CONTINUE to keep receiving inventory or CANCEL to stop receiving inventory.',
         [
           {
             text: 'Cancel',
