@@ -322,9 +322,8 @@ export const ReceiptListScreen = withModal(() => {
         searchPlaceholderText="Search by customer name"
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         emptyStateProps={{
-          heading: 'Create your first Receipt',
-          text:
-            'You have no receipts yet. Let’s help you create one it takes only a few seconds.',
+          heading: 'Create Your First Receipt',
+          text: 'You have no receipts yet. Create one in seconds',
         }}
       />
     </KeyboardAvoidingView>
