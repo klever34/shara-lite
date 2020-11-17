@@ -98,7 +98,9 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   )}. You paid ${amountWithCurrency(
     totalAmountPaid,
   )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
-    creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
+    !isFulfilled && creditDueDate
+      ? format(new Date(creditDueDate), 'MMM dd, yyyy')
+      : ''
   }. Don't forget to make payment.\n\nPowered by Shara for free.\nwww.shara.co`;
 
   const receiptShareMessage = `Hi ${
@@ -108,7 +110,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   }. You paid ${amountWithCurrency(
     totalAmountPaid,
   )} and owe ${amountWithCurrency(creditAmountLeft)}${
-    creditDueDate
+    !isFulfilled && creditDueDate
       ? ` (which is due on ${format(new Date(creditDueDate), 'MMM dd, yyyy')})`
       : ''
   }. Thank you.\n\nPowered by Shara for free.\nwww.shara.co`;
