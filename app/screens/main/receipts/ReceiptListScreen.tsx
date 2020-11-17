@@ -192,7 +192,10 @@ export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
 };
 
 export const ReceiptListScreen = withModal(() => {
+  const realm = useRealm();
   const navigation = useAppNavigation();
+
+  const receipts = realm ? getReceipts({realm}) : [];
 
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
@@ -212,12 +215,12 @@ export const ReceiptListScreen = withModal(() => {
   } = useReceiptList();
 
   const handleCreateReceipt = useCallback(() => {
-    if (!business.name) {
+    if (!business.name && !receipts.length) {
       navigation.navigate('BuildReceipt');
     } else {
       navigation.navigate('CreateReceipt', {});
     }
-  }, [business.name, navigation]);
+  }, [receipts.length, business.name, navigation]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {

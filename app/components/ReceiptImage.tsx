@@ -47,10 +47,12 @@ export const ReceiptImage = (props: Props) => {
   const getBusinessMobile = useCallback(() => {
     if (businessInfo.mobile) {
       return businessInfo.mobile.startsWith(code)
-        ? `+${code}${businessInfo.mobile.replace(code, '')}`
+        ? `+${businessInfo.mobile}`
         : `+${code}${businessInfo.mobile}`;
     }
-    return `+${code}${user?.mobile}`;
+    return user?.mobile.startsWith(code)
+      ? `+${user?.mobile}`
+      : `+${code}${user?.mobile}`;
   }, [businessInfo.mobile, code, user]);
 
   const onCapture = useCallback(
