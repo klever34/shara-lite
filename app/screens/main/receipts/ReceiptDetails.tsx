@@ -89,7 +89,9 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const businessInfo = getAuthService().getBusinessInfo();
   const isFulfilled = receipt?.total_amount === totalAmountPaid;
 
-  const paymentReminderMessage = `Hello, you purchased some items from ${
+  const paymentReminderMessage = `Hello ${
+    customer?.name ?? ''
+  }, thank you for your recent purchase from ${
     businessInfo?.name
   } for ${amountWithCurrency(
     receipt?.total_amount,
