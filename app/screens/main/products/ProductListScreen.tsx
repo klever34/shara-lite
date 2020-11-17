@@ -20,7 +20,7 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {KeyboardAvoidingView, Text, View} from 'react-native';
+import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
 import {EditProductModal} from './EditProductModal';
 
 export const ProductListScreen = withModal(() => {
@@ -124,7 +124,12 @@ export const ProductListScreen = withModal(() => {
           menuOptions={[
             {
               text: 'Help',
-              onSelect: () => {},
+              onSelect: () => {
+                Alert.alert(
+                  'Coming Soon',
+                  'This feature is coming in the next update',
+                );
+              },
             },
           ]}
         />

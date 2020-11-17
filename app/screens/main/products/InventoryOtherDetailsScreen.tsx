@@ -213,16 +213,7 @@ export const InventoryOtherDetailsScreen = () => {
         header={{
           title: 'Other details',
           iconLeft: {iconName: 'arrow-left', onPress: handleGoBack},
-        }}
-        footer={
-          <Button
-            title="Finish"
-            variantColor="red"
-            isLoading={isLoading}
-            onPress={handleFinish}
-            style={applyStyles('w-full')}
-          />
-        }>
+        }}>
         <View style={applyStyles('pt-24')}>
           <AutoComplete<SupplierListItem>
             rightIcon="users"
@@ -262,8 +253,15 @@ export const InventoryOtherDetailsScreen = () => {
             value={note}
             label="Notes (optional)"
             onChangeText={handleNoteChange}
-            style={applyStyles('pt-0 mb-96', {height: 96})}
+            style={applyStyles('pt-0 mb-16', {height: 96})}
             placeholder="Any other information about this transaction?"
+          />
+          <Button
+            title="Finish"
+            variantColor="red"
+            isLoading={isLoading}
+            onPress={handleFinish}
+            style={applyStyles('w-full')}
           />
         </View>
       </Page>

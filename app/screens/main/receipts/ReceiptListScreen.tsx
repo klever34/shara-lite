@@ -12,7 +12,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
-import {endOfDay, startOfDay, subMonths} from 'date-fns';
+import {endOfDay, isToday, startOfDay, subMonths} from 'date-fns';
 import {subDays, subWeeks, subYears} from 'date-fns/esm';
 import React, {
   useCallback,
@@ -21,10 +21,10 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {KeyboardAvoidingView, Text, View} from 'react-native';
+import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
 import {ReceiptListItem} from './ReceiptListItem';
 
-export const useReceiptList = ({initialFilter = 'today'} = {}) => {
+export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const receipts = realm ? getReceipts({realm}) : [];
@@ -33,12 +33,31 @@ export const useReceiptList = ({initialFilter = 'today'} = {}) => {
   const [filter, setFilter] = useState(initialFilter);
   const [allReceipts, setAllReceipts] = useState(receipts || []);
 
+  const getRecentSalesDate = useCallback(() => {
+    const myReceipts = (allReceipts as unknown) as Realm.Results<
+      IReceipt & Realm.Object
+    >;
+    if (myReceipts.length) {
+      const receiptsSortedByDate = myReceipts.sorted('created_at', true);
+      const recentReceipt = receiptsSortedByDate[0];
+      if (
+        recentReceipt &&
+        recentReceipt.created_at &&
+        !isToday(recentReceipt.created_at)
+      ) {
+        return recentReceipt.created_at;
+      }
+    }
+    return new Date();
+  }, [allReceipts]);
+
   const handleStatusFilter = useCallback((status: any) => {
     setFilter(status);
   }, []);
 
   const filterOptions = useMemo(
     () => [
+      {text: 'Recent', onSelect: () => handleStatusFilter('recent')},
       {text: 'Today', onSelect: () => handleStatusFilter('today')},
       {text: '3 Days', onSelect: () => handleStatusFilter('3-days')},
       {text: '1 Week', onSelect: () => handleStatusFilter('1-week')},
@@ -62,6 +81,13 @@ export const useReceiptList = ({initialFilter = 'today'} = {}) => {
       switch (filter) {
         case 'all':
           userReceipts = userReceipts;
+          break;
+        case 'recent':
+          userReceipts = userReceipts.filtered(
+            'created_at >= $0 && created_at < $1',
+            subDays(getRecentSalesDate(), 7),
+            getRecentSalesDate(),
+          );
           break;
         case 'today':
           userReceipts = userReceipts.filtered(
@@ -116,10 +142,11 @@ export const useReceiptList = ({initialFilter = 'today'} = {}) => {
       );
     }
     return (userReceipts.sorted('created_at', true) as unknown) as IReceipt[];
-  }, [allReceipts, searchTerm, filter]);
+  }, [allReceipts, searchTerm, filter, getRecentSalesDate]);
 
   const filterOptionLabels = {
     today: 'Today',
+    recent: 'Recent',
     '3-days': '3 Days',
     '1-week': '1 Week',
     '1-month': '1 Month',
@@ -165,7 +192,11 @@ export const useReceiptList = ({initialFilter = 'today'} = {}) => {
 };
 
 export const ReceiptListScreen = withModal(() => {
+  const realm = useRealm();
   const navigation = useAppNavigation();
+
+  const receipts = realm ? getReceipts({realm}) : [];
+
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const headerImage = business.profile_image?.url
@@ -184,8 +215,12 @@ export const ReceiptListScreen = withModal(() => {
   } = useReceiptList();
 
   const handleCreateReceipt = useCallback(() => {
-    navigation.navigate('CreateReceipt', {});
-  }, [navigation]);
+    if (!receipts.length) {
+      navigation.navigate('BuildReceipt');
+    } else {
+      navigation.navigate('CreateReceipt', {});
+    }
+  }, [receipts, navigation]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
@@ -247,7 +282,12 @@ export const ReceiptListScreen = withModal(() => {
           menuOptions={[
             {
               text: 'Help',
-              onSelect: () => {},
+              onSelect: () => {
+                Alert.alert(
+                  'Coming Soon',
+                  'This feature is coming in the next update',
+                );
+              },
             },
           ]}
         />
@@ -276,10 +316,10 @@ export const ReceiptListScreen = withModal(() => {
         renderListItem={renderReceiptItem}
         data={filteredReceipts as IReceipt[]}
         onCreateEntity={handleCreateReceipt}
-        searchPlaceholderText="Search Receipts"
         createEntityButtonText="Create Receipt"
         activeFilter={filterOptionLabels[filter]}
         headerAmount={amountWithCurrency(totalAmount)}
+        searchPlaceholderText="Search by customer name"
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         emptyStateProps={{
           heading: 'Create your first Receipt',

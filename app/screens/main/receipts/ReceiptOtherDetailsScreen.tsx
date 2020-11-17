@@ -19,12 +19,12 @@ import {getCustomers} from '@/services/customer';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
+import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
 import {addDays, format} from 'date-fns';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Alert, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptProvider} from './ReceiptProvider';
-import {useReceipt} from '@/services/receipt';
 
 type CustomerListItem =
   | Pick<ICustomer, 'name' | 'mobile' | '_id'>
@@ -78,11 +78,6 @@ export const ReceiptOtherDetailsScreen = () => {
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer,
   );
-
-  // const creditAmount = useMemo(() => totalAmount - amountPaid ?? 0, [
-  //   amountPaid,
-  //   totalAmount,
-  // ]);
 
   const handleClearState = useCallback(() => {
     setNote('');
@@ -158,17 +153,19 @@ export const ReceiptOtherDetailsScreen = () => {
   };
 
   const handleFinish = useCallback(async () => {
-    let receiptToCreate: any = {
+    const paid = amountOwed ? amountPaid : totalAmount;
+    const receiptToCreate: any = {
       ...receipt,
       note,
       realm,
       dueDate,
-      amountPaid,
       totalAmount,
+      amountPaid: paid,
       creditAmount: amountOwed,
-      payments: [{method: '', amount: amountPaid}],
+      payments: [{method: '', amount: paid}],
       customer: customer ? customer : ({} as ICustomer),
     };
+
     if (isNewCustomer && saveToPhoneBook) {
       try {
         await contactService.addContact({
@@ -189,13 +186,13 @@ export const ReceiptOtherDetailsScreen = () => {
     handleClearState();
     navigation.navigate('ReceiptSuccess', {id: createdReceipt._id});
   }, [
+    amountOwed,
+    amountPaid,
+    totalAmount,
     receipt,
     note,
     realm,
     dueDate,
-    amountPaid,
-    totalAmount,
-    amountOwed,
     customer,
     isNewCustomer,
     saveToPhoneBook,
@@ -254,16 +251,8 @@ export const ReceiptOtherDetailsScreen = () => {
         header={{
           title: `Total: ${amountWithCurrency(totalAmount)}`,
           iconLeft: {iconName: 'arrow-left', onPress: handleGoBack},
-        }}
-        footer={
-          <Button
-            title="Finish"
-            variantColor="red"
-            onPress={handleFinish}
-            style={applyStyles('w-full')}
-          />
-        }>
-        <View style={applyStyles('pt-24')}>
+        }}>
+        <View>
           <RadioButton
             isChecked={isPartialPayment}
             containerStyle={applyStyles('py-16 mb-24 center')}
@@ -393,8 +382,14 @@ export const ReceiptOtherDetailsScreen = () => {
             value={note}
             label="Notes (optional)"
             onChangeText={handleNoteChange}
-            style={applyStyles('pt-0 mb-96', {height: 96})}
+            style={applyStyles('pt-0 mb-16', {height: 96})}
             placeholder="Any other information about this transaction?"
+          />
+          <Button
+            title="Finish"
+            variantColor="red"
+            onPress={handleFinish}
+            style={applyStyles('w-full')}
           />
         </View>
       </Page>

@@ -149,7 +149,7 @@ export const MoreOptionsScreen = () => {
   return (
     <ScrollView>
       <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
-        {(!business.name || !business.address) && (
+        {!business.name && (
           <Touchable onPress={onEditBusinessSettings}>
             <View
               style={applyStyles('my-lg mx-lg py-sm', {

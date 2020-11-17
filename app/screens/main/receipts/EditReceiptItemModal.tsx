@@ -4,6 +4,7 @@ import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
 import {applyStyles, colors} from '@/styles';
+import {omit} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 
@@ -59,7 +60,7 @@ export const EditReceiptItemModal = (props: Props) => {
 
   const handleUpdate = useCallback(() => {
     const payload = {
-      ...item,
+      ...omit(item),
       price: price ? price : 0,
       quantity: quantity ? parseFloat(quantity) : 0,
     } as IReceiptItem;

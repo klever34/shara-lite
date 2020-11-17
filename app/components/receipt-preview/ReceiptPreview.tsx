@@ -69,7 +69,6 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
   const creditDueDate = receipt?.dueDate;
   const receiptDate = receipt?.created_at ?? new Date();
   const businessInfo = getAuthService().getBusinessInfo();
-  const hasCustomerMobile = customer?.mobile;
   const allPayments = receipt ? getAllPayments({receipt}) : [];
   const totalAmountPaid = allPayments.reduce(
     (total, payment) => total + payment.amount_paid,
@@ -500,62 +499,48 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
             style={applyStyles(
               'flex-row w-full items-center justify-space-between flex-wrap',
             )}>
-            {hasCustomerMobile && (
-              <View style={applyStyles('center', {width: '33%'})}>
-                <Touchable onPress={onWhatsappShare}>
-                  <View
-                    style={applyStyles('w-full', 'flex-row', 'center', {
-                      height: 48,
+            <View style={applyStyles('center', {width: '33%'})}>
+              <Touchable onPress={onWhatsappShare}>
+                <View
+                  style={applyStyles('w-full', 'flex-row', 'center', {
+                    height: 48,
+                  })}>
+                  <Icon
+                    size={24}
+                    type="ionicons"
+                    name="logo-whatsapp"
+                    color={colors.whatsapp}
+                  />
+                  <Text
+                    style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                      color: colors['gray-200'],
                     })}>
-                    <Icon
-                      size={24}
-                      type="ionicons"
-                      name="logo-whatsapp"
-                      color={colors.whatsapp}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-sm',
-                        'text-400',
-                        'text-uppercase',
-                        {
-                          color: colors['gray-200'],
-                        },
-                      )}>
-                      whatsapp
-                    </Text>
-                  </View>
-                </Touchable>
-              </View>
-            )}
-            {hasCustomerMobile && (
-              <View style={applyStyles('center', {width: '33%'})}>
-                <Touchable onPress={onSmsShare}>
-                  <View
-                    style={applyStyles('w-full', 'flex-row', 'center', {
-                      height: 48,
+                    whatsapp
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
+            <View style={applyStyles('center', {width: '33%'})}>
+              <Touchable onPress={onSmsShare}>
+                <View
+                  style={applyStyles('w-full', 'flex-row', 'center', {
+                    height: 48,
+                  })}>
+                  <Icon
+                    size={24}
+                    name="message-circle"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles('pl-sm', 'text-400', 'text-uppercase', {
+                      color: colors['gray-200'],
                     })}>
-                    <Icon
-                      size={24}
-                      name="message-circle"
-                      type="feathericons"
-                      color={colors.primary}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-sm',
-                        'text-400',
-                        'text-uppercase',
-                        {
-                          color: colors['gray-200'],
-                        },
-                      )}>
-                      sms
-                    </Text>
-                  </View>
-                </Touchable>
-              </View>
-            )}
+                    sms
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
             <View style={applyStyles('center', {width: '33%'})}>
               <Touchable onPress={onEmailShare}>
                 <View

@@ -11,11 +11,12 @@ import {
 import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
 import {useAddCustomer} from '@/services/customer/hooks';
-import {Contact, selectContactPhone} from 'react-native-select-contact';
+import {Contact} from 'react-native-select-contact';
 import {getContactService} from '@/services';
 import parsePhoneNumberFromString from 'libphonenumber-js';
 import {RadioInputRef} from '@/components/RadioInput';
 import {TextInputFieldRef} from '@/components/TextInput';
+import {handleError} from '@/services/error-boundary';
 
 type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
@@ -107,25 +108,28 @@ export const AddCustomer = (props: AddCustomerProps) => {
   );
 
   const handleImport = useCallback(() => {
-    selectContactPhone().then((selection) => {
-      if (!selection) {
-        return;
-      }
-      let {selectedPhone, contact} = selection;
-      const number = getContactService().formatPhoneNumber(
-        selectedPhone?.number,
-      );
-      const phoneNumber = parsePhoneNumberFromString(number);
-      if (phoneNumber) {
-        setImportSelection({
-          contact,
-          phoneNumber: {
-            callingCode: String(phoneNumber.countryCallingCode),
-            number: String(phoneNumber.nationalNumber),
-          },
-        });
-      }
-    });
+    getContactService()
+      .selectContactPhone()
+      .then((selection) => {
+        if (!selection) {
+          return;
+        }
+        let {selectedPhone, contact} = selection;
+        const number = getContactService().formatPhoneNumber(
+          selectedPhone?.number,
+        );
+        const phoneNumber = parsePhoneNumberFromString(number);
+        if (phoneNumber) {
+          setImportSelection({
+            contact,
+            phoneNumber: {
+              callingCode: String(phoneNumber.countryCallingCode),
+              number: String(phoneNumber.nationalNumber),
+            },
+          });
+        }
+      })
+      .catch(handleError);
   }, []);
 
   return (

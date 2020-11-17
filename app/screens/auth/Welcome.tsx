@@ -1,6 +1,6 @@
 import React from 'react';
 import {Text, View, TouchableHighlight, StyleSheet, Image} from 'react-native';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {useAppNavigation} from '@/services/navigation';
 
 export const Welcome = () => {
@@ -12,7 +12,9 @@ export const Welcome = () => {
           source={require('../../assets/images/shara_logo_white.png')}
           style={styles.image}
         />
-        <Text style={styles.bodyText}>The Last Ledger You'll Ever Need</Text>
+        <Text style={applyStyles('text-white text-base text-300')}>
+          The Last Ledger You'll Ever Need
+        </Text>
       </View>
       <View style={styles.buttonSection}>
         <TouchableHighlight
@@ -53,11 +55,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     resizeMode: 'contain',
   },
-  bodyText: {
-    color: 'white',
-    fontSize: 16,
-    fontFamily: 'Rubik-Light',
-  },
   buttonSection: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -76,6 +73,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: colors.primary,
     textTransform: 'uppercase',
-    fontFamily: 'Rubik-Regular',
+    fontFamily: 'Roboto-Regular',
   },
 });

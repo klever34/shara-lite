@@ -34,10 +34,7 @@ export const useShare = ({
     };
 
     if (!recipient) {
-      Alert.alert(
-        'Info',
-        'Please select a customer to share receipt with via Whatsapp',
-      );
+      Alert.alert('Info', 'Please add a customer to share receipt via SMS');
     } else {
       try {
         await Share.shareSingle(shareOptions);
@@ -81,7 +78,7 @@ export const useShare = ({
     if (!recipient) {
       Alert.alert(
         'Info',
-        'Please select a customer to share receipt with via Whatsapp',
+        'Please add a customer to share receipt via Whatsapp',
       );
     } else {
       try {
