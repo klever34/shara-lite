@@ -79,13 +79,18 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
 
   const handleShowHeader = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (e.nativeEvent.contentOffset.y > 0) {
+      if (
+        data &&
+        initialNumToRender &&
+        data?.length > initialNumToRender &&
+        e.nativeEvent.contentOffset.y > 0
+      ) {
         setIsHeaderShown(false);
       } else {
         setIsHeaderShown(true);
       }
     },
-    [],
+    [data, initialNumToRender],
   );
 
   return (
