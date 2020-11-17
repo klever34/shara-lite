@@ -33,6 +33,7 @@ import {ReceiptProvider} from './receipts/ReceiptProvider';
 import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
 import {BuildReceiptScreen} from './receipts/BuildReceiptScreen';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
+import {ReceiptReviewScreen} from './receipts/ReceiptReviewScreen';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -45,6 +46,7 @@ export type MainStackParamList = {
   BuildReceipt: undefined;
   ReceiptOtherDetails: undefined;
   CreateReceipt: {receipt?: IReceipt};
+  ReceiptReview: {id: IReceipt['_id']};
   ReceiptDetails: {id: IReceipt['_id']};
   ReceiptSuccess: {id: IReceipt['_id']};
 
@@ -192,6 +194,11 @@ const MainScreens = () => {
             name="ReceiptSuccess"
             options={{headerShown: false}}
             component={ReceiptSuccessScreen}
+          />
+          <MainStack.Screen
+            name="ReceiptReview"
+            options={{headerShown: false}}
+            component={ReceiptReviewScreen}
           />
           <MainStack.Screen
             name="BuildReceipt"

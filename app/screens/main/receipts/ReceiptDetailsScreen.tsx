@@ -26,6 +26,6 @@ export const ReceiptDetailsScreen = ({route}: any) => {
       <ActivityIndicator color={colors.primary} size={40} />
     </View>
   ) : (
-    <ReceiptDetails receipt={receipt} header={route.params.header} />
+    <ReceiptDetails receipt={receipt} />
   );
 };
