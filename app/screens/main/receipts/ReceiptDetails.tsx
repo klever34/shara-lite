@@ -89,24 +89,28 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const businessInfo = getAuthService().getBusinessInfo();
   const isFulfilled = receipt?.total_amount === totalAmountPaid;
 
-  const paymentReminderMessage = `Hello, you purchased some items from ${
+  const paymentReminderMessage = `Hello ${
+    customer?.name ?? ''
+  }, thank you for your recent purchase from ${
     businessInfo?.name
   } for ${amountWithCurrency(
     receipt?.total_amount,
   )}. You paid ${amountWithCurrency(
     totalAmountPaid,
   )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
-    creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
+    !isFulfilled && creditDueDate
+      ? format(new Date(creditDueDate), 'MMM dd, yyyy')
+      : ''
   }. Don't forget to make payment.\n\nPowered by Shara for free.\nwww.shara.co`;
 
   const receiptShareMessage = `Hi ${
     customer?.name ?? ''
-  }, thank you for your recent purchase of ${
-    receipt?.items?.length
-  } item(s) from ${businessInfo.name}. You paid ${amountWithCurrency(
+  }, thank you for your recent purchase from ${
+    businessInfo.name
+  }. You paid ${amountWithCurrency(
     totalAmountPaid,
   )} and owe ${amountWithCurrency(creditAmountLeft)}${
-    creditDueDate
+    !isFulfilled && creditDueDate
       ? ` (which is due on ${format(new Date(creditDueDate), 'MMM dd, yyyy')})`
       : ''
   }. Thank you.\n\nPowered by Shara for free.\nwww.shara.co`;
@@ -127,34 +131,34 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     analyticsService
       .logEvent('share', {
         method: 'sms',
-        content_type: 'debit-reminder',
+        content_type: isFulfilled ? 'share-receipt' : 'debit-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
     handleSmsShare();
-  }, [analyticsService, handleSmsShare, receipt]);
+  }, [analyticsService, isFulfilled, handleSmsShare, receipt]);
 
   const onEmailShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
         method: 'email',
-        content_type: 'debit-reminder',
+        content_type: isFulfilled ? 'share-receipt' : 'debit-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
     handleEmailShare();
-  }, [analyticsService, receipt, handleEmailShare]);
+  }, [analyticsService, isFulfilled, receipt, handleEmailShare]);
 
   const onWhatsappShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
         method: 'whatsapp',
-        content_type: 'debit-reminder',
+        content_type: isFulfilled ? 'share-receipt' : 'debit-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
     handleWhatsappShare();
-  }, [analyticsService, receipt, handleWhatsappShare]);
+  }, [analyticsService, isFulfilled, receipt, handleWhatsappShare]);
 
   const handleSetCustomer = useCallback(
     (value?: ICustomer, callback?: () => void) => {
