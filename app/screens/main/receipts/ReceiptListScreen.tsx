@@ -215,12 +215,12 @@ export const ReceiptListScreen = withModal(() => {
   } = useReceiptList();
 
   const handleCreateReceipt = useCallback(() => {
-    if (!receipts.length) {
+    if (!receipts.length || !business.name) {
       navigation.navigate('BuildReceipt');
     } else {
       navigation.navigate('CreateReceipt', {});
     }
-  }, [receipts, navigation]);
+  }, [receipts.length, business.name, navigation]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {

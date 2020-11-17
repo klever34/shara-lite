@@ -80,6 +80,7 @@ export function AutoComplete<T>({
   const handleInputFocus = useCallback(
     (e) => {
       textInputProps?.onFocus && textInputProps?.onFocus(e);
+      setFocus(true);
       setInputBgStyle({
         borderWidth: 1.5,
         borderColor: colors['red-50'],
@@ -108,11 +109,6 @@ export function AutoComplete<T>({
 
   const handleChangeText = useCallback(
     (searchedText: string) => {
-      if (searchedText.length) {
-        setFocus(true);
-      } else {
-        setFocus(false);
-      }
       setQuery(searchedText);
       const searchValue = searchedText.trim().toLowerCase();
       const results = items.filter((item: T) => {

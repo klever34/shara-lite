@@ -2,7 +2,6 @@ import {applyStyles} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Text, TextStyle} from 'react-native';
 import {getAuthService} from '../services';
-import {colors} from '../styles';
 import {AppInput, AppInputProps} from './AppInput';
 
 type Props = Omit<AppInputProps, 'onChange' | 'onChangeText'> & {
@@ -36,8 +35,11 @@ const toNumber = (value: string) => parseFloat(value.replace(/,/g, ''));
 export const CurrencyInput = (props: Props) => {
   const authService = getAuthService();
   const currency = authService.getUserCurrency();
-  const {value: valueProp, onChange, iconStyle, ...rest} = props;
+  const {value: valueProp, onChange, iconStyle, style, ...rest} = props;
+
   const [value, setValue] = useState(valueProp);
+
+  const inputPaddingLeft = currency.length > 1 ? 'pl-48' : 'pl-32';
 
   useEffect(() => {
     if (valueProp) {
@@ -65,11 +67,12 @@ export const CurrencyInput = (props: Props) => {
       value={value}
       keyboardType="numeric"
       onChangeText={handleChange}
+      style={applyStyles(inputPaddingLeft, style)}
       leftIcon={
         <Text
-          style={applyStyles('text-400', {
+          style={applyStyles('text-700 text-gray-300', {
+            top: -1,
             fontSize: 16,
-            color: colors['gray-300'],
             ...iconStyle,
           })}>
           {currency}

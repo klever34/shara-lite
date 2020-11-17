@@ -48,7 +48,7 @@ export const AppInput = (props: AppInputProps) => {
     : applyStyles('pl-16');
   const withRightIconStyle = rightIcon
     ? applyStyles('pr-56')
-    : applyStyles('p4-16');
+    : applyStyles('pr-16');
 
   const inputRef = useRef(null);
 

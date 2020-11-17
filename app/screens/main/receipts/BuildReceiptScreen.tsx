@@ -1,6 +1,6 @@
 import {AppInput, Button, PhoneNumberField, SecureEmblem} from '@/components';
 import {Page} from '@/components/Page';
-import {getAnalyticsService, getApiService} from '@/services';
+import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
@@ -44,7 +44,7 @@ export const BuildReceiptScreen = () => {
       name: '',
       address: '',
       mobile: '',
-      countryCode: callingCode,
+      countryCode: getAuthService().getUser()?.country_code || callingCode,
     },
     onSubmit: (payload) => {
       const {countryCode, mobile, ...rest} = payload;

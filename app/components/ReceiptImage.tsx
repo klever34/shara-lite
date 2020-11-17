@@ -43,7 +43,7 @@ export const ReceiptImage = (props: Props) => {
 
   const businessInfo = getAuthService().getBusinessInfo();
   const {callingCode} = useIPGeolocation();
-  const code = businessInfo.country_code || callingCode;
+  const code = businessInfo.country_code || user?.country_code || callingCode;
   const getBusinessMobile = useCallback(() => {
     if (businessInfo.mobile) {
       return businessInfo.mobile.startsWith(code)
