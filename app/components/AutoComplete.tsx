@@ -146,7 +146,7 @@ export function AutoComplete<T>({
               width: 0,
               height: 5,
             },
-            height: listItems.length > 3 ? 150 : 'auto',
+            height: listItems.length > 3 ? 250 : 'auto',
           })}>
           <FlatList
             data={listItems}

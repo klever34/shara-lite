@@ -22,7 +22,7 @@ import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, FlatList, Keyboard, Text, View} from 'react-native';
+import {Alert, BackHandler, FlatList, Keyboard, Text, View} from 'react-native';
 import {EditReceiptItemModal} from './EditReceiptItemModal';
 import {useReceiptProvider} from './ReceiptProvider';
 
@@ -342,6 +342,32 @@ export const CreateReceipt = (props: Props) => {
     setTotalAmount(total);
   }, [receiptItems]);
 
+  const handleBackButtonPress = useCallback(() => {
+    if (!navigation.isFocused()) {
+      return false;
+    }
+    if (receiptItems.length) {
+      Alert.alert(
+        'Warning',
+        'Press CONTINUE to keep receipting or CANCEL to stop receipt creation.',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+          {
+            text: 'Continue',
+            onPress: () => {},
+          },
+        ],
+      );
+      return true;
+    }
+    return false;
+  }, [receiptItems, navigation]);
+
   useEffect(() => {
     Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
@@ -353,101 +379,107 @@ export const CreateReceipt = (props: Props) => {
     };
   }, []);
 
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress);
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonPress,
+      );
+    };
+  }, [handleBackButtonPress]);
+
   return (
     <View style={applyStyles('flex-1')}>
-      {/* <FlatList
+      <FlatList
         data={[]}
         persistentScrollbar
         nestedScrollEnabled
         renderItem={undefined}
         keyboardShouldPersistTaps="always"
         ListHeaderComponent={
-          <></>
-        }
-      /> */}
-
-      <View style={applyStyles('bg-gray-10 px-16 py-32 elevation-2')}>
-        <View style={applyStyles('pb-16')}>
-          <AutoComplete<IProduct>
-            rightIcon="box"
-            items={products}
-            value={searchQuery}
-            label="Product / Service"
-            setFilter={handleProductSearch}
-            onClearInput={handleClearState}
-            onItemSelect={handleSelectProduct}
-            renderItem={renderSearchDropdownItem}
-            onChangeText={handleChangeSearchQuery}
-            noResultsAction={() => setIsNewProduct(true)}
-            textInputProps={{
-              placeholder: 'Search or enter product/service',
-            }}
-          />
-        </View>
-        {(itemToEdit || selectedProduct) && (
           <>
-            <View
-              style={applyStyles(
-                'pb-16 flex-row items-center justify-between',
-              )}>
-              <View style={applyStyles({width: '48%'})}>
-                <CurrencyInput
-                  placeholder="0.00"
-                  label="Unit Price"
-                  value={price?.toString()}
-                  style={applyStyles('bg-white')}
-                  onChange={(text) => handlePriceChange(text)}
+            <View style={applyStyles('bg-gray-10 px-16 py-32 elevation-2')}>
+              <View style={applyStyles('pb-16')}>
+                <AutoComplete<IProduct>
+                  rightIcon="box"
+                  items={products}
+                  value={searchQuery}
+                  label="Product / Service"
+                  setFilter={handleProductSearch}
+                  onClearInput={handleClearState}
+                  onItemSelect={handleSelectProduct}
+                  renderItem={renderSearchDropdownItem}
+                  onChangeText={handleChangeSearchQuery}
+                  noResultsAction={() => setIsNewProduct(true)}
+                  textInputProps={{
+                    placeholder: 'Search or enter product/service',
+                  }}
                 />
               </View>
-              <View style={applyStyles({width: '48%'})}>
-                <AppInput
-                  placeholder="0"
-                  value={quantity}
-                  label="Quantity"
-                  keyboardType="numeric"
-                  style={applyStyles('bg-white')}
-                  onChangeText={handleQuantityChange}
-                />
+              <View
+                style={applyStyles(
+                  'pb-16 flex-row items-center justify-between',
+                )}>
+                <View style={applyStyles({width: '48%'})}>
+                  <CurrencyInput
+                    placeholder="0.00"
+                    label="Unit Price"
+                    value={price?.toString()}
+                    style={applyStyles('bg-white')}
+                    onChange={(text) => handlePriceChange(text)}
+                  />
+                </View>
+                <View style={applyStyles({width: '48%'})}>
+                  <AppInput
+                    placeholder="0"
+                    value={quantity}
+                    label="Quantity"
+                    keyboardType="numeric"
+                    style={applyStyles('bg-white')}
+                    onChangeText={handleQuantityChange}
+                  />
+                </View>
               </View>
+              <Button
+                variantColor="clear"
+                title="Add to Receipt"
+                onPress={handleAddReceiptItem}
+                style={applyStyles({
+                  shadowColor: 'red',
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 4.65,
+                  elevation: 8,
+                })}
+              />
             </View>
-            <Button
-              variantColor="clear"
-              title="Add to Receipt"
-              onPress={handleAddReceiptItem}
-              style={applyStyles({
-                shadowColor: 'red',
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.3,
-                shadowRadius: 4.65,
-                elevation: 8,
-              })}
+
+            <FlatList
+              data={receiptItems}
+              persistentScrollbar
+              style={applyStyles('bg-white elevation-1')}
+              renderItem={renderReceiptItem}
+              keyboardShouldPersistTaps="always"
+              ListHeaderComponent={
+                receiptItems.length ? <ReceiptTableHeader /> : undefined
+              }
+              keyExtractor={(item) => `${item?.product._id?.toString()}`}
+              ListEmptyComponent={
+                <View style={applyStyles('py-96 center mx-auto')}>
+                  <Text
+                    style={applyStyles(
+                      'px-48 text-700 text-center text-gray-200 text-uppercase',
+                    )}>
+                    There are no products/services in this receipt
+                  </Text>
+                </View>
+              }
             />
           </>
-        )}
-      </View>
-
-      <FlatList
-        data={receiptItems}
-        persistentScrollbar
-        style={applyStyles('bg-white elevation-1')}
-        renderItem={renderReceiptItem}
-        keyboardShouldPersistTaps="always"
-        ListHeaderComponent={
-          receiptItems.length ? <ReceiptTableHeader /> : undefined
-        }
-        keyExtractor={(item) => `${item?.product._id?.toString()}`}
-        ListEmptyComponent={
-          <View style={applyStyles('py-96 center mx-auto')}>
-            <Text
-              style={applyStyles(
-                'px-48 text-700 text-center text-gray-200 text-uppercase',
-              )}>
-              There are no products/services in this receipt
-            </Text>
-          </View>
         }
       />
 
