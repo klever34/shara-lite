@@ -27,7 +27,7 @@ export const CreateReceiptScreen = ({route}: any) => {
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header
         title="New Receipt"
-        iconRight={{iconName: 'x', onPress: handleGoBack}}
+        headerRight={{options: [{icon: 'x', onPress: handleGoBack}]}}
       />
       <CreateReceipt receipt={receipt} />
     </SafeAreaView>

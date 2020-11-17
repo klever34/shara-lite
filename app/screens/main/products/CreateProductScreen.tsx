@@ -223,7 +223,7 @@ export const CreateProductScreen = (props: Props) => {
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
         title="create product"
-        iconRight={{iconName: 'x', onPress: handleGoBack}}
+        headerRight={{options: [{icon: 'x', onPress: handleGoBack}]}}
       />
       <View style={applyStyles('flex-1')}>
         <FlatList

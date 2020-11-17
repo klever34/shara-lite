@@ -93,7 +93,10 @@ export const BuildReceiptScreen = () => {
 
   return (
     <Page
-      header={{title: 'Setup', iconRight: {iconName: 'x', onPress: onSkip}}}
+      header={{
+        title: 'Setup',
+        headerRight: {options: [{icon: 'x', onPress: onSkip}]},
+      }}
       footer={
         <View>
           <View style={applyStyles('flex-row justify-between items-center')}>

@@ -137,7 +137,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
       header={{
         title: 'Add Customer',
         iconLeft: {},
-        iconRight: {iconName: 'book', onPress: handleImport},
+        headerRight: {options: [{icon: 'book', onPress: handleImport}]},
       }}
       style={applyStyles('bg-white')}>
       <FormBuilder

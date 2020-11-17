@@ -13,7 +13,7 @@ import {HeaderBackButton} from '@react-navigation/stack';
 export type HeaderRightOption = {icon: string; onPress: () => void};
 export type HeaderRightMenuOption = {text: string; onSelect: () => void};
 
-type HeaderRightProps = {
+export type HeaderRightProps = {
   loading?: boolean;
   options?: HeaderRightOption[];
   menuOptions?: HeaderRightMenuOption[];

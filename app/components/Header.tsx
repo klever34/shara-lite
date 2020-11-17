@@ -2,20 +2,21 @@ import React, {ReactNode, useCallback} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton, HeaderBackButtonProps} from './HeaderBackButton';
+import {HeaderRight, HeaderRightProps} from '@/components/HeaderRight';
 
 export type HeaderTitleProps = {
   title?: string;
   style?: ViewStyle;
   children?: ReactNode;
   iconLeft?: HeaderBackButtonProps;
-  iconRight?: HeaderBackButtonProps;
+  headerRight?: HeaderRightProps;
 };
 
 export const Header = ({
   title,
   style,
   iconLeft,
-  iconRight,
+  headerRight,
   children,
 }: HeaderTitleProps) => {
   const renderContent = useCallback(() => {
@@ -59,9 +60,9 @@ export const Header = ({
         </View>
       )}
       {renderContent()}
-      {iconRight && (
-        <View style={applyStyles('absolute h-full top-8 right-8')}>
-          <HeaderBackButton {...iconRight} />
+      {headerRight && (
+        <View style={applyStyles('absolute h-full top-12 right-0')}>
+          <HeaderRight {...headerRight} />
         </View>
       )}
     </View>

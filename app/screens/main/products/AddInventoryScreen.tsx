@@ -364,7 +364,7 @@ export const AddInventoryScreen = ({route}: any) => {
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
         title="add inventory"
-        iconRight={{iconName: 'x', onPress: handleGoBack}}
+        headerRight={{options: [{icon: 'x', onPress: handleGoBack}]}}
       />
       <ScrollView
         nestedScrollEnabled
