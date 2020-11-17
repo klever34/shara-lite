@@ -1,5 +1,5 @@
 import React, {ReactNode, useCallback} from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text, View, ViewStyle, TextStyle} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton, HeaderBackButtonProps} from './HeaderBackButton';
 
@@ -9,6 +9,7 @@ export type HeaderTitleProps = {
   children?: ReactNode;
   iconLeft?: HeaderBackButtonProps;
   iconRight?: HeaderBackButtonProps;
+  titleStyle?: TextStyle | string;
 };
 
 export const Header = ({
@@ -17,13 +18,17 @@ export const Header = ({
   iconLeft,
   iconRight,
   children,
+  titleStyle,
 }: HeaderTitleProps) => {
   const renderContent = useCallback(() => {
     if (title) {
       return (
         <View style={applyStyles('flex-1 center flex-row h-36 mx-48')}>
           <Text
-            style={applyStyles('text-500 text-uppercase text-gray-200')}
+            style={applyStyles(
+              'text-500 text-uppercase text-gray-200',
+              titleStyle,
+            )}
             numberOfLines={1}>
             {title}
           </Text>
@@ -33,7 +38,7 @@ export const Header = ({
     if (children) {
       return children;
     }
-  }, [title, children]);
+  }, [title, children, titleStyle]);
 
   return (
     <View
