@@ -30,7 +30,6 @@ const SplashScreen = () => {
         try {
           initRealm();
         } catch (e) {
-          console.log('****', e);
           Alert.alert(
             'Oops! Something went wrong.',
             'Try clearing app data from application settings',
