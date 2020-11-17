@@ -134,65 +134,72 @@ export const useReceipt = (): useReceiptInterface => {
     });
     await trace.stop();
 
-    await BluebirdPromise.each(
-      receiptItems,
-      async (receiptItem: IReceiptItem) => {
-        await saveReceiptItem({
+    const addReceiptDetails = async () => {
+      await BluebirdPromise.each(
+        receiptItems,
+        async (receiptItem: IReceiptItem) => {
+          await saveReceiptItem({
+            receipt,
+            receiptItem,
+          });
+
+          await restockProduct({
+            product: receiptItem.product,
+            quantity: receiptItem.quantity * -1,
+          });
+        },
+      );
+      getAnalyticsService()
+        .logEvent('receiptCreated', {
+          amount: String(receipt.total_amount),
+          currency_code: getAuthService().getUser()?.currency_code ?? '',
+        })
+        .then(() => {});
+
+      getGeolocationService()
+        .getCurrentPosition()
+        .then((location) => {
+          realm.write(() => {
+            realm.create<Partial<IReceipt>>(
+              modelName,
+              {
+                _id: receipt._id,
+                coordinates: convertToLocationString(location),
+              },
+              UpdateMode.Modified,
+            );
+          });
+        });
+
+      await BluebirdPromise.each(payments, async (payment: any) => {
+        await savePayment({
+          customer: receiptCustomer,
           receipt,
-          receiptItem,
+          type: 'receipt',
+          ...payment,
         });
-
-        await restockProduct({
-          product: receiptItem.product,
-          quantity: receiptItem.quantity * -1,
-        });
-      },
-    );
-    getAnalyticsService()
-      .logEvent('receiptCreated', {
-        amount: String(receipt.total_amount),
-        currency_code: getAuthService().getUser()?.currency_code ?? '',
-      })
-      .then(() => {});
-
-    getGeolocationService()
-      .getCurrentPosition()
-      .then((location) => {
-        realm.write(() => {
-          realm.create<Partial<IReceipt>>(
-            modelName,
-            {_id: receipt._id, coordinates: convertToLocationString(location)},
-            UpdateMode.Modified,
-          );
+        getAnalyticsService().logEvent('paymentMade', {
+          method: payment.method,
+          amount: payment.amount.toString(),
+          currency_code: getAuthService().getUser()?.currency_code ?? '',
+          item_id: receipt?._id?.toString() ?? '',
         });
       });
 
-    await BluebirdPromise.each(payments, async (payment: any) => {
-      await savePayment({
-        customer: receiptCustomer,
-        receipt,
-        type: 'receipt',
-        ...payment,
-      });
-      getAnalyticsService().logEvent('paymentMade', {
-        method: payment.method,
-        amount: payment.amount.toString(),
-        currency_code: getAuthService().getUser()?.currency_code ?? '',
-        item_id: receipt?._id?.toString() ?? '',
-      });
-    });
+      if (creditAmount > 0) {
+        await saveCredit({
+          dueDate,
+          creditAmount,
+          //@ts-ignore
+          customer: receiptCustomer,
+          receipt,
+        });
+      }
 
-    if (creditAmount > 0) {
-      await saveCredit({
-        dueDate,
-        creditAmount,
-        //@ts-ignore
-        customer: receiptCustomer,
-        receipt,
-      });
-    }
+      await fullTrace.stop();
+    };
 
-    await fullTrace.stop();
+    addReceiptDetails().then(() => {});
 
     return receipt;
   };
