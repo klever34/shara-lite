@@ -8,7 +8,7 @@ import CountryPicker, {
 } from 'react-native-country-picker-modal';
 import {FlagButtonProps} from 'react-native-country-picker-modal/lib/FlagButton';
 import {AppInput, AppInputProps} from './AppInput';
-import parsePhoneNumberFromString from 'libphonenumber-js';
+import {getContactService} from '@/services';
 
 export type PhoneNumber = {
   callingCode: string;
@@ -45,7 +45,7 @@ export const PhoneNumberField = (props: PhoneNumberFieldProps) => {
       if (!phoneNumber) {
         return countryCode2 as CountryCode;
       }
-      return (parsePhoneNumberFromString(
+      return (getContactService().parsePhoneNumber(
         `+${phoneNumber.callingCode} ${
           phoneNumber.number.length >= 4 ? phoneNumber.number : '1234'
         }`,

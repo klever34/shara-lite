@@ -16,19 +16,19 @@ export const saveCustomer = ({
   realm: Realm;
   customer: ICustomer;
 }): ICustomer => {
-  const customerDetails: ICustomer = {
+  let customerDetails: ICustomer = {
     ...customer,
     name: customer.name,
     mobile: customer.mobile,
-    ...getBaseModelValues(),
   };
-  const existingCustomer = getCustomerByMobile({
-    realm,
-    mobile: customerDetails.mobile,
-  });
 
-  if (existingCustomer) {
-    return existingCustomer;
+  if (customer._id) {
+    customerDetails._id = customer._id;
+  } else {
+    customerDetails = {
+      ...customerDetails,
+      ...getBaseModelValues(),
+    };
   }
 
   realm.write(() => {

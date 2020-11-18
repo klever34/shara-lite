@@ -40,7 +40,7 @@ export const HeaderRight = ({
             onPress={onPress}
             backImage={() => {
               return (
-                <View style={applyStyles('center w-36 h-36 rounded-24')}>
+                <View style={applyStyles('center w-30 h-30 rounded-24')}>
                   <Icon
                     type="feathericons"
                     color={colors['gray-300']}

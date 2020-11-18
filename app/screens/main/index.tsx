@@ -39,7 +39,7 @@ export type MainStackParamList = {
   Home: undefined;
 
   // Customers
-  AddCustomer: undefined;
+  AddCustomer: {title?: string; customer?: ICustomer};
   CustomerDetails: {customer: ICustomer};
 
   // Receipt

@@ -11,7 +11,11 @@ export const useAddCustomer = () => {
     (values: ICustomer) => {
       if (
         values.mobile &&
-        customers.filtered('mobile = $0', values.mobile).length
+        customers.filtered(
+          'mobile = $0' + (values._id ? ' AND _id != $1' : ''),
+          values.mobile,
+          values._id,
+        ).length
       ) {
         Alert.alert(
           'Info',
@@ -21,7 +25,7 @@ export const useAddCustomer = () => {
       } else {
         saveCustomer({realm, customer: values});
         ToastAndroid.showWithGravityAndOffset(
-          'Customer added',
+          'Customer saved',
           ToastAndroid.SHORT,
           ToastAndroid.TOP,
           0,

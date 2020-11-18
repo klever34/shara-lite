@@ -18,6 +18,7 @@ export type RadioInputRef = {
 export type RadioInputProps = {
   label?: string;
   value?: boolean;
+  display?: boolean;
   containerStyle?: ViewStyle;
   onChange?: (value: boolean) => void;
   disabled?: boolean;
@@ -31,6 +32,7 @@ export const RadioInput = ({
   onChange,
   disabled: initialDisabled = false,
   innerRef,
+  display = true,
 }: RadioInputProps) => {
   const [value, setValue] = useState(initialValue);
   const [disabled, setDisabled] = useState(initialDisabled);
@@ -51,6 +53,10 @@ export const RadioInput = ({
       });
     }
   }, [disabled, handleChange, innerRef]);
+
+  if (!display) {
+    return null;
+  }
 
   return (
     <View style={applyStyles(' w-full', containerStyle)}>
