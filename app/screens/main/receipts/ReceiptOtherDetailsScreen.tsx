@@ -251,6 +251,7 @@ export const ReceiptOtherDetailsScreen = () => {
         header={{
           title: `Total: ${amountWithCurrency(totalAmount)}`,
           iconLeft: {iconName: 'arrow-left', onPress: handleGoBack},
+          titleStyle: applyStyles({fontSize: 14}, 'text-gray-300'),
         }}>
         <View>
           <RadioButton
