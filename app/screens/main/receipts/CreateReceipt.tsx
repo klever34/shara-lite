@@ -21,7 +21,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -29,6 +29,7 @@ import {
   Keyboard,
   ScrollView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 import {EditReceiptItemModal} from './EditReceiptItemModal';
@@ -396,6 +397,9 @@ export const CreateReceipt = (props: Props) => {
     };
   }, [handleBackButtonPress]);
 
+  const unitPriceFieldRef = useRef<TextInput | null>(null);
+  const quantityFieldRef = useRef<TextInput | null>(null);
+
   return (
     <>
       <ScrollView
@@ -418,6 +422,12 @@ export const CreateReceipt = (props: Props) => {
               noResultsAction={() => setIsNewProduct(true)}
               textInputProps={{
                 placeholder: 'Search or enter product/service',
+                returnKeyType: 'next',
+                onSubmitEditing: () => {
+                  if (unitPriceFieldRef.current) {
+                    unitPriceFieldRef.current.focus();
+                  }
+                },
               }}
             />
           </View>
@@ -429,21 +439,30 @@ export const CreateReceipt = (props: Props) => {
                 )}>
                 <View style={applyStyles({width: '48%'})}>
                   <CurrencyInput
+                    ref={unitPriceFieldRef}
                     placeholder="0.00"
                     label="Unit Price"
                     value={price?.toString()}
                     style={applyStyles('bg-white')}
                     onChange={(text) => handlePriceChange(text)}
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      if (quantityFieldRef.current) {
+                        quantityFieldRef.current.focus();
+                      }
+                    }}
                   />
                 </View>
                 <View style={applyStyles({width: '48%'})}>
                   <AppInput
+                    ref={quantityFieldRef}
                     placeholder="0"
                     value={quantity}
                     label="Quantity"
                     keyboardType="numeric"
                     style={applyStyles('bg-white')}
                     onChangeText={handleQuantityChange}
+                    onSubmitEditing={handleAddReceiptItem}
                   />
                 </View>
               </View>
