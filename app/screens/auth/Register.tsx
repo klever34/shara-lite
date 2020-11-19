@@ -74,6 +74,10 @@ export const Register = () => {
   const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
     const {mobile, countryCode, password} = data;
+    if (!countryCode) {
+      Alert.alert('Error', 'Please select a country');
+      return;
+    }
     const payload = {
       country_code: countryCode,
       password: password.trim(),
