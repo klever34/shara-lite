@@ -7,8 +7,15 @@ import {
 import TextInput, {TextInputProps} from '@/components/TextInput';
 import {useAsync} from '@/services/api';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {View} from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  createRef,
+  RefObject,
+} from 'react';
+import {View, TextInput as RNTextInput} from 'react-native';
 import {AppInputProps} from './AppInput';
 import {ImageInput, ImageInputProps} from './ImageInput';
 import {RadioInput, RadioInputProps} from './RadioInput';
@@ -64,6 +71,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
   }, [fields]);
   type FormErrors = {[name: string]: string};
   type FormValues = Record<FieldNames, any>;
+  type FormFieldRefs = Partial<Record<FieldNames, RefObject<RNTextInput>>>;
   const [values, setValues] = useState<FormValues>(
     names.reduce((acc, name) => {
       const {
@@ -133,6 +141,43 @@ export const FormBuilder = <FieldNames extends keyof any>({
     },
   );
 
+  const [fieldRefNames, fieldRefs] = useMemo(() => {
+    const nextFieldRefs: FormFieldRefs = {};
+    const nextFieldRefNames = names.filter((name) => {
+      const field = fields[name];
+      return ['text', 'mobile', 'password'].includes(field.type);
+    });
+    nextFieldRefNames.forEach((name) => {
+      nextFieldRefs[name] = createRef<RNTextInput>();
+    });
+    return [nextFieldRefNames, nextFieldRefs];
+  }, [fields, names]);
+
+  const getReturnKeyType = useCallback(
+    (name: string) => {
+      const index = fieldRefNames.findIndex((currName) => name === currName);
+      return index === fieldRefNames.length - 1 ? 'done' : 'next';
+    },
+    [fieldRefNames],
+  );
+
+  const getSubmitEditingHandler = useCallback(
+    (name: string) => {
+      const index = fieldRefNames.findIndex((currName) => name === currName);
+      if (index !== fieldRefNames.length - 1) {
+        const nextFieldRef = fieldRefs[fieldRefNames[index + 1]];
+        return () => {
+          if (nextFieldRef?.current) {
+            nextFieldRef.current.focus();
+          }
+        };
+      } else if (index === names.length - 1) {
+        return runHandleSubmitBtnPress;
+      }
+    },
+    [fieldRefNames, fieldRefs, names.length, runHandleSubmitBtnPress],
+  );
+
   useEffect(() => {
     onInputChange?.(values);
   }, [onInputChange, values]);
@@ -167,12 +212,17 @@ export const FormBuilder = <FieldNames extends keyof any>({
       {names.map((name) => {
         const field = fields[name];
         let fieldProps;
+        let fieldRef;
         switch (field.type) {
           case 'text':
             fieldProps = field.props as TextInputProps;
+            fieldRef = fieldRefs[name];
             return (
               <TextInput
                 key={name as string}
+                ref={fieldRef}
+                returnKeyType={getReturnKeyType(String(name))}
+                onSubmitEditing={getSubmitEditingHandler(String(name))}
                 {...fieldProps}
                 containerStyle={applyStyles(
                   'mb-24 w-full',
@@ -185,8 +235,12 @@ export const FormBuilder = <FieldNames extends keyof any>({
             );
           case 'mobile':
             fieldProps = field.props as PhoneNumberFieldProps;
+            fieldRef = fieldRefs[name];
             return (
               <PhoneNumberField
+                ref={fieldRef}
+                returnKeyType={getReturnKeyType(String(name))}
+                onSubmitEditing={getSubmitEditingHandler(String(name))}
                 key={name as string}
                 {...fieldProps}
                 containerStyle={applyStyles(
@@ -198,8 +252,12 @@ export const FormBuilder = <FieldNames extends keyof any>({
             );
           case 'password':
             fieldProps = field.props as AppInputProps;
+            fieldRef = fieldRefs[name];
             return (
               <PasswordField
+                ref={fieldRef}
+                returnKeyType={getReturnKeyType(String(name))}
+                onSubmitEditing={getSubmitEditingHandler(String(name))}
                 key={name as string}
                 {...fieldProps}
                 containerStyle={applyStyles(

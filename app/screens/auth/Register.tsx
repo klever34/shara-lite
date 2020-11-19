@@ -11,8 +11,15 @@ import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useState} from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import * as yup from 'yup';
 import {useInitRealm} from '@/services/realm';
 
@@ -93,6 +100,9 @@ export const Register = () => {
     }
   };
 
+  const passwordFieldRef = useRef<TextInput | null>(null);
+  const confirmPasswordFieldRef = useRef<TextInput | null>(null);
+
   return (
     <AuthView
       header={{title: 'Sign up', iconLeft: {}}}
@@ -112,21 +122,36 @@ export const Register = () => {
             onChangeText={(data) => onChangeMobile(data)}
             isInvalid={touched.mobile && !!errors.mobile}
             value={{number: values.mobile, callingCode: values.countryCode}}
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              if (passwordFieldRef.current) {
+                passwordFieldRef.current.focus();
+              }
+            }}
           />
           <PasswordField
+            ref={passwordFieldRef}
             value={values.password}
             label="Enter your password"
             errorMessage={errors.password}
             containerStyle={applyStyles('mb-24')}
             onChangeText={handleChange('password')}
             isInvalid={touched.password && !!errors.password}
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              if (confirmPasswordFieldRef.current) {
+                confirmPasswordFieldRef.current.focus();
+              }
+            }}
           />
           <PasswordField
+            ref={confirmPasswordFieldRef}
             value={values.confirmPassword}
             label="Confirm password"
             errorMessage={errors.confirmPassword}
             onChangeText={handleChange('confirmPassword')}
             isInvalid={touched.confirmPassword && !!errors.confirmPassword}
+            onSubmitEditing={handleSubmit}
           />
         </View>
       </View>
