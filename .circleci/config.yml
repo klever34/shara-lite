@@ -342,11 +342,15 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          command: yarn lint
           name: Run ESLint Check
+          command: |
+            cd shara-pro
+            yarn lint
       - run:
-          command: yarn test
           name: Run Unit and Integration Tests
+          command: |
+            cd shara-pro
+            yarn test
   fastlane:
     parameters:
       env:
