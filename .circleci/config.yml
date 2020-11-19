@@ -310,6 +310,7 @@ jobs:
                   - run:
                       name: Commit and Push version update
                       command: |
+                        cd shara-pro
                         git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
                         git add package.json
                         git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
