@@ -79,7 +79,7 @@ export const BuildReceiptScreen = () => {
       try {
         await apiService.businessSetup(payload);
         getAnalyticsService()
-          .logEvent('businessSetupComplete')
+          .logEvent('businessSetupComplete', {})
           .catch(handleError);
         setIsLoading(false);
         onSkip();

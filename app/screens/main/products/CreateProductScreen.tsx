@@ -59,7 +59,7 @@ export const CreateProductScreen = (props: Props) => {
   );
 
   useEffect(() => {
-    getAnalyticsService().logEvent('productStart').catch(handleError);
+    getAnalyticsService().logEvent('productStart', {}).catch(handleError);
   }, [handleError, receipt]);
 
   const {showSuccessToast} = useContext(ToastContext);
@@ -168,7 +168,7 @@ export const CreateProductScreen = (props: Props) => {
         quantity: parseFloat(quantity),
       } as IProduct;
 
-      getAnalyticsService().logEvent('productAdded').catch(handleError);
+      getAnalyticsService().logEvent('productAdded', {}).catch(handleError);
 
       setProducts([product, ...products]);
 

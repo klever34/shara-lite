@@ -179,7 +179,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
               ? `+${phoneNumber.callingCode}${phoneNumber.number}`
               : undefined,
           };
-          await addCustomer({...values, _id: customer?._id});
+          await addCustomer({...values, _id: customer?._id}, 'manual');
           if (values.saveToPhonebook && phoneNumber.number) {
             await getContactService().addContact({
               givenName: values.name,

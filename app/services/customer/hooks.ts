@@ -4,13 +4,17 @@ import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {ICustomer} from '@/models';
 import {useRealm} from '@/services/realm';
 import {ToastContext} from '@/components/Toast';
+import {SharaAppEventsProperties} from '@/services/analytics';
 
 export const useAddCustomer = () => {
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
   const {showSuccessToast} = useContext(ToastContext);
   return useCallback(
-    (values: ICustomer) => {
+    (
+      values: ICustomer,
+      source: SharaAppEventsProperties['customerAdded']['source'],
+    ) => {
       if (
         values.mobile &&
         customers.filtered(
@@ -25,7 +29,7 @@ export const useAddCustomer = () => {
         );
         return Promise.reject();
       } else {
-        saveCustomer({realm, customer: values});
+        saveCustomer({realm, customer: values, source});
         showSuccessToast?.('Customer saved');
         return Promise.resolve();
       }

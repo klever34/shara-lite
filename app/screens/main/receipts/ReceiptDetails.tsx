@@ -175,7 +175,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
             customer: newCustomer,
           });
       } else {
-        const newCustomer = value && saveCustomer({realm, customer: value});
+        const newCustomer =
+          value && saveCustomer({realm, customer: value, source: 'manual'});
         setCustomer(newCustomer);
         receipt &&
           newCustomer &&

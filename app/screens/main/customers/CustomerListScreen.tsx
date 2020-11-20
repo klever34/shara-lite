@@ -288,11 +288,14 @@ export const CustomerListScreen = withModal(
                     return;
                   }
                   let {contact, selectedPhone} = selection;
-                  addCustomer({
-                    name: contact.name,
-                    mobile: selectedPhone.number,
-                    email: contact.emails[0]?.address,
-                  });
+                  addCustomer(
+                    {
+                      name: contact.name,
+                      mobile: selectedPhone.number,
+                      email: contact.emails[0]?.address,
+                    },
+                    'phonebook',
+                  );
                   reloadMyCustomers();
                 })
                 .catch(handleError);

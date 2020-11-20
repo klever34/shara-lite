@@ -144,12 +144,12 @@ export const AddInventoryScreen = ({route}: any) => {
 
   const handleAddProduct = useCallback(
     ({name, price: productPrice}) => {
-      getAnalyticsService().logEvent('productStart').catch(handleError);
+      getAnalyticsService().logEvent('productStart', {}).catch(handleError);
       const createdProduct = saveProduct({
         realm,
         product: {name, price: productPrice},
       });
-      getAnalyticsService().logEvent('productAdded').catch(handleError);
+      getAnalyticsService().logEvent('productAdded', {}).catch(handleError);
       setIsNewProduct(false);
       return createdProduct;
     },
@@ -174,7 +174,7 @@ export const AddInventoryScreen = ({route}: any) => {
       } as IStockItem;
 
       getAnalyticsService()
-        .logEvent('productAddedToReceipt')
+        .logEvent('productAddedToReceipt', {})
         .catch(handleError);
 
       if (

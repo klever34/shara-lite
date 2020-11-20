@@ -4,6 +4,7 @@ import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
 import {ObjectId} from 'bson';
 import {getAnalyticsService} from '@/services';
+import {SharaAppEventsProperties} from '../analytics';
 
 export const getCustomers = ({realm}: {realm: Realm}) => {
   return realm.objects<ICustomer>(modelName).filtered('is_deleted = false');
@@ -12,9 +13,11 @@ export const getCustomers = ({realm}: {realm: Realm}) => {
 export const saveCustomer = ({
   realm,
   customer,
+  source,
 }: {
   realm: Realm;
   customer: ICustomer;
+  source: SharaAppEventsProperties['customerAdded']['source'];
 }): ICustomer => {
   let customerDetails: ICustomer = {
     ...customer,
@@ -34,10 +37,11 @@ export const saveCustomer = ({
   realm.write(() => {
     realm.create<ICustomer>(modelName, customerDetails, UpdateMode.Modified);
   });
-
-  getAnalyticsService()
-    .logEvent('customerAdded')
-    .then(() => {});
+  if (!customer._id) {
+    getAnalyticsService()
+      .logEvent('customerAdded', {source})
+      .then(() => {});
+  }
 
   return customerDetails;
 };

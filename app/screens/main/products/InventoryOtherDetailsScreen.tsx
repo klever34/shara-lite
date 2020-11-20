@@ -144,7 +144,9 @@ export const InventoryOtherDetailsScreen = () => {
       });
       setIsLoading(false);
 
-      getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
+      getAnalyticsService()
+        .logEvent('inventoryReceived', {})
+        .catch(handleError);
 
       handleClearState();
       handleClearInventoryStock();

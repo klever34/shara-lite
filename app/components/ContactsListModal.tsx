@@ -156,7 +156,7 @@ export function ContactsListModal<T>({
         name,
         mobile,
       };
-      saveCustomer({realm, customer});
+      saveCustomer({realm, customer, source: 'phonebook'});
       setPhoneContacts((prevPhoneContacts) => {
         return prevPhoneContacts.filter(
           (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
