@@ -22,8 +22,8 @@ import {useRealm} from '@/services/realm';
 import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
 import {addDays, format} from 'date-fns';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {Alert, SafeAreaView, Text, View} from 'react-native';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {Alert, SafeAreaView, Text, TextInput, View} from 'react-native';
 import {useReceiptProvider} from './ReceiptProvider';
 
 type CustomerListItem =
@@ -244,6 +244,9 @@ export const ReceiptOtherDetailsScreen = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const amountOwedFieldRef = useRef<TextInput | null>(null);
+  const customerFieldRef = useRef<TextInput | null>(null);
+  const noteFieldRef = useRef<TextInput | null>(null);
 
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
@@ -274,14 +277,27 @@ export const ReceiptOtherDetailsScreen = () => {
                     label="Customer Paid"
                     value={amountPaid?.toString()}
                     onChange={(text) => handleAmountPaidChange(text)}
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      if (amountOwedFieldRef.current) {
+                        amountOwedFieldRef.current.focus();
+                      }
+                    }}
                   />
                 </View>
                 <View style={applyStyles({width: '48%'})}>
                   <CurrencyInput
+                    ref={amountOwedFieldRef}
                     placeholder="0.00"
                     label="Customer owes"
                     value={amountOwed?.toString()}
                     onChange={(text) => handleAmountOwedChange(text)}
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      if (customerFieldRef.current) {
+                        customerFieldRef.current.focus();
+                      }
+                    }}
                   />
                 </View>
               </View>
@@ -345,7 +361,7 @@ export const ReceiptOtherDetailsScreen = () => {
               )}
             </>
           )}
-          <AutoComplete<CustomerListItem>
+          <AutoComplete
             rightIcon="users"
             items={allCustomers}
             value={customerSearchQuery}
@@ -356,7 +372,16 @@ export const ReceiptOtherDetailsScreen = () => {
             label="Select or add customer (optional)"
             inputStyle={applyStyles('mb-16 bg-gray-10')}
             noResultsAction={() => setIsNewCustomer(true)}
-            textInputProps={{placeholder: 'Search or add a customer'}}
+            ref={customerFieldRef}
+            textInputProps={{
+              placeholder: 'Search or add a customer',
+              returnKeyType: 'next',
+              onSubmitEditing: () => {
+                if (noteFieldRef.current) {
+                  noteFieldRef.current.focus();
+                }
+              },
+            }}
           />
           {isNewCustomer && (
             <>
@@ -379,12 +404,14 @@ export const ReceiptOtherDetailsScreen = () => {
             </>
           )}
           <AppInput
+            ref={noteFieldRef}
             multiline
             value={note}
             label="Notes (optional)"
             onChangeText={handleNoteChange}
             style={applyStyles('pt-0 mb-16', {height: 96})}
             placeholder="Any other information about this transaction?"
+            onSubmitEditing={handleFinish}
           />
           <Button
             title="Finish"

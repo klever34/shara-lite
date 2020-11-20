@@ -18,13 +18,14 @@ import {useAppNavigation} from '@/services/navigation';
 import {saveProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {
   Alert,
   FlatList,
   Keyboard,
   SafeAreaView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
 
@@ -127,9 +128,8 @@ export const CreateProductScreen = (props: Props) => {
   }, [products, itemToEdit, handleClearState]);
 
   const handleAddProduct = useCallback(() => {
-    const priceCondition = price || price === 0 ? true : false;
-    const quantityCondition =
-      quantity && parseFloat(quantity) >= 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
+    const quantityCondition = !!(quantity && parseFloat(quantity) >= 0);
     if (name && priceCondition && quantityCondition && quantity) {
       const product = {
         name,
@@ -150,7 +150,7 @@ export const CreateProductScreen = (props: Props) => {
 
   const handleDone = useCallback(() => {
     let items = products;
-    const priceCondition = price || price === 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
 
     if (quantity && quantityCondition && priceCondition) {
@@ -219,6 +219,9 @@ export const CreateProductScreen = (props: Props) => {
     };
   }, []);
 
+  const unitPriceFieldRef = useRef<TextInput | null>(null);
+  const quantityFieldRef = useRef<TextInput | null>(null);
+
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
@@ -242,6 +245,12 @@ export const CreateProductScreen = (props: Props) => {
                     label="Product / service name"
                     onChangeText={handleNameChange}
                     placeholder="Enter product/service name here"
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      if (unitPriceFieldRef.current) {
+                        unitPriceFieldRef.current.focus();
+                      }
+                    }}
                   />
                 </View>
                 <View
@@ -250,21 +259,32 @@ export const CreateProductScreen = (props: Props) => {
                   )}>
                   <View style={applyStyles({width: '48%'})}>
                     <CurrencyInput
+                      ref={unitPriceFieldRef}
                       placeholder="0.00"
                       label="Unit Price"
                       value={price?.toString()}
                       style={applyStyles('bg-white')}
                       onChange={(text) => handlePriceChange(text)}
+                      returnKeyType="next"
+                      onSubmitEditing={() => {
+                        if (quantityFieldRef.current) {
+                          quantityFieldRef.current.focus();
+                        }
+                      }}
                     />
                   </View>
                   <View style={applyStyles({width: '48%'})}>
                     <AppInput
+                      ref={quantityFieldRef}
                       placeholder="0"
                       value={quantity}
                       label="Quantity"
                       keyboardType="numeric"
                       style={applyStyles('bg-white')}
                       onChangeText={handleQuantityChange}
+                      onSubmitEditing={
+                        itemToEdit ? handleUpdateProduct : handleAddProduct
+                      }
                     />
                   </View>
                 </View>

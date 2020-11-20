@@ -29,6 +29,12 @@ type FormFieldProps = {
   radio: RadioInputProps;
 };
 
+const fieldsWithFocus: (keyof FormFieldProps)[] = [
+  'text',
+  'mobile',
+  'password',
+];
+
 export type FormValidation = (
   name: string,
   values: {[name: string]: any},
@@ -145,7 +151,10 @@ export const FormBuilder = <FieldNames extends keyof any>({
     const nextFieldRefs: FormFieldRefs = {};
     const nextFieldRefNames = names.filter((name) => {
       const field = fields[name];
-      return ['text', 'mobile', 'password'].includes(field.type);
+      return (
+        fieldsWithFocus.includes(field.type) &&
+        (field.props as TextInputProps).focusable !== false
+      );
     });
     nextFieldRefNames.forEach((name) => {
       nextFieldRefs[name] = createRef<RNTextInput>();

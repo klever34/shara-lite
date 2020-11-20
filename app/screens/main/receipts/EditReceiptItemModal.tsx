@@ -5,8 +5,8 @@ import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import {omit} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
+import {Text, TextInput, View} from 'react-native';
 
 type Props = {
   visible: boolean;
@@ -76,6 +76,8 @@ export const EditReceiptItemModal = (props: Props) => {
     return numberWithCommas(total);
   }, [price, quantity]);
 
+  const quantityFieldRef = useRef<TextInput | null>(null);
+
   return (
     <BottomHalfModalContainer visible={visible} onClose={handleClose}>
       <View
@@ -104,6 +106,12 @@ export const EditReceiptItemModal = (props: Props) => {
                   label="Unit Price"
                   value={price?.toString()}
                   onChange={handlePriceChange}
+                  returnKeyType="next"
+                  onSubmitEditing={() => {
+                    if (quantityFieldRef.current) {
+                      quantityFieldRef.current.focus();
+                    }
+                  }}
                 />
               </View>
               <View
@@ -111,10 +119,12 @@ export const EditReceiptItemModal = (props: Props) => {
                   width: '48%',
                 })}>
                 <AppInput
+                  ref={quantityFieldRef}
                   value={quantity}
                   label="Quantity"
                   keyboardType="numeric"
                   onChangeText={handleQuantityChange}
+                  onSubmitEditing={handleUpdate}
                 />
               </View>
             </View>

@@ -45,6 +45,7 @@ export const UserProfileSettings = () => {
           value: {number: nationalNumber, callingCode: country_code},
           label: 'Phone Number',
           editable: false,
+          focusable: false,
         },
       },
       email: {
