@@ -50,6 +50,7 @@ export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
   type: K;
   props: FormFieldProps[K];
   validations?: FormValidation[];
+  remove?: boolean;
 };
 
 export type FormFields<T extends keyof any> = Record<T, FormField>;
@@ -64,20 +65,22 @@ type FormBuilderProps<
   onSubmit?: (values: {[name in keyof Fields]: any}) => Promise<any>;
 };
 
-export const FormBuilder = <FieldNames extends keyof any>({
+export const FormBuilder = <FieldName extends keyof any>({
   fields,
   onInputChange,
   submitBtn,
   onSubmit,
-}: FormBuilderProps<FieldNames>) => {
+}: FormBuilderProps<FieldName>) => {
   const {setFooter} = usePage();
 
-  const names = useMemo<FieldNames[]>(() => {
-    return Object.keys(fields) as FieldNames[];
+  const names = useMemo<FieldName[]>(() => {
+    return Object.keys(fields).filter(
+      (name) => !fields[name as FieldName].remove,
+    ) as FieldName[];
   }, [fields]);
   type FormErrors = {[name: string]: string};
-  type FormValues = Record<FieldNames, any>;
-  type FormFieldRefs = Partial<Record<FieldNames, RefObject<RNTextInput>>>;
+  type FormValues = Record<FieldName, any>;
+  type FormFieldRefs = Partial<Record<FieldName, RefObject<RNTextInput>>>;
   const [values, setValues] = useState<FormValues>(
     names.reduce((acc, name) => {
       const {
@@ -100,7 +103,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
   });
 
   const validateForm = useCallback(() => {
-    const nextErrors: FormErrors = (Object.keys(values) as FieldNames[]).reduce(
+    const nextErrors: FormErrors = (Object.keys(values) as FieldName[]).reduce(
       (acc, name) => {
         const validations: FormValidation[] | undefined =
           fields[name].validations;

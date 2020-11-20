@@ -120,11 +120,11 @@ export const AddCustomer = (props: AddCustomerProps) => {
           label: 'Save to Phonebook',
           value: !customer,
           disabled: !!customer,
-          display: !customer,
           innerRef: (saveToPhonebookField: RadioInputRef) => {
             saveToPhonebookFieldRef.current = saveToPhonebookField;
           },
         },
+        remove: !!customer,
       },
     };
   }, [customer]);
