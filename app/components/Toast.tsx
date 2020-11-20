@@ -50,7 +50,7 @@ export class Toast extends Component<ToastProps, ToastState> {
     this.timerID && clearTimeout(this.timerID);
   }
 
-  showToast = (message = '', duration = 3000) => {
+  showToast = (message = '', duration = 1500) => {
     if (!this.isShownToast && message) {
       this.message = message;
 
