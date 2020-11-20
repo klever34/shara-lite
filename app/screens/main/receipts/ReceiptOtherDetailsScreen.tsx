@@ -278,6 +278,7 @@ export const ReceiptOtherDetailsScreen = () => {
                     value={amountPaid?.toString()}
                     onChange={(text) => handleAmountPaidChange(text)}
                     returnKeyType="next"
+                    autoFocus
                     onSubmitEditing={() => {
                       setImmediate(() => {
                         if (amountOwedFieldRef.current) {
