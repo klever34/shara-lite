@@ -234,6 +234,9 @@ jobs:
     docker:
       - image: circleci/node:12
     parameters:
+      app:
+        type: string
+        default: shara-pro
       merged:
         type: boolean
         default: false
@@ -250,7 +253,7 @@ jobs:
       - run:
           name: Yarn Install Dependencies
           command: |
-            cd shara-pro
+            cd <<parameters.app>>
             yarn install
             yarn jetify
       - unless:
@@ -259,7 +262,7 @@ jobs:
             - run:
                 name: No Versioning. Just use release version
                 command: |
-                  cd shara-pro
+                  cd <<parameters.app>>
                   NEW_VERSION=$(jq ".version" -r package.json)
                   BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
@@ -275,7 +278,7 @@ jobs:
                   - run:
                       name: Auto-versioning >>  When Master, Discovery or Develop bump patch
                       command: |
-                        cd shara-pro
+                        cd <<parameters.app>>
                         CURRENT_VERSION=$(jq ".version" -r package.json)
                         NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
                         BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
@@ -291,7 +294,7 @@ jobs:
                   - run:
                       name: Auto-versioning >> When unmerged i.e. feature branches, bump build
                       command: |
-                        cd shara-pro
+                        cd <<parameters.app>>
                         CURRENT_VERSION=$(jq ".version" -r package.json)
                         BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
                         BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
@@ -310,7 +313,7 @@ jobs:
                   - run:
                       name: Commit and Push version update
                       command: |
-                        cd shara-pro
+                        cd <<parameters.app>>
                         git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
                         git add package.json
                         git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
@@ -326,16 +329,20 @@ jobs:
       - run:
           name: Setup Credentials
           command: |
-            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > shara-pro/android/app/google-services.json
-            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > shara-pro/android/google-play-store-service-account.json
-            echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > shara-pro/android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
-            echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > shara-pro/android/app/shara.keystore
+            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > <<parameters.app>>/android/app/google-services.json
+            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > <<parameters.app>>/android/google-play-store-service-account.json
+            echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > <<parameters.app>>/android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
+            echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > <<parameters.app>>/android/app/shara.keystore
             echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
-            echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> shara-pro/android/gradle.properties
+            echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> <<parameters.app>>/android/gradle.properties
       - persist_to_workspace:
           paths: .
           root: .
   test:
+    parameters:
+      app:
+        type: string
+        default: shara-pro
     docker:
       - image: circleci/node:12
     steps:
@@ -344,15 +351,18 @@ jobs:
       - run:
           name: Run ESLint Check
           command: |
-            cd shara-pro
+            cd <<parameters.app>>
             yarn lint
       - run:
           name: Run Unit and Integration Tests
           command: |
-            cd shara-pro
+            cd <<parameters.app>>
             yarn test
   fastlane:
     parameters:
+      app:
+        type: string
+        default: shara-pro
       env:
         type: string
         default: test
@@ -386,7 +396,7 @@ jobs:
             - run:
                 name: Test Build Config
                 command: |
-                  cd shara-pro
+                  cd <<parameters.app>>
                   echo '' >> .env
                   echo 'CI_TESTS=true' >> .env
       - unless:
@@ -395,13 +405,13 @@ jobs:
             - run:
                 name: Release Build Config
                 command: |
-                  cd shara-pro
+                  cd <<parameters.app>>
                   echo '' >> .env
                   echo 'CI_TESTS=false' >> .env
       - run:
           name: Set Version
           command: |
-            cd shara-pro
+            cd <<parameters.app>>
             NEW_VERSION=$(jq ".version" -r package.json)
             echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
             echo "export SHARA_VERSION_NAME=${NEW_VERSION}" >> $BASH_ENV
@@ -410,7 +420,7 @@ jobs:
       - run:
           name: Install Fastlane & Firebase tools
           command: |
-            cd shara-pro
+            cd <<parameters.app>>
             cd android
             bundle install
             curl -sL https://firebase.tools | bash
@@ -418,7 +428,7 @@ jobs:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           no_output_timeout: 30m
           command: |
-            cd shara-pro
+            cd <<parameters.app>>
             NEW_VERSION=$(jq ".version" -r package.json)
             export NEW_VERSION=${NEW_VERSION}
             export SHARA_VERSION_NAME=${NEW_VERSION}
@@ -436,7 +446,7 @@ jobs:
             - run:
                 name: Sentry Release Integration
                 command: |
-                  cd shara-pro
+                  cd <<parameters.app>>
                   curl -sL https://sentry.io/get-cli/ | bash
                   VERSION=$(jq ".version" -r package.json)
                   PACKAGE_NAME="<<parameters.packageName>>"
