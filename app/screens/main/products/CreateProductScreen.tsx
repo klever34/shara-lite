@@ -26,6 +26,7 @@ import React, {
 } from 'react';
 import {
   Alert,
+  BackHandler,
   FlatList,
   Keyboard,
   SafeAreaView,
@@ -71,11 +72,6 @@ export const CreateProductScreen = (props: Props) => {
     setItemToEdit(null);
     Keyboard.dismiss();
   }, []);
-
-  const handleGoBack = useCallback(() => {
-    handleClearState();
-    navigation.goBack();
-  }, [navigation, handleClearState]);
 
   const handleNameChange = useCallback((text) => {
     setName(text);
@@ -230,6 +226,48 @@ export const CreateProductScreen = (props: Props) => {
 
   const unitPriceFieldRef = useRef<TextInput | null>(null);
   const quantityFieldRef = useRef<TextInput | null>(null);
+
+  const handleGoBack = useCallback(() => {
+    const goBack = () => {
+      handleClearState();
+      navigation.goBack();
+    };
+    if (products.length) {
+      Alert.alert('Warning', 'You have not save the added products', [
+        {
+          text: 'Cancel',
+          onPress: goBack,
+        },
+        {
+          text: 'Save',
+          onPress: handleDone,
+        },
+      ]);
+    } else {
+      goBack();
+    }
+  }, [handleClearState, handleDone, navigation, products.length]);
+
+  const handleBackButtonPress = useCallback(() => {
+    if (!navigation.isFocused()) {
+      return false;
+    }
+    if (products.length) {
+      handleGoBack();
+      return true;
+    }
+    return false;
+  }, [navigation, products.length, handleGoBack]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress);
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonPress,
+      );
+    };
+  }, [handleBackButtonPress]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
