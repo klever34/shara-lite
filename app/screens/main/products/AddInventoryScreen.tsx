@@ -9,7 +9,7 @@ import {
   StickyFooter,
 } from '@/components';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency, showToast} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IStockItem} from '@/models/StockItem';
 import {getAnalyticsService} from '@/services';
@@ -20,7 +20,7 @@ import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles} from '@/styles';
 import {omit} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   BackHandler,
@@ -32,6 +32,7 @@ import {
   View,
 } from 'react-native';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
+import {ToastContext} from '@/components/Toast';
 
 export const AddInventoryScreen = ({route}: any) => {
   const realm = useRealm();
@@ -155,10 +156,10 @@ export const AddInventoryScreen = ({route}: any) => {
     },
     [handleError, realm],
   );
-
+  const {showToast} = useContext(ToastContext);
   const handleAddReceiptItem = useCallback(() => {
     let payload = selectedProduct;
-    const priceCondition = price || price === 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
     if (payload && priceCondition && quantityCondition && quantity) {
       if (isNewProduct) {
@@ -199,7 +200,7 @@ export const AddInventoryScreen = ({route}: any) => {
 
       Keyboard.dismiss();
       handleClearState();
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert(
         'Info',
@@ -214,6 +215,7 @@ export const AddInventoryScreen = ({route}: any) => {
     handleError,
     inventoryStock,
     handleClearState,
+    showToast,
     handleAddProduct,
     searchQuery,
   ]);
@@ -221,7 +223,7 @@ export const AddInventoryScreen = ({route}: any) => {
   const handleDone = useCallback(() => {
     let items = inventoryStock;
     let payload = selectedProduct;
-    const priceCondition = price || price === 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
 
     if (isNewProduct) {
@@ -245,7 +247,7 @@ export const AddInventoryScreen = ({route}: any) => {
       Keyboard.dismiss();
       handleClearState();
 
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleUpdateInventoryStock([product, ...inventoryStock]);
 
@@ -269,6 +271,7 @@ export const AddInventoryScreen = ({route}: any) => {
     handleAddProduct,
     searchQuery,
     handleClearState,
+    showToast,
     handleUpdateInventoryStock,
     navigation,
   ]);

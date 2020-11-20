@@ -1,12 +1,19 @@
 import {AppInput, Button, CurrencyInput} from '@/components';
-import {numberWithCommas, showToast} from '@/helpers/utils';
+import {numberWithCommas} from '@/helpers/utils';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {getAuthService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import {omit} from 'lodash';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {Text, TextInput, View} from 'react-native';
+import {ToastContext} from '@/components/Toast';
 
 type Props = {
   visible: boolean;
@@ -49,14 +56,14 @@ export const EditReceiptItemModal = (props: Props) => {
     setQuantity('');
     onClose();
   }, [onClose]);
-
+  const {showToast} = useContext(ToastContext);
   const handleDelete = useCallback(() => {
     if (item) {
       onRemoveProductItem(item);
       handleClose();
-      showToast({message: 'PRODUCT REMOVED FROM RECEIPT'});
+      showToast('PRODUCT REMOVED FROM RECEIPT');
     }
-  }, [handleClose, item, onRemoveProductItem]);
+  }, [handleClose, item, onRemoveProductItem, showToast]);
 
   const handleUpdate = useCallback(() => {
     const payload = {
@@ -66,8 +73,8 @@ export const EditReceiptItemModal = (props: Props) => {
     } as IReceiptItem;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
-    showToast({message: 'PRODUCT EDITED'});
-  }, [item, price, quantity, onUpdateProductItem, handleClose]);
+    showToast('PRODUCT EDITED');
+  }, [item, price, quantity, onUpdateProductItem, handleClose, showToast]);
 
   const getSubtotal = useCallback(() => {
     const p = price ? price : 0;

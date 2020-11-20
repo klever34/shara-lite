@@ -1,5 +1,5 @@
 import {ICustomer} from '@/models';
-import {RouteProp, useNavigation} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import React, {useState, useMemo, useRef, useEffect, useCallback} from 'react';
 import {
   FormBuilder,
@@ -19,6 +19,7 @@ import {TextInputFieldRef} from '@/components/TextInput';
 import {handleError} from '@/services/error-boundary';
 import {CustomersStackParamList} from '@/screens/main/customers/index';
 import {MainStackParamList} from '@/screens/main';
+import {useAppNavigation} from '@/services/navigation';
 
 type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
@@ -27,7 +28,7 @@ type AddCustomerProps = {
 
 export const AddCustomer = (props: AddCustomerProps) => {
   const {onSubmit, route} = props;
-  const navigation = useNavigation();
+  const navigation = useAppNavigation();
   const addCustomer = useAddCustomer();
   const {title = 'Add Customer', customer} = route.params ?? {};
   type FormFieldName = 'name' | 'mobile' | 'email' | 'saveToPhonebook';
@@ -171,7 +172,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
       style={applyStyles('bg-white')}>
       <FormBuilder
         fields={formFields}
-        onSubmit={async (values) => {
+        onSubmit={(values) => {
           const phoneNumber = values.mobile as PhoneNumber;
           values = {
             ...values,
@@ -179,16 +180,25 @@ export const AddCustomer = (props: AddCustomerProps) => {
               ? `+${phoneNumber.callingCode}${phoneNumber.number}`
               : undefined,
           };
-          await addCustomer({...values, _id: customer?._id}, 'manual');
-          if (values.saveToPhonebook && phoneNumber.number) {
-            await getContactService().addContact({
-              givenName: values.name,
-              phoneNumbers: [
-                `+${phoneNumber.callingCode}${phoneNumber.number}`,
-              ],
-            });
-          }
-          onSubmit ? onSubmit(values) : navigation.goBack();
+          return addCustomer({...values, _id: customer?._id}, 'manual').then(
+            (nextCustomer) => {
+              if (values.saveToPhonebook && phoneNumber.number) {
+                getContactService()
+                  .addContact({
+                    givenName: values.name,
+                    phoneNumbers: [
+                      `+${phoneNumber.callingCode}${phoneNumber.number}`,
+                    ],
+                  })
+                  .catch(handleError);
+              }
+              onSubmit
+                ? onSubmit(values)
+                : navigation.replace('CustomerDetails', {
+                    customer: nextCustomer,
+                  });
+            },
+          );
         }}
         submitBtn={{
           title: 'Save',

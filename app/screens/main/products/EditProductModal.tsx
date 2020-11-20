@@ -1,10 +1,10 @@
 import {AppInput, Button, CurrencyInput} from '@/components';
-import {showToast} from '@/helpers/utils';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {IProduct} from '@/models/Product';
 import {applyStyles, colors} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
+import {ToastContext} from '@/components/Toast';
 
 type Props = {
   visible: boolean;
@@ -26,7 +26,7 @@ export const EditProductModal = (props: Props) => {
     onRemoveProductItem,
     onUpdateProductItem,
   } = props;
-
+  const {showToast} = useContext(ToastContext);
   const [name, setName] = useState(item?.name);
   const [price, setPrice] = useState<number | undefined>(item?.price);
   const [quantity, setQuantity] = useState<string | undefined>(
@@ -70,9 +70,9 @@ export const EditProductModal = (props: Props) => {
     if (item) {
       onRemoveProductItem && onRemoveProductItem(item);
       handleClose();
-      showToast({message: 'PRODUCT/SERVICE REMOVED FROM RECEIPT'});
+      showToast('PRODUCT/SERVICE REMOVED FROM RECEIPT');
     }
-  }, [handleClose, item, onRemoveProductItem]);
+  }, [handleClose, item, onRemoveProductItem, showToast]);
 
   const handleUpdate = useCallback(() => {
     const payload = {
@@ -83,8 +83,16 @@ export const EditProductModal = (props: Props) => {
     } as IProduct;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
-    showToast({message: 'PRODUCT/SERVICE UPDATED SUCCESSFULLY'});
-  }, [item, name, price, quantity, onUpdateProductItem, handleClose]);
+    showToast('PRODUCT/SERVICE UPDATED SUCCESSFULLY');
+  }, [
+    item,
+    name,
+    price,
+    quantity,
+    onUpdateProductItem,
+    handleClose,
+    showToast,
+  ]);
 
   return (
     <BottomHalfModalContainer visible={visible} onClose={handleClose}>

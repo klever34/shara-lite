@@ -1,4 +1,3 @@
-import {showToast} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -6,7 +5,14 @@ import {getCustomers, saveCustomer} from '@/services/customer';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
-import React, {memo, useCallback, useEffect, useMemo, useState} from 'react';
+import React, {
+  memo,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   ActivityIndicator,
   ListRenderItemInfo,
@@ -22,6 +28,7 @@ import EmptyState from './EmptyState';
 import Icon from './Icon';
 import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
+import {ToastContext} from '@/components/Toast';
 
 type Props<T> = {
   entity?: string;
@@ -147,7 +154,7 @@ export function ContactsListModal<T>({
     }
     return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
   }, []);
-
+  const {showToast} = useContext(ToastContext);
   const handleCreateCustomer = useCallback(
     (contact: CustomerListItem) => {
       const mobile = contact.mobile;
@@ -162,9 +169,9 @@ export function ContactsListModal<T>({
           (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
         );
       });
-      showToast({message: 'CUSTOMER ADDED'});
+      showToast('CUSTOMER ADDED');
     },
-    [realm],
+    [realm, showToast],
   );
 
   const handleSelectCustomer = useCallback(

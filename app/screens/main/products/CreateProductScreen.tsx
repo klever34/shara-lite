@@ -62,7 +62,7 @@ export const CreateProductScreen = (props: Props) => {
     getAnalyticsService().logEvent('productStart', {}).catch(handleError);
   }, [handleError, receipt]);
 
-  const {showSuccessToast} = useContext(ToastContext);
+  const {showToast} = useContext(ToastContext);
 
   const handleClearState = useCallback(() => {
     setName('');
@@ -150,11 +150,11 @@ export const CreateProductScreen = (props: Props) => {
 
       Keyboard.dismiss();
       handleClearState();
-      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert('Info', 'Please add product/service name, price & quantity');
     }
-  }, [price, quantity, name, products, handleClearState, showSuccessToast]);
+  }, [price, quantity, name, products, handleClearState, showToast]);
 
   const handleDone = useCallback(() => {
     let items = products;
@@ -175,7 +175,7 @@ export const CreateProductScreen = (props: Props) => {
       Keyboard.dismiss();
       handleClearState();
 
-      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleAddProducts([product, ...products]);
     } else if (items.length) {
@@ -193,7 +193,7 @@ export const CreateProductScreen = (props: Props) => {
     name,
     handleError,
     handleClearState,
-    showSuccessToast,
+    showToast,
     handleAddProducts,
   ]);
 

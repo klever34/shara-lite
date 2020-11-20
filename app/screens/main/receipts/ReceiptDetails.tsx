@@ -16,7 +16,7 @@ import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, numberWithCommas, showToast} from '@/helpers/utils';
+import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {
@@ -33,7 +33,7 @@ import {cancelReceipt, updateReceipt} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -49,6 +49,7 @@ import {
 } from 'react-native-bluetooth-escpos-printer';
 import {ReceiptListItem} from './ReceiptListItem';
 import {useReceiptProvider} from './ReceiptProvider';
+import {ToastContext} from '@/components/Toast';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
@@ -393,17 +394,17 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       navigation.navigate('Home');
     }
   }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
-
+  const {showToast} = useContext(ToastContext);
   const handleCancelReceipt = useCallback(
     (note) => {
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
         handleClose();
-        showToast({message: 'RECEIPT CANCELLED'});
+        showToast('RECEIPT CANCELLED');
       }, 50);
     },
-    [receipt, realm, handleClose],
+    [receipt, realm, handleClose, showToast],
   );
 
   const handleEditReceipt = useCallback(() => {
@@ -424,12 +425,12 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         amount: creditPaymentAmount,
       });
       setCreditPaymentAmount(0);
-      showToast({message: 'CREDIT PAYMENT RECORDED'});
+      showToast('CREDIT PAYMENT RECORDED');
       Keyboard.dismiss();
     } else {
       Alert.alert('Info', 'Please select a customer');
     }
-  }, [creditPaymentAmount, customer, receipt, realm]);
+  }, [customer, realm, receipt, creditPaymentAmount, showToast]);
 
   const handleOpenContactList = useCallback(() => {
     const closeContactListModal = openModal('bottom-half', {
