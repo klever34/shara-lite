@@ -1,12 +1,14 @@
-import {useCallback} from 'react';
-import {Alert, ToastAndroid} from 'react-native';
+import {useCallback, useContext} from 'react';
+import {Alert} from 'react-native';
 import {getCustomers, saveCustomer} from '@/services/customer/service';
 import {ICustomer} from '@/models';
 import {useRealm} from '@/services/realm';
+import {ToastContext} from '@/components/Toast';
 
 export const useAddCustomer = () => {
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
+  const {showSuccessToast} = useContext(ToastContext);
   return useCallback(
     (values: ICustomer) => {
       if (
@@ -24,16 +26,10 @@ export const useAddCustomer = () => {
         return Promise.reject();
       } else {
         saveCustomer({realm, customer: values});
-        ToastAndroid.showWithGravityAndOffset(
-          'Customer saved',
-          ToastAndroid.SHORT,
-          ToastAndroid.TOP,
-          0,
-          52,
-        );
+        showSuccessToast?.('Customer saved');
         return Promise.resolve();
       }
     },
-    [customers, realm],
+    [customers, realm, showSuccessToast],
   );
 };

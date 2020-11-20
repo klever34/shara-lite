@@ -10,7 +10,7 @@ import {
   StickyFooter,
 } from '@/components';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency, showToast} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {IReceiptItem} from '@/models/ReceiptItem';
@@ -21,7 +21,13 @@ import {useAppNavigation} from '@/services/navigation';
 import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Alert,
   BackHandler,
@@ -34,6 +40,7 @@ import {
 } from 'react-native';
 import {EditReceiptItemModal} from './EditReceiptItemModal';
 import {useReceiptProvider} from './ReceiptProvider';
+import {ToastContext} from '@/components/Toast';
 
 type Props = {
   receipt?: IReceipt;
@@ -163,10 +170,11 @@ export const CreateReceipt = (props: Props) => {
     },
     [handleError, realm],
   );
+  const {showSuccessToast} = useContext(ToastContext);
 
   const handleAddReceiptItem = useCallback(() => {
     let payload = selectedProduct;
-    const priceCondition = price || price === 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
     if (isNewProduct) {
       payload = handleAddProduct({name: searchQuery, price});
@@ -210,25 +218,26 @@ export const CreateReceipt = (props: Props) => {
       setQuantity('');
       setSearchQuery('');
       setSelectedProduct(null);
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert('Info', 'Please add product/service, quantity & price');
     }
   }, [
+    selectedProduct,
     price,
     quantity,
-    selectedProduct,
-    handleError,
-    receiptItems,
     isNewProduct,
     handleAddProduct,
     searchQuery,
+    handleError,
+    receiptItems,
+    showSuccessToast,
   ]);
 
   const handleDone = useCallback(() => {
     let items = receiptItems;
     let payload = selectedProduct;
-    const priceCondition = price || price === 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
 
     if (isNewProduct) {
@@ -266,7 +275,7 @@ export const CreateReceipt = (props: Props) => {
       setSearchQuery('');
       setSelectedProduct(null);
 
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {
@@ -296,6 +305,7 @@ export const CreateReceipt = (props: Props) => {
     handleUpdateReceipt,
     totalAmount,
     receipt,
+    showSuccessToast,
     navigation,
   ]);
 

@@ -8,7 +8,6 @@ import {
   ReceiptTableItemProps,
   StickyFooter,
 } from '@/components';
-import {showToast} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
@@ -18,7 +17,13 @@ import {useAppNavigation} from '@/services/navigation';
 import {saveProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Alert,
   FlatList,
@@ -28,6 +33,7 @@ import {
   TextInput,
   View,
 } from 'react-native';
+import {ToastContext} from '@/components/Toast';
 
 type Props = {
   receipt?: IReceipt;
@@ -55,6 +61,8 @@ export const CreateProductScreen = (props: Props) => {
   useEffect(() => {
     getAnalyticsService().logEvent('productStart').catch(handleError);
   }, [handleError, receipt]);
+
+  const {showSuccessToast} = useContext(ToastContext);
 
   const handleClearState = useCallback(() => {
     setName('');
@@ -142,11 +150,11 @@ export const CreateProductScreen = (props: Props) => {
 
       Keyboard.dismiss();
       handleClearState();
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert('Info', 'Please add product/service name, price & quantity');
     }
-  }, [price, quantity, name, products, handleClearState]);
+  }, [price, quantity, name, products, handleClearState, showSuccessToast]);
 
   const handleDone = useCallback(() => {
     let items = products;
@@ -167,7 +175,7 @@ export const CreateProductScreen = (props: Props) => {
       Keyboard.dismiss();
       handleClearState();
 
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleAddProducts([product, ...products]);
     } else if (items.length) {
@@ -185,6 +193,7 @@ export const CreateProductScreen = (props: Props) => {
     name,
     handleError,
     handleClearState,
+    showSuccessToast,
     handleAddProducts,
   ]);
 

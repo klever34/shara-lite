@@ -15,6 +15,7 @@ import {useErrorHandler} from '@/services/error-boundary';
 import {Platform} from 'react-native';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 import {NavigationState} from '@react-navigation/routers';
+import {ToastProvider} from '@/components/Toast';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -49,40 +50,42 @@ const App = () => {
   }, []);
 
   return (
-    <RealmProvider>
-      <IPGeolocationProvider>
-        <NavigationContainer
-          onStateChange={(state) => {
-            if (!state) {
-              return;
-            }
-            const analyticsService = getAnalyticsService();
-            analyticsService
-              .tagScreenName(getActiveRouteName(state))
-              .catch(handleError);
-          }}>
-          <MenuProvider>
-            <RootStack.Navigator initialRouteName="Splash">
-              <RootStack.Screen
-                name="Splash"
-                component={SplashScreen}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen
-                name="Auth"
-                component={AuthScreens}
-                options={{headerShown: false}}
-              />
-              <RootStack.Screen
-                name="Main"
-                component={MainScreens}
-                options={{headerShown: false}}
-              />
-            </RootStack.Navigator>
-          </MenuProvider>
-        </NavigationContainer>
-      </IPGeolocationProvider>
-    </RealmProvider>
+    <ToastProvider>
+      <RealmProvider>
+        <IPGeolocationProvider>
+          <NavigationContainer
+            onStateChange={(state) => {
+              if (!state) {
+                return;
+              }
+              const analyticsService = getAnalyticsService();
+              analyticsService
+                .tagScreenName(getActiveRouteName(state))
+                .catch(handleError);
+            }}>
+            <MenuProvider>
+              <RootStack.Navigator initialRouteName="Splash">
+                <RootStack.Screen
+                  name="Splash"
+                  component={SplashScreen}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen
+                  name="Auth"
+                  component={AuthScreens}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen
+                  name="Main"
+                  component={MainScreens}
+                  options={{headerShown: false}}
+                />
+              </RootStack.Navigator>
+            </MenuProvider>
+          </NavigationContainer>
+        </IPGeolocationProvider>
+      </RealmProvider>
+    </ToastProvider>
   );
 };
 
