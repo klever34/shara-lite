@@ -416,9 +416,10 @@ export const ReceiptOtherDetailsScreen = () => {
             value={note}
             label="Notes (optional)"
             onChangeText={handleNoteChange}
-            style={applyStyles('pt-0 mb-16', {height: 96})}
+            style={applyStyles('mb-16', {height: 96})}
             placeholder="Any other information about this transaction?"
             onSubmitEditing={handleFinish}
+            textAlignVertical="top"
           />
           <Button
             title="Finish"
