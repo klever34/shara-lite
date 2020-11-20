@@ -8,6 +8,19 @@ import {NavigationProp} from '@react-navigation/core/lib/typescript/src/types';
 import {ParamListBase} from '@react-navigation/routers';
 import {BackHandler, ToastAndroid} from 'react-native';
 
+export const getRouteName = (navState: any): any => {
+  if (!navState) {
+    return null;
+  }
+
+  const route = navState.routes[navState.index];
+
+  if (route.routes) {
+    return getRouteName(route);
+  }
+  return route.routeName;
+};
+
 export const useAppNavigation = <T extends ParamListBase>() => {
   const navigation = useNavigation<NavigationProp<T>>();
   const replace = useCallback(

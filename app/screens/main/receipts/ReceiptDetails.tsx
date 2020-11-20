@@ -16,7 +16,7 @@ import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, numberWithCommas, showToast} from '@/helpers/utils';
+import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {
@@ -33,7 +33,7 @@ import {cancelReceipt, updateReceipt} from '@/services/ReceiptService';
 import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {ReactNode, useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -49,14 +49,15 @@ import {
 } from 'react-native-bluetooth-escpos-printer';
 import {ReceiptListItem} from './ReceiptListItem';
 import {useReceiptProvider} from './ReceiptProvider';
+import {ToastContext} from '@/components/Toast';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
-  header?: ReactNode;
+  page?: 'details' | 'review';
 };
 
 export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
-  let {receipt, openModal, header} = props;
+  let {receipt, openModal, page = 'details'} = props;
 
   const realm = useRealm();
   const navigation = useAppNavigation();
@@ -175,7 +176,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
             customer: newCustomer,
           });
       } else {
-        const newCustomer = value && saveCustomer({realm, customer: value});
+        const newCustomer =
+          value && saveCustomer({realm, customer: value, source: 'manual'});
         setCustomer(newCustomer);
         receipt &&
           newCustomer &&
@@ -392,17 +394,17 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       navigation.navigate('Home');
     }
   }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
-
+  const {showSuccessToast} = useContext(ToastContext);
   const handleCancelReceipt = useCallback(
     (note) => {
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
         handleClose();
-        showToast({message: 'RECEIPT CANCELLED'});
+        showSuccessToast('RECEIPT CANCELLED');
       }, 50);
     },
-    [receipt, realm, handleClose],
+    [receipt, realm, handleClose, showSuccessToast],
   );
 
   const handleEditReceipt = useCallback(() => {
@@ -423,12 +425,12 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         amount: creditPaymentAmount,
       });
       setCreditPaymentAmount(0);
-      showToast({message: 'CREDIT PAYMENT RECORDED'});
+      showSuccessToast('CREDIT PAYMENT RECORDED');
       Keyboard.dismiss();
     } else {
       Alert.alert('Info', 'Please select a customer');
     }
-  }, [creditPaymentAmount, customer, receipt, realm]);
+  }, [customer, realm, receipt, creditPaymentAmount, showSuccessToast]);
 
   const handleOpenContactList = useCallback(() => {
     const closeContactListModal = openModal('bottom-half', {
@@ -492,36 +494,72 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
     };
   }, []);
 
-  header = header ?? (
-    <View
-      style={applyStyles('flex-row bg-white items-center', {
-        shadowColor: '#000',
-        shadowOffset: {
-          width: 0,
-          height: 2,
-        },
-        shadowOpacity: 0.34,
-        shadowRadius: 6.27,
-        elevation: 10,
-        borderBottomColor: colors['gray-10'],
-      })}>
-      <HeaderBackButton {...{iconName: 'arrow-left', onPress: handleClose}} />
-      <ReceiptListItem
-        isHeader
-        style={applyStyles({
-          left: -14,
-          borderBottomWidth: 0,
-          width: Dimensions.get('window').width - 34,
-        })}
-        receipt={receipt}
-        onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
-      />
-    </View>
-  );
+  const pageHeader =
+    page === 'review' ? (
+      <View
+        style={applyStyles('flex-row bg-white items-center', {
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.34,
+          shadowRadius: 6.27,
+          elevation: 10,
+          borderBottomColor: colors['gray-10'],
+        })}>
+        <ReceiptListItem
+          isHeader
+          receipt={receipt}
+          showRightSection={false}
+          style={applyStyles('flex-1')}
+          onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
+        />
+        <Touchable onPress={handleClose}>
+          <View
+            style={applyStyles('px-8 py-16 flex-row items-center rounded-24')}>
+            <Text style={applyStyles('text-700 text-uppercase text-gray-300')}>
+              Close
+            </Text>
+            <Icon
+              name="x"
+              size={20}
+              type="feathericons"
+              color={colors['gray-300']}
+            />
+          </View>
+        </Touchable>
+      </View>
+    ) : (
+      <View
+        style={applyStyles('flex-row bg-white items-center', {
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
+          },
+          shadowOpacity: 0.34,
+          shadowRadius: 6.27,
+          elevation: 10,
+          borderBottomColor: colors['gray-10'],
+        })}>
+        <HeaderBackButton {...{iconName: 'arrow-left', onPress: handleClose}} />
+        <ReceiptListItem
+          isHeader
+          style={applyStyles({
+            left: -14,
+            borderBottomWidth: 0,
+            width: Dimensions.get('window').width - 34,
+          })}
+          receipt={receipt}
+          onPress={receipt?.hasCustomer ? undefined : handleOpenContactList}
+        />
+      </View>
+    );
 
   return (
     <>
-      {header}
+      {pageHeader}
       <View style={applyStyles('bg-white flex-1 pt-4')}>
         <FlatList
           data={[]}
@@ -548,6 +586,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                         onChange={(value) =>
                           handleCreditPaymentAmountChange(value)
                         }
+                        onSubmitEditing={handleCreditPaymentSubmit}
                       />
                     </View>
                     <View style={applyStyles({width: '48%'})}>

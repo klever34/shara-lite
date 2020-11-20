@@ -63,7 +63,7 @@ export const saveDeliveryAgent = ({
     realm.write(saveDeliveryAgentInDb);
   }
   getAnalyticsService()
-    .logEvent('deliveryAgentAdded')
+    .logEvent('deliveryAgentAdded', {})
     .then(() => {});
 
   return deliveryAgentToCreate;

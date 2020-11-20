@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {
   AuthView,
   FormBuilder,
@@ -33,8 +33,6 @@ const ForgotPassword = () => {
     },
   };
 
-  const formValuesRef = useRef<Record<FormFieldName, any>>();
-
   return (
     <AuthView
       showEmblem={false}
@@ -42,25 +40,22 @@ const ForgotPassword = () => {
       heading="Forgot your password?"
       style={applyStyles('bg-white pt-24')}
       description="Enter your mobile number to receive your OTP"
-      buttonTitle="submit"
-      onSubmit={() => {
-        const {current: values} = formValuesRef;
-        const phoneNumber = values?.mobile as PhoneNumber;
-        const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;
-        return getApiService()
-          .forgotPassword({
-            mobile,
-          })
-          .then(({message}) => {
-            ToastAndroid.show(message, ToastAndroid.LONG);
-            navigation.replace('ResetPassword', {mobile});
-          })
-          .catch(handleError);
-      }}>
+      showButton={false}>
       <FormBuilder
         fields={formFields}
-        onInputChange={(values) => {
-          formValuesRef.current = values;
+        submitBtn={{title: 'submit'}}
+        onSubmit={(values) => {
+          const phoneNumber = values?.mobile as PhoneNumber;
+          const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;
+          return getApiService()
+            .forgotPassword({
+              mobile,
+            })
+            .then(({message}) => {
+              ToastAndroid.show(message, ToastAndroid.LONG);
+              navigation.replace('ResetPassword', {mobile});
+            })
+            .catch(handleError);
         }}
       />
     </AuthView>

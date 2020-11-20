@@ -116,7 +116,7 @@ export const useReceivedInventory = (): useReceivedInventoryInterface => {
 
       await addNewStockItem({stockItem: newStockItem});
     });
-    getAnalyticsService().logEvent('inventoryReceived').catch();
+    getAnalyticsService().logEvent('inventoryReceived', {}).catch();
   };
 
   return {

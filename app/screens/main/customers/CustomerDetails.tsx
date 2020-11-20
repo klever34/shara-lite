@@ -183,7 +183,23 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   return (
     <CustomerContext.Provider value={customer}>
       <Page
-        header={{title: customer.name, iconLeft: {}}}
+        header={{
+          title: customer.name,
+          iconLeft: {},
+          headerRight: {
+            menuOptions: [
+              {
+                text: 'Edit',
+                onSelect: () => {
+                  navigation.navigate('AddCustomer', {
+                    title: 'Edit Customer',
+                    customer,
+                  });
+                },
+              },
+            ],
+          },
+        }}
         footer={footer}
         style={applyStyles('px-0 py-0')}>
         <HomeContainer<IReceipt>

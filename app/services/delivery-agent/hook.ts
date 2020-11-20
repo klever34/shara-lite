@@ -81,7 +81,7 @@ export const useDeliveryAgent = (): useDeliveryAgentInterface => {
     await trace.stop();
 
     getAnalyticsService()
-      .logEvent('deliveryAgentAdded')
+      .logEvent('deliveryAgentAdded', {})
       .then(() => {});
 
     return deliveryAgentToCreate;

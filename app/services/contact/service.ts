@@ -10,7 +10,7 @@ import {UpdateMode} from 'realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {User} from 'types/app';
 import {uniqBy} from 'lodash';
-import parsePhoneNumber from 'libphonenumber-js';
+import * as LibPhoneNumber from 'libphonenumber-js';
 import {IIPGeolocationService} from '@/services/ip-geolocation';
 import * as RNSelectContact from 'react-native-select-contact';
 
@@ -31,6 +31,7 @@ export interface IContactService {
   createMultipleContacts(contact: IContact[]): Promise<IContact[]>;
   updateContact(contact: Partial<IContact>): Promise<IContact>;
   updateMultipleContacts(contact: Partial<IContact[]>): Promise<IContact[]>;
+  parsePhoneNumber(number: string): LibPhoneNumber.PhoneNumber | undefined;
   formatPhoneNumber(number: string): string;
   addContact(contact: {
     givenName: string;
@@ -137,9 +138,13 @@ export class ContactService implements IContactService {
     return this.permissionGranted;
   }
 
-  public formatPhoneNumber(phoneNumber: string): string {
-    const removeAllNonDigits = (number: string) =>
-      number.replace(/[^\d+]/g, '');
+  private removeAllNonDigits(number: string) {
+    return number.replace(/[^\d+]/g, '');
+  }
+
+  public parsePhoneNumber(
+    phoneNumber: string,
+  ): LibPhoneNumber.PhoneNumber | undefined {
     if (phoneNumber[0] !== '+') {
       let countryCallingCode;
       const ipDetails = this.ipGeolocationService.getUserIpDetails();
@@ -149,17 +154,21 @@ export class ContactService implements IContactService {
         countryCallingCode = this.authService.getUser()?.country_code ?? '';
       }
       if (!countryCallingCode) {
-        return removeAllNonDigits(phoneNumber);
+        return;
       }
       phoneNumber =
         `${countryCallingCode[0] === '+' ? '' : '+'}${countryCallingCode}` +
         phoneNumber;
     }
-    const phoneNumberDetails = parsePhoneNumber(phoneNumber);
-    if (!phoneNumberDetails || !phoneNumberDetails.isValid()) {
-      return removeAllNonDigits(phoneNumber);
+    return LibPhoneNumber.parsePhoneNumberFromString(phoneNumber);
+  }
+
+  public formatPhoneNumber(phoneNumber: string): string {
+    const parsedPhoneNumber = this.parsePhoneNumber(phoneNumber);
+    if (!parsedPhoneNumber || !parsedPhoneNumber.isValid()) {
+      return this.removeAllNonDigits(phoneNumber);
     }
-    return String(phoneNumberDetails.number);
+    return String(parsedPhoneNumber.number);
   }
 
   public async addContact(contact: {

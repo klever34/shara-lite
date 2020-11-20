@@ -7,8 +7,15 @@ import {
 import TextInput, {TextInputProps} from '@/components/TextInput';
 import {useAsync} from '@/services/api';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
-import {View} from 'react-native';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+  createRef,
+  RefObject,
+} from 'react';
+import {View, TextInput as RNTextInput} from 'react-native';
 import {AppInputProps} from './AppInput';
 import {ImageInput, ImageInputProps} from './ImageInput';
 import {RadioInput, RadioInputProps} from './RadioInput';
@@ -21,6 +28,12 @@ type FormFieldProps = {
   image: ImageInputProps;
   radio: RadioInputProps;
 };
+
+const fieldsWithFocus: (keyof FormFieldProps)[] = [
+  'text',
+  'mobile',
+  'password',
+];
 
 export type FormValidation = (
   name: string,
@@ -37,6 +50,7 @@ export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
   type: K;
   props: FormFieldProps[K];
   validations?: FormValidation[];
+  remove?: boolean;
 };
 
 export type FormFields<T extends keyof any> = Record<T, FormField>;
@@ -51,19 +65,22 @@ type FormBuilderProps<
   onSubmit?: (values: {[name in keyof Fields]: any}) => Promise<any>;
 };
 
-export const FormBuilder = <FieldNames extends keyof any>({
+export const FormBuilder = <FieldName extends keyof any>({
   fields,
   onInputChange,
   submitBtn,
   onSubmit,
-}: FormBuilderProps<FieldNames>) => {
+}: FormBuilderProps<FieldName>) => {
   const {setFooter} = usePage();
 
-  const names = useMemo<FieldNames[]>(() => {
-    return Object.keys(fields) as FieldNames[];
+  const names = useMemo<FieldName[]>(() => {
+    return Object.keys(fields).filter(
+      (name) => !fields[name as FieldName].remove,
+    ) as FieldName[];
   }, [fields]);
   type FormErrors = {[name: string]: string};
-  type FormValues = Record<FieldNames, any>;
+  type FormValues = Record<FieldName, any>;
+  type FormFieldRefs = Partial<Record<FieldName, RefObject<RNTextInput>>>;
   const [values, setValues] = useState<FormValues>(
     names.reduce((acc, name) => {
       const {
@@ -86,7 +103,7 @@ export const FormBuilder = <FieldNames extends keyof any>({
   });
 
   const validateForm = useCallback(() => {
-    const nextErrors: FormErrors = (Object.keys(values) as FieldNames[]).reduce(
+    const nextErrors: FormErrors = (Object.keys(values) as FieldName[]).reduce(
       (acc, name) => {
         const validations: FormValidation[] | undefined =
           fields[name].validations;
@@ -133,6 +150,48 @@ export const FormBuilder = <FieldNames extends keyof any>({
     },
   );
 
+  const [fieldRefNames, fieldRefs] = useMemo(() => {
+    const nextFieldRefs: FormFieldRefs = {};
+    const nextFieldRefNames = names.filter((name) => {
+      const field = fields[name];
+      return (
+        fieldsWithFocus.includes(field.type) &&
+        (field.props as TextInputProps).focusable !== false
+      );
+    });
+    nextFieldRefNames.forEach((name) => {
+      nextFieldRefs[name] = createRef<RNTextInput>();
+    });
+    return [nextFieldRefNames, nextFieldRefs];
+  }, [fields, names]);
+
+  const getReturnKeyType = useCallback(
+    (name: string) => {
+      const index = fieldRefNames.findIndex((currName) => name === currName);
+      return index === fieldRefNames.length - 1 ? 'done' : 'next';
+    },
+    [fieldRefNames],
+  );
+
+  const getSubmitEditingHandler = useCallback(
+    (name: string) => {
+      const index = fieldRefNames.findIndex((currName) => name === currName);
+      if (index !== fieldRefNames.length - 1) {
+        const nextFieldRef = fieldRefs[fieldRefNames[index + 1]];
+        return () => {
+          setImmediate(() => {
+            if (nextFieldRef?.current) {
+              nextFieldRef.current.focus();
+            }
+          });
+        };
+      } else if (index === names.length - 1) {
+        return runHandleSubmitBtnPress;
+      }
+    },
+    [fieldRefNames, fieldRefs, names.length, runHandleSubmitBtnPress],
+  );
+
   useEffect(() => {
     onInputChange?.(values);
   }, [onInputChange, values]);
@@ -167,12 +226,17 @@ export const FormBuilder = <FieldNames extends keyof any>({
       {names.map((name) => {
         const field = fields[name];
         let fieldProps;
+        let fieldRef;
         switch (field.type) {
           case 'text':
             fieldProps = field.props as TextInputProps;
+            fieldRef = fieldRefs[name];
             return (
               <TextInput
                 key={name as string}
+                ref={fieldRef}
+                returnKeyType={getReturnKeyType(String(name))}
+                onSubmitEditing={getSubmitEditingHandler(String(name))}
                 {...fieldProps}
                 containerStyle={applyStyles(
                   'mb-24 w-full',
@@ -185,8 +249,12 @@ export const FormBuilder = <FieldNames extends keyof any>({
             );
           case 'mobile':
             fieldProps = field.props as PhoneNumberFieldProps;
+            fieldRef = fieldRefs[name];
             return (
               <PhoneNumberField
+                ref={fieldRef}
+                returnKeyType={getReturnKeyType(String(name))}
+                onSubmitEditing={getSubmitEditingHandler(String(name))}
                 key={name as string}
                 {...fieldProps}
                 containerStyle={applyStyles(
@@ -198,8 +266,12 @@ export const FormBuilder = <FieldNames extends keyof any>({
             );
           case 'password':
             fieldProps = field.props as AppInputProps;
+            fieldRef = fieldRefs[name];
             return (
               <PasswordField
+                ref={fieldRef}
+                returnKeyType={getReturnKeyType(String(name))}
+                onSubmitEditing={getSubmitEditingHandler(String(name))}
                 key={name as string}
                 {...fieldProps}
                 containerStyle={applyStyles(

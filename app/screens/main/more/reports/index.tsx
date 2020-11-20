@@ -1,13 +1,7 @@
 import {amountWithCurrency} from '@/helpers/utils';
 import {colors} from '@/styles';
-import React, {useCallback, useMemo} from 'react';
-import {
-  Alert,
-  ListRenderItemInfo,
-  Text,
-  ToastAndroid,
-  View,
-} from 'react-native';
+import React, {useCallback, useContext, useMemo} from 'react';
+import {Alert, ListRenderItemInfo, Text, View} from 'react-native';
 import {HomeContainer} from '@/components';
 import {useReports} from '@/services/reports';
 import {applyStyles} from '@/styles';
@@ -20,6 +14,7 @@ import {IReceipt} from '@/models/Receipt';
 import {useReceiptList} from '@/screens/main/receipts/ReceiptListScreen';
 import {format} from 'date-fns';
 import {useAppNavigation} from '@/services/navigation';
+import {ToastContext} from '@/components/Toast';
 
 export const ReportsScreen = () => {
   const {exportReportsToExcel} = useReports();
@@ -32,15 +27,15 @@ export const ReportsScreen = () => {
     handleReceiptSearch,
     totalAmount,
   } = useReceiptList({initialFilter: 'all'});
-
+  const {showSuccessToast} = useContext(ToastContext);
   const handleExport = useCallback(async () => {
     try {
       await exportReportsToExcel();
-      ToastAndroid.show('Report exported successfully', ToastAndroid.SHORT);
+      showSuccessToast('Report exported successfully');
     } catch (error) {
       Alert.alert('Error', error.message);
     }
-  }, [exportReportsToExcel]);
+  }, [exportReportsToExcel, showSuccessToast]);
 
   const analyticsService = getAnalyticsService();
 

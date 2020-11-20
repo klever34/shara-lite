@@ -4,6 +4,7 @@ import {getBaseModelValues} from '@/helpers/models';
 import {omit} from 'lodash';
 import {ObjectId} from 'bson';
 import {getAnalyticsService} from '@/services';
+import {SharaAppEventsProperties} from '../analytics';
 
 export const getCustomers = ({realm}: {realm: Realm}) => {
   return realm.objects<ICustomer>(modelName).filtered('is_deleted = false');
@@ -12,32 +13,35 @@ export const getCustomers = ({realm}: {realm: Realm}) => {
 export const saveCustomer = ({
   realm,
   customer,
+  source,
 }: {
   realm: Realm;
   customer: ICustomer;
+  source: SharaAppEventsProperties['customerAdded']['source'];
 }): ICustomer => {
-  const customerDetails: ICustomer = {
+  let customerDetails: ICustomer = {
     ...customer,
     name: customer.name,
     mobile: customer.mobile,
-    ...getBaseModelValues(),
   };
-  const existingCustomer = getCustomerByMobile({
-    realm,
-    mobile: customerDetails.mobile,
-  });
 
-  if (existingCustomer) {
-    return existingCustomer;
+  if (customer._id) {
+    customerDetails._id = customer._id;
+  } else {
+    customerDetails = {
+      ...customerDetails,
+      ...getBaseModelValues(),
+    };
   }
 
   realm.write(() => {
     realm.create<ICustomer>(modelName, customerDetails, UpdateMode.Modified);
   });
-
-  getAnalyticsService()
-    .logEvent('customerAdded')
-    .then(() => {});
+  if (!customer._id) {
+    getAnalyticsService()
+      .logEvent('customerAdded', {source})
+      .then(() => {});
+  }
 
   return customerDetails;
 };
