@@ -1,6 +1,6 @@
 version: 2.1
 workflows:
-  testing-workflow:
+  shara-pro-testing-workflow:
     jobs:
       - checkout_code:
           context: shara-test
@@ -77,6 +77,8 @@ workflows:
           context: shara-test
           lane: internal
           packageName: co.shara.app.test
+          # TODO Shara Lite Package name
+          # TODO Investigate using
           productFlavor: dev
           env: test
           testBuild: false
