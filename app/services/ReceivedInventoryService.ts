@@ -116,5 +116,5 @@ export const addNewInventory = ({
 
     addNewStockItem({realm, stockItem: newStockItem});
   });
-  getAnalyticsService().logEvent('inventoryReceived').catch();
+  getAnalyticsService().logEvent('inventoryReceived', {}).catch();
 };

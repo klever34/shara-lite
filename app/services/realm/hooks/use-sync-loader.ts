@@ -44,6 +44,7 @@ const useSyncLoader = () => {
   }: initializeSyncSyncObject) => {
     const trace = await perf().startTrace('syncData');
     setRealmUser(user);
+    syncRealm.current = newRealm;
 
     const lastLocalSync = await getLocalLastSync();
     localRealm.current &&
@@ -59,7 +60,6 @@ const useSyncLoader = () => {
     setTimeout(() => {
       setIsSyncCompleted(true);
     }, 2000);
-    syncRealm.current = newRealm;
     await trace.stop();
   };
 

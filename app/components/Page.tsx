@@ -1,7 +1,7 @@
 import {Header, HeaderTitleProps} from '@/components/Header';
 import {applyStyles} from '@/styles';
 import React, {ReactNode, useContext, useEffect, useState} from 'react';
-import {View, ViewStyle} from 'react-native';
+import {Keyboard, View, ViewStyle} from 'react-native';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
@@ -9,6 +9,7 @@ type PageProps = {
   header?: HeaderTitleProps;
   children?: ReactNode;
   footer?: ReactNode;
+  forceShowFooter?: boolean;
   style?: ViewStyle;
 };
 
@@ -20,6 +21,7 @@ export const Page = ({
   header,
   children,
   footer: initialFooter = null,
+  forceShowFooter = false,
   style,
 }: PageProps) => {
   const [footer, setFooter] = useState<ReactNode>(initialFooter);
@@ -29,6 +31,26 @@ export const Page = ({
       setFooter(initialFooter);
     }
   }, [initialFooter]);
+
+  const [showFooter, setShowFooter] = useState(true);
+
+  const keyboardDidShow = () => {
+    setShowFooter(false);
+  };
+
+  const keyboardDidHide = () => {
+    setShowFooter(true);
+  };
+
+  useEffect(() => {
+    Keyboard.addListener('keyboardDidShow', keyboardDidShow);
+    Keyboard.addListener('keyboardDidHide', keyboardDidHide);
+
+    return () => {
+      Keyboard.removeListener('keyboardDidShow', keyboardDidShow);
+      Keyboard.removeListener('keyboardDidHide', keyboardDidHide);
+    };
+  }, []);
 
   return (
     <PageContext.Provider value={{setFooter}}>
@@ -40,7 +62,7 @@ export const Page = ({
         keyboardShouldPersistTaps="always">
         <View style={applyStyles('px-16 py-16', style)}>{children}</View>
       </KeyboardAwareScrollView>
-      {footer && (
+      {footer && (showFooter || forceShowFooter) && (
         <View
           style={applyStyles('w-full p-16 bg-white', {
             shadowColor: '#000',

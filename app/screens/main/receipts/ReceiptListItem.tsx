@@ -14,6 +14,7 @@ export type ReceiptListItemProps = {
   isHeader?: boolean;
   receipt?: IReceipt;
   onPress?: () => void;
+  showRightSection?: boolean;
   getReceiptItemLeftText?: (receipt?: IReceipt) => string;
   getReceiptItemRightText?: (receipt?: IReceipt) => string;
 };
@@ -25,6 +26,7 @@ export const ReceiptListItem = ({
   isHeader = false,
   getReceiptItemLeftText,
   getReceiptItemRightText,
+  showRightSection = true,
 }: ReceiptListItemProps) => {
   const {getReceiptAmounts} = useReceipt();
   const {creditAmountLeft} = getReceiptAmounts(receipt);
@@ -96,7 +98,7 @@ export const ReceiptListItem = ({
                       textDecorationLine: 'underline',
                     },
                   )}>
-                  Add Customer details
+                  Add Customer
                 </Text>
                 <Text
                   style={applyStyles(
@@ -127,17 +129,19 @@ export const ReceiptListItem = ({
             </>
           )}
         </View>
-        <View style={applyStyles('items-end', {width: '48%'})}>
-          <Text style={applyStyles('pb-4 text-700 text-gray-300')}>
-            {amountWithCurrency(receipt?.total_amount)}
-          </Text>
-          <Text
-            style={applyStyles(
-              `${statusTextWeight} text-uppercase text-xs ${statusTextColor}`,
-            )}>
-            {statusText}
-          </Text>
-        </View>
+        {showRightSection && (
+          <View style={applyStyles('items-end', {width: '48%'})}>
+            <Text style={applyStyles('pb-4 text-700 text-gray-300')}>
+              {amountWithCurrency(receipt?.total_amount)}
+            </Text>
+            <Text
+              style={applyStyles(
+                `${statusTextWeight} text-uppercase text-xs ${statusTextColor}`,
+              )}>
+              {statusText}
+            </Text>
+          </View>
+        )}
       </View>
     </Touchable>
   );

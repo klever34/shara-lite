@@ -1,13 +1,13 @@
 {
   "name": "shara",
-  "version": "0.4.8",
+  "version": "0.4.10",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
     "ios": "react-native run-ios",
     "start": "react-native start",
     "test": "jest",
-    "lint": "tsc && eslint app-v2 --ext .js,.jsx,.ts,.tsx --fix",
+    "lint": "tsc && eslint app --ext .js,.jsx,.ts,.tsx --fix",
     "clean": "cd android && ./gradlew clean",
     "connect": "adb reverse tcp:8081 tcp:8081"
   },

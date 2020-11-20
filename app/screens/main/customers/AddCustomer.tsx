@@ -1,5 +1,5 @@
 import {ICustomer} from '@/models';
-import {useNavigation} from '@react-navigation/native';
+import {RouteProp} from '@react-navigation/native';
 import React, {useState, useMemo, useRef, useEffect, useCallback} from 'react';
 import {
   FormBuilder,
@@ -17,16 +17,20 @@ import parsePhoneNumberFromString from 'libphonenumber-js';
 import {RadioInputRef} from '@/components/RadioInput';
 import {TextInputFieldRef} from '@/components/TextInput';
 import {handleError} from '@/services/error-boundary';
+import {CustomersStackParamList} from '@/screens/main/customers/index';
+import {MainStackParamList} from '@/screens/main';
+import {useAppNavigation} from '@/services/navigation';
 
 type AddCustomerProps = {
   onSubmit?: (customer: ICustomer) => void;
+  route: RouteProp<CustomersStackParamList & MainStackParamList, 'AddCustomer'>;
 };
 
 export const AddCustomer = (props: AddCustomerProps) => {
-  const {onSubmit} = props;
-  const navigation = useNavigation();
+  const {onSubmit, route} = props;
+  const navigation = useAppNavigation();
   const addCustomer = useAddCustomer();
-
+  const {title = 'Add Customer', customer} = route.params ?? {};
   type FormFieldName = 'name' | 'mobile' | 'email' | 'saveToPhonebook';
 
   const [importSelection, setImportSelection] = useState<{
@@ -62,8 +66,22 @@ export const AddCustomer = (props: AddCustomerProps) => {
     }
   }, [importSelection]);
 
-  const formFields: FormFields<FormFieldName> = useMemo(
-    () => ({
+  const formFields: FormFields<FormFieldName> = useMemo(() => {
+    let phoneNumber: PhoneNumber | undefined;
+    let parsedphoneNumber;
+    if (
+      customer?.mobile &&
+      (parsedphoneNumber = getContactService().parsePhoneNumber(
+        customer.mobile,
+      ))
+    ) {
+      phoneNumber = {
+        callingCode: String(parsedphoneNumber.countryCallingCode),
+        number: String(parsedphoneNumber.nationalNumber),
+      };
+    }
+
+    return {
       name: {
         type: 'text',
         props: {
@@ -71,6 +89,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
           innerRef: (nameField: TextInputFieldRef) => {
             nameFieldRef.current = nameField;
           },
+          value: customer?.name,
         },
         validations: [required()],
       },
@@ -81,6 +100,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
           innerRef: (mobileField: PhoneNumberFieldRef) => {
             mobileFieldRef.current = mobileField;
           },
+          value: phoneNumber,
         },
       },
       email: {
@@ -91,21 +111,23 @@ export const AddCustomer = (props: AddCustomerProps) => {
           innerRef: (emailField: TextInputFieldRef) => {
             emailFieldRef.current = emailField;
           },
+          value: customer?.email,
         },
       },
       saveToPhonebook: {
         type: 'radio',
         props: {
           label: 'Save to Phonebook',
-          value: true,
+          value: !customer,
+          disabled: !!customer,
           innerRef: (saveToPhonebookField: RadioInputRef) => {
             saveToPhonebookFieldRef.current = saveToPhonebookField;
           },
         },
+        remove: !!customer,
       },
-    }),
-    [],
-  );
+    };
+  }, [customer]);
 
   const handleImport = useCallback(() => {
     getContactService()
@@ -132,17 +154,25 @@ export const AddCustomer = (props: AddCustomerProps) => {
       .catch(handleError);
   }, []);
 
+  const options = useMemo(() => {
+    const result = [];
+    if (!customer) {
+      result.push({icon: 'book', onPress: handleImport});
+    }
+    return result;
+  }, [customer, handleImport]);
+
   return (
     <Page
       header={{
-        title: 'Add Customer',
+        title,
         iconLeft: {},
-        iconRight: {iconName: 'book', onPress: handleImport},
+        headerRight: {options},
       }}
       style={applyStyles('bg-white')}>
       <FormBuilder
         fields={formFields}
-        onSubmit={async (values) => {
+        onSubmit={(values) => {
           const phoneNumber = values.mobile as PhoneNumber;
           values = {
             ...values,
@@ -150,19 +180,28 @@ export const AddCustomer = (props: AddCustomerProps) => {
               ? `+${phoneNumber.callingCode}${phoneNumber.number}`
               : undefined,
           };
-          await addCustomer(values);
-          if (values.saveToPhonebook && phoneNumber.number) {
-            await getContactService().addContact({
-              givenName: values.name,
-              phoneNumbers: [
-                `+${phoneNumber.callingCode}${phoneNumber.number}`,
-              ],
-            });
-          }
-          onSubmit ? onSubmit(values) : navigation.goBack();
+          return addCustomer({...values, _id: customer?._id}, 'manual').then(
+            (nextCustomer) => {
+              if (values.saveToPhonebook && phoneNumber.number) {
+                getContactService()
+                  .addContact({
+                    givenName: values.name,
+                    phoneNumbers: [
+                      `+${phoneNumber.callingCode}${phoneNumber.number}`,
+                    ],
+                  })
+                  .catch(handleError);
+              }
+              onSubmit
+                ? onSubmit(values)
+                : navigation.replace('CustomerDetails', {
+                    customer: nextCustomer,
+                  });
+            },
+          );
         }}
         submitBtn={{
-          title: 'Add',
+          title: 'Save',
         }}
         onInputChange={(values) => {
           const phoneNumber = values.mobile as PhoneNumber;
@@ -172,7 +211,7 @@ export const AddCustomer = (props: AddCustomerProps) => {
               const {current: saveToPhonebookField} = saveToPhonebookFieldRef;
               if (saveToPhonebookField?.disabled) {
                 setImportSelection(null);
-                saveToPhonebookField?.setDisabled(false);
+                saveToPhonebookField?.setDisabled(!!customer);
               }
             }
           }

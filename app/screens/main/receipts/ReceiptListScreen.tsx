@@ -215,12 +215,12 @@ export const ReceiptListScreen = withModal(() => {
   } = useReceiptList();
 
   const handleCreateReceipt = useCallback(() => {
-    if (!receipts.length) {
+    if (!business.name && !receipts.length) {
       navigation.navigate('BuildReceipt');
     } else {
       navigation.navigate('CreateReceipt', {});
     }
-  }, [receipts, navigation]);
+  }, [receipts.length, business.name, navigation]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
@@ -322,9 +322,8 @@ export const ReceiptListScreen = withModal(() => {
         searchPlaceholderText="Search by customer name"
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         emptyStateProps={{
-          heading: 'Create your first Receipt',
-          text:
-            'You have no receipts yet. Let’s help you create one it takes only a few seconds.',
+          heading: 'Create Your First Receipt',
+          text: 'You have no receipts yet. Create one in seconds',
         }}
       />
     </KeyboardAvoidingView>
