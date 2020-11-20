@@ -73,7 +73,7 @@ export const CurrencyInput = forwardRef<TextInput, CurrencyInputProps>(
         leftIcon={
           <Text
             style={applyStyles('text-700 text-gray-300', {
-              top: -1,
+              top: 1,
               fontSize: 16,
               ...iconStyle,
             })}>
