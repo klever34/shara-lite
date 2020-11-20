@@ -586,6 +586,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                         onChange={(value) =>
                           handleCreditPaymentAmountChange(value)
                         }
+                        onSubmitEditing={handleCreditPaymentSubmit}
                       />
                     </View>
                     <View style={applyStyles({width: '48%'})}>
