@@ -103,17 +103,17 @@ export const CreateProductScreen = (props: Props) => {
   const handleAddProducts = useCallback(
     (payload: NewProduct[]) => {
       setIsLoading(true);
+      saveProducts({
+        realm,
+        products: payload.map((item) => {
+          delete item.id;
+          return item;
+        }),
+      });
       setTimeout(() => {
-        saveProducts({
-          realm,
-          products: payload.map((item) => {
-            delete item.id;
-            return item;
-          }),
-        });
-      }, 100);
-      setIsLoading(false);
-      navigation.navigate('ProductsTab');
+        setIsLoading(false);
+        navigation.navigate('ProductsTab');
+      }, 150 * payload.length);
     },
     [navigation, realm],
   );
