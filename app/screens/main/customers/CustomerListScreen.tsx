@@ -295,7 +295,11 @@ export const CustomerListScreen = withModal(
                       email: contact.emails[0]?.address,
                     },
                     'phonebook',
-                  );
+                  ).then((customer) => {
+                    setImmediate(() => {
+                      navigation.navigate('CustomerDetails', {customer});
+                    });
+                  });
                   reloadMyCustomers();
                 })
                 .catch(handleError);

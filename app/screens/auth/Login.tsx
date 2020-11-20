@@ -117,9 +117,11 @@ export const Login = () => {
           value={{number: values.mobile, callingCode: values.countryCode}}
           returnKeyType="next"
           onSubmitEditing={() => {
-            if (passwordFieldRef.current) {
-              passwordFieldRef.current.focus();
-            }
+            setImmediate(() => {
+              if (passwordFieldRef.current) {
+                passwordFieldRef.current.focus();
+              }
+            });
           }}
         />
         <PasswordField

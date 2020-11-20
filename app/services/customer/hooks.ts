@@ -9,7 +9,7 @@ import {SharaAppEventsProperties} from '@/services/analytics';
 export const useAddCustomer = () => {
   const realm = useRealm() as Realm;
   const customers = getCustomers({realm});
-  const {showSuccessToast} = useContext(ToastContext);
+  const {showToast} = useContext(ToastContext);
   return useCallback(
     (
       values: ICustomer,
@@ -29,11 +29,11 @@ export const useAddCustomer = () => {
         );
         return Promise.reject();
       } else {
-        saveCustomer({realm, customer: values, source});
-        showSuccessToast?.('Customer saved');
-        return Promise.resolve();
+        const customer = saveCustomer({realm, customer: values, source});
+        showToast?.('Customer saved');
+        return Promise.resolve(customer);
       }
     },
-    [customers, realm, showSuccessToast],
+    [customers, realm, showToast],
   );
 };

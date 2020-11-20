@@ -278,10 +278,13 @@ export const ReceiptOtherDetailsScreen = () => {
                     value={amountPaid?.toString()}
                     onChange={(text) => handleAmountPaidChange(text)}
                     returnKeyType="next"
+                    autoFocus
                     onSubmitEditing={() => {
-                      if (amountOwedFieldRef.current) {
-                        amountOwedFieldRef.current.focus();
-                      }
+                      setImmediate(() => {
+                        if (amountOwedFieldRef.current) {
+                          amountOwedFieldRef.current.focus();
+                        }
+                      });
                     }}
                   />
                 </View>
@@ -294,9 +297,11 @@ export const ReceiptOtherDetailsScreen = () => {
                     onChange={(text) => handleAmountOwedChange(text)}
                     returnKeyType="next"
                     onSubmitEditing={() => {
-                      if (customerFieldRef.current) {
-                        customerFieldRef.current.focus();
-                      }
+                      setImmediate(() => {
+                        if (customerFieldRef.current) {
+                          customerFieldRef.current.focus();
+                        }
+                      });
                     }}
                   />
                 </View>
@@ -377,9 +382,11 @@ export const ReceiptOtherDetailsScreen = () => {
               placeholder: 'Search or add a customer',
               returnKeyType: 'next',
               onSubmitEditing: () => {
-                if (noteFieldRef.current) {
-                  noteFieldRef.current.focus();
-                }
+                setImmediate(() => {
+                  if (noteFieldRef.current) {
+                    noteFieldRef.current.focus();
+                  }
+                });
               },
             }}
           />
@@ -409,9 +416,10 @@ export const ReceiptOtherDetailsScreen = () => {
             value={note}
             label="Notes (optional)"
             onChangeText={handleNoteChange}
-            style={applyStyles('pt-0 mb-16', {height: 96})}
+            style={applyStyles('mb-16', {height: 96})}
             placeholder="Any other information about this transaction?"
             onSubmitEditing={handleFinish}
+            textAlignVertical="top"
           />
           <Button
             title="Finish"

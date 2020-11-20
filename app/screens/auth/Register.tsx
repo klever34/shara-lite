@@ -128,9 +128,11 @@ export const Register = () => {
             value={{number: values.mobile, callingCode: values.countryCode}}
             returnKeyType="next"
             onSubmitEditing={() => {
-              if (passwordFieldRef.current) {
-                passwordFieldRef.current.focus();
-              }
+              setImmediate(() => {
+                if (passwordFieldRef.current) {
+                  passwordFieldRef.current.focus();
+                }
+              });
             }}
           />
           <PasswordField
@@ -143,9 +145,11 @@ export const Register = () => {
             isInvalid={touched.password && !!errors.password}
             returnKeyType="next"
             onSubmitEditing={() => {
-              if (confirmPasswordFieldRef.current) {
-                confirmPasswordFieldRef.current.focus();
-              }
+              setImmediate(() => {
+                if (confirmPasswordFieldRef.current) {
+                  confirmPasswordFieldRef.current.focus();
+                }
+              });
             }}
           />
           <PasswordField

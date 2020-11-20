@@ -26,6 +26,7 @@ import React, {
 } from 'react';
 import {
   Alert,
+  BackHandler,
   FlatList,
   Keyboard,
   SafeAreaView,
@@ -62,7 +63,7 @@ export const CreateProductScreen = (props: Props) => {
     getAnalyticsService().logEvent('productStart', {}).catch(handleError);
   }, [handleError, receipt]);
 
-  const {showSuccessToast} = useContext(ToastContext);
+  const {showToast} = useContext(ToastContext);
 
   const handleClearState = useCallback(() => {
     setName('');
@@ -71,11 +72,6 @@ export const CreateProductScreen = (props: Props) => {
     setItemToEdit(null);
     Keyboard.dismiss();
   }, []);
-
-  const handleGoBack = useCallback(() => {
-    handleClearState();
-    navigation.goBack();
-  }, [navigation, handleClearState]);
 
   const handleNameChange = useCallback((text) => {
     setName(text);
@@ -150,11 +146,11 @@ export const CreateProductScreen = (props: Props) => {
 
       Keyboard.dismiss();
       handleClearState();
-      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert('Info', 'Please add product/service name, price & quantity');
     }
-  }, [price, quantity, name, products, handleClearState, showSuccessToast]);
+  }, [price, quantity, name, products, handleClearState, showToast]);
 
   const handleDone = useCallback(() => {
     let items = products;
@@ -175,7 +171,7 @@ export const CreateProductScreen = (props: Props) => {
       Keyboard.dismiss();
       handleClearState();
 
-      showSuccessToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleAddProducts([product, ...products]);
     } else if (items.length) {
@@ -193,7 +189,7 @@ export const CreateProductScreen = (props: Props) => {
     name,
     handleError,
     handleClearState,
-    showSuccessToast,
+    showToast,
     handleAddProducts,
   ]);
 
@@ -231,6 +227,48 @@ export const CreateProductScreen = (props: Props) => {
   const unitPriceFieldRef = useRef<TextInput | null>(null);
   const quantityFieldRef = useRef<TextInput | null>(null);
 
+  const handleGoBack = useCallback(() => {
+    const goBack = () => {
+      handleClearState();
+      navigation.goBack();
+    };
+    if (products.length) {
+      Alert.alert('Warning', 'You have not save the added products', [
+        {
+          text: 'Cancel',
+          onPress: goBack,
+        },
+        {
+          text: 'Save',
+          onPress: handleDone,
+        },
+      ]);
+    } else {
+      goBack();
+    }
+  }, [handleClearState, handleDone, navigation, products.length]);
+
+  const handleBackButtonPress = useCallback(() => {
+    if (!navigation.isFocused()) {
+      return false;
+    }
+    if (products.length) {
+      handleGoBack();
+      return true;
+    }
+    return false;
+  }, [navigation, products.length, handleGoBack]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress);
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonPress,
+      );
+    };
+  }, [handleBackButtonPress]);
+
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
@@ -256,9 +294,11 @@ export const CreateProductScreen = (props: Props) => {
                     placeholder="Enter product/service name here"
                     returnKeyType="next"
                     onSubmitEditing={() => {
-                      if (unitPriceFieldRef.current) {
-                        unitPriceFieldRef.current.focus();
-                      }
+                      setImmediate(() => {
+                        if (unitPriceFieldRef.current) {
+                          unitPriceFieldRef.current.focus();
+                        }
+                      });
                     }}
                   />
                 </View>
@@ -276,9 +316,11 @@ export const CreateProductScreen = (props: Props) => {
                       onChange={(text) => handlePriceChange(text)}
                       returnKeyType="next"
                       onSubmitEditing={() => {
-                        if (quantityFieldRef.current) {
-                          quantityFieldRef.current.focus();
-                        }
+                        setImmediate(() => {
+                          if (quantityFieldRef.current) {
+                            quantityFieldRef.current.focus();
+                          }
+                        });
                       }}
                     />
                   </View>

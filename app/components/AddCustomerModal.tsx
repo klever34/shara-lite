@@ -1,5 +1,4 @@
 import {Button} from '@/components';
-import {showToast} from '@/helpers/utils';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {ICustomer} from '@/models';
 import {getContactService} from '@/services';
@@ -8,12 +7,13 @@ import {getCustomers} from '@/services/customer';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, Text, View} from 'react-native';
 import {AutoComplete} from './AutoComplete';
 import {PhoneNumber, PhoneNumberField} from './PhoneNumberField';
 import {RadioButton} from './RadioButton';
 import Touchable from './Touchable';
+import {ToastContext} from '@/components/Toast';
 
 type Props = {
   visible: boolean;
@@ -88,7 +88,7 @@ export const AddCustomerModal = (props: Props) => {
       });
     }
   };
-
+  const {showToast} = useContext(ToastContext);
   const handleSave = useCallback(async () => {
     if (isNewCustomer && saveToPhoneBook) {
       try {
@@ -107,7 +107,7 @@ export const AddCustomerModal = (props: Props) => {
     }
     onAddCustomer && onAddCustomer(customer);
     handleClose();
-    showToast({message: 'CUSTOMER ADDED'});
+    showToast('CUSTOMER ADDED');
   }, [
     contactService,
     customer,
@@ -115,6 +115,7 @@ export const AddCustomerModal = (props: Props) => {
     isNewCustomer,
     onAddCustomer,
     saveToPhoneBook,
+    showToast,
   ]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {

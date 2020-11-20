@@ -170,13 +170,14 @@ type ShowToast = (message?: string, duration?: number) => void;
 type HideToast = (duration: number) => void;
 
 export type ToastContextProps = {
-  showToast?: ShowToast;
-  hideToast?: HideToast;
-  showSuccessToast?: ShowToast;
-  hideSuccessToast?: HideToast;
+  showToast: ShowToast;
+  hideToast: HideToast;
 };
 
-export const ToastContext = createContext<ToastContextProps>({});
+export const ToastContext = createContext<ToastContextProps>({
+  showToast: () => {},
+  hideToast: () => {},
+});
 
 export type ToastProviderProps = {
   children: ReactNode;
@@ -184,7 +185,6 @@ export type ToastProviderProps = {
 
 export const ToastProvider = ({children}: ToastProviderProps) => {
   const toastRef = useRef<Toast | null>(null);
-  const successToastRef = useRef<Toast | null>(null);
 
   const showToast: ShowToast = useCallback((...args) => {
     toastRef.current?.showToast(...args);
@@ -194,25 +194,14 @@ export const ToastProvider = ({children}: ToastProviderProps) => {
     toastRef.current?.hideToast(...args);
   }, []);
 
-  const showSuccessToast: ShowToast = useCallback((...args) => {
-    successToastRef.current?.showToast(...args);
-  }, []);
-
-  const hideSuccessToast: HideToast = useCallback((...args) => {
-    successToastRef.current?.hideToast(...args);
-  }, []);
-
   return (
     <ToastContext.Provider
       value={{
         showToast,
         hideToast,
-        showSuccessToast,
-        hideSuccessToast,
       }}>
       {children}
-      <Toast ref={toastRef} />
-      <Toast ref={successToastRef} backgroundColor={colors['green-100']} />
+      <Toast ref={toastRef} backgroundColor={colors['green-100']} />
     </ToastContext.Provider>
   );
 };
