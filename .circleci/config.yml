@@ -44,6 +44,53 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
+  shara-lite-testing-workflow:
+    jobs:
+      - checkout_code:
+          app: shara-lite
+          context: shara-test
+          merged: false
+          commit: true
+          versioning: true
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
+      - fastlane:
+          app: shara-lite
+          context: shara-test
+          lane: internal
+          packageName: co.shara.app.test
+          productFlavor: dev
+          env: test
+          testBuild: false
+          requires:
+            - checkout_code
+            - test
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
   discovery-workflow:
     jobs:
       - checkout_code:
