@@ -26,7 +26,7 @@ export const EditProductModal = (props: Props) => {
     onRemoveProductItem,
     onUpdateProductItem,
   } = props;
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const [name, setName] = useState(item?.name);
   const [price, setPrice] = useState<number | undefined>(item?.price);
   const [quantity, setQuantity] = useState<string | undefined>(
@@ -70,9 +70,9 @@ export const EditProductModal = (props: Props) => {
     if (item) {
       onRemoveProductItem && onRemoveProductItem(item);
       handleClose();
-      showToast('PRODUCT/SERVICE REMOVED FROM RECEIPT');
+      showSuccessToast('PRODUCT/SERVICE REMOVED FROM RECEIPT');
     }
-  }, [handleClose, item, onRemoveProductItem, showToast]);
+  }, [handleClose, item, onRemoveProductItem, showSuccessToast]);
 
   const handleUpdate = useCallback(() => {
     const payload = {
@@ -83,7 +83,7 @@ export const EditProductModal = (props: Props) => {
     } as IProduct;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
-    showToast('PRODUCT/SERVICE UPDATED SUCCESSFULLY');
+    showSuccessToast('PRODUCT/SERVICE UPDATED SUCCESSFULLY');
   }, [
     item,
     name,
@@ -91,7 +91,7 @@ export const EditProductModal = (props: Props) => {
     quantity,
     onUpdateProductItem,
     handleClose,
-    showToast,
+    showSuccessToast,
   ]);
 
   return (

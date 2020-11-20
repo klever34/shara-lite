@@ -170,13 +170,13 @@ type ShowToast = (message?: string, duration?: number) => void;
 type HideToast = (duration: number) => void;
 
 export type ToastContextProps = {
-  showToast: ShowToast;
-  hideToast: HideToast;
+  showSuccessToast: ShowToast;
+  hideSuccessToast: HideToast;
 };
 
 export const ToastContext = createContext<ToastContextProps>({
-  showToast: () => {},
-  hideToast: () => {},
+  showSuccessToast: () => {},
+  hideSuccessToast: () => {},
 });
 
 export type ToastProviderProps = {
@@ -184,24 +184,24 @@ export type ToastProviderProps = {
 };
 
 export const ToastProvider = ({children}: ToastProviderProps) => {
-  const toastRef = useRef<Toast | null>(null);
+  const successToastRef = useRef<Toast | null>(null);
 
   const showToast: ShowToast = useCallback((...args) => {
-    toastRef.current?.showToast(...args);
+    successToastRef.current?.showToast(...args);
   }, []);
 
   const hideToast: HideToast = useCallback((...args) => {
-    toastRef.current?.hideToast(...args);
+    successToastRef.current?.hideToast(...args);
   }, []);
 
   return (
     <ToastContext.Provider
       value={{
-        showToast,
-        hideToast,
+        showSuccessToast: showToast,
+        hideSuccessToast: hideToast,
       }}>
       {children}
-      <Toast ref={toastRef} backgroundColor={colors['green-100']} />
+      <Toast ref={successToastRef} backgroundColor={colors['green-100']} />
     </ToastContext.Provider>
   );
 };

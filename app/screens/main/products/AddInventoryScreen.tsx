@@ -156,7 +156,7 @@ export const AddInventoryScreen = ({route}: any) => {
     },
     [handleError, realm],
   );
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const handleAddReceiptItem = useCallback(() => {
     let payload = selectedProduct;
     const priceCondition = !!(price || price === 0);
@@ -200,7 +200,7 @@ export const AddInventoryScreen = ({route}: any) => {
 
       Keyboard.dismiss();
       handleClearState();
-      showToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert(
         'Info',
@@ -215,7 +215,7 @@ export const AddInventoryScreen = ({route}: any) => {
     handleError,
     inventoryStock,
     handleClearState,
-    showToast,
+    showSuccessToast,
     handleAddProduct,
     searchQuery,
   ]);
@@ -247,7 +247,7 @@ export const AddInventoryScreen = ({route}: any) => {
       Keyboard.dismiss();
       handleClearState();
 
-      showToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleUpdateInventoryStock([product, ...inventoryStock]);
 
@@ -271,7 +271,7 @@ export const AddInventoryScreen = ({route}: any) => {
     handleAddProduct,
     searchQuery,
     handleClearState,
-    showToast,
+    showSuccessToast,
     handleUpdateInventoryStock,
     navigation,
   ]);

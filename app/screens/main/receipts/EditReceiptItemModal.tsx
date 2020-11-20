@@ -56,14 +56,14 @@ export const EditReceiptItemModal = (props: Props) => {
     setQuantity('');
     onClose();
   }, [onClose]);
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const handleDelete = useCallback(() => {
     if (item) {
       onRemoveProductItem(item);
       handleClose();
-      showToast('PRODUCT REMOVED FROM RECEIPT');
+      showSuccessToast('PRODUCT REMOVED FROM RECEIPT');
     }
-  }, [handleClose, item, onRemoveProductItem, showToast]);
+  }, [handleClose, item, onRemoveProductItem, showSuccessToast]);
 
   const handleUpdate = useCallback(() => {
     const payload = {
@@ -73,8 +73,15 @@ export const EditReceiptItemModal = (props: Props) => {
     } as IReceiptItem;
     onUpdateProductItem && onUpdateProductItem(payload);
     handleClose();
-    showToast('PRODUCT EDITED');
-  }, [item, price, quantity, onUpdateProductItem, handleClose, showToast]);
+    showSuccessToast('PRODUCT EDITED');
+  }, [
+    item,
+    price,
+    quantity,
+    onUpdateProductItem,
+    handleClose,
+    showSuccessToast,
+  ]);
 
   const getSubtotal = useCallback(() => {
     const p = price ? price : 0;

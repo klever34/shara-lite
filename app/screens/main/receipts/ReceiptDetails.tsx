@@ -394,17 +394,17 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       navigation.navigate('Home');
     }
   }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const handleCancelReceipt = useCallback(
     (note) => {
       setTimeout(() => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
         handleClose();
-        showToast('RECEIPT CANCELLED');
+        showSuccessToast('RECEIPT CANCELLED');
       }, 50);
     },
-    [receipt, realm, handleClose, showToast],
+    [receipt, realm, handleClose, showSuccessToast],
   );
 
   const handleEditReceipt = useCallback(() => {
@@ -425,12 +425,12 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         amount: creditPaymentAmount,
       });
       setCreditPaymentAmount(0);
-      showToast('CREDIT PAYMENT RECORDED');
+      showSuccessToast('CREDIT PAYMENT RECORDED');
       Keyboard.dismiss();
     } else {
       Alert.alert('Info', 'Please select a customer');
     }
-  }, [customer, realm, receipt, creditPaymentAmount, showToast]);
+  }, [customer, realm, receipt, creditPaymentAmount, showSuccessToast]);
 
   const handleOpenContactList = useCallback(() => {
     const closeContactListModal = openModal('bottom-half', {

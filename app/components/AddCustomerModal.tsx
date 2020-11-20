@@ -88,7 +88,7 @@ export const AddCustomerModal = (props: Props) => {
       });
     }
   };
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const handleSave = useCallback(async () => {
     if (isNewCustomer && saveToPhoneBook) {
       try {
@@ -107,7 +107,7 @@ export const AddCustomerModal = (props: Props) => {
     }
     onAddCustomer && onAddCustomer(customer);
     handleClose();
-    showToast('CUSTOMER ADDED');
+    showSuccessToast('CUSTOMER ADDED');
   }, [
     contactService,
     customer,
@@ -115,7 +115,7 @@ export const AddCustomerModal = (props: Props) => {
     isNewCustomer,
     onAddCustomer,
     saveToPhoneBook,
-    showToast,
+    showSuccessToast,
   ]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {

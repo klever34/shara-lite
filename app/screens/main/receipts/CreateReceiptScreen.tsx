@@ -167,7 +167,7 @@ export const CreateReceiptScreen = ({route}: any) => {
     },
     [handleError, realm],
   );
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
 
   const handleAddReceiptItem = useCallback(() => {
     let payload = selectedProduct;
@@ -215,7 +215,7 @@ export const CreateReceiptScreen = ({route}: any) => {
       setQuantity('');
       setSearchQuery('');
       setSelectedProduct(null);
-      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert('Info', 'Please add product/service, quantity & price');
     }
@@ -228,7 +228,7 @@ export const CreateReceiptScreen = ({route}: any) => {
     searchQuery,
     handleError,
     receiptItems,
-    showToast,
+    showSuccessToast,
   ]);
 
   const handleDone = useCallback(() => {
@@ -272,7 +272,7 @@ export const CreateReceiptScreen = ({route}: any) => {
       setSearchQuery('');
       setSelectedProduct(null);
 
-      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       navigation.navigate('ReceiptOtherDetails');
     } else if (items.length) {
@@ -302,7 +302,7 @@ export const CreateReceiptScreen = ({route}: any) => {
     handleUpdateReceipt,
     totalAmount,
     receipt,
-    showToast,
+    showSuccessToast,
     navigation,
   ]);
 

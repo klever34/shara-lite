@@ -63,7 +63,7 @@ export const CreateProductScreen = (props: Props) => {
     getAnalyticsService().logEvent('productStart', {}).catch(handleError);
   }, [handleError, receipt]);
 
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
 
   const handleClearState = useCallback(() => {
     setName('');
@@ -98,6 +98,7 @@ export const CreateProductScreen = (props: Props) => {
 
   const handleAddProducts = useCallback(
     (payload: NewProduct[]) => {
+      console.log(payload);
       setIsLoading(true);
       saveProducts({
         realm,
@@ -133,35 +134,33 @@ export const CreateProductScreen = (props: Props) => {
 
   const handleAddProduct = useCallback(() => {
     const priceCondition = !!(price || price === 0);
-    const quantityCondition = !!(quantity && parseFloat(quantity) >= 0);
-    if (name && priceCondition && quantityCondition && quantity) {
+    if (name && priceCondition) {
       const product = {
         name,
         price,
         id: Date.now(),
-        quantity: parseFloat(quantity),
+        quantity: parseFloat(quantity ?? '0') || 0,
       } as NewProduct;
 
       setProducts([product, ...products]);
 
       Keyboard.dismiss();
       handleClearState();
-      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
-      Alert.alert('Info', 'Please add product/service name, price & quantity');
+      Alert.alert('Info', 'Please add product/service name and price');
     }
-  }, [price, quantity, name, products, handleClearState, showToast]);
+  }, [price, quantity, name, products, handleClearState, showSuccessToast]);
 
   const handleDone = useCallback(() => {
     let items = products;
     const priceCondition = !!(price || price === 0);
-    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
 
-    if (quantity && quantityCondition && priceCondition) {
+    if (name && priceCondition) {
       const product = {
         name,
         price,
-        quantity: parseFloat(quantity),
+        quantity: parseFloat(quantity ?? '0') || 0,
       } as IProduct;
 
       getAnalyticsService().logEvent('productAdded', {}).catch(handleError);
@@ -171,7 +170,7 @@ export const CreateProductScreen = (props: Props) => {
       Keyboard.dismiss();
       handleClearState();
 
-      showToast?.('PRODUCT/SERVICE SUCCESSFULLY ADDED');
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleAddProducts([product, ...products]);
     } else if (items.length) {
@@ -189,7 +188,7 @@ export const CreateProductScreen = (props: Props) => {
     name,
     handleError,
     handleClearState,
-    showToast,
+    showSuccessToast,
     handleAddProducts,
   ]);
 

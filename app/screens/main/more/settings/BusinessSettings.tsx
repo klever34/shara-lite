@@ -76,7 +76,7 @@ export const BusinessSettings = () => {
   }, [address, callingCode, mobile, name, profile_image]);
 
   const formValuesRef = useRef<BusinessFormPayload>();
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const handleSubmit = useCallback(async () => {
     const {current: formValues} = formValuesRef;
     if (!formValues) {
@@ -98,12 +98,12 @@ export const BusinessSettings = () => {
       getAnalyticsService()
         .logEvent('businessSetupComplete', {})
         .catch(handleError);
-      showToast('Business settings update successful');
+      showSuccessToast('Business settings update successful');
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);
     }
-  }, [user, apiService, id, handleError, showToast, navigation]);
+  }, [user, apiService, id, handleError, showSuccessToast, navigation]);
 
   return (
     <Page

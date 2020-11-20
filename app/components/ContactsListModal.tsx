@@ -154,7 +154,7 @@ export function ContactsListModal<T>({
     }
     return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
   }, []);
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const handleCreateCustomer = useCallback(
     (contact: CustomerListItem) => {
       const mobile = contact.mobile;
@@ -169,9 +169,9 @@ export function ContactsListModal<T>({
           (prevPhoneContact) => prevPhoneContact.mobile !== mobile,
         );
       });
-      showToast('CUSTOMER ADDED');
+      showSuccessToast('CUSTOMER ADDED');
     },
-    [realm, showToast],
+    [realm, showSuccessToast],
   );
 
   const handleSelectCustomer = useCallback(

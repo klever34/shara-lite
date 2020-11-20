@@ -108,7 +108,7 @@ export const InventoryOtherDetailsScreen = () => {
       });
     }
   };
-  const {showToast} = useContext(ToastContext);
+  const {showSuccessToast} = useContext(ToastContext);
   const handleFinish = useCallback(() => {
     let payload: any = {
       supplier,
@@ -149,7 +149,7 @@ export const InventoryOtherDetailsScreen = () => {
 
       handleClearState();
       handleClearInventoryStock();
-      showToast('INVENTORY RECEIVED SUCCESSFULLY');
+      showSuccessToast('INVENTORY RECEIVED SUCCESSFULLY');
 
       navigation.navigate('ProductsTab');
     }, 100);
@@ -162,7 +162,7 @@ export const InventoryOtherDetailsScreen = () => {
     handleError,
     handleClearState,
     handleClearInventoryStock,
-    showToast,
+    showSuccessToast,
     navigation,
     contactService,
   ]);
