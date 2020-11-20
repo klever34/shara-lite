@@ -453,7 +453,12 @@ export const CreateReceiptScreen = ({route}: any) => {
               onItemSelect={handleSelectProduct}
               renderItem={renderSearchDropdownItem}
               onChangeText={handleChangeSearchQuery}
-              noResultsAction={() => setIsNewProduct(true)}
+              noResultsAction={(productName) => {
+                if (productName) {
+                  setIsNewProduct(true);
+                  setSelectedProduct({name: productName});
+                }
+              }}
               textInputProps={{
                 placeholder: 'Search or enter product/service',
                 returnKeyType: 'next',
