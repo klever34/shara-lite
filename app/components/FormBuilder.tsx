@@ -176,9 +176,11 @@ export const FormBuilder = <FieldNames extends keyof any>({
       if (index !== fieldRefNames.length - 1) {
         const nextFieldRef = fieldRefs[fieldRefNames[index + 1]];
         return () => {
-          if (nextFieldRef?.current) {
-            nextFieldRef.current.focus();
-          }
+          setImmediate(() => {
+            if (nextFieldRef?.current) {
+              nextFieldRef.current.focus();
+            }
+          });
         };
       } else if (index === names.length - 1) {
         return runHandleSubmitBtnPress;

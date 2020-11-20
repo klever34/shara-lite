@@ -434,9 +434,11 @@ export const CreateReceipt = (props: Props) => {
                 placeholder: 'Search or enter product/service',
                 returnKeyType: 'next',
                 onSubmitEditing: () => {
-                  if (unitPriceFieldRef.current) {
-                    unitPriceFieldRef.current.focus();
-                  }
+                  setImmediate(() => {
+                    if (unitPriceFieldRef.current) {
+                      unitPriceFieldRef.current.focus();
+                    }
+                  });
                 },
               }}
             />
@@ -457,9 +459,11 @@ export const CreateReceipt = (props: Props) => {
                     onChange={(text) => handlePriceChange(text)}
                     returnKeyType="next"
                     onSubmitEditing={() => {
-                      if (quantityFieldRef.current) {
-                        quantityFieldRef.current.focus();
-                      }
+                      setImmediate(() => {
+                        if (quantityFieldRef.current) {
+                          quantityFieldRef.current.focus();
+                        }
+                      });
                     }}
                   />
                 </View>

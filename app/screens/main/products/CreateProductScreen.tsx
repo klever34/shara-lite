@@ -256,9 +256,11 @@ export const CreateProductScreen = (props: Props) => {
                     placeholder="Enter product/service name here"
                     returnKeyType="next"
                     onSubmitEditing={() => {
-                      if (unitPriceFieldRef.current) {
-                        unitPriceFieldRef.current.focus();
-                      }
+                      setImmediate(() => {
+                        if (unitPriceFieldRef.current) {
+                          unitPriceFieldRef.current.focus();
+                        }
+                      });
                     }}
                   />
                 </View>
@@ -276,9 +278,11 @@ export const CreateProductScreen = (props: Props) => {
                       onChange={(text) => handlePriceChange(text)}
                       returnKeyType="next"
                       onSubmitEditing={() => {
-                        if (quantityFieldRef.current) {
-                          quantityFieldRef.current.focus();
-                        }
+                        setImmediate(() => {
+                          if (quantityFieldRef.current) {
+                            quantityFieldRef.current.focus();
+                          }
+                        });
                       }}
                     />
                   </View>
