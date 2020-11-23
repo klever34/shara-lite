@@ -195,12 +195,13 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const handleReportsDownload = useCallback(async () => {
     try {
-      await exportReportsToExcel({receipts});
+      const receiptsToDownload = (customer.receipts as unknown) as IReceipt[];
+      await exportReportsToExcel({receipts: receiptsToDownload});
       showSuccessToast('Report downloaded successfully');
     } catch (error) {
       Alert.alert('Error', error.message);
     }
-  }, [receipts, exportReportsToExcel, showSuccessToast]);
+  }, [customer, exportReportsToExcel, showSuccessToast]);
 
   const footer = filteredReceipts?.length ? (
     <Button title="Create Receipt" onPress={handleCreateReceipt} />
