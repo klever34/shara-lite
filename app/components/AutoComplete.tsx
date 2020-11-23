@@ -262,7 +262,7 @@ export const AutoComplete = forwardRef<TextInput, AutoCompleteProps>(
                     name="x-circle"
                     type="feathericons"
                     style={styles.iconRight}
-                    color={colors['gray-50']}
+                    color={colors['red-200']}
                   />
                 </Touchable>
               ))}

@@ -50,6 +50,7 @@ import {
 import {ReceiptListItem} from './ReceiptListItem';
 import {useReceiptProvider} from './ReceiptProvider';
 import {ToastContext} from '@/components/Toast';
+import {useIPGeolocation} from '@/services/ip-geolocation';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
@@ -127,6 +128,18 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
     shareProps,
   );
+  const {callingCode} = useIPGeolocation();
+  const code = businessInfo.country_code || user?.country_code || callingCode;
+  const getBusinessMobile = useCallback(() => {
+    if (businessInfo.mobile) {
+      return businessInfo.mobile.startsWith(code)
+        ? `+${businessInfo.mobile}`
+        : `+${code}${businessInfo.mobile}`;
+    }
+    return user?.mobile.startsWith(code)
+      ? `+${user?.mobile}`
+      : `+${code}${user?.mobile}`;
+  }, [businessInfo.mobile, code, user]);
 
   const onSmsShare = useCallback(() => {
     analyticsService
@@ -254,7 +267,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
         );
         businessInfo.name &&
           (await BluetoothEscposPrinter.printText(
-            `Tel: ${businessInfo.mobile || user?.mobile}\n`,
+            `Tel: ${getBusinessMobile()}\n`,
             {},
           ));
         await BluetoothEscposPrinter.printerAlign(
@@ -356,14 +369,13 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       }
     },
     [
-      receiptDate,
       printer,
+      receipt,
       businessInfo.name,
       businessInfo.address,
-      businessInfo.mobile,
-      user,
+      getBusinessMobile,
+      receiptDate,
       currencyCode,
-      receipt,
       totalAmountPaid,
       creditAmountLeft,
       handleClosePrinterModal,
