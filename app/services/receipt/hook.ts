@@ -64,7 +64,7 @@ interface useReceiptInterface {
   getReceiptsTotalProductQuantity: (receiptsData: IReceipt[]) => number;
   getReceiptAmounts: (
     receiptData?: IReceipt,
-  ) => {totalAmountPaid: number; creditAmountLeft?: number};
+  ) => {totalAmountPaid?: number; creditAmountLeft?: number};
 }
 
 export const useReceipt = (): useReceiptInterface => {
