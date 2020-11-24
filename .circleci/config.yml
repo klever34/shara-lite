@@ -32,6 +32,7 @@ workflows:
           context: shara-test
           lane: internal
           packageName: co.shara.app.test
+          firebaseAppId: 1:23333573770:android:fcfed3f15dcb3768718973
           productFlavor: dev
           env: test
           testBuild: false
