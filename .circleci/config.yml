@@ -285,7 +285,7 @@ jobs:
       versioning:
         type: boolean
         default: true
-#    working_directory: ~/project/<<parameters.app>>/
+    working_directory: ~/project/<<parameters.app>>/
     steps:
       - checkout
       - android/install-ndk:
