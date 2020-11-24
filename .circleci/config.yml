@@ -285,6 +285,7 @@ jobs:
       versioning:
         type: boolean
         default: true
+    working_directory: ~/project/<<parameters.app>>
     steps:
       - checkout
       - android/install-ndk:
@@ -292,7 +293,6 @@ jobs:
       - run:
           name: Yarn Install Dependencies
           command: |
-            cd <<parameters.app>>
             yarn install
             yarn jetify
       - unless:
@@ -301,7 +301,6 @@ jobs:
             - run:
                 name: No Versioning. Just use release version
                 command: |
-                  cd <<parameters.app>>
                   NEW_VERSION=$(jq ".version" -r package.json)
                   BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
@@ -317,7 +316,6 @@ jobs:
                   - run:
                       name: Auto-versioning >>  When Master, Discovery or Develop bump patch
                       command: |
-                        cd <<parameters.app>>
                         CURRENT_VERSION=$(jq ".version" -r package.json)
                         NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
                         BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
@@ -333,7 +331,6 @@ jobs:
                   - run:
                       name: Auto-versioning >> When unmerged i.e. feature branches, bump build
                       command: |
-                        cd <<parameters.app>>
                         CURRENT_VERSION=$(jq ".version" -r package.json)
                         BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
                         BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
@@ -352,7 +349,6 @@ jobs:
                   - run:
                       name: Commit and Push version update
                       command: |
-                        cd <<parameters.app>>
                         git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
                         git add package.json
                         git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
@@ -368,14 +364,12 @@ jobs:
       - run:
           name: Setup Credentials
           command: |
-            echo ${<<parameters.appEnv>>}
-            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > <<parameters.app>>/android/app/google-services.json
-            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > <<parameters.app>>/android/google-play-store-service-account.json
-            echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > <<parameters.app>>/android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
-            echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > <<parameters.app>>/android/app/shara.keystore
-            echo -n ${<<parameters.appEnv>>} | base64 -d -i > <<parameters.app>>/.env
-            echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> <<parameters.app>>/android/gradle.properties
-            # TODO Switch env based on on app
+            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > android/app/google-services.json
+            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > android/google-play-store-service-account.json
+            echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
+            echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > android/app/shara.keystore
+            echo -n ${<<parameters.appEnv>>} | base64 -d -i > .env
+            echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> android/gradle.properties
       - persist_to_workspace:
           paths: .
           root: .
@@ -388,18 +382,17 @@ jobs:
         enum: [ "shara-lite", "shara-pro" ]
     docker:
       - image: circleci/node:12
+    working_directory: ~/project/<<parameters.app>>
     steps:
       - attach_workspace:
           at: .
       - run:
           name: Run ESLint Check
           command: |
-            cd <<parameters.app>>
             yarn lint
       - run:
           name: Run Unit and Integration Tests
           command: |
-            cd <<parameters.app>>
             yarn test
   fastlane:
     parameters:
@@ -433,6 +426,7 @@ jobs:
         default: false
     docker:
       - image: circleci/android:api-27-node
+    working_directory: ~/project/<<parameters.app>>
     resource_class: large
     steps:
       - attach_workspace:
@@ -443,7 +437,6 @@ jobs:
             - run:
                 name: Test Build Config
                 command: |
-                  cd <<parameters.app>>
                   echo '' >> .env
                   echo 'CI_TESTS=true' >> .env
       - unless:
@@ -452,13 +445,11 @@ jobs:
             - run:
                 name: Release Build Config
                 command: |
-                  cd <<parameters.app>>
                   echo '' >> .env
                   echo 'CI_TESTS=false' >> .env
       - run:
           name: Set Version
           command: |
-            cd <<parameters.app>>
             NEW_VERSION=$(jq ".version" -r package.json)
             echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
             echo "export SHARA_VERSION_NAME=${NEW_VERSION}" >> $BASH_ENV
@@ -467,7 +458,6 @@ jobs:
       - run:
           name: Install Fastlane & Firebase tools
           command: |
-            cd <<parameters.app>>
             cd android
             bundle install
             curl -sL https://firebase.tools | bash
@@ -475,7 +465,6 @@ jobs:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           no_output_timeout: 30m
           command: |
-            cd <<parameters.app>>
             NEW_VERSION=$(jq ".version" -r package.json)
             export NEW_VERSION=${NEW_VERSION}
             export SHARA_VERSION_NAME=${NEW_VERSION}
@@ -494,7 +483,6 @@ jobs:
             - run:
                 name: Sentry Release Integration
                 command: |
-                  cd <<parameters.app>>
                   curl -sL https://sentry.io/get-cli/ | bash
                   VERSION=$(jq ".version" -r package.json)
                   PACKAGE_NAME="<<parameters.packageName>>"
