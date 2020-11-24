@@ -15,7 +15,6 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
-                - feature/shara-lite
       - test:
           requires:
             - checkout_code
@@ -27,7 +26,6 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
-                - feature/shara-lite
       - fastlane:
           context: shara-test
           lane: internal
@@ -47,7 +45,6 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
-                - feature/shara-lite
   shara-lite-testing-workflow:
     jobs:
       - checkout_code:
@@ -59,35 +56,30 @@ workflows:
           versioning: true
           filters:
             branches:
-              only:
-                - feature/shara-lite
-#              ignore:
-#                - master
-#                - develop
-#                - discovery
-#                - /^release.*/
-#                - /^hotfix.*/
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
       - test:
           app: shara-lite
           requires:
             - checkout_code
           filters:
             branches:
-              only:
-                - feature/shara-lite
-#              ignore:
-#                - master
-#                - develop
-#                - discovery
-#                - /^release.*/
-#                - /^hotfix.*/
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
       - fastlane:
           app: shara-lite
           context: shara-test
           lane: internal
           packageName: co.shara.lite.test
           firebaseAppId: 1:23333573770:android:3dafca5656e3c2b9718973
-          # TODO Investigate using working directory
           productFlavor: dev
           env: test
           testBuild: false
@@ -97,14 +89,12 @@ workflows:
             - test
           filters:
             branches:
-              only:
-                - feature/shara-lite
-#              ignore:
-#                - master
-#                - develop
-#                - discovery
-#                - /^release.*/
-#                - /^hotfix.*/
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
   discovery-workflow:
     jobs:
       - checkout_code:
@@ -279,8 +269,10 @@ jobs:
       - image: circleci/node:12
     parameters:
       app:
-        type: string
-        default: shara-pro
+        type: enum
+        default: "shara-pro"
+        description: The Shara app to build or deploy
+        enum: ["shara-lite", "shara-pro"]
       appEnv:
         type: string
         default: SHARA_MOBILE_ENV
@@ -390,8 +382,10 @@ jobs:
   test:
     parameters:
       app:
-        type: string
-        default: shara-pro
+        type: enum
+        default: "shara-pro"
+        description: The Shara app to build or deploy
+        enum: [ "shara-lite", "shara-pro" ]
     docker:
       - image: circleci/node:12
     steps:
@@ -410,8 +404,10 @@ jobs:
   fastlane:
     parameters:
       app:
-        type: string
-        default: shara-pro
+        type: enum
+        default: "shara-pro"
+        description: The Shara app to build or deploy
+        enum: [ "shara-lite", "shara-pro" ]
       env:
         type: string
         default: test
