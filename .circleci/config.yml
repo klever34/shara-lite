@@ -285,7 +285,7 @@ jobs:
       versioning:
         type: boolean
         default: true
-    working_directory: ~/project/<<parameters.app>>/
+#    working_directory: ~/project/<<parameters.app>>/
     steps:
       - checkout
       - android/install-ndk:
@@ -293,6 +293,8 @@ jobs:
       - run:
           name: Yarn Install Dependencies
           command: |
+            pwd
+            ls
             yarn install
             yarn jetify
       - unless:
