@@ -1,6 +1,1 @@
-This first release is a bit rough around the edges but expect it will be rapidly improved in the coming days.
-
-It has the following features
-- Sign up
-- Login
-- Single Chat window with Basic Real-time chat
+Bugfixes and Performance improvements
