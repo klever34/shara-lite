@@ -52,6 +52,7 @@ workflows:
     jobs:
       - checkout_code:
           app: shara-lite
+          appEnv: SHARA_LITE_ENV
           context: shara-test
           merged: false
           commit: true
@@ -280,6 +281,9 @@ jobs:
       app:
         type: string
         default: shara-pro
+      appEnv:
+        type: string
+        default: SHARA_MOBILE_ENV
       merged:
         type: boolean
         default: false
@@ -372,12 +376,14 @@ jobs:
       - run:
           name: Setup Credentials
           command: |
+            echo ${<<parameters.appEnv>>}
             echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > <<parameters.app>>/android/app/google-services.json
             echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > <<parameters.app>>/android/google-play-store-service-account.json
             echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > <<parameters.app>>/android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
             echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > <<parameters.app>>/android/app/shara.keystore
-            echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > <<parameters.app>>/.env
+            echo -n ${<<parameters.appEnv>>} | base64 -d -i > <<parameters.app>>/.env
             echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> <<parameters.app>>/android/gradle.properties
+            # TODO Switch env based on on app
       - persist_to_workspace:
           paths: .
           root: .
