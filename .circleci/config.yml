@@ -15,6 +15,7 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
+                - feature/shara-lite
       - test:
           requires:
             - checkout_code
@@ -26,6 +27,7 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
+                - feature/shara-lite
       - fastlane:
           context: shara-test
           lane: internal
@@ -44,6 +46,7 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
+                - feature/shara-lite
   shara-lite-testing-workflow:
     jobs:
       - checkout_code:
@@ -54,45 +57,52 @@ workflows:
           versioning: true
           filters:
             branches:
-              ignore:
-                - master
-                - develop
-                - discovery
-                - /^release.*/
-                - /^hotfix.*/
+              only:
+                - feature/shara-lite
+#              ignore:
+#                - master
+#                - develop
+#                - discovery
+#                - /^release.*/
+#                - /^hotfix.*/
       - test:
           app: shara-lite
           requires:
             - checkout_code
           filters:
             branches:
-              ignore:
-                - master
-                - develop
-                - discovery
-                - /^release.*/
-                - /^hotfix.*/
+              only:
+                - feature/shara-lite
+#              ignore:
+#                - master
+#                - develop
+#                - discovery
+#                - /^release.*/
+#                - /^hotfix.*/
       - fastlane:
           app: shara-lite
           context: shara-test
           lane: internal
-          packageName: co.shara.app.test
+          packageName: co.shara.lite.test
           # TODO Shara Lite Package name
-          # TODO Investigate using
+          # TODO Investigate using working directory
           productFlavor: dev
           env: test
           testBuild: false
+          testersGroup: shara-engineering-developers
           requires:
             - checkout_code
             - test
           filters:
             branches:
-              ignore:
-                - master
-                - develop
-                - discovery
-                - /^release.*/
-                - /^hotfix.*/
+              only:
+                - feature/shara-lite
+#              ignore:
+#                - master
+#                - develop
+#                - discovery
+#                - /^release.*/
+#                - /^hotfix.*/
   discovery-workflow:
     jobs:
       - checkout_code:
