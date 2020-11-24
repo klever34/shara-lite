@@ -98,7 +98,6 @@ export const CreateProductScreen = (props: Props) => {
 
   const handleAddProducts = useCallback(
     (payload: NewProduct[]) => {
-      console.log(payload);
       setIsLoading(true);
       saveProducts({
         realm,
@@ -110,7 +109,7 @@ export const CreateProductScreen = (props: Props) => {
       setTimeout(() => {
         setIsLoading(false);
         navigation.navigate('ProductsTab');
-      }, 150 * payload.length);
+      }, 50 * payload.length);
     },
     [navigation, realm],
   );
