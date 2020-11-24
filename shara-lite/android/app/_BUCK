@@ -35,12 +35,12 @@ android_library(
 
 android_build_config(
     name = "build_config",
-    package = "co.shara.app",
+    package = "co.shara.lite",
 )
 
 android_resource(
     name = "res",
-    package = "co.shara.app",
+    package = "co.shara.lite",
     res = "src/main/res",
 )
 

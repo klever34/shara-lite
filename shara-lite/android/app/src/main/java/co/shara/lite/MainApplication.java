@@ -1,4 +1,4 @@
-package co.shara.app;
+package co.shara.lite;
 
 import android.app.Application;
 import android.content.Context;

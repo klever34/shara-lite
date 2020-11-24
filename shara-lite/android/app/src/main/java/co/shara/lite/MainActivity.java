@@ -1,4 +1,4 @@
-package co.shara.app;
+package co.shara.lite;
 
 import com.facebook.react.ReactActivity;
 
@@ -10,6 +10,6 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return "Shara";
+    return "Shara Lite";
   }
 }

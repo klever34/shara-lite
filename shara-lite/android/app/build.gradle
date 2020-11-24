@@ -165,13 +165,13 @@ android {
     }
 
     defaultConfig {
-        applicationId "co.shara.app"
+        applicationId "co.shara.lite"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode appVersionCode
         versionName appVersionName
         multiDexEnabled true
-        resValue "string", "build_config_package", "co.shara.app"
+        resValue "string", "build_config_package", "co.shara.lite"
     }
     splits {
         abi {
@@ -219,7 +219,7 @@ android {
             dimension "standard"
         }
         production {
-            applicationId "co.shara.app"
+            applicationId "co.shara.lite"
             dimension "standard"
         }
     }
