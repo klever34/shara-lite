@@ -123,6 +123,7 @@ workflows:
           context: shara-discovery
           lane: internal
           packageName: co.shara.app.discovery
+          firebaseAppId: 1:23333573770:android:47b6159bc69ffadc718973
           productFlavor: discovery
           env: discovery
           requires:
@@ -135,6 +136,8 @@ workflows:
       - fastlane:
           context: shara-discovery
           lane: testlab
+          packageName: co.shara.app.discovery
+          firebaseAppId: 1:23333573770:android:47b6159bc69ffadc718973
           testBuild: true
           productFlavor: discovery
           env: discovery
@@ -163,6 +166,7 @@ workflows:
           context: shara-dev
           lane: internal
           packageName: co.shara.app.delivery
+          firebaseAppId: 1:23333573770:android:4074d3f86936056d718973
           productFlavor: delivery
           env: delivery
           requires:
@@ -176,6 +180,7 @@ workflows:
           lane: testlab
           testBuild: true
           packageName: co.shara.app.delivery
+          firebaseAppId: 1:23333573770:android:4074d3f86936056d718973
           productFlavor: delivery
           env: delivery
           requires:
@@ -195,6 +200,7 @@ workflows:
             branches:
               only:
                 - /^release.*/
+                - /^hotfix.*/
       - test:
           requires:
             - checkout_code
@@ -202,6 +208,7 @@ workflows:
           context: shara-qa
           lane: internal
           packageName: co.shara.app.qa
+          firebaseAppId: 1:23333573770:android:071bf88f8bc1c01b718973
           productFlavor: qa
           env: qa
           requires:
@@ -215,6 +222,7 @@ workflows:
           lane: testlab
           testBuild: true
           packageName: co.shara.app.qa
+          firebaseAppId: 1:23333573770:android:071bf88f8bc1c01b718973
           productFlavor: qa
           env: qa
           requires:
@@ -223,32 +231,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-  hotfix-workflow:
-    jobs:
-      - checkout_code:
-          context: shara-beta
-          merged: false
-          commit: false
-          versioning: false
-          filters:
-            branches:
-              only:
-                - /^hotfix.*/
-      - test:
-          requires:
-            - checkout_code
-      - fastlane:
-          context: shara-beta
-          lane: play
-          track: internal
-          packageName: co.shara.app
-          productFlavor: production
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - /^hotfix.*/
   beta-workflow:
     jobs:
       - checkout_code:
@@ -268,6 +250,7 @@ workflows:
           lane: play
           track: beta
           packageName: co.shara.app
+          firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
           productFlavor: production
           env: beta
           requires:
@@ -280,6 +263,7 @@ workflows:
           context: shara-beta
           lane: internal
           packageName: co.shara.app
+          firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
           productFlavor: production
           env: beta
           requires:
@@ -288,7 +272,6 @@ workflows:
             branches:
               only:
                 - master
-
 jobs:
   checkout_code:
     docker:
