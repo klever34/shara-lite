@@ -1,5 +1,6 @@
 import {
   AuthView,
+  Button,
   PasswordField,
   PhoneNumber,
   PhoneNumberField,
@@ -114,6 +115,7 @@ export const Register = () => {
       buttonTitle="Sign Up"
       onSubmit={handleSubmit}
       heading="Get Started For Free"
+      showButton={false}
       style={applyStyles('bg-white')}
       description="Sign up and enjoy all the features available on Shara. It only takes a few moments.">
       <View>
@@ -160,6 +162,13 @@ export const Register = () => {
             onChangeText={handleChange('confirmPassword')}
             isInvalid={touched.confirmPassword && !!errors.confirmPassword}
             onSubmitEditing={handleSubmit}
+          />
+          <Button
+            variantColor="red"
+            onPress={handleSubmit}
+            title="Sign Up"
+            isLoading={loading}
+            style={applyStyles('w-full mt-24')}
           />
         </View>
       </View>
