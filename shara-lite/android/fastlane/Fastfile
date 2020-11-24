@@ -96,7 +96,7 @@ platform :android do
       app: ENV['FIREBASE_APP_ID_ANDROID'],
       firebase_cli_token: ENV['FIREBASE_TOKEN'],
       groups: ENV['FIREBASE_APP_DIST_GROUP'],
-      release_notes_file: "./fastlane/release-notes.txt"
+      release_notes_file: "release-notes.txt"
     )
   end
 
