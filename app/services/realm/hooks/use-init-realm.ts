@@ -10,9 +10,7 @@ export const useInitRealm = () => {
     const createdLocalRealm = await createLocalRealm();
     localRealm.current = createdLocalRealm;
     setRealm(createdLocalRealm);
-    if (isNewUser) {
-      setIsSyncCompleted(true);
-    }
+    setIsSyncCompleted(!!isNewUser);
 
     const realmService = getRealmService();
     realmService.setInstance(createdLocalRealm);
