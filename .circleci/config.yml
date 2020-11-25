@@ -588,8 +588,6 @@ jobs:
         default: true
     steps:
       - checkout
-      - request-approval:
-          type: approval
       - android/install-ndk:
           ndk-version: android-ndk-r19c
       - run:
