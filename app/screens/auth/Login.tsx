@@ -78,7 +78,7 @@ export const Login = () => {
     setLoading(true);
     try {
       await apiService.logIn(payload);
-      await initRealm();
+      await initRealm({initSync: true});
 
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})

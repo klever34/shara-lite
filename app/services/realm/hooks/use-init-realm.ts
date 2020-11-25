@@ -6,11 +6,14 @@ import {getRealmService} from '@/services';
 export const useInitRealm = () => {
   const {localRealm, setRealm, setIsSyncCompleted} = useContext(RealmContext);
 
-  const initRealm = async ({isNewUser}: {isNewUser?: boolean} = {}) => {
+  const initRealm = async ({
+    isNewUser,
+    initSync,
+  }: {isNewUser?: boolean; initSync?: boolean} = {}) => {
     const createdLocalRealm = await createLocalRealm();
     localRealm.current = createdLocalRealm;
     setRealm(createdLocalRealm);
-    setIsSyncCompleted(!!isNewUser);
+    setIsSyncCompleted(isNewUser || !initSync);
 
     const realmService = getRealmService();
     realmService.setInstance(createdLocalRealm);
