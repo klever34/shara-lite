@@ -231,16 +231,20 @@ export const CreateProductScreen = (props: Props) => {
       navigation.goBack();
     };
     if (products.length) {
-      Alert.alert('Warning', 'You have not save the added products', [
-        {
-          text: 'Cancel',
-          onPress: goBack,
-        },
-        {
-          text: 'Save',
-          onPress: handleDone,
-        },
-      ]);
+      Alert.alert(
+        'Warning',
+        'Are you sure you want to exit this page? The product had not been added.',
+        [
+          {
+            text: 'Cancel',
+            onPress: goBack,
+          },
+          {
+            text: 'Save',
+            onPress: handleDone,
+          },
+        ],
+      );
     } else {
       goBack();
     }
