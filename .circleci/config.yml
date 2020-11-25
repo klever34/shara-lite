@@ -2,23 +2,23 @@ version: 2.1
 workflows:
   shara-pro-testing-workflow:
     jobs:
-#      - request-approval:
-#          type: approval
-#          filters:
-#            branches:
-#              ignore:
-#                - master
-#                - develop
-#                - discovery
-#                - /^release.*/
-#                - /^hotfix.*/
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
       - checkout_code:
           context: shara-test
           merged: false
           commit: true
           versioning: true
-#          requires:
-#            - request-approval
+          requires:
+            - request-approval
           filters:
             branches:
               ignore:
@@ -59,16 +59,16 @@ workflows:
                 - /^hotfix.*/
   shara-lite-testing-workflow:
     jobs:
-#      - request-approval:
-#          type: approval
-#          filters:
-#            branches:
-#              ignore:
-#                - master
-#                - develop
-#                - discovery
-#                - /^release.*/
-#                - /^hotfix.*/
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
       - checkout_code:
           app: shara-lite
           appEnv: SHARA_LITE_ENV
@@ -76,8 +76,8 @@ workflows:
           merged: false
           commit: true
           versioning: true
-#          requires:
-#            - request-approval
+          requires:
+            - request-approval
           filters:
             branches:
               ignore:
