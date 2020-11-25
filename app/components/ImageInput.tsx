@@ -32,6 +32,9 @@ export const ImageInput = ({
     allowsEditing: true,
     title: 'Select a picture',
     takePhotoButtonTitle: 'Take a Photo',
+    storageOptions: {
+      cameraRoll: true,
+    },
   });
 
   const {current: handleChangeValue} = useRef(onChangeValue);
