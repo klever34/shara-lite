@@ -13,6 +13,7 @@ workflows:
                 - /^release.*/
                 - /^hotfix.*/
       - checkout_code:
+          app: shara-pro
           context: shara-test
           merged: false
           commit: true
@@ -28,6 +29,7 @@ workflows:
                 - /^release.*/
                 - /^hotfix.*/
       - test:
+          app: shara-pro
           requires:
             - checkout_code
           filters:
@@ -39,6 +41,7 @@ workflows:
                 - /^release.*/
                 - /^hotfix.*/
       - fastlane:
+          app: shara-pro
           context: shara-test
           lane: internal
           packageName: co.shara.app.test
@@ -119,22 +122,36 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
-  discovery-workflow:
+  shara-pro-discovery-workflow:
     jobs:
-      - checkout_code:
-          context: shara-discovery
-          merged: true
-          commit: true
-          versioning: true
+      - request-approval:
+          type: approval
           filters:
             branches:
               only:
                 - discovery
-                - shara-v2-designs
+      - checkout_code:
+          app: shara-pro
+          context: shara-discovery
+          merged: true
+          commit: true
+          versioning: true
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - discovery
       - test:
+          app: shara-pro
           requires:
             - checkout_code
+          filters:
+            branches:
+              only:
+                - discovery
       - fastlane:
+          app: shara-pro
           context: shara-discovery
           lane: internal
           packageName: co.shara.app.discovery
@@ -147,8 +164,8 @@ workflows:
             branches:
               only:
                 - discovery
-                - shara-v2-designs
       - fastlane:
+          app: shara-pro
           context: shara-discovery
           lane: testlab
           packageName: co.shara.app.discovery
@@ -163,21 +180,90 @@ workflows:
               only:
                 - discovery
                 - shara-v2-designs
-  delivery-workflow:
+  shara-lite-discovery-workflow:
     jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - discovery
       - checkout_code:
+          app: shara-lite
+          context: shara-discovery
+          merged: true
+          commit: true
+          versioning: true
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - discovery
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          app: shara-lite
+          context: shara-discovery
+          lane: internal
+          packageName: co.shara.lite.discovery
+          firebaseAppId: 1:23333573770:android:63ec23b8508f2f4b718973
+          productFlavor: discovery
+          env: discovery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          app: shara-lite
+          context: shara-discovery
+          lane: testlab
+          packageName: co.shara.lite.discovery
+          firebaseAppId: 1:23333573770:android:63ec23b8508f2f4b718973
+          testBuild: true
+          productFlavor: discovery
+          env: discovery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+                - shara-v2-designs
+  shara-pro-delivery-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - develop
+      - checkout_code:
+          app: shara-pro
           context: shara-dev
           merged: true
           commit: true
           versioning: true
+          requires:
+            - request-approval
           filters:
             branches:
               only:
                 - develop
       - test:
+          app: shara-pro
           requires:
             - checkout_code
       - fastlane:
+          app: shara-pro
           context: shara-dev
           lane: internal
           packageName: co.shara.app.delivery
@@ -191,6 +277,7 @@ workflows:
               only:
                 - discovery
       - fastlane:
+          app: shara-pro
           context: shara-dev
           lane: testlab
           testBuild: true
@@ -204,22 +291,87 @@ workflows:
             branches:
               only:
                 - discovery
-  qa-workflow:
+  shara-lite-delivery-workflow:
     jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - develop
       - checkout_code:
+          app: shara-lite
+          context: shara-dev
+          merged: true
+          commit: true
+          versioning: true
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - develop
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-lite
+          context: shara-dev
+          lane: internal
+          packageName: co.shara.lite.delivery
+          firebaseAppId: 1:23333573770:android:a605073864091ebc718973
+          productFlavor: delivery
+          env: delivery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          app: shara-lite
+          context: shara-dev
+          lane: testlab
+          testBuild: true
+          packageName: co.shara.lite.delivery
+          firebaseAppId: 1:23333573770:android:a605073864091ebc718973
+          productFlavor: delivery
+          env: delivery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+  shara-pro-qa-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /^release.*/
+                - /^hotfix.*/
+      - checkout_code:
+          app: shara-pro
           context: shara-qa
           merged: true
           commit: false
           versioning: false
+          requires:
+            - request-approval
           filters:
             branches:
               only:
                 - /^release.*/
                 - /^hotfix.*/
       - test:
+          app: shara-pro
           requires:
             - checkout_code
       - fastlane:
+          app: shara-pro
           context: shara-qa
           lane: internal
           packageName: co.shara.app.qa
@@ -232,7 +384,9 @@ workflows:
             branches:
               only:
                 - /^release.*/
+                - /^hotfix.*/
       - fastlane:
+          app: shara-pro
           context: shara-qa
           lane: testlab
           testBuild: true
@@ -246,21 +400,90 @@ workflows:
             branches:
               only:
                 - /^release.*/
-  beta-workflow:
+                - /^hotfix.*/
+  shara-lite-qa-workflow:
     jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /^release.*/
+                - /^hotfix.*/
       - checkout_code:
+          app: shara-lite
+          context: shara-qa
+          merged: true
+          commit: false
+          versioning: false
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - /^release.*/
+                - /^hotfix.*/
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-lite
+          context: shara-qa
+          lane: internal
+          packageName: co.shara.lite.qa
+          firebaseAppId: 1:23333573770:android:ab175901eb76e572718973
+          productFlavor: qa
+          env: qa
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^release.*/
+                - /^hotfix.*/
+      - fastlane:
+          app: shara-lite
+          context: shara-qa
+          lane: testlab
+          testBuild: true
+          packageName: co.shara.lite.qa
+          firebaseAppId: 1:23333573770:android:ab175901eb76e572718973
+          productFlavor: qa
+          env: qa
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^release.*/
+                - /^hotfix.*/
+  shara-pro-beta-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - master
+      - checkout_code:
+          app: shara-pro
           context: shara-beta
           merged: true
           commit: true
           versioning: false
+          requires:
+            - request-approval
           filters:
             branches:
               only:
                 - master
       - test:
+          app: shara-pro
           requires:
             - checkout_code
       - fastlane:
+          app: shara-pro
           context: shara-beta
           lane: play
           track: beta
@@ -275,10 +498,64 @@ workflows:
               only:
                 - master
       - fastlane:
+          app: shara-pro
           context: shara-beta
           lane: internal
           packageName: co.shara.app
           firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+  shara-lite-beta-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - master
+      - checkout_code:
+          app: shara-lite
+          context: shara-beta
+          merged: true
+          commit: true
+          versioning: false
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - master
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: play
+          track: beta
+          packageName: co.shara.lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: internal
+          packageName: co.shara.lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
           productFlavor: production
           env: beta
           requires:
