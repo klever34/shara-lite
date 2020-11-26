@@ -1,10 +1,16 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
+type FieldData = {
+  key: string;
+  label: string;
+  value: string;
+};
+
 export interface IPaymentOption extends BaseModelInterface {
   name: string;
   slug: string;
   fields?: string;
-  fieldsData?: Array<any>;
+  fieldsData?: Array<FieldData>;
 }
 
 export const modelName = 'PaymentOption';
