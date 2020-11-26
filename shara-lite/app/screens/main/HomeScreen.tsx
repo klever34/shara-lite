@@ -7,12 +7,14 @@ import {ReceiptsScreen} from '@/screens/main/receipts';
 import {applyStyles, colors} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
-import {SafeAreaView} from 'react-native';
+import {SafeAreaView, View} from 'react-native';
+import Keypad from '@/assets/images/keypad.svg';
 
 export type MainNavParamList = {
-  Receipts: undefined;
+  TransactionsTab: undefined;
+  PaymentsTab: undefined;
+  EntryTab: undefined;
   CustomersTab: undefined;
-  ProductsTab: undefined;
   MoreTab: undefined;
 };
 
@@ -22,29 +24,57 @@ export const HomeScreen = () => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <MainNav.Navigator
-        initialRouteName="Receipts"
+        initialRouteName="TransactionsTab"
         tabBarOptions={{
           labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: colors['red-200'],
           inactiveTintColor: colors['gray-50'],
-          style: applyStyles('h-64'),
+          style: applyStyles('h-80'),
           tabStyle: applyStyles('py-10'),
         }}>
         <MainNav.Screen
-          name="Receipts"
+          name="TransactionsTab"
           component={ReceiptsScreen}
           options={{
             tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Receipts</TabBarLabel>
+              <TabBarLabel {...labelProps}>Transactions</TabBarLabel>
+            ),
+            tabBarIcon: ({color}) => (
+              <Icon type="feathericons" name="layers" size={24} color={color} />
+            ),
+          }}
+        />
+        <MainNav.Screen
+          name="PaymentsTab"
+          component={ProductsScreen}
+          options={{
+            tabBarLabel: (labelProps) => (
+              <TabBarLabel {...labelProps}>Payments</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
               <Icon
                 type="feathericons"
-                name="file-text"
+                name="dollar-sign"
                 size={24}
                 color={color}
               />
             ),
+          }}
+        />
+        <MainNav.Screen
+          name="EntryTab"
+          component={ReceiptsScreen}
+          options={{
+            tabBarButton: ({}) => {
+              return (
+                <View
+                  style={applyStyles(
+                    'w-64 h-64 m-8 bg-primary rounded-32 center',
+                  )}>
+                  <Keypad width={24} height={24} />
+                </View>
+              );
+            },
           }}
         />
         <MainNav.Screen
@@ -56,18 +86,6 @@ export const HomeScreen = () => {
             ),
             tabBarIcon: ({color}) => (
               <Icon type="feathericons" name="users" size={24} color={color} />
-            ),
-          }}
-        />
-        <MainNav.Screen
-          name="ProductsTab"
-          component={ProductsScreen}
-          options={{
-            tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Products</TabBarLabel>
-            ),
-            tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="box" size={24} color={color} />
             ),
           }}
         />
