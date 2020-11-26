@@ -6,6 +6,7 @@ import schema5 from './1601307197690-add-receipt-image-cancellation-fields';
 import schema6 from './1603716195553-add-receipt-note-field';
 import schema7 from './1603716195553-add-receipt-note-field';
 import schema8 from './1604671961817-add-email-to-customer';
+import schema9 from './1606389607325-add-payment-options';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -16,6 +17,7 @@ const schemas: any[] = [
   {schemaVersion: 6, ...schema6},
   {schemaVersion: 7, ...schema7},
   {schemaVersion: 8, ...schema8},
+  {schemaVersion: 9, ...schema9},
 ];
 
 export default schemas;
