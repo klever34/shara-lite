@@ -33,6 +33,7 @@ interface saveReceiptInterface {
   receiptItems: IReceiptItem[];
   image_url?: string;
   local_image_url?: string;
+  is_hidden_in_pro?: boolean;
 }
 
 interface updateReceiptInterface {
@@ -94,6 +95,7 @@ export const useReceipt = (): useReceiptInterface => {
     receiptItems,
     local_image_url,
     image_url,
+    is_hidden_in_pro,
   }: saveReceiptInterface) => {
     const fullTrace = await perf().startTrace('saveReceiptFullFlow');
 
@@ -105,6 +107,7 @@ export const useReceipt = (): useReceiptInterface => {
       credit_amount: creditAmount,
       local_image_url,
       image_url,
+      is_hidden_in_pro,
       ...getBaseModelValues(),
     };
 

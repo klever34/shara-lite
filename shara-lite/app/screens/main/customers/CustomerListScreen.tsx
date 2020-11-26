@@ -23,6 +23,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
+import {format, formatDistanceToNowStrict} from 'date-fns';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -85,6 +86,7 @@ export const CustomerListScreen = withModal(
       }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'> & {
         onPress?: () => void;
       }) => {
+        const credit = customer?.credits && customer.credits[0];
         if (!customer) {
           return (
             <EmptyState
@@ -94,6 +96,43 @@ export const CustomerListScreen = withModal(
             />
           );
         }
+
+        const getDateText = () => {
+          if (credit?.due_date) {
+            if (customer.overdueCreditAmount) {
+              return (
+                <Text
+                  style={applyStyles(
+                    'text-xxs text-700 text-red-200 text-uppercase',
+                  )}>
+                  Due{' '}
+                  {formatDistanceToNowStrict(credit.due_date, {
+                    addSuffix: true,
+                  })}
+                </Text>
+              );
+            } else {
+              return (
+                <Text
+                  style={applyStyles(
+                    'text-xxs text-700 text-gray-200 text-uppercase',
+                  )}>
+                  collect on {format(credit.due_date, 'dd MMM yyyy')}
+                </Text>
+              );
+            }
+          } else {
+            return (
+              <Text
+                style={applyStyles(
+                  'text-xxs text-700 text-gray-50 text-uppercase',
+                )}>
+                set collection date
+              </Text>
+            );
+          }
+        };
+
         return (
           <Touchable
             onPress={
@@ -121,29 +160,23 @@ export const CustomerListScreen = withModal(
                   {customer.name}
                 </Text>
                 <Text style={applyStyles('text-sm text-400 text-gray-300')}>
-                  {customer.mobile}
+                  {credit
+                    ? credit?.created_at &&
+                      formatDistanceToNowStrict(credit.created_at, {
+                        addSuffix: true,
+                      })
+                    : customer?.mobile}
                 </Text>
               </View>
               {!!customer.remainingCreditAmount && (
                 <View style={applyStyles('items-end')}>
-                  <Text
-                    style={applyStyles(
-                      'text-sm text-700',
-                      customer.overdueCreditAmount
-                        ? 'text-primary'
-                        : 'text-gray-300',
-                    )}>
+                  <Text style={applyStyles('text-sm text-700 text-red-200')}>
                     {amountWithCurrency(
                       customer.overdueCreditAmount ||
                         customer.remainingCreditAmount,
                     )}
                   </Text>
-                  <Text
-                    style={applyStyles(
-                      'text-xxs text-700 text-red-100 text-uppercase',
-                    )}>
-                    {customer.overdueCreditAmount ? 'Due' : 'Owes you'}
-                  </Text>
+                  {getDateText()}
                 </View>
               )}
             </View>
