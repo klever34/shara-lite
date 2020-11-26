@@ -1,17 +1,13 @@
 import {HomeContainer} from '@/components';
 import EmptyState from '@/components/EmptyState';
-import {HeaderRight, HeaderRightMenuOption} from '@/components/HeaderRight';
+import {HeaderRight} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {
-  getAnalyticsService,
-  getAuthService,
-  getContactService,
-} from '@/services';
+import {getAnalyticsService, getContactService} from '@/services';
 import {useAddCustomer} from '@/services/customer/hooks';
 import {getCustomers} from '@/services/customer/service';
 import {handleError} from '@/services/error-boundary';
@@ -49,21 +45,15 @@ export const CustomerListScreen = withModal(
     const navigation = useAppNavigation();
     const realm = useRealm();
     const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
-    const [business, setBusiness] = useState(
-      getAuthService().getBusinessInfo(),
-    );
     const reloadMyCustomers = useCallback(() => {
       if (realm) {
         const nextMyCustomers = getCustomers({realm});
         setMyCustomers(nextMyCustomers);
       }
-      setBusiness(getAuthService().getBusinessInfo());
     }, [realm]);
 
-    type Filter = 'all' | 'paid' | 'owes';
     const analyticsService = getAnalyticsService();
     const [searchTerm, setSearchTerm] = useState('');
-    const [filter, setFilter] = useState<Filter>('all');
     const financeSummary: IFinanceSummary = getSummary({realm});
 
     const handleSelectCustomer = useCallback(
@@ -244,45 +234,12 @@ export const CustomerListScreen = withModal(
       return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
     }, []);
 
-    const handleStatusFilter = useCallback((status: Filter) => {
-      setFilter(status);
-    }, []);
-
-    const filterOptions = useMemo<Record<Filter, HeaderRightMenuOption>>(
-      () => ({
-        all: {text: 'All', onSelect: () => handleStatusFilter('all')},
-        paid: {text: 'Paid', onSelect: () => handleStatusFilter('paid')},
-        owes: {
-          text: 'Owes you',
-          onSelect: () => handleStatusFilter('owes'),
-        },
-      }),
-      [handleStatusFilter],
-    );
-
-    const filterOptionList = useMemo(() => Object.values(filterOptions), [
-      filterOptions,
-    ]);
     const handleCustomerSearch = useCallback((query) => {
       setSearchTerm(query);
     }, []);
 
     const filteredCustomers = useMemo(() => {
       let customers = myCustomers;
-      if (filter) {
-        switch (filter) {
-          case 'paid':
-            customers = myCustomers.filtered('ALL credits.amount_left = 0');
-            break;
-          case 'owes':
-            customers = myCustomers.filtered('ANY credits.amount_left > 0');
-            break;
-          case 'all':
-          default:
-            customers = myCustomers;
-            break;
-        }
-      }
       if (searchTerm) {
         customers = customers.filtered(
           `name CONTAINS[c] "${searchTerm}" OR mobile CONTAINS[c] "${searchTerm}"`,
@@ -292,7 +249,7 @@ export const CustomerListScreen = withModal(
         'desc',
         'asc',
       ]);
-    }, [filter, myCustomers, searchTerm]);
+    }, [myCustomers, searchTerm]);
     const addCustomer = useAddCustomer();
 
     const handleAddCustomer = useCallback(() => {
@@ -344,11 +301,9 @@ export const CustomerListScreen = withModal(
           keyExtractor={keyExtractor}
           createEntityButtonIcon="users"
           onSearch={handleCustomerSearch}
-          filterOptions={filterOptionList}
           onCreateEntity={handleAddCustomer}
           createEntityButtonText="Add Customer"
           renderListItem={renderCustomerListItem}
-          activeFilter={filterOptions[filter].text}
           headerAmount={amountWithCurrency(financeSummary.totalCredit)}
           searchPlaceholderText={`Search ${filteredCustomers.length} Customers`}
           emptyStateProps={{
