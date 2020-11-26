@@ -21,7 +21,7 @@ import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useEffect, useState} from 'react';
 import {Alert, SafeAreaView, Text, View} from 'react-native';
-import {useReceiptProvider} from '../receipts/ReceiptProvider';
+import {useReceiptProvider} from '../transactions/ReceiptProvider';
 
 type SupplierListItem =
   | Pick<ISupplier, 'name' | 'mobile' | '_id'>

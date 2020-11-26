@@ -20,18 +20,18 @@ import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {getAuthService, getPubNubService} from '../../services';
-import {AddInventoryScreen} from './products/AddInventoryScreen';
-import {CreateProductScreen} from './products/CreateProductScreen';
-import {InventoryOtherDetailsScreen} from './products/InventoryOtherDetailsScreen';
-import {CreateReceiptScreen} from './receipts/CreateReceiptScreen';
-import {ReceiptDetailsScreen} from './receipts/ReceiptDetailsScreen';
+import {AddInventoryScreen} from './payments/AddInventoryScreen';
+import {CreateProductScreen} from './payments/CreateProductScreen';
+import {InventoryOtherDetailsScreen} from './payments/InventoryOtherDetailsScreen';
+import {CreateReceiptScreen} from './transactions/CreateReceiptScreen';
+import {ReceiptDetailsScreen} from './transactions/ReceiptDetailsScreen';
 import {AddCustomer} from '@/screens/main/customers';
 import {ICustomer} from '@/models';
 import CustomerDetails from '@/screens/main/customers/CustomerDetails';
-import {ReceiptOtherDetailsScreen} from './receipts/ReceiptOtherDetailsScreen';
-import {ReceiptProvider} from './receipts/ReceiptProvider';
-import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
-import {BuildReceiptScreen} from './receipts/BuildReceiptScreen';
+import {ReceiptOtherDetailsScreen} from './transactions/ReceiptOtherDetailsScreen';
+import {ReceiptProvider} from './transactions/ReceiptProvider';
+import {ReceiptSuccessScreen} from './transactions/ReceiptSuccessScreen';
+import {BuildReceiptScreen} from './transactions/BuildReceiptScreen';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 
 export type MainStackParamList = {

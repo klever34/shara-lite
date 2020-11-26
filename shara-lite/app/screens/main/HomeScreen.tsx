@@ -2,8 +2,9 @@ import {Icon} from '@/components/Icon';
 import {TabBarLabel} from '@/components/TabBarLabel';
 import {CustomersScreen} from '@/screens/main/customers';
 import {MoreScreen} from '@/screens/main/more';
-import {ProductsScreen} from '@/screens/main/products';
-import {ReceiptsScreen} from '@/screens/main/receipts';
+import {PaymentsScreen} from '@/screens/main/payments';
+import {TransactionsScreen} from '@/screens/main/transactions';
+import {EntryScreen} from '@/screens/main/entry';
 import {applyStyles, colors} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
@@ -34,7 +35,7 @@ export const HomeScreen = () => {
         }}>
         <MainNav.Screen
           name="TransactionsTab"
-          component={ReceiptsScreen}
+          component={TransactionsScreen}
           options={{
             tabBarLabel: (labelProps) => (
               <TabBarLabel {...labelProps}>Transactions</TabBarLabel>
@@ -46,7 +47,7 @@ export const HomeScreen = () => {
         />
         <MainNav.Screen
           name="PaymentsTab"
-          component={ProductsScreen}
+          component={PaymentsScreen}
           options={{
             tabBarLabel: (labelProps) => (
               <TabBarLabel {...labelProps}>Payments</TabBarLabel>
@@ -63,13 +64,13 @@ export const HomeScreen = () => {
         />
         <MainNav.Screen
           name="EntryTab"
-          component={ReceiptsScreen}
+          component={EntryScreen}
           options={{
             tabBarButton: ({}) => {
               return (
                 <View
                   style={applyStyles(
-                    'w-64 h-64 m-8 bg-primary rounded-32 center',
+                    'w-64 h-64 my-8 bg-primary rounded-32 center',
                   )}>
                   <Keypad width={24} height={24} />
                 </View>

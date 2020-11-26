@@ -10,7 +10,7 @@ export type ProductsStackParamList = {
 
 const ProductsStack = createStackNavigator<ProductsStackParamList>();
 
-export const ProductsScreen = () => {
+export const PaymentsScreen = () => {
   return (
     <ProductsStack.Navigator
       initialRouteName="ProductList"

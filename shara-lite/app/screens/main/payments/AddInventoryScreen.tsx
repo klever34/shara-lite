@@ -29,7 +29,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useReceiptProvider} from '../receipts/ReceiptProvider';
+import {useReceiptProvider} from '../transactions/ReceiptProvider';
 
 export const AddInventoryScreen = ({route}: any) => {
   const realm = useRealm();

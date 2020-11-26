@@ -11,7 +11,7 @@ export type ReceiptsStackParamList = {
 
 const ReceiptsStack = createStackNavigator<ReceiptsStackParamList>();
 
-export const ReceiptsScreen = () => {
+export const TransactionsScreen = () => {
   return (
     <ReceiptsStack.Navigator
       initialRouteName="ReceiptList"
