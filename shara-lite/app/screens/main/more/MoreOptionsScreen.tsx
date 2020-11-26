@@ -21,6 +21,7 @@ import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useRealmLogout} from '@/services/realm';
+import {SecureEmblem} from '@/components';
 
 export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
@@ -85,25 +86,8 @@ export const MoreOptionsScreen = () => {
         onPress: onEditBusinessSettings,
       },
       {
-        title: 'Reports',
-        icon: 'eye',
-        onPress: () => {
-          navigation.navigate('Reports');
-        },
-      },
-      {
-        title: 'App Lock',
-        icon: 'users',
-        onPress: () => {
-          Alert.alert(
-            'Coming Soon',
-            'This feature is coming in the next update',
-          );
-        },
-      },
-      {
         title: 'Help & Support',
-        icon: 'users',
+        icon: 'help-circle',
         onPress: () => {
           Alert.alert(
             'Coming Soon',
@@ -231,7 +215,7 @@ export const MoreOptionsScreen = () => {
             />
           </View>
         )}
-        <View style={applyStyles('mb-32')}>
+        <View style={applyStyles('mb-24')}>
           {moreOptions.map(({title, icon, onPress}, index) => {
             return (
               <Touchable onPress={onPress} key={title}>
@@ -262,6 +246,16 @@ export const MoreOptionsScreen = () => {
               </Touchable>
             );
           })}
+        </View>
+        <View style={applyStyles('px-16')}>
+          <Image
+            resizeMode="center"
+            style={applyStyles('mb-24', {width: 330, height: 80})}
+            source={require('@/assets/images/invite-banner.png')}
+          />
+          <View style={applyStyles('center pb-24')}>
+            <SecureEmblem />
+          </View>
         </View>
         <View style={applyStyles('flex-1')}>
           <Touchable onPress={handleLogout}>
