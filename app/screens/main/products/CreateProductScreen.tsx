@@ -236,19 +236,19 @@ export const CreateProductScreen = (props: Props) => {
         'Are you sure you want to exit this page? The product had not been added.',
         [
           {
-            text: 'Cancel',
-            onPress: goBack,
+            text: 'No',
+            onPress: () => {},
           },
           {
-            text: 'Save',
-            onPress: handleDone,
+            text: 'Yes',
+            onPress: goBack,
           },
         ],
       );
     } else {
       goBack();
     }
-  }, [handleClearState, handleDone, navigation, products.length]);
+  }, [handleClearState, navigation, products.length]);
 
   const handleBackButtonPress = useCallback(() => {
     if (!navigation.isFocused()) {

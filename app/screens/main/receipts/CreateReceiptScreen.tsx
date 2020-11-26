@@ -362,15 +362,15 @@ export const CreateReceiptScreen = ({route}: any) => {
     if (receiptItems.length) {
       Alert.alert(
         'Warning',
-        'Are you sure you want to exit this page? The reciept had not been created.',
+        'Are you sure you want to exit this page? The receipt had not been created.',
         [
           {
-            text: 'Cancel',
-            onPress: goBack,
+            text: 'No',
+            onPress: () => {},
           },
           {
-            text: 'Continue',
-            onPress: () => {},
+            text: 'Yes',
+            onPress: goBack,
           },
         ],
       );
