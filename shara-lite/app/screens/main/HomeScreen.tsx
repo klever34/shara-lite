@@ -41,7 +41,7 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>Transactions</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="layers" size={24} color={color} />
+              <Icon type="feathericons" name="layers" size={20} color={color} />
             ),
           }}
         />
@@ -56,7 +56,7 @@ export const HomeScreen = () => {
               <Icon
                 type="feathericons"
                 name="dollar-sign"
-                size={24}
+                size={20}
                 color={color}
               />
             ),
@@ -70,7 +70,7 @@ export const HomeScreen = () => {
               return (
                 <View
                   style={applyStyles(
-                    'w-64 h-64 my-8 bg-primary rounded-32 center',
+                    'w-60 h-60 my-12 bg-primary rounded-32 center',
                   )}>
                   <Keypad width={24} height={24} />
                 </View>
@@ -86,7 +86,7 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>Customers</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="users" size={24} color={color} />
+              <Icon type="feathericons" name="users" size={20} color={color} />
             ),
           }}
         />
@@ -98,7 +98,7 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>More</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="menu" size={24} color={color} />
+              <Icon type="feathericons" name="menu" size={20} color={color} />
             ),
           }}
         />

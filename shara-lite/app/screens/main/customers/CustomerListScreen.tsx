@@ -1,17 +1,28 @@
+import {HomeContainer} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {HeaderRight, HeaderRightMenuOption} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
+import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {
   getAnalyticsService,
-  getContactService,
   getAuthService,
+  getContactService,
 } from '@/services';
+import {useAddCustomer} from '@/services/customer/hooks';
 import {getCustomers} from '@/services/customer/service';
+import {handleError} from '@/services/error-boundary';
+import {getSummary, IFinanceSummary} from '@/services/FinanceService';
+import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
+import {
+  HeaderBackButton,
+  StackHeaderLeftButtonProps,
+} from '@react-navigation/stack';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -27,18 +38,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import {useAppNavigation} from '@/services/navigation';
-import {
-  HeaderBackButton,
-  StackHeaderLeftButtonProps,
-} from '@react-navigation/stack';
-import {applyStyles} from '@/styles';
-import {HomeContainer} from '@/components';
-import PlaceholderImage from '@/components/PlaceholderImage';
-import {getSummary, IFinanceSummary} from '@/services/FinanceService';
-import {withModal, ModalWrapperFields} from '@/helpers/hocs';
-import {useAddCustomer} from '@/services/customer/hooks';
-import {handleError} from '@/services/error-boundary';
 
 type CustomerListItem = ICustomer;
 
@@ -60,17 +59,11 @@ export const CustomerListScreen = withModal(
       setBusiness(getAuthService().getBusinessInfo());
     }, [realm]);
 
-    const analyticsService = getAnalyticsService();
-    const financeSummary: IFinanceSummary = getSummary({realm});
-    const [searchTerm, setSearchTerm] = useState('');
     type Filter = 'all' | 'paid' | 'owes';
+    const analyticsService = getAnalyticsService();
+    const [searchTerm, setSearchTerm] = useState('');
     const [filter, setFilter] = useState<Filter>('all');
-
-    const headerImage = business.profile_image?.url
-      ? {
-          uri: business.profile_image.url,
-        }
-      : require('@/assets/images/shara-user-img.png');
+    const financeSummary: IFinanceSummary = getSummary({realm});
 
     const handleSelectCustomer = useCallback(
       (item?: ICustomer) => {
@@ -312,25 +305,24 @@ export const CustomerListScreen = withModal(
           backgroundColor: colors.white,
         })}>
         <HomeContainer<ICustomer>
-          headerImage={headerImage}
+          showFAB={false}
           initialNumToRender={10}
-          headerTitle="total credit"
-          createEntityButtonIcon="users"
-          renderListItem={renderCustomerListItem}
           data={filteredCustomers}
-          searchPlaceholderText="Search Customers"
-          createEntityButtonText="Add Customer"
-          onCreateEntity={handleAddCustomer}
-          headerAmount={amountWithCurrency(financeSummary.totalCredit)}
           keyExtractor={keyExtractor}
+          createEntityButtonIcon="users"
+          onSearch={handleCustomerSearch}
+          filterOptions={filterOptionList}
+          onCreateEntity={handleAddCustomer}
+          createEntityButtonText="Add Customer"
+          renderListItem={renderCustomerListItem}
+          activeFilter={filterOptions[filter].text}
+          headerAmount={amountWithCurrency(financeSummary.totalCredit)}
+          searchPlaceholderText={`Search ${filteredCustomers.length} Customers`}
           emptyStateProps={{
             heading: 'Add your customers',
             text:
               'Keep track of who your customers are, what they bought, and what they owe you.',
           }}
-          filterOptions={filterOptionList}
-          activeFilter={filterOptions[filter].text}
-          onSearch={handleCustomerSearch}
         />
       </KeyboardAvoidingView>
     );
