@@ -786,6 +786,8 @@ jobs:
             cd android
             bundle exec fastlane <<parameters.lane>>
           environment:
+            SHARA_APP: <<parameters.app>>
+            SHARA_ENV: <<parameters.env>>
             GOOGLE_PLAY_TRACK: <<parameters.track>>
             PRODUCT_FLAVOUR: <<parameters.productFlavor>>
             FIREBASE_APP_ID_ANDROID: <<parameters.firebaseAppId>>
