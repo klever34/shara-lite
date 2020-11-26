@@ -13,9 +13,9 @@ import {CustomersStackParamList} from '@/screens/main/customers';
 import {applyStyles} from '@/styles';
 import {MainStackParamList} from '..';
 import {Page} from '@/components/Page';
-import {ReceiptListItem} from '@/screens/main/receipts/ReceiptListItem';
+import {ReceiptListItem} from '@/screens/main/transactions/ReceiptListItem';
 import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
-import {useReceiptProvider} from '../receipts/ReceiptProvider';
+import {useReceiptProvider} from '../transactions/ReceiptProvider';
 import {getReceipts} from '@/services/ReceiptService';
 import {useRealm} from '@/services/realm';
 

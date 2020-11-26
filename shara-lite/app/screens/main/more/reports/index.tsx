@@ -17,7 +17,7 @@ import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 import {TitleDivider} from '@/components';
 import {IReceipt} from '@/models/Receipt';
-import {useReceiptList} from '@/screens/main/receipts/ReceiptListScreen';
+import {useReceiptList} from '@/screens/main/transactions/ReceiptListScreen';
 import {format} from 'date-fns';
 import {useAppNavigation} from '@/services/navigation';
 
