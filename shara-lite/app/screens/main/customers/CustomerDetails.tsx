@@ -1,212 +1,232 @@
-import {Button, HeaderRight, HomeContainer, Header} from '@/components';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {Button, DatePicker} from '@/components';
+import {Icon} from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService} from '@/services';
-import {CustomerContext} from '@/services/customer';
-import {useErrorHandler} from '@/services/error-boundary';
-import {RouteProp, useNavigation} from '@react-navigation/native';
-import {HeaderBackButton} from '@react-navigation/stack';
-import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
-import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
-import {TextStyle} from 'react-native';
 import {CustomersStackParamList} from '@/screens/main/customers';
-import {applyStyles} from '@/styles';
-import {MainStackParamList} from '..';
-import {Page} from '@/components/Page';
 import {ReceiptListItem} from '@/screens/main/transactions/ReceiptListItem';
-import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
-import {useReceiptProvider} from '../transactions/ReceiptProvider';
-import {getReceipts} from '@/services/ReceiptService';
+import {getAnalyticsService, getAuthService} from '@/services';
+import {CustomerContext} from '@/services/customer';
+import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
+import {ShareHookProps, useShare} from '@/services/share';
+import {applyStyles, colors} from '@/styles';
+import {RouteProp} from '@react-navigation/native';
+import {HeaderBackButton} from '@react-navigation/stack';
+import {format} from 'date-fns';
+import React, {useCallback, useState} from 'react';
+import {Dimensions, Text, View} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {MainStackParamList} from '..';
 
-type CustomerDetailsProps = ModalWrapperFields & {
+type CustomerDetailsProps = {
   route: RouteProp<
     CustomersStackParamList & MainStackParamList,
     'CustomerDetails'
   >;
 };
 
-const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
+const CustomerDetails = ({route}: CustomerDetailsProps) => {
   const realm = useRealm();
-  const navigation = useNavigation();
-  const {handleUpdateCreateReceiptFromCustomer} = useReceiptProvider();
+  const navigation = useAppNavigation();
+  const analyticsService = getAnalyticsService();
+  const businessInfo = getAuthService().getBusinessInfo();
 
-  const receipts = realm ? getReceipts({realm}) : [];
+  const [receiptImage, setReceiptImage] = useState('');
 
   const {customer} = route.params;
 
-  const getReceiptItemLeftText = useCallback(
-    (receipt: IReceipt, baseStyle: TextStyle) => {
-      let children = '';
-      if (receipt.created_at) {
-        const createdDate = new Date(
-          format(receipt.created_at, 'MMM dd, yyyy'),
-        );
-        if (isToday(createdDate)) {
-          children = 'Today';
-        } else if (isYesterday(createdDate)) {
-          children = 'Yesterday';
-        } else if (isThisWeek(createdDate)) {
-          children = format(createdDate, 'iiii');
-        } else if (isThisWeek(addWeeks(createdDate, 1))) {
-          children = 'Last week ' + format(createdDate, 'iiii');
-        } else {
-          children = format(createdDate, 'dd MMMM, yyyy');
-        }
-      }
-      return {
-        style: baseStyle,
-        children,
-      };
-    },
-    [],
+  const receipt = {} as IReceipt;
+  const totalAmountPaid = 0;
+  const creditAmountLeft = 0;
+  const creditDueDate = new Date();
+
+  const paymentReminderMessage = `Hello ${
+    customer?.name ?? ''
+  }, thank you for your recent purchase from ${
+    businessInfo?.name
+  } for ${amountWithCurrency(
+    receipt?.total_amount,
+  )}. You paid ${amountWithCurrency(
+    totalAmountPaid,
+  )} and owe ${amountWithCurrency(creditAmountLeft)} which is due on ${
+    creditDueDate ? format(new Date(creditDueDate), 'MMM dd, yyyy') : ''
+  }. Don't forget to make payment.\n\nPowered by Shara for free.\nwww.shara.co`;
+
+  const shareProps: ShareHookProps = {
+    image: receiptImage,
+    title: 'Payment Reminder',
+    subject: 'Payment Reminder',
+    message: paymentReminderMessage,
+    recipient: receipt?.customer?.mobile,
+  };
+
+  const {handleSmsShare, handleWhatsappShare} = useShare(shareProps);
+
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    creditDueDate || undefined,
   );
 
-  const handleError = useErrorHandler();
+  const onSmsShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'sms',
+        content_type: 'debit-reminder',
+        item_id: receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleSmsShare();
+  }, [analyticsService, handleSmsShare, receipt]);
 
-  const handleListItemSelect = useCallback(
-    (id: IReceipt['_id']) => {
-      getAnalyticsService()
-        .logEvent('selectContent', {
-          content_type: 'Receipt',
-          item_id: id?.toString() ?? '',
-        })
-        .catch(handleError);
-      navigation.navigate('SalesDetails', {id});
-    },
-    [handleError, navigation],
-  );
+  const onWhatsappShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'whatsapp',
+        content_type: 'debit-reminder',
+        item_id: receipt?._id?.toString() ?? '',
+      })
+      .then(() => {});
+    handleWhatsappShare();
+  }, [analyticsService, receipt, handleWhatsappShare]);
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <HeaderBackButton onPress={() => navigation.navigate('Customers')} />
-      ),
-      headerRight: () => (
-        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
-      ),
-    });
-  }, [
-    customer.receipts,
-    getReceiptItemLeftText,
-    handleListItemSelect,
-    navigation,
-    openModal,
-  ]);
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const filteredReceipts = useMemo(() => {
-    let customerReceipts = customer.receipts?.sorted('created_at', true);
-    if (searchTerm) {
-      // @ts-ignore
-      customerReceipts = customerReceipts?.filter((receipt) => {
-        return (
-          (prepareValueForSearch(receipt.total_amount).search(searchTerm) ??
-            -1) !== -1 ||
-          (prepareValueForSearch(receipt.amount_paid).search(searchTerm) ??
-            -1) !== -1 ||
-          (prepareValueForSearch(receipt.credit_amount).search(searchTerm) ??
-            -1) !== -1
-        );
-      });
+  const handleDueDateChange = useCallback((date?: Date) => {
+    if (date) {
+      setDueDate(date);
     }
-    return customerReceipts;
-  }, [customer.receipts, searchTerm]);
-
-  const handleReceiptItemSelect = useCallback(
-    (receipt: IReceipt) => {
-      navigation.navigate('ReceiptDetails', {
-        id: receipt._id,
-        header: (
-          <Header
-            title={
-              customer.remainingCreditAmount
-                ? `Owes you: ${amountWithCurrency(
-                    customer.remainingCreditAmount,
-                  )}`
-                : `Total: ${amountWithCurrency(customer.totalAmount)}`
-            }
-            iconLeft={{}}
-          />
-        ),
-      });
-    },
-    [customer.remainingCreditAmount, customer.totalAmount, navigation],
-  );
-
-  const renderReceiptItem = useCallback(
-    ({item: receipt}: {item: IReceipt}) => {
-      return (
-        <ReceiptListItem
-          receipt={receipt}
-          onPress={() => handleReceiptItemSelect(receipt)}
-          getReceiptItemLeftText={(currentReceipt) => {
-            return currentReceipt?.created_at
-              ? format(currentReceipt?.created_at, 'eeee dd MMMM, yyyy')
-              : '';
-          }}
-          getReceiptItemRightText={(currentReceipt) => {
-            return currentReceipt?.created_at
-              ? format(currentReceipt?.created_at, 'hh:mm aa')
-              : '';
-          }}
-        />
-      );
-    },
-    [handleReceiptItemSelect],
-  );
-
-  const handleReceiptSearch = useCallback((text) => {
-    setSearchTerm(text);
   }, []);
-
-  const handleCreateReceipt = useCallback(() => {
-    if (!receipts.length) {
-      handleUpdateCreateReceiptFromCustomer(customer);
-      navigation.navigate('BuildReceipt');
-    } else {
-      handleUpdateCreateReceiptFromCustomer(customer);
-      navigation.navigate('CreateReceipt', {receipt: {customer}});
-    }
-  }, [
-    receipts.length,
-    handleUpdateCreateReceiptFromCustomer,
-    customer,
-    navigation,
-  ]);
-
-  const footer = filteredReceipts?.length ? (
-    <Button title="Create Receipt" onPress={handleCreateReceipt} />
-  ) : null;
 
   return (
     <CustomerContext.Provider value={customer}>
-      <Page
-        header={{title: customer.name, iconLeft: {}}}
-        footer={footer}
-        style={applyStyles('px-0 py-0')}>
-        <HomeContainer<IReceipt>
-          headerImage={require('@/assets/images/shara-user-img.png')}
-          initialNumToRender={10}
-          createEntityButtonIcon="file-text"
-          data={(filteredReceipts as unknown) as IReceipt[]}
-          searchPlaceholderText="Search Receipts"
-          createEntityButtonText="Create Receipt"
-          keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
-          emptyStateProps={{
-            heading: `Create your first Receipt for ${customer.name}`,
-            text:
-              'You have no receipts yet. Let’s help you create one it takes only a few seconds.',
-          }}
-          renderListItem={renderReceiptItem}
-          onSearch={handleReceiptSearch}
-          showFAB={false}
-          onCreateEntity={handleCreateReceipt}
-        />
-      </Page>
+      <SafeAreaView style={applyStyles('flex-1')}>
+        <View
+          style={applyStyles('flex-row bg-white items-center', {
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.34,
+            shadowRadius: 6.27,
+            elevation: 10,
+            borderBottomColor: colors['gray-10'],
+          })}>
+          <HeaderBackButton
+            {...{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
+          />
+          <ReceiptListItem
+            isHeader
+            style={applyStyles({
+              left: -14,
+              borderBottomWidth: 0,
+              width: Dimensions.get('window').width - 34,
+            })}
+            receipt={undefined}
+          />
+        </View>
+        <View style={applyStyles('bg-white center py-16')}>
+          <DatePicker
+            //@ts-ignore
+            value={dueDate}
+            minimumDate={new Date()}
+            onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
+            {(toggleShow) => (
+              <Touchable onPress={toggleShow}>
+                <View style={applyStyles('p-8 flex-row items-center')}>
+                  <Icon
+                    size={16}
+                    name="calendar"
+                    type="feathericons"
+                    color={colors['red-200']}
+                  />
+                  <Text
+                    style={applyStyles(
+                      `pl-sm text-xs text-uppercase text-700 ${
+                        dueDate ? 'text-gray-300' : 'text-red-200'
+                      }`,
+                    )}>
+                    {dueDate
+                      ? `on ${format(dueDate, 'ccc, dd MMM yyyy')}`
+                      : 'set collection date'}
+                  </Text>
+                </View>
+              </Touchable>
+            )}
+          </DatePicker>
+          <View style={applyStyles('flex-row items-center')}>
+            <Text
+              style={applyStyles(
+                'text-xs text-uppercase text-gray-50 text-700',
+              )}>
+              Send reminder:
+            </Text>
+            <View style={applyStyles('px-4')}>
+              <Touchable onPress={onWhatsappShare}>
+                <View
+                  style={applyStyles('px-2 flex-row center', {
+                    height: 48,
+                  })}>
+                  <Icon
+                    size={16}
+                    type="ionicons"
+                    name="logo-whatsapp"
+                    color={colors.whatsapp}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                    )}>
+                    whatsapp
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
+            <View style={applyStyles('px-4')}>
+              <Touchable onPress={onSmsShare}>
+                <View
+                  style={applyStyles('px-2 flex-row center', {
+                    height: 48,
+                  })}>
+                  <Icon
+                    size={16}
+                    name="message-circle"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                    )}>
+                    sms
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
+          </View>
+        </View>
+        <View
+          style={applyStyles(
+            'p-16 flex-row justify-between items-center bottom-0 absolute',
+          )}>
+          <Button
+            onPress={() => {}}
+            variantColor="green"
+            style={applyStyles({width: '48%'})}>
+            <Text style={applyStyles('text-uppercase text-white text-700')}>
+              You Collected
+            </Text>
+          </Button>
+          <Button
+            variantColor="red"
+            onPress={() => {}}
+            style={applyStyles({width: '48%'})}>
+            <Text style={applyStyles('text-uppercase text-white text-700')}>
+              You Gave
+            </Text>
+          </Button>
+        </View>
+      </SafeAreaView>
     </CustomerContext.Provider>
   );
 };
 
-export default withModal(CustomerDetails);
+export default CustomerDetails;

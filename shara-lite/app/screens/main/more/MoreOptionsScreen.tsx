@@ -115,6 +115,22 @@ export const MoreOptionsScreen = () => {
       handleError(e);
     }
   }, [handleError, navigation, logoutFromRealm]);
+  const handleLogoutConfirm = useCallback(() => {
+    Alert.alert(
+      'Warning',
+      'Are you sure you want to exit this page? The product had not been added.',
+      [
+        {
+          text: 'No',
+          onPress: () => {},
+        },
+        {
+          text: 'Yes',
+          onPress: handleLogout,
+        },
+      ],
+    );
+  }, []);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -258,7 +274,7 @@ export const MoreOptionsScreen = () => {
           </View>
         </View>
         <View style={applyStyles('flex-1')}>
-          <Touchable onPress={handleLogout}>
+          <Touchable onPress={handleLogoutConfirm}>
             <View
               style={applyStyles(
                 'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',
