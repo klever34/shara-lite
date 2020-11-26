@@ -7,6 +7,7 @@ interface youGaveInterface {
   customer: ICustomer;
   amount: number;
   note?: string;
+  dueDate?: Date;
 }
 
 interface youGotInterface {
@@ -37,10 +38,12 @@ export const useTransaction = (): useTransactionInterface => {
     customer,
     note,
     amount,
+    dueDate,
   }: youGaveInterface): Promise<IReceipt> => {
     const receiptData = {
       customer,
       note,
+      dueDate,
       amountPaid: 0,
       totalAmount: amount,
       creditAmount: amount,
