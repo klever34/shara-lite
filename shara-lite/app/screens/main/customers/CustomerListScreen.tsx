@@ -1,6 +1,5 @@
 import {HomeContainer} from '@/components';
 import EmptyState from '@/components/EmptyState';
-import {HeaderRight} from '@/components/HeaderRight';
 import Icon from '@/components/Icon';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
@@ -29,7 +28,6 @@ import React, {
   useState,
 } from 'react';
 import {
-  Alert,
   KeyboardAvoidingView,
   ListRenderItemInfo,
   Text,

@@ -1,7 +1,6 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {View, TextInput} from 'react-native';
-import {value} from 'rsdi';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 

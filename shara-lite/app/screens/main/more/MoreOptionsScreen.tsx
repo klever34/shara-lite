@@ -130,7 +130,7 @@ export const MoreOptionsScreen = () => {
         },
       ],
     );
-  }, []);
+  }, [handleLogout]);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;

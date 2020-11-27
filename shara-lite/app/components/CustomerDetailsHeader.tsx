@@ -48,7 +48,7 @@ const CustomerDetailsHeader = ({
       );
     }
     return renderLeftSection;
-  }, [renderLeftSection]);
+  }, [credit, creditCreatedAt, customer, renderLeftSection]);
 
   renderRightSection = useMemo(() => {
     if (!renderRightSection) {
@@ -57,7 +57,7 @@ const CustomerDetailsHeader = ({
           <>
             <Text
               style={applyStyles(
-                `pb-4 text-400 text-uppercase text-xxs text-gray-100`,
+                'pb-4 text-400 text-uppercase text-xxs text-gray-100',
               )}>
               You will collect
             </Text>
@@ -71,7 +71,7 @@ const CustomerDetailsHeader = ({
         );
     }
     return renderRightSection;
-  }, [renderRightSection]);
+  }, [credit, customer, renderRightSection]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
