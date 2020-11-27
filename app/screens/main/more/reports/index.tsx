@@ -120,11 +120,9 @@ export const ReportsScreen = () => {
               <Text
                 style={applyStyles(
                   'text-700 font-bold text-xs text-uppercase text-right',
-                  receipt.credit_amount === 0
-                    ? 'text-gray-100'
-                    : 'text-red-100',
+                  receipt.credit_amount ? 'text-red-100' : 'text-gray-100',
                 )}>
-                {receipt.credit_amount === 0 ? 'Paid' : 'Owes you'}
+                {receipt.credit_amount ? 'Owes you' : 'Paid'}
               </Text>
             </View>
           </View>
