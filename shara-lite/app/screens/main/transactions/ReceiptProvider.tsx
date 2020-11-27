@@ -23,6 +23,7 @@ interface Receipt {
   customer: ICustomer | Customer;
 }
 
+// eslint-disable-next-line no-spaced-func
 const ReceiptContext = createContext<{
   receipt: Receipt;
   inventoryStock: IStockItem[];
