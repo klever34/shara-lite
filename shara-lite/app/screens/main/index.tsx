@@ -2,7 +2,6 @@ import EmptyState from '@/components/EmptyState';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {HomeScreen} from '@/screens/main/HomeScreen';
-import {ReportsScreen} from '@/screens/main/more/reports';
 import {
   BusinessSettings,
   UserProfileSettings,
@@ -20,18 +19,8 @@ import {ActivityIndicator, View} from 'react-native';
 import Config from 'react-native-config';
 import getUuidByString from 'uuid-by-string';
 import {getAuthService, getPubNubService} from '../../services';
-import {AddInventoryScreen} from './payments/AddInventoryScreen';
-import {CreateProductScreen} from './payments/CreateProductScreen';
-import {InventoryOtherDetailsScreen} from './payments/InventoryOtherDetailsScreen';
-import {CreateReceiptScreen} from './transactions/CreateReceiptScreen';
-import {ReceiptDetailsScreen} from './transactions/ReceiptDetailsScreen';
-import {AddCustomer} from '@/screens/main/customers';
 import {ICustomer} from '@/models';
 import CustomerDetails from '@/screens/main/customers/CustomerDetails';
-import {ReceiptOtherDetailsScreen} from './transactions/ReceiptOtherDetailsScreen';
-import {ReceiptProvider} from './transactions/ReceiptProvider';
-import {ReceiptSuccessScreen} from './transactions/ReceiptSuccessScreen';
-import {BuildReceiptScreen} from './transactions/BuildReceiptScreen';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 
 export type MainStackParamList = {
@@ -118,105 +107,51 @@ const MainScreens = () => {
 
   return (
     <PubNubProvider client={pubNubClient}>
-      <ReceiptProvider>
-        <MainStack.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: colors.white,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'Roboto-Regular',
-            },
-            headerTintColor: colors['gray-300'],
-          }}>
-          {/* Home */}
-          <MainStack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{headerShown: false}}
-          />
+      <MainStack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.white,
+          },
+          headerTitleStyle: {
+            fontSize: 16,
+            fontFamily: 'Roboto-Regular',
+          },
+          headerTintColor: colors['gray-300'],
+        }}>
+        {/* Home */}
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
 
-          {/* Customers */}
-          <MainStack.Screen
-            name="AddCustomer"
-            component={AddCustomer}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="CustomerDetails"
-            component={CustomerDetails}
-            options={({route}) => ({
-              title: route.params.customer.name,
-              headerShown: false,
-            })}
-          />
+        {/* Customers */}
+        <MainStack.Screen
+          name="CustomerDetails"
+          component={CustomerDetails}
+          options={({route}) => ({
+            title: route.params.customer.name,
+            headerShown: false,
+          })}
+        />
 
-          {/* More */}
-          <MainStack.Screen
-            name="BusinessSettings"
-            component={BusinessSettings}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="Reports"
-            component={ReportsScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="UserProfileSettings"
-            component={UserProfileSettings}
-            options={{headerShown: false}}
-          />
+        {/* More */}
+        <MainStack.Screen
+          name="BusinessSettings"
+          component={BusinessSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
 
-          {/* Receipt */}
-          <MainStack.Screen
-            name="ReceiptDetails"
-            component={ReceiptDetailsScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="CreateReceipt"
-            component={CreateReceiptScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="ReceiptOtherDetails"
-            options={{headerShown: false}}
-            component={ReceiptOtherDetailsScreen}
-          />
-          <MainStack.Screen
-            name="ReceiptSuccess"
-            options={{headerShown: false}}
-            component={ReceiptSuccessScreen}
-          />
-          <MainStack.Screen
-            name="BuildReceipt"
-            options={{headerShown: false}}
-            component={BuildReceiptScreen}
-          />
+        {/* Transactions */}
 
-          {/* Product */}
-          <MainStack.Screen
-            name="CreateProduct"
-            component={CreateProductScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="AddInventory"
-            component={AddInventoryScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="InventoryOtherDetails"
-            component={InventoryOtherDetailsScreen}
-            options={{headerShown: false}}
-          />
-        </MainStack.Navigator>
-      </ReceiptProvider>
+        {/* Payments */}
+      </MainStack.Navigator>
     </PubNubProvider>
   );
 };

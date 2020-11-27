@@ -2,19 +2,19 @@ import {IReceipt} from '@/models/Receipt';
 import {colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {ReceiptListScreen} from './ReceiptListScreen';
+import {TransactionListScreen} from './TransactionListScreen';
 
-export type ReceiptsStackParamList = {
-  ReceiptList: undefined;
+export type TransactionStackParamList = {
+  TransactionList: undefined;
   ReceiptDetails: {receipt: IReceipt};
 };
 
-const ReceiptsStack = createStackNavigator<ReceiptsStackParamList>();
+const ReceiptsStack = createStackNavigator<TransactionStackParamList>();
 
 export const TransactionsScreen = () => {
   return (
     <ReceiptsStack.Navigator
-      initialRouteName="ReceiptList"
+      initialRouteName="TransactionList"
       screenOptions={{
         headerStyle: {
           backgroundColor: colors.white,
@@ -25,11 +25,10 @@ export const TransactionsScreen = () => {
         },
         headerTintColor: colors['gray-300'],
       }}>
-      <ReceiptsStack.Screen name="ReceiptList" component={ReceiptListScreen} />
+      <ReceiptsStack.Screen
+        name="TransactionList"
+        component={TransactionListScreen}
+      />
     </ReceiptsStack.Navigator>
   );
 };
-
-export * from './CreateReceipt';
-export * from './ReceiptItemModal';
-export * from './ReceiptPreviewModal';

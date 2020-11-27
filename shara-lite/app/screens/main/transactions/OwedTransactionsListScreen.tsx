@@ -191,7 +191,7 @@ export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
   );
 };
 
-export const ReceiptListScreen = withModal(() => {
+export const OwedTransactionsListScreen = withModal(() => {
   const realm = useRealm();
   const navigation = useAppNavigation();
 
