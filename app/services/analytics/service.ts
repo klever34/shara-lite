@@ -52,6 +52,8 @@ export type SharaAppEventsProperties = {
   productAdded: {};
   inventoryReceived: {};
   deliveryAgentAdded: {};
+  syncStarted: {};
+  syncCompleted: {};
 };
 
 export interface IAnalyticsService {

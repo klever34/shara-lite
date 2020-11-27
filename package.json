@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.4.10",
+  "version": "0.4.12",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -62,7 +62,7 @@
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-get-random-values": "^1.4.0",
-    "react-native-image-picker": "^2.3.3",
+    "react-native-image-picker": "2.3.4",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
     "react-native-location": "^2.5.0",
     "react-native-modal": "^11.5.6",

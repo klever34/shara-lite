@@ -1,15 +1,13 @@
 import {amountWithCurrency} from '@/helpers/utils';
-import {colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useContext, useMemo} from 'react';
 import {Alert, ListRenderItemInfo, Text, View} from 'react-native';
-import {HomeContainer} from '@/components';
+import {HomeContainer, TitleDivider} from '@/components';
 import {useReports} from '@/services/reports';
-import {applyStyles} from '@/styles';
 import {Page} from '@/components/Page';
 import {getAnalyticsService} from '@/services';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
-import {TitleDivider} from '@/components';
 import {IReceipt} from '@/models/Receipt';
 import {useReceiptList} from '@/screens/main/receipts/ReceiptListScreen';
 import {format} from 'date-fns';
@@ -30,12 +28,12 @@ export const ReportsScreen = () => {
   const {showSuccessToast} = useContext(ToastContext);
   const handleExport = useCallback(async () => {
     try {
-      await exportReportsToExcel();
+      await exportReportsToExcel({receipts: filteredReceipts});
       showSuccessToast('Report exported successfully');
     } catch (error) {
       Alert.alert('Error', error.message);
     }
-  }, [exportReportsToExcel, showSuccessToast]);
+  }, [filteredReceipts, exportReportsToExcel, showSuccessToast]);
 
   const analyticsService = getAnalyticsService();
 
@@ -122,11 +120,9 @@ export const ReportsScreen = () => {
               <Text
                 style={applyStyles(
                   'text-700 font-bold text-xs text-uppercase text-right',
-                  receipt.credit_amount === 0
-                    ? 'text-gray-100'
-                    : 'text-red-100',
+                  receipt.credit_amount ? 'text-red-100' : 'text-gray-100',
                 )}>
-                {receipt.credit_amount === 0 ? 'Paid' : 'Owes you'}
+                {receipt.credit_amount ? 'Owes you' : 'Paid'}
               </Text>
             </View>
           </View>

@@ -6,16 +6,14 @@ import {
   PhoneNumber,
   required,
 } from '@/components';
-import {getApiService} from '@/services';
-import {ToastAndroid} from 'react-native';
-import {useErrorHandler} from '@/services/error-boundary';
-import {useAppNavigation} from '@/services/navigation';
-import {RouteProp, useRoute} from '@react-navigation/native';
 import {AuthStackParamList} from '@/screens/auth/index';
+import {getApiService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import {Alert, ToastAndroid} from 'react-native';
 
 const ForgotPassword = () => {
-  const handleError = useErrorHandler();
   const navigation = useAppNavigation();
   const {params} = useRoute<RouteProp<AuthStackParamList, 'ForgotPassword'>>();
 
@@ -55,8 +53,11 @@ const ForgotPassword = () => {
               ToastAndroid.show(message, ToastAndroid.LONG);
               navigation.replace('ResetPassword', {mobile});
             })
-            .catch(handleError);
+            .catch((error) => {
+              Alert.alert('Error', error.message);
+            });
         }}
+        forceUseFormButton
       />
     </AuthView>
   );

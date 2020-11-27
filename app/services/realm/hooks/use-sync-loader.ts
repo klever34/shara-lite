@@ -8,7 +8,7 @@ import {
   getLocalLastSync,
   initLocalLastSyncStorage,
 } from '@/services/realm/utils/sync-storage';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 
 const syncInterval = 1000 * 20;
 
@@ -43,6 +43,9 @@ const useSyncLoader = () => {
     partitionValue,
   }: initializeSyncSyncObject) => {
     const trace = await perf().startTrace('syncData');
+    getAnalyticsService()
+      .logEvent('syncStarted', {})
+      .then(() => {});
     setRealmUser(user);
     syncRealm.current = newRealm;
 
@@ -61,6 +64,9 @@ const useSyncLoader = () => {
       setIsSyncCompleted(true);
     }, 2000);
     await trace.stop();
+    getAnalyticsService()
+      .logEvent('syncCompleted', {})
+      .then(() => {});
   };
 
   const initializeSync = useCallback(
