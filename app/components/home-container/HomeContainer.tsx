@@ -108,13 +108,13 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
         </Fade>
       )}
       {moreHeader}
+      <SearchFilter
+        onSearch={onSearch}
+        onOpenFilter={onOpenFilter}
+        placeholderText={searchPlaceholderText}
+      />
       {!!data && data.length ? (
         <>
-          <SearchFilter
-            onSearch={onSearch}
-            onOpenFilter={onOpenFilter}
-            placeholderText={searchPlaceholderText}
-          />
           {hasSections ? (
             <SectionList
               //@ts-ignore

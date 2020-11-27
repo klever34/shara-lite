@@ -240,6 +240,7 @@ export const ReceiptOtherDetailsScreen = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const amountPaidFieldRef = useRef<TextInput | null>(null);
   const amountOwedFieldRef = useRef<TextInput | null>(null);
   const customerFieldRef = useRef<TextInput | null>(null);
   const noteFieldRef = useRef<TextInput | null>(null);
@@ -285,6 +286,13 @@ export const ReceiptOtherDetailsScreen = () => {
                 containerStyle={applyStyles('mb-24')}
                 onChangeText={(data) => handleChangeMobile(data)}
                 value={{number: mobile, callingCode: countryCode}}
+                onSubmitEditing={() => {
+                  setImmediate(() => {
+                    if (noteFieldRef.current) {
+                      noteFieldRef.current.focus();
+                    }
+                  });
+                }}
               />
 
               <RadioButton
@@ -304,8 +312,14 @@ export const ReceiptOtherDetailsScreen = () => {
             label="Notes (optional)"
             textAlignVertical="top"
             onChangeText={handleNoteChange}
-            onSubmitEditing={handleFinish}
             style={applyStyles('mb-16', {height: 96})}
+            onSubmitEditing={() => {
+              setImmediate(() => {
+                if (amountPaidFieldRef.current) {
+                  amountPaidFieldRef.current.focus();
+                }
+              });
+            }}
             placeholder="Any other information about this transaction?"
           />
           <Accordiontem
@@ -336,16 +350,10 @@ export const ReceiptOtherDetailsScreen = () => {
                   ref={amountOwedFieldRef}
                   placeholder="0.00"
                   label="Customer owes"
-                  value={amountOwed?.toString()}
-                  onChange={(text) => handleAmountOwedChange(text)}
                   returnKeyType="next"
-                  onSubmitEditing={() => {
-                    setImmediate(() => {
-                      if (customerFieldRef.current) {
-                        customerFieldRef.current.focus();
-                      }
-                    });
-                  }}
+                  value={amountOwed?.toString()}
+                  // onSubmitEditing={handleFinish}
+                  onChange={(text) => handleAmountOwedChange(text)}
                 />
               </View>
             </View>
