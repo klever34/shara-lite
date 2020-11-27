@@ -83,7 +83,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
         data &&
         initialNumToRender &&
         data?.length > initialNumToRender &&
-        e.nativeEvent.contentOffset.y > 0
+        e.nativeEvent.contentOffset.y > 600
       ) {
         setIsHeaderShown(false);
       } else {
