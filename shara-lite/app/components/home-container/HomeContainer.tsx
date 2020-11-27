@@ -24,10 +24,13 @@ import {HomeContainerHeader} from './Header';
 import {Fade} from '../Fade';
 
 type HomeContainerProps<T> = {
+  showFAB?: boolean;
+  searchTerm?: string;
   activeFilter?: string;
   headerTitle?: string;
   headerAmount?: string;
-  headerImage?: ImageSourcePropType;
+  moreHeader?: ReactNode;
+  headerStyle?: ViewStyle;
   hasSections?: boolean;
   placeholderText?: string;
   onOpenFilter?: () => void;
@@ -36,6 +39,7 @@ type HomeContainerProps<T> = {
   createEntityButtonText?: string;
   createEntityButtonIcon?: string;
   emptyStateProps?: EmptyStateProps;
+  headerImage?: ImageSourcePropType;
   onSearch?: (text: string) => void;
   filterOptions?: HeaderRightMenuOption[];
   data?: T[] | SectionListData<T, DefaultSectionT>[];
@@ -44,35 +48,33 @@ type HomeContainerProps<T> = {
   renderSectionHeader?: SectionListProps<T>['renderSectionHeader'];
   initialNumToRender?: VirtualizedListProps<T>['initialNumToRender'];
   renderSectionListItem?: SectionListRenderItem<T, DefaultSectionT>;
-  showFAB?: boolean;
-  moreHeader?: ReactNode;
-  headerStyle?: ViewStyle;
 };
 
 export function HomeContainer<T>(props: HomeContainerProps<T>) {
   const {
     data,
     onSearch,
+    searchTerm,
+    headerImage,
     hasSections,
     headerTitle,
     activeFilter,
     onOpenFilter,
     headerAmount,
     keyExtractor,
+    headerStyle,
     filterOptions,
     onCreateEntity,
     renderListItem,
+    showFAB = true,
     emptyStateProps,
+    moreHeader = null,
     initialNumToRender,
     renderSectionHeader,
     searchPlaceholderText,
     renderSectionListItem,
     createEntityButtonText,
     createEntityButtonIcon,
-    showFAB = true,
-    headerImage,
-    moreHeader = null,
-    headerStyle,
   } = props;
 
   const [isHeaderShown, setIsHeaderShown] = useState(true);
@@ -104,6 +106,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
       )}
       {moreHeader}
       <SearchFilter
+        value={searchTerm}
         onSearch={onSearch}
         onOpenFilter={onOpenFilter}
         placeholderText={searchPlaceholderText}

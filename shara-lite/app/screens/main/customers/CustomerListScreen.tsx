@@ -42,19 +42,22 @@ type CustomerListScreenProps = ModalWrapperFields & {};
 
 export const CustomerListScreen = withModal(
   ({openModal}: CustomerListScreenProps) => {
-    const navigation = useAppNavigation();
     const realm = useRealm();
+    const addCustomer = useAddCustomer();
+    const navigation = useAppNavigation();
+
+    const [searchTerm, setSearchTerm] = useState('');
     const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
+
+    const analyticsService = getAnalyticsService();
+    const financeSummary: IFinanceSummary = getSummary({realm});
+
     const reloadMyCustomers = useCallback(() => {
       if (realm) {
         const nextMyCustomers = getCustomers({realm});
         setMyCustomers(nextMyCustomers);
       }
     }, [realm]);
-
-    const analyticsService = getAnalyticsService();
-    const [searchTerm, setSearchTerm] = useState('');
-    const financeSummary: IFinanceSummary = getSummary({realm});
 
     const handleSelectCustomer = useCallback(
       (item?: ICustomer) => {
@@ -186,11 +189,11 @@ export const CustomerListScreen = withModal(
                 return (
                   <View style={applyStyles('flex-row center')}>
                     <Icon
+                      size={22}
+                      name="users"
+                      borderRadius={12}
                       type="feathericons"
                       color={colors['gray-300']}
-                      name="users"
-                      size={22}
-                      borderRadius={12}
                     />
                     <Text
                       style={applyStyles(
@@ -209,21 +212,6 @@ export const CustomerListScreen = withModal(
           );
         },
         headerTitle: () => null,
-        headerRight: () => (
-          <HeaderRight
-            menuOptions={[
-              {
-                text: 'Help',
-                onSelect: () => {
-                  Alert.alert(
-                    'Coming Soon',
-                    'This feature is coming in the next update',
-                  );
-                },
-              },
-            ]}
-          />
-        ),
       });
     }, [myCustomers, navigation, renderCustomerListItem]);
 
@@ -250,7 +238,6 @@ export const CustomerListScreen = withModal(
         'asc',
       ]);
     }, [myCustomers, searchTerm]);
-    const addCustomer = useAddCustomer();
 
     const handleAddCustomer = useCallback(() => {
       openModal('options', {
@@ -297,6 +284,7 @@ export const CustomerListScreen = withModal(
         <HomeContainer<ICustomer>
           showFAB={false}
           initialNumToRender={10}
+          searchTerm={searchTerm}
           data={filteredCustomers}
           keyExtractor={keyExtractor}
           createEntityButtonIcon="users"

@@ -1,6 +1,7 @@
 import {Button, DatePicker} from '@/components';
 import CustomerDetailsHeader from '@/components/CustomerDetailsHeader';
 import {Icon} from '@/components/Icon';
+import PaymentReminderImage from '@/components/PaymentReminderImage';
 import Touchable from '@/components/Touchable';
 import TransactionListHeader from '@/components/TransactionListHeader';
 import TransactionListItem from '@/components/TransactionListItem';
@@ -73,7 +74,7 @@ const CustomerDetails = ({route}: CustomerDetailsProps) => {
     analyticsService
       .logEvent('share', {
         method: 'sms',
-        content_type: 'debit-reminder',
+        content_type: 'payment-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
@@ -84,7 +85,7 @@ const CustomerDetails = ({route}: CustomerDetailsProps) => {
     analyticsService
       .logEvent('share', {
         method: 'whatsapp',
-        content_type: 'debit-reminder',
+        content_type: 'payment-reminder',
         item_id: receipt?._id?.toString() ?? '',
       })
       .then(() => {});
@@ -135,7 +136,7 @@ const CustomerDetails = ({route}: CustomerDetailsProps) => {
             })}
           />
         </View>
-        {credit && (
+        {filteredReceipts?.length && (
           <>
             <View style={applyStyles('bg-white center py-16')}>
               <DatePicker
@@ -227,6 +228,14 @@ const CustomerDetails = ({route}: CustomerDetailsProps) => {
               }
               ListFooterComponent={<View style={applyStyles({height: 200})} />}
             />
+            <View style={applyStyles({opacity: 0, height: 0})}>
+              <PaymentReminderImage
+                amount={1000}
+                date={dueDate}
+                captureMode="update"
+                getImageUri={(data) => setReceiptImage(data)}
+              />
+            </View>
           </>
         )}
         <View
