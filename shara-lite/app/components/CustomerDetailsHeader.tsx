@@ -48,7 +48,7 @@ const CustomerDetailsHeader = ({
       );
     }
     return renderLeftSection;
-  }, [renderLeftSection]);
+  }, [credit, customer, creditCreatedAt, renderLeftSection]);
 
   renderRightSection = useMemo(() => {
     if (!renderRightSection) {
@@ -71,7 +71,7 @@ const CustomerDetailsHeader = ({
         );
     }
     return renderRightSection;
-  }, [renderRightSection]);
+  }, [credit, customer, renderRightSection]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>

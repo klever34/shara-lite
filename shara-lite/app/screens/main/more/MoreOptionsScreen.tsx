@@ -115,6 +115,7 @@ export const MoreOptionsScreen = () => {
       handleError(e);
     }
   }, [handleError, navigation, logoutFromRealm]);
+
   const handleLogoutConfirm = useCallback(() => {
     Alert.alert(
       'Warning',
@@ -130,8 +131,10 @@ export const MoreOptionsScreen = () => {
         },
       ],
     );
-  }, []);
+  }, [handleLogout]);
+
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
     if (business.mobile?.startsWith(code)) {
