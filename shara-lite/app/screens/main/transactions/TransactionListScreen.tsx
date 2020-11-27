@@ -79,7 +79,7 @@ export const TransactionListScreen = () => {
       setMyTransactions(myTransactions);
       setBusiness(getAuthService().getBusinessInfo());
     });
-  }, [navigation]);
+  }, [getTransactions, navigation]);
 
   useEffect(() => {
     const youCollectedAmount = myTransactions
@@ -93,7 +93,7 @@ export const TransactionListScreen = () => {
 
     setYouGaveAmount(youGaveAmount);
     setYouCollectedAmount(youCollectedAmount);
-  }, [myTransactions.length]);
+  }, [myTransactions, myTransactions.length]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
