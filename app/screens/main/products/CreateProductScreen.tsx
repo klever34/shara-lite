@@ -233,7 +233,7 @@ export const CreateProductScreen = (props: Props) => {
     if (products.length) {
       Alert.alert(
         'Warning',
-        'Are you sure you want to exit this page? The product had not been added.',
+        'Are you sure you want to exit this page? The product has not been added.',
         [
           {
             text: 'No',
