@@ -71,3 +71,7 @@ buck-out/
 .env.dev
 .env.staging
 .env.production
+
+
+shara-lite
+shara-pro

@@ -1,4 +1,5 @@
 import {
+  Accordiontem,
   AppInput,
   AutoComplete,
   Button,
@@ -64,7 +65,6 @@ export const ReceiptOtherDetailsScreen = () => {
   const [mobile, setMobile] = useState('');
   const [isNewCustomer, setIsNewCustomer] = useState(false);
   const [saveToPhoneBook, setSaveToPhoneBook] = useState(true);
-  const [isPartialPayment, setIsPartialPayment] = useState(false);
   const [amountOwed, setAmountOwed] = useState<number | undefined>();
   const [amountPaid, setAmountPaid] = useState<number | undefined>();
   const [countryCode, setCountryCode] = useState(callingCode || '');
@@ -125,10 +125,6 @@ export const ReceiptOtherDetailsScreen = () => {
 
   const handleNoteChange = useCallback((text: string) => {
     setNote(text);
-  }, []);
-
-  const handleIsPartialPaymentChange = useCallback((checked: boolean) => {
-    setIsPartialPayment(checked);
   }, []);
 
   const handleSaveToPhoneBookChange = useCallback((checked: boolean) => {
@@ -244,6 +240,7 @@ export const ReceiptOtherDetailsScreen = () => {
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+  const amountPaidFieldRef = useRef<TextInput | null>(null);
   const amountOwedFieldRef = useRef<TextInput | null>(null);
   const customerFieldRef = useRef<TextInput | null>(null);
   const noteFieldRef = useRef<TextInput | null>(null);
@@ -257,115 +254,6 @@ export const ReceiptOtherDetailsScreen = () => {
           titleStyle: applyStyles({fontSize: 14}, 'text-gray-300'),
         }}>
         <View>
-          <RadioButton
-            isChecked={isPartialPayment}
-            containerStyle={applyStyles('py-16 mb-24 center')}
-            onChange={handleIsPartialPaymentChange}>
-            <Text style={applyStyles('text-400 text-gray-300')}>
-              Credit Payment?
-            </Text>
-          </RadioButton>
-          {isPartialPayment && (
-            <>
-              <View
-                style={applyStyles(
-                  'pb-24 flex-row items-center justify-between',
-                )}>
-                <View style={applyStyles({width: '48%'})}>
-                  <CurrencyInput
-                    placeholder="0.00"
-                    label="Customer Paid"
-                    value={amountPaid?.toString()}
-                    onChange={(text) => handleAmountPaidChange(text)}
-                    returnKeyType="next"
-                    autoFocus
-                    onSubmitEditing={() => {
-                      setImmediate(() => {
-                        if (amountOwedFieldRef.current) {
-                          amountOwedFieldRef.current.focus();
-                        }
-                      });
-                    }}
-                  />
-                </View>
-                <View style={applyStyles({width: '48%'})}>
-                  <CurrencyInput
-                    ref={amountOwedFieldRef}
-                    placeholder="0.00"
-                    label="Customer owes"
-                    value={amountOwed?.toString()}
-                    onChange={(text) => handleAmountOwedChange(text)}
-                    returnKeyType="next"
-                    onSubmitEditing={() => {
-                      setImmediate(() => {
-                        if (customerFieldRef.current) {
-                          customerFieldRef.current.focus();
-                        }
-                      });
-                    }}
-                  />
-                </View>
-              </View>
-              {dueDate && (
-                <DatePicker
-                  value={dueDate}
-                  minimumDate={new Date()}
-                  onChange={(e: Event, date?: Date) =>
-                    handleDueDateChange(date)
-                  }>
-                  {(toggleShow) => (
-                    <Touchable onPress={toggleShow}>
-                      <View style={applyStyles('pb-16')}>
-                        <Text
-                          style={applyStyles(
-                            'text-xs text-uppercase text-500 text-gray-100 pb-8',
-                          )}>
-                          Payment due date (optional)
-                        </Text>
-                        <View style={applyStyles('flex-row items-center')}>
-                          <View
-                            style={applyStyles(
-                              'w-full items-center flex-row px-16 text-500 pr-56 bg-gray-10',
-                              {
-                                height: 56,
-                                borderRadius: 8,
-                              },
-                            )}>
-                            {dueDate ? (
-                              <Text style={applyStyles('text-500 text-base')}>
-                                {format(dueDate, 'dd/MM/yyyy')}
-                              </Text>
-                            ) : (
-                              <Text
-                                style={applyStyles(
-                                  'text-500 text-gray-300 text-base',
-                                )}>
-                                Select date for balance to be paid
-                              </Text>
-                            )}
-                          </View>
-                          <View
-                            style={applyStyles('flex-row center', {
-                              position: 'absolute',
-                              right: 12,
-                              top: 16,
-                              zIndex: 10,
-                            })}>
-                            <Icon
-                              size={24}
-                              name="calendar"
-                              type="feathericons"
-                              color={colors['gray-50']}
-                            />
-                          </View>
-                        </View>
-                      </View>
-                    </Touchable>
-                  )}
-                </DatePicker>
-              )}
-            </>
-          )}
           <AutoComplete
             rightIcon="users"
             items={allCustomers}
@@ -398,6 +286,13 @@ export const ReceiptOtherDetailsScreen = () => {
                 containerStyle={applyStyles('mb-24')}
                 onChangeText={(data) => handleChangeMobile(data)}
                 value={{number: mobile, callingCode: countryCode}}
+                onSubmitEditing={() => {
+                  setImmediate(() => {
+                    if (noteFieldRef.current) {
+                      noteFieldRef.current.focus();
+                    }
+                  });
+                }}
               />
 
               <RadioButton
@@ -411,16 +306,114 @@ export const ReceiptOtherDetailsScreen = () => {
             </>
           )}
           <AppInput
-            ref={noteFieldRef}
             multiline
             value={note}
+            ref={noteFieldRef}
             label="Notes (optional)"
+            textAlignVertical="top"
             onChangeText={handleNoteChange}
             style={applyStyles('mb-16', {height: 96})}
+            onSubmitEditing={() => {
+              setImmediate(() => {
+                if (amountPaidFieldRef.current) {
+                  amountPaidFieldRef.current.focus();
+                }
+              });
+            }}
             placeholder="Any other information about this transaction?"
-            onSubmitEditing={handleFinish}
-            textAlignVertical="top"
           />
+          <Accordiontem
+            title="Is the customer owing?"
+            titleContainerStyle={applyStyles('mb-16 bg-gray-50')}>
+            <View
+              style={applyStyles(
+                'pb-24 flex-row items-center justify-between',
+              )}>
+              <View style={applyStyles({width: '48%'})}>
+                <CurrencyInput
+                  placeholder="0.00"
+                  label="Customer Paid"
+                  returnKeyType="next"
+                  value={amountPaid?.toString()}
+                  onChange={(text) => handleAmountPaidChange(text)}
+                  onSubmitEditing={() => {
+                    setImmediate(() => {
+                      if (amountOwedFieldRef.current) {
+                        amountOwedFieldRef.current.focus();
+                      }
+                    });
+                  }}
+                />
+              </View>
+              <View style={applyStyles({width: '48%'})}>
+                <CurrencyInput
+                  ref={amountOwedFieldRef}
+                  placeholder="0.00"
+                  label="Customer owes"
+                  returnKeyType="next"
+                  value={amountOwed?.toString()}
+                  // onSubmitEditing={handleFinish}
+                  onChange={(text) => handleAmountOwedChange(text)}
+                />
+              </View>
+            </View>
+            {dueDate && (
+              <DatePicker
+                value={dueDate}
+                minimumDate={new Date()}
+                onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
+                {(toggleShow) => (
+                  <Touchable onPress={toggleShow}>
+                    <View style={applyStyles('pb-16')}>
+                      <Text
+                        style={applyStyles(
+                          'text-xs text-uppercase text-500 text-gray-100 pb-8',
+                        )}>
+                        Payment due date (optional)
+                      </Text>
+                      <View style={applyStyles('flex-row items-center')}>
+                        <View
+                          style={applyStyles(
+                            'w-full items-center flex-row px-16 text-500 pr-56 bg-gray-10',
+                            {
+                              height: 56,
+                              borderRadius: 8,
+                            },
+                          )}>
+                          {dueDate ? (
+                            <Text style={applyStyles('text-500 text-base')}>
+                              {format(dueDate, 'dd/MM/yyyy')}
+                            </Text>
+                          ) : (
+                            <Text
+                              style={applyStyles(
+                                'text-500 text-gray-300 text-base',
+                              )}>
+                              Select date for balance to be paid
+                            </Text>
+                          )}
+                        </View>
+                        <View
+                          style={applyStyles('flex-row center', {
+                            position: 'absolute',
+                            right: 12,
+                            top: 16,
+                            zIndex: 10,
+                          })}>
+                          <Icon
+                            size={24}
+                            name="calendar"
+                            type="feathericons"
+                            color={colors['gray-50']}
+                          />
+                        </View>
+                      </View>
+                    </View>
+                  </Touchable>
+                )}
+              </DatePicker>
+            )}
+          </Accordiontem>
           <Button
             title="Finish"
             variantColor="red"

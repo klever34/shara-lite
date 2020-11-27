@@ -1,5 +1,6 @@
 import {
   AuthView,
+  Button,
   PasswordField,
   PhoneNumber,
   PhoneNumberField,
@@ -77,7 +78,7 @@ export const Login = () => {
     setLoading(true);
     try {
       await apiService.logIn(payload);
-      await initRealm();
+      await initRealm({initSync: true});
 
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
@@ -103,6 +104,7 @@ export const Login = () => {
       buttonTitle="Sign In"
       onSubmit={handleSubmit}
       heading="Welcome Back"
+      showButton={false}
       style={applyStyles('bg-white')}
       header={{title: 'Sign In', iconLeft: {}}}
       description="Sign in and enjoy all the features available on Shara. It only takes a few moments.">
@@ -132,6 +134,13 @@ export const Login = () => {
           onChangeText={handleChange('password')}
           isInvalid={touched.password && !!errors.password}
           onSubmitEditing={handleSubmit}
+        />
+        <Button
+          variantColor="red"
+          onPress={handleSubmit}
+          title="Sign In"
+          isLoading={loading}
+          style={applyStyles('w-full mt-24')}
         />
       </View>
 

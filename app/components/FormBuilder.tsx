@@ -55,14 +55,21 @@ export type FormField<K extends keyof FormFieldProps = keyof FormFieldProps> = {
 
 export type FormFields<T extends keyof any> = Record<T, FormField>;
 
+export type FormBuilderRef<FieldName extends keyof any> = {
+  handleSubmit: (
+    submitFn?: ((values: Record<FieldName, any>) => Promise<void>) | undefined,
+  ) => () => Promise<void>;
+};
+
 type FormBuilderProps<
-  FieldNames extends keyof any,
-  Fields = FormFields<FieldNames>
+  FieldName extends keyof any,
+  Fields = FormFields<FieldName>
 > = {
   fields: Fields;
   onInputChange?: (values: {[name in keyof Fields]: any}) => void;
   submitBtn?: ButtonProps;
   onSubmit?: (values: {[name in keyof Fields]: any}) => Promise<any>;
+  forceUseFormButton?: boolean;
 };
 
 export const FormBuilder = <FieldName extends keyof any>({
@@ -70,6 +77,7 @@ export const FormBuilder = <FieldName extends keyof any>({
   onInputChange,
   submitBtn,
   onSubmit,
+  forceUseFormButton = false,
 }: FormBuilderProps<FieldName>) => {
   const {setFooter} = usePage();
 
@@ -216,10 +224,17 @@ export const FormBuilder = <FieldName extends keyof any>({
   );
 
   useEffect(() => {
-    if (submitBtn && setFooter) {
+    if (submitBtn && setFooter && !forceUseFormButton) {
       setFooter(button);
     }
-  }, [button, loading, runHandleSubmitBtnPress, setFooter, submitBtn]);
+  }, [
+    button,
+    forceUseFormButton,
+    loading,
+    runHandleSubmitBtnPress,
+    setFooter,
+    submitBtn,
+  ]);
 
   return (
     <View style={applyStyles('flex-row flex-wrap')}>
@@ -262,6 +277,8 @@ export const FormBuilder = <FieldName extends keyof any>({
                   fieldProps.containerStyle,
                 )}
                 onChangeText={onChangeValue(name)}
+                isInvalid={!!errors[name as string]}
+                errorMessage={errors[name as string]}
               />
             );
           case 'password':
@@ -279,6 +296,8 @@ export const FormBuilder = <FieldName extends keyof any>({
                   fieldProps.containerStyle,
                 )}
                 onChangeText={onChangeValue(name)}
+                isInvalid={!!errors[name as string]}
+                errorMessage={errors[name as string]}
               />
             );
           case 'image':
@@ -311,7 +330,7 @@ export const FormBuilder = <FieldName extends keyof any>({
             return null;
         }
       })}
-      {submitBtn && !setFooter && button}
+      {submitBtn && (!setFooter || forceUseFormButton) && button}
     </View>
   );
 };

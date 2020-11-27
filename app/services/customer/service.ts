@@ -35,7 +35,11 @@ export const saveCustomer = ({
   }
 
   realm.write(() => {
-    realm.create<ICustomer>(modelName, customerDetails, UpdateMode.Modified);
+    customerDetails = realm.create<ICustomer>(
+      modelName,
+      customerDetails,
+      UpdateMode.Modified,
+    );
   });
   if (!customer._id) {
     getAnalyticsService()

@@ -1,4 +1,4 @@
-import {Button, HeaderRight, HomeContainer, Header} from '@/components';
+import {Button, Header, HeaderRight, HomeContainer} from '@/components';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
@@ -7,8 +7,15 @@ import {useErrorHandler} from '@/services/error-boundary';
 import {RouteProp, useNavigation} from '@react-navigation/native';
 import {HeaderBackButton} from '@react-navigation/stack';
 import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
-import React, {useCallback, useLayoutEffect, useMemo, useState} from 'react';
-import {TextStyle} from 'react-native';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {Alert, TextStyle} from 'react-native';
 import {CustomersStackParamList} from '@/screens/main/customers';
 import {applyStyles} from '@/styles';
 import {MainStackParamList} from '..';
@@ -18,6 +25,8 @@ import {amountWithCurrency, prepareValueForSearch} from '@/helpers/utils';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
 import {getReceipts} from '@/services/ReceiptService';
 import {useRealm} from '@/services/realm';
+import {useReports} from '@/services/reports';
+import {ToastContext} from '@/components/Toast';
 
 type CustomerDetailsProps = ModalWrapperFields & {
   route: RouteProp<
@@ -30,6 +39,8 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
   const realm = useRealm();
   const navigation = useNavigation();
   const {handleUpdateCreateReceiptFromCustomer} = useReceiptProvider();
+  const {exportReportsToExcel} = useReports();
+  const {showSuccessToast} = useContext(ToastContext);
 
   const receipts = realm ? getReceipts({realm}) : [];
 
@@ -83,7 +94,14 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         <HeaderBackButton onPress={() => navigation.navigate('Customers')} />
       ),
       headerRight: () => (
-        <HeaderRight menuOptions={[{text: 'Help', onSelect: () => {}}]} />
+        <HeaderRight
+          menuOptions={[
+            {
+              text: 'Help',
+              onSelect: () => {},
+            },
+          ]}
+        />
       ),
     });
   }, [
@@ -96,11 +114,18 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [customerReceipts, setCustomerReceipts] = useState(customer.receipts);
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      setCustomerReceipts(customer.receipts);
+    });
+  }, [customer.receipts, navigation, realm]);
+
   const filteredReceipts = useMemo(() => {
-    let customerReceipts = customer.receipts?.sorted('created_at', true);
+    let nextCustomerReceipts = customerReceipts?.sorted('created_at', true);
     if (searchTerm) {
       // @ts-ignore
-      customerReceipts = customerReceipts?.filter((receipt) => {
+      nextCustomerReceipts = nextCustomerReceipts?.filter((receipt) => {
         return (
           (prepareValueForSearch(receipt.total_amount).search(searchTerm) ??
             -1) !== -1 ||
@@ -111,8 +136,8 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         );
       });
     }
-    return customerReceipts;
-  }, [customer.receipts, searchTerm]);
+    return nextCustomerReceipts;
+  }, [customerReceipts, searchTerm]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
@@ -176,6 +201,16 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
     navigation,
   ]);
 
+  const handleReportsDownload = useCallback(async () => {
+    try {
+      const receiptsToDownload = (customer.receipts as unknown) as IReceipt[];
+      await exportReportsToExcel({receipts: receiptsToDownload});
+      showSuccessToast('Report downloaded successfully');
+    } catch (error) {
+      Alert.alert('Error', error.message);
+    }
+  }, [customer, exportReportsToExcel, showSuccessToast]);
+
   const footer = filteredReceipts?.length ? (
     <Button title="Create Receipt" onPress={handleCreateReceipt} />
   ) : null;
@@ -196,6 +231,10 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
                     customer,
                   });
                 },
+              },
+              {
+                text: 'Download reports',
+                onSelect: handleReportsDownload,
               },
             ],
           },
