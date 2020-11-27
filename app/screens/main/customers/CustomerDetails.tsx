@@ -10,6 +10,7 @@ import {addWeeks, format, isThisWeek, isToday, isYesterday} from 'date-fns';
 import React, {
   useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -113,11 +114,18 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
 
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [customerReceipts, setCustomerReceipts] = useState(customer.receipts);
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      setCustomerReceipts(customer.receipts);
+    });
+  }, [customer.receipts, navigation, realm]);
+
   const filteredReceipts = useMemo(() => {
-    let customerReceipts = customer.receipts?.sorted('created_at', true);
+    let nextCustomerReceipts = customerReceipts?.sorted('created_at', true);
     if (searchTerm) {
       // @ts-ignore
-      customerReceipts = customerReceipts?.filter((receipt) => {
+      nextCustomerReceipts = nextCustomerReceipts?.filter((receipt) => {
         return (
           (prepareValueForSearch(receipt.total_amount).search(searchTerm) ??
             -1) !== -1 ||
@@ -128,8 +136,8 @@ const CustomerDetails = ({route, openModal}: CustomerDetailsProps) => {
         );
       });
     }
-    return customerReceipts;
-  }, [customer.receipts, searchTerm]);
+    return nextCustomerReceipts;
+  }, [customerReceipts, searchTerm]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
