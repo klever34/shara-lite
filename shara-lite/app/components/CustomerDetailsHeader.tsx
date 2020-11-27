@@ -8,19 +8,21 @@ import {Icon} from './Icon';
 import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
 
+export type CustomerDetailsHeaderProps = {
+  style?: ViewStyle;
+  customer?: ICustomer;
+  onPress?: () => void;
+  renderLeftSection?: () => ReactNode;
+  renderRightSection?: () => ReactNode;
+};
+
 const CustomerDetailsHeader = ({
   style,
   onPress,
   customer,
   renderLeftSection,
   renderRightSection,
-}: {
-  style?: ViewStyle;
-  customer?: ICustomer;
-  onPress?: () => void;
-  renderLeftSection?: () => ReactNode;
-  renderRightSection?: () => ReactNode;
-}) => {
+}: CustomerDetailsHeaderProps) => {
   const credit = customer?.credits && customer.credits[0];
   const creditCreatedAt = credit?.created_at;
 

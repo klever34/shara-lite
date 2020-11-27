@@ -1,5 +1,7 @@
 import {Button, DatePicker} from '@/components';
-import CustomerDetailsHeader from '@/components/CustomerDetailsHeader';
+import CustomerDetailsHeader, {
+  CustomerDetailsHeaderProps,
+} from '@/components/CustomerDetailsHeader';
 import {Icon} from '@/components/Icon';
 import PaymentReminderImage from '@/components/PaymentReminderImage';
 import Touchable from '@/components/Touchable';
@@ -23,6 +25,8 @@ type TransactionDetailsProps = {
   creditAmount?: number;
   transactions?: IReceipt[];
   showActionButtons?: boolean;
+  renderHeaderLeftSection?: CustomerDetailsHeaderProps['renderLeftSection'];
+  renderHeaderRightSection?: CustomerDetailsHeaderProps['renderRightSection'];
 };
 
 const TransactionDetails = ({
@@ -31,6 +35,8 @@ const TransactionDetails = ({
   transactions,
   dueDate: creditDueDate,
   showActionButtons = true,
+  renderHeaderLeftSection,
+  renderHeaderRightSection,
 }: TransactionDetailsProps) => {
   const navigation = useAppNavigation();
   const analyticsService = getAnalyticsService();
@@ -118,6 +124,8 @@ const TransactionDetails = ({
             borderBottomWidth: 0,
             width: Dimensions.get('window').width - 34,
           })}
+          renderLeftSection={renderHeaderLeftSection}
+          renderRightSection={renderHeaderRightSection}
         />
       </View>
       {transactions?.length && (
