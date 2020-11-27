@@ -1,24 +1,9 @@
-import {Button, DatePicker} from '@/components';
-import CustomerDetailsHeader from '@/components/CustomerDetailsHeader';
-import {Icon} from '@/components/Icon';
-import PaymentReminderImage from '@/components/PaymentReminderImage';
-import Touchable from '@/components/Touchable';
 import TransactionDetails from '@/components/TransactionDetails';
-import TransactionListHeader from '@/components/TransactionListHeader';
-import TransactionListItem from '@/components/TransactionListItem';
-import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {CustomersStackParamList} from '@/screens/main/customers';
-import {getAnalyticsService, getAuthService} from '@/services';
 import {CustomerContext} from '@/services/customer';
-import {useAppNavigation} from '@/services/navigation';
-import {ShareHookProps, useShare} from '@/services/share';
-import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
-import {HeaderBackButton} from '@react-navigation/stack';
-import {format} from 'date-fns';
-import React, {useCallback, useMemo, useState} from 'react';
-import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
+import React, {useMemo} from 'react';
 import {MainStackParamList} from '..';
 
 type CustomerDetailsProps = {
