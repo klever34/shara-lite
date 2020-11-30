@@ -22,6 +22,7 @@ import React, {
 } from 'react';
 import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
 import {EditProductModal} from './EditProductModal';
+import PaymentContainer from './PaymentContainer';
 
 export const ProductListScreen = withModal(() => {
   const realm = useRealm();
@@ -98,7 +99,7 @@ export const ProductListScreen = withModal(() => {
                   <Icon
                     type="feathericons"
                     color={colors['gray-300']}
-                    name="box"
+                    name="dollar-sign"
                     size={22}
                     borderRadius={12}
                   />
@@ -110,7 +111,7 @@ export const ProductListScreen = withModal(() => {
                       },
                     )}
                     numberOfLines={1}>
-                    Products
+                    Payments
                   </Text>
                 </View>
               );
@@ -230,6 +231,7 @@ export const ProductListScreen = withModal(() => {
             "You have no products yet. Let's help you load your products to create receipts faster and monitor stock levels.",
         }}
       />
+      <PaymentContainer />
       <EditProductModal
         item={itemToEdit}
         visible={openEditModal}
