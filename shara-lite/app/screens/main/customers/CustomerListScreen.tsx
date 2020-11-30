@@ -7,7 +7,6 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 import {getCustomers} from '@/services/customer/service';
-import {getSummary, IFinanceSummary} from '@/services/FinanceService';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
@@ -41,7 +40,6 @@ export const CustomerListScreen = () => {
   const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
 
   const analyticsService = getAnalyticsService();
-  const financeSummary: IFinanceSummary = getSummary({realm});
 
   const reloadMyCustomers = useCallback(() => {
     if (realm) {
@@ -204,7 +202,7 @@ export const CustomerListScreen = () => {
       },
       headerTitle: () => null,
     });
-  }, [myCustomers, navigation, renderCustomerListItem]);
+  }, [navigation]);
 
   const keyExtractor = useCallback((item) => {
     if (!item) {
@@ -252,5 +250,3 @@ export const CustomerListScreen = () => {
     </KeyboardAvoidingView>
   );
 };
-
-export * from './AddCustomer';

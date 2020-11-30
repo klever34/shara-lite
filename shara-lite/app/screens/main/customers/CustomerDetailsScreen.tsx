@@ -6,14 +6,14 @@ import {RouteProp} from '@react-navigation/native';
 import React, {useMemo} from 'react';
 import {MainStackParamList} from '..';
 
-type CustomerDetailsProps = {
+type CustomerDetailsScreenProps = {
   route: RouteProp<
     CustomersStackParamList & MainStackParamList,
     'CustomerDetails'
   >;
 };
 
-const CustomerDetails = ({route}: CustomerDetailsProps) => {
+const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
   const {customer} = route.params;
   const credit = customer?.credits && customer.credits[0];
   const creditDueDate = credit?.due_date;
@@ -42,4 +42,4 @@ const CustomerDetails = ({route}: CustomerDetailsProps) => {
   );
 };
 
-export default CustomerDetails;
+export default CustomerDetailsScreen;

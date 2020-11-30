@@ -6,7 +6,7 @@ import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {KeyboardAvoidingView} from 'react-native';
-import {ReceiptListItem} from './ReceiptListItem';
+import {TransactionListItem} from './TransactionListItem';
 
 export const useReceiptList = () => {
   const realm = useRealm();
@@ -42,7 +42,7 @@ export const useReceiptList = () => {
         `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
-    return userReceipts;
+    return (userReceipts as unknown) as IReceipt[];
     // return userReceipts.sorted('created_at', true);
   }, [allReceipts, searchTerm]);
 
@@ -71,7 +71,7 @@ export const AllTransactionsListScreen = () => {
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
-      navigation.navigate('ReceiptDetails', {id: receipt._id});
+      navigation.navigate('TransactionDetails', {transaction: receipt});
     },
     [navigation],
   );
@@ -79,7 +79,7 @@ export const AllTransactionsListScreen = () => {
   const renderReceiptItem = useCallback(
     ({item: receipt}: {item: IReceipt}) => {
       return (
-        <ReceiptListItem
+        <TransactionListItem
           receipt={receipt}
           onPress={() => handleReceiptItemSelect(receipt)}
         />

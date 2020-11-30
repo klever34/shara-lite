@@ -5,7 +5,7 @@ import {applyStyles, colors} from '@/styles';
 import React, {useCallback} from 'react';
 import {KeyboardAvoidingView} from 'react-native';
 import {useReceiptList} from './AllTransactionsListScreen';
-import {ReceiptListItem} from './ReceiptListItem';
+import {TransactionListItem} from './TransactionListItem';
 
 export const OwedTransactionsListScreen = () => {
   const navigation = useAppNavigation();
@@ -14,7 +14,7 @@ export const OwedTransactionsListScreen = () => {
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
-      navigation.navigate('ReceiptDetails', {id: receipt._id});
+      navigation.navigate('TransactionDetails', {transaction: receipt});
     },
     [navigation],
   );
@@ -22,7 +22,7 @@ export const OwedTransactionsListScreen = () => {
   const renderReceiptItem = useCallback(
     ({item: receipt}: {item: IReceipt}) => {
       return (
-        <ReceiptListItem
+        <TransactionListItem
           receipt={receipt}
           onPress={() => handleReceiptItemSelect(receipt)}
         />
