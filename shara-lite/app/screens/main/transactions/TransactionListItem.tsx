@@ -92,12 +92,12 @@ export const TransactionListItem = ({
             <View style={applyStyles('flex-row items-center')}>
               <View
                 style={applyStyles('center bg-green-200', {
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
                 })}>
                 <Icon
-                  size={16}
+                  size={20}
                   name="dollar-sign"
                   type="feathericons"
                   color={colors.white}

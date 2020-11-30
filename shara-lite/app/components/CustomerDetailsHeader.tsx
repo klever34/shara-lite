@@ -32,7 +32,7 @@ const CustomerDetailsHeader = ({
         <>
           <Text
             numberOfLines={1}
-            style={applyStyles('pb-4 text-uppercase text-700 text-gray-300')}>
+            style={applyStyles('text-uppercase text-700 text-gray-300')}>
             {customer?.name}
           </Text>
           <Text
@@ -59,7 +59,7 @@ const CustomerDetailsHeader = ({
           <>
             <Text
               style={applyStyles(
-                'pb-4 text-400 text-uppercase text-xxs text-gray-100',
+                'text-400 text-uppercase text-xxs text-gray-100',
               )}>
               You will collect
             </Text>
