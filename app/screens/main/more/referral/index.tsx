@@ -5,7 +5,7 @@ import {getApiService, getAuthService} from '@/services';
 import {applyStyles} from '@/styles';
 import {useAppNavigation} from 'app-v2/services/navigation';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, Platform, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 
 export default function ReferralScreen() {
@@ -28,7 +28,7 @@ export default function ReferralScreen() {
     };
     try {
       await apiService.userProfileUpdate(payload);
-      showSuccessToast('Referral code submitted successfully');
+      showSuccessToast('Referral code submitted');
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);
@@ -42,7 +42,9 @@ export default function ReferralScreen() {
 
   useEffect(() => {
     return () => {
-      fetchDeviceId();
+      if (Platform.OS === 'android') {
+        fetchDeviceId();
+      }
     };
   }, [fetchDeviceId]);
 
