@@ -21,6 +21,7 @@ export interface IReceipt extends BaseModelInterface {
   is_cancelled?: boolean;
   cancellation_reason?: string;
   note?: string;
+  is_hidden_in_pro?: boolean;
 
   //Getters
   isPaid?: boolean;
@@ -49,6 +50,7 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       local_image_url: 'string?',
       is_cancelled: {type: 'bool', default: false, optional: true},
       cancellation_reason: 'string?',
+      is_hidden_in_pro: {type: 'bool', default: false, optional: true},
       note: 'string?',
       items: {
         type: 'linkingObjects',
@@ -71,13 +73,10 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
   public amount_paid: number | undefined;
   public customer: ICustomer | undefined;
   public credits: ICredit[] | undefined;
+  public payments: IPayment[] | undefined;
   public local_image_url: IReceipt['local_image_url'];
   public image_url: IReceipt['image_url'];
   public items: IReceipt['items'];
-
-  public get isPaid() {
-    return this.total_amount === this.amount_paid;
-  }
 
   public get hasCustomer() {
     return !!this?.customer?._id;
@@ -89,5 +88,9 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
 
   public get isPending() {
     return !!(this.local_image_url || this.image_url) && !this.items?.length;
+  }
+
+  public get isPaid() {
+    return !this.credits?.filter((credit) => !credit.fulfilled).length;
   }
 }

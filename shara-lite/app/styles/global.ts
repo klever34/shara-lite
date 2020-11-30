@@ -87,6 +87,10 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'text-capitalize': {
     textTransform: 'capitalize',
   },
+  'text-3xl': {
+    fontSize: 32,
+    lineHeight: 40,
+  },
   'text-2xl': {
     fontSize: 24,
     lineHeight: 32,

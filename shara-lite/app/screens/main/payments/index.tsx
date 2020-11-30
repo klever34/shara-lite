@@ -1,7 +1,7 @@
 import {colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
-import {ProductListScreen} from './ProductListScreen';
+import {PaymentListScreen} from './PaymentListScreen';
 
 export type ProductsStackParamList = {
   ProductList: undefined;
@@ -24,9 +24,9 @@ export const PaymentsScreen = () => {
         },
         headerTintColor: colors['gray-300'],
       }}>
-      <ProductsStack.Screen name="ProductList" component={ProductListScreen} />
+      <ProductsStack.Screen name="ProductList" component={PaymentListScreen} />
     </ProductsStack.Navigator>
   );
 };
 
-export * from './ProductListScreen';
+export * from './PaymentListScreen';

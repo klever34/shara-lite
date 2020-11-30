@@ -5,12 +5,14 @@ import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 
 type SearchFilterProps = {
+  value?: string;
   onOpenFilter?: () => void;
   placeholderText?: string;
   onSearch?: (text: string) => void;
 };
 
 export const SearchFilter = ({
+  value,
   onSearch,
   onOpenFilter,
   placeholderText = 'Search',
@@ -36,6 +38,7 @@ export const SearchFilter = ({
           />
         </View>
         <TextInput
+          value={value}
           style={applyStyles('px-40 text-400 bg-white', {
             height: 40,
             fontSize: 16,

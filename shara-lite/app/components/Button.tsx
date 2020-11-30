@@ -23,7 +23,7 @@ export type ButtonProps = Omit<BaseButtonProps, 'onPress'> & {
   isLoading?: boolean;
   children?: React.ReactNode;
   onPress?: () => Promise<void> | void;
-  variantColor?: 'red' | 'blue' | 'white' | 'clear' | 'transparent';
+  variantColor?: 'red' | 'blue' | 'white' | 'green' | 'clear' | 'transparent';
 };
 
 export const Button = ({
@@ -46,6 +46,10 @@ export const Button = ({
     },
     blue: {
       button: styles.blueButton,
+      text: disabled ? styles.buttonTextDisabled : styles.redButtonText,
+    },
+    green: {
+      button: styles.greenButton,
       text: disabled ? styles.buttonTextDisabled : styles.redButtonText,
     },
     clear: {
@@ -134,6 +138,9 @@ const styles = StyleSheet.create({
   },
   blueButton: {
     backgroundColor: colors.blue,
+  },
+  greenButton: {
+    backgroundColor: colors['green-200'],
   },
   clearButton: {
     elevation: 0,
