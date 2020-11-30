@@ -104,12 +104,7 @@ export interface IApiService {
     businessId?: string,
   ): Promise<ApiResponse>;
 
-  userProfileUpdate(
-    payload: Pick<
-      User,
-      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
-    >,
-  ): Promise<ApiResponse>;
+  userProfileUpdate(payload: Partial<User>): Promise<ApiResponse>;
 
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
