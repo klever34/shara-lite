@@ -24,10 +24,12 @@ const useSyncLoader = () => {
     realm,
     localRealm,
     syncRealm,
+    modelUpdates,
     isSyncInProgress,
     setIsSyncInProgress,
     setIsSyncCompleted,
     setRealmUser,
+    setModelUpdates,
   } = useContext(RealmContext);
 
   const retryUpdate = () => {
@@ -35,6 +37,14 @@ const useSyncLoader = () => {
     setTimeout(() => {
       initializeSync().then(() => {});
     }, syncInterval);
+  };
+
+  const handleModelUpdates = (model: string) => {
+    const updatedModels = {
+      ...modelUpdates,
+      [model]: Date.now(),
+    };
+    setModelUpdates(updatedModels);
   };
 
   const syncData = async ({
@@ -58,6 +68,7 @@ const useSyncLoader = () => {
       localRealm: localRealm.current,
       partitionValue,
       lastLocalSync,
+      onModelUpdate: handleModelUpdates,
     });
 
     setTimeout(() => {
