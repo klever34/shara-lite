@@ -37,7 +37,13 @@ export type Requester = {
 
 export type UserProfileFormPayload = Pick<
   User,
-  'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+  | 'firstname'
+  | 'lastname'
+  | 'mobile'
+  | 'email'
+  | 'country_code'
+  | 'device_id'
+  | 'referrer_code'
 >;
 
 export interface IApiService {

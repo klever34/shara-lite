@@ -4,8 +4,8 @@ import {ToastContext} from '@/components/Toast';
 import {getApiService, getAuthService} from '@/services';
 import {applyStyles} from '@/styles';
 import {useAppNavigation} from 'app-v2/services/navigation';
-import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, Platform, View} from 'react-native';
+import React, {useCallback, useContext, useState} from 'react';
+import {Alert, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 
 export default function ReferralScreen() {
@@ -13,7 +13,6 @@ export default function ReferralScreen() {
   const navigation = useAppNavigation();
   const user = getAuthService().getUser();
 
-  const [deviceId, setDeviceId] = useState('');
   const [code, setCode] = useState(user?.referrer_code ?? '');
   const {showSuccessToast} = useContext(ToastContext);
 
@@ -22,31 +21,19 @@ export default function ReferralScreen() {
   }, []);
 
   const handleSubmit = useCallback(async () => {
-    const payload = {
-      referrer_code: code,
-      device_id: deviceId,
-    };
     try {
+      const id = await getAndroidId();
+      const payload: any = {
+        referrer_code: code,
+        device_id: id,
+      };
       await apiService.userProfileUpdate(payload);
       showSuccessToast('Referral code submitted');
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);
     }
-  }, [apiService, code, deviceId, navigation, showSuccessToast]);
-
-  const fetchDeviceId = useCallback(async () => {
-    const id = await getAndroidId();
-    setDeviceId(id);
-  }, []);
-
-  useEffect(() => {
-    return () => {
-      if (Platform.OS === 'android') {
-        fetchDeviceId();
-      }
-    };
-  }, [fetchDeviceId]);
+  }, [apiService, code, navigation, showSuccessToast]);
 
   return (
     <Page
