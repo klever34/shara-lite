@@ -14,6 +14,8 @@ type User = {
   updated_at: string;
   currency_code: string;
   businesses: Business[];
+  referrer_code: string;
+  device_id: string;
 };
 
 type Business = {

@@ -37,7 +37,13 @@ export type Requester = {
 
 export type UserProfileFormPayload = Pick<
   User,
-  'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+  | 'firstname'
+  | 'lastname'
+  | 'mobile'
+  | 'email'
+  | 'country_code'
+  | 'device_id'
+  | 'referrer_code'
 >;
 
 export interface IApiService {
@@ -104,12 +110,7 @@ export interface IApiService {
     businessId?: string,
   ): Promise<ApiResponse>;
 
-  userProfileUpdate(
-    payload: Pick<
-      User,
-      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
-    >,
-  ): Promise<ApiResponse>;
+  userProfileUpdate(payload: Partial<User>): Promise<ApiResponse>;
 
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 

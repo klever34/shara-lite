@@ -22,7 +22,10 @@ export const UserProfileSettings = () => {
     const phoneNumber = parsePhoneNumber('+' + mobile);
     const nationalNumber = (phoneNumber?.nationalNumber ?? '') as string;
     const fields: FormFields<
-      keyof Omit<UserProfileFormPayload, 'country_code'>
+      keyof Omit<
+        UserProfileFormPayload,
+        'country_code' | 'referrer_code' | 'device_id'
+      >
     > = {
       firstname: {
         type: 'text',
@@ -62,7 +65,9 @@ export const UserProfileSettings = () => {
     return fields;
   }, [country_code, email, firstname, lastname, mobile]);
 
-  const formValuesRef = useRef<UserProfileFormPayload>();
+  const formValuesRef = useRef<
+    Omit<UserProfileFormPayload, 'referrer_code' | 'device_id'>
+  >();
 
   const handleSubmit = useCallback(async () => {
     const {current: formValues} = formValuesRef;

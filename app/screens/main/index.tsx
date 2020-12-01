@@ -34,6 +34,7 @@ import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
 import {BuildReceiptScreen} from './receipts/BuildReceiptScreen';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 import {ReceiptReviewScreen} from './receipts/ReceiptReviewScreen';
+import ReferralScreen from './more/referral';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -59,6 +60,7 @@ export type MainStackParamList = {
   UserProfileSettings: undefined;
   BusinessSettings: undefined;
   Reports: undefined;
+  Referral: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -171,6 +173,11 @@ const MainScreens = () => {
           <MainStack.Screen
             name="UserProfileSettings"
             component={UserProfileSettings}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="Referral"
+            component={ReferralScreen}
             options={{headerShown: false}}
           />
 

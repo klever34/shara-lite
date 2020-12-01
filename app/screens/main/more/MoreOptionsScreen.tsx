@@ -92,8 +92,15 @@ export const MoreOptionsScreen = () => {
         },
       },
       {
-        title: 'App Lock',
+        title: 'Referral',
         icon: 'users',
+        onPress: () => {
+          navigation.navigate('Referral');
+        },
+      },
+      {
+        title: 'App Lock',
+        icon: 'lock',
         onPress: () => {
           Alert.alert(
             'Coming Soon',
@@ -103,7 +110,7 @@ export const MoreOptionsScreen = () => {
       },
       {
         title: 'Help & Support',
-        icon: 'users',
+        icon: 'help-circle',
         onPress: () => {
           Alert.alert(
             'Coming Soon',
