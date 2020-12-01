@@ -1,7 +1,11 @@
 import {Dimensions} from 'react-native';
+import ExtraDimensions from 'react-native-extra-dimensions-android';
 
 export const dimensions = {
-  fullHeight: Dimensions.get('window').height,
+  fullHeight:
+    ExtraDimensions.getRealWindowHeight() -
+    ExtraDimensions.getSoftMenuBarHeight() -
+    ExtraDimensions.getStatusBarHeight(),
   fullWidth: Dimensions.get('window').width,
 };
 

@@ -25,7 +25,7 @@ const MainNav = createBottomTabNavigator<MainNavParamList>();
 export const HomeScreen = () => {
   const [entryTabActive, setEntryTabActive] = useState(true);
   return (
-    <SafeAreaView style={applyStyles('h-full')}>
+    <SafeAreaView style={applyStyles('h-screen')}>
       <MainNav.Navigator
         initialRouteName="EntryTab"
         tabBarOptions={{

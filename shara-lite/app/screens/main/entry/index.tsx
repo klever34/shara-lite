@@ -243,7 +243,7 @@ export const EntryScreen = () => {
 
   const currency = getAuthService().getUserCurrency();
   return (
-    <View style={applyStyles('h-screen pb-104')}>
+    <View style={applyStyles('h-full')}>
       <View
         style={applyStyles('pt-24 pb-16 px-16 bg-white justify-center', {
           flex: 3,
@@ -254,7 +254,7 @@ export const EntryScreen = () => {
         {/*  </Text>*/}
         {/*  <Text style={applyStyles('text-gray-200 text-xs')}>-₦200,000</Text>*/}
         {/*</View>*/}
-        <View style={applyStyles({flex: 3})}>
+        <View style={applyStyles('mb-6')}>
           <Text
             style={applyStyles(
               'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4',
@@ -264,13 +264,12 @@ export const EntryScreen = () => {
           <Text
             style={applyStyles(
               'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center',
-              {flex: 2},
             )}
             numberOfLines={1}>
             {currency + displayedAmount}
           </Text>
         </View>
-        <View style={applyStyles('w-full', {flex: 2})}>
+        <View style={applyStyles('w-full')}>
           <AppInput placeholder="Enter Details (Rent, Bill, Loan...)" />
         </View>
       </View>
