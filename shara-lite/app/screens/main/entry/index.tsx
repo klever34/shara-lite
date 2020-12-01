@@ -254,7 +254,7 @@ export const EntryScreen = () => {
         {/*  </Text>*/}
         {/*  <Text style={applyStyles('text-gray-200 text-xs')}>-₦200,000</Text>*/}
         {/*</View>*/}
-        <View style={applyStyles('mb-16', {flex: 3})}>
+        <View style={applyStyles({flex: 3})}>
           <Text
             style={applyStyles(
               'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4',
@@ -270,7 +270,7 @@ export const EntryScreen = () => {
             {currency + displayedAmount}
           </Text>
         </View>
-        <View style={applyStyles('w-full')}>
+        <View style={applyStyles('w-full', {flex: 2})}>
           <AppInput placeholder="Enter Details (Rent, Bill, Loan...)" />
         </View>
       </View>
