@@ -1,4 +1,10 @@
-import React, {ReactNode, useCallback, useEffect, useState} from 'react';
+import React, {
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {View, Text, ToastAndroid, ViewStyle, TextStyle} from 'react-native';
 import {applyStyles} from '@/styles';
 import {AppInput} from '@/components';
@@ -176,13 +182,12 @@ const calculate = (tokens: string[]) => {
 export const EntryScreen = () => {
   const [tokens, setTokens] = useState<string[]>(['0']);
   const [displayedAmount, setDisplayedAmount] = useState('0');
-  useEffect(() => {
-    setDisplayedAmount(
-      tokens.reduce((acc, curr) => {
-        return acc + curr;
-      }, ''),
-    );
-  }, [tokens]);
+  const [calculated, setCalculated] = useState(false);
+
+  const isValidAmount = useMemo(() => {
+    const amount = parseFloat(displayedAmount);
+    return calculated && amount !== 0;
+  }, [calculated, displayedAmount]);
 
   const enterValue = useCallback((value: string) => {
     return () => {
@@ -236,10 +241,30 @@ export const EntryScreen = () => {
     try {
       const result = calculate(tokens);
       setDisplayedAmount(numberWithCommas(result));
+      setCalculated(true);
     } catch (e) {
-      ToastAndroid.show('Invalid Amount', ToastAndroid.SHORT);
+      setDisplayedAmount(
+        tokens.reduce((acc, curr) => {
+          return acc + curr;
+        }, ''),
+      );
+      setCalculated(false);
     }
   }, [tokens]);
+
+  useEffect(() => {
+    handleCalculate();
+  }, [handleCalculate]);
+
+  useEffect(() => {
+    if (!isValidAmount) {
+      ToastAndroid.show('Invalid Amount', ToastAndroid.SHORT);
+    }
+  }, [isValidAmount]);
+
+  const youGave = useCallback(() => {}, []);
+
+  const youCollected = useCallback(() => {}, []);
 
   const currency = getAuthService().getUserCurrency();
   return (
@@ -248,12 +273,14 @@ export const EntryScreen = () => {
         style={applyStyles('pt-24 pb-16 px-16 bg-white justify-center', {
           flex: 3,
         })}>
-        {/*<View style={applyStyles('items-center mb-16', {flex: 3})}>*/}
-        {/*  <Text style={applyStyles('text-gray-100 text-xxs text-uppercase')}>*/}
-        {/*    Last Transaction*/}
-        {/*  </Text>*/}
-        {/*  <Text style={applyStyles('text-gray-200 text-xs')}>-₦200,000</Text>*/}
-        {/*</View>*/}
+        {!isValidAmount && (
+          <View style={applyStyles('items-center mb-24')}>
+            <Text style={applyStyles('text-gray-100 text-xxs text-uppercase')}>
+              Last Transaction
+            </Text>
+            <Text style={applyStyles('text-gray-200 text-xs')}>-₦200,000</Text>
+          </View>
+        )}
         <View style={applyStyles('mb-6')}>
           <Text
             style={applyStyles(
@@ -266,12 +293,14 @@ export const EntryScreen = () => {
               'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center',
             )}
             numberOfLines={1}>
-            {currency + displayedAmount}
+            {`${currency} ${displayedAmount}`}
           </Text>
         </View>
-        <View style={applyStyles('w-full')}>
-          <AppInput placeholder="Enter Details (Rent, Bill, Loan...)" />
-        </View>
+        {isValidAmount && (
+          <View style={applyStyles('w-full')}>
+            <AppInput placeholder="Enter Details (Rent, Bill, Loan...)" />
+          </View>
+        )}
       </View>
       <View style={applyStyles('bg-gray-20 px-8 py-16', {flex: 7})}>
         <View style={applyStyles('flex-row flex-1')}>
@@ -334,16 +363,22 @@ export const EntryScreen = () => {
           />
         </View>
         <View style={applyStyles('flex-row flex-1')}>
-          <EntryButton
-            label="You collected"
-            style={applyStyles('bg-green-200')}
-            textStyle={applyStyles('font-bold text-white')}
-          />
-          <EntryButton
-            label="You gave"
-            style={applyStyles('bg-red-200')}
-            textStyle={applyStyles('font-bold text-white')}
-          />
+          {isValidAmount && (
+            <>
+              <EntryButton
+                label="You collected"
+                style={applyStyles('bg-green-200')}
+                textStyle={applyStyles('font-bold text-white')}
+                onPress={youCollected}
+              />
+              <EntryButton
+                label="You gave"
+                style={applyStyles('bg-red-200')}
+                textStyle={applyStyles('font-bold text-white')}
+                onPress={youGave}
+              />
+            </>
+          )}
         </View>
       </View>
     </View>
