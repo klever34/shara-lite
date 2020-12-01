@@ -12,6 +12,8 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {getAuthService} from '@/services';
 import {numberWithCommas} from '@/helpers/utils';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {CustomerListScreen} from './CustomerListScreen';
 
 type EntryButtonProps = {
   label?: string;
@@ -179,7 +181,7 @@ const calculate = (tokens: string[]) => {
   }
 };
 
-export const EntryScreen = () => {
+export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
   const [tokens, setTokens] = useState<string[]>(['0']);
   const [displayedAmount, setDisplayedAmount] = useState('0');
   const [calculated, setCalculated] = useState(false);
@@ -262,7 +264,13 @@ export const EntryScreen = () => {
     }
   }, [isValidAmount]);
 
-  const youGave = useCallback(() => {}, []);
+  const youGave = useCallback(() => {
+    const closeModal = openModal('full', {
+      renderContent: () => {
+        return <CustomerListScreen closeModal={closeModal} />;
+      },
+    });
+  }, [openModal]);
 
   const youCollected = useCallback(() => {}, []);
 
@@ -383,8 +391,4 @@ export const EntryScreen = () => {
       </View>
     </View>
   );
-};
-
-export * from './CreateReceipt';
-export * from './ReceiptItemModal';
-export * from './ReceiptPreviewModal';
+});
