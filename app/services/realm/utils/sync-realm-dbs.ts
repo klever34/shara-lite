@@ -8,11 +8,13 @@ export const syncRealmDbs = ({
   targetRealm,
   partitionValue,
   isLocal,
+  onModelUpdate,
 }: {
   sourceRealm: Realm;
   targetRealm: Realm;
   partitionValue: string;
   isLocal?: boolean;
+  onModelUpdate?: (name: string) => void;
 }) => {
   sourceRealm.schema.forEach((objSchema) => {
     const modelName = objSchema.name;
@@ -42,19 +44,21 @@ export const syncRealmDbs = ({
                 insertedRecord,
                 Realm.UpdateMode.Modified,
               );
+
+              if (isLocal) {
+                saveLastLocalSync({
+                  model: objSchema.name,
+                  date: insertedRecord.updated_at,
+                }).then(() => {});
+              } else {
+                onModelUpdate && onModelUpdate(modelName);
+              }
             };
 
             if (targetRealm.isInTransaction) {
               insertItem();
             } else {
               targetRealm.write(insertItem);
-            }
-
-            if (isLocal) {
-              saveLastLocalSync({
-                model: objSchema.name,
-                date: insertedRecord.updated_at,
-              }).then(() => {});
             }
           }
         });

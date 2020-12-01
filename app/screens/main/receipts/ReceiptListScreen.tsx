@@ -23,6 +23,7 @@ import React, {
 } from 'react';
 import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
 import {ReceiptListItem} from './ReceiptListItem';
+import {useSyncNotification} from '@/services/realm/hooks/use-sync-notification';
 
 export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
   const realm = useRealm();
@@ -164,12 +165,19 @@ export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
     return 0;
   }, [filter, searchTerm, filteredReceipts]);
 
+  const reloadReceipts = useCallback(() => {
+    const myReceipts = realm ? getReceipts({realm}) : [];
+    setAllReceipts(myReceipts);
+  }, [realm]);
+
   useEffect(() => {
-    return navigation.addListener('focus', () => {
-      const myReceipts = realm ? getReceipts({realm}) : [];
-      setAllReceipts(myReceipts);
-    });
-  }, [navigation, realm]);
+    return navigation.addListener('focus', reloadReceipts);
+  }, [navigation, reloadReceipts]);
+
+  useSyncNotification({
+    model: 'Receipt',
+    onAddition: reloadReceipts,
+  });
 
   return useMemo(
     () => ({
