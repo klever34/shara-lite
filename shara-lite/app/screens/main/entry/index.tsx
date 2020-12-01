@@ -26,7 +26,7 @@ const EntryButton = ({
     <Touchable onPress={onPress}>
       <View style={applyStyles('flex-1 center bg-white rounded-16 m-4', style)}>
         {children || (
-          <Text style={applyStyles('text-sm text-uppercase', textStyle)}>
+          <Text style={applyStyles('text-base text-uppercase', textStyle)}>
             {label}
           </Text>
         )}
@@ -243,24 +243,28 @@ export const EntryScreen = () => {
 
   const currency = getAuthService().getUserCurrency();
   return (
-    <View style={applyStyles('flex-1')}>
-      <View style={applyStyles('pt-40 py-48 px-16 bg-white h-3/10')}>
-        <View style={applyStyles('items-center mb-24')}>
-          <Text style={applyStyles('text-gray-100 text-xxs text-uppercase')}>
-            Last Transaction
-          </Text>
-          <Text style={applyStyles('text-gray-200 text-xs')}>-₦200,000</Text>
-        </View>
-        <View>
+    <View style={applyStyles('h-screen pb-104')}>
+      <View
+        style={applyStyles('pt-24 pb-16 px-16 bg-white justify-center', {
+          flex: 3,
+        })}>
+        {/*<View style={applyStyles('items-center mb-16', {flex: 3})}>*/}
+        {/*  <Text style={applyStyles('text-gray-100 text-xxs text-uppercase')}>*/}
+        {/*    Last Transaction*/}
+        {/*  </Text>*/}
+        {/*  <Text style={applyStyles('text-gray-200 text-xs')}>-₦200,000</Text>*/}
+        {/*</View>*/}
+        <View style={applyStyles('mb-16', {flex: 3})}>
           <Text
             style={applyStyles(
-              'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-8',
+              'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4',
             )}>
             Amount
           </Text>
           <Text
             style={applyStyles(
-              'text-gray-300 py-4 px-8 rounded-4 text-3xl text-uppercase text-400 self-center mb-8',
+              'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center',
+              {flex: 2},
             )}
             numberOfLines={1}>
             {currency + displayedAmount}
@@ -270,7 +274,7 @@ export const EntryScreen = () => {
           <AppInput placeholder="Enter Details (Rent, Bill, Loan...)" />
         </View>
       </View>
-      <View style={applyStyles('bg-gray-20 h-7/10 px-8 pt-32 pb-20')}>
+      <View style={applyStyles('bg-gray-20 px-8 py-16', {flex: 7})}>
         <View style={applyStyles('flex-row flex-1')}>
           <EntryButton label="." onPress={enterValue('.')} />
           <EntryButton
@@ -279,7 +283,7 @@ export const EntryScreen = () => {
             onPress={handleClear}
           />
           <EntryButton onPress={handleDelete} style={applyStyles('bg-gray-50')}>
-            <Icon type="feathericons" name="delete" />
+            <Icon type="feathericons" name="delete" size={24} />
           </EntryButton>
         </View>
         <View style={applyStyles('flex-row flex-1')}>
