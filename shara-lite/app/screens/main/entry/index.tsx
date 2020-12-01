@@ -1,5 +1,5 @@
 import React, {ReactNode, useCallback, useEffect, useState} from 'react';
-import {View, Text, ToastAndroid} from 'react-native';
+import {View, Text, ToastAndroid, ViewStyle, TextStyle} from 'react-native';
 import {applyStyles} from '@/styles';
 import {AppInput} from '@/components';
 import Icon from '@/components/Icon';
@@ -11,18 +11,24 @@ type EntryButtonProps = {
   label?: string;
   children?: ReactNode;
   onPress?: () => void;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
 };
 
 const EntryButton = ({
   label = '',
   children = null,
   onPress,
+  style,
+  textStyle,
 }: EntryButtonProps) => {
   return (
     <Touchable onPress={onPress}>
-      <View style={applyStyles('flex-1 center bg-gray-50 rounded-16 m-4')}>
+      <View style={applyStyles('flex-1 center bg-white rounded-16 m-4', style)}>
         {children || (
-          <Text style={applyStyles('text-sm text-uppercase')}>{label}</Text>
+          <Text style={applyStyles('text-sm text-uppercase', textStyle)}>
+            {label}
+          </Text>
         )}
       </View>
     </Touchable>
@@ -267,8 +273,12 @@ export const EntryScreen = () => {
       <View style={applyStyles('bg-gray-20 h-7/10 px-8 pt-32 pb-20')}>
         <View style={applyStyles('flex-row flex-1')}>
           <EntryButton label="." onPress={enterValue('.')} />
-          <EntryButton label="clear" onPress={handleClear} />
-          <EntryButton onPress={handleDelete}>
+          <EntryButton
+            style={applyStyles('bg-gray-50', {flex: 2})}
+            label="clear"
+            onPress={handleClear}
+          />
+          <EntryButton onPress={handleDelete} style={applyStyles('bg-gray-50')}>
             <Icon type="feathericons" name="delete" />
           </EntryButton>
         </View>
@@ -276,19 +286,29 @@ export const EntryScreen = () => {
           <EntryButton label="7" onPress={enterValue('7')} />
           <EntryButton label="8" onPress={enterValue('8')} />
           <EntryButton label="9" onPress={enterValue('9')} />
-          <EntryButton label="%" onPress={enterValue('%')} />
+          <EntryButton
+            label="%"
+            onPress={enterValue('%')}
+            style={applyStyles('bg-gray-50')}
+          />
         </View>
         <View style={applyStyles('flex-row flex-1')}>
           <EntryButton label="4" onPress={enterValue('4')} />
           <EntryButton label="5" onPress={enterValue('5')} />
           <EntryButton label="6" onPress={enterValue('6')} />
-          <EntryButton label="÷" onPress={enterValue('÷')} />
+          <EntryButton
+            label="÷"
+            onPress={enterValue('÷')}
+            style={applyStyles('bg-gray-50')}
+          />
         </View>
         <View style={applyStyles('flex-row flex-1')}>
           <EntryButton label="1" onPress={enterValue('1')} />
           <EntryButton label="2" onPress={enterValue('2')} />
           <EntryButton label="3" onPress={enterValue('3')} />
-          <EntryButton onPress={enterValue('*')}>
+          <EntryButton
+            onPress={enterValue('*')}
+            style={applyStyles('bg-gray-50')}>
             <Text>x</Text>
           </EntryButton>
         </View>
@@ -299,12 +319,28 @@ export const EntryScreen = () => {
           <EntryButton label="=" onPress={handleCalculate} />
         </View>
         <View style={applyStyles('flex-row flex-1')}>
-          <EntryButton label="-" onPress={enterValue('-')} />
-          <EntryButton label="+" onPress={enterValue('+')} />
+          <EntryButton
+            label="-"
+            onPress={enterValue('-')}
+            style={applyStyles('bg-gray-50')}
+          />
+          <EntryButton
+            label="+"
+            onPress={enterValue('+')}
+            style={applyStyles('bg-gray-50')}
+          />
         </View>
         <View style={applyStyles('flex-row flex-1')}>
-          <EntryButton label="You collected" />
-          <EntryButton label="You gave" />
+          <EntryButton
+            label="You collected"
+            style={applyStyles('bg-green-200')}
+            textStyle={applyStyles('font-bold text-white')}
+          />
+          <EntryButton
+            label="You gave"
+            style={applyStyles('bg-red-200')}
+            textStyle={applyStyles('font-bold text-white')}
+          />
         </View>
       </View>
     </View>
