@@ -29,6 +29,15 @@ type Business = {
   signature_image?: {url: string};
 };
 
+type PaymentProvider = {
+  name: string;
+  slug: string;
+  fields: Array<{
+    key: string;
+    label: string;
+  }>;
+};
+
 type GroupChat = {
   name: string;
   description: string | null;

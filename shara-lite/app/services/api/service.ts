@@ -10,6 +10,7 @@ import {
   Business,
   GroupChat,
   GroupChatMember,
+  PaymentProvider,
   User,
 } from 'types/app';
 
@@ -56,6 +57,8 @@ export interface IApiService {
     otp: string;
     password: string;
   }): Promise<ApiResponse>;
+
+  getPaymentProviders(): Promise<PaymentProvider[]>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -281,6 +284,20 @@ export class ApiService implements IApiService {
   }): Promise<any> {
     try {
       return await this.requester.patch('/password-reset', payload);
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getPaymentProviders() {
+    try {
+      const {
+        data: {paymentProviders},
+      } = await this.requester.get<{paymentProviders: PaymentProvider[]}>(
+        '/payment-provider',
+        {},
+      );
+      return paymentProviders;
     } catch (e) {
       throw e;
     }

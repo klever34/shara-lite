@@ -44,7 +44,6 @@ export const usePaymentOption = (): usePaymentOptionInterface => {
       fields: JSON.stringify(paymentOption.fieldsData),
       ...getBaseModelValues(),
     };
-    console.log(paymentOption, updatedPaymentOption);
 
     const trace = await perf().startTrace('savePaymentOption');
     realm.write(() => {
