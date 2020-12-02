@@ -5,8 +5,8 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
-import {format} from 'date-fns';
-import React, {useMemo} from 'react';
+import {format, formatDistanceToNowStrict} from 'date-fns';
+import React, {useCallback, useMemo} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 
 export type ReceiptListItemProps = {
@@ -18,33 +18,48 @@ export type ReceiptListItemProps = {
   getReceiptItemRightText?: (receipt?: IReceipt) => string;
 };
 
-export const ReceiptListItem = ({
+export const TransactionListItem = ({
   style,
   receipt,
   onPress,
-  isHeader = false,
   getReceiptItemLeftText,
   getReceiptItemRightText,
 }: ReceiptListItemProps) => {
   const {getReceiptAmounts} = useReceipt();
   const {creditAmountLeft} = getReceiptAmounts(receipt);
-  const hasCustomer = receipt?.hasCustomer;
-  const statusText = receipt?.is_cancelled
-    ? 'Cancelled'
-    : !creditAmountLeft
-    ? 'Paid'
-    : `owes ${amountWithCurrency(creditAmountLeft)}`;
-  const statusTextWeight =
-    !creditAmountLeft || receipt?.is_cancelled ? 'text-400' : 'text-700';
-  const statusTextColor =
-    !creditAmountLeft || receipt?.is_cancelled
-      ? 'text-gray-200'
-      : 'text-red-100';
+
+  const getStatusText = useCallback(() => {
+    if (receipt?.isPaid) {
+      return '';
+    }
+    if (receipt?.dueDate) {
+      if (receipt.dueDate.getTime() < Date.now()) {
+        return `due ${formatDistanceToNowStrict(receipt.dueDate, {
+          addSuffix: true,
+        })}`;
+      } else {
+        return `collect on ${format(receipt?.dueDate, 'dd MMM, yyy')}`;
+      }
+    } else {
+      return 'set collection date';
+    }
+  }, [receipt]);
+
+  const getStatusTextColor = useCallback(() => {
+    if (receipt?.dueDate) {
+      if (receipt.dueDate.getTime() < Date.now()) {
+        return 'text-red-200';
+      }
+      return 'text-gray-200';
+    } else {
+      return 'text-gray-50';
+    }
+  }, [receipt]);
 
   getReceiptItemLeftText = useMemo(() => {
     if (!getReceiptItemLeftText) {
       return (currentReceipt) => {
-        return currentReceipt?.customer?.name ?? 'No Customer';
+        return currentReceipt?.customer?.name ?? 'No customer';
       };
     }
     return getReceiptItemLeftText;
@@ -54,7 +69,9 @@ export const ReceiptListItem = ({
     if (!getReceiptItemRightText) {
       return (currentReceipt) => {
         return currentReceipt?.created_at
-          ? format(currentReceipt?.created_at, 'MMM dd yyyy, hh:mmaa')
+          ? formatDistanceToNowStrict(currentReceipt?.created_at, {
+              addSuffix: true,
+            })
           : '';
       };
     }
@@ -73,34 +90,31 @@ export const ReceiptListItem = ({
           style,
         )}>
         <View style={applyStyles('flex-row items-center', {width: '48%'})}>
-          {!hasCustomer && isHeader ? (
+          {receipt?.isPaid ? (
             <View style={applyStyles('flex-row items-center')}>
               <View
-                style={applyStyles('center bg-gray-20', {
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
+                style={applyStyles('center bg-green-200', {
+                  width: 40,
+                  height: 40,
+                  borderRadius: 20,
                 })}>
                 <Icon
-                  size={16}
-                  name="plus"
+                  size={20}
+                  name="dollar-sign"
                   type="feathericons"
-                  color={colors['gray-50']}
+                  color={colors.white}
                 />
               </View>
               <View style={applyStyles('pl-8')}>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-700 text-sm text-primary text-uppercase',
-                    {
-                      textDecorationLine: 'underline',
-                    },
+                    'pb-4 text-gray-50 text-700 text-sm text-uppercase',
                   )}>
-                  Add Customer details
+                  Payment received
                 </Text>
                 <Text
                   style={applyStyles(
-                    'text-uppercase text-400 text-gray-200 text-xs',
+                    'text-uppercase text-400 text-gray-200 text-xxs',
                   )}>
                   {getReceiptItemRightText(receipt)}
                 </Text>
@@ -119,7 +133,7 @@ export const ReceiptListItem = ({
                 </Text>
                 <Text
                   style={applyStyles(
-                    'text-uppercase text-400 text-gray-200 text-xs',
+                    'text-uppercase text-400 text-gray-200 text-xxs',
                   )}>
                   {getReceiptItemRightText(receipt)}
                 </Text>
@@ -128,14 +142,21 @@ export const ReceiptListItem = ({
           )}
         </View>
         <View style={applyStyles('items-end', {width: '48%'})}>
-          <Text style={applyStyles('pb-4 text-700 text-gray-300')}>
-            {amountWithCurrency(receipt?.total_amount)}
+          <Text
+            style={applyStyles(
+              `pb-4 text-700 ${
+                receipt?.isPaid ? 'text-gray-300' : 'text-red-200'
+              }`,
+            )}>
+            {amountWithCurrency(
+              receipt?.isPaid ? receipt?.total_amount : creditAmountLeft,
+            )}
           </Text>
           <Text
             style={applyStyles(
-              `${statusTextWeight} text-uppercase text-xs ${statusTextColor}`,
+              `text-700 text-uppercase text-xxs ${getStatusTextColor()}`,
             )}>
-            {statusText}
+            {getStatusText()}
           </Text>
         </View>
       </View>

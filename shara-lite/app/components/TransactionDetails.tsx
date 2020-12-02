@@ -21,6 +21,7 @@ import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
 
 type TransactionDetailsProps = {
   dueDate?: Date;
+  isPaid?: boolean;
   customer?: ICustomer;
   creditAmount?: number;
   transactions?: IReceipt[];
@@ -33,6 +34,7 @@ const TransactionDetails = ({
   customer,
   creditAmount,
   transactions,
+  isPaid = false,
   dueDate: creditDueDate,
   showActionButtons = true,
   renderHeaderLeftSection,
@@ -130,86 +132,89 @@ const TransactionDetails = ({
       </View>
       {transactions?.length && (
         <>
-          <View style={applyStyles('bg-white center py-16')}>
-            <DatePicker
-              //@ts-ignore
-              value={dueDate}
-              minimumDate={new Date()}
-              onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
-              {(toggleShow) => (
-                <Touchable onPress={toggleShow}>
-                  <View style={applyStyles('p-8 flex-row items-center')}>
-                    <Icon
-                      size={16}
-                      name="calendar"
-                      type="feathericons"
-                      color={colors['red-200']}
-                    />
-                    <Text
-                      style={applyStyles(
-                        `pl-sm text-xs text-uppercase text-700 ${
-                          dueDate ? 'text-gray-300' : 'text-red-200'
-                        }`,
-                      )}>
-                      {dueDate
-                        ? `on ${format(dueDate, 'ccc, dd MMM yyyy')}`
-                        : 'set collection date'}
-                    </Text>
-                  </View>
-                </Touchable>
-              )}
-            </DatePicker>
-            <View style={applyStyles('flex-row items-center')}>
-              <Text
-                style={applyStyles(
-                  'text-xs text-uppercase text-gray-50 text-700',
-                )}>
-                Send reminder:
-              </Text>
-              <View style={applyStyles('px-4')}>
-                <Touchable onPress={onWhatsappShare}>
-                  <View
-                    style={applyStyles('px-2 flex-row center', {
-                      height: 48,
-                    })}>
-                    <Icon
-                      size={16}
-                      type="ionicons"
-                      name="logo-whatsapp"
-                      color={colors.whatsapp}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                      )}>
-                      whatsapp
-                    </Text>
-                  </View>
-                </Touchable>
-              </View>
-              <View style={applyStyles('px-4')}>
-                <Touchable onPress={onSmsShare}>
-                  <View
-                    style={applyStyles('px-2 flex-row center', {
-                      height: 48,
-                    })}>
-                    <Icon
-                      size={16}
-                      name="message-circle"
-                      type="feathericons"
-                      color={colors.primary}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                      )}>
-                      sms
-                    </Text>
-                  </View>
-                </Touchable>
+          {!isPaid && (
+            <View style={applyStyles('bg-white center py-16')}>
+              <DatePicker
+                //@ts-ignore
+                value={dueDate}
+                minimumDate={new Date()}
+                onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
+                {(toggleShow) => (
+                  <Touchable onPress={toggleShow}>
+                    <View style={applyStyles('p-8 flex-row items-center')}>
+                      <Icon
+                        size={16}
+                        name="calendar"
+                        type="feathericons"
+                        color={colors['red-200']}
+                      />
+                      <Text
+                        style={applyStyles(
+                          `pl-sm text-xs text-uppercase text-700 ${
+                            dueDate ? 'text-gray-300' : 'text-red-200'
+                          }`,
+                        )}>
+                        {dueDate
+                          ? `on ${format(dueDate, 'ccc, dd MMM yyyy')}`
+                          : 'set collection date'}
+                      </Text>
+                    </View>
+                  </Touchable>
+                )}
+              </DatePicker>
+              <View style={applyStyles('flex-row items-center')}>
+                <Text
+                  style={applyStyles(
+                    'text-xs text-uppercase text-gray-50 text-700',
+                  )}>
+                  Send reminder:
+                </Text>
+                <View style={applyStyles('px-4')}>
+                  <Touchable onPress={onWhatsappShare}>
+                    <View
+                      style={applyStyles('px-2 flex-row center', {
+                        height: 48,
+                      })}>
+                      <Icon
+                        size={16}
+                        type="ionicons"
+                        name="logo-whatsapp"
+                        color={colors.whatsapp}
+                      />
+                      <Text
+                        style={applyStyles(
+                          'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                        )}>
+                        whatsapp
+                      </Text>
+                    </View>
+                  </Touchable>
+                </View>
+                <View style={applyStyles('px-4')}>
+                  <Touchable onPress={onSmsShare}>
+                    <View
+                      style={applyStyles('px-2 flex-row center', {
+                        height: 48,
+                      })}>
+                      <Icon
+                        size={16}
+                        name="message-circle"
+                        type="feathericons"
+                        color={colors.primary}
+                      />
+                      <Text
+                        style={applyStyles(
+                          'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                        )}>
+                        sms
+                      </Text>
+                    </View>
+                  </Touchable>
+                </View>
               </View>
             </View>
-          </View>
+          )}
+
           <FlatList
             data={transactions}
             renderItem={renderTransactionItem}

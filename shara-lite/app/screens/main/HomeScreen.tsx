@@ -25,7 +25,7 @@ const MainNav = createBottomTabNavigator<MainNavParamList>();
 export const HomeScreen = () => {
   const [entryTabActive, setEntryTabActive] = useState(true);
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView style={applyStyles('h-screen')}>
       <MainNav.Navigator
         initialRouteName="EntryTab"
         tabBarOptions={{
@@ -33,7 +33,8 @@ export const HomeScreen = () => {
           activeTintColor: colors['red-200'],
           inactiveTintColor: colors['gray-50'],
           style: applyStyles('h-80'),
-          tabStyle: applyStyles('py-10'),
+          tabStyle: applyStyles('py-20'),
+          iconStyle: applyStyles('py-4'),
         }}>
         <MainNav.Screen
           name="TransactionsTab"

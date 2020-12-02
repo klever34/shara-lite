@@ -74,25 +74,25 @@ export const TransactionListScreen = () => {
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      const myTransactions = getTransactions();
+      const userTransactions = getTransactions();
 
-      setMyTransactions(myTransactions);
+      setMyTransactions(userTransactions);
       setBusiness(getAuthService().getBusinessInfo());
     });
   }, [getTransactions, navigation]);
 
   useEffect(() => {
-    const youCollectedAmount = myTransactions
+    const collectedAmount = myTransactions
       .filter((item) => item.isPaid)
       .map((item) => item.total_amount)
       .reduce((acc, item) => acc + item, 0);
-    const youGaveAmount = myTransactions
+    const gaveAmount = myTransactions
       .filter((item) => !item.isPaid)
       .map((item) => item.credit_amount)
       .reduce((acc, item) => acc + item, 0);
 
-    setYouGaveAmount(youGaveAmount);
-    setYouCollectedAmount(youCollectedAmount);
+    setYouGaveAmount(gaveAmount);
+    setYouCollectedAmount(collectedAmount);
   }, [myTransactions, myTransactions.length]);
 
   return (

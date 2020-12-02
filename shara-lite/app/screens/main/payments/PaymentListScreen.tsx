@@ -6,6 +6,7 @@ import {applyStyles, colors} from '@/styles';
 import {StackHeaderLeftButtonProps} from '@react-navigation/stack';
 import React, {useLayoutEffect} from 'react';
 import {Text, View} from 'react-native';
+import PaymentContainer from './PaymentContainer';
 
 export const PaymentListScreen = withModal(() => {
   const navigation = useAppNavigation();
@@ -46,5 +47,5 @@ export const PaymentListScreen = withModal(() => {
     });
   }, [navigation]);
 
-  return null;
+  return <PaymentContainer />;
 });

@@ -1,5 +1,7 @@
 node_modules
 android
 .idea
+.env
 
 *.log
+.env
