@@ -71,6 +71,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const analyticsService = getAnalyticsService();
   const currencyCode = getAuthService().getUserCurrencyCode();
   let {totalAmountPaid, creditAmountLeft} = getReceiptAmounts(receipt);
+  totalAmountPaid = totalAmountPaid || receipt?.total_amount;
 
   const [receiptImage, setReceiptImage] = useState('');
   const [printer, setPrinter] = useState<{address: string}>(
