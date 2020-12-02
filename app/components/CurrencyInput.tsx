@@ -56,6 +56,7 @@ export const CurrencyInput = forwardRef<TextInput, CurrencyInputProps>(
           onChangeText && onChangeText(stringValue);
         } else {
           setValue('');
+          onChangeText && onChangeText('');
         }
       },
       [onChangeText],
