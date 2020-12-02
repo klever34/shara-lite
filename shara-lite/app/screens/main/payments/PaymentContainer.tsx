@@ -2,31 +2,33 @@ import {AppInput, Button, SecureEmblem} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {getAuthService} from '@/services';
+import {IPaymentOption} from '@/models/PaymentOption';
+import {getApiService, getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
+import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
 import {Picker} from '@react-native-community/picker';
 import {Formik} from 'formik';
 import React, {useCallback, useEffect, useState} from 'react';
 import {FlatList, Image, ScrollView, Text, View} from 'react-native';
-
-type PaymentMethod = {
-  id: string;
-  number: string;
-  method: string;
-};
-
-const pickerLabelString = {
-  mpesa: 'MPESA',
-  bank: 'Bank',
-} as {[key: string]: string};
+import {PaymentProvider} from 'types/app';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
+  const apiService = getApiService();
   const navigation = useAppNavigation();
   const {callingCode} = useIPGeolocation();
-  const [paymentMethods, setPaymentMethods] = useState<PaymentMethod[]>([]);
+  const {
+    savePaymentOption,
+    getPaymentOptions,
+    updatePaymentOption,
+    deletePaymentOption,
+  } = usePaymentOption();
+  const paymentOptions = getPaymentOptions();
+  const [paymentProviders, setPaymentProviders] = useState<PaymentProvider[]>(
+    [],
+  );
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const getMobileNumber = useCallback(() => {
@@ -39,29 +41,24 @@ function PaymentContainer(props: ModalWrapperFields) {
 
   const onFormSubmit = useCallback(
     (values) => {
-      setPaymentMethods([{id: Date.now(), ...values}, ...paymentMethods]);
+      console.log(values);
+      savePaymentOption({paymentOption: values});
     },
-    [paymentMethods],
+    [savePaymentOption],
   );
 
   const handleEditItem = useCallback(
-    (values) => {
-      const updatedList = paymentMethods.map((item) => {
-        if (item.id === values.id) {
-          return values;
-        }
-        return item;
-      });
-      setPaymentMethods(updatedList);
+    (items, values) => {
+      updatePaymentOption({paymentOption: items, updates: values});
     },
-    [paymentMethods],
+    [updatePaymentOption],
   );
 
   const handleRemoveItem = useCallback(
     (values) => {
-      setPaymentMethods(paymentMethods.filter((item) => item.id !== values.id));
+      deletePaymentOption({paymentOption: values});
     },
-    [paymentMethods],
+    [deletePaymentOption],
   );
 
   const handleOpenAddItemModal = useCallback(() => {
@@ -74,30 +71,62 @@ function PaymentContainer(props: ModalWrapperFields) {
             )}>
             add Payment info
           </Text>
-          <Formik
+          <Formik<{
+            name?: string;
+            slug?: string;
+            fieldsData?: Array<{key?: string; label?: string; value?: string}>;
+          }>
             onSubmit={onFormSubmit}
-            initialValues={{method: 'mpesa', number: ''}}>
-            {({values, handleChange, setFieldValue, handleSubmit}) => (
+            initialValues={{slug: ''}}>
+            {({values, setFieldValue, handleSubmit}) => (
               <View style={applyStyles('px-16 py-24')}>
                 <Picker
                   mode="dropdown"
                   prompt="Select a payment method"
-                  selectedValue={values.method}
-                  onValueChange={(itemValue) =>
-                    setFieldValue('method', itemValue)
-                  }
-                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                  <Picker.Item label="MPESA" value="mpesa" />
-                  <Picker.Item label="Bank" value="bank" />
-                </Picker>
+                  selectedValue={values.slug}
+                  onValueChange={(itemValue) => {
+                    setFieldValue('slug', itemValue);
+                    const selectedProvider = paymentProviders.find(
+                      (item) => item.slug === itemValue,
+                    );
+                    const name = selectedProvider?.name;
+                    const fields = selectedProvider?.fields;
 
-                <AppInput
-                  value={values.number}
-                  keyboardType="numeric"
-                  style={applyStyles('mt-24')}
-                  onChangeText={handleChange('number')}
-                  placeholder={`${pickerLabelString[values.method]} Number`}
-                />
+                    setFieldValue('name', name);
+                    setFieldValue('fieldsData', fields);
+                  }}
+                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
+                  <Picker.Item label="Select a payment method" value="" />
+                  {paymentProviders.map((provider) => (
+                    <Picker.Item
+                      key={provider.slug}
+                      label={provider.name}
+                      value={provider.slug}
+                    />
+                  ))}
+                </Picker>
+                {values?.fieldsData?.map((field, index) => (
+                  <AppInput
+                    key={field.key}
+                    keyboardType="numeric"
+                    placeholder={field.label}
+                    style={applyStyles('mt-24')}
+                    value={
+                      values?.fieldsData ? values?.fieldsData[index]?.value : ''
+                    }
+                    onChangeText={(text: string) => {
+                      const updatedFieldsData = values?.fieldsData?.map(
+                        (item) => {
+                          if (item.key === field.key) {
+                            return {...item, value: text};
+                          }
+                          return item;
+                        },
+                      );
+                      setFieldValue('fieldsData', updatedFieldsData);
+                    }}
+                  />
+                ))}
 
                 <View
                   style={applyStyles(
@@ -124,10 +153,10 @@ function PaymentContainer(props: ModalWrapperFields) {
         </>
       ),
     });
-  }, [openModal, onFormSubmit]);
+  }, [openModal, onFormSubmit, paymentProviders]);
 
   const handleOpenEditItemModal = useCallback(
-    (item: PaymentMethod) => {
+    (item: IPaymentOption) => {
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
           <>
@@ -137,28 +166,43 @@ function PaymentContainer(props: ModalWrapperFields) {
               )}>
               edit Payment info
             </Text>
-            <Formik onSubmit={handleEditItem} initialValues={item}>
-              {({values, handleChange, setFieldValue, handleSubmit}) => (
+            <Formik<{
+              name?: string;
+              slug?: string;
+              fieldsData?: Array<{
+                key?: string;
+                label?: string;
+                value?: string;
+              }>;
+            }>
+              initialValues={item}
+              onSubmit={(values) => handleEditItem(item, values)}>
+              {({values, setFieldValue, handleSubmit}) => (
                 <View style={applyStyles('px-16 py-24')}>
-                  <Picker
-                    mode="dropdown"
-                    prompt="Select a payment method"
-                    selectedValue={values.method}
-                    onValueChange={(itemValue) =>
-                      setFieldValue('method', itemValue)
-                    }
-                    style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                    <Picker.Item label="MPESA" value="mpesa" />
-                    <Picker.Item label="Bank" value="bank" />
-                  </Picker>
-
-                  <AppInput
-                    value={values.number}
-                    keyboardType="numeric"
-                    style={applyStyles('mt-24')}
-                    onChangeText={handleChange('number')}
-                    placeholder={`${pickerLabelString[values.method]} Number`}
-                  />
+                  {values?.fieldsData?.map((field, index) => (
+                    <AppInput
+                      key={field.key}
+                      keyboardType="numeric"
+                      placeholder={field.label}
+                      style={applyStyles('mt-24')}
+                      value={
+                        values?.fieldsData
+                          ? values?.fieldsData[index]?.value
+                          : ''
+                      }
+                      onChangeText={(text: string) => {
+                        const updatedFieldsData = values?.fieldsData?.map(
+                          (fieldData) => {
+                            if (fieldData.key === field.key) {
+                              return {...fieldData, value: text};
+                            }
+                            return fieldData;
+                          },
+                        );
+                        setFieldValue('fieldsData', updatedFieldsData);
+                      }}
+                    />
+                  ))}
 
                   <View
                     style={applyStyles(
@@ -248,9 +292,9 @@ function PaymentContainer(props: ModalWrapperFields) {
                 style={applyStyles('text-gray-300 text-700 text-center py-24')}>
                 You can pay me via
               </Text>
-              {paymentMethods.map((item, index) => (
+              {/* {paymentOptions.map((item, index) => (
                 <View
-                  key={`${item.id}-${index}`}
+                  key={`${item.slug}-${index}`}
                   style={applyStyles(
                     'flex-row items-center py-8 bg-white justify-between',
                     {
@@ -286,6 +330,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                   </View>
                 </View>
               ))}
+             */}
             </View>
           </View>
 
@@ -312,8 +357,12 @@ function PaymentContainer(props: ModalWrapperFields) {
     business.profile_image,
     getMobileNumber,
     openModal,
-    paymentMethods,
   ]);
+
+  const fectchPaymentProviders = useCallback(async () => {
+    const providers = await apiService.getPaymentProviders();
+    setPaymentProviders(providers);
+  }, [apiService]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
@@ -321,12 +370,16 @@ function PaymentContainer(props: ModalWrapperFields) {
     });
   }, [navigation]);
 
+  useEffect(() => {
+    fectchPaymentProviders();
+  }, [fectchPaymentProviders]);
+
   return (
     <ScrollView
       persistentScrollbar
       keyboardShouldPersistTaps="always"
       style={applyStyles('py-24 bg-white flex-1')}>
-      {paymentMethods.length === 0 ? (
+      {paymentOptions.length === 0 ? (
         <View style={applyStyles('px-16')}>
           <View style={applyStyles('center pb-32')}>
             <SecureEmblem />
@@ -338,38 +391,68 @@ function PaymentContainer(props: ModalWrapperFields) {
               can know how to pay you.
             </Text>
           </View>
-          <Formik
+          <Formik<{
+            name?: string;
+            slug?: string;
+            fieldsData?: Array<{key?: string; label?: string; value?: string}>;
+          }>
             onSubmit={onFormSubmit}
-            initialValues={{method: '', number: ''}}>
-            {({values, handleChange, setFieldValue, handleSubmit}) => (
+            initialValues={{slug: ''}}>
+            {({values, setFieldValue, handleSubmit}) => (
               <>
                 <Picker
                   mode="dropdown"
                   prompt="Select a payment method"
-                  selectedValue={values.method}
-                  onValueChange={(itemValue) =>
-                    setFieldValue('method', itemValue)
-                  }
-                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                  <Picker.Item label="MPESA" value="mpesa" />
-                  <Picker.Item label="Bank" value="bank" />
-                </Picker>
+                  selectedValue={values.slug}
+                  onValueChange={(itemValue) => {
+                    setFieldValue('slug', itemValue);
+                    const selectedProvider = paymentProviders.find(
+                      (item) => item.slug === itemValue,
+                    );
+                    const name = selectedProvider?.name;
+                    const fields = selectedProvider?.fields;
 
-                {!!values.method && (
+                    setFieldValue('name', name);
+                    setFieldValue('fieldsData', fields);
+                  }}
+                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
+                  <Picker.Item label="Select a payment method" value="" />
+                  {paymentProviders.map((provider) => (
+                    <Picker.Item
+                      key={provider.slug}
+                      label={provider.name}
+                      value={provider.slug}
+                    />
+                  ))}
+                </Picker>
+                {values?.fieldsData?.map((field, index) => (
                   <AppInput
-                    value={values.number}
+                    key={field.key}
                     keyboardType="numeric"
+                    placeholder={field.label}
                     style={applyStyles('mt-24')}
-                    onChangeText={handleChange('number')}
-                    placeholder={`${pickerLabelString[values.method]} Number`}
+                    value={
+                      values?.fieldsData ? values?.fieldsData[index]?.value : ''
+                    }
+                    onChangeText={(text: string) => {
+                      const updatedFieldsData = values?.fieldsData?.map(
+                        (item) => {
+                          if (item.key === field.key) {
+                            return {...item, value: text};
+                          }
+                          return item;
+                        },
+                      );
+                      setFieldValue('fieldsData', updatedFieldsData);
+                    }}
                   />
-                )}
+                ))}
 
                 <View style={applyStyles('pt-24')}>
                   <Button
                     title="Save"
-                    disabled={!values.method}
                     onPress={handleSubmit}
+                    disabled={!values.slug}
                   />
                 </View>
               </>
@@ -379,7 +462,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       ) : (
         <View>
           <FlatList
-            data={paymentMethods}
+            data={paymentOptions}
             renderItem={({item}) => (
               <View
                 style={applyStyles(
@@ -392,12 +475,19 @@ function PaymentContainer(props: ModalWrapperFields) {
                   },
                 )}>
                 <View style={applyStyles('py-8')}>
-                  <Text style={applyStyles('text-gray-300 text-700 text-base')}>
-                    {item.number}
+                  <Text
+                    style={applyStyles('pb-2 text-gray-100 text-uppercase')}>
+                    {item.name}
                   </Text>
-                  <Text style={applyStyles('text-gray-100 text-uppercase')}>
-                    {pickerLabelString[item.method]}
-                  </Text>
+                  {item?.fieldsData?.map((i) => (
+                    <Text
+                      key={i.key}
+                      style={applyStyles(
+                        'pb-2 text-gray-300 text-700 text-base',
+                      )}>
+                      {i.label} - {i.value}
+                    </Text>
+                  ))}
                 </View>
                 <View>
                   <Touchable onPress={() => handleOpenEditItemModal(item)}>
@@ -413,7 +503,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                 </View>
               </View>
             )}
-            keyExtractor={(item, index) => `${item.number}-${index}`}
+            keyExtractor={(item, index) => `${item.slug}-${index}`}
           />
 
           <View style={applyStyles('center pt-24')}>
