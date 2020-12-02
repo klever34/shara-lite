@@ -51,6 +51,7 @@ import {ReceiptListItem} from './ReceiptListItem';
 import {useReceiptProvider} from './ReceiptProvider';
 import {ToastContext} from '@/components/Toast';
 import {useIPGeolocation} from '@/services/ip-geolocation';
+import {useFinance} from '@/services/finance';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
@@ -63,6 +64,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const {getReceiptAmounts} = useReceipt();
+  const {getTotalCredit} = useFinance();
   const {handleClearReceipt, createReceiptFromCustomer} = useReceiptProvider();
 
   const customers = getCustomers({realm});
@@ -70,8 +72,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const storageService = getStorageService();
   const analyticsService = getAnalyticsService();
   const currencyCode = getAuthService().getUserCurrencyCode();
-  let {creditAmountLeft, totalAmountPaid} = getReceiptAmounts(receipt);
-  totalAmountPaid = totalAmountPaid || receipt?.total_amount;
+  let {totalAmountPaid} = getReceiptAmounts(receipt);
+  const creditAmountLeft = getTotalCredit({credits: receipt?.credits});
 
   const [receiptImage, setReceiptImage] = useState('');
   const [printer, setPrinter] = useState<{address: string}>(
