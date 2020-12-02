@@ -8,6 +8,7 @@ import {
   PhoneNumber,
   PhoneNumberField,
   RadioButton,
+  toNumber,
 } from '@/components';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
@@ -24,7 +25,7 @@ import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
 import {addDays, format} from 'date-fns';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {Alert, SafeAreaView, Text, TextInput, View} from 'react-native';
+import {SafeAreaView, Text, TextInput, View} from 'react-native';
 import {useReceiptProvider} from './ReceiptProvider';
 
 type CustomerListItem =
@@ -109,16 +110,18 @@ export const ReceiptOtherDetailsScreen = () => {
 
   const handleAmountPaidChange = useCallback(
     (text) => {
-      setAmountPaid(text);
-      setAmountOwed(totalAmount - parseFloat(text));
+      const paid = toNumber(text);
+      setAmountPaid(paid);
+      setAmountOwed(totalAmount - paid);
     },
     [totalAmount],
   );
 
   const handleAmountOwedChange = useCallback(
     (text) => {
-      setAmountOwed(text);
-      setAmountPaid(totalAmount - parseFloat(text));
+      const owed = toNumber(text);
+      setAmountOwed(owed);
+      setAmountPaid(totalAmount - owed);
     },
     [totalAmount],
   );
@@ -150,6 +153,7 @@ export const ReceiptOtherDetailsScreen = () => {
 
   const handleFinish = useCallback(async () => {
     const paid = amountOwed ? amountPaid : totalAmount;
+
     const receiptToCreate: any = {
       ...receipt,
       note,
@@ -162,19 +166,23 @@ export const ReceiptOtherDetailsScreen = () => {
       customer: customer ? customer : ({} as ICustomer),
     };
 
-    if (isNewCustomer && saveToPhoneBook) {
-      try {
-        await contactService.addContact({
-          givenName: customer?.name ?? '',
-          phoneNumbers: [
-            {
-              label: 'mobile',
-              number: customer?.mobile ?? '',
-            },
-          ],
-        });
-      } catch (error) {
-        Alert.alert('Error', error);
+    if (isNewCustomer) {
+      if (saveToPhoneBook && customer?.mobile) {
+        try {
+          await contactService.addContact({
+            givenName: customer?.name ?? '',
+            phoneNumbers: [
+              {
+                label: 'mobile',
+                number: customer?.mobile ?? '',
+              },
+            ],
+          });
+        } catch (error) {
+          console.log(error.message);
+        }
+      } else {
+        receiptToCreate.customer = {name: customerSearchQuery};
       }
     }
     handleUpdateReceipt(receiptToCreate);
@@ -186,6 +194,7 @@ export const ReceiptOtherDetailsScreen = () => {
     amountPaid,
     totalAmount,
     receipt,
+    customerSearchQuery,
     note,
     realm,
     dueDate,
@@ -334,8 +343,8 @@ export const ReceiptOtherDetailsScreen = () => {
                   placeholder="0.00"
                   label="Customer Paid"
                   returnKeyType="next"
-                  value={amountPaid?.toString()}
-                  onChange={(text) => handleAmountPaidChange(text)}
+                  value={amountPaid}
+                  onChangeText={handleAmountPaidChange}
                   onSubmitEditing={() => {
                     setImmediate(() => {
                       if (amountOwedFieldRef.current) {
@@ -351,9 +360,8 @@ export const ReceiptOtherDetailsScreen = () => {
                   placeholder="0.00"
                   label="Customer owes"
                   returnKeyType="next"
-                  value={amountOwed?.toString()}
-                  // onSubmitEditing={handleFinish}
-                  onChange={(text) => handleAmountOwedChange(text)}
+                  value={amountOwed}
+                  onChangeText={handleAmountOwedChange}
                 />
               </View>
             </View>

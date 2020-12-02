@@ -39,9 +39,9 @@ export const CreditPaymentForm = (props: Props) => {
                 label="Amount Paid"
                 keyboardType="number-pad"
                 containerStyle={styles.input}
-                value={values.amount?.toString()}
+                value={values.amount}
                 isInvalid={touched.amount && !!errors.amount}
-                onChange={(text) => setFieldValue('amount', text)}
+                onChangeText={(text) => setFieldValue('amount', text)}
               />
             </View>
             <View style={styles.pickerContainer}>

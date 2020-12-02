@@ -10,6 +10,7 @@ import {
   ReceiptTableItem,
   ReceiptTableItemProps,
   StickyFooter,
+  toNumber,
 } from '@/components/';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
@@ -425,7 +426,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   }, []);
 
   const handleCreditPaymentAmountChange = useCallback((amount) => {
-    setCreditPaymentAmount(amount);
+    setCreditPaymentAmount(toNumber(amount));
   }, []);
 
   const handleCreditPaymentSubmit = useCallback(() => {
@@ -595,10 +596,8 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                     )}>
                     <View style={applyStyles({width: '48%'})}>
                       <CurrencyInput
-                        value={creditPaymentAmount.toString()}
-                        onChange={(value) =>
-                          handleCreditPaymentAmountChange(value)
-                        }
+                        value={creditPaymentAmount}
+                        onChangeText={handleCreditPaymentAmountChange}
                         onSubmitEditing={handleCreditPaymentSubmit}
                       />
                     </View>
