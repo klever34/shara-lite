@@ -110,7 +110,7 @@ workflows:
           productFlavor: dev
           env: test
           testBuild: false
-          testersGroup: shara-engineering-developers
+          testersGroup: shara-product
           requires:
             - checkout_code
             - test
