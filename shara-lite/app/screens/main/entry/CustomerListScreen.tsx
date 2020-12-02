@@ -93,11 +93,12 @@ export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
           content_type: 'customer',
         })
         .then(() => {});
-      youGave({customer})
-        .then(() => {
-          closeModal();
-        })
-        .catch(handleError);
+      customer &&
+        youGave({customer, amount: 0})
+          .then(() => {
+            closeModal();
+          })
+          .catch(handleError);
     },
     [closeModal, youGave],
   );
@@ -113,7 +114,7 @@ export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
         <Touchable
           onPress={() => {
             onPress?.();
-            handleSelectCustomer(customer);
+            customer && handleSelectCustomer(customer);
           }}>
           <View
             style={applyStyles(
@@ -123,12 +124,12 @@ export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
             <View style={applyStyles('flex-1 ml-8')}>
               <Text
                 style={applyStyles('text-sm text-700 text-gray-300 uppercase')}>
-                {customer.name}
+                {customer?.name}
               </Text>
             </View>
             <View>
               <Text style={applyStyles('text-sm text-400 text-gray-300')}>
-                {customer.mobile}
+                {customer?.mobile}
               </Text>
             </View>
           </View>

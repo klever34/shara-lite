@@ -34,7 +34,9 @@ export const TransactionListItem = ({
     }
     if (receipt?.dueDate) {
       if (receipt.dueDate.getTime() < Date.now()) {
-        return `due ${formatDistanceToNowStrict(receipt.dueDate)}`;
+        return `due ${formatDistanceToNowStrict(receipt.dueDate, {
+          addSuffix: true,
+        })}`;
       } else {
         return `collect on ${format(receipt?.dueDate, 'dd MMM, yyy')}`;
       }
