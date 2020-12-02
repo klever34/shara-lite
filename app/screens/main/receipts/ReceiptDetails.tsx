@@ -14,6 +14,7 @@ import {
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
+import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
@@ -26,6 +27,7 @@ import {
 } from '@/services';
 import {saveCreditPayment} from '@/services/CreditPaymentService';
 import {getCustomers, saveCustomer} from '@/services/customer';
+import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {useReceipt} from '@/services/receipt';
@@ -49,9 +51,6 @@ import {
 } from 'react-native-bluetooth-escpos-printer';
 import {ReceiptListItem} from './ReceiptListItem';
 import {useReceiptProvider} from './ReceiptProvider';
-import {ToastContext} from '@/components/Toast';
-import {useIPGeolocation} from '@/services/ip-geolocation';
-import {useFinance} from '@/services/finance';
 
 type ReceiptDetailsProps = ModalWrapperFields & {
   receipt?: IReceipt;
@@ -64,7 +63,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const {getReceiptAmounts} = useReceipt();
-  const {getTotalCredit} = useFinance();
   const {handleClearReceipt, createReceiptFromCustomer} = useReceiptProvider();
 
   const customers = getCustomers({realm});
@@ -72,8 +70,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const storageService = getStorageService();
   const analyticsService = getAnalyticsService();
   const currencyCode = getAuthService().getUserCurrencyCode();
-  let {totalAmountPaid} = getReceiptAmounts(receipt);
-  const creditAmountLeft = getTotalCredit({credits: receipt?.credits});
+  let {totalAmountPaid, creditAmountLeft} = getReceiptAmounts(receipt);
 
   const [receiptImage, setReceiptImage] = useState('');
   const [printer, setPrinter] = useState<{address: string}>(
