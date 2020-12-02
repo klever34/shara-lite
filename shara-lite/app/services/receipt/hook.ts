@@ -202,7 +202,7 @@ export const useReceipt = (): useReceiptInterface => {
       await fullTrace.stop();
     };
 
-    addReceiptDetails().then(() => {});
+    await addReceiptDetails();
 
     return receipt;
   };

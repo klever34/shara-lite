@@ -7,6 +7,8 @@ import {Text, View, ViewStyle} from 'react-native';
 import {Icon} from './Icon';
 import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
+import {HeaderBackButton} from '@/components/HeaderBackButton';
+import {useAppNavigation} from '@/services/navigation';
 
 export type CustomerDetailsHeaderProps = {
   style?: ViewStyle;
@@ -14,6 +16,7 @@ export type CustomerDetailsHeaderProps = {
   onPress?: () => void;
   renderLeftSection?: () => ReactNode;
   renderRightSection?: () => ReactNode;
+  backButton?: boolean;
 };
 
 const CustomerDetailsHeader = ({
@@ -22,6 +25,7 @@ const CustomerDetailsHeader = ({
   customer,
   renderLeftSection,
   renderRightSection,
+  backButton = true,
 }: CustomerDetailsHeaderProps) => {
   const credit = customer?.credits && customer.credits[0];
   const creditCreatedAt = credit?.created_at;
@@ -75,54 +79,75 @@ const CustomerDetailsHeader = ({
     return renderRightSection;
   }, [credit, customer, renderRightSection]);
 
+  const navigation = useAppNavigation();
+
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
       <View
-        style={applyStyles(
-          'px-16 py-16 flex-row items-center justify-between',
-          {
-            borderBottomWidth: 1,
-            borderBottomColor: colors['gray-10'],
+        style={applyStyles('flex-row bg-white items-center', {
+          shadowColor: '#000',
+          shadowOffset: {
+            width: 0,
+            height: 2,
           },
-          style,
-        )}>
-        <View style={applyStyles('flex-row items-center', {width: '48%'})}>
-          {!customer ? (
-            <View style={applyStyles('flex-row items-center')}>
-              <View
-                style={applyStyles('center bg-gray-20', {
-                  width: 30,
-                  height: 30,
-                  borderRadius: 15,
-                })}>
-                <Icon
-                  size={16}
-                  name="plus"
-                  type="feathericons"
-                  color={colors['gray-50']}
-                />
+          shadowOpacity: 0.34,
+          shadowRadius: 6.27,
+          elevation: 10,
+          borderBottomColor: colors['gray-10'],
+        })}>
+        {backButton && (
+          <HeaderBackButton
+            iconName="arrow-left"
+            onPress={() => navigation.goBack()}
+          />
+        )}
+        <View
+          style={applyStyles(
+            'px-16 py-16 flex-row items-center justify-between flex-1',
+            {
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-10'],
+            },
+            style,
+          )}>
+          <View style={applyStyles('flex-row items-center', {width: '48%'})}>
+            {!customer ? (
+              <View style={applyStyles('flex-row items-center')}>
+                <View
+                  style={applyStyles('center bg-gray-20', {
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                  })}>
+                  <Icon
+                    size={16}
+                    name="plus"
+                    type="feathericons"
+                    color={colors['gray-50']}
+                  />
+                </View>
+                <View style={applyStyles('pl-8')}>
+                  <Text
+                    style={applyStyles(
+                      'pb-4 text-700 text-sm text-primary text-uppercase',
+                      {
+                        textDecorationLine: 'underline',
+                      },
+                    )}>
+                    Add Customer details
+                  </Text>
+                </View>
               </View>
-              <View style={applyStyles('pl-8')}>
-                <Text
-                  style={applyStyles(
-                    'pb-4 text-700 text-sm text-primary text-uppercase',
-                    {
-                      textDecorationLine: 'underline',
-                    },
-                  )}>
-                  Add Customer details
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <>
-              <PlaceholderImage text={customer?.name ?? ''} />
-              <View style={applyStyles('pl-sm')}>{renderLeftSection()}</View>
-            </>
-          )}
-        </View>
-        <View style={applyStyles('items-end', {width: '48%'})}>
-          {renderRightSection()}
+            ) : (
+              <>
+                <PlaceholderImage text={customer?.name ?? ''} />
+                <View style={applyStyles('pl-sm')}>{renderLeftSection()}</View>
+              </>
+            )}
+          </View>
+          <View style={applyStyles('items-end', {width: '48%'})}>
+            {renderRightSection()}
+          </View>
         </View>
       </View>
     </Touchable>

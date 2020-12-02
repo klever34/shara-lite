@@ -10,10 +10,13 @@ import {applyStyles} from '@/styles';
 import {AppInput} from '@/components';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {numberWithCommas} from '@/helpers/utils';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {CustomerListScreen} from './CustomerListScreen';
+import {handleError} from '@/services/error-boundary';
+import {useTransaction} from '@/services/transaction';
+import {useAppNavigation} from '@/services/navigation';
 
 type EntryButtonProps = {
   label?: string;
@@ -183,13 +186,15 @@ const calculate = (tokens: string[]) => {
 
 export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
   const [tokens, setTokens] = useState<string[]>(['0']);
-  const [displayedAmount, setDisplayedAmount] = useState('0');
+  const [amount, setAmount] = useState({
+    label: '0',
+    value: 0,
+  });
   const [calculated, setCalculated] = useState(false);
 
   const isValidAmount = useMemo(() => {
-    const amount = parseFloat(displayedAmount);
-    return calculated && amount !== 0;
-  }, [calculated, displayedAmount]);
+    return calculated && amount.value !== 0;
+  }, [amount.value, calculated]);
 
   const enterValue = useCallback((value: string) => {
     return () => {
@@ -241,15 +246,21 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
 
   const handleCalculate = useCallback(() => {
     try {
-      const result = calculate(tokens);
-      setDisplayedAmount(numberWithCommas(result));
+      const result = calculate(tokens) as number;
+      setAmount({
+        label: numberWithCommas(result),
+        value: result,
+      });
       setCalculated(true);
     } catch (e) {
-      setDisplayedAmount(
-        tokens.reduce((acc, curr) => {
-          return acc + curr;
-        }, ''),
-      );
+      setAmount(() => {
+        return {
+          label: tokens.reduce((acc, curr) => {
+            return acc + curr;
+          }, ''),
+          value: 0,
+        };
+      });
       setCalculated(false);
     }
   }, [tokens]);
@@ -263,18 +274,72 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
       ToastAndroid.show('Invalid Amount', ToastAndroid.SHORT);
     }
   }, [isValidAmount]);
+  const {youGave} = useTransaction();
 
-  const youGave = useCallback(() => {
-    const closeModal = openModal('full', {
+  const navigation = useAppNavigation();
+
+  const handleYouGave = useCallback(() => {
+    const closeFullModal = openModal('full', {
       renderContent: () => {
-        return <CustomerListScreen closeModal={closeModal} />;
+        return (
+          <CustomerListScreen
+            onClose={closeFullModal}
+            onSelectCustomer={(customer) => {
+              closeFullModal();
+              const closeLoadingModal = openModal('loading', {
+                text: 'Creating Transaction',
+              });
+              getAnalyticsService()
+                .logEvent('selectContent', {
+                  item_id:
+                    '_id' in customer ? customer?._id?.toString() ?? '' : '',
+                  content_type: 'customer',
+                })
+                .then(() => {});
+              youGave({customer, amount: amount.value})
+                .then((receipt) => {
+                  const {customer: nextCustomer} = receipt;
+                  navigation.navigate('CustomerDetails', {
+                    customer: nextCustomer,
+                    header: {
+                      backButton: false,
+                      style: applyStyles({left: 0}),
+                    },
+                    sendReminder: false,
+                    actionButtons: [
+                      {
+                        onPress: () => {
+                          navigation.goBack();
+                        },
+                        variantColor: 'red',
+                        style: applyStyles({width: '50%'}),
+                        children: (
+                          <Text
+                            style={applyStyles(
+                              'text-uppercase text-white text-700',
+                            )}>
+                            Finish
+                          </Text>
+                        ),
+                      },
+                    ],
+                  });
+                })
+                .catch(handleError)
+                .finally(() => {
+                  closeLoadingModal();
+                });
+            }}
+          />
+        );
       },
     });
-  }, [openModal]);
+  }, [amount.value, navigation, openModal, youGave]);
 
-  const youCollected = useCallback(() => {}, []);
+  const handleYouCollected = useCallback(() => {}, []);
 
   const currency = getAuthService().getUserCurrency();
+
   return (
     <View style={applyStyles('h-full')}>
       <View
@@ -301,7 +366,7 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
               'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center',
             )}
             numberOfLines={1}>
-            {`${currency} ${displayedAmount}`}
+            {`${currency} ${amount.label}`}
           </Text>
         </View>
         {isValidAmount && (
@@ -377,13 +442,13 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
                 label="You collected"
                 style={applyStyles('bg-green-200')}
                 textStyle={applyStyles('font-bold text-white')}
-                onPress={youCollected}
+                onPress={handleYouCollected}
               />
               <EntryButton
                 label="You gave"
                 style={applyStyles('bg-red-200')}
                 textStyle={applyStyles('font-bold text-white')}
-                onPress={youGave}
+                onPress={handleYouGave}
               />
             </>
           )}
