@@ -52,6 +52,8 @@ type SharaAppEventsProperties = {
   productAdded: undefined;
   inventoryReceived: undefined;
   deliveryAgentAdded: undefined;
+  syncStarted: {};
+  syncCompleted: {};
 };
 
 export interface IAnalyticsService {

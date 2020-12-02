@@ -8,7 +8,7 @@ import {
   getLocalLastSync,
   initLocalLastSyncStorage,
 } from '@/services/realm/utils/sync-storage';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 
 const syncInterval = 1000 * 20;
 
@@ -24,10 +24,12 @@ const useSyncLoader = () => {
     realm,
     localRealm,
     syncRealm,
+    modelUpdates,
     isSyncInProgress,
     setIsSyncInProgress,
     setIsSyncCompleted,
     setRealmUser,
+    setModelUpdates,
   } = useContext(RealmContext);
 
   const retryUpdate = () => {
@@ -37,13 +39,25 @@ const useSyncLoader = () => {
     }, syncInterval);
   };
 
+  const handleModelUpdates = (model: string) => {
+    const updatedModels = {
+      ...modelUpdates,
+      [model]: Date.now(),
+    };
+    setModelUpdates(updatedModels);
+  };
+
   const syncData = async ({
     newRealm,
     realmUser: user,
     partitionValue,
   }: initializeSyncSyncObject) => {
     const trace = await perf().startTrace('syncData');
+    getAnalyticsService()
+      .logEvent('syncStarted', {})
+      .then(() => {});
     setRealmUser(user);
+    syncRealm.current = newRealm;
 
     const lastLocalSync = await getLocalLastSync();
     localRealm.current &&
@@ -54,13 +68,16 @@ const useSyncLoader = () => {
       localRealm: localRealm.current,
       partitionValue,
       lastLocalSync,
+      onModelUpdate: handleModelUpdates,
     });
 
     setTimeout(() => {
       setIsSyncCompleted(true);
     }, 2000);
-    syncRealm.current = newRealm;
     await trace.stop();
+    getAnalyticsService()
+      .logEvent('syncCompleted', {})
+      .then(() => {});
   };
 
   const initializeSync = useCallback(
