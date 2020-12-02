@@ -1,6 +1,6 @@
 {
   "name": "shara",
-  "version": "0.4.15-bugfix.receipt-credit-payment+build.5056",
+  "version": "0.4.15-bugfix.receipt-credit-payment+build.5060",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
