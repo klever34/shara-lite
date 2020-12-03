@@ -44,7 +44,9 @@ export const CurrencyInput = forwardRef<TextInput, CurrencyInputProps>(
 
     useEffect(() => {
       if (valueProp) {
-        valueProp && setValue(toThousandString(valueProp.toString()));
+        setValue(toThousandString(valueProp.toString()));
+      } else {
+        setValue('');
       }
     }, [valueProp]);
 

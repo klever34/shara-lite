@@ -64,6 +64,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const realm = useRealm();
   const navigation = useAppNavigation();
   const {getReceiptAmounts} = useReceipt();
+  const {showSuccessToast} = useContext(ToastContext);
   const {handleClearReceipt, createReceiptFromCustomer} = useReceiptProvider();
 
   const customers = getCustomers({realm});
@@ -72,7 +73,6 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const analyticsService = getAnalyticsService();
   const currencyCode = getAuthService().getUserCurrencyCode();
   let {totalAmountPaid, creditAmountLeft} = getReceiptAmounts(receipt);
-  totalAmountPaid = totalAmountPaid || receipt?.total_amount;
 
   const [receiptImage, setReceiptImage] = useState('');
   const [printer, setPrinter] = useState<{address: string}>(
@@ -82,7 +82,9 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer,
   );
-  const [creditPaymentAmount, setCreditPaymentAmount] = useState(0);
+  const [creditPaymentAmount, setCreditPaymentAmount] = useState<
+    number | undefined
+  >();
   const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
   const [isCancelReceiptModalOpen, setIsCancelReceiptModalOpen] = useState(
     false,
@@ -408,7 +410,7 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
       navigation.navigate('Home');
     }
   }, [createReceiptFromCustomer, handleClearReceipt, navigation]);
-  const {showSuccessToast} = useContext(ToastContext);
+
   const handleCancelReceipt = useCallback(
     (note) => {
       setTimeout(() => {
@@ -430,15 +432,15 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
   }, []);
 
   const handleCreditPaymentSubmit = useCallback(() => {
-    if (customer?.name) {
+    if (customer?.name && creditPaymentAmount) {
       saveCreditPayment({
         realm,
-        customer,
         receipt,
+        customer,
         method: '',
         amount: creditPaymentAmount,
       });
-      setCreditPaymentAmount(0);
+      setCreditPaymentAmount(undefined);
       showSuccessToast('CREDIT PAYMENT RECORDED');
       Keyboard.dismiss();
     } else {
@@ -596,9 +598,10 @@ export const ReceiptDetails = withModal((props: ReceiptDetailsProps) => {
                     )}>
                     <View style={applyStyles({width: '48%'})}>
                       <CurrencyInput
+                        placeholder="0.00"
                         value={creditPaymentAmount}
-                        onChangeText={handleCreditPaymentAmountChange}
                         onSubmitEditing={handleCreditPaymentSubmit}
+                        onChangeText={handleCreditPaymentAmountChange}
                       />
                     </View>
                     <View style={applyStyles({width: '48%'})}>
