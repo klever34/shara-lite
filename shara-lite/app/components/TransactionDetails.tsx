@@ -1,4 +1,4 @@
-import {Button, DatePicker, ButtonProps} from '@/components';
+import {Button, ButtonProps, DatePicker} from '@/components';
 import CustomerDetailsHeader, {
   CustomerDetailsHeaderProps,
 } from '@/components/CustomerDetailsHeader';
@@ -16,6 +16,7 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
+import {useTransaction} from '@/services/transaction';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
@@ -65,6 +66,7 @@ const TransactionDetails = ({
   };
 
   const {handleSmsShare, handleWhatsappShare} = useShare(shareProps);
+  const {updateDueDate} = useTransaction();
 
   const onSmsShare = useCallback(() => {
     analyticsService
@@ -88,11 +90,21 @@ const TransactionDetails = ({
     handleWhatsappShare();
   }, [analyticsService, handleWhatsappShare]);
 
-  const handleDueDateChange = useCallback((date?: Date) => {
-    if (date) {
-      setDueDate(date);
-    }
-  }, []);
+  const handleDueDateChange = useCallback(
+    async (date?: Date) => {
+      if (date) {
+        setDueDate(date);
+        if (customer) {
+          try {
+            await updateDueDate({due_date: date, customer});
+          } catch (e) {
+            console.log('*****', e);
+          }
+        }
+      }
+    },
+    [customer, updateDueDate],
+  );
 
   const renderTransactionItem = useCallback(
     ({item: transaction}: {item: IReceipt}) => {

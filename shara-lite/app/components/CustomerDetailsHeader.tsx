@@ -68,10 +68,7 @@ const CustomerDetailsHeader = ({
               You will collect
             </Text>
             <Text style={applyStyles('pb-4 text-700 text-red-200')}>
-              {amountWithCurrency(
-                customer?.overdueCreditAmount ||
-                  customer?.remainingCreditAmount,
-              )}
+              {amountWithCurrency(customer?.remainingCreditAmount)}
             </Text>
           </>
         );

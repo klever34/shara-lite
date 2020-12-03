@@ -68,7 +68,8 @@ export const CustomerListScreen = () => {
     }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'> & {
       onPress?: () => void;
     }) => {
-      const credit = customer?.credits && customer.credits[0];
+      const credit =
+        customer?.credits && customer.credits[customer?.credits.length - 1];
       if (!customer) {
         return (
           <EmptyState
@@ -80,7 +81,7 @@ export const CustomerListScreen = () => {
       }
 
       const getDateText = () => {
-        if (credit?.due_date) {
+        if (customer?.dueDate) {
           if (customer.overdueCreditAmount) {
             return (
               <Text
@@ -88,7 +89,7 @@ export const CustomerListScreen = () => {
                   'text-xxs text-700 text-red-200 text-uppercase',
                 )}>
                 Due{' '}
-                {formatDistanceToNowStrict(credit.due_date, {
+                {formatDistanceToNowStrict(customer.dueDate, {
                   addSuffix: true,
                 })}
               </Text>
@@ -99,7 +100,7 @@ export const CustomerListScreen = () => {
                 style={applyStyles(
                   'text-xxs text-700 text-gray-200 text-uppercase',
                 )}>
-                collect on {format(credit.due_date, 'dd MMM yyyy')}
+                collect on {format(customer.dueDate, 'dd MMM yyyy')}
               </Text>
             );
           }
@@ -153,10 +154,7 @@ export const CustomerListScreen = () => {
             {!!customer.remainingCreditAmount && (
               <View style={applyStyles('items-end')}>
                 <Text style={applyStyles('text-sm text-700 text-red-200')}>
-                  {amountWithCurrency(
-                    customer.overdueCreditAmount ||
-                      customer.remainingCreditAmount,
-                  )}
+                  {amountWithCurrency(customer.remainingCreditAmount)}
                 </Text>
                 {getDateText()}
               </View>

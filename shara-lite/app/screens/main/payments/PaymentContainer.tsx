@@ -538,7 +538,7 @@ function PaymentContainer(props: ModalWrapperFields) {
             </Touchable>
           </View>
 
-          <View style={applyStyles('pt-24 px-16')}>
+          <View style={applyStyles('pt-24 px-16 pb-48')}>
             <Button title="Add New Payment" onPress={handleOpenAddItemModal} />
           </View>
         </View>
