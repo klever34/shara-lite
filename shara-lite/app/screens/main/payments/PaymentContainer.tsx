@@ -471,8 +471,34 @@ function PaymentContainer(props: ModalWrapperFields) {
         </View>
       ) : (
         <View>
+          <View style={applyStyles('center')}>
+            <Touchable onPress={handleOpenPreviewModal}>
+              <View
+                style={applyStyles(
+                  'py-8 px-16 rounded-8 flex-row items-center bg-gray-20',
+                )}>
+                <Icon
+                  name="eye"
+                  size={16}
+                  type="feathericons"
+                  color={colors['gray-50']}
+                />
+                <Text
+                  style={applyStyles(
+                    'pl-4 text-700 text-gray-200 text-uppercase',
+                  )}>
+                  Preview your payment page
+                </Text>
+              </View>
+            </Touchable>
+          </View>
+
+          <View style={applyStyles('p-16')}>
+            <Button title="Add New Payment" onPress={handleOpenAddItemModal} />
+          </View>
           <FlatList
             data={paymentOptions}
+            style={applyStyles('pb-56')}
             renderItem={({item}) => (
               <View
                 style={applyStyles(
@@ -515,32 +541,6 @@ function PaymentContainer(props: ModalWrapperFields) {
             )}
             keyExtractor={(item, index) => `${item.slug}-${index}`}
           />
-
-          <View style={applyStyles('center pt-24')}>
-            <Touchable onPress={handleOpenPreviewModal}>
-              <View
-                style={applyStyles(
-                  'py-8 px-16 rounded-8 flex-row items-center bg-gray-20',
-                )}>
-                <Icon
-                  name="eye"
-                  size={16}
-                  type="feathericons"
-                  color={colors['gray-50']}
-                />
-                <Text
-                  style={applyStyles(
-                    'pl-4 text-700 text-gray-200 text-uppercase',
-                  )}>
-                  Preview your payment page
-                </Text>
-              </View>
-            </Touchable>
-          </View>
-
-          <View style={applyStyles('pt-24 px-16 pb-48')}>
-            <Button title="Add New Payment" onPress={handleOpenAddItemModal} />
-          </View>
         </View>
       )}
     </ScrollView>

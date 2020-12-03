@@ -12,11 +12,12 @@ import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {ShareHookProps, useShare} from '@/services/share';
+import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
-import {useTransaction} from '@/services/transaction';
+import * as Animatable from 'react-native-animatable';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
@@ -155,7 +156,7 @@ const TransactionDetails = ({
           header?.style,
         )}
       />
-      {transactions?.length && (
+      {!!transactions?.length && (
         <>
           {!isPaid && (
             <View style={applyStyles('bg-white center py-16')}>
@@ -259,6 +260,32 @@ const TransactionDetails = ({
             />
           </View>
         </>
+      )}
+      {customer && !transactions?.length && (
+        <View
+          style={applyStyles(
+            'center bg-gray-20 p-16 bottom-80 absolute w-full',
+          )}>
+          <Text style={applyStyles('pb-16 text-center text-700')}>
+            Add first transaction for {customer?.name}
+          </Text>
+          <Animatable.View
+            duration={200}
+            animation={{
+              from: {translateY: -10},
+              to: {translateY: 0},
+            }}
+            direction="alternate"
+            useNativeDriver={true}
+            iterationCount="infinite">
+            <Icon
+              size={20}
+              name="arrow-down"
+              type="feathericons"
+              color={colors.primary}
+            />
+          </Animatable.View>
+        </View>
       )}
       {!!showActionButtons && (
         <View
