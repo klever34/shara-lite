@@ -1,6 +1,6 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
-type FieldData = {
+export type FieldData = {
   key: string;
   label: string;
   value: string;

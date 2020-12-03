@@ -33,7 +33,7 @@ interface useTransactionInterface {
   youGave: (data: youGaveInterface) => Promise<IReceipt>;
   youGot: (data: youGotInterface) => Promise<IReceipt>;
   addCustomerToTransaction: (data: addCustomerToTransactionInterface) => void;
-  updateDueDate: (data: updateDueDateInterface) => void;
+  updateDueDate: (data: updateDueDateInterface) => Promise<void>;
 }
 
 export const useTransaction = (): useTransactionInterface => {

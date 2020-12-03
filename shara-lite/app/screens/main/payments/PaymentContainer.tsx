@@ -10,8 +10,9 @@ import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
 import {Picker} from '@react-native-community/picker';
 import {Formik} from 'formik';
+import {omit} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {FlatList, Image, ScrollView, Text, View} from 'react-native';
+import {Alert, FlatList, Image, ScrollView, Text, View} from 'react-native';
 import {PaymentProvider} from 'types/app';
 
 function PaymentContainer(props: ModalWrapperFields) {
@@ -29,6 +30,8 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [paymentProviders, setPaymentProviders] = useState<PaymentProvider[]>(
     [],
   );
+  const [isSaving, setIsSaving] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const getMobileNumber = useCallback(() => {
@@ -40,23 +43,37 @@ function PaymentContainer(props: ModalWrapperFields) {
   }, [business.country_code, business.mobile, callingCode]);
 
   const onFormSubmit = useCallback(
-    (values) => {
-      console.log(values);
-      savePaymentOption({paymentOption: values});
+    async (values: IPaymentOption) => {
+      if (values?.fieldsData?.every((item) => item.value)) {
+        setIsSaving(true);
+        await savePaymentOption({paymentOption: values});
+        setIsSaving(false);
+      } else {
+        Alert.alert('Waring', 'Please fill all the fields in the form');
+      }
     },
     [savePaymentOption],
   );
 
   const handleEditItem = useCallback(
-    (items, values) => {
-      updatePaymentOption({paymentOption: items, updates: values});
+    async (paymentOption: IPaymentOption, updates: Partial<IPaymentOption>) => {
+      if (updates?.fieldsData?.every((item) => item.value)) {
+        delete updates.fields;
+        setIsSaving(true);
+        await updatePaymentOption({paymentOption, updates});
+        setIsSaving(false);
+      } else {
+        Alert.alert('Waring', 'Please fill all the fields in the form');
+      }
     },
     [updatePaymentOption],
   );
 
   const handleRemoveItem = useCallback(
-    (values) => {
-      deletePaymentOption({paymentOption: values});
+    async (values) => {
+      setIsDeleting(true);
+      await deletePaymentOption({paymentOption: values});
+      setIsDeleting(false);
     },
     [deletePaymentOption],
   );
@@ -71,13 +88,9 @@ function PaymentContainer(props: ModalWrapperFields) {
             )}>
             add Payment info
           </Text>
-          <Formik<{
-            name?: string;
-            slug?: string;
-            fieldsData?: Array<{key?: string; label?: string; value?: string}>;
-          }>
+          <Formik<IPaymentOption>
             onSubmit={onFormSubmit}
-            initialValues={{slug: ''}}>
+            initialValues={{slug: '', name: '', fieldsData: []}}>
             {({values, setFieldValue, handleSubmit}) => (
               <View style={applyStyles('px-16 py-24')}>
                 <Picker
@@ -108,7 +121,6 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
-                    keyboardType="numeric"
                     placeholder={field.label}
                     style={applyStyles('mt-24')}
                     value={
@@ -140,6 +152,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                   />
                   <Button
                     title="Save"
+                    isLoading={isSaving}
                     style={applyStyles({width: '48%'})}
                     onPress={() => {
                       handleSubmit();
@@ -153,10 +166,11 @@ function PaymentContainer(props: ModalWrapperFields) {
         </>
       ),
     });
-  }, [openModal, onFormSubmit, paymentProviders]);
+  }, [openModal, isSaving, onFormSubmit, paymentProviders]);
 
   const handleOpenEditItemModal = useCallback(
     (item: IPaymentOption) => {
+      const initialValues = omit(item);
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
           <>
@@ -166,80 +180,80 @@ function PaymentContainer(props: ModalWrapperFields) {
               )}>
               edit Payment info
             </Text>
-            <Formik<{
-              name?: string;
-              slug?: string;
-              fieldsData?: Array<{
-                key?: string;
-                label?: string;
-                value?: string;
-              }>;
-            }>
-              initialValues={item}
+            <Formik<IPaymentOption>
+              initialValues={{
+                ...initialValues,
+                fieldsData: initialValues.fields
+                  ? JSON.parse(initialValues.fields)
+                  : [],
+              }}
               onSubmit={(values) => handleEditItem(item, values)}>
-              {({values, setFieldValue, handleSubmit}) => (
-                <View style={applyStyles('px-16 py-24')}>
-                  {values?.fieldsData?.map((field, index) => (
-                    <AppInput
-                      key={field.key}
-                      keyboardType="numeric"
-                      placeholder={field.label}
-                      style={applyStyles('mt-24')}
-                      value={
-                        values?.fieldsData
-                          ? values?.fieldsData[index]?.value
-                          : ''
-                      }
-                      onChangeText={(text: string) => {
-                        const updatedFieldsData = values?.fieldsData?.map(
-                          (fieldData) => {
-                            if (fieldData.key === field.key) {
-                              return {...fieldData, value: text};
-                            }
-                            return fieldData;
-                          },
-                        );
-                        setFieldValue('fieldsData', updatedFieldsData);
-                      }}
-                    />
-                  ))}
+              {({values, setFieldValue, handleSubmit}) => {
+                return (
+                  <View style={applyStyles('px-16 py-24')}>
+                    {values?.fieldsData?.map((field, index) => (
+                      <AppInput
+                        key={field.key}
+                        placeholder={field.label}
+                        style={applyStyles('mt-24')}
+                        value={
+                          values?.fieldsData
+                            ? values?.fieldsData[index]?.value
+                            : ''
+                        }
+                        onChangeText={(text: string) => {
+                          const updatedFieldsData = values?.fieldsData?.map(
+                            (fieldData) => {
+                              if (fieldData.key === field.key) {
+                                return {...fieldData, value: text};
+                              }
+                              return fieldData;
+                            },
+                          );
+                          setFieldValue('fieldsData', updatedFieldsData);
+                        }}
+                      />
+                    ))}
 
-                  <View
-                    style={applyStyles(
-                      'pt-24 flex-row items-center justify-between',
-                    )}>
-                    <Button
-                      title="Remove"
-                      style={applyStyles({width: '48%'})}
-                      onPress={() => {
-                        handleRemoveItem(item);
-                        closeModal();
-                      }}
-                      variantColor="transparent"
-                    />
-                    <Button
-                      title="Save"
-                      style={applyStyles({width: '48%'})}
-                      onPress={() => {
-                        handleSubmit();
-                        closeModal();
-                      }}
-                    />
+                    <View
+                      style={applyStyles(
+                        'pt-24 flex-row items-center justify-between',
+                      )}>
+                      <Button
+                        title="Remove"
+                        isLoading={isDeleting}
+                        style={applyStyles({width: '48%'})}
+                        onPress={() => {
+                          handleRemoveItem(item);
+                          closeModal();
+                        }}
+                        variantColor="transparent"
+                      />
+                      <Button
+                        title="Save"
+                        isLoading={isSaving}
+                        style={applyStyles({width: '48%'})}
+                        onPress={() => {
+                          handleSubmit();
+                          closeModal();
+                        }}
+                      />
+                    </View>
                   </View>
-                </View>
-              )}
+                );
+              }}
             </Formik>
           </>
         ),
       });
     },
-    [openModal, handleEditItem, handleRemoveItem],
+    [openModal, isSaving, isDeleting, handleEditItem, handleRemoveItem],
   );
 
   const handleOpenPreviewModal = useCallback(() => {
     openModal('full', {
       renderContent: () => (
-        <View style={applyStyles('flex-1 bg-gray-10 px-16')}>
+        <View style={applyStyles('flex-1 bg-gray-10 px-16 mb-10')}>
           <View style={applyStyles('flex-row justify-between items-center')}>
             <Image
               resizeMode="contain"
@@ -334,12 +348,12 @@ function PaymentContainer(props: ModalWrapperFields) {
             </View>
           </View>
 
-          <View style={applyStyles('center')}>
+          <View style={applyStyles('items-center flex-1')}>
             <Text style={applyStyles('text-center text-700 text-gray-300')}>
               CREATE RECEIPTS WITH SHARA FOR FREE. DOWNLOAD NOW.
             </Text>
           </View>
-          <View style={applyStyles('bottom-16 absolute center')}>
+          <View style={applyStyles('items-center')}>
             <Text style={applyStyles('text-center text-gray-100 text-sm')}>
               Powered by Shara Inc © 2020
             </Text>
@@ -380,7 +394,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       keyboardShouldPersistTaps="always"
       style={applyStyles('py-24 bg-white flex-1')}>
       {paymentOptions.length === 0 ? (
-        <View style={applyStyles('px-16')}>
+        <View style={applyStyles('px-16 flex-1')}>
           <View style={applyStyles('center pb-32')}>
             <SecureEmblem />
             <Text
@@ -391,13 +405,9 @@ function PaymentContainer(props: ModalWrapperFields) {
               can know how to pay you.
             </Text>
           </View>
-          <Formik<{
-            name?: string;
-            slug?: string;
-            fieldsData?: Array<{key?: string; label?: string; value?: string}>;
-          }>
+          <Formik<IPaymentOption>
             onSubmit={onFormSubmit}
-            initialValues={{slug: ''}}>
+            initialValues={{slug: '', name: '', fieldsData: []}}>
             {({values, setFieldValue, handleSubmit}) => (
               <>
                 <Picker
@@ -428,7 +438,6 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
-                    keyboardType="numeric"
                     placeholder={field.label}
                     style={applyStyles('mt-24')}
                     value={
@@ -451,6 +460,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                 <View style={applyStyles('pt-24')}>
                   <Button
                     title="Save"
+                    isLoading={isSaving}
                     onPress={handleSubmit}
                     disabled={!values.slug}
                   />
@@ -528,7 +538,7 @@ function PaymentContainer(props: ModalWrapperFields) {
             </Touchable>
           </View>
 
-          <View style={applyStyles('pt-24 px-16')}>
+          <View style={applyStyles('pt-24 px-16 pb-48')}>
             <Button title="Add New Payment" onPress={handleOpenAddItemModal} />
           </View>
         </View>

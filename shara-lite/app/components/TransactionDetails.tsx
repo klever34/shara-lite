@@ -31,15 +31,15 @@ export type TransactionDetailsProps = {
 };
 
 const TransactionDetails = ({
+  header,
   customer,
   creditAmount,
   transactions,
+  actionButtons,
   isPaid = false,
+  sendReminder = true,
   dueDate: creditDueDate,
   showActionButtons = true,
-  header,
-  sendReminder = true,
-  actionButtons,
 }: TransactionDetailsProps) => {
   const analyticsService = getAnalyticsService();
   const businessInfo = getAuthService().getBusinessInfo();
@@ -90,18 +90,21 @@ const TransactionDetails = ({
     handleWhatsappShare();
   }, [analyticsService, handleWhatsappShare]);
 
-  const handleDueDateChange = useCallback(async (date?: Date) => {
-    if (date) {
-      setDueDate(date);
-      if (customer) {
-        try {
-          await updateDueDate({due_date: date, customer});
-        } catch (e) {
-          console.log('*****', e);
+  const handleDueDateChange = useCallback(
+    async (date?: Date) => {
+      if (date) {
+        setDueDate(date);
+        if (customer) {
+          try {
+            await updateDueDate({due_date: date, customer});
+          } catch (e) {
+            console.log('*****', e);
+          }
         }
       }
-    }
-  }, []);
+    },
+    [customer, updateDueDate],
+  );
 
   const renderTransactionItem = useCallback(
     ({item: transaction}: {item: IReceipt}) => {
@@ -184,7 +187,7 @@ const TransactionDetails = ({
                   </Touchable>
                 )}
               </DatePicker>
-              {sendReminder && (
+              {!!sendReminder && (
                 <View style={applyStyles('flex-row items-center')}>
                   <Text
                     style={applyStyles(
@@ -257,7 +260,7 @@ const TransactionDetails = ({
           </View>
         </>
       )}
-      {showActionButtons && (
+      {!!showActionButtons && (
         <View
           style={applyStyles(
             'p-16 w-full bg-white flex-row justify-center items-center bottom-0 absolute',

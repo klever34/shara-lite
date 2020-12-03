@@ -73,7 +73,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
   }
 
   public get remainingCredit() {
-    return this.credits?.filtered('amount_left > 0');
+    return this.credits?.filtered('fulfilled = false AND amount_left > 0');
   }
 
   public get remainingCreditAmount() {

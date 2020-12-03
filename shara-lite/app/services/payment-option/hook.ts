@@ -10,7 +10,7 @@ interface savePaymentOptionInterface {
 
 interface updatePaymentOptionInterface {
   paymentOption: IPaymentOption;
-  updates: object;
+  updates: Partial<IPaymentOption>;
 }
 
 interface deletePaymentOptionInterface {
@@ -22,8 +22,8 @@ interface usePaymentOptionInterface {
   savePaymentOption: (
     data: savePaymentOptionInterface,
   ) => Promise<IPaymentOption>;
-  updatePaymentOption: (data: updatePaymentOptionInterface) => void;
-  deletePaymentOption: (data: deletePaymentOptionInterface) => void;
+  updatePaymentOption: (data: updatePaymentOptionInterface) => Promise<void>;
+  deletePaymentOption: (data: deletePaymentOptionInterface) => Promise<void>;
 }
 
 export const usePaymentOption = (): usePaymentOptionInterface => {
@@ -67,6 +67,13 @@ export const usePaymentOption = (): usePaymentOptionInterface => {
       ...updates,
       updated_at: new Date(),
     };
+
+    if (updates.fieldsData) {
+      updatedPaymentOption.fields = JSON.stringify(
+        updatedPaymentOption.fieldsData,
+      );
+      delete updatedPaymentOption.fieldsData;
+    }
 
     const trace = await perf().startTrace('updatePaymentOption');
     realm.write(() => {
