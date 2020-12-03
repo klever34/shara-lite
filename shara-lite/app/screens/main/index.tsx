@@ -21,6 +21,7 @@ import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
 } from './entry/SelectCustomerList';
+import {CustomerEntryScreen} from './customers/CustomerEntryScreen';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -28,6 +29,7 @@ export type MainStackParamList = {
   // Customers
   SelectCustomerList: SelectCustomerListScreenParams;
   CustomerDetails: TransactionDetailsProps;
+  CustomerEntry: undefined;
 
   // Transaction
   TransactionDetails: {transaction: IReceipt};
@@ -103,6 +105,12 @@ const MainScreens = () => {
       <MainStack.Screen
         name="SelectCustomerList"
         component={SelectCustomerListScreen}
+        options={{headerShown: false}}
+      />
+
+      <MainStack.Screen
+        name="CustomerEntry"
+        component={CustomerEntryScreen}
         options={{headerShown: false}}
       />
 

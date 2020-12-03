@@ -18,6 +18,7 @@ import {format} from 'date-fns';
 import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import {useAppNavigation} from '@/services/navigation';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
@@ -113,12 +114,14 @@ const TransactionDetails = ({
     },
     [],
   );
-
+  const navigation = useAppNavigation();
   actionButtons = useMemo(() => {
     if (!actionButtons) {
       return [
         {
-          onPress: () => {},
+          onPress: () => {
+            navigation.navigate('CustomerEntry');
+          },
           variantColor: 'green',
           style: applyStyles('flex-1 mr-4'),
           children: (
@@ -128,7 +131,9 @@ const TransactionDetails = ({
           ),
         },
         {
-          onPress: () => {},
+          onPress: () => {
+            navigation.navigate('CustomerEntry');
+          },
           variantColor: 'red',
           style: applyStyles('flex-1 ml-4'),
           children: (
@@ -140,7 +145,7 @@ const TransactionDetails = ({
       ];
     }
     return actionButtons;
-  }, [actionButtons]);
+  }, [actionButtons, navigation]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
