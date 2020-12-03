@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
 import {Page} from '@/components/Page';
 import {FlatList, View, Text, ListRenderItemInfo} from 'react-native';
 import {getContactService} from '@/services';
@@ -13,6 +13,9 @@ import PlaceholderImage from '@/components/PlaceholderImage';
 import {RouteProp} from '@react-navigation/native';
 import {MainStackParamList} from '@/screens/main';
 import {useAppNavigation} from '@/services/navigation';
+import {SearchFilter} from '@/components';
+import * as JsSearch from 'js-search';
+import throttle from 'lodash/throttle';
 
 export type SelectCustomerListItem =
   | Pick<ICustomer, 'name' | 'mobile' | '_id'>
@@ -123,6 +126,27 @@ export const SelectCustomerListScreen = ({
     [onSelectCustomer],
   );
   const navigation = useAppNavigation();
+  const [searchText, setSearchText] = useState('');
+  const searchRef = useRef(new JsSearch.Search('mobile'));
+  useEffect(() => {
+    const {current: search} = searchRef;
+    search.addIndex('name');
+    search.addIndex('mobile');
+    search.addDocuments(data);
+  }, [data]);
+  const [filteredData, setFilterData] = useState(data);
+  const onSearch = useCallback(
+    throttle((query: string) => {
+      const {current: search} = searchRef;
+      setSearchText(query);
+      if (query) {
+        setFilterData(search.search(query) as SelectCustomerListItem[]);
+      } else {
+        setFilterData(data);
+      }
+    }, 750),
+    [data],
+  );
   return (
     <Page
       header={{
@@ -133,10 +157,15 @@ export const SelectCustomerListScreen = ({
         },
       }}
       style={applyStyles('px-0 py-0')}>
+      <SearchFilter
+        placeholderText="Search customers on phonebook"
+        value={searchText}
+        onSearch={onSearch}
+      />
       <FlatList
         renderItem={renderCustomerListItem}
         keyExtractor={keyExtractor}
-        data={data}
+        data={filteredData}
       />
     </Page>
   );
