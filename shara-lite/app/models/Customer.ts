@@ -26,6 +26,7 @@ export interface ICustomer extends BaseModelInterface {
   remainingCredit?: Realm.Results<ICredit & Realm.Object>;
   remainingCreditAmount?: number;
   debtLevel?: DEBT_LEVEL;
+  dueDate?: Date | undefined;
 }
 
 export const modelName = 'Customer';
@@ -105,5 +106,15 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       return DEBT_LEVEL.IN_DEBT;
     }
     return DEBT_LEVEL.NO_DEBT;
+  }
+
+  public get dueDate() {
+    const credits = this.credits
+      ?.filtered(
+        'is_deleted = false AND due_date != null AND fulfilled = false',
+      )
+      .sorted('due_date');
+
+    return credits?.length ? credits[0].due_date : undefined;
   }
 }
