@@ -10,8 +10,11 @@ import {ICustomer} from '@/models';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/styles';
 import PlaceholderImage from '@/components/PlaceholderImage';
+import {RouteProp} from '@react-navigation/native';
+import {MainStackParamList} from '@/screens/main';
+import {useAppNavigation} from '@/services/navigation';
 
-type CustomerListItem =
+export type SelectCustomerListItem =
   | Pick<ICustomer, 'name' | 'mobile' | '_id'>
   | {
       name: string;
@@ -19,17 +22,22 @@ type CustomerListItem =
     };
 const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
 
-type CustomerListScreenProps = {
-  onClose: () => void;
-  onSelectCustomer: (customer: CustomerListItem) => void;
+export type SelectCustomerListScreenParams = {
+  onSelectCustomer: (customer: SelectCustomerListItem) => void;
 };
 
-export const CustomerListScreen = ({
-  onClose,
-  onSelectCustomer,
-}: CustomerListScreenProps) => {
+export type SelectCustomerListScreenProps = {
+  route: RouteProp<MainStackParamList, 'SelectCustomerList'>;
+};
+
+export const SelectCustomerListScreen = ({
+  route,
+}: SelectCustomerListScreenProps) => {
+  const {onSelectCustomer} = route.params;
   const realm = useRealm();
-  const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
+  const [phoneContacts, setPhoneContacts] = useState<SelectCustomerListItem[]>(
+    [],
+  );
   const {run: runGetPhoneContacts} = useAsync(getPhoneContactsPromiseFn, {
     defer: true,
   });
@@ -37,7 +45,7 @@ export const CustomerListScreen = ({
     const customers = getCustomers({realm});
     runGetPhoneContacts().then((contacts) => {
       setPhoneContacts(
-        contacts.reduce<CustomerListItem[]>(
+        contacts.reduce<SelectCustomerListItem[]>(
           (acc, {givenName, familyName, phoneNumber}) => {
             const existing = customers.filtered(
               `mobile = "${phoneNumber.number}"`,
@@ -72,7 +80,7 @@ export const CustomerListScreen = ({
         'desc',
         'asc',
       ]),
-      ...orderBy(phoneContacts, ['name'] as (keyof CustomerListItem)[], [
+      ...orderBy(phoneContacts, ['name'] as (keyof SelectCustomerListItem)[], [
         'asc',
       ]),
     ],
@@ -83,7 +91,7 @@ export const CustomerListScreen = ({
     ({
       item: customer,
       onPress,
-    }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'> & {
+    }: Pick<ListRenderItemInfo<SelectCustomerListItem | null>, 'item'> & {
       onPress?: () => void;
     }) => {
       return (
@@ -114,13 +122,14 @@ export const CustomerListScreen = ({
     },
     [onSelectCustomer],
   );
+  const navigation = useAppNavigation();
   return (
     <Page
       header={{
         title: 'Select Customer',
         iconLeft: {
           iconName: 'x',
-          onPress: onClose,
+          onPress: navigation.goBack,
         },
       }}
       style={applyStyles('px-0 py-0')}>

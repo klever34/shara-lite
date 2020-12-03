@@ -21,12 +21,11 @@ import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {numberWithCommas} from '@/helpers/utils';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {CustomerListScreen} from './CustomerListScreen';
 import {handleError} from '@/services/error-boundary';
 import {useTransaction} from '@/services/transaction';
 import {useAppNavigation} from '@/services/navigation';
 import SecureEmblem from '@/assets/images/emblem.svg';
+import {SelectCustomerListItem} from './SelectCustomerList';
 
 type EntryButtonProps = {
   label?: string;
@@ -194,7 +193,7 @@ const calculate = (tokens: string[]) => {
   }
 };
 
-export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
+export const EntryScreen = () => {
   const [tokens, setTokens] = useState<string[]>(['0']);
   const [amount, setAmount] = useState({
     label: '0',
@@ -290,64 +289,47 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
   const navigation = useAppNavigation();
 
   const handleYouGave = useCallback(() => {
-    const closeFullModal = openModal('full', {
-      renderContent: () => {
-        return (
-          <CustomerListScreen
-            onClose={closeFullModal}
-            onSelectCustomer={(customer) => {
-              closeFullModal();
-              const closeLoadingModal = openModal('loading', {
-                text: 'Creating Transaction',
-              });
-              getAnalyticsService()
-                .logEvent('selectContent', {
-                  item_id:
-                    '_id' in customer ? customer?._id?.toString() ?? '' : '',
-                  content_type: 'customer',
-                })
-                .then(() => {});
-              youGave({customer, amount: amount.value, note})
-                .then((receipt) => {
-                  const {customer: nextCustomer} = receipt;
-                  navigation.navigate('CustomerDetails', {
-                    customer: nextCustomer,
-                    header: {
-                      backButton: false,
-                      style: applyStyles({left: 0}),
-                    },
-                    sendReminder: false,
-                    actionButtons: [
-                      {
-                        onPress: () => {
-                          navigation.goBack();
-                        },
-                        variantColor: 'red',
-                        style: applyStyles({width: '50%'}),
-                        children: (
-                          <Text
-                            style={applyStyles(
-                              'text-uppercase text-white text-700',
-                            )}>
-                            Finish
-                          </Text>
-                        ),
-                      },
-                    ],
-                  });
-                  setNote('');
-                  setAmount({label: '0', value: 0});
-                })
-                .catch(handleError)
-                .finally(() => {
-                  closeLoadingModal();
-                });
-            }}
-          />
-        );
+    navigation.navigate('SelectCustomerList', {
+      onSelectCustomer: (customer: SelectCustomerListItem) => {
+        getAnalyticsService()
+          .logEvent('selectContent', {
+            item_id: '_id' in customer ? customer?._id?.toString() ?? '' : '',
+            content_type: 'customer',
+          })
+          .then(() => {});
+        youGave({customer, amount: amount.value, note})
+          .then((receipt) => {
+            const {customer: nextCustomer} = receipt;
+            navigation.navigate('CustomerDetails', {
+              customer: nextCustomer,
+              header: {
+                backButton: false,
+                style: applyStyles({left: 0}),
+              },
+              sendReminder: false,
+              actionButtons: [
+                {
+                  onPress: () => {
+                    navigation.navigate('EntryTab');
+                  },
+                  variantColor: 'red',
+                  style: applyStyles({width: '50%'}),
+                  children: (
+                    <Text
+                      style={applyStyles('text-uppercase text-white text-700')}>
+                      Finish
+                    </Text>
+                  ),
+                },
+              ],
+            });
+            setNote('');
+            setAmount({label: '0', value: 0});
+          })
+          .catch(handleError);
       },
     });
-  }, [amount.value, navigation, note, openModal, youGave]);
+  }, [amount.value, navigation, note, youGave]);
 
   const currency = getAuthService().getUserCurrency();
 
@@ -379,14 +361,16 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
   ).current;
 
   const handleYouCollected = useCallback(() => {
-    youGot({amount: amount.value, note}).then(() => {
-      showSuccessView();
-      setTimeout(() => {
-        hideSuccessView();
-      }, 2000);
-      setNote('');
-      setAmount({label: '0', value: 0});
-    });
+    youGot({amount: amount.value, note})
+      .then(() => {
+        showSuccessView();
+        setTimeout(() => {
+          hideSuccessView();
+        }, 2000);
+        setNote('');
+        setAmount({label: '0', value: 0});
+      })
+      .catch(handleError);
   }, [amount.value, hideSuccessView, note, showSuccessView, youGot]);
   return (
     <View style={applyStyles('h-full')}>
@@ -524,4 +508,4 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
       </View>
     </View>
   );
-});
+};
