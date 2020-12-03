@@ -350,10 +350,9 @@ export const useReceipt = (): useReceiptInterface => {
       (total, payment) => total + payment.amount_paid,
       0,
     );
-    const creditAmountLeft = receiptData?.credits?.reduce(
-      (acc, item) => acc + item.amount_left,
-      0,
-    );
+    const creditAmountLeft = receiptData?.credits
+      ?.filter((item) => !item.fulfilled)
+      .reduce((acc, item) => acc + item.amount_left, 0);
     return {totalAmountPaid, creditAmountLeft};
   };
 

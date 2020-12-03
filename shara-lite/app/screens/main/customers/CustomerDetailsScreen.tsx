@@ -17,11 +17,6 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
   const transactionDetailsProps = route.params;
   const {customer} = transactionDetailsProps;
 
-  const creditAmountLeft = customer?.credits?.reduce(
-    (acc, item) => acc + item.amount_left,
-    0,
-  );
-
   const filteredReceipts = useMemo(() => {
     return (customer?.receipts?.sorted(
       'created_at',
@@ -34,7 +29,7 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
       <TransactionDetails
         dueDate={customer?.dueDate}
         transactions={filteredReceipts}
-        creditAmount={creditAmountLeft}
+        creditAmount={customer?.remainingCreditAmount}
         {...transactionDetailsProps}
       />
     </CustomerContext.Provider>

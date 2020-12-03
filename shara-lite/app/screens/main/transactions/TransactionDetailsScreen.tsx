@@ -12,10 +12,9 @@ const TransactionDetailsScreen = ({route}: TransactionDetailsScreenProps) => {
   const customer = transaction?.customer;
   const creditDueDate = transaction?.dueDate;
 
-  const creditAmountLeft = transaction?.credits?.reduce(
-    (acc, item) => acc + item.amount_left,
-    0,
-  );
+  const creditAmountLeft = transaction?.credits
+    ?.filter((item) => !item.fulfilled)
+    .reduce((acc, item) => acc + item.amount_left, 0);
 
   return (
     <TransactionDetails
