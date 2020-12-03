@@ -325,6 +325,7 @@ export const EntryScreen = () => {
             });
             setNote('');
             setAmount({label: '0', value: 0});
+            setTokens(['0']);
           })
           .catch(handleError);
       },
@@ -369,6 +370,7 @@ export const EntryScreen = () => {
         }, 2000);
         setNote('');
         setAmount({label: '0', value: 0});
+        setTokens(['0']);
       })
       .catch(handleError);
   }, [amount.value, hideSuccessView, note, showSuccessView, youGot]);
