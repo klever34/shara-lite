@@ -91,7 +91,7 @@ export const Login = () => {
       onSubmit={handleSubmit}
       heading="Welcome Back"
       style={applyStyles('bg-white')}
-      header={{title: 'Sign In', iconLeft: {}}}
+      header={{title: 'Sign In'}}
       description="Sign in and enjoy all the features available on Shara. It only takes a few moments.">
       <View style={applyStyles('pb-32')}>
         <PhoneNumberField

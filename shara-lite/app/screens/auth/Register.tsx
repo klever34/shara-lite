@@ -4,14 +4,18 @@ import {
   PhoneNumber,
   PhoneNumberField,
 } from '@/components';
-import {getAnalyticsService, getApiService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getStorageService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useState} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import * as yup from 'yup';
 import {useInitRealm} from '@/services/realm';
@@ -39,6 +43,7 @@ const validationSchema = yup.object().shape({
 });
 
 export const Register = () => {
+  const storageService = getStorageService();
   const navigation = useAppNavigation();
   const {callingCode} = useIPGeolocation();
   const {initRealm} = useInitRealm();
@@ -93,9 +98,17 @@ export const Register = () => {
     }
   };
 
+  const hideWelcomeScreen = useCallback(async () => {
+    await storageService.setItem('hide-welcome-screen', true);
+  }, [storageService]);
+
+  useEffect(() => {
+    hideWelcomeScreen();
+  }, [hideWelcomeScreen]);
+
   return (
     <AuthView
-      header={{title: 'Sign up', iconLeft: {}}}
+      header={{title: 'Sign up'}}
       isLoading={loading}
       buttonTitle="Sign Up"
       onSubmit={handleSubmit}

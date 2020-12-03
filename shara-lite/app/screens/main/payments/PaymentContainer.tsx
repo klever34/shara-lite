@@ -253,7 +253,7 @@ function PaymentContainer(props: ModalWrapperFields) {
   const handleOpenPreviewModal = useCallback(() => {
     openModal('full', {
       renderContent: () => (
-        <View style={applyStyles('flex-1 bg-gray-10 px-16')}>
+        <View style={applyStyles('flex-1 bg-gray-10 px-16 mb-10')}>
           <View style={applyStyles('flex-row justify-between items-center')}>
             <Image
               resizeMode="contain"
@@ -348,12 +348,12 @@ function PaymentContainer(props: ModalWrapperFields) {
             </View>
           </View>
 
-          <View style={applyStyles('center')}>
+          <View style={applyStyles('items-center flex-1')}>
             <Text style={applyStyles('text-center text-700 text-gray-300')}>
               CREATE RECEIPTS WITH SHARA FOR FREE. DOWNLOAD NOW.
             </Text>
           </View>
-          <View style={applyStyles('bottom-16 absolute center')}>
+          <View style={applyStyles('items-center')}>
             <Text style={applyStyles('text-center text-gray-100 text-sm')}>
               Powered by Shara Inc © 2020
             </Text>

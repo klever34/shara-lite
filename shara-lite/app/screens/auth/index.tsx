@@ -1,8 +1,11 @@
 import {PhoneNumber} from '@/components';
 import ForgotPassword from '@/screens/auth/ForgotPassword';
 import ResetPassword from '@/screens/auth/ResetPassword';
+import {getStorageService} from '@/services';
+import {applyStyles, colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
-import React, {useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
+import {ActivityIndicator, View} from 'react-native';
 import {Login} from './Login';
 import {Register} from './Register';
 import {Welcome} from './Welcome';
@@ -19,6 +22,10 @@ export type AuthStackParamList = {
 const AuthStack = createStackNavigator<AuthStackParamList>();
 
 const AuthScreens = () => {
+  const [initialRouteName, setInitialRouteName] = useState<
+    keyof AuthStackParamList | undefined
+  >();
+
   useEffect(() => {
     // const realmService = getRealmService();
     const timer = setTimeout(() => {
@@ -26,8 +33,29 @@ const AuthScreens = () => {
       clearTimeout(timer);
     }, 100);
   }, []);
+
+  const storageService = getStorageService();
+  const setInitialRoute = useCallback(async () => {
+    const hideWelcomeScreen = await storageService.getItem(
+      'hide-welcome-screen',
+    );
+    setInitialRouteName(hideWelcomeScreen ? 'Login' : 'Welcome');
+  }, [storageService]);
+
+  useEffect(() => {
+    setInitialRoute();
+  }, [setInitialRoute]);
+
+  if (!initialRouteName) {
+    return (
+      <View style={applyStyles('flex-1 center')}>
+        <ActivityIndicator color={colors.primary} size={40} />
+      </View>
+    );
+  }
+
   return (
-    <AuthStack.Navigator>
+    <AuthStack.Navigator initialRouteName={initialRouteName}>
       <AuthStack.Screen
         name="Welcome"
         component={Welcome}
