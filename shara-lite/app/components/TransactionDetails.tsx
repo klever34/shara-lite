@@ -145,8 +145,9 @@ const TransactionDetails = ({
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <CustomerDetailsHeader
-        customer={customer}
         {...header}
+        isPaid={isPaid}
+        customer={customer}
         style={applyStyles(
           {
             left: -14,
@@ -163,7 +164,6 @@ const TransactionDetails = ({
               <DatePicker
                 //@ts-ignore
                 value={dueDate}
-                minimumDate={new Date()}
                 onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
                 {(toggleShow) => (
                   <Touchable onPress={toggleShow}>

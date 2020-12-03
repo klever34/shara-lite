@@ -24,9 +24,12 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
     ) as unknown) as IReceipt[];
   }, [customer]);
 
+  const isPaid = filteredReceipts?.every((item) => item.isPaid);
+
   return (
     <CustomerContext.Provider value={customer}>
       <TransactionDetails
+        isPaid={isPaid}
         dueDate={customer?.dueDate}
         transactions={filteredReceipts}
         creditAmount={customer?.remainingCreditAmount}

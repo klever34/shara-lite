@@ -11,23 +11,26 @@ import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {useAppNavigation} from '@/services/navigation';
 
 export type CustomerDetailsHeaderProps = {
+  isPaid?: boolean;
   style?: ViewStyle;
+  backButton?: boolean;
   customer?: ICustomer;
   onPress?: () => void;
   renderLeftSection?: () => ReactNode;
   renderRightSection?: () => ReactNode;
-  backButton?: boolean;
 };
 
 const CustomerDetailsHeader = ({
   style,
+  isPaid,
   onPress,
   customer,
   renderLeftSection,
   renderRightSection,
   backButton = true,
 }: CustomerDetailsHeaderProps) => {
-  const credit = customer?.credits && customer.credits[0];
+  const credit =
+    customer?.credits && customer.credits[customer?.credits.length - 1];
   const creditCreatedAt = credit?.created_at;
 
   renderLeftSection = useMemo(() => {
@@ -142,9 +145,11 @@ const CustomerDetailsHeader = ({
               </>
             )}
           </View>
-          <View style={applyStyles('items-end', {width: '48%'})}>
-            {renderRightSection()}
-          </View>
+          {!isPaid && (
+            <View style={applyStyles('items-end', {width: '48%'})}>
+              {renderRightSection()}
+            </View>
+          )}
         </View>
       </View>
     </Touchable>
