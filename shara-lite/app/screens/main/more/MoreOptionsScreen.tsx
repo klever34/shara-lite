@@ -133,6 +133,7 @@ export const MoreOptionsScreen = () => {
     );
   }, [handleLogout]);
 
+  const user = getAuthService().getUser();
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const getMobieNumber = useCallback(() => {
@@ -215,7 +216,7 @@ export const MoreOptionsScreen = () => {
                 style={applyStyles('text-400 text-xs leading-16 uppercase', {
                   color: colors['gray-100'],
                 })}>
-                ID: {business.id}
+                ID: {user?.id}
               </Text>
             </View>
             <HeaderBackButton
