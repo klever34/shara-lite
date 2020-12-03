@@ -1,7 +1,7 @@
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {Page} from '@/components/Page';
 import {FlatList, View, Text, ListRenderItemInfo} from 'react-native';
-import {getAnalyticsService, getContactService} from '@/services';
+import {getContactService} from '@/services';
 import {useAsync} from '@/services/api';
 import {useRealm} from '@/services/realm';
 import {getCustomers} from '@/services/customer';
@@ -10,18 +10,9 @@ import {ICustomer} from '@/models';
 import Touchable from '@/components/Touchable';
 import {applyStyles} from '@/styles';
 import PlaceholderImage from '@/components/PlaceholderImage';
-import {useTransaction} from '@/services/transaction';
-import {handleError} from '@/services/error-boundary';
 
 type CustomerListItem =
-  | Pick<
-      ICustomer,
-      | 'name'
-      | 'mobile'
-      | 'remainingCreditAmount'
-      | 'overdueCreditAmount'
-      | '_id'
-    >
+  | Pick<ICustomer, 'name' | 'mobile' | '_id'>
   | {
       name: string;
       mobile?: string;
@@ -29,10 +20,14 @@ type CustomerListItem =
 const getPhoneContactsPromiseFn = () => getContactService().getPhoneContacts();
 
 type CustomerListScreenProps = {
-  closeModal: () => void;
+  onClose: () => void;
+  onSelectCustomer: (customer: CustomerListItem) => void;
 };
 
-export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
+export const CustomerListScreen = ({
+  onClose,
+  onSelectCustomer,
+}: CustomerListScreenProps) => {
   const realm = useRealm();
   const [phoneContacts, setPhoneContacts] = useState<CustomerListItem[]>([]);
   const {run: runGetPhoneContacts} = useAsync(getPhoneContactsPromiseFn, {
@@ -83,25 +78,6 @@ export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
     ],
     [myCustomers, phoneContacts],
   );
-  const {youGave} = useTransaction();
-  console.log('render');
-  const handleSelectCustomer = useCallback(
-    (customer?: ICustomer) => {
-      getAnalyticsService()
-        .logEvent('selectContent', {
-          item_id: customer?._id?.toString() ?? '',
-          content_type: 'customer',
-        })
-        .then(() => {});
-      customer &&
-        youGave({customer, amount: 0})
-          .then(() => {
-            closeModal();
-          })
-          .catch(handleError);
-    },
-    [closeModal, youGave],
-  );
 
   const renderCustomerListItem = useCallback(
     ({
@@ -114,7 +90,7 @@ export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
         <Touchable
           onPress={() => {
             onPress?.();
-            customer && handleSelectCustomer(customer);
+            customer && onSelectCustomer(customer);
           }}>
           <View
             style={applyStyles(
@@ -136,7 +112,7 @@ export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
         </Touchable>
       );
     },
-    [handleSelectCustomer],
+    [onSelectCustomer],
   );
   return (
     <Page
@@ -144,9 +120,7 @@ export const CustomerListScreen = ({closeModal}: CustomerListScreenProps) => {
         title: 'Select Customer',
         iconLeft: {
           iconName: 'x',
-          onPress: () => {
-            closeModal();
-          },
+          onPress: onClose,
         },
       }}
       style={applyStyles('px-0 py-0')}>

@@ -14,9 +14,8 @@ type CustomerDetailsScreenProps = {
 };
 
 const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
-  const {customer} = route.params;
-  const credit = customer?.credits && customer.credits[0];
-  const creditDueDate = credit?.due_date;
+  const transactionDetailsProps = route.params;
+  const {customer} = transactionDetailsProps;
 
   const creditAmountLeft = customer?.credits?.reduce(
     (acc, item) => acc + item.amount_left,
@@ -24,19 +23,19 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
   );
 
   const filteredReceipts = useMemo(() => {
-    return (customer.receipts?.sorted(
+    return (customer?.receipts?.sorted(
       'created_at',
       true,
     ) as unknown) as IReceipt[];
-  }, [customer.receipts]);
+  }, [customer]);
 
   return (
     <CustomerContext.Provider value={customer}>
       <TransactionDetails
-        customer={customer}
-        dueDate={creditDueDate}
+        dueDate={customer?.dueDate}
         transactions={filteredReceipts}
         creditAmount={creditAmountLeft}
+        {...transactionDetailsProps}
       />
     </CustomerContext.Provider>
   );

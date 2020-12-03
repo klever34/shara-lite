@@ -1,5 +1,4 @@
 import EmptyState from '@/components/EmptyState';
-import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import CustomerDetailsScreen from '@/screens/main/customers/CustomerDetailsScreen';
 import {HomeScreen} from '@/screens/main/HomeScreen';
@@ -17,12 +16,13 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React, {useContext} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
+import {TransactionDetailsProps} from '@/components/TransactionDetails';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Customers
-  CustomerDetails: {customer: ICustomer};
+  CustomerDetails: TransactionDetailsProps;
 
   // Transaction
   TransactionDetails: {transaction: IReceipt};
@@ -90,7 +90,7 @@ const MainScreens = () => {
         name="CustomerDetails"
         component={CustomerDetailsScreen}
         options={({route}) => ({
-          title: route.params.customer.name,
+          title: route.params.customer?.name,
           headerShown: false,
         })}
       />

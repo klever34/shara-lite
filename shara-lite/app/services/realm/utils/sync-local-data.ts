@@ -4,15 +4,17 @@ import {syncRealmDbs} from '@/services/realm/utils/sync-realm-dbs';
 import {normalizeDb} from '@/services/realm/utils/normalizations';
 
 export const syncLocalData = ({
-  syncRealm,
-  localRealm,
-  partitionValue,
-  lastLocalSync,
-}: {
+                                syncRealm,
+                                localRealm,
+                                partitionValue,
+                                lastLocalSync,
+                                onModelUpdate,
+                              }: {
   syncRealm?: Realm;
   localRealm?: Realm;
   partitionValue: string;
   lastLocalSync: any | undefined;
+  onModelUpdate: (name: string) => void;
 }) => {
   if (!syncRealm || !localRealm) {
     return;
@@ -50,5 +52,6 @@ export const syncLocalData = ({
     sourceRealm: syncRealm,
     targetRealm: localRealm,
     partitionValue,
+    onModelUpdate,
   });
 };

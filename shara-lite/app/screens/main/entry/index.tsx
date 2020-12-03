@@ -4,16 +4,29 @@ import React, {
   useEffect,
   useMemo,
   useState,
+  useRef,
 } from 'react';
-import {View, Text, ToastAndroid, ViewStyle, TextStyle} from 'react-native';
+import {
+  View,
+  Text,
+  ToastAndroid,
+  ViewStyle,
+  TextStyle,
+  Animated,
+  PanResponder,
+} from 'react-native';
 import {applyStyles} from '@/styles';
 import {AppInput} from '@/components';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 import {numberWithCommas} from '@/helpers/utils';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {CustomerListScreen} from './CustomerListScreen';
+import {handleError} from '@/services/error-boundary';
+import {useTransaction} from '@/services/transaction';
+import {useAppNavigation} from '@/services/navigation';
+import SecureEmblem from '@/assets/images/emblem.svg';
 
 type EntryButtonProps = {
   label?: string;
@@ -183,13 +196,15 @@ const calculate = (tokens: string[]) => {
 
 export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
   const [tokens, setTokens] = useState<string[]>(['0']);
-  const [displayedAmount, setDisplayedAmount] = useState('0');
+  const [amount, setAmount] = useState({
+    label: '0',
+    value: 0,
+  });
   const [calculated, setCalculated] = useState(false);
 
   const isValidAmount = useMemo(() => {
-    const amount = parseFloat(displayedAmount);
-    return calculated && amount !== 0;
-  }, [calculated, displayedAmount]);
+    return calculated && amount.value !== 0;
+  }, [amount.value, calculated]);
 
   const enterValue = useCallback((value: string) => {
     return () => {
@@ -241,15 +256,21 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
 
   const handleCalculate = useCallback(() => {
     try {
-      const result = calculate(tokens);
-      setDisplayedAmount(numberWithCommas(result));
+      const result = calculate(tokens) as number;
+      setAmount({
+        label: numberWithCommas(result),
+        value: result,
+      });
       setCalculated(true);
     } catch (e) {
-      setDisplayedAmount(
-        tokens.reduce((acc, curr) => {
-          return acc + curr;
-        }, ''),
-      );
+      setAmount(() => {
+        return {
+          label: tokens.reduce((acc, curr) => {
+            return acc + curr;
+          }, ''),
+          value: 0,
+        };
+      });
       setCalculated(false);
     }
   }, [tokens]);
@@ -263,52 +284,164 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
       ToastAndroid.show('Invalid Amount', ToastAndroid.SHORT);
     }
   }, [isValidAmount]);
+  const {youGave, youGot} = useTransaction();
+  const [note, setNote] = useState('');
 
-  const youGave = useCallback(() => {
-    const closeModal = openModal('full', {
+  const navigation = useAppNavigation();
+
+  const handleYouGave = useCallback(() => {
+    const closeFullModal = openModal('full', {
       renderContent: () => {
-        return <CustomerListScreen closeModal={closeModal} />;
+        return (
+          <CustomerListScreen
+            onClose={closeFullModal}
+            onSelectCustomer={(customer) => {
+              closeFullModal();
+              const closeLoadingModal = openModal('loading', {
+                text: 'Creating Transaction',
+              });
+              getAnalyticsService()
+                .logEvent('selectContent', {
+                  item_id:
+                    '_id' in customer ? customer?._id?.toString() ?? '' : '',
+                  content_type: 'customer',
+                })
+                .then(() => {});
+              youGave({customer, amount: amount.value, note})
+                .then((receipt) => {
+                  const {customer: nextCustomer} = receipt;
+                  navigation.navigate('CustomerDetails', {
+                    customer: nextCustomer,
+                    header: {
+                      backButton: false,
+                      style: applyStyles({left: 0}),
+                    },
+                    sendReminder: false,
+                    actionButtons: [
+                      {
+                        onPress: () => {
+                          navigation.goBack();
+                        },
+                        variantColor: 'red',
+                        style: applyStyles({width: '50%'}),
+                        children: (
+                          <Text
+                            style={applyStyles(
+                              'text-uppercase text-white text-700',
+                            )}>
+                            Finish
+                          </Text>
+                        ),
+                      },
+                    ],
+                  });
+                  setNote('');
+                  setAmount({label: '0', value: 0});
+                })
+                .catch(handleError)
+                .finally(() => {
+                  closeLoadingModal();
+                });
+            }}
+          />
+        );
       },
     });
-  }, [openModal]);
-
-  const youCollected = useCallback(() => {}, []);
+  }, [amount.value, navigation, note, openModal, youGave]);
 
   const currency = getAuthService().getUserCurrency();
+
+  const pan = useRef(new Animated.ValueXY({x: 0, y: -500})).current;
+
+  const showSuccessView = useCallback(() => {
+    Animated.timing(pan, {
+      toValue: {x: 0, y: 0},
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  }, [pan]);
+
+  const hideSuccessView = useCallback(() => {
+    Animated.spring(pan, {
+      toValue: {x: 0, y: -500},
+      useNativeDriver: true,
+    }).start();
+  }, [pan]);
+
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: () => true,
+      onPanResponderMove: Animated.event([null, {dy: pan.y}], {
+        useNativeDriver: false,
+      }),
+      onPanResponderRelease: hideSuccessView,
+    }),
+  ).current;
+
+  const handleYouCollected = useCallback(() => {
+    youGot({amount: amount.value, note}).then(() => {
+      showSuccessView();
+      setTimeout(() => {
+        hideSuccessView();
+      }, 2000);
+      setNote('');
+      setAmount({label: '0', value: 0});
+    });
+  }, [amount.value, hideSuccessView, note, showSuccessView, youGot]);
   return (
     <View style={applyStyles('h-full')}>
       <View
-        style={applyStyles('pt-24 pb-16 px-16 bg-white justify-center', {
+        style={applyStyles('bg-white justify-center relative', {
           flex: 3,
         })}>
-        {!isValidAmount && (
-          <View style={applyStyles('items-center mb-24')}>
-            <Text style={applyStyles('text-gray-100 text-xxs text-uppercase')}>
-              Last Transaction
+        <Animated.View
+          style={applyStyles(
+            'absolute bottom-0 right-0 w-full h-full bg-green-200 center',
+            {zIndex: 1, transform: [{translateX: pan.x}, {translateY: pan.y}]},
+          )}
+          {...panResponder.panHandlers}>
+          <SecureEmblem style={applyStyles('w-64 h-64')} />
+          <Text style={applyStyles('text-lg text-white mt-8 text-uppercase')}>
+            <Text>Transaction Added Successful</Text>
+          </Text>
+        </Animated.View>
+        <View style={applyStyles('pt-24 pb-16 px-16')}>
+          {!isValidAmount && (
+            <View style={applyStyles('items-center mb-24')}>
+              <Text
+                style={applyStyles('text-gray-100 text-xxs text-uppercase')}>
+                Last Transaction
+              </Text>
+              <Text style={applyStyles('text-gray-200 text-xs')}>
+                -₦200,000
+              </Text>
+            </View>
+          )}
+          <View style={applyStyles('mb-6')}>
+            <Text
+              style={applyStyles(
+                'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4',
+              )}>
+              Amount
             </Text>
-            <Text style={applyStyles('text-gray-200 text-xs')}>-₦200,000</Text>
+            <Text
+              style={applyStyles(
+                'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center',
+              )}
+              numberOfLines={1}>
+              {`${currency} ${amount.label}`}
+            </Text>
           </View>
-        )}
-        <View style={applyStyles('mb-6')}>
-          <Text
-            style={applyStyles(
-              'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4',
-            )}>
-            Amount
-          </Text>
-          <Text
-            style={applyStyles(
-              'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center',
-            )}
-            numberOfLines={1}>
-            {`${currency} ${displayedAmount}`}
-          </Text>
+          {isValidAmount && (
+            <View style={applyStyles('w-full')}>
+              <AppInput
+                placeholder="Enter Details (Rent, Bill, Loan...)"
+                value={note}
+                onChangeText={setNote}
+              />
+            </View>
+          )}
         </View>
-        {isValidAmount && (
-          <View style={applyStyles('w-full')}>
-            <AppInput placeholder="Enter Details (Rent, Bill, Loan...)" />
-          </View>
-        )}
       </View>
       <View style={applyStyles('bg-gray-20 px-8 py-16', {flex: 7})}>
         <View style={applyStyles('flex-row flex-1')}>
@@ -377,13 +510,13 @@ export const EntryScreen = withModal(({openModal}: ModalWrapperFields) => {
                 label="You collected"
                 style={applyStyles('bg-green-200')}
                 textStyle={applyStyles('font-bold text-white')}
-                onPress={youCollected}
+                onPress={handleYouCollected}
               />
               <EntryButton
                 label="You gave"
                 style={applyStyles('bg-red-200')}
                 textStyle={applyStyles('font-bold text-white')}
-                onPress={youGave}
+                onPress={handleYouGave}
               />
             </>
           )}

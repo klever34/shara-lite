@@ -70,7 +70,7 @@ function PaymentReminderImage({
             {date && format(date, 'dd MMM yyyy')}
           </Text>
           <View style={applyStyles('center pb-32')}>
-            {business.profile_image && (
+            {!!business.profile_image && (
               <View style={applyStyles('w-40 h-40 mb-12')}>
                 <Image
                   style={applyStyles('w-full h-full rounded-sm')}

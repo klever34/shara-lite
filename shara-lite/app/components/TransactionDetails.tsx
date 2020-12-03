@@ -1,4 +1,4 @@
-import {Button, DatePicker} from '@/components';
+import {Button, ButtonProps, DatePicker} from '@/components';
 import CustomerDetailsHeader, {
   CustomerDetailsHeaderProps,
 } from '@/components/CustomerDetailsHeader';
@@ -11,36 +11,36 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getAuthService} from '@/services';
-import {useAppNavigation} from '@/services/navigation';
 import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
-import {HeaderBackButton} from '@react-navigation/stack';
 import {format} from 'date-fns';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
+import {useTransaction} from '@/services/transaction';
 
-type TransactionDetailsProps = {
+export type TransactionDetailsProps = {
   dueDate?: Date;
   isPaid?: boolean;
   customer?: ICustomer;
   creditAmount?: number;
   transactions?: IReceipt[];
   showActionButtons?: boolean;
-  renderHeaderLeftSection?: CustomerDetailsHeaderProps['renderLeftSection'];
-  renderHeaderRightSection?: CustomerDetailsHeaderProps['renderRightSection'];
+  header?: Partial<CustomerDetailsHeaderProps>;
+  sendReminder?: boolean;
+  actionButtons?: ButtonProps[];
 };
 
 const TransactionDetails = ({
+  header,
   customer,
   creditAmount,
   transactions,
+  actionButtons,
   isPaid = false,
+  sendReminder = true,
   dueDate: creditDueDate,
   showActionButtons = true,
-  renderHeaderLeftSection,
-  renderHeaderRightSection,
 }: TransactionDetailsProps) => {
-  const navigation = useAppNavigation();
   const analyticsService = getAnalyticsService();
   const businessInfo = getAuthService().getBusinessInfo();
 
@@ -66,6 +66,7 @@ const TransactionDetails = ({
   };
 
   const {handleSmsShare, handleWhatsappShare} = useShare(shareProps);
+  const {updateDueDate} = useTransaction();
 
   const onSmsShare = useCallback(() => {
     analyticsService
@@ -89,11 +90,21 @@ const TransactionDetails = ({
     handleWhatsappShare();
   }, [analyticsService, handleWhatsappShare]);
 
-  const handleDueDateChange = useCallback((date?: Date) => {
-    if (date) {
-      setDueDate(date);
-    }
-  }, []);
+  const handleDueDateChange = useCallback(
+    async (date?: Date) => {
+      if (date) {
+        setDueDate(date);
+        if (customer) {
+          try {
+            await updateDueDate({due_date: date, customer});
+          } catch (e) {
+            console.log('*****', e);
+          }
+        }
+      }
+    },
+    [customer, updateDueDate],
+  );
 
   const renderTransactionItem = useCallback(
     ({item: transaction}: {item: IReceipt}) => {
@@ -102,34 +113,48 @@ const TransactionDetails = ({
     [],
   );
 
+  actionButtons = useMemo(() => {
+    if (!actionButtons) {
+      return [
+        {
+          onPress: () => {},
+          variantColor: 'green',
+          style: applyStyles('flex-1 mr-4'),
+          children: (
+            <Text style={applyStyles('text-uppercase text-white text-700')}>
+              You Collected
+            </Text>
+          ),
+        },
+        {
+          onPress: () => {},
+          variantColor: 'red',
+          style: applyStyles('flex-1 ml-4'),
+          children: (
+            <Text style={applyStyles('text-uppercase text-white text-700')}>
+              You Gave
+            </Text>
+          ),
+        },
+      ];
+    }
+    return actionButtons;
+  }, [actionButtons]);
+
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
-      <View
-        style={applyStyles('flex-row bg-white items-center', {
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.34,
-          shadowRadius: 6.27,
-          elevation: 10,
-          borderBottomColor: colors['gray-10'],
-        })}>
-        <HeaderBackButton
-          {...{iconName: 'arrow-left', onPress: () => navigation.goBack()}}
-        />
-        <CustomerDetailsHeader
-          customer={customer}
-          style={applyStyles({
+      <CustomerDetailsHeader
+        customer={customer}
+        {...header}
+        style={applyStyles(
+          {
             left: -14,
             borderBottomWidth: 0,
             width: Dimensions.get('window').width - 34,
-          })}
-          renderLeftSection={renderHeaderLeftSection}
-          renderRightSection={renderHeaderRightSection}
-        />
-      </View>
+          },
+          header?.style,
+        )}
+      />
       {transactions?.length && (
         <>
           {!isPaid && (
@@ -162,56 +187,58 @@ const TransactionDetails = ({
                   </Touchable>
                 )}
               </DatePicker>
-              <View style={applyStyles('flex-row items-center')}>
-                <Text
-                  style={applyStyles(
-                    'text-xs text-uppercase text-gray-50 text-700',
-                  )}>
-                  Send reminder:
-                </Text>
-                <View style={applyStyles('px-4')}>
-                  <Touchable onPress={onWhatsappShare}>
-                    <View
-                      style={applyStyles('px-2 flex-row center', {
-                        height: 48,
-                      })}>
-                      <Icon
-                        size={16}
-                        type="ionicons"
-                        name="logo-whatsapp"
-                        color={colors.whatsapp}
-                      />
-                      <Text
-                        style={applyStyles(
-                          'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                        )}>
-                        whatsapp
-                      </Text>
-                    </View>
-                  </Touchable>
+              {!!sendReminder && (
+                <View style={applyStyles('flex-row items-center')}>
+                  <Text
+                    style={applyStyles(
+                      'text-xs text-uppercase text-gray-50 text-700',
+                    )}>
+                    Send reminder:
+                  </Text>
+                  <View style={applyStyles('px-4')}>
+                    <Touchable onPress={onWhatsappShare}>
+                      <View
+                        style={applyStyles('px-2 flex-row center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={16}
+                          type="ionicons"
+                          name="logo-whatsapp"
+                          color={colors.whatsapp}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                          )}>
+                          whatsapp
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
+                  <View style={applyStyles('px-4')}>
+                    <Touchable onPress={onSmsShare}>
+                      <View
+                        style={applyStyles('px-2 flex-row center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={16}
+                          name="message-circle"
+                          type="feathericons"
+                          color={colors.primary}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                          )}>
+                          sms
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
                 </View>
-                <View style={applyStyles('px-4')}>
-                  <Touchable onPress={onSmsShare}>
-                    <View
-                      style={applyStyles('px-2 flex-row center', {
-                        height: 48,
-                      })}>
-                      <Icon
-                        size={16}
-                        name="message-circle"
-                        type="feathericons"
-                        color={colors.primary}
-                      />
-                      <Text
-                        style={applyStyles(
-                          'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                        )}>
-                        sms
-                      </Text>
-                    </View>
-                  </Touchable>
-                </View>
-              </View>
+              )}
             </View>
           )}
 
@@ -233,27 +260,14 @@ const TransactionDetails = ({
           </View>
         </>
       )}
-      {showActionButtons && (
+      {!!showActionButtons && (
         <View
           style={applyStyles(
-            'p-16 w-full bg-white flex-row justify-between items-center bottom-0 absolute',
+            'p-16 w-full bg-white flex-row justify-center items-center bottom-0 absolute',
           )}>
-          <Button
-            onPress={() => {}}
-            variantColor="green"
-            style={applyStyles({width: '48%'})}>
-            <Text style={applyStyles('text-uppercase text-white text-700')}>
-              You Collected
-            </Text>
-          </Button>
-          <Button
-            variantColor="red"
-            onPress={() => {}}
-            style={applyStyles({width: '48%'})}>
-            <Text style={applyStyles('text-uppercase text-white text-700')}>
-              You Gave
-            </Text>
-          </Button>
+          {actionButtons.map((actionButton) => (
+            <Button {...actionButton} />
+          ))}
         </View>
       )}
     </SafeAreaView>
