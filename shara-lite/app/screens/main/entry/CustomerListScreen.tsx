@@ -120,9 +120,7 @@ export const CustomerListScreen = ({
         title: 'Select Customer',
         iconLeft: {
           iconName: 'x',
-          onPress: () => {
-            onClose();
-          },
+          onPress: onClose,
         },
       }}
       style={applyStyles('px-0 py-0')}>
