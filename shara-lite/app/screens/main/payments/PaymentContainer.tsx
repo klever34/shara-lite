@@ -18,12 +18,12 @@ import {
   Image,
   ScrollView,
   Text,
-  // ToastAndroid,
-  // TouchableOpacity,
+  ToastAndroid,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import {PaymentProvider} from 'types/app';
-// import Clipboard from '@react-native-community/clipboard';
+import Clipboard from '@react-native-community/clipboard';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -44,10 +44,13 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [isDeleting, setIsDeleting] = useState(false);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
-  // const copyToClipboard = (content: string) => () => {
-  //   Clipboard.setString(content);
-  //   ToastAndroid.show('Copied', ToastAndroid.LONG);
-  // };
+  const copyToClipboard = (option: IPaymentOption) => {
+    const value = `${option.name}\n${option?.fieldsData?.map(
+      (field) => `${field.label}: ${field.value}`,
+    )}`;
+    Clipboard.setString(value);
+    ToastAndroid.show('Copied', ToastAndroid.LONG);
+  };
 
   const getMobileNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -354,21 +357,21 @@ function PaymentContainer(props: ModalWrapperFields) {
                         </Text>
                       ))}
                     </View>
-                    {/* <View>
-                      <TouchableOpacity onPress={copyToClipboard(item.name)}>
-                      <View
-                        style={applyStyles(
-                          'px-10 py-8 bg-gray-20 rounded-4 p-8',
-                        )}>
-                        <Text
+                    <View>
+                      <TouchableOpacity onPress={() => copyToClipboard(item)}>
+                        <View
                           style={applyStyles(
-                            'text-uppercase text-400 text-gray-300 text-xs',
+                            'px-10 py-8 bg-gray-20 rounded-4 p-8',
                           )}>
-                          Copy number
-                        </Text>
-                      </View>
+                          <Text
+                            style={applyStyles(
+                              'text-uppercase text-400 text-gray-300 text-xs',
+                            )}>
+                            Copy number
+                          </Text>
+                        </View>
                       </TouchableOpacity>
-                    </View> */}
+                    </View>
                   </View>
                 ))}
               </View>
