@@ -404,9 +404,11 @@ function PaymentContainer(props: ModalWrapperFields) {
   ]);
 
   const fectchPaymentProviders = useCallback(async () => {
-    const providers = await apiService.getPaymentProviders();
+    const providers = await apiService.getPaymentProviders({
+      country_code: business.country_code,
+    });
     setPaymentProviders(providers);
-  }, [apiService]);
+  }, [apiService, business]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
