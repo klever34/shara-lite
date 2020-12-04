@@ -164,3 +164,6 @@ type StatusFilter = {
   label: string;
   value: 'all' | 'unpaid' | 'paid' | 'pending' | 'cancelled';
 };
+
+//@ts-ignore
+declare module 'react-native-keyboard-aware-scrollview';

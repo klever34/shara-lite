@@ -12,15 +12,7 @@ import {Picker} from '@react-native-community/picker';
 import {Formik} from 'formik';
 import {omit} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  Image,
-  SafeAreaView,
-  ScrollView,
-  Text,
-  View,
-} from 'react-native';
+import {Alert, FlatList, Image, ScrollView, Text, View} from 'react-native';
 import {PaymentProvider} from 'types/app';
 
 function PaymentContainer(props: ModalWrapperFields) {
@@ -397,12 +389,12 @@ function PaymentContainer(props: ModalWrapperFields) {
   }, [fectchPaymentProviders]);
 
   return (
-    <SafeAreaView style={applyStyles('py-24 bg-white flex-1')}>
+    <ScrollView
+      persistentScrollbar
+      keyboardShouldPersistTaps="always"
+      style={applyStyles('py-24 bg-white flex-1')}>
       {paymentOptions.length === 0 ? (
-        <ScrollView
-          persistentScrollbar
-          keyboardShouldPersistTaps="always"
-          style={applyStyles('px-16 flex-1')}>
+        <View style={applyStyles('px-16 flex-1')}>
           <View style={applyStyles('center pb-32')}>
             <SecureEmblem />
             <Text
@@ -465,7 +457,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                   />
                 ))}
 
-                <View style={applyStyles('pt-24')}>
+                <View style={applyStyles('pt-24', {paddingBottom: 300})}>
                   <Button
                     title="Save"
                     isLoading={isSaving}
@@ -476,7 +468,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               </>
             )}
           </Formik>
-        </ScrollView>
+        </View>
       ) : (
         <View>
           <View style={applyStyles('center')}>
@@ -551,7 +543,7 @@ function PaymentContainer(props: ModalWrapperFields) {
           />
         </View>
       )}
-    </SafeAreaView>
+    </ScrollView>
   );
 }
 
