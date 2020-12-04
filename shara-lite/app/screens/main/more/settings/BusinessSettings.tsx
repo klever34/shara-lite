@@ -1,6 +1,5 @@
 import {
   BusinessFormPayload,
-  Button,
   FormBuilder,
   FormFields,
   PhoneNumber,
@@ -11,7 +10,7 @@ import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useMemo, useRef} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert} from 'react-native';
 
@@ -71,6 +70,14 @@ export const BusinessSettings = () => {
           rightIcon: 'globe',
           label: 'Enter your payment link?',
         },
+        validations: [
+          (fieldName, values) => {
+            if (values[fieldName].match(/[^a-z-]/)) {
+              return 'Payment link should contain only lowercase and dash';
+            }
+            return null;
+          },
+        ],
       },
       profileImageFile: {
         type: 'image',
@@ -84,52 +91,49 @@ export const BusinessSettings = () => {
     return fields;
   }, [address, callingCode, mobile, name, slug, profile_image]);
 
-  const formValuesRef = useRef<BusinessFormPayload>();
-  const handleSubmit = useCallback(async () => {
-    const {current: formValues} = formValuesRef;
-    if (!formValues) {
-      return;
-    }
-    const payload = new FormData();
-    payload.append('name', formValues?.name);
-    payload.append('address', formValues?.address);
-    formValues?.slug && payload.append('slug', formValues?.slug);
-    formValues?.mobile && payload.append('mobile', formValues?.mobile);
-    formValues?.countryCode &&
-      payload.append('country_code', formValues?.countryCode);
-    formValues?.profileImageFile &&
-      Object.keys(formValues?.profileImageFile).length > 1 &&
-      payload.append('profileImageFile', formValues?.profileImageFile);
-    try {
-      user?.businesses && user.businesses.length
-        ? await apiService.businessSetupUpdate(payload, id)
-        : await apiService.businessSetup(payload);
-      getAnalyticsService()
-        .logEvent('businessSetupComplete')
-        .catch(handleError);
-      showToast({message: 'Business settings update successful'});
-      navigation.goBack();
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    }
-  }, [user, apiService, navigation, id, handleError]);
+  const handleSubmit = useCallback(
+    async (formValues) => {
+      const phoneNumber = formValues.mobile as PhoneNumber;
+      formValues = {
+        ...formValues,
+        mobile: phoneNumber.number,
+        countryCode: phoneNumber.callingCode,
+      };
+      const payload = new FormData();
+      payload.append('name', formValues?.name);
+      payload.append('address', formValues?.address);
+      formValues?.slug && payload.append('slug', formValues?.slug);
+      formValues?.mobile && payload.append('mobile', formValues?.mobile);
+      formValues?.countryCode &&
+        payload.append('country_code', formValues?.countryCode);
+      formValues?.profileImageFile &&
+        Object.keys(formValues?.profileImageFile).length > 1 &&
+        payload.append('profileImageFile', formValues?.profileImageFile);
+      try {
+        user?.businesses && user.businesses.length
+          ? await apiService.businessSetupUpdate(payload, id)
+          : await apiService.businessSetup(payload);
+        getAnalyticsService()
+          .logEvent('businessSetupComplete')
+          .catch(handleError);
+        showToast({message: 'Business settings update successful'});
+        navigation.goBack();
+      } catch (error) {
+        Alert.alert('Error', error.message);
+      }
+    },
+    [user, apiService, navigation, id, handleError],
+  );
 
   return (
     <Page
       header={{title: 'Business Settings', iconLeft: {}}}
-      footer={<Button title={'Save'} onPress={handleSubmit} />}
       style={applyStyles('bg-white')}>
       <>
         <FormBuilder
           fields={formFields}
-          onInputChange={(values) => {
-            const phoneNumber = values.mobile as PhoneNumber;
-            formValuesRef.current = {
-              ...values,
-              mobile: phoneNumber.number,
-              countryCode: phoneNumber.callingCode,
-            };
-          }}
+          submitBtn={{title: 'Save'}}
+          onSubmit={handleSubmit}
         />
       </>
     </Page>
