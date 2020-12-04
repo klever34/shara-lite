@@ -23,6 +23,7 @@ import {MainStackParamList} from '..';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useRealmLogout} from '@/services/realm';
 import {SecureEmblem} from '@/components';
+import Config from 'react-native-config';
 
 export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
@@ -132,7 +133,7 @@ export const MoreOptionsScreen = () => {
 
   const user = getAuthService().getUser();
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
-  const paymentLink = `www.shara.co/pay/${business.slug}`;
+  const paymentLink = `${Config.WEB_BASE_URL}/pay/${business.slug}`;
 
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;

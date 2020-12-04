@@ -1,34 +1,33 @@
-import React, {
-  ReactNode,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  useRef,
-  createContext,
-  useContext,
-  SetStateAction,
-  Dispatch,
-  ComponentType,
-} from 'react';
-import {
-  View,
-  Text,
-  ToastAndroid,
-  ViewStyle,
-  TextStyle,
-  Animated,
-  PanResponder,
-  Keyboard,
-} from 'react-native';
-import {applyStyles} from '@/styles';
+import SecureEmblem from '@/assets/images/emblem.svg';
 import {AppInput} from '@/components';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {getAuthService} from '@/services';
 import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
-import SecureEmblem from '@/assets/images/emblem.svg';
 import {useReceiptList} from '@/screens/main/transactions/AllTransactionsListScreen';
+import {getAuthService} from '@/services';
+import {applyStyles} from '@/styles';
+import React, {
+  ComponentType,
+  createContext,
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  Animated,
+  PanResponder,
+  Keyboard,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 const getLastToken = (tokens: string[]) => {
   return tokens[tokens.length - 1];
@@ -382,12 +381,6 @@ export const TransactionEntryView = withTransactionEntry(
     useEffect(() => {
       handleCalculate();
     }, [handleCalculate]);
-
-    useEffect(() => {
-      if (!isValidAmount) {
-        ToastAndroid.show('Invalid Amount', ToastAndroid.SHORT);
-      }
-    }, [isValidAmount]);
 
     const currency = getAuthService().getUserCurrency();
 

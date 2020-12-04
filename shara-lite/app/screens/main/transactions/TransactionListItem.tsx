@@ -90,7 +90,7 @@ export const TransactionListItem = ({
           style,
         )}>
         <View style={applyStyles('flex-row items-center', {width: '48%'})}>
-          {receipt?.isPaid ? (
+          {receipt?.isPaid && !receipt.customer ? (
             <View style={applyStyles('flex-row items-center')}>
               <View
                 style={applyStyles('center bg-green-200', {

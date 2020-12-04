@@ -5,23 +5,24 @@ import CustomerDetailsHeader, {
 import {Icon} from '@/components/Icon';
 import PaymentReminderImage from '@/components/PaymentReminderImage';
 import Touchable from '@/components/Touchable';
+import {TransactionEntryContextProps} from '@/components/TransactionEntryView';
 import TransactionListHeader from '@/components/TransactionListHeader';
 import TransactionListItem from '@/components/TransactionListItem';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getAuthService} from '@/services';
+import {handleError} from '@/services/error-boundary';
+import {useAppNavigation} from '@/services/navigation';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useState, useMemo} from 'react';
+import Config from 'react-native-config';
+import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import {TransactionEntryContextProps} from '@/components/TransactionEntryView';
-import {handleError} from '@/services/error-boundary';
-import {useAppNavigation} from '@/services/navigation';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
@@ -56,7 +57,7 @@ const TransactionDetails = withModal(
       creditDueDate || undefined,
     );
 
-    const payLink = `www.shara.co/pay/${businessInfo.slug}`;
+    const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
 
     const paymentReminderMessage = `Hello ${
       customer?.name ?? ''
@@ -64,7 +65,7 @@ const TransactionDetails = withModal(
       businessInfo?.name
     }. You paid owe ${amountWithCurrency(creditAmount)} which is due on ${
       dueDate ? format(new Date(dueDate), 'MMM dd, yyyy') : ''
-    }.\n To Pay click.\n ${payLink}\n. Powered by Shara for free.\nwww.shara.co`;
+    }.\n\nTo Pay click.\n ${paymentLink}\n\n Powered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
@@ -207,7 +208,8 @@ const TransactionDetails = withModal(
               <View style={applyStyles('bg-white center py-16')}>
                 <DatePicker
                   //@ts-ignore
-                  value={dueDate}
+                  minimumDate={new Date()}
+                  value={dueDate ?? new Date()}
                   onChange={(e: Event, date?: Date) =>
                     handleDueDateChange(date)
                   }>
