@@ -129,7 +129,6 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
-                    label={field.label}
                     placeholder={field.label}
                     style={applyStyles('mt-24')}
                     value={
@@ -203,7 +202,6 @@ function PaymentContainer(props: ModalWrapperFields) {
                     {values?.fieldsData?.map((field, index) => (
                       <AppInput
                         key={field.key}
-                        label={field.label}
                         placeholder={field.label}
                         style={applyStyles('mt-24')}
                         value={
@@ -448,7 +446,6 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
-                    label={field.label}
                     placeholder={field.label}
                     style={applyStyles('mt-24')}
                     value={
