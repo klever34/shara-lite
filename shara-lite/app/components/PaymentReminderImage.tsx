@@ -3,7 +3,7 @@ import {getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import RNFetchBlob from 'rn-fetch-blob';
 import {Image, ScrollView, Text, View} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
@@ -22,6 +22,7 @@ function PaymentReminderImage({
 }) {
   const {callingCode} = useIPGeolocation();
   const business = getAuthService().getBusinessInfo();
+  const [, setRerenderDate] = useState(Date.now());
 
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -33,12 +34,18 @@ function PaymentReminderImage({
 
   const onCapture = useCallback(
     async (uri: any) => {
-      RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
-        getImageUri(data);
-      });
+      if (uri) {
+        RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
+          getImageUri(data);
+        });
+      }
     },
     [getImageUri],
   );
+
+  useEffect(() => {
+    setRerenderDate(Date.now());
+  }, [date]);
 
   return (
     <ScrollView>
