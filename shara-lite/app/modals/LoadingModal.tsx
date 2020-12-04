@@ -14,7 +14,11 @@ const LoadingModal = ({text, visible = false}: LoadingModalProps) => {
           borderRadius: 4,
           backgroundColor: colors.white,
         })}>
-        <ActivityIndicator size={32} style={applyStyles('mr-md')} />
+        <ActivityIndicator
+          size={32}
+          color={colors.primary}
+          style={applyStyles('mr-md')}
+        />
         <Text style={applyStyles('text-lg')}>{text}</Text>
       </View>
     </Modal>

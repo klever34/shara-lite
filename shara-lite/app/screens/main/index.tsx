@@ -20,7 +20,7 @@ import {TransactionDetailsProps} from '@/components/TransactionDetails';
 import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
-} from './entry/SelectCustomerList';
+} from './entry/SelectCustomerScreen';
 import {
   CustomerEntryScreen,
   CustomerEntryScreenParams,
