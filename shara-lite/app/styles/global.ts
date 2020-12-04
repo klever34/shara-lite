@@ -147,6 +147,21 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'text-700': {
     fontFamily: 'Roboto-Bold',
   },
+  'body-300': {
+    fontFamily: 'Rubik-Light',
+  },
+  'body-400': {
+    fontFamily: 'Rubik-Regular',
+  },
+  'body-500': {
+    fontFamily: 'Rubik-Medium',
+  },
+  'body-700': {
+    fontFamily: 'Rubik-Bold',
+  },
+  'body-900': {
+    fontFamily: 'Rubik-Black',
+  },
   'heading-100': {
     fontFamily: 'CocogoosePro-Thin',
   },

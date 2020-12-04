@@ -215,7 +215,8 @@ export const TransactionEntryButton = ({
       }}>
       <View style={applyStyles('flex-1 center bg-white rounded-16 m-4', style)}>
         {children || (
-          <Text style={applyStyles('text-base text-uppercase', textStyle)}>
+          <Text
+            style={applyStyles('text-base text-uppercase body-500', textStyle)}>
             {label}
           </Text>
         )}
@@ -426,10 +427,12 @@ export const TransactionEntryView = withTransactionEntry(
             {!isValidAmount && showLastTransactions && lastTransaction && (
               <View style={applyStyles('items-center mb-24')}>
                 <Text
-                  style={applyStyles('text-gray-100 text-xxs text-uppercase')}>
+                  style={applyStyles(
+                    'text-gray-100 text-xxs text-uppercase body-400',
+                  )}>
                   Last Transaction
                 </Text>
-                <Text style={applyStyles('text-gray-200 text-xs')}>
+                <Text style={applyStyles('text-gray-200 text-xs body-400')}>
                   {`${lastTransaction.isPaid ? '' : '-'}${amountWithCurrency(
                     lastTransaction.isPaid
                       ? lastTransaction.total_amount
@@ -441,13 +444,13 @@ export const TransactionEntryView = withTransactionEntry(
             <View style={applyStyles('mb-6')}>
               <Text
                 style={applyStyles(
-                  'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4',
+                  'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4 body-400',
                 )}>
                 Amount
               </Text>
               <Text
                 style={applyStyles(
-                  'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center',
+                  'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center body-400',
                 )}
                 numberOfLines={1}>
                 {`${currency} ${amount?.label}`}
