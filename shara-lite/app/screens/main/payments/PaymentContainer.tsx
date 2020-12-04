@@ -12,8 +12,18 @@ import {Picker} from '@react-native-community/picker';
 import {Formik} from 'formik';
 import {omit} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, FlatList, Image, ScrollView, Text, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Image,
+  ScrollView,
+  Text,
+  // ToastAndroid,
+  // TouchableOpacity,
+  View,
+} from 'react-native';
 import {PaymentProvider} from 'types/app';
+// import Clipboard from '@react-native-community/clipboard';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -33,6 +43,11 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+
+  // const copyToClipboard = (content: string) => () => {
+  //   Clipboard.setString(content);
+  //   ToastAndroid.show('Copied', ToastAndroid.LONG);
+  // };
 
   const getMobileNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -121,8 +136,8 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
-                    placeholder={field.label}
-                    style={applyStyles('mt-24')}
+                    label={field.label}
+                    style={applyStyles('mb-24')}
                     value={
                       values?.fieldsData ? values?.fieldsData[index]?.value : ''
                     }
@@ -194,8 +209,8 @@ function PaymentContainer(props: ModalWrapperFields) {
                     {values?.fieldsData?.map((field, index) => (
                       <AppInput
                         key={field.key}
-                        placeholder={field.label}
-                        style={applyStyles('mt-24')}
+                        label={field.label}
+                        style={applyStyles('mb-24')}
                         value={
                           values?.fieldsData
                             ? values?.fieldsData[index]?.value
@@ -253,115 +268,126 @@ function PaymentContainer(props: ModalWrapperFields) {
   const handleOpenPreviewModal = useCallback(() => {
     openModal('full', {
       renderContent: () => (
-        <View style={applyStyles('flex-1 bg-gray-10 px-16 mb-10')}>
-          <View style={applyStyles('flex-row justify-between items-center')}>
-            <Image
-              resizeMode="contain"
-              style={applyStyles('w-80 h-80')}
-              source={require('@/assets/images/shara_logo_red.png')}
-            />
-            <SecureEmblem style={applyStyles({width: 48, height: 48})} />
-          </View>
-          <View style={applyStyles('bg-white rounded-16 p-16 mb-24')}>
-            <View style={applyStyles('flex-row items-center')}>
-              <View style={applyStyles('w-80 h-80')}>
-                {business.profile_image && (
-                  <Image
-                    style={applyStyles('w-full h-full rounded-lg')}
-                    source={{
-                      uri: business.profile_image.url,
-                    }}
-                  />
-                )}
-              </View>
-              <View style={applyStyles('flex-1 px-12')}>
-                <Text
-                  style={applyStyles(
-                    'text-700 uppercase leading-16 text-gray-300 mb-4',
-                  )}>
-                  {business.name}
-                </Text>
-                <Text
-                  style={applyStyles(
-                    'text-400 text-sm leading-16 text-gray-300 mb-4',
-                  )}>
-                  {business.address}
-                </Text>
-                {!!business.mobile && (
+        <ScrollView
+          persistentScrollbar
+          keyboardShouldPersistTaps="always"
+          style={applyStyles('bg-white flex-1')}>
+          <View style={applyStyles('flex-1 bg-gray-10 px-16 h-screen')}>
+            <View style={applyStyles('flex-row justify-between items-center')}>
+              <Image
+                resizeMode="contain"
+                style={applyStyles('w-80 h-80')}
+                source={require('@/assets/images/shara_logo_red.png')}
+              />
+              <SecureEmblem style={applyStyles({width: 48, height: 48})} />
+            </View>
+            <View style={applyStyles('bg-white rounded-16 p-16 mb-24')}>
+              <View style={applyStyles('flex-row items-center')}>
+                <View style={applyStyles('w-80 h-80')}>
+                  {business.profile_image && (
+                    <Image
+                      style={applyStyles('w-full h-full rounded-lg')}
+                      source={{
+                        uri: business.profile_image.url,
+                      }}
+                    />
+                  )}
+                </View>
+                <View style={applyStyles('flex-1 px-12')}>
                   <Text
                     style={applyStyles(
-                      'text-400 text-sm leading-16  text-gray-300 mb-4',
-                      {
-                        color: colors['gray-300'],
-                      },
+                      'text-700 uppercase leading-16 text-gray-300 mb-4',
                     )}>
-                    Tel: {getMobileNumber()}
+                    {business.name}
                   </Text>
-                )}
-              </View>
-            </View>
-
-            <View>
-              <Text
-                style={applyStyles('text-gray-300 text-700 text-center py-24')}>
-                You can pay me via
-              </Text>
-              {/* {paymentOptions.map((item, index) => (
-                <View
-                  key={`${item.slug}-${index}`}
-                  style={applyStyles(
-                    'flex-row items-center py-8 bg-white justify-between',
-                    {
-                      borderTopColor: colors['gray-10'],
-                      borderTopWidth: 1,
-                      borderBottomColor: colors['gray-10'],
-                      borderBottomWidth: 1,
-                    },
-                  )}>
-                  <View style={applyStyles('py-8')}>
+                  <Text
+                    style={applyStyles(
+                      'text-400 text-sm leading-16 text-gray-300 mb-4',
+                    )}>
+                    {business.address}
+                  </Text>
+                  {!!business.mobile && (
                     <Text
                       style={applyStyles(
-                        'pb-4 text-gray-200 text-uppercase text-xs',
+                        'text-400 text-sm leading-16  text-gray-300 mb-4',
+                        {
+                          color: colors['gray-300'],
+                        },
                       )}>
-                      {pickerLabelString[item.method]}
+                      Tel: {getMobileNumber()}
                     </Text>
-                    <Text style={applyStyles('text-gray-300 text-700 text-lg')}>
-                      {item.number}
-                    </Text>
-                  </View>
-                  <View>
-                    <View
-                      style={applyStyles(
-                        'px-16 py-8 bg-gray-20 rounded-4 p-8',
-                      )}>
+                  )}
+                </View>
+              </View>
+
+              <View>
+                <Text
+                  style={applyStyles(
+                    'text-gray-300 text-700 text-center py-24',
+                  )}>
+                  You can pay me via
+                </Text>
+                {paymentOptions.map((item, index) => (
+                  <View
+                    key={`${index}`}
+                    style={applyStyles(
+                      'flex-row items-center py-8 bg-white justify-between',
+                      {
+                        borderTopColor: colors['gray-10'],
+                        borderTopWidth: 1,
+                        borderBottomColor: colors['gray-10'],
+                        borderBottomWidth: 1,
+                      },
+                    )}>
+                    <View style={applyStyles('py-8 flex-1')}>
                       <Text
                         style={applyStyles(
-                          'text-uppercase text-400 text-gray-300 text-xs',
+                          'pb-4 text-gray-200 text-uppercase text-xs',
                         )}>
-                        Copy number
+                        {item.name}
                       </Text>
+                      {item?.fieldsData?.map((i) => (
+                        <Text
+                          key={i.key}
+                          style={applyStyles('text-gray-300 text-400 text-lg')}>
+                          {i.value}
+                        </Text>
+                      ))}
                     </View>
+                    {/* <View>
+                      <TouchableOpacity onPress={copyToClipboard(item.name)}>
+                      <View
+                        style={applyStyles(
+                          'px-10 py-8 bg-gray-20 rounded-4 p-8',
+                        )}>
+                        <Text
+                          style={applyStyles(
+                            'text-uppercase text-400 text-gray-300 text-xs',
+                          )}>
+                          Copy number
+                        </Text>
+                      </View>
+                      </TouchableOpacity>
+                    </View> */}
                   </View>
-                </View>
-              ))}
-             */}
+                ))}
+              </View>
+            </View>
+            {/* <View style={applyStyles('items-center flex-1')}>
+              <Text style={applyStyles('text-center text-700 text-gray-300')}>
+                CREATE RECEIPTS WITH SHARA FOR FREE. DOWNLOAD NOW.
+              </Text>
+            </View> */}
+            <View style={applyStyles('items-center')}>
+              <Text style={applyStyles('text-center text-gray-100 text-sm')}>
+                Powered by Shara Inc © 2020
+              </Text>
+              <Text style={applyStyles('text-center text-gray-100 text-sm')}>
+                www.shara.co
+              </Text>
             </View>
           </View>
-
-          <View style={applyStyles('items-center flex-1')}>
-            <Text style={applyStyles('text-center text-700 text-gray-300')}>
-              CREATE RECEIPTS WITH SHARA FOR FREE. DOWNLOAD NOW.
-            </Text>
-          </View>
-          <View style={applyStyles('items-center')}>
-            <Text style={applyStyles('text-center text-gray-100 text-sm')}>
-              Powered by Shara Inc © 2020
-            </Text>
-            <Text style={applyStyles('text-center text-gray-100 text-sm')}>
-              www.shara.co
-            </Text>
-          </View>
-        </View>
+        </ScrollView>
       ),
     });
   }, [
@@ -371,6 +397,7 @@ function PaymentContainer(props: ModalWrapperFields) {
     business.profile_image,
     getMobileNumber,
     openModal,
+    paymentOptions,
   ]);
 
   const fectchPaymentProviders = useCallback(async () => {
@@ -438,8 +465,8 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
-                    placeholder={field.label}
-                    style={applyStyles('mt-24')}
+                    label={field.label}
+                    style={applyStyles('mb-24')}
                     value={
                       values?.fieldsData ? values?.fieldsData[index]?.value : ''
                     }
