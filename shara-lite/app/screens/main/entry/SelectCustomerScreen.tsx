@@ -1,21 +1,20 @@
-import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {SearchFilter} from '@/components';
 import {Page} from '@/components/Page';
-import {FlatList, View, Text, ListRenderItemInfo} from 'react-native';
+import PlaceholderImage from '@/components/PlaceholderImage';
+import Touchable from '@/components/Touchable';
+import {ICustomer} from '@/models';
+import {MainStackParamList} from '@/screens/main';
 import {getContactService} from '@/services';
 import {useAsync} from '@/services/api';
-import {useRealm} from '@/services/realm';
-import {getCustomers} from '@/services/customer';
-import orderBy from 'lodash/orderBy';
-import {ICustomer} from '@/models';
-import Touchable from '@/components/Touchable';
-import {applyStyles} from '@/styles';
-import PlaceholderImage from '@/components/PlaceholderImage';
-import {RouteProp} from '@react-navigation/native';
-import {MainStackParamList} from '@/screens/main';
 import {useAppNavigation} from '@/services/navigation';
-import {SearchFilter} from '@/components';
+import {useRealm} from '@/services/realm';
+import {applyStyles} from '@/styles';
+import {RouteProp} from '@react-navigation/native';
 import * as JsSearch from 'js-search';
+import orderBy from 'lodash/orderBy';
 import throttle from 'lodash/throttle';
+import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
+import {FlatList, ListRenderItemInfo, Text, View} from 'react-native';
 
 export type SelectCustomerListItem =
   | Pick<ICustomer, 'name' | 'mobile' | '_id'>
@@ -45,17 +44,10 @@ export const SelectCustomerListScreen = ({
     defer: true,
   });
   useEffect(() => {
-    const customers = getCustomers({realm});
     runGetPhoneContacts().then((contacts) => {
       setPhoneContacts(
         contacts.reduce<SelectCustomerListItem[]>(
           (acc, {givenName, familyName, phoneNumber}) => {
-            const existing = customers.filtered(
-              `mobile = "${phoneNumber.number}"`,
-            );
-            if (existing.length) {
-              return acc;
-            }
             return [
               ...acc,
               {
@@ -69,7 +61,6 @@ export const SelectCustomerListScreen = ({
       );
     });
   }, [realm, runGetPhoneContacts]);
-  const myCustomers = getCustomers({realm});
   const keyExtractor = useCallback((item) => {
     if (!item) {
       return '';
@@ -79,15 +70,11 @@ export const SelectCustomerListScreen = ({
 
   const data = useMemo(
     () => [
-      ...orderBy(myCustomers, ['debtLevel', 'name'] as (keyof ICustomer)[], [
-        'desc',
-        'asc',
-      ]),
       ...orderBy(phoneContacts, ['name'] as (keyof SelectCustomerListItem)[], [
         'asc',
       ]),
     ],
-    [myCustomers, phoneContacts],
+    [phoneContacts],
   );
 
   const renderCustomerListItem = useCallback(
@@ -128,13 +115,15 @@ export const SelectCustomerListScreen = ({
   const navigation = useAppNavigation();
   const [searchText, setSearchText] = useState('');
   const searchRef = useRef(new JsSearch.Search('mobile'));
+  const [filteredData, setFilterData] = useState(data);
   useEffect(() => {
     const {current: search} = searchRef;
     search.addIndex('name');
     search.addIndex('mobile');
     search.addDocuments(data);
+    setFilterData(data);
   }, [data]);
-  const [filteredData, setFilterData] = useState(data);
+
   const onSearch = useCallback(
     throttle((query: string) => {
       const {current: search} = searchRef;

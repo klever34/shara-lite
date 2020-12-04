@@ -208,8 +208,8 @@ const TransactionDetails = withModal(
               <View style={applyStyles('bg-white center py-16')}>
                 <DatePicker
                   //@ts-ignore
-                  value={dueDate}
                   minimumDate={new Date()}
+                  value={dueDate ?? new Date()}
                   onChange={(e: Event, date?: Date) =>
                     handleDueDateChange(date)
                   }>

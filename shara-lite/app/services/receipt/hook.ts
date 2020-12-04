@@ -99,7 +99,7 @@ export const useReceipt = (): useReceiptInterface => {
   }: saveReceiptInterface) => {
     const fullTrace = await perf().startTrace('saveReceiptFullFlow');
 
-    const receipt: IReceipt = {
+    let receipt: IReceipt = {
       tax,
       note,
       amount_paid: amountPaid,
@@ -133,7 +133,7 @@ export const useReceipt = (): useReceiptInterface => {
 
     const trace = await perf().startTrace('saveReceipt');
     realm.write(() => {
-      realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
+      receipt = realm.create<IReceipt>(modelName, receipt, UpdateMode.Modified);
     });
     await trace.stop();
 
