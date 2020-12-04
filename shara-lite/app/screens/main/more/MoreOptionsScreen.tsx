@@ -5,8 +5,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, Image, ScrollView, Text, View} from 'react-native';
+import {Alert, Image, ScrollView, Text, ToastAndroid, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
+import Clipboard from '@react-native-community/clipboard';
 import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
@@ -131,6 +132,7 @@ export const MoreOptionsScreen = () => {
 
   const user = getAuthService().getUser();
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+  const paymentLink = `www.shara.co/pay/${business.slug}`;
 
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -139,6 +141,11 @@ export const MoreOptionsScreen = () => {
     }
     return `+${code}${business.mobile}`;
   }, [business.country_code, business.mobile, callingCode]);
+
+  const copyToClipboard = useCallback(() => {
+    Clipboard.setString(paymentLink);
+    ToastAndroid.show('Copied', ToastAndroid.LONG);
+  }, [paymentLink]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
@@ -167,69 +174,109 @@ export const MoreOptionsScreen = () => {
           </Touchable>
         )}
         {!!business.name && (
-          <View
-            style={applyStyles(
-              'p-16 flex-row items-center border-t-1 border-gray-20',
-            )}>
-            <View style={applyStyles('w-80 h-80')}>
-              {business.profile_image ? (
-                <Image
-                  style={applyStyles('w-full h-full rounded-lg')}
-                  source={{
-                    uri: business.profile_image.url,
-                  }}
-                />
-              ) : (
-                <View
-                  style={applyStyles(
-                    'center w-full h-full border-4 rounded-lg border-gray-20',
-                  )}>
-                  <Icon
-                    type="feathericons"
-                    name="user"
-                    color={colors['gray-50']}
-                    size={24}
+          <>
+            <View
+              style={applyStyles(
+                'p-16 flex-row items-center border-t-1 border-gray-20',
+              )}>
+              <View style={applyStyles('w-80 h-80')}>
+                {business.profile_image ? (
+                  <Image
+                    style={applyStyles('w-full h-full rounded-lg')}
+                    source={{
+                      uri: business.profile_image.url,
+                    }}
                   />
-                </View>
-              )}
-            </View>
-            <View style={applyStyles('flex-1 px-12')}>
-              <Text
-                style={applyStyles(
-                  'text-700 uppercase text-sm leading-16 text-gray-300 mb-4',
-                )}>
-                {business.name}
-              </Text>
-              {!!business.mobile && (
+                ) : (
+                  <View
+                    style={applyStyles(
+                      'center w-full h-full border-4 rounded-lg border-gray-20',
+                    )}>
+                    <Icon
+                      type="feathericons"
+                      name="user"
+                      color={colors['gray-50']}
+                      size={24}
+                    />
+                  </View>
+                )}
+              </View>
+              <View style={applyStyles('flex-1 px-12')}>
                 <Text
-                  style={applyStyles('text-400 text-sm leading-16 mb-4', {
-                    color: colors['gray-300'],
-                  })}>
-                  {getMobieNumber()}
+                  style={applyStyles(
+                    'text-700 uppercase text-sm leading-16 text-gray-300 mb-4',
+                  )}>
+                  {business.name}
                 </Text>
-              )}
-              <Text
-                style={applyStyles('text-400 text-xs leading-16 uppercase', {
-                  color: colors['gray-100'],
-                })}>
-                ID: {user?.id}
-              </Text>
+                {!!business.mobile && (
+                  <Text
+                    style={applyStyles('text-400 text-sm leading-16 mb-4', {
+                      color: colors['gray-300'],
+                    })}>
+                    {getMobieNumber()}
+                  </Text>
+                )}
+                <Text
+                  style={applyStyles('text-400 text-xs leading-16 uppercase', {
+                    color: colors['gray-100'],
+                  })}>
+                  ID: {user?.id}
+                </Text>
+              </View>
+              <HeaderBackButton
+                onPress={onEditBusinessSettings}
+                backImage={() => (
+                  <View style={applyStyles('center w-48 h-48')}>
+                    <Icon
+                      type="feathericons"
+                      name="edit"
+                      size={24}
+                      color={colors['gray-50']}
+                      onPress={onEditBusinessSettings}
+                    />
+                  </View>
+                )}
+              />
             </View>
-            <HeaderBackButton
-              onPress={onEditBusinessSettings}
-              backImage={() => (
-                <View style={applyStyles('center w-48 h-48')}>
-                  <Icon
-                    type="feathericons"
-                    name="edit"
-                    size={24}
-                    color={colors['gray-50']}
-                    onPress={onEditBusinessSettings}
+
+            {!!business.slug && (
+              <View
+                style={applyStyles(
+                  'px-16 pb-16 flex-row items-center justify-between',
+                )}>
+                <View>
+                  <Text
+                    style={applyStyles('pb-4 text-400 leading-16', {
+                      color: colors['gray-100'],
+                    })}>
+                    Your Payment link
+                  </Text>
+                  <Text
+                    style={applyStyles('text-400 leading-16', {
+                      color: colors['gray-200'],
+                    })}>
+                    {paymentLink}
+                  </Text>
+                </View>
+                <View>
+                  <HeaderBackButton
+                    onPress={copyToClipboard}
+                    backImage={() => (
+                      <View style={applyStyles('center w-48 h-48')}>
+                        <Icon
+                          type="feathericons"
+                          name="copy"
+                          size={24}
+                          color={colors['gray-50']}
+                          onPress={copyToClipboard}
+                        />
+                      </View>
+                    )}
                   />
                 </View>
-              )}
-            />
-          </View>
+              </View>
+            )}
+          </>
         )}
         <View style={applyStyles('mb-24')}>
           {moreOptions.map(({title, icon, onPress}, index) => {
