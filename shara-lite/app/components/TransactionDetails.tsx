@@ -56,13 +56,15 @@ const TransactionDetails = withModal(
       creditDueDate || undefined,
     );
 
+    const payLink = `www.shara.co/pay/${businessInfo.slug}`;
+
     const paymentReminderMessage = `Hello ${
       customer?.name ?? ''
-    }, thank you for your recent purchase from ${
+    }, thank you for doing business with ${
       businessInfo?.name
     }. You paid owe ${amountWithCurrency(creditAmount)} which is due on ${
       dueDate ? format(new Date(dueDate), 'MMM dd, yyyy') : ''
-    }. Don't forget to make payment.\n\nPowered by Shara for free.\nwww.shara.co`;
+    }.\n To Pay click.\n ${payLink}\n. Powered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,

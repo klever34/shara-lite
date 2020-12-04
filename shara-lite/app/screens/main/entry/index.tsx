@@ -90,7 +90,7 @@ export const TransactionEntryScreen = withModal(
       <TransactionEntryView
         actionButtons={[
           {
-            label: 'You collected',
+            label: 'You made',
             style: applyStyles('bg-green-200'),
             textStyle: applyStyles('font-bold text-white'),
             onPress: handleYouCollected,
