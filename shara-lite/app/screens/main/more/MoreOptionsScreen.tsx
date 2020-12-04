@@ -117,20 +117,16 @@ export const MoreOptionsScreen = () => {
   }, [handleError, navigation, logoutFromRealm]);
 
   const handleLogoutConfirm = useCallback(() => {
-    Alert.alert(
-      'Warning',
-      'Are you sure you want to exit this page? The product had not been added.',
-      [
-        {
-          text: 'No',
-          onPress: () => {},
-        },
-        {
-          text: 'Yes',
-          onPress: handleLogout,
-        },
-      ],
-    );
+    Alert.alert('Warning', 'Are you sure you want to logout?', [
+      {
+        text: 'No',
+        onPress: () => {},
+      },
+      {
+        text: 'Yes',
+        onPress: handleLogout,
+      },
+    ]);
   }, [handleLogout]);
 
   const user = getAuthService().getUser();

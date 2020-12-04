@@ -34,7 +34,6 @@ function PaymentReminderImage({
   const onCapture = useCallback(
     async (uri: any) => {
       RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
-        console.log(data);
         getImageUri(data);
       });
     },

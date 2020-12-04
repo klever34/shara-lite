@@ -12,7 +12,15 @@ import {Picker} from '@react-native-community/picker';
 import {Formik} from 'formik';
 import {omit} from 'lodash';
 import React, {useCallback, useEffect, useState} from 'react';
-import {Alert, FlatList, Image, ScrollView, Text, View} from 'react-native';
+import {
+  Alert,
+  FlatList,
+  Image,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  View,
+} from 'react-native';
 import {PaymentProvider} from 'types/app';
 
 function PaymentContainer(props: ModalWrapperFields) {
@@ -121,6 +129,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
+                    label={field.label}
                     placeholder={field.label}
                     style={applyStyles('mt-24')}
                     value={
@@ -194,6 +203,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                     {values?.fieldsData?.map((field, index) => (
                       <AppInput
                         key={field.key}
+                        label={field.label}
                         placeholder={field.label}
                         style={applyStyles('mt-24')}
                         value={
@@ -389,12 +399,12 @@ function PaymentContainer(props: ModalWrapperFields) {
   }, [fectchPaymentProviders]);
 
   return (
-    <ScrollView
-      persistentScrollbar
-      keyboardShouldPersistTaps="always"
-      style={applyStyles('py-24 bg-white flex-1')}>
+    <SafeAreaView style={applyStyles('py-24 bg-white flex-1')}>
       {paymentOptions.length === 0 ? (
-        <View style={applyStyles('px-16 flex-1')}>
+        <ScrollView
+          persistentScrollbar
+          keyboardShouldPersistTaps="always"
+          style={applyStyles('px-16 flex-1')}>
           <View style={applyStyles('center pb-32')}>
             <SecureEmblem />
             <Text
@@ -438,6 +448,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                 {values?.fieldsData?.map((field, index) => (
                   <AppInput
                     key={field.key}
+                    label={field.label}
                     placeholder={field.label}
                     style={applyStyles('mt-24')}
                     value={
@@ -468,7 +479,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               </>
             )}
           </Formik>
-        </View>
+        </ScrollView>
       ) : (
         <View>
           <View style={applyStyles('center')}>
@@ -543,7 +554,7 @@ function PaymentContainer(props: ModalWrapperFields) {
           />
         </View>
       )}
-    </ScrollView>
+    </SafeAreaView>
   );
 }
 

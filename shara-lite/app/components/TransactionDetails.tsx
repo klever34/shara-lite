@@ -102,7 +102,7 @@ const TransactionDetails = ({
           try {
             await updateDueDate({due_date: date, customer});
           } catch (e) {
-            console.log('*****', e);
+            console.log(e);
           }
         }
       }
