@@ -117,22 +117,19 @@ export const MoreOptionsScreen = () => {
   }, [handleError, navigation, logoutFromRealm]);
 
   const handleLogoutConfirm = useCallback(() => {
-    Alert.alert(
-      'Warning',
-      'Are you sure you want to exit this page? The product had not been added.',
-      [
-        {
-          text: 'No',
-          onPress: () => {},
-        },
-        {
-          text: 'Yes',
-          onPress: handleLogout,
-        },
-      ],
-    );
+    Alert.alert('Warning', 'Are you sure you want to logout?', [
+      {
+        text: 'No',
+        onPress: () => {},
+      },
+      {
+        text: 'Yes',
+        onPress: handleLogout,
+      },
+    ]);
   }, [handleLogout]);
 
+  const user = getAuthService().getUser();
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const getMobieNumber = useCallback(() => {
@@ -215,7 +212,7 @@ export const MoreOptionsScreen = () => {
                 style={applyStyles('text-400 text-xs leading-16 uppercase', {
                   color: colors['gray-100'],
                 })}>
-                ID: {business.id}
+                ID: {user?.id}
               </Text>
             </View>
             <HeaderBackButton

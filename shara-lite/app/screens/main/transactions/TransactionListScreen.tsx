@@ -112,7 +112,7 @@ export const TransactionListScreen = () => {
         <View style={applyStyles('px-16')}>
           <Text
             style={applyStyles(
-              'text-uppercase text-400 text-gray-200 text-xs',
+              'pb-4 text-uppercase text-400 text-gray-200 text-xs',
             )}>
             You've collected
           </Text>
@@ -123,7 +123,7 @@ export const TransactionListScreen = () => {
         <View>
           <Text
             style={applyStyles(
-              'text-uppercase text-400 text-gray-200 text-xs',
+              'pb-4 text-uppercase text-400 text-gray-200 text-xs',
             )}>
             You are owed
           </Text>

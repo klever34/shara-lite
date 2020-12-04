@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.4.9-feature.shara-lite+build.5089",
+  "version": "0.4.9-feature.shara-lite+build.5112",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -41,6 +41,7 @@
     "faker": "^5.1.0",
     "formik": "^2.1.5",
     "intl": "^1.2.5",
+    "js-search": "^2.0.0",
     "libphonenumber-js": "^1.8.5",
     "lodash": "^4.17.15",
     "lottie-react-native": "^3.5.0",
@@ -105,6 +106,7 @@
     "@types/faker": "^4.1.12",
     "@types/geojson": "^7946.0.7",
     "@types/jest": "^24.0.24",
+    "@types/js-search": "^1.4.0",
     "@types/lodash": "^4.14.157",
     "@types/node": "^12.12.54",
     "@types/promise-retry": "^1.1.3",

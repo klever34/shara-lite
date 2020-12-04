@@ -4,13 +4,14 @@ import {CustomersScreen} from '@/screens/main/customers';
 import {MoreScreen} from '@/screens/main/more';
 import {PaymentsScreen} from '@/screens/main/payments';
 import {TransactionsScreen} from '@/screens/main/transactions';
-import {EntryScreen} from '@/screens/main/entry';
+import {TransactionEntryScreen} from '@/screens/main/entry';
 import {applyStyles, colors} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {SafeAreaView, View} from 'react-native';
 import Keypad from '@/assets/images/keypad.svg';
 import {HeaderBackButton} from '@react-navigation/stack';
+import {EventArg} from '@react-navigation/native';
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
@@ -23,7 +24,17 @@ export type MainNavParamList = {
 const MainNav = createBottomTabNavigator<MainNavParamList>();
 
 export const HomeScreen = () => {
-  const [entryTabActive, setEntryTabActive] = useState(true);
+  const [currentTab, setCurrentTab] = useState<keyof MainNavParamList>(
+    'EntryTab',
+  );
+
+  const handleTabPress = useCallback(
+    (evt: EventArg<Extract<'tabPress', string>, true>) => {
+      setCurrentTab(evt.target?.split('-')?.[0] as keyof MainNavParamList);
+    },
+    [],
+  );
+
   return (
     <SafeAreaView style={applyStyles('h-screen')}>
       <MainNav.Navigator
@@ -47,6 +58,9 @@ export const HomeScreen = () => {
               <Icon type="feathericons" name="layers" size={20} color={color} />
             ),
           }}
+          listeners={{
+            tabPress: handleTabPress,
+          }}
         />
         <MainNav.Screen
           name="PaymentsTab"
@@ -64,10 +78,13 @@ export const HomeScreen = () => {
               />
             ),
           }}
+          listeners={{
+            tabPress: handleTabPress,
+          }}
         />
         <MainNav.Screen
           name="EntryTab"
-          component={EntryScreen}
+          component={TransactionEntryScreen}
           options={{
             tabBarButton: ({onPress}) => {
               return (
@@ -77,7 +94,9 @@ export const HomeScreen = () => {
                       <View
                         style={applyStyles(
                           'w-60 h-60 my-12 rounded-32 center',
-                          entryTabActive ? 'bg-primary' : 'bg-gray-100',
+                          currentTab === 'EntryTab'
+                            ? 'bg-primary'
+                            : 'bg-gray-100',
                         )}>
                         <Keypad width={24} height={24} />
                       </View>
@@ -89,12 +108,7 @@ export const HomeScreen = () => {
             },
           }}
           listeners={{
-            focus: () => {
-              setEntryTabActive(true);
-            },
-            blur: () => {
-              setEntryTabActive(false);
-            },
+            tabPress: handleTabPress,
           }}
         />
         <MainNav.Screen
@@ -108,6 +122,9 @@ export const HomeScreen = () => {
               <Icon type="feathericons" name="users" size={20} color={color} />
             ),
           }}
+          listeners={{
+            tabPress: handleTabPress,
+          }}
         />
         <MainNav.Screen
           name="MoreTab"
@@ -119,6 +136,9 @@ export const HomeScreen = () => {
             tabBarIcon: ({color}) => (
               <Icon type="feathericons" name="menu" size={20} color={color} />
             ),
+          }}
+          listeners={{
+            tabPress: handleTabPress,
           }}
         />
       </MainNav.Navigator>

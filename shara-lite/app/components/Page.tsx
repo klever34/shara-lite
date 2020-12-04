@@ -4,6 +4,7 @@ import React, {ReactNode, useContext, useEffect, useState} from 'react';
 import {View, ViewStyle} from 'react-native';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+import {Footer} from './Footer';
 
 type PageProps = {
   header?: HeaderTitleProps;
@@ -40,21 +41,7 @@ export const Page = ({
         keyboardShouldPersistTaps="always">
         <View style={applyStyles('px-16 py-16', style)}>{children}</View>
       </KeyboardAwareScrollView>
-      {footer && (
-        <View
-          style={applyStyles('w-full p-16 bg-white', {
-            shadowColor: '#000',
-            shadowOffset: {
-              width: 0,
-              height: 5,
-            },
-            shadowOpacity: 0.34,
-            shadowRadius: 6.27,
-            elevation: 10,
-          })}>
-          {footer}
-        </View>
-      )}
+      {footer && <Footer>{footer}</Footer>}
     </PageContext.Provider>
   );
 };

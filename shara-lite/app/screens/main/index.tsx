@@ -17,12 +17,22 @@ import React, {useContext} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionDetailsProps} from '@/components/TransactionDetails';
+import {
+  SelectCustomerListScreen,
+  SelectCustomerListScreenParams,
+} from './entry/SelectCustomerScreen';
+import {
+  CustomerEntryScreen,
+  CustomerEntryScreenParams,
+} from './customers/CustomerEntryScreen';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Customers
+  SelectCustomerList: SelectCustomerListScreenParams;
   CustomerDetails: TransactionDetailsProps;
+  CustomerEntry: CustomerEntryScreenParams;
 
   // Transaction
   TransactionDetails: {transaction: IReceipt};
@@ -93,6 +103,18 @@ const MainScreens = () => {
           title: route.params.customer?.name,
           headerShown: false,
         })}
+      />
+
+      <MainStack.Screen
+        name="SelectCustomerList"
+        component={SelectCustomerListScreen}
+        options={{headerShown: false}}
+      />
+
+      <MainStack.Screen
+        name="CustomerEntry"
+        component={CustomerEntryScreen}
+        options={{headerShown: false}}
       />
 
       {/* More */}
