@@ -4,12 +4,12 @@ import {addItemToQueue} from '@/services/realm/utils/queue';
 import {saveLastLocalSync} from '@/services/realm/utils/sync-storage';
 
 export const syncRealmDbs = ({
-                               sourceRealm,
-                               targetRealm,
-                               partitionValue,
-                               isLocal,
-                               onModelUpdate,
-                             }: {
+  sourceRealm,
+  targetRealm,
+  partitionValue,
+  isLocal,
+  onModelUpdate,
+}: {
   sourceRealm: Realm;
   targetRealm: Realm;
   partitionValue: string;
