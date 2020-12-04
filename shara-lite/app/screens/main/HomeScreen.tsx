@@ -4,7 +4,7 @@ import {CustomersScreen} from '@/screens/main/customers';
 import {MoreScreen} from '@/screens/main/more';
 import {PaymentsScreen} from '@/screens/main/payments';
 import {TransactionsScreen} from '@/screens/main/transactions';
-import {EntryScreen} from '@/screens/main/entry';
+import {TransactionEntryScreen} from '@/screens/main/entry';
 import {applyStyles, colors} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useState} from 'react';
@@ -67,7 +67,7 @@ export const HomeScreen = () => {
         />
         <MainNav.Screen
           name="EntryTab"
-          component={EntryScreen}
+          component={TransactionEntryScreen}
           options={{
             tabBarButton: ({onPress}) => {
               return (

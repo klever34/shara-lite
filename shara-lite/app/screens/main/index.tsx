@@ -21,7 +21,10 @@ import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
 } from './entry/SelectCustomerList';
-import {CustomerEntryScreen} from './customers/CustomerEntryScreen';
+import {
+  CustomerEntryScreen,
+  CustomerEntryScreenParams,
+} from './customers/CustomerEntryScreen';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -29,7 +32,7 @@ export type MainStackParamList = {
   // Customers
   SelectCustomerList: SelectCustomerListScreenParams;
   CustomerDetails: TransactionDetailsProps;
-  CustomerEntry: undefined;
+  CustomerEntry: CustomerEntryScreenParams;
 
   // Transaction
   TransactionDetails: {transaction: IReceipt};

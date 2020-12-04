@@ -15,9 +15,11 @@ import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useState, useMemo} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import {TransactionEntryContextProps} from '@/components/TransactionEntryView';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 
 export type TransactionDetailsProps = {
@@ -115,12 +117,25 @@ const TransactionDetails = ({
     [],
   );
   const navigation = useAppNavigation();
+  const {youGave, youGot} = useTransaction();
   actionButtons = useMemo(() => {
+    if (!customer) {
+      return [];
+    }
     if (!actionButtons) {
       return [
         {
           onPress: () => {
-            navigation.navigate('CustomerEntry');
+            navigation.navigate('CustomerEntry', {
+              onEntrySave: ({amount, note}: TransactionEntryContextProps) => {
+                navigation.goBack();
+                youGot({
+                  customer,
+                  amount: amount?.value ?? 0,
+                  note,
+                }).catch(handleError);
+              },
+            });
           },
           variantColor: 'green',
           style: applyStyles('flex-1 mr-4'),
@@ -132,7 +147,16 @@ const TransactionDetails = ({
         },
         {
           onPress: () => {
-            navigation.navigate('CustomerEntry');
+            navigation.navigate('CustomerEntry', {
+              onEntrySave: ({amount, note}: TransactionEntryContextProps) => {
+                navigation.goBack();
+                youGave({
+                  customer,
+                  amount: amount?.value ?? 0,
+                  note,
+                }).catch(handleError);
+              },
+            });
           },
           variantColor: 'red',
           style: applyStyles('flex-1 ml-4'),
@@ -145,7 +169,7 @@ const TransactionDetails = ({
       ];
     }
     return actionButtons;
-  }, [actionButtons, navigation]);
+  }, [actionButtons, customer, navigation, youGave, youGot]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
