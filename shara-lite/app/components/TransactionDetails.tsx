@@ -57,7 +57,7 @@ const TransactionDetails = withModal(
       creditDueDate || undefined,
     );
 
-    const paymentLink = `${Config.WEB_BASE_URL}/${businessInfo.slug}`;
+    const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
 
     const paymentReminderMessage = `Hello ${
       customer?.name ?? ''

@@ -133,7 +133,7 @@ export const MoreOptionsScreen = () => {
 
   const user = getAuthService().getUser();
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
-  const paymentLink = `${Config.WEB_BASE_URL}/${business.slug}`;
+  const paymentLink = `${Config.WEB_BASE_URL}/pay/${business.slug}`;
 
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
