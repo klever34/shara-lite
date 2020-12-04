@@ -5,8 +5,9 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, Image, ScrollView, Text, View} from 'react-native';
+import {Alert, Image, ScrollView, Text, ToastAndroid, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
+import Clipboard from '@react-native-community/clipboard';
 import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
@@ -141,6 +142,11 @@ export const MoreOptionsScreen = () => {
     return `+${code}${business.mobile}`;
   }, [business.country_code, business.mobile, callingCode]);
 
+  const copyToClipboard = useCallback(() => {
+    Clipboard.setString(paymentLink);
+    ToastAndroid.show('Copied', ToastAndroid.LONG);
+  }, [paymentLink]);
+
   useEffect(() => {
     return navigation.addListener('focus', () => {
       setBusiness(getAuthService().getBusinessInfo());
@@ -254,7 +260,7 @@ export const MoreOptionsScreen = () => {
                 </View>
                 <View>
                   <HeaderBackButton
-                    onPress={onEditBusinessSettings}
+                    onPress={copyToClipboard}
                     backImage={() => (
                       <View style={applyStyles('center w-48 h-48')}>
                         <Icon
@@ -262,7 +268,7 @@ export const MoreOptionsScreen = () => {
                           name="copy"
                           size={24}
                           color={colors['gray-50']}
-                          onPress={onEditBusinessSettings}
+                          onPress={copyToClipboard}
                         />
                       </View>
                     )}
