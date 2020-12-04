@@ -51,14 +51,18 @@ export interface IApiService {
   }): Promise<ApiResponse>;
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
+
   forgotPassword(payload: {mobile: string}): Promise<ApiResponse>;
+
   resetPassword(payload: {
     mobile: string;
     otp: string;
     password: string;
   }): Promise<ApiResponse>;
 
-  getPaymentProviders(): Promise<PaymentProvider[]>;
+  getPaymentProviders(params: {
+    country_code: string | undefined;
+  }): Promise<PaymentProvider[]>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -289,13 +293,17 @@ export class ApiService implements IApiService {
     }
   }
 
-  async getPaymentProviders() {
+  async getPaymentProviders({
+    country_code,
+  }: {
+    country_code: string | undefined;
+  }) {
     try {
       const {
         data: {paymentProviders},
       } = await this.requester.get<{paymentProviders: PaymentProvider[]}>(
         '/payment-provider',
-        {},
+        {country_code},
       );
       return paymentProviders;
     } catch (e) {
@@ -458,6 +466,7 @@ export class ApiService implements IApiService {
       throw error;
     }
   }
+
   async userProfileUpdate(payload: UserProfileFormPayload) {
     try {
       const fetchResponse = await this.requester.patch('/users/me', payload);

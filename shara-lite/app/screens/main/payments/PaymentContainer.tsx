@@ -376,19 +376,14 @@ function PaymentContainer(props: ModalWrapperFields) {
                 ))}
               </View>
             </View>
-            {/* <View style={applyStyles('items-center flex-1')}>
-              <Text style={applyStyles('text-center text-700 text-gray-300')}>
-                CREATE RECEIPTS WITH SHARA FOR FREE. DOWNLOAD NOW.
-              </Text>
-            </View> */}
-            <View style={applyStyles('items-center')}>
-              <Text style={applyStyles('text-center text-gray-100 text-sm')}>
-                Powered by Shara Inc © 2020
-              </Text>
-              <Text style={applyStyles('text-center text-gray-100 text-sm')}>
-                www.shara.co
-              </Text>
-            </View>
+          </View>
+          <View style={applyStyles('items-center py-32 bg-gray-10')}>
+            <Text style={applyStyles('text-center text-gray-100 text-sm')}>
+              Powered by Shara Inc © 2020
+            </Text>
+            <Text style={applyStyles('text-center text-gray-100 text-sm')}>
+              www.shara.co
+            </Text>
           </View>
         </ScrollView>
       ),
@@ -404,9 +399,11 @@ function PaymentContainer(props: ModalWrapperFields) {
   ]);
 
   const fectchPaymentProviders = useCallback(async () => {
-    const providers = await apiService.getPaymentProviders();
+    const providers = await apiService.getPaymentProviders({
+      country_code: business.country_code,
+    });
     setPaymentProviders(providers);
-  }, [apiService]);
+  }, [apiService, business]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
