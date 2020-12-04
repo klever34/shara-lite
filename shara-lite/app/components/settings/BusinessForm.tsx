@@ -13,6 +13,7 @@ import {ImagePickerResult, useImageInput} from '@/helpers/utils';
 
 export type BusinessFormPayload = {
   name: string;
+  slug?: string;
   address?: string;
   mobile?: string;
   countryCode?: string;

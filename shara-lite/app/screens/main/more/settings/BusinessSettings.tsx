@@ -26,8 +26,9 @@ export const BusinessSettings = () => {
   const {
     name,
     id,
-    mobile = '',
+    slug,
     address,
+    mobile = '',
     country_code,
     profile_image,
   } = businessInfo;
@@ -63,6 +64,14 @@ export const BusinessSettings = () => {
           rightIcon: 'map-pin',
         },
       },
+      slug: {
+        type: 'text',
+        props: {
+          value: slug,
+          rightIcon: 'globe',
+          label: 'Enter your payment link?',
+        },
+      },
       profileImageFile: {
         type: 'image',
         props: {
@@ -73,7 +82,7 @@ export const BusinessSettings = () => {
       },
     };
     return fields;
-  }, [address, callingCode, mobile, name, profile_image]);
+  }, [address, callingCode, mobile, name, slug, profile_image]);
 
   const formValuesRef = useRef<BusinessFormPayload>();
   const handleSubmit = useCallback(async () => {
@@ -84,6 +93,7 @@ export const BusinessSettings = () => {
     const payload = new FormData();
     payload.append('name', formValues?.name);
     payload.append('address', formValues?.address);
+    formValues?.slug && payload.append('slug', formValues?.slug);
     formValues?.mobile && payload.append('mobile', formValues?.mobile);
     formValues?.countryCode &&
       payload.append('country_code', formValues?.countryCode);

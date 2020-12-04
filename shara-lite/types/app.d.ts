@@ -19,6 +19,7 @@ type User = {
 type Business = {
   id: string;
   name: string;
+  slug?: string;
   user_id: string;
   address?: string;
   mobile?: string;
