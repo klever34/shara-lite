@@ -19,6 +19,7 @@ import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
+import Config from 'react-native-config';
 import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
@@ -56,7 +57,7 @@ const TransactionDetails = withModal(
       creditDueDate || undefined,
     );
 
-    const paymentLink = `www.shara.co/pay/${businessInfo.slug}`;
+    const paymentLink = `${Config.WEB_BASE_URL}/${businessInfo.slug}`;
 
     const paymentReminderMessage = `Hello ${
       customer?.name ?? ''
@@ -64,7 +65,7 @@ const TransactionDetails = withModal(
       businessInfo?.name
     }. You paid owe ${amountWithCurrency(creditAmount)} which is due on ${
       dueDate ? format(new Date(dueDate), 'MMM dd, yyyy') : ''
-    }.\n To Pay click.\n ${paymentLink}\n. Powered by Shara for free.\nwww.shara.co`;
+    }.\n\nTo Pay click.\n ${paymentLink}\n\n Powered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,

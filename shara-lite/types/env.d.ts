@@ -16,6 +16,8 @@ declare module 'react-native-config' {
 
   export const CI_TESTS: string;
 
+  export const WEB_BASE_URL: string;
+
   export const ENVIRONMENT:
     | 'delivery'
     | 'test'
