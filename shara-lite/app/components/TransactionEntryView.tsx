@@ -25,8 +25,9 @@ import {AppInput} from '@/components';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {getAuthService} from '@/services';
-import {numberWithCommas} from '@/helpers/utils';
+import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
 import SecureEmblem from '@/assets/images/emblem.svg';
+import {useReceiptList} from '@/screens/main/transactions/AllTransactionsListScreen';
 
 const getLastToken = (tokens: string[]) => {
   return tokens[tokens.length - 1];
@@ -293,7 +294,10 @@ export const TransactionEntryView = withTransactionEntry(
       pan,
       hideSuccessView,
     } = useContext(TransactionEntryContext);
-
+    const {filteredReceipts} = useReceiptList();
+    const lastTransaction = useMemo(() => {
+      return filteredReceipts[0];
+    }, [filteredReceipts]);
     const [calculated, setCalculated] = useState(false);
 
     const isValidAmount = useMemo(() => {
@@ -419,14 +423,18 @@ export const TransactionEntryView = withTransactionEntry(
             </Text>
           </Animated.View>
           <View style={applyStyles('pt-24 pb-16 px-16')}>
-            {!isValidAmount && showLastTransactions && (
+            {!isValidAmount && showLastTransactions && lastTransaction && (
               <View style={applyStyles('items-center mb-24')}>
                 <Text
                   style={applyStyles('text-gray-100 text-xxs text-uppercase')}>
                   Last Transaction
                 </Text>
                 <Text style={applyStyles('text-gray-200 text-xs')}>
-                  -₦200,000
+                  {`${lastTransaction.isPaid ? '' : '-'}${amountWithCurrency(
+                    lastTransaction.isPaid
+                      ? lastTransaction.total_amount
+                      : lastTransaction.credit_amount,
+                  )}`}
                 </Text>
               </View>
             )}

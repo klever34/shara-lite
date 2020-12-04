@@ -67,7 +67,7 @@ const TransactionListItem = ({
             style={applyStyles(
               'text-xs text-700 text-green-200 text-uppercase',
             )}>
-            {amountWithCurrency(transaction.amount_paid)}
+            {amountWithCurrency(transaction.total_amount)}
           </Text>
         )}
       </View>
