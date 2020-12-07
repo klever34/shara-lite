@@ -245,7 +245,7 @@ export const MoreOptionsScreen = () => {
                 style={applyStyles(
                   'px-16 pb-16 flex-row items-center justify-between',
                 )}>
-                <View>
+                <View style={applyStyles('flex-1')}>
                   <Text
                     style={applyStyles('pb-4 text-400 leading-16', {
                       color: colors['gray-100'],
@@ -256,7 +256,7 @@ export const MoreOptionsScreen = () => {
                     style={applyStyles('text-400 leading-16', {
                       color: colors['gray-200'],
                     })}>
-                    {paymentLink}
+                    {paymentLink} Your Payment link
                   </Text>
                 </View>
                 <View>
