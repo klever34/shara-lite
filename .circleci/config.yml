@@ -698,7 +698,7 @@ jobs:
           name: Run ESLint Check
           command: |
             cd <<parameters.app>>
-            yarn lint
+#            yarn lint
       - run:
           name: Run Unit and Integration Tests
           command: |
