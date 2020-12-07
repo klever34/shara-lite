@@ -24,6 +24,7 @@ import {
 } from 'react-native';
 import {PaymentProvider} from 'types/app';
 import Clipboard from '@react-native-community/clipboard';
+import {showToast} from '@/helpers/utils';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -69,6 +70,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       ) {
         setIsSaving(true);
         await savePaymentOption({paymentOption: values});
+        showToast({message: 'PAYMENT OPTION ADDED'});
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
@@ -87,6 +89,7 @@ function PaymentContainer(props: ModalWrapperFields) {
         delete updates.fields;
         setIsSaving(true);
         await updatePaymentOption({paymentOption, updates});
+        showToast({message: 'PAYMENT OPTION EDITED'});
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
@@ -99,6 +102,7 @@ function PaymentContainer(props: ModalWrapperFields) {
     async (values) => {
       setIsDeleting(true);
       await deletePaymentOption({paymentOption: values});
+      showToast({message: 'PAYMENT OPTION REMOVED'});
       setIsDeleting(false);
     },
     [deletePaymentOption],

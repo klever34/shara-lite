@@ -256,7 +256,7 @@ export const MoreOptionsScreen = () => {
                     style={applyStyles('text-400 leading-16', {
                       color: colors['gray-200'],
                     })}>
-                    {paymentLink} Your Payment link
+                    {paymentLink}
                   </Text>
                 </View>
                 <View>
