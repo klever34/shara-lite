@@ -1,14 +1,14 @@
+import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
-import {format, formatDistanceToNowStrict} from 'date-fns';
-import React, {useMemo, ReactNode} from 'react';
+import {formatDistanceToNowStrict} from 'date-fns';
+import React, {ReactNode, useMemo} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 import {Icon} from './Icon';
 import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
-import {HeaderBackButton} from '@/components/HeaderBackButton';
-import {useAppNavigation} from '@/services/navigation';
 
 export type CustomerDetailsHeaderProps = {
   isPaid?: boolean;
@@ -50,7 +50,7 @@ const CustomerDetailsHeader = ({
               ? creditCreatedAt &&
                 `${formatDistanceToNowStrict(creditCreatedAt, {
                   addSuffix: true,
-                })}, ${format(creditCreatedAt, 'hh:mm a')}`
+                })}`
               : customer?.mobile}
           </Text>
         </>
