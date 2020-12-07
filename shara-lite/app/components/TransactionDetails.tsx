@@ -63,7 +63,7 @@ const TransactionDetails = withModal(
       customer?.name ?? ''
     }, thank you for doing business with ${
       businessInfo?.name
-    }. You paid owe ${amountWithCurrency(creditAmount)} which is due on ${
+    }. You owe ${amountWithCurrency(creditAmount)} which is due on ${
       dueDate ? format(new Date(dueDate), 'MMM dd, yyyy') : ''
     }.\n\nTo Pay click.\n ${paymentLink}\n\n Powered by Shara for free.\nwww.shara.co`;
 

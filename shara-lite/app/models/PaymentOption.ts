@@ -4,6 +4,7 @@ export type FieldData = {
   key: string;
   label: string;
   value: string;
+  required: boolean;
 };
 
 export interface IPaymentOption extends BaseModelInterface {

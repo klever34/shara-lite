@@ -62,7 +62,7 @@ const CustomerDetailsHeader = ({
   renderRightSection = useMemo(() => {
     if (!renderRightSection) {
       return () =>
-        credit && (
+        !!customer?.remainingCreditAmount && (
           <>
             <Text
               style={applyStyles(
@@ -77,7 +77,7 @@ const CustomerDetailsHeader = ({
         );
     }
     return renderRightSection;
-  }, [credit, customer, renderRightSection]);
+  }, [customer, renderRightSection]);
 
   const navigation = useAppNavigation();
 

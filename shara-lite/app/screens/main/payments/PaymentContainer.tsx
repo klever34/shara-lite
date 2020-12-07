@@ -62,12 +62,16 @@ function PaymentContainer(props: ModalWrapperFields) {
 
   const onFormSubmit = useCallback(
     async (values: IPaymentOption) => {
-      if (values?.fieldsData?.every((item) => item.value)) {
+      if (
+        values?.fieldsData
+          ?.filter((item) => item.required)
+          .every((item) => item.value)
+      ) {
         setIsSaving(true);
         await savePaymentOption({paymentOption: values});
         setIsSaving(false);
       } else {
-        Alert.alert('Waring', 'Please fill all the fields in the form.');
+        Alert.alert('Warning', 'Please fill all the fields in the form.');
       }
     },
     [savePaymentOption],
@@ -75,13 +79,17 @@ function PaymentContainer(props: ModalWrapperFields) {
 
   const handleEditItem = useCallback(
     async (paymentOption: IPaymentOption, updates: Partial<IPaymentOption>) => {
-      if (updates?.fieldsData?.every((item) => item.value)) {
+      if (
+        updates?.fieldsData
+          ?.filter((item) => item.required)
+          .every((item) => item.value)
+      ) {
         delete updates.fields;
         setIsSaving(true);
         await updatePaymentOption({paymentOption, updates});
         setIsSaving(false);
       } else {
-        Alert.alert('Waring', 'Please fill all the fields in the form.');
+        Alert.alert('Warning', 'Please fill all the fields in the form.');
       }
     },
     [updatePaymentOption],

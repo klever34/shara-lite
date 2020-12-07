@@ -84,12 +84,12 @@ export const useTransaction = (): useTransactionInterface => {
     const createdReceipt = await saveReceipt(receiptData);
 
     if (customer) {
-      saveCreditPayment({
+      await saveCreditPayment({
         customer,
         note,
         amount,
         method: '',
-      }).then(() => {});
+      });
     }
 
     return createdReceipt;
