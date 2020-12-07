@@ -71,9 +71,13 @@ const TransactionDetails = withModal(
       customer?.name ?? ''
     }, thank you for doing business with ${
       businessInfo?.name
-    }. You owe ${amountWithCurrency(creditAmount)} which is due on ${
-      dueDate ? format(new Date(dueDate), 'MMM dd, yyyy') : ''
-    }.\n\nTo Pay click.\n ${paymentLink}\n\n Powered by Shara for free.\nwww.shara.co`;
+    }. You owe ${amountWithCurrency(
+      creditAmount || customer?.remainingCreditAmount,
+    )}${
+      dueDate
+        ? ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
+        : ''
+    }.\n\nTo pay click\n ${paymentLink}\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
@@ -228,6 +232,7 @@ const TransactionDetails = withModal(
           {...header}
           isPaid={isPaid}
           customer={customer}
+          creditAmount={creditAmount}
           onPress={handleAddCustomer}
           style={applyStyles(
             {
@@ -341,8 +346,8 @@ const TransactionDetails = withModal(
               <PaymentReminderImage
                 date={dueDate}
                 captureMode="update"
-                amount={creditAmount}
                 getImageUri={(data) => setReceiptImage(data)}
+                amount={creditAmount || customer?.remainingCreditAmount}
               />
             </View>
           </>

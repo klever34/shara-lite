@@ -32,7 +32,6 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
         isPaid={isPaid}
         dueDate={customer?.dueDate}
         transactions={filteredReceipts}
-        creditAmount={customer?.remainingCreditAmount}
         {...transactionDetailsProps}
       />
     </CustomerContext.Provider>
