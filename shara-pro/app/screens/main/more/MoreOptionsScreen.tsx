@@ -92,8 +92,15 @@ export const MoreOptionsScreen = () => {
         },
       },
       {
-        title: 'App Lock',
+        title: 'Referral',
         icon: 'users',
+        onPress: () => {
+          navigation.navigate('Referral');
+        },
+      },
+      {
+        title: 'App Lock',
+        icon: 'lock',
         onPress: () => {
           Alert.alert(
             'Coming Soon',
@@ -103,7 +110,7 @@ export const MoreOptionsScreen = () => {
       },
       {
         title: 'Help & Support',
-        icon: 'users',
+        icon: 'help-circle',
         onPress: () => {
           Alert.alert(
             'Coming Soon',
@@ -121,7 +128,7 @@ export const MoreOptionsScreen = () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
-      getAnalyticsService().logEvent('logout').catch(handleError);
+      getAnalyticsService().logEvent('logout', {}).catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],
@@ -131,6 +138,21 @@ export const MoreOptionsScreen = () => {
       handleError(e);
     }
   }, [handleError, navigation, logoutFromRealm]);
+
+  const handleLogoutConfirm = useCallback(() => {
+    Alert.alert('Warning', 'Are you sure you want to logout?', [
+      {
+        text: 'No',
+        onPress: () => {},
+      },
+      {
+        text: 'Yes',
+        onPress: handleLogout,
+      },
+    ]);
+  }, [handleLogout]);
+
+  const user = getAuthService().getUser();
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -212,7 +234,7 @@ export const MoreOptionsScreen = () => {
                 style={applyStyles('text-400 text-xs leading-16 uppercase', {
                   color: colors['gray-100'],
                 })}>
-                ID: {business.id}
+                ID: {user?.id}
               </Text>
             </View>
             <HeaderBackButton
@@ -264,7 +286,7 @@ export const MoreOptionsScreen = () => {
           })}
         </View>
         <View style={applyStyles('flex-1')}>
-          <Touchable onPress={handleLogout}>
+          <Touchable onPress={handleLogoutConfirm}>
             <View
               style={applyStyles(
                 'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',

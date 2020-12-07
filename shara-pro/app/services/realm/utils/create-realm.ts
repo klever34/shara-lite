@@ -13,7 +13,6 @@ import {Product} from '@/models/Product';
 import {Supplier} from '@/models/Supplier';
 import {StockItem} from '@/models/StockItem';
 import {DeliveryAgent} from '@/models/DeliveryAgent';
-import {PaymentOption} from '@/models/PaymentOption';
 import {StorageService} from '../../storage';
 import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
@@ -32,7 +31,6 @@ export const schema = [
   ReceivedInventory,
   Message,
   Payment,
-  PaymentOption,
   Product,
   Receipt,
   ReceiptItem,
@@ -111,7 +109,7 @@ const createRealm = async (options?: any): Promise<Realm> => {
       user: options.realmUser,
       partitionValue,
     };
-    config.path = `sync-user-data-${partitionValue}-v2`;
+    config.path = `sync-user-data-${partitionValue}-v2-${partitionValue}`;
     Realm.Sync.setLogLevel('all');
   }
 

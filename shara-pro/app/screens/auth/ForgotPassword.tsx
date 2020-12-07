@@ -1,4 +1,4 @@
-import React, {useRef} from 'react';
+import React from 'react';
 import {
   AuthView,
   FormBuilder,
@@ -6,16 +6,14 @@ import {
   PhoneNumber,
   required,
 } from '@/components';
-import {getApiService} from '@/services';
-import {ToastAndroid} from 'react-native';
-import {useErrorHandler} from '@/services/error-boundary';
-import {useAppNavigation} from '@/services/navigation';
-import {RouteProp, useRoute} from '@react-navigation/native';
 import {AuthStackParamList} from '@/screens/auth/index';
+import {getApiService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
+import {RouteProp, useRoute} from '@react-navigation/native';
+import {Alert, ToastAndroid} from 'react-native';
 
 const ForgotPassword = () => {
-  const handleError = useErrorHandler();
   const navigation = useAppNavigation();
   const {params} = useRoute<RouteProp<AuthStackParamList, 'ForgotPassword'>>();
 
@@ -33,8 +31,6 @@ const ForgotPassword = () => {
     },
   };
 
-  const formValuesRef = useRef<Record<FormFieldName, any>>();
-
   return (
     <AuthView
       showEmblem={false}
@@ -42,26 +38,26 @@ const ForgotPassword = () => {
       heading="Forgot your password?"
       style={applyStyles('bg-white pt-24')}
       description="Enter your mobile number to receive your OTP"
-      buttonTitle="submit"
-      onSubmit={() => {
-        const {current: values} = formValuesRef;
-        const phoneNumber = values?.mobile as PhoneNumber;
-        const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;
-        return getApiService()
-          .forgotPassword({
-            mobile,
-          })
-          .then(({message}) => {
-            ToastAndroid.show(message, ToastAndroid.LONG);
-            navigation.replace('ResetPassword', {mobile});
-          })
-          .catch(handleError);
-      }}>
+      showButton={false}>
       <FormBuilder
         fields={formFields}
-        onInputChange={(values) => {
-          formValuesRef.current = values;
+        submitBtn={{title: 'submit'}}
+        onSubmit={(values) => {
+          const phoneNumber = values?.mobile as PhoneNumber;
+          const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;
+          return getApiService()
+            .forgotPassword({
+              mobile,
+            })
+            .then(({message}) => {
+              ToastAndroid.show(message, ToastAndroid.LONG);
+              navigation.replace('ResetPassword', {mobile});
+            })
+            .catch((error) => {
+              Alert.alert('Error', error.message);
+            });
         }}
+        forceUseFormButton
       />
     </AuthView>
   );

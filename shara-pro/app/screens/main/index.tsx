@@ -33,18 +33,21 @@ import {ReceiptProvider} from './receipts/ReceiptProvider';
 import {ReceiptSuccessScreen} from './receipts/ReceiptSuccessScreen';
 import {BuildReceiptScreen} from './receipts/BuildReceiptScreen';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
+import {ReceiptReviewScreen} from './receipts/ReceiptReviewScreen';
+import ReferralScreen from './more/referral';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Customers
-  AddCustomer: undefined;
+  AddCustomer: {title?: string; customer?: ICustomer};
   CustomerDetails: {customer: ICustomer};
 
   // Receipt
   BuildReceipt: undefined;
   ReceiptOtherDetails: undefined;
   CreateReceipt: {receipt?: IReceipt};
+  ReceiptReview: {id: IReceipt['_id']};
   ReceiptDetails: {id: IReceipt['_id']};
   ReceiptSuccess: {id: IReceipt['_id']};
 
@@ -57,6 +60,7 @@ export type MainStackParamList = {
   UserProfileSettings: undefined;
   BusinessSettings: undefined;
   Reports: undefined;
+  Referral: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -171,6 +175,11 @@ const MainScreens = () => {
             component={UserProfileSettings}
             options={{headerShown: false}}
           />
+          <MainStack.Screen
+            name="Referral"
+            component={ReferralScreen}
+            options={{headerShown: false}}
+          />
 
           {/* Receipt */}
           <MainStack.Screen
@@ -192,6 +201,11 @@ const MainScreens = () => {
             name="ReceiptSuccess"
             options={{headerShown: false}}
             component={ReceiptSuccessScreen}
+          />
+          <MainStack.Screen
+            name="ReceiptReview"
+            options={{headerShown: false}}
+            component={ReceiptReviewScreen}
           />
           <MainStack.Screen
             name="BuildReceipt"

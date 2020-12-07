@@ -20,11 +20,6 @@ basic_devices = [
         model: "Pixel2",
         version: "28",
         orientation: "portrait"
-    },
-    {
-        model: "Nexus5X",
-        version: "23",
-        orientation: "portrait"
     }
 ]
 

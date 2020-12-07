@@ -8,7 +8,6 @@ import {
 } from '@/components';
 import {Page} from '@/components/Page';
 import Touchable from '@/components/Touchable';
-import {showToast} from '@/helpers/utils';
 import {ISupplier} from '@/models/Supplier';
 import {getAnalyticsService, getContactService} from '@/services';
 import {useAsync} from '@/services/api';
@@ -19,9 +18,10 @@ import {useRealm} from '@/services/realm';
 import {addNewInventory} from '@/services/ReceivedInventoryService';
 import {getSuppliers, saveSupplier} from '@/services/SupplierService';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
+import {ToastContext} from '@/components/Toast';
 
 type SupplierListItem =
   | Pick<ISupplier, 'name' | 'mobile' | '_id'>
@@ -108,7 +108,7 @@ export const InventoryOtherDetailsScreen = () => {
       });
     }
   };
-
+  const {showSuccessToast} = useContext(ToastContext);
   const handleFinish = useCallback(() => {
     let payload: any = {
       supplier,
@@ -133,22 +133,23 @@ export const InventoryOtherDetailsScreen = () => {
         }
       }
       setIsLoading(true);
-      const newSupplier = saveSupplier({
+      payload.supplier = saveSupplier({
         realm,
         supplier: {name: supplier?.name ?? '', mobile: supplier?.mobile},
       });
-      payload.supplier = newSupplier;
       addNewInventory({
         realm,
         ...payload,
       });
       setIsLoading(false);
 
-      getAnalyticsService().logEvent('inventoryReceived').catch(handleError);
+      getAnalyticsService()
+        .logEvent('inventoryReceived', {})
+        .catch(handleError);
 
       handleClearState();
       handleClearInventoryStock();
-      showToast({message: 'INVENTORY RECEIVED SUCCESSFULLY'});
+      showSuccessToast('INVENTORY RECEIVED SUCCESSFULLY');
 
       navigation.navigate('ProductsTab');
     }, 100);
@@ -160,9 +161,10 @@ export const InventoryOtherDetailsScreen = () => {
     realm,
     handleError,
     handleClearState,
+    handleClearInventoryStock,
+    showSuccessToast,
     navigation,
     contactService,
-    handleClearInventoryStock,
   ]);
 
   const renderSearchDropdownItem = useCallback(({item, onPress}) => {

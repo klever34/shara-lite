@@ -6,9 +6,11 @@ import {ICustomer, modelName} from '@/models';
 import {getBaseModelValues} from '@/helpers/models';
 import {getAnalyticsService} from '@/services';
 import perf from '@react-native-firebase/perf';
+import {SharaAppEventsProperties} from '@/services/analytics';
 
 interface saveCustomerInterface {
   customer: ICustomer;
+  source: SharaAppEventsProperties['customerAdded']['source'];
 }
 
 interface getCustomerInterface {
@@ -32,6 +34,7 @@ export const useCustomer = (): useCustomerInterface => {
 
   const saveCustomer = async ({
     customer,
+    source,
   }: saveCustomerInterface): Promise<ICustomer> => {
     const customerDetails: ICustomer = {
       ...customer,
@@ -54,7 +57,7 @@ export const useCustomer = (): useCustomerInterface => {
     await trace.stop();
 
     getAnalyticsService()
-      .logEvent('customerAdded')
+      .logEvent('customerAdded', {source})
       .then(() => {});
 
     return customerDetails;

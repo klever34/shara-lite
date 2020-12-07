@@ -46,7 +46,7 @@ export const saveSupplier = ({
   });
 
   getAnalyticsService()
-    .logEvent('supplierAdded')
+    .logEvent('supplierAdded', {})
     .then(() => {});
 
   return supplierDetails;

@@ -1,5 +1,6 @@
 import {
   AuthView,
+  Button,
   PasswordField,
   PhoneNumber,
   PhoneNumberField,
@@ -11,8 +12,15 @@ import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useState} from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useRef, useState} from 'react';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import * as yup from 'yup';
 import {useInitRealm} from '@/services/realm';
 
@@ -58,6 +66,10 @@ export const Login = () => {
   const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
     const {mobile, countryCode, password} = data;
+    if (!countryCode) {
+      Alert.alert('Error', 'Please select a country');
+      return;
+    }
     const payload = {
       password: password.trim(),
       mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
@@ -66,7 +78,7 @@ export const Login = () => {
     setLoading(true);
     try {
       await apiService.logIn(payload);
-      await initRealm();
+      await initRealm({initSync: true});
 
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
@@ -84,12 +96,15 @@ export const Login = () => {
 
   const navigation = useAppNavigation();
 
+  const passwordFieldRef = useRef<TextInput | null>(null);
+
   return (
     <AuthView
       isLoading={loading}
       buttonTitle="Sign In"
       onSubmit={handleSubmit}
       heading="Welcome Back"
+      showButton={false}
       style={applyStyles('bg-white')}
       header={{title: 'Sign In', iconLeft: {}}}
       description="Sign in and enjoy all the features available on Shara. It only takes a few moments.">
@@ -102,13 +117,30 @@ export const Login = () => {
           onChangeText={(data) => onChangeMobile(data)}
           isInvalid={touched.mobile && !!errors.mobile}
           value={{number: values.mobile, callingCode: values.countryCode}}
+          returnKeyType="next"
+          onSubmitEditing={() => {
+            setImmediate(() => {
+              if (passwordFieldRef.current) {
+                passwordFieldRef.current.focus();
+              }
+            });
+          }}
         />
         <PasswordField
+          ref={passwordFieldRef}
           value={values.password}
           label="Enter your password"
           errorMessage={errors.password}
           onChangeText={handleChange('password')}
           isInvalid={touched.password && !!errors.password}
+          onSubmitEditing={handleSubmit}
+        />
+        <Button
+          variantColor="red"
+          onPress={handleSubmit}
+          title="Sign In"
+          isLoading={loading}
+          style={applyStyles('w-full mt-24')}
         />
       </View>
 

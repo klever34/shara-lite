@@ -7,9 +7,10 @@ import {
   ReceiptTableHeader,
   ReceiptTableItem,
   StickyFooter,
+  toNumber,
 } from '@/components';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency, showToast} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IStockItem} from '@/models/StockItem';
 import {getAnalyticsService} from '@/services';
@@ -20,16 +21,19 @@ import {getProducts, saveProduct} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles} from '@/styles';
 import {omit} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
+  BackHandler,
   FlatList,
   Keyboard,
   SafeAreaView,
+  ScrollView,
   Text,
   View,
 } from 'react-native';
 import {useReceiptProvider} from '../receipts/ReceiptProvider';
+import {ToastContext} from '@/components/Toast';
 
 export const AddInventoryScreen = ({route}: any) => {
   const realm = useRealm();
@@ -70,7 +74,7 @@ export const AddInventoryScreen = ({route}: any) => {
   }, [navigation, handleClearState]);
 
   const handlePriceChange = useCallback((item) => {
-    setPrice(item);
+    setPrice(toNumber(item));
   }, []);
 
   const handleQuantityChange = useCallback((item) => {
@@ -142,21 +146,21 @@ export const AddInventoryScreen = ({route}: any) => {
 
   const handleAddProduct = useCallback(
     ({name, price: productPrice}) => {
-      getAnalyticsService().logEvent('productStart').catch(handleError);
+      getAnalyticsService().logEvent('productStart', {}).catch(handleError);
       const createdProduct = saveProduct({
         realm,
         product: {name, price: productPrice},
       });
-      getAnalyticsService().logEvent('productAdded').catch(handleError);
+      getAnalyticsService().logEvent('productAdded', {}).catch(handleError);
       setIsNewProduct(false);
       return createdProduct;
     },
     [handleError, realm],
   );
-
+  const {showSuccessToast} = useContext(ToastContext);
   const handleAddReceiptItem = useCallback(() => {
     let payload = selectedProduct;
-    const priceCondition = price || price === 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
     if (payload && priceCondition && quantityCondition && quantity) {
       if (isNewProduct) {
@@ -172,7 +176,7 @@ export const AddInventoryScreen = ({route}: any) => {
       } as IStockItem;
 
       getAnalyticsService()
-        .logEvent('productAddedToReceipt')
+        .logEvent('productAddedToReceipt', {})
         .catch(handleError);
 
       if (
@@ -197,7 +201,7 @@ export const AddInventoryScreen = ({route}: any) => {
 
       Keyboard.dismiss();
       handleClearState();
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
       Alert.alert(
         'Info',
@@ -212,6 +216,7 @@ export const AddInventoryScreen = ({route}: any) => {
     handleError,
     inventoryStock,
     handleClearState,
+    showSuccessToast,
     handleAddProduct,
     searchQuery,
   ]);
@@ -219,7 +224,7 @@ export const AddInventoryScreen = ({route}: any) => {
   const handleDone = useCallback(() => {
     let items = inventoryStock;
     let payload = selectedProduct;
-    const priceCondition = price || price === 0 ? true : false;
+    const priceCondition = !!(price || price === 0);
     const quantityCondition = quantity ? !!parseFloat(quantity) : false;
 
     if (isNewProduct) {
@@ -243,7 +248,7 @@ export const AddInventoryScreen = ({route}: any) => {
       Keyboard.dismiss();
       handleClearState();
 
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleUpdateInventoryStock([product, ...inventoryStock]);
 
@@ -267,6 +272,7 @@ export const AddInventoryScreen = ({route}: any) => {
     handleAddProduct,
     searchQuery,
     handleClearState,
+    showSuccessToast,
     handleUpdateInventoryStock,
     navigation,
   ]);
@@ -312,149 +318,182 @@ export const AddInventoryScreen = ({route}: any) => {
     setShowContinueBtn(true);
   };
 
+  const handleBackButtonPress = useCallback(() => {
+    if (!navigation.isFocused()) {
+      return false;
+    }
+    if (inventoryStock.length) {
+      Alert.alert(
+        'Warning',
+        'Press CONTINUE to keep receiving inventory or CANCEL to stop receiving inventory.',
+        [
+          {
+            text: 'Cancel',
+            onPress: () => {
+              navigation.goBack();
+            },
+          },
+          {
+            text: 'Continue',
+            onPress: () => {},
+          },
+        ],
+      );
+      return true;
+    }
+    return false;
+  }, [inventoryStock, navigation]);
+
   useEffect(() => {
     Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
 
-    // cleanup function
     return () => {
       Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
       Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
     };
   }, []);
 
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress);
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonPress,
+      );
+    };
+  }, [handleBackButtonPress]);
+
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
         title="add inventory"
-        iconRight={{iconName: 'x', onPress: handleGoBack}}
+        headerRight={{options: [{icon: 'x', onPress: handleGoBack}]}}
       />
-      <View style={applyStyles('flex-1')}>
-        <FlatList
-          data={[]}
-          nestedScrollEnabled
-          persistentScrollbar
-          renderItem={undefined}
-          keyboardShouldPersistTaps="always"
-          ListHeaderComponent={
+      <ScrollView
+        nestedScrollEnabled
+        persistentScrollbar={true}
+        keyboardShouldPersistTaps="always"
+        style={applyStyles('flex-1 bg-white')}>
+        <View style={applyStyles('bg-gray-10 px-16 py-32')}>
+          <View style={(selectedProduct || itemToEdit) && applyStyles('pb-16')}>
+            <AutoComplete<IProduct>
+              rightIcon="box"
+              items={products}
+              value={searchQuery}
+              label="Product / Service"
+              setFilter={handleProductSearch}
+              onClearInput={handleClearState}
+              onItemSelect={handleSelectProduct}
+              renderItem={renderSearchDropdownItem}
+              onChangeText={handleChangeSearchQuery}
+              noResultsAction={() => setIsNewProduct(true)}
+              textInputProps={{
+                placeholder: 'Search or enter product/service',
+              }}
+            />
+          </View>
+          {(selectedProduct || itemToEdit) && (
             <>
-              <View style={applyStyles('bg-gray-10 px-16 py-32')}>
-                <View style={applyStyles('pb-16')}>
-                  <AutoComplete<IProduct>
-                    rightIcon="box"
-                    items={products}
-                    value={searchQuery}
-                    label="Product / Service"
-                    setFilter={handleProductSearch}
-                    onClearInput={handleClearState}
-                    onItemSelect={handleSelectProduct}
-                    renderItem={renderSearchDropdownItem}
-                    onChangeText={handleChangeSearchQuery}
-                    noResultsAction={() => setIsNewProduct(true)}
-                    textInputProps={{
-                      placeholder: 'Search or enter product/service',
-                    }}
+              <View
+                style={applyStyles(
+                  'pb-16 flex-row items-center justify-between',
+                )}>
+                <View style={applyStyles({width: '48%'})}>
+                  <CurrencyInput
+                    value={price}
+                    placeholder="0.00"
+                    label="Unit Price"
+                    style={applyStyles('bg-white')}
+                    onChangeText={handlePriceChange}
                   />
                 </View>
+                <View style={applyStyles({width: '48%'})}>
+                  <AppInput
+                    placeholder="0"
+                    value={quantity}
+                    label="Quantity"
+                    keyboardType="numeric"
+                    style={applyStyles('bg-white')}
+                    onChangeText={handleQuantityChange}
+                  />
+                </View>
+              </View>
+              {itemToEdit ? (
                 <View
                   style={applyStyles(
-                    'pb-16 flex-row items-center justify-between',
+                    'flex-row items-center py-12 justify-between',
                   )}>
-                  <View style={applyStyles({width: '48%'})}>
-                    <CurrencyInput
-                      placeholder="0.00"
-                      label="Unit Price"
-                      value={price?.toString()}
-                      style={applyStyles('bg-white')}
-                      onChange={(text) => handlePriceChange(text)}
-                    />
-                  </View>
-                  <View style={applyStyles({width: '48%'})}>
-                    <AppInput
-                      placeholder="0"
-                      value={quantity}
-                      label="Quantity"
-                      keyboardType="numeric"
-                      style={applyStyles('bg-white')}
-                      onChangeText={handleQuantityChange}
-                    />
-                  </View>
-                </View>
-                {itemToEdit ? (
-                  <View
-                    style={applyStyles(
-                      'flex-row items-center py-12 justify-between',
-                    )}>
-                    <Button
-                      title="Delete"
-                      variantColor="transparent"
-                      onPress={handleRemoveInventoryStockItem}
-                      style={applyStyles({
-                        width: '48%',
-                      })}
-                    />
-                    <Button
-                      title="Save"
-                      variantColor="red"
-                      onPress={handleUpdateInventoryStockItem}
-                      style={applyStyles({
-                        width: '48%',
-                      })}
-                    />
-                  </View>
-                ) : (
                   <Button
-                    variantColor="clear"
-                    title="Add Inventory"
-                    onPress={handleAddReceiptItem}
+                    title="Delete"
+                    variantColor="transparent"
+                    onPress={handleRemoveInventoryStockItem}
                     style={applyStyles({
-                      shadowColor: 'red',
-                      shadowOffset: {
-                        width: 0,
-                        height: 4,
-                      },
-                      shadowOpacity: 0.3,
-                      shadowRadius: 4.65,
-                      elevation: 8,
+                      width: '48%',
                     })}
                   />
-                )}
-              </View>
-              <FlatList
-                persistentScrollbar
-                //@ts-ignore
-                data={inventoryStock}
-                style={applyStyles('bg-white')}
-                renderItem={renderInventoryStockItem}
-                keyboardShouldPersistTaps="always"
-                ListHeaderComponent={
-                  inventoryStock.length ? <ReceiptTableHeader /> : undefined
-                }
-                keyExtractor={(item) => `${item?._id?.toString()}`}
-                ListEmptyComponent={
-                  <View style={applyStyles('py-96 center mx-auto')}>
-                    <Text
-                      style={applyStyles(
-                        'px-48 text-700 text-center text-gray-200 text-uppercase',
-                      )}>
-                      There are no products/service to add
-                    </Text>
-                  </View>
-                }
-              />
+                  <Button
+                    title="Save"
+                    variantColor="red"
+                    onPress={handleUpdateInventoryStockItem}
+                    style={applyStyles({
+                      width: '48%',
+                    })}
+                  />
+                </View>
+              ) : (
+                <Button
+                  variantColor="clear"
+                  title="Add Inventory"
+                  onPress={handleAddReceiptItem}
+                  style={applyStyles({
+                    shadowColor: 'red',
+                    shadowOffset: {
+                      width: 0,
+                      height: 4,
+                    },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4.65,
+                    elevation: 8,
+                  })}
+                />
+              )}
             </>
+          )}
+        </View>
+        <FlatList
+          persistentScrollbar
+          //@ts-ignore
+          data={inventoryStock}
+          style={applyStyles('bg-white')}
+          renderItem={renderInventoryStockItem}
+          keyboardShouldPersistTaps="always"
+          ListHeaderComponent={
+            inventoryStock.length ? <ReceiptTableHeader /> : undefined
+          }
+          keyExtractor={(item) => `${item?._id?.toString()}`}
+          ListEmptyComponent={
+            <View style={applyStyles('py-96 center mx-auto')}>
+              <Text
+                style={applyStyles(
+                  'px-48 text-700 text-center text-gray-200 text-uppercase',
+                )}>
+                There are no products/service to add
+              </Text>
+            </View>
           }
         />
-        {showContinueBtn && (
-          <StickyFooter>
-            <Button
-              title="Continue"
-              onPress={handleDone}
-              disabled={!products.length}
-            />
-          </StickyFooter>
-        )}
-      </View>
+      </ScrollView>
+
+      {showContinueBtn && (
+        <StickyFooter>
+          <Button
+            title="Continue"
+            onPress={handleDone}
+            disabled={!products.length}
+          />
+        </StickyFooter>
+      )}
     </SafeAreaView>
   );
 };

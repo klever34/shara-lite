@@ -7,8 +7,8 @@ import {
   ReceiptTableItem,
   ReceiptTableItemProps,
   StickyFooter,
+  toNumber,
 } from '@/components';
-import {showToast} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
@@ -18,15 +18,24 @@ import {useAppNavigation} from '@/services/navigation';
 import {saveProducts} from '@/services/ProductService';
 import {useRealm} from '@/services/realm';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import {
   Alert,
+  BackHandler,
   FlatList,
   Keyboard,
   SafeAreaView,
   Text,
+  TextInput,
   View,
 } from 'react-native';
+import {ToastContext} from '@/components/Toast';
 
 type Props = {
   receipt?: IReceipt;
@@ -52,28 +61,25 @@ export const CreateProductScreen = (props: Props) => {
   );
 
   useEffect(() => {
-    getAnalyticsService().logEvent('productStart').catch(handleError);
+    getAnalyticsService().logEvent('productStart', {}).catch(handleError);
   }, [handleError, receipt]);
+
+  const {showSuccessToast} = useContext(ToastContext);
 
   const handleClearState = useCallback(() => {
     setName('');
-    setPrice(0);
     setQuantity('');
+    setPrice(undefined);
     setItemToEdit(null);
     Keyboard.dismiss();
   }, []);
-
-  const handleGoBack = useCallback(() => {
-    handleClearState();
-    navigation.goBack();
-  }, [navigation, handleClearState]);
 
   const handleNameChange = useCallback((text) => {
     setName(text);
   }, []);
 
   const handlePriceChange = useCallback((item) => {
-    setPrice(item);
+    setPrice(toNumber(item));
   }, []);
 
   const handleQuantityChange = useCallback((item) => {
@@ -94,17 +100,17 @@ export const CreateProductScreen = (props: Props) => {
   const handleAddProducts = useCallback(
     (payload: NewProduct[]) => {
       setIsLoading(true);
+      saveProducts({
+        realm,
+        products: payload.map((item) => {
+          delete item.id;
+          return item;
+        }),
+      });
       setTimeout(() => {
-        saveProducts({
-          realm,
-          products: payload.map((item) => {
-            delete item.id;
-            return item;
-          }),
-        });
-      }, 100);
-      setIsLoading(false);
-      navigation.navigate('ProductsTab');
+        setIsLoading(false);
+        navigation.navigate('ProductsTab');
+      }, 50 * payload.length);
     },
     [navigation, realm],
   );
@@ -127,47 +133,44 @@ export const CreateProductScreen = (props: Props) => {
   }, [products, itemToEdit, handleClearState]);
 
   const handleAddProduct = useCallback(() => {
-    const priceCondition = price || price === 0 ? true : false;
-    const quantityCondition =
-      quantity && parseFloat(quantity) >= 0 ? true : false;
-    if (name && priceCondition && quantityCondition && quantity) {
+    const priceCondition = !!(price || price === 0);
+    if (name && priceCondition) {
       const product = {
         name,
         price,
         id: Date.now(),
-        quantity: parseFloat(quantity),
+        quantity: parseFloat(quantity ?? '0') || 0,
       } as NewProduct;
 
       setProducts([product, ...products]);
 
       Keyboard.dismiss();
       handleClearState();
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
-      Alert.alert('Info', 'Please add product/service name, price & quantity');
+      Alert.alert('Info', 'Please add product/service name and price');
     }
-  }, [price, quantity, name, products, handleClearState]);
+  }, [price, quantity, name, products, handleClearState, showSuccessToast]);
 
   const handleDone = useCallback(() => {
     let items = products;
-    const priceCondition = price || price === 0 ? true : false;
-    const quantityCondition = quantity ? !!parseFloat(quantity) : false;
+    const priceCondition = !!(price || price === 0);
 
-    if (quantity && quantityCondition && priceCondition) {
+    if (name && priceCondition) {
       const product = {
         name,
         price,
-        quantity: parseFloat(quantity),
+        quantity: parseFloat(quantity ?? '0') || 0,
       } as IProduct;
 
-      getAnalyticsService().logEvent('productAdded').catch(handleError);
+      getAnalyticsService().logEvent('productAdded', {}).catch(handleError);
 
       setProducts([product, ...products]);
 
       Keyboard.dismiss();
       handleClearState();
 
-      showToast({message: 'PRODUCT/SERVICE SUCCESSFULLY ADDED'});
+      showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
 
       handleAddProducts([product, ...products]);
     } else if (items.length) {
@@ -185,6 +188,7 @@ export const CreateProductScreen = (props: Props) => {
     name,
     handleError,
     handleClearState,
+    showSuccessToast,
     handleAddProducts,
   ]);
 
@@ -213,18 +217,66 @@ export const CreateProductScreen = (props: Props) => {
     Keyboard.addListener('keyboardDidShow', _keyboardDidShow);
     Keyboard.addListener('keyboardDidHide', _keyboardDidHide);
 
-    // cleanup function
     return () => {
       Keyboard.removeListener('keyboardDidShow', _keyboardDidShow);
       Keyboard.removeListener('keyboardDidHide', _keyboardDidHide);
     };
   }, []);
 
+  const unitPriceFieldRef = useRef<TextInput | null>(null);
+  const quantityFieldRef = useRef<TextInput | null>(null);
+
+  const handleGoBack = useCallback(() => {
+    const goBack = () => {
+      handleClearState();
+      navigation.goBack();
+    };
+    if (products.length) {
+      Alert.alert(
+        'Warning',
+        'Are you sure you want to exit this page? The product has not been added.',
+        [
+          {
+            text: 'No',
+            onPress: () => {},
+          },
+          {
+            text: 'Yes',
+            onPress: goBack,
+          },
+        ],
+      );
+    } else {
+      goBack();
+    }
+  }, [handleClearState, navigation, products.length]);
+
+  const handleBackButtonPress = useCallback(() => {
+    if (!navigation.isFocused()) {
+      return false;
+    }
+    if (products.length) {
+      handleGoBack();
+      return true;
+    }
+    return false;
+  }, [navigation, products.length, handleGoBack]);
+
+  useEffect(() => {
+    BackHandler.addEventListener('hardwareBackPress', handleBackButtonPress);
+    return () => {
+      BackHandler.removeEventListener(
+        'hardwareBackPress',
+        handleBackButtonPress,
+      );
+    };
+  }, [handleBackButtonPress]);
+
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <Header
         title="create product"
-        iconRight={{iconName: 'x', onPress: handleGoBack}}
+        headerRight={{options: [{icon: 'x', onPress: handleGoBack}]}}
       />
       <View style={applyStyles('flex-1')}>
         <FlatList
@@ -243,6 +295,14 @@ export const CreateProductScreen = (props: Props) => {
                     label="Product / service name"
                     onChangeText={handleNameChange}
                     placeholder="Enter product/service name here"
+                    returnKeyType="next"
+                    onSubmitEditing={() => {
+                      setImmediate(() => {
+                        if (unitPriceFieldRef.current) {
+                          unitPriceFieldRef.current.focus();
+                        }
+                      });
+                    }}
                   />
                 </View>
                 <View
@@ -251,21 +311,34 @@ export const CreateProductScreen = (props: Props) => {
                   )}>
                   <View style={applyStyles({width: '48%'})}>
                     <CurrencyInput
+                      ref={unitPriceFieldRef}
                       placeholder="0.00"
                       label="Unit Price"
-                      value={price?.toString()}
+                      value={price}
                       style={applyStyles('bg-white')}
-                      onChange={(text) => handlePriceChange(text)}
+                      onChangeText={handlePriceChange}
+                      returnKeyType="next"
+                      onSubmitEditing={() => {
+                        setImmediate(() => {
+                          if (quantityFieldRef.current) {
+                            quantityFieldRef.current.focus();
+                          }
+                        });
+                      }}
                     />
                   </View>
                   <View style={applyStyles({width: '48%'})}>
                     <AppInput
+                      ref={quantityFieldRef}
                       placeholder="0"
                       value={quantity}
                       label="Quantity"
                       keyboardType="numeric"
                       style={applyStyles('bg-white')}
                       onChangeText={handleQuantityChange}
+                      onSubmitEditing={
+                        itemToEdit ? handleUpdateProduct : handleAddProduct
+                      }
                     />
                   </View>
                 </View>

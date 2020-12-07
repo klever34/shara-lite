@@ -7,20 +7,20 @@ import {castObjectValuesToString} from '@/helpers/utils';
 import getFirebaseAnalytics from '@react-native-firebase/analytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 
-type SharaAppEventsProperties = {
+export type SharaAppEventsProperties = {
   // Chat
-  messageSent: undefined;
-  oneOnOneChatInitiated: undefined;
-  groupChatCreated: undefined;
+  messageSent: {};
+  oneOnOneChatInitiated: {};
+  groupChatCreated: {};
   // Onboarding
-  businessSetupComplete: undefined;
-  businessSetupStart: undefined;
+  businessSetupComplete: {};
+  businessSetupStart: {};
   login: {method: string};
-  logout: undefined;
+  logout: {};
   signup: {method: string};
   // Customer
   customerLocationAdded: {user_id: string};
-  customerAdded: undefined;
+  customerAdded: {source: 'manual' | 'phonebook'};
   // Receipts
   creditPaid: {
     item_id: string;
@@ -29,7 +29,7 @@ type SharaAppEventsProperties = {
     method: string;
     remaining_balance: string;
   };
-  receiptStart: undefined;
+  receiptStart: {};
   receiptCreated: {amount: string; currency_code: string};
   paymentMade: {
     item_id: string;
@@ -37,8 +37,8 @@ type SharaAppEventsProperties = {
     amount: string;
     currency_code: string;
   };
-  productAddedToReceipt: undefined;
-  customerAddedToReceipt: undefined;
+  productAddedToReceipt: {};
+  customerAddedToReceipt: {};
   // Content
   share: {item_id: string; content_type: string; method: string};
   selectContent: {item_id: string; content_type: string};
@@ -47,11 +47,13 @@ type SharaAppEventsProperties = {
   // Credit Management
   creditAdded: {item_id: string; amount: string; currency_code: string};
   // Inventory
-  supplierAdded: undefined;
-  productStart: undefined;
-  productAdded: undefined;
-  inventoryReceived: undefined;
-  deliveryAgentAdded: undefined;
+  supplierAdded: {};
+  productStart: {};
+  productAdded: {};
+  inventoryReceived: {};
+  deliveryAgentAdded: {};
+  syncStarted: {};
+  syncCompleted: {};
 };
 
 export interface IAnalyticsService {
@@ -60,7 +62,7 @@ export interface IAnalyticsService {
 
   logEvent<K extends keyof SharaAppEventsProperties>(
     eventName: K,
-    eventData?: SharaAppEventsProperties[K],
+    eventData: SharaAppEventsProperties[K],
   ): Promise<void>;
 
   tagScreenName(screenName: string): Promise<void>;
@@ -95,6 +97,7 @@ export class AnalyticsService implements IAnalyticsService {
         'id',
         'country_code',
         'currency_code',
+        'referrer_code',
       ];
       const userData: {[key: string]: string} = userFields.reduce(
         (acc, prop) => {
@@ -107,6 +110,7 @@ export class AnalyticsService implements IAnalyticsService {
       );
       userData.environment = Config.ENVIRONMENT;
       userData.businessName = user.businesses?.[0]?.name ?? '';
+      userData.referralCode = user.referrer_code ?? '';
       const alias =
         user.firstname && user.lastname
           ? `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim()
@@ -134,7 +138,11 @@ export class AnalyticsService implements IAnalyticsService {
   ): Promise<void> {
     let nextEventData;
     if (eventData) {
-      nextEventData = castObjectValuesToString(eventData as any);
+      nextEventData = castObjectValuesToString(
+        eventData as {
+          [key: string]: any;
+        },
+      );
     }
     try {
       await this.firebaseAnalytics.logEvent(eventName, eventData);

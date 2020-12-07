@@ -32,6 +32,9 @@ export const ImageInput = ({
     allowsEditing: true,
     title: 'Select a picture',
     takePhotoButtonTitle: 'Take a Photo',
+    storageOptions: {
+      cameraRoll: true,
+    },
   });
 
   const {current: handleChangeValue} = useRef(onChangeValue);
@@ -58,7 +61,7 @@ export const ImageInput = ({
           style={applyStyles(
             'bg-gray-10 w-full h-128 rounded-lg overflow-hidden center',
           )}>
-          {value ? (
+          {value?.uri ? (
             <Image
               resizeMode="contain"
               style={applyStyles('items-center justify-center', {

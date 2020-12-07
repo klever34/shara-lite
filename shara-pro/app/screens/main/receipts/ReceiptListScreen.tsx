@@ -23,6 +23,7 @@ import React, {
 } from 'react';
 import {Alert, KeyboardAvoidingView, Text, View} from 'react-native';
 import {ReceiptListItem} from './ReceiptListItem';
+import {useSyncNotification} from '@/services/realm/hooks/use-sync-notification';
 
 export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
   const realm = useRealm();
@@ -164,12 +165,19 @@ export const useReceiptList = ({initialFilter = 'recent'} = {}) => {
     return 0;
   }, [filter, searchTerm, filteredReceipts]);
 
+  const reloadReceipts = useCallback(() => {
+    const myReceipts = realm ? getReceipts({realm}) : [];
+    setAllReceipts(myReceipts);
+  }, [realm]);
+
   useEffect(() => {
-    return navigation.addListener('focus', () => {
-      const myReceipts = realm ? getReceipts({realm}) : [];
-      setAllReceipts(myReceipts);
-    });
-  }, [navigation, realm]);
+    return navigation.addListener('focus', reloadReceipts);
+  }, [navigation, reloadReceipts]);
+
+  useSyncNotification({
+    model: 'Receipt',
+    onAddition: reloadReceipts,
+  });
 
   return useMemo(
     () => ({
@@ -215,12 +223,12 @@ export const ReceiptListScreen = withModal(() => {
   } = useReceiptList();
 
   const handleCreateReceipt = useCallback(() => {
-    if (!receipts.length) {
+    if (!business.name && !receipts.length) {
       navigation.navigate('BuildReceipt');
     } else {
       navigation.navigate('CreateReceipt', {});
     }
-  }, [receipts, navigation]);
+  }, [receipts.length, business.name, navigation]);
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
@@ -322,9 +330,8 @@ export const ReceiptListScreen = withModal(() => {
         searchPlaceholderText="Search by customer name"
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         emptyStateProps={{
-          heading: 'Create your first Receipt',
-          text:
-            'You have no receipts yet. Let’s help you create one it takes only a few seconds.',
+          heading: 'Create Your First Receipt',
+          text: 'You have no receipts yet. Create one in seconds',
         }}
       />
     </KeyboardAvoidingView>

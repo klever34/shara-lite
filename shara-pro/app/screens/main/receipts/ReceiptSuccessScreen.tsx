@@ -12,7 +12,7 @@ export const ReceiptSuccessScreen = ({route}: any) => {
   useEffect(() => {
     const timeout = setTimeout(() => {
       const receiptId = route.params.id;
-      navigation.navigate('ReceiptDetails', {id: receiptId});
+      navigation.navigate('ReceiptReview', {id: receiptId});
     }, 2000);
     return () => clearTimeout(timeout);
   }, [realm, navigation, route.params.id]);
