@@ -12,7 +12,11 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService, getAuthService} from '@/services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getContactService,
+} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {ShareHookProps, useShare} from '@/services/share';
@@ -23,6 +27,7 @@ import Config from 'react-native-config';
 import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
+import {useCustomer} from '@/services/customer/hook';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
@@ -39,20 +44,23 @@ export type TransactionDetailsProps = {
 const TransactionDetails = withModal(
   ({
     header,
-    customer,
     creditAmount,
     transactions,
     actionButtons,
     isPaid = false,
     sendReminder = true,
+    customer: customerProp,
     dueDate: creditDueDate,
     showActionButtons = true,
     openModal,
   }: TransactionDetailsProps & ModalWrapperFields) => {
     const analyticsService = getAnalyticsService();
     const businessInfo = getAuthService().getBusinessInfo();
+    const {addCustomerToTransaction} = useTransaction();
+    const {saveCustomer} = useCustomer();
 
     const [receiptImage, setReceiptImage] = useState('');
+    const [customer, setCustomer] = useState(customerProp);
     const [dueDate, setDueDate] = useState<Date | undefined>(
       creditDueDate || undefined,
     );
@@ -115,6 +123,33 @@ const TransactionDetails = withModal(
       },
       [customer, updateDueDate],
     );
+
+    const handleAddCustomer = useCallback(async () => {
+      try {
+        const selection = await getContactService().selectContactPhone();
+        if (!selection) {
+          return;
+        }
+        const {contact, selectedPhone} = selection;
+        const createCustomerPayload = {
+          name: contact.name,
+          mobile: selectedPhone.number,
+          email: contact.emails[0]?.address,
+        };
+        const newCustomer = await saveCustomer({
+          customer: createCustomerPayload,
+        });
+        setCustomer(newCustomer);
+        if (transactions?.length) {
+          await addCustomerToTransaction({
+            customer: newCustomer,
+            transaction: transactions[0],
+          });
+        }
+      } catch (error) {
+        handleError(error);
+      }
+    }, [saveCustomer, transactions, addCustomerToTransaction]);
 
     const renderTransactionItem = useCallback(
       ({item: transaction}: {item: IReceipt}) => {
@@ -193,6 +228,7 @@ const TransactionDetails = withModal(
           {...header}
           isPaid={isPaid}
           customer={customer}
+          onPress={handleAddCustomer}
           style={applyStyles(
             {
               left: -14,

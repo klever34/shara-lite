@@ -82,7 +82,7 @@ const CustomerDetailsHeader = ({
   const navigation = useAppNavigation();
 
   return (
-    <Touchable onPress={onPress ? onPress : undefined}>
+    <Touchable onPress={!customer && onPress ? onPress : undefined}>
       <View
         style={applyStyles('flex-row bg-white items-center', {
           shadowColor: '#000',

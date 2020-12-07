@@ -4,6 +4,7 @@ import {IReceipt} from '@/models/Receipt';
 import {useReceipt} from '@/services/receipt';
 import {useCreditPayment} from '@/services/credit-payment';
 import {useCredit} from '@/services/credit';
+import {omit} from 'lodash';
 
 interface youGaveInterface {
   customer: ICustomer;
@@ -32,7 +33,9 @@ interface useTransactionInterface {
   getTransactions: () => IReceipt[];
   youGave: (data: youGaveInterface) => Promise<IReceipt>;
   youGot: (data: youGotInterface) => Promise<IReceipt>;
-  addCustomerToTransaction: (data: addCustomerToTransactionInterface) => void;
+  addCustomerToTransaction: (
+    data: addCustomerToTransactionInterface,
+  ) => Promise<void>;
   updateDueDate: (data: updateDueDateInterface) => Promise<void>;
 }
 
@@ -100,7 +103,7 @@ export const useTransaction = (): useTransactionInterface => {
     customer,
   }: addCustomerToTransactionInterface) => {
     const receipt = {
-      ...transaction,
+      ...omit(transaction),
       is_hidden_in_pro: false,
     };
 
