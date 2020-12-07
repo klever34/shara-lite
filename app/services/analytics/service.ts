@@ -110,7 +110,7 @@ export class AnalyticsService implements IAnalyticsService {
       );
       userData.environment = Config.ENVIRONMENT;
       userData.businessName = user.businesses?.[0]?.name ?? '';
-      userData.referralCode = user.referrer_code;
+      userData.referralCode = user.referrer_code ?? '';
       const alias =
         user.firstname && user.lastname
           ? `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim()
