@@ -71,7 +71,7 @@ function PaymentContainer(props: ModalWrapperFields) {
         await savePaymentOption({paymentOption: values});
         setIsSaving(false);
       } else {
-        Alert.alert('Warning', 'Please fill all the fields in the form.');
+        Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
     [savePaymentOption],
@@ -89,7 +89,7 @@ function PaymentContainer(props: ModalWrapperFields) {
         await updatePaymentOption({paymentOption, updates});
         setIsSaving(false);
       } else {
-        Alert.alert('Warning', 'Please fill all the fields in the form.');
+        Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
     [updatePaymentOption],
