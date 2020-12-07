@@ -50,7 +50,7 @@ const CustomerDetailsHeader = ({
               ? creditCreatedAt &&
                 `${formatDistanceToNowStrict(creditCreatedAt, {
                   addSuffix: true,
-                })},`
+                })}`
               : customer?.mobile}
           </Text>
         </>
