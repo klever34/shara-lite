@@ -7,6 +7,7 @@ import {
   ReceiptTableItem,
   ReceiptTableItemProps,
   StickyFooter,
+  toNumber,
 } from '@/components';
 import {IProduct} from '@/models/Product';
 import {IReceipt} from '@/models/Receipt';
@@ -67,8 +68,8 @@ export const CreateProductScreen = (props: Props) => {
 
   const handleClearState = useCallback(() => {
     setName('');
-    setPrice(0);
     setQuantity('');
+    setPrice(undefined);
     setItemToEdit(null);
     Keyboard.dismiss();
   }, []);
@@ -78,7 +79,7 @@ export const CreateProductScreen = (props: Props) => {
   }, []);
 
   const handlePriceChange = useCallback((item) => {
-    setPrice(item);
+    setPrice(toNumber(item));
   }, []);
 
   const handleQuantityChange = useCallback((item) => {
@@ -313,9 +314,9 @@ export const CreateProductScreen = (props: Props) => {
                       ref={unitPriceFieldRef}
                       placeholder="0.00"
                       label="Unit Price"
-                      value={price?.toString()}
+                      value={price}
                       style={applyStyles('bg-white')}
-                      onChange={(text) => handlePriceChange(text)}
+                      onChangeText={handlePriceChange}
                       returnKeyType="next"
                       onSubmitEditing={() => {
                         setImmediate(() => {
