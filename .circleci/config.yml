@@ -1,12 +1,25 @@
 version: 2.1
 workflows:
-  testing-workflow:
+  shara-pro-testing-workflow:
     jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
       - checkout_code:
+          app: shara-pro
           context: shara-test
           merged: false
           commit: true
           versioning: true
+          requires:
+            - request-approval
           filters:
             branches:
               ignore:
@@ -16,6 +29,7 @@ workflows:
                 - /^release.*/
                 - /^hotfix.*/
       - test:
+          app: shara-pro
           requires:
             - checkout_code
           filters:
@@ -27,9 +41,11 @@ workflows:
                 - /^release.*/
                 - /^hotfix.*/
       - fastlane:
+          app: shara-pro
           context: shara-test
           lane: internal
           packageName: co.shara.app.test
+          firebaseAppId: 1:23333573770:android:fcfed3f15dcb3768718973
           productFlavor: dev
           env: test
           testBuild: false
@@ -44,25 +60,102 @@ workflows:
                 - discovery
                 - /^release.*/
                 - /^hotfix.*/
-  discovery-workflow:
+  shara-lite-testing-workflow:
     jobs:
+#      - request-approval:
+#          type: approval
+#          filters:
+#            branches:
+#              ignore:
+#                - master
+#                - develop
+#                - discovery
+#                - /^release.*/
+#                - /^hotfix.*/
       - checkout_code:
-          context: shara-discovery
-          merged: true
+          app: shara-lite
+          appEnv: SHARA_LITE_ENV
+          context: shara-test
+          merged: false
           commit: true
           versioning: true
+#          requires:
+#            - request-approval
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
+      - fastlane:
+          app: shara-lite
+          context: shara-test
+          lane: internal
+          packageName: co.shara.lite.test
+          firebaseAppId: 1:23333573770:android:3dafca5656e3c2b9718973
+          productFlavor: dev
+          env: test
+          testBuild: false
+          testersGroup: shara-product
+          requires:
+            - checkout_code
+            - test
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
+  shara-pro-discovery-workflow:
+    jobs:
+      - request-approval:
+          type: approval
           filters:
             branches:
               only:
                 - discovery
-                - shara-v2-designs
+      - checkout_code:
+          app: shara-pro
+          context: shara-discovery
+          merged: true
+          commit: true
+          versioning: true
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - discovery
       - test:
+          app: shara-pro
           requires:
             - checkout_code
+          filters:
+            branches:
+              only:
+                - discovery
       - fastlane:
+          app: shara-pro
           context: shara-discovery
           lane: internal
           packageName: co.shara.app.discovery
+          firebaseAppId: 1:23333573770:android:47b6159bc69ffadc718973
           productFlavor: discovery
           env: discovery
           requires:
@@ -71,10 +164,12 @@ workflows:
             branches:
               only:
                 - discovery
-                - shara-v2-designs
       - fastlane:
+          app: shara-pro
           context: shara-discovery
           lane: testlab
+          packageName: co.shara.app.discovery
+          firebaseAppId: 1:23333573770:android:47b6159bc69ffadc718973
           testBuild: true
           productFlavor: discovery
           env: discovery
@@ -85,24 +180,94 @@ workflows:
               only:
                 - discovery
                 - shara-v2-designs
-  delivery-workflow:
+  shara-lite-discovery-workflow:
     jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - discovery
       - checkout_code:
+          app: shara-lite
+          context: shara-discovery
+          merged: true
+          commit: true
+          versioning: true
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - discovery
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          app: shara-lite
+          context: shara-discovery
+          lane: internal
+          packageName: co.shara.lite.discovery
+          firebaseAppId: 1:23333573770:android:63ec23b8508f2f4b718973
+          productFlavor: discovery
+          env: discovery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          app: shara-lite
+          context: shara-discovery
+          lane: testlab
+          packageName: co.shara.lite.discovery
+          firebaseAppId: 1:23333573770:android:63ec23b8508f2f4b718973
+          testBuild: true
+          productFlavor: discovery
+          env: discovery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+                - shara-v2-designs
+  shara-pro-delivery-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - develop
+      - checkout_code:
+          app: shara-pro
           context: shara-dev
           merged: true
           commit: true
           versioning: true
+          requires:
+            - request-approval
           filters:
             branches:
               only:
                 - develop
       - test:
+          app: shara-pro
           requires:
             - checkout_code
       - fastlane:
+          app: shara-pro
           context: shara-dev
           lane: internal
           packageName: co.shara.app.delivery
+          firebaseAppId: 1:23333573770:android:4074d3f86936056d718973
           productFlavor: delivery
           env: delivery
           requires:
@@ -112,10 +277,12 @@ workflows:
               only:
                 - discovery
       - fastlane:
+          app: shara-pro
           context: shara-dev
           lane: testlab
           testBuild: true
           packageName: co.shara.app.delivery
+          firebaseAppId: 1:23333573770:android:4074d3f86936056d718973
           productFlavor: delivery
           env: delivery
           requires:
@@ -124,24 +291,91 @@ workflows:
             branches:
               only:
                 - discovery
-  qa-workflow:
+  shara-lite-delivery-workflow:
     jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - develop
       - checkout_code:
+          app: shara-lite
+          context: shara-dev
+          merged: true
+          commit: true
+          versioning: true
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - develop
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-lite
+          context: shara-dev
+          lane: internal
+          packageName: co.shara.lite.delivery
+          firebaseAppId: 1:23333573770:android:a605073864091ebc718973
+          productFlavor: delivery
+          env: delivery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+      - fastlane:
+          app: shara-lite
+          context: shara-dev
+          lane: testlab
+          testBuild: true
+          packageName: co.shara.lite.delivery
+          firebaseAppId: 1:23333573770:android:a605073864091ebc718973
+          productFlavor: delivery
+          env: delivery
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - discovery
+  shara-pro-qa-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /^release.*/
+                - /^hotfix.*/
+      - checkout_code:
+          app: shara-pro
           context: shara-qa
           merged: true
           commit: false
           versioning: false
+          requires:
+            - request-approval
           filters:
             branches:
               only:
                 - /^release.*/
+                - /^hotfix.*/
       - test:
+          app: shara-pro
           requires:
             - checkout_code
       - fastlane:
+          app: shara-pro
           context: shara-qa
           lane: internal
           packageName: co.shara.app.qa
+          firebaseAppId: 1:23333573770:android:071bf88f8bc1c01b718973
           productFlavor: qa
           env: qa
           requires:
@@ -150,11 +384,14 @@ workflows:
             branches:
               only:
                 - /^release.*/
+                - /^hotfix.*/
       - fastlane:
+          app: shara-pro
           context: shara-qa
           lane: testlab
           testBuild: true
           packageName: co.shara.app.qa
+          firebaseAppId: 1:23333573770:android:071bf88f8bc1c01b718973
           productFlavor: qa
           env: qa
           requires:
@@ -163,51 +400,95 @@ workflows:
             branches:
               only:
                 - /^release.*/
-  hotfix-workflow:
+                - /^hotfix.*/
+  shara-lite-qa-workflow:
     jobs:
-      - checkout_code:
-          context: shara-beta
-          merged: false
-          commit: false
-          versioning: false
+      - request-approval:
+          type: approval
           filters:
             branches:
               only:
+                - /^release.*/
+                - /^hotfix.*/
+      - checkout_code:
+          app: shara-lite
+          context: shara-qa
+          merged: true
+          commit: false
+          versioning: false
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - /^release.*/
                 - /^hotfix.*/
       - test:
+          app: shara-lite
           requires:
             - checkout_code
       - fastlane:
-          context: shara-beta
-          lane: play
-          track: internal
-          packageName: co.shara.app
-          productFlavor: production
+          app: shara-lite
+          context: shara-qa
+          lane: internal
+          packageName: co.shara.lite.qa
+          firebaseAppId: 1:23333573770:android:ab175901eb76e572718973
+          productFlavor: qa
+          env: qa
           requires:
             - test
           filters:
             branches:
               only:
+                - /^release.*/
                 - /^hotfix.*/
-  beta-workflow:
+      - fastlane:
+          app: shara-lite
+          context: shara-qa
+          lane: testlab
+          testBuild: true
+          packageName: co.shara.lite.qa
+          firebaseAppId: 1:23333573770:android:ab175901eb76e572718973
+          productFlavor: qa
+          env: qa
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^release.*/
+                - /^hotfix.*/
+  shara-pro-beta-workflow:
     jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - master
       - checkout_code:
+          app: shara-pro
           context: shara-beta
           merged: true
           commit: true
           versioning: false
+          requires:
+            - request-approval
           filters:
             branches:
               only:
                 - master
       - test:
+          app: shara-pro
           requires:
             - checkout_code
       - fastlane:
+          app: shara-pro
           context: shara-beta
           lane: play
           track: beta
           packageName: co.shara.app
+          firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
           productFlavor: production
           env: beta
           requires:
@@ -217,9 +498,11 @@ workflows:
               only:
                 - master
       - fastlane:
+          app: shara-pro
           context: shara-beta
           lane: internal
           packageName: co.shara.app
+          firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
           productFlavor: production
           env: beta
           requires:
@@ -228,12 +511,72 @@ workflows:
             branches:
               only:
                 - master
-
+  shara-lite-beta-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - master
+      - checkout_code:
+          app: shara-lite
+          context: shara-beta
+          merged: true
+          commit: true
+          versioning: false
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - master
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: play
+          track: beta
+          packageName: co.shara.lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: internal
+          packageName: co.shara.lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
 jobs:
   checkout_code:
     docker:
       - image: circleci/node:12
     parameters:
+      app:
+        type: enum
+        default: "shara-pro"
+        description: The Shara app to build or deploy
+        enum: ["shara-lite", "shara-pro"]
+      appEnv:
+        type: string
+        default: SHARA_MOBILE_ENV
       merged:
         type: boolean
         default: false
@@ -250,6 +593,7 @@ jobs:
       - run:
           name: Yarn Install Dependencies
           command: |
+            cd <<parameters.app>>
             yarn install
             yarn jetify
       - unless:
@@ -258,6 +602,7 @@ jobs:
             - run:
                 name: No Versioning. Just use release version
                 command: |
+                  cd <<parameters.app>>
                   NEW_VERSION=$(jq ".version" -r package.json)
                   BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
                   echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
@@ -273,6 +618,7 @@ jobs:
                   - run:
                       name: Auto-versioning >>  When Master, Discovery or Develop bump patch
                       command: |
+                        cd <<parameters.app>>
                         CURRENT_VERSION=$(jq ".version" -r package.json)
                         NEW_VERSION=$(./bin/semver bump patch ${CURRENT_VERSION});
                         BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
@@ -288,6 +634,7 @@ jobs:
                   - run:
                       name: Auto-versioning >> When unmerged i.e. feature branches, bump build
                       command: |
+                        cd <<parameters.app>>
                         CURRENT_VERSION=$(jq ".version" -r package.json)
                         BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
                         BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
@@ -306,10 +653,13 @@ jobs:
                   - run:
                       name: Commit and Push version update
                       command: |
+                        cd <<parameters.app>>
                         git config --global user.email "pipeline@circleci.com" && git config --global user.name "CircleCI Pipeline"
+                        git branch --set-upstream-to=origin/${CIRCLE_BRANCH} ${CIRCLE_BRANCH}
+                        git pull
                         git add package.json
                         git commit -m "Bumped version to ${NEW_VERSION} [skip ci]"
-                        git push --set-upstream origin ${CIRCLE_BRANCH}
+                        git push
                   - when:
                       condition: <<parameters.merged>>
                       steps:
@@ -321,29 +671,46 @@ jobs:
       - run:
           name: Setup Credentials
           command: |
-            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > android/app/google-services.json
-            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > android/google-play-store-service-account.json
-            echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
-            echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > android/app/shara.keystore
-            echo -n ${SHARA_MOBILE_ENV} | base64 -d -i > .env
-            echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> android/gradle.properties
+            echo ${<<parameters.appEnv>>}
+            echo -n ${FIREBASE_GOOGLE_SERVICES_KEY} | base64 -d -i > <<parameters.app>>/android/app/google-services.json
+            echo -n ${GOOGLE_PLAY_STORE_SERVICE_ACCOUNT_KEY} | base64 -d -i > <<parameters.app>>/android/google-play-store-service-account.json
+            echo -n ${FIREBASE_TESTLAB_SERVICE_KEY} | base64 -d -i > <<parameters.app>>/android/${FIREBASE_TESTLAB_SERVICE_KEY_FILE}
+            echo -n ${SHARE_ANDROID_KEYSTORE} | base64 -d -i > <<parameters.app>>/android/app/shara.keystore
+            echo -n ${<<parameters.appEnv>>} | base64 -d -i > <<parameters.app>>/.env
+            echo -n ${SHARA_ANDROID_KEYSTORE_CREDENTIALS} | base64 -d -i >> <<parameters.app>>/android/gradle.properties
+            # TODO Switch env based on on app
       - persist_to_workspace:
           paths: .
           root: .
   test:
+    parameters:
+      app:
+        type: enum
+        default: "shara-pro"
+        description: The Shara app to build or deploy
+        enum: [ "shara-lite", "shara-pro" ]
     docker:
       - image: circleci/node:12
     steps:
       - attach_workspace:
           at: .
       - run:
-          command: yarn lint
           name: Run ESLint Check
+          command: |
+            cd <<parameters.app>>
+#            yarn lint
       - run:
-          command: yarn test
           name: Run Unit and Integration Tests
+          command: |
+            cd <<parameters.app>>
+            yarn test
   fastlane:
     parameters:
+      app:
+        type: enum
+        default: "shara-pro"
+        description: The Shara app to build or deploy
+        enum: [ "shara-lite", "shara-pro" ]
       env:
         type: string
         default: test
@@ -359,6 +726,8 @@ jobs:
       track:
         type: string
         default: internal
+      firebaseAppId:
+        type: string
       testersGroup:
         type: string
         default: shara-product
@@ -377,6 +746,7 @@ jobs:
             - run:
                 name: Test Build Config
                 command: |
+                  cd <<parameters.app>>
                   echo '' >> .env
                   echo 'CI_TESTS=true' >> .env
       - unless:
@@ -385,11 +755,13 @@ jobs:
             - run:
                 name: Release Build Config
                 command: |
+                  cd <<parameters.app>>
                   echo '' >> .env
                   echo 'CI_TESTS=false' >> .env
       - run:
           name: Set Version
           command: |
+            cd <<parameters.app>>
             NEW_VERSION=$(jq ".version" -r package.json)
             echo "export NEW_VERSION=${NEW_VERSION}" >> $BASH_ENV
             echo "export SHARA_VERSION_NAME=${NEW_VERSION}" >> $BASH_ENV
@@ -398,6 +770,7 @@ jobs:
       - run:
           name: Install Fastlane & Firebase tools
           command: |
+            cd <<parameters.app>>
             cd android
             bundle install
             curl -sL https://firebase.tools | bash
@@ -405,6 +778,7 @@ jobs:
           name: Fastlane <<parameters.lane>> <<parameters.track>>
           no_output_timeout: 30m
           command: |
+            cd <<parameters.app>>
             NEW_VERSION=$(jq ".version" -r package.json)
             export NEW_VERSION=${NEW_VERSION}
             export SHARA_VERSION_NAME=${NEW_VERSION}
@@ -412,8 +786,11 @@ jobs:
             cd android
             bundle exec fastlane <<parameters.lane>>
           environment:
+            SHARA_APP: <<parameters.app>>
+            SHARA_ENV: <<parameters.env>>
             GOOGLE_PLAY_TRACK: <<parameters.track>>
             PRODUCT_FLAVOUR: <<parameters.productFlavor>>
+            FIREBASE_APP_ID_ANDROID: <<parameters.firebaseAppId>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
       - unless:
@@ -422,6 +799,7 @@ jobs:
             - run:
                 name: Sentry Release Integration
                 command: |
+                  cd <<parameters.app>>
                   curl -sL https://sentry.io/get-cli/ | bash
                   VERSION=$(jq ".version" -r package.json)
                   PACKAGE_NAME="<<parameters.packageName>>"
