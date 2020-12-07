@@ -1,5 +1,6 @@
 import {
   AuthView,
+  Button,
   PasswordField,
   PhoneNumber,
   PhoneNumberField,
@@ -15,8 +16,15 @@ import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useState, useEffect, useCallback} from 'react';
-import {Alert, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import React, {useRef, useState, useEffect, useCallback} from 'react';
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import * as yup from 'yup';
 import {useInitRealm} from '@/services/realm';
 
@@ -72,6 +80,10 @@ export const Register = () => {
   const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
     const {mobile, countryCode, password} = data;
+    if (!countryCode) {
+      Alert.alert('Error', 'Please select a country');
+      return;
+    }
     const payload = {
       country_code: countryCode,
       password: password.trim(),
@@ -105,6 +117,8 @@ export const Register = () => {
   useEffect(() => {
     hideWelcomeScreen();
   }, [hideWelcomeScreen]);
+  const passwordFieldRef = useRef<TextInput | null>(null);
+  const confirmPasswordFieldRef = useRef<TextInput | null>(null);
 
   return (
     <AuthView
@@ -113,6 +127,7 @@ export const Register = () => {
       buttonTitle="Sign Up"
       onSubmit={handleSubmit}
       heading="Get Started For Free"
+      showButton={false}
       style={applyStyles('bg-white')}
       description="Sign up and enjoy all the features available on Shara. It only takes a few moments.">
       <View>
@@ -125,21 +140,47 @@ export const Register = () => {
             onChangeText={(data) => onChangeMobile(data)}
             isInvalid={touched.mobile && !!errors.mobile}
             value={{number: values.mobile, callingCode: values.countryCode}}
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              setImmediate(() => {
+                if (passwordFieldRef.current) {
+                  passwordFieldRef.current.focus();
+                }
+              });
+            }}
           />
           <PasswordField
+            ref={passwordFieldRef}
             value={values.password}
             label="Enter your password"
             errorMessage={errors.password}
             containerStyle={applyStyles('mb-24')}
             onChangeText={handleChange('password')}
             isInvalid={touched.password && !!errors.password}
+            returnKeyType="next"
+            onSubmitEditing={() => {
+              setImmediate(() => {
+                if (confirmPasswordFieldRef.current) {
+                  confirmPasswordFieldRef.current.focus();
+                }
+              });
+            }}
           />
           <PasswordField
+            ref={confirmPasswordFieldRef}
             value={values.confirmPassword}
             label="Confirm password"
             errorMessage={errors.confirmPassword}
             onChangeText={handleChange('confirmPassword')}
             isInvalid={touched.confirmPassword && !!errors.confirmPassword}
+            onSubmitEditing={handleSubmit}
+          />
+          <Button
+            variantColor="red"
+            onPress={handleSubmit}
+            title="Sign Up"
+            isLoading={loading}
+            style={applyStyles('w-full mt-24')}
           />
         </View>
       </View>

@@ -111,7 +111,7 @@ const createRealm = async (options?: any): Promise<Realm> => {
       user: options.realmUser,
       partitionValue,
     };
-    config.path = `sync-user-data-${partitionValue}-v2`;
+    config.path = `sync-user-data-${partitionValue}-v2-${partitionValue}`;
     Realm.Sync.setLogLevel('all');
   }
 

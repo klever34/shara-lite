@@ -162,7 +162,8 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
             customer: newCustomer,
           });
       } else {
-        const newCustomer = value && saveCustomer({realm, customer: value});
+        const newCustomer =
+          value && saveCustomer({realm, customer: value, source: 'manual'});
         setCustomer(newCustomer);
         receipt &&
           newCustomer &&

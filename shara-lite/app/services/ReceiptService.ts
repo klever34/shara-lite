@@ -70,12 +70,12 @@ export const saveReceipt = ({
   }
 
   if (!customer._id && customer.name) {
-    receiptCustomer = saveCustomer({realm, customer});
+    receiptCustomer = saveCustomer({realm, customer, source: 'manual'});
   }
   if (customer._id) {
     receiptCustomer = customer;
     getAnalyticsService()
-      .logEvent('customerAddedToReceipt')
+      .logEvent('customerAddedToReceipt', {})
       .then(() => {});
   }
 
@@ -177,7 +177,7 @@ export const updateReceipt = ({
 }): void => {
   if (!receipt.customer) {
     getAnalyticsService()
-      .logEvent('customerAddedToReceipt')
+      .logEvent('customerAddedToReceipt', {})
       .then(() => {});
   }
   realm.write(() => {

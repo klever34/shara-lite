@@ -1,14 +1,16 @@
 import {applyStyles} from '@/styles';
-import React, {useCallback, useEffect, useState} from 'react';
-import {Text, TextStyle} from 'react-native';
+import {isNumber} from 'lodash';
+import React, {forwardRef, useCallback, useEffect, useState} from 'react';
+import {Text, TextInput, TextStyle} from 'react-native';
 import {getAuthService} from '../services';
-import {colors} from '../styles';
 import {AppInput, AppInputProps} from './AppInput';
 
-type Props = Omit<AppInputProps, 'onChange' | 'onChangeText'> & {
-  onChange?: (value: number) => void;
+type CurrencyInputProps = Omit<AppInputProps, 'value'> & {
+  value?: number;
   iconStyle?: TextStyle;
 };
+
+export const toNumber = (value: string) => parseFloat(value.replace(/,/g, ''));
 
 const toThousandString = (text: string) => {
   const numberValue = toNumber(text);
@@ -16,7 +18,7 @@ const toThousandString = (text: string) => {
     const parts = text.split('.');
 
     if (parts.length > 1) {
-      const n = toNumber(parts[0]);
+      const n = parts[0] ? toNumber(parts[0]) : 0;
       const part0 = new Intl.NumberFormat('en-GB').format(n);
       const part1 = parts[1].toString().substring(0, 2);
       return `${part0}.${part1}`;
@@ -24,58 +26,63 @@ const toThousandString = (text: string) => {
       return text;
     }
   } else {
-    return new Intl.NumberFormat('en-GB', {
-      style: 'decimal',
-      maximumFractionDigits: 2,
-    }).format(numberValue);
+    return new Intl.NumberFormat().format(numberValue);
   }
 };
 
-const toNumber = (value: string) => parseFloat(value.replace(/,/g, ''));
+export const CurrencyInput = forwardRef<TextInput, CurrencyInputProps>(
+  (props: CurrencyInputProps, ref) => {
+    const authService = getAuthService();
+    const currency = authService.getUserCurrency();
+    const {value: valueProp, onChangeText, iconStyle, style, ...rest} = props;
 
-export const CurrencyInput = (props: Props) => {
-  const authService = getAuthService();
-  const currency = authService.getUserCurrency();
-  const {value: valueProp, onChange, iconStyle, ...rest} = props;
-  const [value, setValue] = useState(valueProp);
+    const [value, setValue] = useState(
+      isNumber(valueProp) ? valueProp?.toString() : '',
+    );
 
-  useEffect(() => {
-    if (valueProp) {
-      valueProp && setValue(toThousandString(valueProp));
-    }
-  }, [valueProp]);
+    const inputPaddingLeft = currency.length > 1 ? 'pl-48' : 'pl-32';
 
-  const handleChange = useCallback(
-    (text) => {
-      if (text) {
-        const numberValue = toNumber(text);
-        const stringValue = toThousandString(text);
-        setValue(stringValue);
-        onChange && onChange(numberValue);
+    useEffect(() => {
+      if (valueProp) {
+        setValue(toThousandString(valueProp.toString()));
       } else {
-        setValue('0');
-        onChange && onChange(0);
+        setValue('');
       }
-    },
-    [onChange],
-  );
+    }, [valueProp]);
 
-  return (
-    <AppInput
-      value={value}
-      keyboardType="numeric"
-      onChangeText={handleChange}
-      leftIcon={
-        <Text
-          style={applyStyles('text-400', {
-            fontSize: 16,
-            color: colors['gray-300'],
-            ...iconStyle,
-          })}>
-          {currency}
-        </Text>
-      }
-      {...rest}
-    />
-  );
-};
+    const handleChange = useCallback(
+      (text) => {
+        if (text) {
+          const stringValue = toThousandString(text);
+          setValue(stringValue);
+          onChangeText && onChangeText(stringValue);
+        } else {
+          setValue('');
+          onChangeText && onChangeText('');
+        }
+      },
+      [onChangeText],
+    );
+
+    return (
+      <AppInput
+        ref={ref}
+        value={value}
+        keyboardType="numeric"
+        onChangeText={handleChange}
+        style={applyStyles(inputPaddingLeft, style)}
+        leftIcon={
+          <Text
+            style={applyStyles('text-700 text-gray-300', {
+              top: 1,
+              fontSize: 16,
+              ...iconStyle,
+            })}>
+            {currency}
+          </Text>
+        }
+        {...rest}
+      />
+    );
+  },
+);

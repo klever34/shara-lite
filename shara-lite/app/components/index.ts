@@ -33,3 +33,4 @@ export * from './AutoComplete';
 export * from './StickyFooter';
 export * from './RadioButton';
 export * from './AddCustomerModal';
+export * from './AccordionItem';

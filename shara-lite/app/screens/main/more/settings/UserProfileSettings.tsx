@@ -2,11 +2,12 @@ import {FormBuilder, FormFields, Button, PhoneNumber} from '@/components';
 import {getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useMemo, useRef} from 'react';
-import {Alert, ToastAndroid} from 'react-native';
+import React, {useCallback, useContext, useMemo, useRef} from 'react';
+import {Alert} from 'react-native';
 import {Page} from '@/components/Page';
 import parsePhoneNumber from 'libphonenumber-js';
 import {UserProfileFormPayload} from '@/services/api';
+import {ToastContext} from '@/components/Toast';
 
 export const UserProfileSettings = () => {
   const authService = getAuthService();
@@ -16,12 +17,15 @@ export const UserProfileSettings = () => {
   const navigation = useAppNavigation();
   const {firstname, lastname, email, mobile = '', country_code = ''} =
     user || {};
-
+  const {showSuccessToast} = useContext(ToastContext);
   const formFields = useMemo(() => {
     const phoneNumber = parsePhoneNumber('+' + mobile);
     const nationalNumber = (phoneNumber?.nationalNumber ?? '') as string;
     const fields: FormFields<
-      keyof Omit<UserProfileFormPayload, 'country_code'>
+      keyof Omit<
+        UserProfileFormPayload,
+        'country_code' | 'referrer_code' | 'device_id'
+      >
     > = {
       firstname: {
         type: 'text',
@@ -45,6 +49,7 @@ export const UserProfileSettings = () => {
           value: {number: nationalNumber, callingCode: country_code},
           label: 'Phone Number',
           editable: false,
+          focusable: false,
         },
       },
       email: {
@@ -60,7 +65,9 @@ export const UserProfileSettings = () => {
     return fields;
   }, [country_code, email, firstname, lastname, mobile]);
 
-  const formValuesRef = useRef<UserProfileFormPayload>();
+  const formValuesRef = useRef<
+    Omit<UserProfileFormPayload, 'referrer_code' | 'device_id'>
+  >();
 
   const handleSubmit = useCallback(async () => {
     const {current: formValues} = formValuesRef;
@@ -69,15 +76,12 @@ export const UserProfileSettings = () => {
     }
     try {
       await apiService.userProfileUpdate(formValues);
-      ToastAndroid.show(
-        'User profile updated successfully',
-        ToastAndroid.SHORT,
-      );
+      showSuccessToast('User profile updated successfully');
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);
     }
-  }, [apiService, navigation]);
+  }, [apiService, navigation, showSuccessToast]);
 
   return (
     <Page

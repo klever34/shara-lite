@@ -6,7 +6,7 @@ import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback} from 'react';
-import {FlatList, ScrollView, Text, View, ViewStyle} from 'react-native';
+import {FlatList, Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {User} from 'types/app';
@@ -43,14 +43,16 @@ export const ReceiptImage = (props: Props) => {
 
   const businessInfo = getAuthService().getBusinessInfo();
   const {callingCode} = useIPGeolocation();
-  const code = businessInfo.country_code || callingCode;
+  const code = businessInfo.country_code || user?.country_code || callingCode;
   const getBusinessMobile = useCallback(() => {
     if (businessInfo.mobile) {
       return businessInfo.mobile.startsWith(code)
-        ? `+${code}${businessInfo.mobile.replace(code, '')}`
+        ? `+${businessInfo.mobile}`
         : `+${code}${businessInfo.mobile}`;
     }
-    return `+${code}${user?.mobile}`;
+    return user?.mobile.startsWith(code)
+      ? `+${user?.mobile}`
+      : `+${code}${user?.mobile}`;
   }, [businessInfo.mobile, code, user]);
 
   const onCapture = useCallback(
@@ -96,6 +98,17 @@ export const ReceiptImage = (props: Props) => {
           })}>
           <>
             <View style={applyStyles('py-lg items-center justify-center')}>
+              {!!businessInfo?.profile_image?.url && (
+                <Image
+                  style={applyStyles('mb-4 items-center justify-center', {
+                    width: 80,
+                    height: 80,
+                    borderRadius: 16,
+                    backgroundColor: colors['gray-20'],
+                  })}
+                  source={{uri: businessInfo?.profile_image.url}}
+                />
+              )}
               {!!businessInfo.name && (
                 <Text
                   style={applyStyles(

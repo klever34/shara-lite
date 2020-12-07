@@ -13,7 +13,7 @@ import {HeaderBackButton} from '@react-navigation/stack';
 export type HeaderRightOption = {icon: string; onPress: () => void};
 export type HeaderRightMenuOption = {text: string; onSelect: () => void};
 
-type HeaderRightProps = {
+export type HeaderRightProps = {
   loading?: boolean;
   options?: HeaderRightOption[];
   menuOptions?: HeaderRightMenuOption[];
@@ -40,7 +40,7 @@ export const HeaderRight = ({
             onPress={onPress}
             backImage={() => {
               return (
-                <View style={applyStyles('center w-36 h-36 rounded-24')}>
+                <View style={applyStyles('center w-30 h-30 rounded-24')}>
                   <Icon
                     type="feathericons"
                     color={colors['gray-300']}

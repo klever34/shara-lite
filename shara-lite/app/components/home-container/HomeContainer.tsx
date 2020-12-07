@@ -81,17 +81,22 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
 
   const handleShowHeader = useCallback(
     (e: NativeSyntheticEvent<NativeScrollEvent>) => {
-      if (e.nativeEvent.contentOffset.y > 0) {
+      if (
+        data &&
+        initialNumToRender &&
+        data?.length > initialNumToRender &&
+        e.nativeEvent.contentOffset.y > 600
+      ) {
         setIsHeaderShown(false);
       } else {
         setIsHeaderShown(true);
       }
     },
-    [],
+    [data, initialNumToRender],
   );
 
   return (
-    <View style={applyStyles('flex-1 bg-white')}>
+    <View style={applyStyles('flex-1 justify-center')}>
       {headerTitle && (
         <Fade visible={isHeaderShown}>
           <HomeContainerHeader
@@ -159,6 +164,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
           headingStyle={applyStyles('px-32')}
           imageStyle={applyStyles({width: 80, height: 80})}
           source={require('@/assets/images/emblem.png')}
+          style={applyStyles('pt-48')}
           {...emptyStateProps}>
           {createEntityButtonText && (
             <Button

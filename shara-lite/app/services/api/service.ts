@@ -38,7 +38,13 @@ export type Requester = {
 
 export type UserProfileFormPayload = Pick<
   User,
-  'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
+  | 'firstname'
+  | 'lastname'
+  | 'mobile'
+  | 'email'
+  | 'country_code'
+  | 'device_id'
+  | 'referrer_code'
 >;
 
 export interface IApiService {
@@ -111,12 +117,7 @@ export interface IApiService {
     businessId?: string,
   ): Promise<ApiResponse>;
 
-  userProfileUpdate(
-    payload: Pick<
-      User,
-      'firstname' | 'lastname' | 'mobile' | 'email' | 'country_code'
-    >,
-  ): Promise<ApiResponse>;
+  userProfileUpdate(payload: Partial<User>): Promise<ApiResponse>;
 
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
@@ -135,76 +136,92 @@ export class ApiService implements IApiService {
       params: {[key: string]: string | number},
       isExternalDomain?: boolean,
     ) => {
-      const fetchUrl = `${
-        isExternalDomain ? '' : Config.API_BASE_URL
-      }${url}?${queryString.stringify(params)}`;
-      const headers: {Authorization?: string; 'Content-Type'?: string} = {};
+      try {
+        const fetchUrl = `${
+          isExternalDomain ? '' : Config.API_BASE_URL
+        }${url}?${queryString.stringify(params)}`;
+        const headers: {Authorization?: string; 'Content-Type'?: string} = {};
 
-      if (!isExternalDomain) {
-        headers.Authorization = `Bearer ${this.authService.getToken() ?? ''}`;
-        headers['Content-Type'] = 'application/json';
+        if (!isExternalDomain) {
+          headers.Authorization = `Bearer ${this.authService.getToken() ?? ''}`;
+          headers['Content-Type'] = 'application/json';
+        }
+
+        const trace = await perf().startTrace(url);
+        const response = await fetch(fetchUrl, {
+          method: 'GET',
+          // @ts-ignore
+          headers,
+        });
+        await trace.stop();
+        return (await this.handleFetchErrors<T>(response)) as T;
+      } catch (e) {
+        throw this.handleNetworkErrors(e);
       }
-
-      const trace = await perf().startTrace(url);
-      const response = await fetch(fetchUrl, {
-        method: 'GET',
-        // @ts-ignore
-        headers,
-      });
-      await trace.stop();
-      return (await this.handleFetchErrors<T>(response)) as T;
     },
     post: async <T extends any = any>(
       url: string,
       data: {[key: string]: any},
       config?: {[key: string]: any},
     ) => {
-      const trace = await perf().startTrace(url);
-      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
-          'Content-Type': 'application/json',
-          ...config?.headers,
-        },
-        body: config ? data : JSON.stringify(data),
-      });
-      await trace.stop();
-      return (await this.handleFetchErrors<T>(response)) as T;
+      try {
+        const trace = await perf().startTrace(url);
+        const response = await fetch(`${Config.API_BASE_URL}${url}`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+            'Content-Type': 'application/json',
+            ...config?.headers,
+          },
+          body: config ? data : JSON.stringify(data),
+        });
+        await trace.stop();
+        return (await this.handleFetchErrors<T>(response)) as T;
+      } catch (e) {
+        throw this.handleNetworkErrors(e);
+      }
     },
     patch: async <T extends any = any>(
       url: string,
       data: {[key: string]: any},
       config?: {[key: string]: any},
     ) => {
-      const trace = await perf().startTrace(url);
-      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
-          'Content-Type': 'application/json',
-          ...config?.headers,
-        },
-        body: config ? data : JSON.stringify(data),
-      });
-      await trace.stop();
-      return (await this.handleFetchErrors<T>(response)) as T;
+      try {
+        const trace = await perf().startTrace(url);
+        const response = await fetch(`${Config.API_BASE_URL}${url}`, {
+          method: 'PATCH',
+          headers: {
+            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+            'Content-Type': 'application/json',
+            ...config?.headers,
+          },
+          body: config ? data : JSON.stringify(data),
+        });
+        await trace.stop();
+        return (await this.handleFetchErrors<T>(response)) as T;
+      } catch (e) {
+        throw this.handleNetworkErrors(e);
+      }
     },
     delete: async <T extends any = any>(
       url: string,
       data: {[key: string]: any},
     ) => {
-      const trace = await perf().startTrace(url);
-      const response = await fetch(`${Config.API_BASE_URL}${url}`, {
-        method: 'DELETE',
-        headers: {
-          Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      await trace.stop();
-      return (await this.handleFetchErrors<T>(response)) as T;
+      try {
+        const trace = await perf().startTrace(url);
+        const response = await fetch(`${Config.API_BASE_URL}${url}`, {
+          method: 'DELETE',
+          headers: {
+            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(data),
+        });
+        await trace.stop();
+        return (await this.handleFetchErrors<T>(response)) as T;
+      } catch (e) {
+        throw this.handleNetworkErrors(e);
+      }
     },
   };
 
@@ -222,6 +239,14 @@ export class ApiService implements IApiService {
       return;
     }
     return (await response.json()) as Promise<T>;
+  };
+
+  private handleNetworkErrors = (e: Error): Error => {
+    if (e.name === 'TypeError') {
+      return new Error("Oops! It seems you don't have internet access");
+    }
+
+    return e;
   };
 
   public async register(payload: {

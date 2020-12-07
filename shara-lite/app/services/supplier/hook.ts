@@ -61,7 +61,7 @@ export const useSupplier = (): useSupplierInterface => {
     await trace.stop();
 
     getAnalyticsService()
-      .logEvent('supplierAdded')
+      .logEvent('supplierAdded', {})
       .then(() => {});
 
     return supplierDetails;
