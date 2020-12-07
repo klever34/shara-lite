@@ -7,6 +7,7 @@ import {
   ReceiptTableHeader,
   ReceiptTableItem,
   StickyFooter,
+  toNumber,
 } from '@/components';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -73,7 +74,7 @@ export const AddInventoryScreen = ({route}: any) => {
   }, [navigation, handleClearState]);
 
   const handlePriceChange = useCallback((item) => {
-    setPrice(item);
+    setPrice(toNumber(item));
   }, []);
 
   const handleQuantityChange = useCallback((item) => {
@@ -400,11 +401,11 @@ export const AddInventoryScreen = ({route}: any) => {
                 )}>
                 <View style={applyStyles({width: '48%'})}>
                   <CurrencyInput
+                    value={price}
                     placeholder="0.00"
                     label="Unit Price"
-                    value={price?.toString()}
                     style={applyStyles('bg-white')}
-                    onChange={(text) => handlePriceChange(text)}
+                    onChangeText={handlePriceChange}
                   />
                 </View>
                 <View style={applyStyles({width: '48%'})}>

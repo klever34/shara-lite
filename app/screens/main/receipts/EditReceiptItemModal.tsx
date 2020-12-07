@@ -1,4 +1,4 @@
-import {AppInput, Button, CurrencyInput} from '@/components';
+import {AppInput, Button, CurrencyInput, toNumber} from '@/components';
 import {numberWithCommas} from '@/helpers/utils';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {IReceiptItem} from '@/models/ReceiptItem';
@@ -44,7 +44,7 @@ export const EditReceiptItemModal = (props: Props) => {
   }, [item]);
 
   const handlePriceChange = useCallback((text) => {
-    setPrice(text);
+    setPrice(toNumber(text));
   }, []);
 
   const handleQuantityChange = useCallback((text) => {
@@ -118,8 +118,8 @@ export const EditReceiptItemModal = (props: Props) => {
                 })}>
                 <CurrencyInput
                   label="Unit Price"
-                  value={price?.toString()}
-                  onChange={handlePriceChange}
+                  value={price}
+                  onChangeText={handlePriceChange}
                   returnKeyType="next"
                   onSubmitEditing={() => {
                     if (quantityFieldRef.current) {

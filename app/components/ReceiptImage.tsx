@@ -6,7 +6,7 @@ import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback} from 'react';
-import {FlatList, ScrollView, Text, View, ViewStyle, Image} from 'react-native';
+import {FlatList, Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {User} from 'types/app';

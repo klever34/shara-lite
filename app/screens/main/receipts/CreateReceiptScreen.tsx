@@ -9,7 +9,9 @@ import {
   ReceiptTableItem,
   ReceiptTableItemProps,
   StickyFooter,
+  toNumber,
 } from '@/components';
+import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IProduct} from '@/models/Product';
@@ -41,7 +43,6 @@ import {
 } from 'react-native';
 import {EditReceiptItemModal} from './EditReceiptItemModal';
 import {useReceiptProvider} from './ReceiptProvider';
-import {ToastContext} from '@/components/Toast';
 
 export const CreateReceiptScreen = ({route}: any) => {
   const receipt = route.params.receipt;
@@ -67,7 +68,7 @@ export const CreateReceiptScreen = ({route}: any) => {
   );
 
   const handleClearState = useCallback(() => {
-    setPrice(0);
+    setPrice(undefined);
     setQuantity('');
     setSearchQuery('');
     setItemToEdit(null);
@@ -80,7 +81,7 @@ export const CreateReceiptScreen = ({route}: any) => {
   }, [handleError, receipt]);
 
   const handlePriceChange = useCallback((item) => {
-    setPrice(item);
+    setPrice(toNumber(item));
   }, []);
 
   const handleQuantityChange = useCallback((item) => {
@@ -120,7 +121,7 @@ export const CreateReceiptScreen = ({route}: any) => {
         setQuantity(addedItem.quantity.toString());
       }
       setSelectedProduct(item);
-      item.price === null ? setPrice(0) : setPrice(item?.price);
+      item.price === null ? setPrice(undefined) : setPrice(item?.price);
     },
     [receiptItems],
   );
@@ -211,9 +212,9 @@ export const CreateReceiptScreen = ({route}: any) => {
       }
 
       Keyboard.dismiss();
-      setPrice(0);
       setQuantity('');
       setSearchQuery('');
+      setPrice(undefined);
       setSelectedProduct(null);
       showSuccessToast('PRODUCT/SERVICE SUCCESSFULLY ADDED');
     } else {
@@ -267,7 +268,7 @@ export const CreateReceiptScreen = ({route}: any) => {
       });
 
       Keyboard.dismiss();
-      setPrice(0);
+      setPrice(undefined);
       setQuantity('');
       setSearchQuery('');
       setSelectedProduct(null);
@@ -480,12 +481,12 @@ export const CreateReceiptScreen = ({route}: any) => {
                 )}>
                 <View style={applyStyles({width: '48%'})}>
                   <CurrencyInput
-                    ref={unitPriceFieldRef}
+                    value={price}
                     placeholder="0.00"
                     label="Unit Price"
-                    value={price?.toString()}
+                    ref={unitPriceFieldRef}
                     style={applyStyles('bg-white')}
-                    onChange={(text) => handlePriceChange(text)}
+                    onChangeText={handlePriceChange}
                     returnKeyType="next"
                     onSubmitEditing={() => {
                       setImmediate(() => {

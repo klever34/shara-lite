@@ -1,4 +1,4 @@
-import {AppInput, Button, CurrencyInput} from '@/components';
+import {AppInput, Button, CurrencyInput, toNumber} from '@/components';
 import {BottomHalfModalContainer} from '@/modals/BottomHalfModal';
 import {IProduct} from '@/models/Product';
 import {applyStyles, colors} from '@/styles';
@@ -52,7 +52,7 @@ export const EditProductModal = (props: Props) => {
   }, []);
 
   const handlePriceChange = useCallback((text) => {
-    setPrice(text);
+    setPrice(toNumber(text));
   }, []);
 
   const handleQuantityChange = useCallback((text) => {
@@ -125,8 +125,8 @@ export const EditProductModal = (props: Props) => {
                 })}>
                 <CurrencyInput
                   label="Unit Price"
-                  value={price?.toString()}
-                  onChange={handlePriceChange}
+                  value={price}
+                  onChangeText={handlePriceChange}
                 />
               </View>
               <View
