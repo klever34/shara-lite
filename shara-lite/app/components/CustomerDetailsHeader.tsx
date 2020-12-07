@@ -16,6 +16,7 @@ export type CustomerDetailsHeaderProps = {
   backButton?: boolean;
   customer?: ICustomer;
   onPress?: () => void;
+  creditAmount?: number;
   renderLeftSection?: () => ReactNode;
   renderRightSection?: () => ReactNode;
 };
@@ -25,6 +26,7 @@ const CustomerDetailsHeader = ({
   isPaid,
   onPress,
   customer,
+  creditAmount,
   renderLeftSection,
   renderRightSection,
   backButton = true,
@@ -71,13 +73,15 @@ const CustomerDetailsHeader = ({
               You will collect
             </Text>
             <Text style={applyStyles('pb-4 text-700 text-red-200')}>
-              {amountWithCurrency(customer?.remainingCreditAmount)}
+              {amountWithCurrency(
+                creditAmount || customer?.remainingCreditAmount,
+              )}
             </Text>
           </>
         );
     }
     return renderRightSection;
-  }, [customer, renderRightSection]);
+  }, [customer, creditAmount, renderRightSection]);
 
   const navigation = useAppNavigation();
 

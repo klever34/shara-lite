@@ -45,7 +45,7 @@ function PaymentReminderImage({
 
   useEffect(() => {
     setRerenderDate(Date.now());
-  }, [date]);
+  }, [date, amount]);
 
   return (
     <ScrollView>
