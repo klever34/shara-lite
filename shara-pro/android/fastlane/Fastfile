@@ -20,6 +20,11 @@ basic_devices = [
         model: "Pixel2",
         version: "28",
         orientation: "portrait"
+    },
+    {
+        model: "Nexus5X",
+        version: "23",
+        orientation: "portrait"
     }
 ]
 
@@ -38,6 +43,11 @@ qa_devices = [
         model: "Pixel2",
         version: "28",
         orientation: "landscape"
+    },
+    {
+        model: "Nexus5X",
+        version: "23",
+        orientation: "portrait"
     }
 ]
 
@@ -132,7 +142,7 @@ platform :android do
   after_all do |lane|
     # This block is called, only if the executed lane was successful
     slack(
-      message: "Successfully deployed Shara v" + ENV['SHARA_VERSION_NAME'],
+      message: "Successfully deployed " + ENV['SHARA_APP'] + " v" + ENV['SHARA_VERSION_NAME'] + " to " + ENV['SHARA_ENV'] + " environment",
       slack_url: ENV['SLACK_WEBHOOK'],
       channel: ENV['SLACK_CHANNEL']
     )
