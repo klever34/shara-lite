@@ -8,13 +8,19 @@ import {getContactService} from '@/services';
 import {useAsync} from '@/services/api';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
-import {applyStyles} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import * as JsSearch from 'js-search';
 import orderBy from 'lodash/orderBy';
 import throttle from 'lodash/throttle';
 import React, {useCallback, useEffect, useMemo, useRef, useState} from 'react';
-import {FlatList, ListRenderItemInfo, Text, View} from 'react-native';
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItemInfo,
+  Text,
+  View,
+} from 'react-native';
 
 export type SelectCustomerListItem =
   | Pick<ICustomer, 'name' | 'mobile' | '_id'>
@@ -145,17 +151,25 @@ export const SelectCustomerListScreen = ({
           onPress: navigation.goBack,
         },
       }}
-      style={applyStyles('px-0 py-0')}>
-      <SearchFilter
-        placeholderText="Search customers on phonebook"
-        value={searchText}
-        onSearch={onSearch}
-      />
-      <FlatList
-        renderItem={renderCustomerListItem}
-        keyExtractor={keyExtractor}
-        data={filteredData}
-      />
+      style={applyStyles('px-0 py-0 flex-1')}>
+      {!filteredData.length ? (
+        <View style={applyStyles('center flex-1')}>
+          <ActivityIndicator size="large" color={colors.primary} />
+        </View>
+      ) : (
+        <>
+          <SearchFilter
+            placeholderText="Search customers on phonebook"
+            value={searchText}
+            onSearch={onSearch}
+          />
+          <FlatList
+            renderItem={renderCustomerListItem}
+            keyExtractor={keyExtractor}
+            data={filteredData}
+          />
+        </>
+      )}
     </Page>
   );
 };
