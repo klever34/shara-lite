@@ -142,6 +142,7 @@ const TransactionDetails = withModal(
         };
         const newCustomer = await saveCustomer({
           customer: createCustomerPayload,
+          source: 'phonebook',
         });
         setCustomer(newCustomer);
         if (transactions?.length) {
