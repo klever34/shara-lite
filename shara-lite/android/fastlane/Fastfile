@@ -1,0 +1,159 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+basic_devices = [
+    {
+        model: "Pixel2",
+        version: "28",
+        orientation: "portrait"
+    },
+    {
+        model: "Nexus5X",
+        version: "23",
+        orientation: "portrait"
+    }
+]
+
+qa_devices = [
+    {
+        model: "OnePlus6T",
+        version: "28",
+        orientation: "portrait"
+    },
+    {
+        model: "Pixel2",
+        version: "28",
+        orientation: "portrait"
+    },
+    {
+        model: "Pixel2",
+        version: "28",
+        orientation: "landscape"
+    },
+    {
+        model: "Nexus5X",
+        version: "23",
+        orientation: "portrait"
+    }
+]
+
+platform :android do
+  desc "Runs all the tests"
+  lane :test do
+    gradle(task: "test")
+  end
+
+  desc "Submit a test build to Firebase Test Lab"
+  lane :testlab do
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "assemble",
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
+
+    # Get Pull request number from CI
+    pr_number = ENV["CI_PULL_REQUEST"] != nil ? ENV["CI_PULL_REQUEST"][/(?<=https:\/\/github.com\/shara-inc\/mobile\/pull\/)(.*)/] : nil
+    test_devices = ENV["PRODUCT_FLAVOUR"] == "qa" ? qa_devices : basic_devices
+
+    # Upload to Firebase Test Lab
+    firebase_test_lab_android(
+      project_id: ENV['GOOGLE_PROJECT_ID'],
+      gcloud_service_key_file: ENV['FIREBASE_TESTLAB_SERVICE_KEY_FILE'],
+      type: "robo",
+      devices: test_devices,
+      app_apk: lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH],
+      console_log_file_name: "fastlane/console_output.log",
+      timeout: "3m",
+      firebase_test_lab_results_bucket: ENV['SHARA_TEST_LAB_BUCKET'],
+      slack_url: ENV["SLACK_WEBHOOK"],
+
+      # If you want notify to Github pull requests.
+      github_owner: ENV["GITHUB_OWNER"],
+      github_repository: ENV["GITHUB_REPO"],
+      github_pr_number: pr_number,
+      github_api_token: ENV["GITHUB_API_TOKEN"],
+    )
+  end
+
+  desc "Submit a new build to Firebase App Distribution"
+  lane :internal do
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "assemble",
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
+    firebase_app_distribution(
+      app: ENV['FIREBASE_APP_ID_ANDROID'],
+      firebase_cli_token: ENV['FIREBASE_TOKEN'],
+      groups: ENV['FIREBASE_APP_DIST_GROUP']
+      # release_notes_file: "release-notes.txt"
+    )
+  end
+
+  desc "Deploy a new version to the Google Play Internal Test Release"
+  lane :playinternalappsharing do
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "assemble",
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
+    upload_to_play_store_internal_app_sharing
+  end
+
+  desc "Deploy a new version to the Google Play lane " + ENV['GOOGLE_PLAY_TRACK']
+  lane :play do
+    gradle(
+      task: "clean",
+    )
+    gradle(
+      task: "bundle",
+      flavor: ENV['PRODUCT_FLAVOUR'],
+      build_type: 'Release'
+    )
+    upload_to_play_store(
+      track: ENV['GOOGLE_PLAY_TRACK'],
+      skip_upload_apk: true,
+      skip_upload_aab: false
+    )
+  end
+
+  after_all do |lane|
+    # This block is called, only if the executed lane was successful
+    slack(
+      message: "Successfully deployed " + ENV['SHARA_APP'] + " v" + ENV['SHARA_VERSION_NAME'] + " to " + ENV['SHARA_ENV'] + " environment",
+      slack_url: ENV['SLACK_WEBHOOK'],
+      channel: ENV['SLACK_CHANNEL']
+    )
+  end
+
+  error do |lane, exception|
+    slack(
+      message:  exception.message + " Error deploying " + ENV['SHARA_APP'] + " v" + ENV['SHARA_VERSION_NAME'] + " to " + ENV['SHARA_ENV'] + " environment",
+      slack_url: ENV['SLACK_WEBHOOK'],
+      success: false
+    )
+  end
+end
