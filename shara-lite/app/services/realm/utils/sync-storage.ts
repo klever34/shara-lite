@@ -1,7 +1,9 @@
 import Realm from 'realm';
+import {ObjectId} from 'bson';
 import {getStorageService} from '@/services';
 
 export const lastLocalSyncStorageKey = 'lastLocalSync';
+export const lastModelSyncStorageKey = 'lastModelSync';
 
 export const getLocalLastSync = async () => {
   const storageService = getStorageService();
@@ -35,4 +37,16 @@ export const saveLastLocalSync = async ({
   let lastSync: any = await getLocalLastSync();
   lastSync[model] = date;
   await storageService.setItem(lastLocalSyncStorageKey, lastSync);
+};
+
+export const saveLastModelSync = async ({
+  model,
+  id,
+}: {
+  model: string;
+  id?: ObjectId;
+}) => {
+  const storageService = getStorageService();
+  const data = {id, model};
+  await storageService.setItem(lastModelSyncStorageKey, data);
 };
