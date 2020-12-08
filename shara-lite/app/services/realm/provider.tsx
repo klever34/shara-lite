@@ -56,7 +56,6 @@ const RealmProvider = (props: any) => {
 
   const updateSyncCompleteStatus = useCallback(async () => {
     const storedSyncDate = await getLocalLastSync();
-    console.log('********', storedSyncDate);
 
     if (!storedSyncDate) {
       setIsSyncCompleted(false);
