@@ -107,7 +107,7 @@ export const MoreOptionsScreen = () => {
     try {
       const authService = getAuthService();
       await authService.logOut();
-      getAnalyticsService().logEvent('logout').catch(handleError);
+      getAnalyticsService().logEvent('logout', {}).catch(handleError);
       navigation.reset({
         index: 0,
         routes: [{name: 'Auth'}],

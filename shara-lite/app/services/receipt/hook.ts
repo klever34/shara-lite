@@ -119,12 +119,12 @@ export const useReceipt = (): useReceiptInterface => {
     }
 
     if (!customer._id && customer.name) {
-      receiptCustomer = await saveCustomer({customer});
+      receiptCustomer = await saveCustomer({customer, source: 'manual'});
     }
     if (customer._id) {
       receiptCustomer = customer;
       getAnalyticsService()
-        .logEvent('customerAddedToReceipt')
+        .logEvent('customerAddedToReceipt', {})
         .then(() => {});
     }
 
@@ -233,7 +233,7 @@ export const useReceipt = (): useReceiptInterface => {
   }: updateReceiptInterface): Promise<void> => {
     if (!receipt.customer) {
       getAnalyticsService()
-        .logEvent('customerAddedToReceipt')
+        .logEvent('customerAddedToReceipt', {})
         .then(() => {});
     }
 

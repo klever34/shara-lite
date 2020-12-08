@@ -114,7 +114,7 @@ export const BusinessSettings = () => {
           ? await apiService.businessSetupUpdate(payload, id)
           : await apiService.businessSetup(payload);
         getAnalyticsService()
-          .logEvent('businessSetupComplete')
+          .logEvent('businessSetupComplete', {})
           .catch(handleError);
         showToast({message: 'Business settings update successful'});
         navigation.goBack();
