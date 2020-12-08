@@ -637,6 +637,7 @@ jobs:
                         cd <<parameters.app>>
                         CURRENT_VERSION=$(jq ".version" -r package.json)
                         BRANCH_NAME=$(echo ${CIRCLE_BRANCH} | sed "s#/#.#g")
+                        BRANCH_NAME=<<parameters.app>>-${BRANCH_NAME}
                         BRANCH_VERSION=$(./bin/semver bump prerel "${BRANCH_NAME}" ${CURRENT_VERSION});
                         NEW_VERSION=$(./bin/semver bump build "build.${CIRCLE_BUILD_NUM}" ${BRANCH_VERSION});
                         jq ".version=\"${NEW_VERSION}\"" package.json > package.json-new && mv package.json-new package.json
