@@ -132,6 +132,7 @@ export const BusinessSettings = () => {
       style={applyStyles('bg-white')}>
       <>
         <FormBuilder
+          forceUseFormButton
           fields={formFields}
           submitBtn={{title: 'Save'}}
           onSubmit={handleSubmit}
