@@ -73,7 +73,7 @@ export const BusinessSettings = () => {
         },
         validations: [
           (fieldName, values) => {
-            if (values[fieldName].match(/[^a-z-]/)) {
+            if (values[fieldName].match(/[^a-z-0-9]/)) {
               return 'Payment link should contain only lowercase and dash';
             }
             return null;
