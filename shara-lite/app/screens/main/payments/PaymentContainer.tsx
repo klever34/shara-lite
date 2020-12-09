@@ -11,7 +11,7 @@ import {applyStyles, colors} from '@/styles';
 import {Picker} from '@react-native-community/picker';
 import {Formik} from 'formik';
 import {omit} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   FlatList,
@@ -24,7 +24,7 @@ import {
 } from 'react-native';
 import {PaymentProvider} from 'types/app';
 import Clipboard from '@react-native-community/clipboard';
-import {showToast} from '@/helpers/utils';
+import {ToastContext} from '@/components/Toast';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -44,6 +44,8 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+
+  const {showSuccessToast} = useContext(ToastContext);
 
   const copyToClipboard = (option: IPaymentOption) => {
     const value = `${option.name}\n${option?.fieldsData?.map(
@@ -70,13 +72,13 @@ function PaymentContainer(props: ModalWrapperFields) {
       ) {
         setIsSaving(true);
         await savePaymentOption({paymentOption: values});
-        showToast({message: 'PAYMENT OPTION ADDED'});
+        showSuccessToast('PAYMENT OPTION ADDED');
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
-    [savePaymentOption],
+    [savePaymentOption, showSuccessToast],
   );
 
   const handleEditItem = useCallback(
@@ -89,23 +91,23 @@ function PaymentContainer(props: ModalWrapperFields) {
         delete updates.fields;
         setIsSaving(true);
         await updatePaymentOption({paymentOption, updates});
-        showToast({message: 'PAYMENT OPTION EDITED'});
+        showSuccessToast('PAYMENT OPTION EDITED');
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
-    [updatePaymentOption],
+    [updatePaymentOption, showSuccessToast],
   );
 
   const handleRemoveItem = useCallback(
     async (values) => {
       setIsDeleting(true);
       await deletePaymentOption({paymentOption: values});
-      showToast({message: 'PAYMENT OPTION REMOVED'});
+      showSuccessToast('PAYMENT OPTION REMOVED');
       setIsDeleting(false);
     },
-    [deletePaymentOption],
+    [deletePaymentOption, showSuccessToast],
   );
 
   const handleOpenAddItemModal = useCallback(() => {
