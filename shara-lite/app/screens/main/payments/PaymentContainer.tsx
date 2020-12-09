@@ -11,7 +11,7 @@ import {applyStyles, colors} from '@/styles';
 import {Picker} from '@react-native-community/picker';
 import {Formik} from 'formik';
 import {omit} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   FlatList,
@@ -24,7 +24,7 @@ import {
 } from 'react-native';
 import {PaymentProvider} from 'types/app';
 import Clipboard from '@react-native-community/clipboard';
-import {showToast} from '@/helpers/utils';
+import {ToastContext} from '@/components/Toast';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -44,6 +44,8 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+
+  const {showSuccessToast} = useContext(ToastContext);
 
   const copyToClipboard = (option: IPaymentOption) => {
     const value = `${option.name}\n${option?.fieldsData?.map(
@@ -70,13 +72,13 @@ function PaymentContainer(props: ModalWrapperFields) {
       ) {
         setIsSaving(true);
         await savePaymentOption({paymentOption: values});
-        showToast({message: 'PAYMENT OPTION ADDED'});
+        showSuccessToast('PAYMENT OPTION ADDED');
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
-    [savePaymentOption],
+    [savePaymentOption, showSuccessToast],
   );
 
   const handleEditItem = useCallback(
@@ -89,23 +91,23 @@ function PaymentContainer(props: ModalWrapperFields) {
         delete updates.fields;
         setIsSaving(true);
         await updatePaymentOption({paymentOption, updates});
-        showToast({message: 'PAYMENT OPTION EDITED'});
+        showSuccessToast('PAYMENT OPTION EDITED');
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
-    [updatePaymentOption],
+    [updatePaymentOption, showSuccessToast],
   );
 
   const handleRemoveItem = useCallback(
     async (values) => {
       setIsDeleting(true);
       await deletePaymentOption({paymentOption: values});
-      showToast({message: 'PAYMENT OPTION REMOVED'});
+      showSuccessToast('PAYMENT OPTION REMOVED');
       setIsDeleting(false);
     },
-    [deletePaymentOption],
+    [deletePaymentOption, showSuccessToast],
   );
 
   const handleOpenAddItemModal = useCallback(() => {
@@ -283,10 +285,7 @@ function PaymentContainer(props: ModalWrapperFields) {
   const handleOpenPreviewModal = useCallback(() => {
     openModal('full', {
       renderContent: () => (
-        <ScrollView
-          persistentScrollbar
-          keyboardShouldPersistTaps="always"
-          style={applyStyles('bg-white flex-1')}>
+        <>
           <View style={applyStyles('flex-1 bg-gray-10 px-16 h-screen')}>
             <View style={applyStyles('flex-row justify-between items-center')}>
               <Image
@@ -296,98 +295,105 @@ function PaymentContainer(props: ModalWrapperFields) {
               />
               <SecureEmblem style={applyStyles({width: 48, height: 48})} />
             </View>
-            <View style={applyStyles('bg-white rounded-16 p-16 mb-24')}>
-              <View style={applyStyles('flex-row items-center')}>
-                <View style={applyStyles('w-80 h-80')}>
-                  {business.profile_image && (
-                    <Image
-                      style={applyStyles('w-full h-full rounded-lg')}
-                      source={{
-                        uri: business.profile_image.url,
-                      }}
-                    />
-                  )}
-                </View>
-                <View style={applyStyles('flex-1 px-12')}>
-                  <Text
-                    style={applyStyles(
-                      'text-700 uppercase leading-16 text-gray-300 mb-4',
-                    )}>
-                    {business.name}
-                  </Text>
-                  <Text
-                    style={applyStyles(
-                      'text-400 text-sm leading-16 text-gray-300 mb-4',
-                    )}>
-                    {business.address}
-                  </Text>
-                  {!!business.mobile && (
+            <ScrollView
+              persistentScrollbar
+              keyboardShouldPersistTaps="always"
+              style={applyStyles('bg-white rounded-16 flex-1')}>
+              <View style={applyStyles('bg-white rounded-16 p-16')}>
+                <View style={applyStyles('flex-row items-center')}>
+                  <View style={applyStyles('w-80 h-80')}>
+                    {business.profile_image && (
+                      <Image
+                        style={applyStyles('w-full h-full rounded-lg')}
+                        source={{
+                          uri: business.profile_image.url,
+                        }}
+                      />
+                    )}
+                  </View>
+                  <View style={applyStyles('flex-1 px-12')}>
                     <Text
                       style={applyStyles(
-                        'text-400 text-sm leading-16  text-gray-300 mb-4',
-                        {
-                          color: colors['gray-300'],
-                        },
+                        'text-700 uppercase leading-16 text-gray-300 mb-4',
                       )}>
-                      Tel: {getMobileNumber()}
+                      {business.name}
                     </Text>
-                  )}
-                </View>
-              </View>
-
-              <View>
-                <Text
-                  style={applyStyles(
-                    'text-gray-300 text-700 text-center py-24',
-                  )}>
-                  You can pay me via
-                </Text>
-                {paymentOptions.map((item, index) => (
-                  <View
-                    key={`${index}`}
-                    style={applyStyles(
-                      'flex-row items-center py-8 bg-white justify-between',
-                      {
-                        borderTopColor: colors['gray-10'],
-                        borderTopWidth: 1,
-                        borderBottomColor: colors['gray-10'],
-                        borderBottomWidth: 1,
-                      },
-                    )}>
-                    <View style={applyStyles('py-8 flex-1')}>
+                    <Text
+                      style={applyStyles(
+                        'text-400 text-sm leading-16 text-gray-300 mb-4',
+                      )}>
+                      {business.address}
+                    </Text>
+                    {!!business.mobile && (
                       <Text
                         style={applyStyles(
-                          'pb-4 text-gray-200 text-uppercase text-xs',
+                          'text-400 text-sm leading-16 text-gray-300 mb-4',
+                          {
+                            color: colors['gray-300'],
+                          },
                         )}>
-                        {item.name}
+                        Tel: {getMobileNumber()}
                       </Text>
-                      {item?.fieldsData?.map((i) => (
-                        <Text
-                          key={i.key}
-                          style={applyStyles('text-gray-300 text-400 text-lg')}>
-                          {i.value}
-                        </Text>
-                      ))}
-                    </View>
-                    <View>
-                      <TouchableOpacity onPress={() => copyToClipboard(item)}>
-                        <View
-                          style={applyStyles(
-                            'px-10 py-8 bg-gray-20 rounded-4 p-8',
-                          )}>
-                          <Text
-                            style={applyStyles(
-                              'text-uppercase text-400 text-gray-300 text-xs',
-                            )}>
-                            Copy number
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
+                    )}
                   </View>
-                ))}
+                </View>
+
+                <View>
+                  <Text
+                    style={applyStyles(
+                      'text-gray-300 text-700 text-center py-24',
+                    )}>
+                    You can pay me via
+                  </Text>
+                  {paymentOptions.map((item, index) => (
+                    <View
+                      key={`${index}`}
+                      style={applyStyles(
+                        'flex-row items-center py-8 bg-white justify-between',
+                        {
+                          borderTopColor: colors['gray-10'],
+                          borderTopWidth: 1,
+                          borderBottomColor: colors['gray-10'],
+                          borderBottomWidth: 1,
+                        },
+                      )}>
+                      <View style={applyStyles('py-8 flex-1')}>
+                        <Text
+                          style={applyStyles(
+                            'pb-4 text-gray-200 text-uppercase text-xs',
+                          )}>
+                          {item.name}
+                        </Text>
+                        {item?.fieldsData?.map((i) => (
+                          <Text
+                            key={i.key}
+                            style={applyStyles(
+                              'text-gray-300 text-400 text-lg',
+                            )}>
+                            {i.value}
+                          </Text>
+                        ))}
+                      </View>
+                      <View>
+                        <TouchableOpacity onPress={() => copyToClipboard(item)}>
+                          <View
+                            style={applyStyles(
+                              'px-10 py-8 bg-gray-20 rounded-4 p-8',
+                            )}>
+                            <Text
+                              style={applyStyles(
+                                'text-uppercase text-400 text-gray-300 text-xs',
+                              )}>
+                              Copy
+                            </Text>
+                          </View>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  ))}
+                </View>
               </View>
-            </View>
+            </ScrollView>
           </View>
           <View style={applyStyles('items-center py-32 bg-gray-10')}>
             <Text style={applyStyles('text-center text-gray-100 text-sm')}>
@@ -397,7 +403,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               www.shara.co
             </Text>
           </View>
-        </ScrollView>
+        </>
       ),
     });
   }, [
