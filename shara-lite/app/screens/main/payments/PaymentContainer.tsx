@@ -1,4 +1,4 @@
-import {AppInput, Button, SecureEmblem} from '@/components';
+import {AppInput, Button, Header, SecureEmblem} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
@@ -154,7 +154,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                   <AppInput
                     key={field.key}
                     label={field.label}
-                    style={applyStyles('mb-24')}
+                    containerStyle={applyStyles('mt-24')}
                     value={
                       values?.fieldsData ? values?.fieldsData[index]?.value : ''
                     }
@@ -227,7 +227,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                       <AppInput
                         key={field.key}
                         label={field.label}
-                        style={applyStyles('mb-24')}
+                        containerStyle={applyStyles('mt-24')}
                         value={
                           values?.fieldsData
                             ? values?.fieldsData[index]?.value
@@ -283,9 +283,13 @@ function PaymentContainer(props: ModalWrapperFields) {
   );
 
   const handleOpenPreviewModal = useCallback(() => {
-    openModal('full', {
+    const closePreviewModal = openModal('full', {
       renderContent: () => (
         <>
+          <Header
+            title="Your Payment Page Preview"
+            iconLeft={{iconName: 'x', onPress: closePreviewModal}}
+          />
           <View style={applyStyles('flex-1 bg-gray-10 px-16 h-screen')}>
             <View style={applyStyles('flex-row justify-between items-center')}>
               <Image
@@ -484,7 +488,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                   <AppInput
                     key={field.key}
                     label={field.label}
-                    style={applyStyles('mb-24')}
+                    containerStyle={applyStyles('mt-24')}
                     value={
                       values?.fieldsData ? values?.fieldsData[index]?.value : ''
                     }
