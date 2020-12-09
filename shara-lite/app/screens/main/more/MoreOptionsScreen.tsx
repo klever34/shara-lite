@@ -24,12 +24,23 @@ import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useRealmLogout} from '@/services/realm';
 import {SecureEmblem} from '@/components';
 import Config from 'react-native-config';
+import {ShareHookProps, useShare} from '@/services/share';
 
 export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
     MainStackParamList & MoreStackParamList
   >();
+  const shareProps: ShareHookProps = {
+    image: '',
+    recipient: '0',
+    title: 'Invite Your Friends',
+    subject: 'Invite Your Friends',
+    message:
+      'Download Shara to keep track of who owes you and get paid faster.\nClick https://bit.ly/shara-lite',
+  };
   const {callingCode} = useIPGeolocation();
+  const {handleWhatsappShare} = useShare(shareProps);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       headerStyle: applyStyles('border-b-1', {
@@ -102,6 +113,17 @@ export const MoreOptionsScreen = () => {
 
   const {logoutFromRealm} = useRealmLogout();
   const handleError = useErrorHandler();
+
+  const handleInviteFriends = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('share', {
+        method: 'whatsapp',
+        content_type: 'invite-friend',
+        item_id: '',
+      })
+      .then(() => {});
+    handleWhatsappShare();
+  }, [handleWhatsappShare]);
 
   const handleLogout = useCallback(async () => {
     try {
@@ -312,11 +334,13 @@ export const MoreOptionsScreen = () => {
           })}
         </View>
         <View style={applyStyles('px-16')}>
-          <Image
-            resizeMode="center"
-            style={applyStyles('mb-24', {width: 330, height: 80})}
-            source={require('@/assets/images/invite-banner.png')}
-          />
+          <Touchable onPress={handleInviteFriends}>
+            <Image
+              resizeMode="center"
+              source={require('@/assets/images/invite-banner.png')}
+              style={applyStyles('mb-24', {width: '100%', height: 80})}
+            />
+          </Touchable>
           <View style={applyStyles('center pb-24')}>
             <SecureEmblem />
           </View>
