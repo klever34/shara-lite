@@ -192,39 +192,6 @@ export const TransactionEntryContext = createContext<
   TransactionEntryContextProps
 >({});
 
-type TransactionEntryButtonProps = {
-  label?: string;
-  children?: ReactNode;
-  onPress?: (context: TransactionEntryContextProps) => void;
-  style?: ViewStyle;
-  textStyle?: TextStyle;
-};
-
-export const TransactionEntryButton = ({
-  label = '',
-  children = null,
-  onPress,
-  style,
-  textStyle,
-}: TransactionEntryButtonProps) => {
-  const context = useContext(TransactionEntryContext);
-  return (
-    <Touchable
-      onPress={() => {
-        onPress?.(context);
-      }}>
-      <View style={applyStyles('flex-1 center bg-white rounded-16 m-4', style)}>
-        {children || (
-          <Text
-            style={applyStyles('text-base text-uppercase body-500', textStyle)}>
-            {label}
-          </Text>
-        )}
-      </View>
-    </Touchable>
-  );
-};
-
 export const withTransactionEntry = <ComponentProps extends {}>(
   Component: ComponentType<ComponentProps>,
 ) => (props: ComponentProps) => {
@@ -417,156 +384,223 @@ export const TransactionEntryView = withTransactionEntry(
     }, [keyboardDidHide, keyboardDidShow]);
 
     return (
-      <View style={applyStyles('flex-1')}>
-        <View
-          style={applyStyles('bg-white justify-center relative', {
-            flex: 3,
-          })}>
-          <Animated.View
-            style={applyStyles(
-              'absolute bottom-0 right-0 w-full h-full bg-green-200 center',
-              {
-                zIndex: 1,
-                transform: [{translateX: pan?.x}, {translateY: pan?.y}],
-              },
-            )}
-            {...panResponder.panHandlers}>
-            <SecureEmblem style={applyStyles('w-64 h-64')} />
-            <Text style={applyStyles('text-lg text-white mt-8 text-uppercase')}>
-              <Text>Transaction Added Successfully</Text>
-            </Text>
-          </Animated.View>
-          <View style={applyStyles('pt-24 pb-16 px-16')}>
-            {!isValidAmount && showLastTransactions && lastTransaction && (
-              <View style={applyStyles('items-center mb-24')}>
+      <>
+        <View style={applyStyles('flex-1')}>
+          <View
+            style={applyStyles('bg-white justify-center relative', {
+              flex: 4,
+            })}>
+            <Animated.View
+              style={applyStyles(
+                'absolute bottom-0 right-0 w-full h-full bg-green-200 center',
+                {
+                  zIndex: 1,
+                  transform: [{translateX: pan?.x}, {translateY: pan?.y}],
+                },
+              )}
+              {...panResponder.panHandlers}>
+              <SecureEmblem style={applyStyles('w-64 h-64')} />
+              <Text
+                style={applyStyles('text-lg text-white mt-8 text-uppercase')}>
+                <Text>Transaction Added Successfully</Text>
+              </Text>
+            </Animated.View>
+            <View style={applyStyles('pt-24 pb-16 px-16')}>
+              {!isValidAmount && showLastTransactions && lastTransaction && (
+                <View style={applyStyles('items-center mb-24')}>
+                  <Text
+                    style={applyStyles(
+                      'text-gray-100 text-xxs text-uppercase body-400',
+                    )}>
+                    Last Transaction
+                  </Text>
+                  <Text style={applyStyles('text-gray-200 text-xs body-400')}>
+                    {`${lastTransaction.isPaid ? '' : '-'}${amountWithCurrency(
+                      lastTransaction.isPaid
+                        ? lastTransaction.total_amount
+                        : lastTransaction.credit_amount,
+                    )}`}
+                  </Text>
+                </View>
+              )}
+              <View style={applyStyles('mb-6')}>
                 <Text
                   style={applyStyles(
-                    'text-gray-100 text-xxs text-uppercase body-400',
+                    'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4 body-400',
                   )}>
-                  Last Transaction
+                  Amount
                 </Text>
-                <Text style={applyStyles('text-gray-200 text-xs body-400')}>
-                  {`${lastTransaction.isPaid ? '' : '-'}${amountWithCurrency(
-                    lastTransaction.isPaid
-                      ? lastTransaction.total_amount
-                      : lastTransaction.credit_amount,
-                  )}`}
+                <Text
+                  style={applyStyles(
+                    'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center body-400',
+                  )}
+                  numberOfLines={1}>
+                  {`${currency} ${amount?.label}`}
                 </Text>
               </View>
-            )}
-            <View style={applyStyles('mb-6')}>
-              <Text
-                style={applyStyles(
-                  'bg-gray-20 text-gray-200 py-4 px-8 rounded-4 text-xxs text-uppercase text-700 font-bold self-center mb-4 body-400',
-                )}>
-                Amount
-              </Text>
-              <Text
-                style={applyStyles(
-                  'text-gray-300 py-4 px-8 rounded-4 text-4xl text-uppercase text-400 self-center body-400',
-                )}
-                numberOfLines={1}>
-                {`${currency} ${amount?.label}`}
-              </Text>
+              {isValidAmount && (
+                <View style={applyStyles('w-full')}>
+                  <AppInput
+                    placeholder="Enter Details (Rent, Bill, Loan...)"
+                    value={note}
+                    onChangeText={setNote}
+                    multiline
+                  />
+                </View>
+              )}
             </View>
-            {isValidAmount && (
-              <View style={applyStyles('w-full')}>
-                <AppInput
-                  placeholder="Enter Details (Rent, Bill, Loan...)"
-                  value={note}
-                  onChangeText={setNote}
-                  multiline
-                />
+            {!showKeypad && (
+              <View style={applyStyles('flex-row mb-16 px-16')}>
+                {isValidAmount && (
+                  <TransactionEntryButtons
+                    actionButtons={actionButtons}
+                    buttonStyle={applyStyles({minHeight: 48})}
+                  />
+                )}
               </View>
             )}
           </View>
-        </View>
-        <View style={applyStyles('bg-gray-20 px-8 py-16', {flex: 7})}>
           {showKeypad && (
-            <View style={applyStyles({flex: 6})}>
-              <View style={applyStyles('flex-row flex-1')}>
-                <TransactionEntryButton label="." onPress={enterValue('.')} />
-                <TransactionEntryButton
-                  style={applyStyles('bg-gray-50', {flex: 2})}
-                  label="clear"
-                  onPress={handleClear}
-                />
-                <TransactionEntryButton
-                  onPress={handleDelete}
-                  style={applyStyles('bg-gray-50')}>
-                  <Icon type="feathericons" name="delete" size={24} />
-                </TransactionEntryButton>
+            <View style={applyStyles('bg-gray-20 px-8 py-16', {flex: 6})}>
+              <View style={applyStyles({flex: 6})}>
+                <View style={applyStyles('flex-row flex-1')}>
+                  <TransactionEntryButton label="." onPress={enterValue('.')} />
+                  <TransactionEntryButton
+                    style={applyStyles('bg-gray-50', {flex: 2})}
+                    label="clear"
+                    onPress={handleClear}
+                  />
+                  <TransactionEntryButton
+                    onPress={handleDelete}
+                    style={applyStyles('bg-gray-50')}>
+                    <Icon type="feathericons" name="delete" size={24} />
+                  </TransactionEntryButton>
+                </View>
+                <View style={applyStyles('flex-row flex-1')}>
+                  <TransactionEntryButton label="7" onPress={enterValue('7')} />
+                  <TransactionEntryButton label="8" onPress={enterValue('8')} />
+                  <TransactionEntryButton label="9" onPress={enterValue('9')} />
+                  <TransactionEntryButton
+                    label="%"
+                    onPress={enterValue('%')}
+                    style={applyStyles('bg-gray-50')}
+                  />
+                </View>
+                <View style={applyStyles('flex-row flex-1')}>
+                  <TransactionEntryButton label="4" onPress={enterValue('4')} />
+                  <TransactionEntryButton label="5" onPress={enterValue('5')} />
+                  <TransactionEntryButton label="6" onPress={enterValue('6')} />
+                  <TransactionEntryButton
+                    label="÷"
+                    onPress={enterValue('÷')}
+                    style={applyStyles('bg-gray-50')}
+                  />
+                </View>
+                <View style={applyStyles('flex-row flex-1')}>
+                  <TransactionEntryButton label="1" onPress={enterValue('1')} />
+                  <TransactionEntryButton label="2" onPress={enterValue('2')} />
+                  <TransactionEntryButton label="3" onPress={enterValue('3')} />
+                  <TransactionEntryButton
+                    onPress={enterValue('*')}
+                    style={applyStyles('bg-gray-50')}>
+                    <Text>x</Text>
+                  </TransactionEntryButton>
+                </View>
+                <View style={applyStyles('flex-row flex-1')}>
+                  <TransactionEntryButton label="0" onPress={enterValue('0')} />
+                  <TransactionEntryButton
+                    label="00"
+                    onPress={enterValue('00')}
+                  />
+                  <TransactionEntryButton
+                    label="000"
+                    onPress={enterValue('000')}
+                  />
+                  <TransactionEntryButton label="=" onPress={handleCalculate} />
+                </View>
+                <View style={applyStyles('flex-row flex-1')}>
+                  <TransactionEntryButton
+                    label="-"
+                    onPress={enterValue('-')}
+                    style={applyStyles('bg-gray-50')}
+                  />
+                  <TransactionEntryButton
+                    label="+"
+                    onPress={enterValue('+')}
+                    style={applyStyles('bg-gray-50')}
+                  />
+                </View>
               </View>
               <View style={applyStyles('flex-row flex-1')}>
-                <TransactionEntryButton label="7" onPress={enterValue('7')} />
-                <TransactionEntryButton label="8" onPress={enterValue('8')} />
-                <TransactionEntryButton label="9" onPress={enterValue('9')} />
-                <TransactionEntryButton
-                  label="%"
-                  onPress={enterValue('%')}
-                  style={applyStyles('bg-gray-50')}
-                />
-              </View>
-              <View style={applyStyles('flex-row flex-1')}>
-                <TransactionEntryButton label="4" onPress={enterValue('4')} />
-                <TransactionEntryButton label="5" onPress={enterValue('5')} />
-                <TransactionEntryButton label="6" onPress={enterValue('6')} />
-                <TransactionEntryButton
-                  label="÷"
-                  onPress={enterValue('÷')}
-                  style={applyStyles('bg-gray-50')}
-                />
-              </View>
-              <View style={applyStyles('flex-row flex-1')}>
-                <TransactionEntryButton label="1" onPress={enterValue('1')} />
-                <TransactionEntryButton label="2" onPress={enterValue('2')} />
-                <TransactionEntryButton label="3" onPress={enterValue('3')} />
-                <TransactionEntryButton
-                  onPress={enterValue('*')}
-                  style={applyStyles('bg-gray-50')}>
-                  <Text>x</Text>
-                </TransactionEntryButton>
-              </View>
-              <View style={applyStyles('flex-row flex-1')}>
-                <TransactionEntryButton label="0" onPress={enterValue('0')} />
-                <TransactionEntryButton label="00" onPress={enterValue('00')} />
-                <TransactionEntryButton
-                  label="000"
-                  onPress={enterValue('000')}
-                />
-                <TransactionEntryButton label="=" onPress={handleCalculate} />
-              </View>
-              <View style={applyStyles('flex-row flex-1')}>
-                <TransactionEntryButton
-                  label="-"
-                  onPress={enterValue('-')}
-                  style={applyStyles('bg-gray-50')}
-                />
-                <TransactionEntryButton
-                  label="+"
-                  onPress={enterValue('+')}
-                  style={applyStyles('bg-gray-50')}
-                />
+                {isValidAmount && (
+                  <TransactionEntryButtons
+                    actionButtons={actionButtons}
+                    buttonStyle={applyStyles({minHeight: 48})}
+                  />
+                )}
               </View>
             </View>
           )}
-          <View style={applyStyles('flex-row flex-1')}>
-            {isValidAmount && (
-              <>
-                {actionButtons.map((actionButton) => {
-                  return (
-                    <TransactionEntryButton
-                      key={actionButton.label}
-                      {...actionButton}
-                    />
-                  );
-                })}
-              </>
-            )}
-          </View>
-          {!showKeypad && <View style={applyStyles({flex: 6})} />}
         </View>
-      </View>
+        {!showKeypad && <View style={applyStyles('flex-1')} />}
+      </>
     );
   },
 );
+
+type TransactionEntryButtonsProps = {
+  actionButtons: TransactionEntryButtonProps[];
+  buttonStyle?: ViewStyle;
+};
+
+export const TransactionEntryButtons = ({
+  actionButtons,
+  buttonStyle,
+}: TransactionEntryButtonsProps) => {
+  return (
+    <>
+      {actionButtons.map((actionButton) => {
+        return (
+          <TransactionEntryButton
+            key={actionButton.label}
+            {...actionButton}
+            style={applyStyles(actionButton.style, buttonStyle)}
+          />
+        );
+      })}
+    </>
+  );
+};
+
+type TransactionEntryButtonProps = {
+  label?: string;
+  children?: ReactNode;
+  onPress?: (context: TransactionEntryContextProps) => void;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+};
+
+export const TransactionEntryButton = ({
+  label = '',
+  children = null,
+  onPress,
+  style,
+  textStyle,
+}: TransactionEntryButtonProps) => {
+  const context = useContext(TransactionEntryContext);
+  return (
+    <Touchable
+      onPress={() => {
+        onPress?.(context);
+      }}>
+      <View style={applyStyles('flex-1 center bg-white rounded-8 m-4', style)}>
+        {children || (
+          <Text
+            style={applyStyles('text-base text-uppercase body-500', textStyle)}>
+            {label}
+          </Text>
+        )}
+      </View>
+    </Touchable>
+  );
+};
