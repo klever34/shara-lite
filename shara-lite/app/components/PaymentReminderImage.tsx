@@ -3,26 +3,25 @@ import {getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useState} from 'react';
-import RNFetchBlob from 'rn-fetch-blob';
+import React, {useCallback, useEffect, useRef} from 'react';
 import {Image, ScrollView, Text, View} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
+import RNFetchBlob from 'rn-fetch-blob';
 import {SecureEmblem} from './SecureEmblem';
 
 function PaymentReminderImage({
   date,
   amount,
   getImageUri,
-  captureMode = 'mount',
 }: {
   date?: Date;
   amount?: number;
   getImageUri: (base64: string) => void;
   captureMode?: ViewShotProperties['captureMode'];
 }) {
+  const viewShot = useRef<any>(null);
   const {callingCode} = useIPGeolocation();
   const business = getAuthService().getBusinessInfo();
-  const [, setRerenderDate] = useState(Date.now());
 
   const getMobieNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -34,6 +33,7 @@ function PaymentReminderImage({
 
   const onCapture = useCallback(
     async (uri: any) => {
+      console.log(uri);
       if (uri) {
         RNFetchBlob.fs.readFile(uri, 'base64').then((data) => {
           getImageUri(data);
@@ -44,15 +44,12 @@ function PaymentReminderImage({
   );
 
   useEffect(() => {
-    setRerenderDate(Date.now());
-  }, [date, amount]);
+    viewShot.current.capture().then(onCapture);
+  }, [date, amount, onCapture]);
 
   return (
     <ScrollView>
-      <ViewShot
-        onCapture={onCapture}
-        captureMode={captureMode}
-        options={{format: 'png'}}>
+      <ViewShot ref={viewShot} options={{format: 'png'}}>
         <View style={applyStyles('bg-white')}>
           <View style={applyStyles('absolute top-20 right-6')}>
             <SecureEmblem style={applyStyles({width: 48, height: 48})} />

@@ -346,7 +346,6 @@ const TransactionDetails = withModal(
             <View style={applyStyles({opacity: 0, height: 0})}>
               <PaymentReminderImage
                 date={dueDate}
-                captureMode="update"
                 getImageUri={(data) => setReceiptImage(data)}
                 amount={creditAmount || customer?.remainingCreditAmount}
               />
