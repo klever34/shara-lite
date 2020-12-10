@@ -44,10 +44,10 @@ export type TransactionDetailsProps = {
 const TransactionDetails = withModal(
   ({
     header,
+    isPaid,
     creditAmount,
     transactions,
     actionButtons,
-    isPaid = false,
     sendReminder = true,
     customer: customerProp,
     dueDate: creditDueDate,
@@ -246,7 +246,9 @@ const TransactionDetails = withModal(
         />
         {!!transactions?.length && (
           <>
-            {!isPaid && (
+            {(isPaid !== undefined
+              ? !isPaid
+              : !!customer?.remainingCreditAmount) && (
               <View style={applyStyles('bg-white center py-16')}>
                 <DatePicker
                   //@ts-ignore
