@@ -98,6 +98,7 @@ export class AuthService implements IAuthService {
         this.token = null;
         this.realmCredentials = null;
         await this.storageService.clear();
+        await this.storageService.setItem('hide-welcome-screen', true);
         this.pubNubService.getInstance()?.unsubscribeAll();
       }
     } catch (e) {
