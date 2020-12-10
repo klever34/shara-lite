@@ -44,14 +44,28 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
       </View>
       <View>
         <TouchableOpacity onPress={() => copyToClipboard(item)}>
-          <View style={applyStyles('px-10 py-8 bg-gray-20 rounded-4 p-8')}>
-            <Text
-              style={applyStyles(
-                'text-uppercase text-400 text-gray-300 text-xs',
-              )}>
-              {hasCopied ? 'Copied' : 'Copy'}
-            </Text>
-          </View>
+          {hasCopied ? (
+            <View
+              style={applyStyles('px-10 py-8 bg-gray-20 rounded-4 p-8', {
+                backgroundColor: colors['green-100'],
+              })}>
+              <Text
+                style={applyStyles(
+                  'text-uppercase text-400 text-gray-300 text-xs text-white',
+                )}>
+                Copied
+              </Text>
+            </View>
+          ) : (
+            <View style={applyStyles('px-10 py-8 bg-gray-20 rounded-4 p-8')}>
+              <Text
+                style={applyStyles(
+                  'text-uppercase text-400 text-gray-300 text-xs',
+                )}>
+                Copy
+              </Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
     </View>
