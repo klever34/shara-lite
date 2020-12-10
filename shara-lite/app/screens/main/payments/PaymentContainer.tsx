@@ -10,20 +10,11 @@ import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
 import {omit} from 'lodash';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  Image,
-  ScrollView,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import {Alert, FlatList, Image, ScrollView, Text, View} from 'react-native';
 import {PaymentProvider} from 'types/app';
-import Clipboard from '@react-native-community/clipboard';
 import {ToastContext} from '@/components/Toast';
 import {PaymentForm} from './PaymentForm';
+import {PaymentPreviewItem} from './PaymentPreviewItem';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -45,14 +36,6 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const {showSuccessToast} = useContext(ToastContext);
-
-  const copyToClipboard = (option: IPaymentOption) => {
-    const value = `${option.name}\n${option?.fieldsData?.map(
-      (field) => `${field.label}: ${field.value}`,
-    )}`;
-    Clipboard.setString(value);
-    ToastAndroid.show('Copied', ToastAndroid.LONG);
-  };
 
   const getMobileNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -281,50 +264,10 @@ function PaymentContainer(props: ModalWrapperFields) {
                     You can pay me via
                   </Text>
                   {paymentOptions.map((item, index) => (
-                    <View
-                      key={`${index}`}
-                      style={applyStyles(
-                        'flex-row items-center py-8 bg-white justify-between',
-                        {
-                          borderTopColor: colors['gray-10'],
-                          borderTopWidth: 1,
-                          borderBottomColor: colors['gray-10'],
-                          borderBottomWidth: 1,
-                        },
-                      )}>
-                      <View style={applyStyles('py-8 flex-1')}>
-                        <Text
-                          style={applyStyles(
-                            'pb-4 text-gray-200 text-uppercase text-xs',
-                          )}>
-                          {item.name}
-                        </Text>
-                        {item?.fieldsData?.map((i) => (
-                          <Text
-                            key={i.key}
-                            style={applyStyles(
-                              'text-gray-300 text-400 text-lg',
-                            )}>
-                            {i.value}
-                          </Text>
-                        ))}
-                      </View>
-                      <View>
-                        <TouchableOpacity onPress={() => copyToClipboard(item)}>
-                          <View
-                            style={applyStyles(
-                              'px-10 py-8 bg-gray-20 rounded-4 p-8',
-                            )}>
-                            <Text
-                              style={applyStyles(
-                                'text-uppercase text-400 text-gray-300 text-xs',
-                              )}>
-                              Copy
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      </View>
-                    </View>
+                    <PaymentPreviewItem
+                      item={item}
+                      key={`${item.name}-${index}`}
+                    />
                   ))}
                 </View>
               </View>

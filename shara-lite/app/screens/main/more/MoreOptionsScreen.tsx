@@ -1,11 +1,12 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
   useState,
 } from 'react';
-import {Alert, Image, ScrollView, Text, ToastAndroid, View} from 'react-native';
+import {Alert, Image, ScrollView, Text, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import Clipboard from '@react-native-community/clipboard';
 import {
@@ -25,6 +26,7 @@ import {useRealmLogout} from '@/services/realm';
 import {SecureEmblem} from '@/components';
 import Config from 'react-native-config';
 import {ShareHookProps, useShare} from '@/services/share';
+import {ToastContext} from '@/components/Toast';
 
 export const MoreOptionsScreen = () => {
   const navigation = useAppNavigation<
@@ -41,6 +43,7 @@ export const MoreOptionsScreen = () => {
   };
   const {callingCode} = useIPGeolocation();
   const {handleWhatsappShare} = useShare(shareProps);
+  const {showSuccessToast} = useContext(ToastContext);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -168,8 +171,8 @@ export const MoreOptionsScreen = () => {
 
   const copyToClipboard = useCallback(() => {
     Clipboard.setString(paymentLink);
-    ToastAndroid.show('Copied', ToastAndroid.LONG);
-  }, [paymentLink]);
+    showSuccessToast('Copied');
+  }, [paymentLink, showSuccessToast]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
