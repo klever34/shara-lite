@@ -1,15 +1,13 @@
-import {AppInput, Button, Header, SecureEmblem} from '@/components';
+import {Button, Header, SecureEmblem} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IPaymentOption} from '@/models/PaymentOption';
-import {getApiService, getAuthService} from '@/services';
+import {getApiService, getAuthService, getStorageService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
-import {Picker} from '@react-native-community/picker';
-import {Formik} from 'formik';
 import {omit} from 'lodash';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
@@ -25,6 +23,7 @@ import {
 import {PaymentProvider} from 'types/app';
 import Clipboard from '@react-native-community/clipboard';
 import {ToastContext} from '@/components/Toast';
+import {PaymentForm} from './PaymentForm';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -120,81 +119,32 @@ function PaymentContainer(props: ModalWrapperFields) {
             )}>
             add Payment info
           </Text>
-          <Formik<IPaymentOption>
-            onSubmit={onFormSubmit}
-            initialValues={{slug: '', name: '', fieldsData: []}}>
-            {({values, setFieldValue, handleSubmit}) => (
-              <View style={applyStyles('px-16 py-24')}>
-                <Picker
-                  mode="dropdown"
-                  prompt="Select a payment method"
-                  selectedValue={values.slug}
-                  onValueChange={(itemValue) => {
-                    setFieldValue('slug', itemValue);
-                    const selectedProvider = paymentProviders.find(
-                      (item) => item.slug === itemValue,
-                    );
-                    const name = selectedProvider?.name;
-                    const fields = selectedProvider?.fields;
-
-                    setFieldValue('name', name);
-                    setFieldValue('fieldsData', fields);
+          <PaymentForm
+            onFormSubmit={onFormSubmit}
+            paymentProviders={paymentProviders}
+            renderButtons={(handleSubmit) => (
+              <View
+                style={applyStyles(
+                  'pt-24 flex-row items-center justify-between',
+                )}>
+                <Button
+                  title="Cancel"
+                  onPress={closeModal}
+                  variantColor="transparent"
+                  style={applyStyles({width: '48%'})}
+                />
+                <Button
+                  title="Save"
+                  isLoading={isSaving}
+                  style={applyStyles({width: '48%'})}
+                  onPress={() => {
+                    handleSubmit();
+                    closeModal();
                   }}
-                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                  <Picker.Item label="Select a payment method" value="" />
-                  {paymentProviders.map((provider) => (
-                    <Picker.Item
-                      key={provider.slug}
-                      label={provider.name}
-                      value={provider.slug}
-                    />
-                  ))}
-                </Picker>
-                {values?.fieldsData?.map((field, index) => (
-                  <AppInput
-                    key={field.key}
-                    label={field.label}
-                    containerStyle={applyStyles('mt-24')}
-                    value={
-                      values?.fieldsData ? values?.fieldsData[index]?.value : ''
-                    }
-                    onChangeText={(text: string) => {
-                      const updatedFieldsData = values?.fieldsData?.map(
-                        (item) => {
-                          if (item.key === field.key) {
-                            return {...item, value: text};
-                          }
-                          return item;
-                        },
-                      );
-                      setFieldValue('fieldsData', updatedFieldsData);
-                    }}
-                  />
-                ))}
-
-                <View
-                  style={applyStyles(
-                    'pt-24 flex-row items-center justify-between',
-                  )}>
-                  <Button
-                    title="Cancel"
-                    onPress={closeModal}
-                    variantColor="transparent"
-                    style={applyStyles({width: '48%'})}
-                  />
-                  <Button
-                    title="Save"
-                    isLoading={isSaving}
-                    style={applyStyles({width: '48%'})}
-                    onPress={() => {
-                      handleSubmit();
-                      closeModal();
-                    }}
-                  />
-                </View>
+                />
               </View>
             )}
-          </Formik>
+          />
         </>
       ),
     });
@@ -212,74 +162,55 @@ function PaymentContainer(props: ModalWrapperFields) {
               )}>
               edit Payment info
             </Text>
-            <Formik<IPaymentOption>
+            <PaymentForm
+              hidePicker={true}
+              paymentProviders={paymentProviders}
+              onFormSubmit={(values) => handleEditItem(item, values)}
               initialValues={{
                 ...initialValues,
                 fieldsData: initialValues.fields
                   ? JSON.parse(initialValues.fields)
                   : [],
               }}
-              onSubmit={(values) => handleEditItem(item, values)}>
-              {({values, setFieldValue, handleSubmit}) => {
-                return (
-                  <View style={applyStyles('px-16 py-24')}>
-                    {values?.fieldsData?.map((field, index) => (
-                      <AppInput
-                        key={field.key}
-                        label={field.label}
-                        containerStyle={applyStyles('mt-24')}
-                        value={
-                          values?.fieldsData
-                            ? values?.fieldsData[index]?.value
-                            : ''
-                        }
-                        onChangeText={(text: string) => {
-                          const updatedFieldsData = values?.fieldsData?.map(
-                            (fieldData) => {
-                              if (fieldData.key === field.key) {
-                                return {...fieldData, value: text};
-                              }
-                              return fieldData;
-                            },
-                          );
-                          setFieldValue('fieldsData', updatedFieldsData);
-                        }}
-                      />
-                    ))}
-
-                    <View
-                      style={applyStyles(
-                        'pt-24 flex-row items-center justify-between',
-                      )}>
-                      <Button
-                        title="Remove"
-                        isLoading={isDeleting}
-                        style={applyStyles({width: '48%'})}
-                        onPress={() => {
-                          handleRemoveItem(item);
-                          closeModal();
-                        }}
-                        variantColor="transparent"
-                      />
-                      <Button
-                        title="Save"
-                        isLoading={isSaving}
-                        style={applyStyles({width: '48%'})}
-                        onPress={() => {
-                          handleSubmit();
-                          closeModal();
-                        }}
-                      />
-                    </View>
-                  </View>
-                );
-              }}
-            </Formik>
+              renderButtons={(handleSubmit) => (
+                <View
+                  style={applyStyles(
+                    'pt-24 flex-row items-center justify-between',
+                  )}>
+                  <Button
+                    title="Remove"
+                    isLoading={isDeleting}
+                    style={applyStyles({width: '48%'})}
+                    onPress={() => {
+                      handleRemoveItem(item);
+                      closeModal();
+                    }}
+                    variantColor="transparent"
+                  />
+                  <Button
+                    title="Save"
+                    isLoading={isSaving}
+                    style={applyStyles({width: '48%'})}
+                    onPress={() => {
+                      handleSubmit();
+                      closeModal();
+                    }}
+                  />
+                </View>
+              )}
+            />
           </>
         ),
       });
     },
-    [openModal, isSaving, isDeleting, handleEditItem, handleRemoveItem],
+    [
+      openModal,
+      isSaving,
+      isDeleting,
+      handleEditItem,
+      handleRemoveItem,
+      paymentProviders,
+    ],
   );
 
   const handleOpenPreviewModal = useCallback(() => {
@@ -421,10 +352,19 @@ function PaymentContainer(props: ModalWrapperFields) {
   ]);
 
   const fectchPaymentProviders = useCallback(async () => {
-    const providers = await apiService.getPaymentProviders({
-      country_code: business.country_code,
-    });
-    setPaymentProviders(providers);
+    const savedProviders = (await getStorageService().getItem(
+      'providers',
+    )) as PaymentProvider[];
+
+    try {
+      const providers = await apiService.getPaymentProviders({
+        country_code: business.country_code,
+      });
+      await getStorageService().setItem('providers', JSON.stringify(providers));
+      setPaymentProviders(providers);
+    } catch (error) {
+      setPaymentProviders(savedProviders ?? []);
+    }
   }, [apiService, business]);
 
   useEffect(() => {
@@ -443,7 +383,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       keyboardShouldPersistTaps="always"
       style={applyStyles('py-24 bg-white flex-1')}>
       {paymentOptions.length === 0 ? (
-        <View style={applyStyles('px-16 flex-1')}>
+        <View style={applyStyles('flex-1')}>
           <View style={applyStyles('center pb-32')}>
             <SecureEmblem />
             <Text
@@ -454,69 +394,20 @@ function PaymentContainer(props: ModalWrapperFields) {
               can know how to pay you.
             </Text>
           </View>
-          <Formik<IPaymentOption>
-            onSubmit={onFormSubmit}
-            initialValues={{slug: '', name: '', fieldsData: []}}>
-            {({values, setFieldValue, handleSubmit}) => (
-              <>
-                <Picker
-                  mode="dropdown"
-                  prompt="Select a payment method"
-                  selectedValue={values.slug}
-                  onValueChange={(itemValue) => {
-                    setFieldValue('slug', itemValue);
-                    const selectedProvider = paymentProviders.find(
-                      (item) => item.slug === itemValue,
-                    );
-                    const name = selectedProvider?.name;
-                    const fields = selectedProvider?.fields;
-
-                    setFieldValue('name', name);
-                    setFieldValue('fieldsData', fields);
-                  }}
-                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                  <Picker.Item label="Select a payment method" value="" />
-                  {paymentProviders.map((provider) => (
-                    <Picker.Item
-                      key={provider.slug}
-                      label={provider.name}
-                      value={provider.slug}
-                    />
-                  ))}
-                </Picker>
-                {values?.fieldsData?.map((field, index) => (
-                  <AppInput
-                    key={field.key}
-                    label={field.label}
-                    containerStyle={applyStyles('mt-24')}
-                    value={
-                      values?.fieldsData ? values?.fieldsData[index]?.value : ''
-                    }
-                    onChangeText={(text: string) => {
-                      const updatedFieldsData = values?.fieldsData?.map(
-                        (item) => {
-                          if (item.key === field.key) {
-                            return {...item, value: text};
-                          }
-                          return item;
-                        },
-                      );
-                      setFieldValue('fieldsData', updatedFieldsData);
-                    }}
-                  />
-                ))}
-
-                <View style={applyStyles('pt-24', {paddingBottom: 300})}>
-                  <Button
-                    title="Save"
-                    isLoading={isSaving}
-                    onPress={handleSubmit}
-                    disabled={!values.slug}
-                  />
-                </View>
-              </>
+          <PaymentForm
+            onFormSubmit={onFormSubmit}
+            paymentProviders={paymentProviders}
+            renderButtons={(handleSubmit, values) => (
+              <View style={applyStyles('pt-24', {paddingBottom: 300})}>
+                <Button
+                  title="Save"
+                  isLoading={isSaving}
+                  onPress={handleSubmit}
+                  disabled={!values?.slug}
+                />
+              </View>
             )}
-          </Formik>
+          />
         </View>
       ) : (
         <View>
