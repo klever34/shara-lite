@@ -39,20 +39,22 @@ export type TransactionDetailsProps = {
   header?: Partial<CustomerDetailsHeaderProps>;
   sendReminder?: boolean;
   actionButtons?: ButtonProps[];
+  onViewAllTransactions?: (customer?: ICustomer) => void;
 };
 
 const TransactionDetails = withModal(
   ({
     header,
     isPaid,
+    openModal,
     creditAmount,
     transactions,
     actionButtons,
     sendReminder = true,
+    onViewAllTransactions,
     customer: customerProp,
     dueDate: creditDueDate,
     showActionButtons = true,
-    openModal,
   }: TransactionDetailsProps & ModalWrapperFields) => {
     const analyticsService = getAnalyticsService();
     const businessInfo = getAuthService().getBusinessInfo();
@@ -343,7 +345,33 @@ const TransactionDetails = withModal(
               keyExtractor={(item, index) =>
                 `${item?._id?.toString()}-${index}`
               }
-              ListFooterComponent={<View style={applyStyles({height: 200})} />}
+              ListFooterComponent={
+                customer && onViewAllTransactions ? (
+                  <View style={applyStyles('mt-24 flex-row center')}>
+                    <Touchable onPress={() => onViewAllTransactions(customer)}>
+                      <View
+                        style={applyStyles(
+                          'py-8 px-16 rounded-8 flex-row center bg-gray-20',
+                        )}>
+                        <Icon
+                          name="eye"
+                          size={16}
+                          type="feathericons"
+                          color={colors['gray-50']}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-4 text-700 text-gray-200 text-uppercase',
+                          )}>
+                          view all transactions
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
+                ) : (
+                  <View style={applyStyles({height: 200})} />
+                )
+              }
             />
             <View style={applyStyles({opacity: 0, height: 0})}>
               <PaymentReminderImage
