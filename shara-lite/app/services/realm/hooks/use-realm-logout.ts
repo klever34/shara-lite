@@ -1,5 +1,6 @@
 import {useContext} from 'react';
 import {RealmContext} from '@/services/realm/provider';
+import {clearQueue} from '@/services/realm/utils/queue';
 
 export const useRealmLogout = () => {
   const {
@@ -16,6 +17,7 @@ export const useRealmLogout = () => {
     setIsSyncInProgress(false);
     setRealm(undefined);
     setIsSyncCompleted(true);
+    clearQueue();
 
     if (localRealm.current) {
       localRealm.current?.removeAllListeners();
