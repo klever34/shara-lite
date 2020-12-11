@@ -103,6 +103,7 @@ export class AnalyticsService implements IAnalyticsService {
         'lastname',
         'id',
         'country_code',
+        'mobile',
         'currency_code',
         'referrer_code',
       ];
@@ -118,6 +119,7 @@ export class AnalyticsService implements IAnalyticsService {
       userData.environment = Config.ENVIRONMENT;
       userData.businessName = user.businesses?.[0]?.name ?? '';
       userData.referralCode = user.referrer_code ?? '';
+      userData.app = 'shara-lite';
       const alias =
         user.firstname && user.lastname
           ? `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim()
