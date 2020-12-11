@@ -28,6 +28,8 @@ export interface IReceipt extends BaseModelInterface {
   hasCustomer?: boolean;
   dueDate?: Date;
   isPending?: boolean;
+  isYouGot?: boolean;
+  isYouGave?: boolean;
 }
 
 export const modelName = 'Receipt';
@@ -92,5 +94,13 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
 
   public get isPaid() {
     return !this.credits?.filter((credit) => !credit.fulfilled).length;
+  }
+
+  public get isYouGave() {
+    return !!(this.credits && this.credits.length);
+  }
+
+  public get isYouGot() {
+    return !this.isYouGave;
   }
 }
