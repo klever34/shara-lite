@@ -2,9 +2,10 @@ import flatten from 'lodash/flatten';
 import {IContact} from '@/models';
 import Config from 'react-native-config';
 import queryString from 'query-string';
+import {ObjectId} from 'bson';
+import perf from '@react-native-firebase/perf';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
-import perf from '@react-native-firebase/perf';
 import {
   ApiResponse,
   Business,
@@ -13,6 +14,7 @@ import {
   PaymentProvider,
   User,
 } from 'types/app';
+import {BaseModelInterface} from '@/models/baseSchema';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -69,6 +71,11 @@ export interface IApiService {
   getPaymentProviders(params: {
     country_code: string | undefined;
   }): Promise<PaymentProvider[]>;
+
+  getSyncedRecord(params: {
+    model: string;
+    _id: ObjectId;
+  }): Promise<BaseModelInterface | null>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -331,6 +338,19 @@ export class ApiService implements IApiService {
         {country_code},
       );
       return paymentProviders;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getSyncedRecord({model, _id}: {model: string; _id: ObjectId}) {
+    try {
+      const {
+        data: {record},
+      } = await this.requester.get<{
+        paymentProviders: BaseModelInterface | null;
+      }>('/sync/record', {model, _id});
+      return record;
     } catch (e) {
       throw e;
     }

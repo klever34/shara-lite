@@ -49,6 +49,7 @@ export const syncRealmDbs = ({
                 saveLastLocalSync({
                   model: objSchema.name,
                   date: insertedRecord.updated_at,
+                  _id: insertedRecord._id,
                 }).then(() => {});
               } else {
                 onModelUpdate && onModelUpdate(modelName);
@@ -98,6 +99,7 @@ export const syncRealmDbs = ({
               saveLastLocalSync({
                 model: objSchema.name,
                 date: modifiedRecord.updated_at,
+                _id: modifiedRecord._id,
               }).then(() => {});
             }
           }
