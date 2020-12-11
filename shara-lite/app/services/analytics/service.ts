@@ -57,6 +57,11 @@ export type SharaAppEventsProperties = {
   //Sync
   syncStarted: {};
   syncCompleted: {};
+  //Payment
+  paymentOptionAdded: {};
+  paymentOptionEdited: {};
+  previewPaymentInfo: {};
+  paymentOptionRemoved: {};
 };
 
 export interface IAnalyticsService {

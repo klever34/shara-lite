@@ -3,7 +3,12 @@ import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IPaymentOption} from '@/models/PaymentOption';
-import {getApiService, getAuthService, getStorageService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getStorageService,
+} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentOption} from '@/services/payment-option';
@@ -55,6 +60,9 @@ function PaymentContainer(props: ModalWrapperFields) {
       ) {
         setIsSaving(true);
         await savePaymentOption({paymentOption: values});
+        getAnalyticsService()
+          .logEvent('paymentOptionAdded', {})
+          .then(() => {});
         showSuccessToast('PAYMENT OPTION ADDED');
         setIsSaving(false);
       } else {
@@ -74,6 +82,9 @@ function PaymentContainer(props: ModalWrapperFields) {
         delete updates.fields;
         setIsSaving(true);
         await updatePaymentOption({paymentOption, updates});
+        getAnalyticsService()
+          .logEvent('paymentOptionEdited', {})
+          .then(() => {});
         showSuccessToast('PAYMENT OPTION EDITED');
         setIsSaving(false);
       } else {
@@ -87,6 +98,9 @@ function PaymentContainer(props: ModalWrapperFields) {
     async (values) => {
       setIsDeleting(true);
       await deletePaymentOption({paymentOption: values});
+      getAnalyticsService()
+        .logEvent('paymentOptionRemoved', {})
+        .then(() => {});
       showSuccessToast('PAYMENT OPTION REMOVED');
       setIsDeleting(false);
     },
@@ -198,6 +212,9 @@ function PaymentContainer(props: ModalWrapperFields) {
   );
 
   const handleOpenPreviewModal = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('previewPaymentInfo', {})
+      .then(() => {});
     const closePreviewModal = openModal('full', {
       renderContent: () => (
         <>
