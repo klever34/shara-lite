@@ -33,7 +33,6 @@ export const Welcome = () => {
         loop={false}
         ref={swiperRef}
         showsPagination
-        scrollEnabled={false}
         onIndexChanged={handleUpdateCount}
         dot={
           <View
@@ -103,6 +102,8 @@ export const Welcome = () => {
           <Text
             style={applyStyles('text-center text-gray-200 text-400 mx-auto', {
               width: 310,
+              maxWidth: 280,
+              lineHeight: 20,
             })}>
             Get your customers to download so they can also be reminded when
             their repayment is due
