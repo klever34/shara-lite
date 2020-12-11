@@ -18,4 +18,8 @@ export const addItemToQueue = (item: () => void) => {
 
 export const isBackgroundSyncCompleted = (): boolean => !queueItems.length;
 
+export const clearQueue = () => {
+  queueItems.length = 0;
+};
+
 processItems();
