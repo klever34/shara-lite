@@ -34,6 +34,7 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+  const [user, setUser] = useState(getAuthService().getUser());
 
   const {showSuccessToast} = useContext(ToastContext);
 
@@ -300,19 +301,21 @@ function PaymentContainer(props: ModalWrapperFields) {
     )) as PaymentProvider[];
 
     try {
+      const country_code = business.country_code || user?.country_code;
       const providers = await apiService.getPaymentProviders({
-        country_code: business.country_code,
+        country_code,
       });
       await getStorageService().setItem('providers', JSON.stringify(providers));
       setPaymentProviders(providers);
     } catch (error) {
       setPaymentProviders(savedProviders ?? []);
     }
-  }, [apiService, business]);
+  }, [apiService, business, user]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
       setBusiness(getAuthService().getBusinessInfo());
+      setUser(getAuthService().getUser());
     });
   }, [navigation]);
 
