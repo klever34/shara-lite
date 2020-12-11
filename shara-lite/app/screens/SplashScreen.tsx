@@ -74,10 +74,12 @@ const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/images/shara_logo_white.png')}
+        source={require('../assets/images/shara-lite_logo.png')}
         style={styles.image}
       />
-      <Text style={styles.text}>The Last Ledger You'll Ever Need</Text>
+      <Text style={styles.text}>
+        Keep track of who owes you and get paid faster
+      </Text>
     </View>
   );
 };
@@ -86,18 +88,25 @@ const styles = StyleSheet.create({
   container: {
     width: dimensions.fullWidth,
     height: dimensions.fullHeight,
-    backgroundColor: colors.primary,
+    backgroundColor: colors.white,
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
   },
   image: {
-    width: '75%',
-    height: '9%',
-    marginBottom: 16,
+    width: '80%',
+    height: '25%',
+    marginBottom: 24,
     resizeMode: 'contain',
   },
-  text: {color: colors.white, fontSize: 12, fontFamily: 'CocogoosePro-Regular'},
+  text: {
+    color: colors.black,
+    fontSize: 22,
+    fontFamily: 'Roboto-Bold',
+    maxWidth: 300,
+    textAlign: 'center',
+    lineHeight: 32,
+  },
 });
 
 export default SplashScreen;
