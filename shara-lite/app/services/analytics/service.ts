@@ -62,6 +62,13 @@ export type SharaAppEventsProperties = {
   paymentOptionEdited: {};
   previewPaymentInfo: {};
   paymentOptionRemoved: {};
+  //Transactions
+  userGaveTransaction: {
+    amount: number;
+  };
+  userGotTransaction: {
+    amount: number;
+  };
 };
 
 export interface IAnalyticsService {
