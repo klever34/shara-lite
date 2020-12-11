@@ -13,6 +13,7 @@ import {Product} from '@/models/Product';
 import {Supplier} from '@/models/Supplier';
 import {StockItem} from '@/models/StockItem';
 import {DeliveryAgent} from '@/models/DeliveryAgent';
+import {PaymentOption} from '@/models/PaymentOption';
 import {StorageService} from '../../storage';
 import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
@@ -31,6 +32,7 @@ export const schema = [
   ReceivedInventory,
   Message,
   Payment,
+  PaymentOption,
   Product,
   Receipt,
   ReceiptItem,
