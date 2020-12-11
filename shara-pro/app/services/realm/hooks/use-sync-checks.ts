@@ -33,7 +33,7 @@ export const useSyncChecks = () => {
         new Date(updated_at) <= new Date(syncedRecord.updated_at || '');
       return {isSynced};
     } catch (e) {
-      return {isSynced: true};
+      return {isSynced: false};
     }
   };
 
