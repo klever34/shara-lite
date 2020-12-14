@@ -817,12 +817,13 @@ jobs:
             FIREBASE_APP_ID_ANDROID: <<parameters.firebaseAppId>>
             FIREBASE_APP_DIST_GROUP: <<parameters.testersGroup>>
             GOOGLE_PROJECT_ID: shara-dev
-            SENTRY_PROJECT: <<parameters.sentryProject>>
       - unless:
           condition: <<parameters.testBuild>>
           steps:
             - run:
                 name: Sentry Release Integration
+                environment:
+                  SENTRY_PROJECT: <<parameters.sentryProject>>
                 command: |
                   cd <<parameters.app>>
                   curl -sL https://sentry.io/get-cli/ | bash
