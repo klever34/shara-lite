@@ -25,6 +25,7 @@ import {
   CustomerEntryScreen,
   CustomerEntryScreenParams,
 } from './customers/CustomerEntryScreen';
+import ReferralScreen from './more/referral';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -40,6 +41,7 @@ export type MainStackParamList = {
   // More
   UserProfileSettings: undefined;
   BusinessSettings: undefined;
+  Referral: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -126,6 +128,11 @@ const MainScreens = () => {
       <MainStack.Screen
         name="UserProfileSettings"
         component={UserProfileSettings}
+        options={{headerShown: false}}
+      />
+      <MainStack.Screen
+        name="Referral"
+        component={ReferralScreen}
         options={{headerShown: false}}
       />
 

@@ -159,8 +159,7 @@ export const MoreOptionsScreen = withModal(
         Alert.alert('Warning', message, [
           {
             text: 'No',
-            onPress: () => {
-            },
+            onPress: () => {},
           },
           {
             text: 'Yes',
