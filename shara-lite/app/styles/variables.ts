@@ -25,6 +25,7 @@ export const colors: {[key: string]: string} = {
   'gray-300': '#363636',
   'gray-900': '#1A202C',
   green: '#20C720',
+  'green-100': '#0EC99C',
   'green-200': '#25A36E',
   black: '#222222',
   whatsapp: '#1BA058',

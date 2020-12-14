@@ -5,14 +5,14 @@ import {
   PhoneNumber,
 } from '@/components';
 import {Page} from '@/components/Page';
-import {showToast} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useContext, useMemo} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert} from 'react-native';
+import {ToastContext} from '@/components/Toast';
 
 export const BusinessSettings = () => {
   const handleError = useErrorHandler();
@@ -32,6 +32,7 @@ export const BusinessSettings = () => {
     profile_image,
   } = businessInfo;
   callingCode = country_code ?? callingCode;
+  const {showSuccessToast} = useContext(ToastContext);
 
   const formFields = useMemo(() => {
     const fields: FormFields<keyof Omit<BusinessFormPayload, 'countryCode'>> = {
@@ -72,7 +73,7 @@ export const BusinessSettings = () => {
         },
         validations: [
           (fieldName, values) => {
-            if (values[fieldName].match(/[^a-z-]/)) {
+            if (values[fieldName].match(/[^a-z-0-9]/)) {
               return 'Payment link should contain only lowercase and dash';
             }
             return null;
@@ -114,15 +115,15 @@ export const BusinessSettings = () => {
           ? await apiService.businessSetupUpdate(payload, id)
           : await apiService.businessSetup(payload);
         getAnalyticsService()
-          .logEvent('businessSetupComplete')
+          .logEvent('businessSetupComplete', {})
           .catch(handleError);
-        showToast({message: 'Business settings update successful'});
+        showSuccessToast('Business settings update successful');
         navigation.goBack();
       } catch (error) {
         Alert.alert('Error', error.message);
       }
     },
-    [user, apiService, navigation, id, handleError],
+    [user, apiService, navigation, id, handleError, showSuccessToast],
   );
 
   return (
@@ -131,6 +132,7 @@ export const BusinessSettings = () => {
       style={applyStyles('bg-white')}>
       <>
         <FormBuilder
+          forceUseFormButton
           fields={formFields}
           submitBtn={{title: 'Save'}}
           onSubmit={handleSubmit}

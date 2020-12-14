@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {AuthView, FormBuilder, FormFields, required} from '@/components';
 import {getApiService} from '@/services';
 import {ToastAndroid} from 'react-native';
@@ -7,11 +7,14 @@ import {useRoute, RouteProp} from '@react-navigation/native';
 import {AuthStackParamList} from '@/screens/auth/index';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
+import {ToastContext} from '@/components/Toast';
 
 const ResetPassword = () => {
   const handleError = useErrorHandler();
   const navigation = useAppNavigation();
   const {params} = useRoute<RouteProp<AuthStackParamList, 'ResetPassword'>>();
+
+  const {showSuccessToast} = useContext(ToastContext);
 
   type FormFieldName = 'otp' | 'password' | 'repeat_password';
 
@@ -54,7 +57,7 @@ const ResetPassword = () => {
               password: values?.password,
             })
             .then(({message}) => {
-              ToastAndroid.show(message, ToastAndroid.LONG);
+              showSuccessToast(message, ToastAndroid.LONG);
               navigation.goBack();
             })
             .catch(handleError);

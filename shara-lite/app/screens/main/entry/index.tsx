@@ -8,6 +8,7 @@ import {SelectCustomerListItem} from '@/screens/main/entry/SelectCustomerScreen'
 import {getAnalyticsService} from '@/services';
 import {applyStyles} from '@/styles';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {getContactService} from '@/services';
 
 export const TransactionEntryScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
@@ -17,8 +18,17 @@ export const TransactionEntryScreen = withModal(
 
     const handleYouGave = useCallback(
       ({amount, note, reset}) => {
-        navigation.navigate('SelectCustomerList', {
-          onSelectCustomer: (customer: SelectCustomerListItem) => {
+        getContactService()
+          .selectContactPhone()
+          .then((selection) => {
+            if (!selection) {
+              return;
+            }
+            const {contact, selectedPhone} = selection;
+            const customer: SelectCustomerListItem = {
+              name: contact.name,
+              mobile: selectedPhone.number,
+            };
             const closeLoadingModal = openModal('loading', {
               text: 'Adding Transaction...',
             });
@@ -61,8 +71,7 @@ export const TransactionEntryScreen = withModal(
               })
               .catch(handleError)
               .finally(closeLoadingModal);
-          },
-        });
+          });
       },
       [navigation, openModal, youGave],
     );

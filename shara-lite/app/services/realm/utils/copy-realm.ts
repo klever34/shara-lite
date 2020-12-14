@@ -35,6 +35,7 @@ const copyObject = ({
         saveLastLocalSync({
           model: objSchema.name,
           date: copy.updated_at,
+          _id: copy._id,
         }).then(() => {});
       }
     } catch (e) {

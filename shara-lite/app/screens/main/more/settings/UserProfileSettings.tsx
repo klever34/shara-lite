@@ -1,8 +1,8 @@
-import {FormBuilder, FormFields, Button, PhoneNumber} from '@/components';
+import {FormBuilder, FormFields, PhoneNumber} from '@/components';
 import {getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useContext, useMemo, useRef} from 'react';
+import React, {useContext, useMemo} from 'react';
 import {Alert} from 'react-native';
 import {Page} from '@/components/Page';
 import parsePhoneNumber from 'libphonenumber-js';
@@ -65,38 +65,28 @@ export const UserProfileSettings = () => {
     return fields;
   }, [country_code, email, firstname, lastname, mobile]);
 
-  const formValuesRef = useRef<
-    Omit<UserProfileFormPayload, 'referrer_code' | 'device_id'>
-  >();
-
-  const handleSubmit = useCallback(async () => {
-    const {current: formValues} = formValuesRef;
-    if (!formValues) {
-      return;
-    }
-    try {
-      await apiService.userProfileUpdate(formValues);
-      showSuccessToast('User profile updated successfully');
-      navigation.goBack();
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    }
-  }, [apiService, navigation, showSuccessToast]);
-
   return (
     <Page
       header={{title: 'Profile Settings', iconLeft: {}}}
-      footer={<Button title={'Save'} onPress={handleSubmit} />}
       style={applyStyles('bg-white')}>
       <FormBuilder
+        forceUseFormButton
         fields={formFields}
-        onInputChange={(values) => {
+        submitBtn={{title: 'Save'}}
+        onSubmit={async (values) => {
           const phoneNumber = values.mobile as PhoneNumber;
-          formValuesRef.current = {
+          const formValues = {
             ...values,
             mobile: phoneNumber.number,
             country_code: phoneNumber.callingCode,
           };
+          try {
+            await apiService.userProfileUpdate(formValues);
+            showSuccessToast('User profile updated successfully');
+            navigation.goBack();
+          } catch (error) {
+            Alert.alert('Error', error.message);
+          }
         }}
       />
     </Page>

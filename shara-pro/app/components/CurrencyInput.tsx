@@ -1,5 +1,5 @@
 import {applyStyles} from '@/styles';
-import {isNumber} from 'lodash';
+import {isFinite} from 'lodash';
 import React, {forwardRef, useCallback, useEffect, useState} from 'react';
 import {Text, TextInput, TextStyle} from 'react-native';
 import {getAuthService} from '../services';
@@ -37,13 +37,13 @@ export const CurrencyInput = forwardRef<TextInput, CurrencyInputProps>(
     const {value: valueProp, onChangeText, iconStyle, style, ...rest} = props;
 
     const [value, setValue] = useState(
-      isNumber(valueProp) ? valueProp?.toString() : '',
+      isFinite(valueProp) ? valueProp?.toString() : '',
     );
 
     const inputPaddingLeft = currency.length > 1 ? 'pl-48' : 'pl-32';
 
     useEffect(() => {
-      if (valueProp) {
+      if (valueProp !== undefined && isFinite(valueProp)) {
         setValue(toThousandString(valueProp.toString()));
       } else {
         setValue('');
@@ -52,7 +52,7 @@ export const CurrencyInput = forwardRef<TextInput, CurrencyInputProps>(
 
     const handleChange = useCallback(
       (text) => {
-        if (text) {
+        if (text && isFinite(toNumber(text))) {
           const stringValue = toThousandString(text);
           setValue(stringValue);
           onChangeText && onChangeText(stringValue);

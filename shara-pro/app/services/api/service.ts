@@ -5,6 +5,7 @@ import queryString from 'query-string';
 import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 import perf from '@react-native-firebase/perf';
+import {ObjectId} from 'bson';
 import {
   ApiResponse,
   Business,
@@ -12,6 +13,7 @@ import {
   GroupChatMember,
   User,
 } from 'types/app';
+import {BaseModelInterface} from '@/models/baseSchema';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -56,12 +58,19 @@ export interface IApiService {
   }): Promise<ApiResponse>;
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
+
   forgotPassword(payload: {mobile: string}): Promise<ApiResponse>;
+
   resetPassword(payload: {
     mobile: string;
     otp: string;
     password: string;
   }): Promise<ApiResponse>;
+
+  getSyncedRecord(params: {
+    model: string;
+    _id: ObjectId;
+  }): Promise<BaseModelInterface | null>;
 
   createOneOnOneChannel(mobile: string): Promise<string>;
 
@@ -311,6 +320,19 @@ export class ApiService implements IApiService {
     }
   }
 
+  async getSyncedRecord({model, _id}: {model: string; _id: ObjectId}) {
+    try {
+      const {
+        data: {record},
+      } = await this.requester.get<{
+        paymentProviders: BaseModelInterface | null;
+      }>('/sync/record', {model, _id});
+      return record;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   public async createOneOnOneChannel(recipient: string) {
     try {
       const {
@@ -466,6 +488,7 @@ export class ApiService implements IApiService {
       throw error;
     }
   }
+
   async userProfileUpdate(payload: UserProfileFormPayload) {
     try {
       const fetchResponse = await this.requester.patch('/users/me', payload);
