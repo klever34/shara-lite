@@ -107,6 +107,13 @@ export const MoreOptionsScreen = withModal(
           onPress: onEditBusinessSettings,
         },
         {
+          title: 'Referral',
+          icon: 'users',
+          onPress: () => {
+            navigation.navigate('Referral');
+          },
+        },
+        {
           title: 'Help & Support',
           icon: 'help-circle',
           onPress: () => {
