@@ -5,7 +5,9 @@ import Config from 'react-native-config';
 import RNUxcam from 'react-native-ux-cam';
 import {castObjectValuesToString} from '@/helpers/utils';
 import getFirebaseAnalytics from '@react-native-firebase/analytics';
+import getFirebaseCrashlytics from '@react-native-firebase/crashlytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
+import * as Sentry from '@sentry/react-native';
 
 export type SharaAppEventsProperties = {
   // Chat
@@ -55,6 +57,11 @@ export type SharaAppEventsProperties = {
   //Sync
   syncStarted: {};
   syncCompleted: {};
+  //Payment
+  paymentOptionAdded: {};
+  paymentOptionEdited: {};
+  previewPaymentInfo: {};
+  paymentOptionRemoved: {};
 };
 
 export interface IAnalyticsService {
@@ -71,6 +78,7 @@ export interface IAnalyticsService {
 
 export class AnalyticsService implements IAnalyticsService {
   private firebaseAnalytics = getFirebaseAnalytics();
+  private firebaseCrashlytics = getFirebaseCrashlytics();
   async initialize(): Promise<void> {
     try {
       if (
@@ -81,9 +89,12 @@ export class AnalyticsService implements IAnalyticsService {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
-        RNUxcam.optIntoSchematicRecordings();
-        RNUxcam.setAutomaticScreenNameTagging(false);
-        RNUxcam.startWithKey(Config.UXCAM_KEY);
+        // TODO: Uncomment the below line when UXCAM is upgraded
+        /*
+          RNUxcam.optIntoSchematicRecordings();
+          RNUxcam.setAutomaticScreenNameTagging(false);
+          RNUxcam.startWithKey(Config.UXCAM_KEY);
+        */
       }
     } catch (e) {
       throw e;
@@ -97,6 +108,7 @@ export class AnalyticsService implements IAnalyticsService {
         'lastname',
         'id',
         'country_code',
+        'mobile',
         'currency_code',
         'referrer_code',
       ];
@@ -112,6 +124,7 @@ export class AnalyticsService implements IAnalyticsService {
       userData.environment = Config.ENVIRONMENT;
       userData.businessName = user.businesses?.[0]?.name ?? '';
       userData.referralCode = user.referrer_code ?? '';
+      userData.app = 'shara-lite';
       const alias =
         user.firstname && user.lastname
           ? `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim()
@@ -128,11 +141,15 @@ export class AnalyticsService implements IAnalyticsService {
 
       await this.firebaseAnalytics.setUserId(String(user.id));
       await this.firebaseAnalytics.setUserProperties(userData);
+
+      await this.firebaseCrashlytics.setUserId(String(user.id));
+      await this.firebaseCrashlytics.setAttributes(userData);
+
+      Sentry.setUser(userData);
     } catch (e) {
       throw e;
     }
   }
-
   async logEvent<K extends keyof SharaAppEventsProperties>(
     eventName: K,
     eventData: SharaAppEventsProperties[K],

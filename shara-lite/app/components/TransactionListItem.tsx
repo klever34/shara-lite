@@ -49,7 +49,7 @@ const TransactionListItem = ({
         style={applyStyles('p-16 bg-gray-10 justify-center', {
           width: '30%',
         })}>
-        {!transaction.isPaid && (
+        {transaction.isYouGave && (
           <Text
             style={applyStyles('text-xs text-700 text-red-200 text-uppercase')}>
             {amountWithCurrency(transaction.credit_amount)}
@@ -62,7 +62,7 @@ const TransactionListItem = ({
           borderTopRightRadius: 8,
           borderBottomRightRadius: 8,
         })}>
-        {!!transaction.isPaid && (
+        {transaction.isYouGot && (
           <Text
             style={applyStyles(
               'text-xs text-700 text-green-200 text-uppercase',

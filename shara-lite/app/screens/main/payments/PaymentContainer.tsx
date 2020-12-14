@@ -1,30 +1,25 @@
-import {AppInput, Button, SecureEmblem} from '@/components';
+import {Button, Header, SecureEmblem} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IPaymentOption} from '@/models/PaymentOption';
-import {getApiService, getAuthService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getStorageService,
+} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
-import {Picker} from '@react-native-community/picker';
-import {Formik} from 'formik';
 import {omit} from 'lodash';
-import React, {useCallback, useEffect, useState} from 'react';
-import {
-  Alert,
-  FlatList,
-  Image,
-  ScrollView,
-  Text,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from 'react-native';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {Alert, FlatList, Image, ScrollView, Text, View} from 'react-native';
 import {PaymentProvider} from 'types/app';
-import Clipboard from '@react-native-community/clipboard';
-import {showToast} from '@/helpers/utils';
+import {ToastContext} from '@/components/Toast';
+import {PaymentForm} from './PaymentForm';
+import {PaymentPreviewItem} from './PaymentPreviewItem';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -44,14 +39,9 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
+  const [user, setUser] = useState(getAuthService().getUser());
 
-  const copyToClipboard = (option: IPaymentOption) => {
-    const value = `${option.name}\n${option?.fieldsData?.map(
-      (field) => `${field.label}: ${field.value}`,
-    )}`;
-    Clipboard.setString(value);
-    ToastAndroid.show('Copied', ToastAndroid.LONG);
-  };
+  const {showSuccessToast} = useContext(ToastContext);
 
   const getMobileNumber = useCallback(() => {
     const code = business.country_code || callingCode;
@@ -70,13 +60,16 @@ function PaymentContainer(props: ModalWrapperFields) {
       ) {
         setIsSaving(true);
         await savePaymentOption({paymentOption: values});
-        showToast({message: 'PAYMENT OPTION ADDED'});
+        getAnalyticsService()
+          .logEvent('paymentOptionAdded', {})
+          .then(() => {});
+        showSuccessToast('PAYMENT OPTION ADDED');
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
-    [savePaymentOption],
+    [savePaymentOption, showSuccessToast],
   );
 
   const handleEditItem = useCallback(
@@ -89,23 +82,29 @@ function PaymentContainer(props: ModalWrapperFields) {
         delete updates.fields;
         setIsSaving(true);
         await updatePaymentOption({paymentOption, updates});
-        showToast({message: 'PAYMENT OPTION EDITED'});
+        getAnalyticsService()
+          .logEvent('paymentOptionEdited', {})
+          .then(() => {});
+        showSuccessToast('PAYMENT OPTION EDITED');
         setIsSaving(false);
       } else {
         Alert.alert('Warning', 'Please fill all the fields in the form');
       }
     },
-    [updatePaymentOption],
+    [updatePaymentOption, showSuccessToast],
   );
 
   const handleRemoveItem = useCallback(
     async (values) => {
       setIsDeleting(true);
       await deletePaymentOption({paymentOption: values});
-      showToast({message: 'PAYMENT OPTION REMOVED'});
+      getAnalyticsService()
+        .logEvent('paymentOptionRemoved', {})
+        .then(() => {});
+      showSuccessToast('PAYMENT OPTION REMOVED');
       setIsDeleting(false);
     },
-    [deletePaymentOption],
+    [deletePaymentOption, showSuccessToast],
   );
 
   const handleOpenAddItemModal = useCallback(() => {
@@ -118,81 +117,32 @@ function PaymentContainer(props: ModalWrapperFields) {
             )}>
             add Payment info
           </Text>
-          <Formik<IPaymentOption>
-            onSubmit={onFormSubmit}
-            initialValues={{slug: '', name: '', fieldsData: []}}>
-            {({values, setFieldValue, handleSubmit}) => (
-              <View style={applyStyles('px-16 py-24')}>
-                <Picker
-                  mode="dropdown"
-                  prompt="Select a payment method"
-                  selectedValue={values.slug}
-                  onValueChange={(itemValue) => {
-                    setFieldValue('slug', itemValue);
-                    const selectedProvider = paymentProviders.find(
-                      (item) => item.slug === itemValue,
-                    );
-                    const name = selectedProvider?.name;
-                    const fields = selectedProvider?.fields;
-
-                    setFieldValue('name', name);
-                    setFieldValue('fieldsData', fields);
+          <PaymentForm
+            onFormSubmit={onFormSubmit}
+            paymentProviders={paymentProviders}
+            renderButtons={(handleSubmit) => (
+              <View
+                style={applyStyles(
+                  'pt-24 flex-row items-center justify-between',
+                )}>
+                <Button
+                  title="Cancel"
+                  onPress={closeModal}
+                  variantColor="transparent"
+                  style={applyStyles({width: '48%'})}
+                />
+                <Button
+                  title="Save"
+                  isLoading={isSaving}
+                  style={applyStyles({width: '48%'})}
+                  onPress={() => {
+                    handleSubmit();
+                    closeModal();
                   }}
-                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                  <Picker.Item label="Select a payment method" value="" />
-                  {paymentProviders.map((provider) => (
-                    <Picker.Item
-                      key={provider.slug}
-                      label={provider.name}
-                      value={provider.slug}
-                    />
-                  ))}
-                </Picker>
-                {values?.fieldsData?.map((field, index) => (
-                  <AppInput
-                    key={field.key}
-                    label={field.label}
-                    style={applyStyles('mb-24')}
-                    value={
-                      values?.fieldsData ? values?.fieldsData[index]?.value : ''
-                    }
-                    onChangeText={(text: string) => {
-                      const updatedFieldsData = values?.fieldsData?.map(
-                        (item) => {
-                          if (item.key === field.key) {
-                            return {...item, value: text};
-                          }
-                          return item;
-                        },
-                      );
-                      setFieldValue('fieldsData', updatedFieldsData);
-                    }}
-                  />
-                ))}
-
-                <View
-                  style={applyStyles(
-                    'pt-24 flex-row items-center justify-between',
-                  )}>
-                  <Button
-                    title="Cancel"
-                    onPress={closeModal}
-                    variantColor="transparent"
-                    style={applyStyles({width: '48%'})}
-                  />
-                  <Button
-                    title="Save"
-                    isLoading={isSaving}
-                    style={applyStyles({width: '48%'})}
-                    onPress={() => {
-                      handleSubmit();
-                      closeModal();
-                    }}
-                  />
-                </View>
+                />
               </View>
             )}
-          </Formik>
+          />
         </>
       ),
     });
@@ -210,83 +160,68 @@ function PaymentContainer(props: ModalWrapperFields) {
               )}>
               edit Payment info
             </Text>
-            <Formik<IPaymentOption>
+            <PaymentForm
+              hidePicker={true}
+              paymentProviders={paymentProviders}
+              onFormSubmit={(values) => handleEditItem(item, values)}
               initialValues={{
                 ...initialValues,
                 fieldsData: initialValues.fields
                   ? JSON.parse(initialValues.fields)
                   : [],
               }}
-              onSubmit={(values) => handleEditItem(item, values)}>
-              {({values, setFieldValue, handleSubmit}) => {
-                return (
-                  <View style={applyStyles('px-16 py-24')}>
-                    {values?.fieldsData?.map((field, index) => (
-                      <AppInput
-                        key={field.key}
-                        label={field.label}
-                        style={applyStyles('mb-24')}
-                        value={
-                          values?.fieldsData
-                            ? values?.fieldsData[index]?.value
-                            : ''
-                        }
-                        onChangeText={(text: string) => {
-                          const updatedFieldsData = values?.fieldsData?.map(
-                            (fieldData) => {
-                              if (fieldData.key === field.key) {
-                                return {...fieldData, value: text};
-                              }
-                              return fieldData;
-                            },
-                          );
-                          setFieldValue('fieldsData', updatedFieldsData);
-                        }}
-                      />
-                    ))}
-
-                    <View
-                      style={applyStyles(
-                        'pt-24 flex-row items-center justify-between',
-                      )}>
-                      <Button
-                        title="Remove"
-                        isLoading={isDeleting}
-                        style={applyStyles({width: '48%'})}
-                        onPress={() => {
-                          handleRemoveItem(item);
-                          closeModal();
-                        }}
-                        variantColor="transparent"
-                      />
-                      <Button
-                        title="Save"
-                        isLoading={isSaving}
-                        style={applyStyles({width: '48%'})}
-                        onPress={() => {
-                          handleSubmit();
-                          closeModal();
-                        }}
-                      />
-                    </View>
-                  </View>
-                );
-              }}
-            </Formik>
+              renderButtons={(handleSubmit) => (
+                <View
+                  style={applyStyles(
+                    'pt-24 flex-row items-center justify-between',
+                  )}>
+                  <Button
+                    title="Remove"
+                    isLoading={isDeleting}
+                    style={applyStyles({width: '48%'})}
+                    onPress={() => {
+                      handleRemoveItem(item);
+                      closeModal();
+                    }}
+                    variantColor="transparent"
+                  />
+                  <Button
+                    title="Save"
+                    isLoading={isSaving}
+                    style={applyStyles({width: '48%'})}
+                    onPress={() => {
+                      handleSubmit();
+                      closeModal();
+                    }}
+                  />
+                </View>
+              )}
+            />
           </>
         ),
       });
     },
-    [openModal, isSaving, isDeleting, handleEditItem, handleRemoveItem],
+    [
+      openModal,
+      isSaving,
+      isDeleting,
+      handleEditItem,
+      handleRemoveItem,
+      paymentProviders,
+    ],
   );
 
   const handleOpenPreviewModal = useCallback(() => {
-    openModal('full', {
+    getAnalyticsService()
+      .logEvent('previewPaymentInfo', {})
+      .then(() => {});
+    const closePreviewModal = openModal('full', {
       renderContent: () => (
-        <ScrollView
-          persistentScrollbar
-          keyboardShouldPersistTaps="always"
-          style={applyStyles('bg-white flex-1')}>
+        <>
+          <Header
+            title="Your Payment Page Preview"
+            iconLeft={{iconName: 'x', onPress: closePreviewModal}}
+          />
           <View style={applyStyles('flex-1 bg-gray-10 px-16 h-screen')}>
             <View style={applyStyles('flex-row justify-between items-center')}>
               <Image
@@ -296,98 +231,65 @@ function PaymentContainer(props: ModalWrapperFields) {
               />
               <SecureEmblem style={applyStyles({width: 48, height: 48})} />
             </View>
-            <View style={applyStyles('bg-white rounded-16 p-16 mb-24')}>
-              <View style={applyStyles('flex-row items-center')}>
-                <View style={applyStyles('w-80 h-80')}>
-                  {business.profile_image && (
-                    <Image
-                      style={applyStyles('w-full h-full rounded-lg')}
-                      source={{
-                        uri: business.profile_image.url,
-                      }}
-                    />
-                  )}
-                </View>
-                <View style={applyStyles('flex-1 px-12')}>
-                  <Text
-                    style={applyStyles(
-                      'text-700 uppercase leading-16 text-gray-300 mb-4',
-                    )}>
-                    {business.name}
-                  </Text>
-                  <Text
-                    style={applyStyles(
-                      'text-400 text-sm leading-16 text-gray-300 mb-4',
-                    )}>
-                    {business.address}
-                  </Text>
-                  {!!business.mobile && (
+            <ScrollView
+              persistentScrollbar
+              keyboardShouldPersistTaps="always"
+              style={applyStyles('bg-white rounded-16 flex-1')}>
+              <View style={applyStyles('bg-white rounded-16 p-16')}>
+                <View style={applyStyles('flex-row items-center')}>
+                  <View style={applyStyles('w-80 h-80')}>
+                    {business.profile_image && (
+                      <Image
+                        style={applyStyles('w-full h-full rounded-lg')}
+                        source={{
+                          uri: business.profile_image.url,
+                        }}
+                      />
+                    )}
+                  </View>
+                  <View style={applyStyles('flex-1 px-12')}>
                     <Text
                       style={applyStyles(
-                        'text-400 text-sm leading-16  text-gray-300 mb-4',
-                        {
-                          color: colors['gray-300'],
-                        },
+                        'text-700 uppercase leading-16 text-gray-300 mb-4',
                       )}>
-                      Tel: {getMobileNumber()}
+                      {business.name}
                     </Text>
-                  )}
-                </View>
-              </View>
-
-              <View>
-                <Text
-                  style={applyStyles(
-                    'text-gray-300 text-700 text-center py-24',
-                  )}>
-                  You can pay me via
-                </Text>
-                {paymentOptions.map((item, index) => (
-                  <View
-                    key={`${index}`}
-                    style={applyStyles(
-                      'flex-row items-center py-8 bg-white justify-between',
-                      {
-                        borderTopColor: colors['gray-10'],
-                        borderTopWidth: 1,
-                        borderBottomColor: colors['gray-10'],
-                        borderBottomWidth: 1,
-                      },
-                    )}>
-                    <View style={applyStyles('py-8 flex-1')}>
+                    <Text
+                      style={applyStyles(
+                        'text-400 text-sm leading-16 text-gray-300 mb-4',
+                      )}>
+                      {business.address}
+                    </Text>
+                    {!!business.mobile && (
                       <Text
                         style={applyStyles(
-                          'pb-4 text-gray-200 text-uppercase text-xs',
+                          'text-400 text-sm leading-16 text-gray-300 mb-4',
+                          {
+                            color: colors['gray-300'],
+                          },
                         )}>
-                        {item.name}
+                        Tel: {getMobileNumber()}
                       </Text>
-                      {item?.fieldsData?.map((i) => (
-                        <Text
-                          key={i.key}
-                          style={applyStyles('text-gray-300 text-400 text-lg')}>
-                          {i.value}
-                        </Text>
-                      ))}
-                    </View>
-                    <View>
-                      <TouchableOpacity onPress={() => copyToClipboard(item)}>
-                        <View
-                          style={applyStyles(
-                            'px-10 py-8 bg-gray-20 rounded-4 p-8',
-                          )}>
-                          <Text
-                            style={applyStyles(
-                              'text-uppercase text-400 text-gray-300 text-xs',
-                            )}>
-                            Copy number
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </View>
+                    )}
                   </View>
-                ))}
+                </View>
+
+                <View>
+                  <Text
+                    style={applyStyles(
+                      'text-gray-300 text-700 text-center py-24',
+                    )}>
+                    You can pay me via
+                  </Text>
+                  {paymentOptions.map((item, index) => (
+                    <PaymentPreviewItem
+                      item={item}
+                      key={`${item.name}-${index}`}
+                    />
+                  ))}
+                </View>
               </View>
-            </View>
+            </ScrollView>
           </View>
           <View style={applyStyles('items-center py-32 bg-gray-10')}>
             <Text style={applyStyles('text-center text-gray-100 text-sm')}>
@@ -397,7 +299,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               www.shara.co
             </Text>
           </View>
-        </ScrollView>
+        </>
       ),
     });
   }, [
@@ -411,15 +313,26 @@ function PaymentContainer(props: ModalWrapperFields) {
   ]);
 
   const fectchPaymentProviders = useCallback(async () => {
-    const providers = await apiService.getPaymentProviders({
-      country_code: business.country_code,
-    });
-    setPaymentProviders(providers);
-  }, [apiService, business]);
+    const savedProviders = (await getStorageService().getItem(
+      'providers',
+    )) as PaymentProvider[];
+
+    try {
+      const country_code = business.country_code || user?.country_code;
+      const providers = await apiService.getPaymentProviders({
+        country_code,
+      });
+      await getStorageService().setItem('providers', JSON.stringify(providers));
+      setPaymentProviders(providers);
+    } catch (error) {
+      setPaymentProviders(savedProviders ?? []);
+    }
+  }, [apiService, business, user]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
       setBusiness(getAuthService().getBusinessInfo());
+      setUser(getAuthService().getUser());
     });
   }, [navigation]);
 
@@ -433,7 +346,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       keyboardShouldPersistTaps="always"
       style={applyStyles('py-24 bg-white flex-1')}>
       {paymentOptions.length === 0 ? (
-        <View style={applyStyles('px-16 flex-1')}>
+        <View style={applyStyles('flex-1')}>
           <View style={applyStyles('center pb-32')}>
             <SecureEmblem />
             <Text
@@ -444,69 +357,20 @@ function PaymentContainer(props: ModalWrapperFields) {
               can know how to pay you.
             </Text>
           </View>
-          <Formik<IPaymentOption>
-            onSubmit={onFormSubmit}
-            initialValues={{slug: '', name: '', fieldsData: []}}>
-            {({values, setFieldValue, handleSubmit}) => (
-              <>
-                <Picker
-                  mode="dropdown"
-                  prompt="Select a payment method"
-                  selectedValue={values.slug}
-                  onValueChange={(itemValue) => {
-                    setFieldValue('slug', itemValue);
-                    const selectedProvider = paymentProviders.find(
-                      (item) => item.slug === itemValue,
-                    );
-                    const name = selectedProvider?.name;
-                    const fields = selectedProvider?.fields;
-
-                    setFieldValue('name', name);
-                    setFieldValue('fieldsData', fields);
-                  }}
-                  style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                  <Picker.Item label="Select a payment method" value="" />
-                  {paymentProviders.map((provider) => (
-                    <Picker.Item
-                      key={provider.slug}
-                      label={provider.name}
-                      value={provider.slug}
-                    />
-                  ))}
-                </Picker>
-                {values?.fieldsData?.map((field, index) => (
-                  <AppInput
-                    key={field.key}
-                    label={field.label}
-                    style={applyStyles('mb-24')}
-                    value={
-                      values?.fieldsData ? values?.fieldsData[index]?.value : ''
-                    }
-                    onChangeText={(text: string) => {
-                      const updatedFieldsData = values?.fieldsData?.map(
-                        (item) => {
-                          if (item.key === field.key) {
-                            return {...item, value: text};
-                          }
-                          return item;
-                        },
-                      );
-                      setFieldValue('fieldsData', updatedFieldsData);
-                    }}
-                  />
-                ))}
-
-                <View style={applyStyles('pt-24', {paddingBottom: 300})}>
-                  <Button
-                    title="Save"
-                    isLoading={isSaving}
-                    onPress={handleSubmit}
-                    disabled={!values.slug}
-                  />
-                </View>
-              </>
+          <PaymentForm
+            onFormSubmit={onFormSubmit}
+            paymentProviders={paymentProviders}
+            renderButtons={(handleSubmit, values) => (
+              <View style={applyStyles('pt-24', {paddingBottom: 300})}>
+                <Button
+                  title="Save"
+                  isLoading={isSaving}
+                  onPress={handleSubmit}
+                  disabled={!values?.slug}
+                />
+              </View>
             )}
-          </Formik>
+          />
         </View>
       ) : (
         <View>

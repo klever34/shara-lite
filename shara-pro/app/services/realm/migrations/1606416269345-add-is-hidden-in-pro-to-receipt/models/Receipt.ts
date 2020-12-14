@@ -1,8 +1,13 @@
-import {ICustomer} from './Customer';
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IPayment} from './Payment';
-import {IReceiptItem} from './ReceiptItem';
-import {ICredit} from './Credit';
+import {IPayment} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
+import {ICredit} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
+
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IReceiptItem} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/ReceiptItem';
+import {ICustomer} from '@/services/realm/migrations/1599826529206-customer-address/models/Customer';
 
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;
@@ -28,8 +33,6 @@ export interface IReceipt extends BaseModelInterface {
   hasCustomer?: boolean;
   dueDate?: Date;
   isPending?: boolean;
-  isYouGot?: boolean;
-  isYouGave?: boolean;
 }
 
 export const modelName = 'Receipt';
@@ -94,13 +97,5 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
 
   public get isPaid() {
     return !this.credits?.filter((credit) => !credit.fulfilled).length;
-  }
-
-  public get isYouGave() {
-    return !!(this.credits && this.credits.length);
-  }
-
-  public get isYouGot() {
-    return !this.isYouGave;
   }
 }
