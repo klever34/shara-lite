@@ -195,6 +195,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-discovery
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: true
           versioning: true
@@ -310,6 +311,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-dev
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: true
           versioning: true
@@ -425,6 +427,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-qa
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: false
           versioning: false
@@ -538,6 +541,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-beta
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: true
           versioning: false
