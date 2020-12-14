@@ -236,43 +236,45 @@ function PaymentContainer(props: ModalWrapperFields) {
               keyboardShouldPersistTaps="always"
               style={applyStyles('bg-white rounded-16 flex-1')}>
               <View style={applyStyles('bg-white rounded-16 p-16')}>
-                <View style={applyStyles('flex-row items-center')}>
-                  <View style={applyStyles('w-80 h-80')}>
-                    {business.profile_image && (
-                      <Image
-                        style={applyStyles('w-full h-full rounded-lg')}
-                        source={{
-                          uri: business.profile_image.url,
-                        }}
-                      />
-                    )}
-                  </View>
-                  <View style={applyStyles('flex-1 px-12')}>
-                    <Text
-                      style={applyStyles(
-                        'text-700 uppercase leading-16 text-gray-300 mb-4',
-                      )}>
-                      {business.name}
-                    </Text>
-                    <Text
-                      style={applyStyles(
-                        'text-400 text-sm leading-16 text-gray-300 mb-4',
-                      )}>
-                      {business.address}
-                    </Text>
-                    {!!business.mobile && (
+                {business.name && (
+                  <View style={applyStyles('flex-row items-center')}>
+                    <View style={applyStyles('w-80 h-80')}>
+                      {business.profile_image && (
+                        <Image
+                          style={applyStyles('w-full h-full rounded-lg')}
+                          source={{
+                            uri: business.profile_image.url,
+                          }}
+                        />
+                      )}
+                    </View>
+                    <View style={applyStyles('flex-1 px-12')}>
+                      <Text
+                        style={applyStyles(
+                          'text-700 uppercase leading-16 text-gray-300 mb-4',
+                        )}>
+                        {business.name}
+                      </Text>
                       <Text
                         style={applyStyles(
                           'text-400 text-sm leading-16 text-gray-300 mb-4',
-                          {
-                            color: colors['gray-300'],
-                          },
                         )}>
-                        Tel: {getMobileNumber()}
+                        {business.address}
                       </Text>
-                    )}
+                      {!!business.mobile && (
+                        <Text
+                          style={applyStyles(
+                            'text-400 text-sm leading-16 text-gray-300 mb-4',
+                            {
+                              color: colors['gray-300'],
+                            },
+                          )}>
+                          Tel: {getMobileNumber()}
+                        </Text>
+                      )}
+                    </View>
                   </View>
-                </View>
+                )}
 
                 <View>
                   <Text

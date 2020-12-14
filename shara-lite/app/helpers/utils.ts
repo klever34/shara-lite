@@ -3,6 +3,7 @@ import {v4 as uuidV4} from 'uuid';
 import promiseRetry from 'promise-retry';
 import addDays from 'date-fns/addDays';
 import CryptoJS from 'crypto-js';
+import * as React from 'react';
 import Config from 'react-native-config';
 import {getAuthService} from '@/services';
 import {useCallback, useMemo, useState} from 'react';
@@ -161,3 +162,20 @@ export const showToast = (payload: ToastPayload) => {
     52,
   );
 };
+
+/**
+ * https://github.com/gregberge/react-merge-refs
+ */
+export default function mergeRefs<T = any>(
+  refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>,
+): React.RefCallback<T> {
+  return (value) => {
+    refs.forEach((ref) => {
+      if (typeof ref === 'function') {
+        ref(value);
+      } else if (ref != null) {
+        (ref as React.MutableRefObject<T | null>).current = value;
+      }
+    });
+  };
+}

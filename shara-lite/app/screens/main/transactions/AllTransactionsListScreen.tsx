@@ -100,6 +100,7 @@ export const AllTransactionsListScreen = () => {
         initialNumToRender={10}
         onSearch={handleReceiptSearch}
         renderListItem={renderReceiptItem}
+        onClearInput={() => handleReceiptSearch('')}
         searchPlaceholderText="Search by customer name"
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
       />
