@@ -830,7 +830,6 @@ jobs:
                   VERSION=$(jq ".version" -r package.json)
                   PACKAGE_NAME="<<parameters.packageName>>"
                   SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}+${CIRCLE_BUILD_NUM}"
-                  export SENTRY_PROJECT=${SENTRY_PROJECT}
                   echo "Sentry Version: ${SENTRY_VERSION}"
                   echo "Sentry Project: ${SENTRY_PROJECT}"
                   sentry-cli releases new "${SENTRY_VERSION}"
