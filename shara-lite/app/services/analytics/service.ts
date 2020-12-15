@@ -62,6 +62,9 @@ export type SharaAppEventsProperties = {
   paymentOptionEdited: {};
   previewPaymentInfo: {};
   paymentOptionRemoved: {};
+  paymentPreviewLabelEdited: {};
+  //Referral
+  referralCodeAdded: {};
 };
 
 export interface IAnalyticsService {
