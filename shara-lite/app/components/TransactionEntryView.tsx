@@ -5,7 +5,7 @@ import Touchable from '@/components/Touchable';
 import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
 import {useReceiptList} from '@/screens/main/transactions/AllTransactionsListScreen';
 import {getAuthService} from '@/services';
-import {applyStyles} from '@/styles';
+import {applyStyles, navBarHeight} from '@/styles';
 import React, {
   ComponentType,
   createContext,
@@ -28,6 +28,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import {dimensions} from '@/styles';
 
 const getLastToken = (tokens: string[]) => {
   return tokens[tokens.length - 1];
@@ -384,7 +385,7 @@ export const TransactionEntryView = withTransactionEntry(
     }, [keyboardDidHide, keyboardDidShow]);
 
     return (
-      <>
+      <View style={applyStyles({height: dimensions.fullHeight - navBarHeight})}>
         <View style={applyStyles('flex-1')}>
           <View
             style={applyStyles('bg-white justify-center relative', {
@@ -543,7 +544,7 @@ export const TransactionEntryView = withTransactionEntry(
           )}
         </View>
         {!showKeypad && <View style={applyStyles('flex-1')} />}
-      </>
+      </View>
     );
   },
 );

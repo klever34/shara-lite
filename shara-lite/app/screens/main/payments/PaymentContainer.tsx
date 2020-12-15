@@ -20,6 +20,8 @@ import {PaymentProvider} from 'types/app';
 import {ToastContext} from '@/components/Toast';
 import {PaymentForm} from './PaymentForm';
 import {PaymentPreviewItem} from './PaymentPreviewItem';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -343,8 +345,9 @@ function PaymentContainer(props: ModalWrapperFields) {
   }, [fectchPaymentProviders]);
 
   return (
-    <ScrollView
-      persistentScrollbar
+    <KeyboardAwareScrollView
+      nestedScrollEnabled
+      persistentScrollbar={true}
       keyboardShouldPersistTaps="always"
       style={applyStyles('py-24 bg-white flex-1')}>
       {paymentOptions.length === 0 ? (
@@ -448,7 +451,7 @@ function PaymentContainer(props: ModalWrapperFields) {
           />
         </View>
       )}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 
