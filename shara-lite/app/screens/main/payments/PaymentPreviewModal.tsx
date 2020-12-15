@@ -3,33 +3,28 @@ import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IPaymentOption} from '@/models/PaymentOption';
-import {getAnalyticsService} from '@/services';
+import {getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useState} from 'react';
 import {Image, ScrollView, Text, View} from 'react-native';
-import {Business} from 'types/app';
 import {EditPaymetPreviewLabelModal} from './EditPaymentPreviewLabelModal';
 import {PaymentPreviewItem} from './PaymentPreviewItem';
 
 type Props = {
   onClose: () => void;
-  business: Business;
   paymentOptions: IPaymentOption[];
 } & ModalWrapperFields;
 
 export const PaymentPreviewModal = withModal(
-  ({onClose, openModal, business, paymentOptions}: Props) => {
+  ({onClose, openModal, paymentOptions}: Props) => {
     const {callingCode} = useIPGeolocation();
-    const [isSaving, setIsSaving] = useState(false);
+    const [business, setBusiness] = useState(
+      getAuthService().getBusinessInfo(),
+    );
 
-    const handleSavePreviewLabel = useCallback((values) => {
-      setIsSaving(true);
-      console.log(values.label);
-      getAnalyticsService()
-        .logEvent('paymentPreviewLabelEdited', {})
-        .then(() => {});
-      setIsSaving(false);
+    const handleUpdateBusiness = useCallback((payload) => {
+      setBusiness(payload);
     }, []);
 
     const getMobileNumber = useCallback(() => {
@@ -44,13 +39,13 @@ export const PaymentPreviewModal = withModal(
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
           <EditPaymetPreviewLabelModal
-            isSaving={isSaving}
             onClose={closeModal}
-            onSubmit={handleSavePreviewLabel}
+            business={business}
+            onUpdateBusiness={handleUpdateBusiness}
           />
         ),
       });
-    }, [openModal, isSaving, handleSavePreviewLabel]);
+    }, [business, openModal, handleUpdateBusiness]);
 
     return (
       <>
@@ -117,7 +112,7 @@ export const PaymentPreviewModal = withModal(
                   <View style={applyStyles('flex-row pt-8 pb-24 center')}>
                     <Text
                       style={applyStyles('text-gray-300 text-700 text-center')}>
-                      You can pay me via
+                      {business.payment_label || 'You can pay me via'}
                     </Text>
                     <Icon
                       name="edit"

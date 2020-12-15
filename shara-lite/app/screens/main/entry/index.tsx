@@ -1,14 +1,13 @@
-import React, {useCallback} from 'react';
-import {Text} from 'react-native';
 import {TransactionEntryView} from '@/components/TransactionEntryView';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {SelectCustomerListItem} from '@/screens/main/entry/SelectCustomerScreen';
+import {getAnalyticsService, getContactService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
-import {handleError} from '@/services/error-boundary';
-import {SelectCustomerListItem} from '@/screens/main/entry/SelectCustomerScreen';
-import {getAnalyticsService} from '@/services';
 import {applyStyles} from '@/styles';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {getContactService} from '@/services';
+import React, {useCallback} from 'react';
+import {Text} from 'react-native';
 
 export const TransactionEntryScreen = withModal(
   ({openModal}: ModalWrapperFields) => {

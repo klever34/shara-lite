@@ -28,6 +28,7 @@ type Business = {
   created_at: string;
   updated_at: string;
   country_code?: string;
+  payment_label?: string;
   profile_image?: {url: string};
   signature_image?: {url: string};
 };

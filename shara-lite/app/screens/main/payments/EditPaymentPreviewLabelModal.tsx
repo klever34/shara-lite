@@ -1,23 +1,58 @@
 import {AppInput, Button} from '@/components';
+import {ToastContext} from '@/components/Toast';
+import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {applyStyles} from '@/styles';
 import {useFormik} from 'formik';
-import React from 'react';
-import {Text, View} from 'react-native';
+import React, {useCallback, useContext, useState} from 'react';
+import {Alert, Text, View} from 'react-native';
+import {Business} from 'types/app';
+import * as yup from 'yup';
 
 type Props = {
-  isSaving: boolean;
   onClose: () => void;
-  onSubmit: (label: string) => void;
+  business: Business;
+  onUpdateBusiness: (business: Business) => void;
 };
 
 export const EditPaymetPreviewLabelModal = ({
   onClose,
-  isSaving,
-  onSubmit,
+  business,
+  onUpdateBusiness,
 }: Props) => {
+  const [isSaving, setIsSaving] = useState(false);
+  const {showSuccessToast} = useContext(ToastContext);
+
+  const handleSavePreviewLabel = useCallback(
+    async (label) => {
+      try {
+        const payload = new FormData();
+        payload.append('payment_label', label);
+        setIsSaving(true);
+        await getApiService().businessSetupUpdate(payload, business.id);
+        setIsSaving(false);
+        getAnalyticsService()
+          .logEvent('paymentPreviewLabelEdited', {})
+          .then(() => {});
+        showSuccessToast('Payment Label updated');
+        onUpdateBusiness(getAuthService().getBusinessInfo());
+        onClose();
+      } catch (error) {
+        setIsSaving(false);
+        Alert.alert('Error', error.message);
+      }
+    },
+    [onClose, business.id, onUpdateBusiness, showSuccessToast],
+  );
   const {values, handleChange, handleSubmit} = useFormik({
-    onSubmit: (payload) => onSubmit(payload.label),
-    initialValues: {label: 'You can pay me via'},
+    onSubmit: (payload) => handleSavePreviewLabel(payload.label),
+    validationSchema: yup.object().shape({
+      label: yup
+        .string()
+        .max(150, 'Payment label cannot be more than 150 characters long'),
+    }),
+    initialValues: {
+      label: business.payment_label || 'You can pay me via',
+    },
   });
 
   return (
@@ -48,11 +83,8 @@ export const EditPaymetPreviewLabelModal = ({
         <Button
           title="Save"
           isLoading={isSaving}
+          onPress={handleSubmit}
           style={applyStyles({width: '48%'})}
-          onPress={() => {
-            handleSubmit();
-            onClose();
-          }}
         />
       </View>
     </View>

@@ -55,6 +55,7 @@ export interface IApiService {
     country_code: string;
     mobile: string;
     password: string;
+    device_id: string;
   }): Promise<ApiResponse>;
 
   logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
@@ -255,6 +256,7 @@ export class ApiService implements IApiService {
     country_code: string;
     mobile: string;
     password: string;
+    device_id: string;
   }) {
     try {
       const fetchResponse = await this.requester.post('/signup', payload);

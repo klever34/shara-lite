@@ -208,13 +208,12 @@ function PaymentContainer(props: ModalWrapperFields) {
     const closePreviewModal = openModal('full', {
       renderContent: () => (
         <PaymentPreviewModal
-          business={business}
           onClose={closePreviewModal}
           paymentOptions={paymentOptions}
         />
       ),
     });
-  }, [business, openModal, paymentOptions]);
+  }, [openModal, paymentOptions]);
 
   const fectchPaymentProviders = useCallback(async () => {
     const savedProviders = (await getStorageService().getItem(
