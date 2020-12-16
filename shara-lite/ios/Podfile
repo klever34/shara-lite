@@ -83,8 +83,6 @@ target 'SharaRN' do
 
   pod 'react-native-config', :path => '../node_modules/react-native-config'
 
-  pod 'react-native-signature-capture', :path => '../node_modules/react-native-signature-capture'
-
   pod 'react-native-image-picker', :path => '../node_modules/react-native-image-picker'
 
   pod 'RNFS', :path => '../node_modules/react-native-fs'
