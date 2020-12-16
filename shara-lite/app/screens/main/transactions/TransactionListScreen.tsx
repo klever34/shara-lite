@@ -16,6 +16,7 @@ import React, {
   useState,
 } from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import {TransactionListItem} from './TransactionListItem';
 
 export const useReceiptList = () => {
@@ -248,12 +249,36 @@ export const TransactionListScreen = () => {
         </>
       ) : (
         <EmptyState
+          style={applyStyles('bg-white')}
           source={require('@/assets/images/emblem.png')}
-          imageStyle={applyStyles('pb-32', {width: 80, height: 80})}
-          text={
-            'You have no records yet.\n Start adding records by tapping here'
-          }
-        />
+          imageStyle={applyStyles('pb-32', {width: 80, height: 80})}>
+          <View style={applyStyles('center')}>
+            <Text style={applyStyles('text-black text-xl pb-4')}>
+              You have no records yet.
+            </Text>
+            <Text style={applyStyles('text-black text-xl')}>
+              Start adding records by tapping here
+            </Text>
+          </View>
+          <View style={applyStyles('center p-16 w-full')}>
+            <Animatable.View
+              duration={200}
+              animation={{
+                from: {translateY: -10},
+                to: {translateY: 0},
+              }}
+              direction="alternate"
+              useNativeDriver={true}
+              iterationCount="infinite">
+              <Icon
+                size={200}
+                name="arrow-down"
+                type="feathericons"
+                color={colors.primary}
+              />
+            </Animatable.View>
+          </View>
+        </EmptyState>
       )}
     </SafeAreaView>
   );
