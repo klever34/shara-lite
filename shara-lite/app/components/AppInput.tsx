@@ -12,6 +12,8 @@ import {
 import {Icon} from './Icon';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+import Touchable from './Touchable';
+import mergeRefs from '../helpers/utils';
 
 export type AppInputProps = {
   label?: string;
@@ -50,6 +52,8 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     const withRightIconStyle = rightIcon
       ? applyStyles('pr-56')
       : applyStyles('pr-16');
+
+    const localInputRef = React.useRef<any>(null);
 
     const handleFocus = React.useCallback(
       (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
@@ -98,19 +102,24 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
                 zIndex: 10,
               })}>
               {typeof leftIcon === 'string' ? (
-                <Icon
-                  size={24}
-                  name={leftIcon}
-                  type="feathericons"
-                  color={colors['gray-50']}
-                />
+                <Touchable
+                  onPress={() => {
+                    localInputRef?.current?.focus();
+                  }}>
+                  <Icon
+                    size={24}
+                    name={leftIcon}
+                    type="feathericons"
+                    color={colors['gray-50']}
+                  />
+                </Touchable>
               ) : (
                 leftIcon
               )}
             </View>
           )}
           <TextInput
-            ref={inputRef}
+            ref={mergeRefs([localInputRef, inputRef])}
             onFocus={handleFocus}
             onBlur={handleBlur}
             style={applyStyles(
@@ -139,12 +148,17 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
                 zIndex: 10,
               })}>
               {typeof rightIcon === 'string' ? (
-                <Icon
-                  size={24}
-                  name={rightIcon}
-                  type="feathericons"
-                  color={colors['gray-50']}
-                />
+                <Touchable
+                  onPress={() => {
+                    localInputRef?.current?.focus();
+                  }}>
+                  <Icon
+                    size={24}
+                    name={rightIcon}
+                    type="feathericons"
+                    color={colors['gray-50']}
+                  />
+                </Touchable>
               ) : (
                 rightIcon
               )}

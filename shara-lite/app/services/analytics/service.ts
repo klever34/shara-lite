@@ -69,6 +69,9 @@ export type SharaAppEventsProperties = {
   userGotTransaction: {
     amount: number;
   };
+  paymentPreviewLabelEdited: {};
+  //Referral
+  referralCodeAdded: {};
 };
 
 export interface IAnalyticsService {

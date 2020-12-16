@@ -15,7 +15,7 @@ export const useReceiptList = () => {
   const receipts = getTransactions();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [allReceipts, setAllReceipts] = useState(receipts || []);
+  const [allReceipts, setAllReceipts] = useState(receipts);
 
   const handleReceiptSearch = useCallback((text) => {
     setSearchTerm(text);
@@ -34,16 +34,15 @@ export const useReceiptList = () => {
   }, [allReceipts, searchTerm]);
 
   const owedReceipts = useMemo(() => {
-    let userReceipts = (allReceipts.filter(
-      (item) => !item.isPaid,
-    ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
+    let userReceipts = (allReceipts as unknown) as Realm.Results<
+      IReceipt & Realm.Object
+    >;
     if (searchTerm) {
-      userReceipts = userReceipts.filtered(
-        `customer.name CONTAINS[c] "${searchTerm}"`,
-      );
+      userReceipts = userReceipts
+        .filtered(`customer.name CONTAINS[c] "${searchTerm}"`)
+        .sorted('created_at', true);
     }
-    return (userReceipts as unknown) as IReceipt[];
-    // return userReceipts.sorted('created_at', true);
+    return userReceipts.filter((item) => !item.isPaid);
   }, [allReceipts, searchTerm]);
 
   useEffect(() => {
@@ -100,6 +99,7 @@ export const AllTransactionsListScreen = () => {
         initialNumToRender={10}
         onSearch={handleReceiptSearch}
         renderListItem={renderReceiptItem}
+        onClearInput={() => handleReceiptSearch('')}
         searchPlaceholderText="Search by customer name"
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
       />

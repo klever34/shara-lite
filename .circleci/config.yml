@@ -45,6 +45,7 @@ workflows:
           context: shara-test
           lane: internal
           packageName: co.shara.app.test
+          sentryProject: shara-plus
           firebaseAppId: 1:23333573770:android:fcfed3f15dcb3768718973
           productFlavor: dev
           env: test
@@ -108,6 +109,7 @@ workflows:
           packageName: co.shara.lite.test
           firebaseAppId: 1:23333573770:android:3dafca5656e3c2b9718973
           productFlavor: dev
+          sentryProject: shara-lite
           env: test
           testBuild: false
           testersGroup: shara-product
@@ -155,6 +157,7 @@ workflows:
           context: shara-discovery
           lane: internal
           packageName: co.shara.app.discovery
+          sentryProject: shara-plus
           firebaseAppId: 1:23333573770:android:47b6159bc69ffadc718973
           productFlavor: discovery
           env: discovery
@@ -169,6 +172,7 @@ workflows:
           context: shara-discovery
           lane: testlab
           packageName: co.shara.app.discovery
+          sentryProject: shara-plus
           firebaseAppId: 1:23333573770:android:47b6159bc69ffadc718973
           testBuild: true
           productFlavor: discovery
@@ -191,6 +195,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-discovery
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: true
           versioning: true
@@ -215,6 +220,7 @@ workflows:
           packageName: co.shara.lite.discovery
           firebaseAppId: 1:23333573770:android:63ec23b8508f2f4b718973
           productFlavor: discovery
+          sentryProject: shara-lite
           env: discovery
           requires:
             - test
@@ -227,6 +233,7 @@ workflows:
           context: shara-discovery
           lane: testlab
           packageName: co.shara.lite.discovery
+          sentryProject: shara-lite
           firebaseAppId: 1:23333573770:android:63ec23b8508f2f4b718973
           testBuild: true
           productFlavor: discovery
@@ -267,6 +274,7 @@ workflows:
           context: shara-dev
           lane: internal
           packageName: co.shara.app.delivery
+          sentryProject: shara-plus
           firebaseAppId: 1:23333573770:android:4074d3f86936056d718973
           productFlavor: delivery
           env: delivery
@@ -282,6 +290,7 @@ workflows:
           lane: testlab
           testBuild: true
           packageName: co.shara.app.delivery
+          sentryProject: shara-plus
           firebaseAppId: 1:23333573770:android:4074d3f86936056d718973
           productFlavor: delivery
           env: delivery
@@ -302,6 +311,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-dev
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: true
           versioning: true
@@ -320,6 +330,7 @@ workflows:
           context: shara-dev
           lane: internal
           packageName: co.shara.lite.delivery
+          sentryProject: shara-lite
           firebaseAppId: 1:23333573770:android:a605073864091ebc718973
           productFlavor: delivery
           env: delivery
@@ -335,6 +346,7 @@ workflows:
           lane: testlab
           testBuild: true
           packageName: co.shara.lite.delivery
+          sentryProject: shara-lite
           firebaseAppId: 1:23333573770:android:a605073864091ebc718973
           productFlavor: delivery
           env: delivery
@@ -375,6 +387,7 @@ workflows:
           context: shara-qa
           lane: internal
           packageName: co.shara.app.qa
+          sentryProject: shara-plus
           firebaseAppId: 1:23333573770:android:071bf88f8bc1c01b718973
           productFlavor: qa
           env: qa
@@ -391,6 +404,7 @@ workflows:
           lane: testlab
           testBuild: true
           packageName: co.shara.app.qa
+          sentryProject: shara-plus
           firebaseAppId: 1:23333573770:android:071bf88f8bc1c01b718973
           productFlavor: qa
           env: qa
@@ -413,6 +427,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-qa
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: false
           versioning: false
@@ -432,6 +447,7 @@ workflows:
           context: shara-qa
           lane: internal
           packageName: co.shara.lite.qa
+          sentryProject: shara-lite
           firebaseAppId: 1:23333573770:android:ab175901eb76e572718973
           productFlavor: qa
           env: qa
@@ -448,6 +464,7 @@ workflows:
           lane: testlab
           testBuild: true
           packageName: co.shara.lite.qa
+          sentryProject: shara-lite
           firebaseAppId: 1:23333573770:android:ab175901eb76e572718973
           productFlavor: qa
           env: qa
@@ -488,6 +505,7 @@ workflows:
           lane: play
           track: beta
           packageName: co.shara.app
+          sentryProject: shara-plus
           firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
           productFlavor: production
           env: beta
@@ -502,6 +520,7 @@ workflows:
           context: shara-beta
           lane: internal
           packageName: co.shara.app
+          sentryProject: shara-plus
           firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
           productFlavor: production
           env: beta
@@ -522,6 +541,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-beta
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: true
           versioning: false
@@ -541,6 +561,7 @@ workflows:
           lane: play
           track: beta
           packageName: co.shara.lite
+          sentryProject: shara-lite
           firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
           productFlavor: production
           env: beta
@@ -555,6 +576,7 @@ workflows:
           context: shara-beta
           lane: internal
           packageName: co.shara.lite
+          sentryProject: shara-lite
           firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
           productFlavor: production
           env: beta
@@ -720,6 +742,9 @@ jobs:
       packageName:
         type: string
         default: co.shara.app.test
+      sentryProject:
+        type: string
+        default: shara-plus
       productFlavor:
         type: string
         default: dev
@@ -801,6 +826,8 @@ jobs:
           steps:
             - run:
                 name: Sentry Release Integration
+                environment:
+                  SENTRY_PROJECT: <<parameters.sentryProject>>
                 command: |
                   cd <<parameters.app>>
                   curl -sL https://sentry.io/get-cli/ | bash
@@ -808,6 +835,7 @@ jobs:
                   PACKAGE_NAME="<<parameters.packageName>>"
                   SENTRY_VERSION="${PACKAGE_NAME}@${VERSION}+${CIRCLE_BUILD_NUM}"
                   echo "Sentry Version: ${SENTRY_VERSION}"
+                  echo "Sentry Project: ${SENTRY_PROJECT}"
                   sentry-cli releases new "${SENTRY_VERSION}"
                   sentry-cli releases set-commits "${SENTRY_VERSION}" --auto
                   sentry-cli releases files "${SENTRY_VERSION}" upload-sourcemaps --bundle-sourcemap android/app/build/generated/sourcemaps/react/<<parameters.productFlavor>>/release/index.android.bundle.map --bundle android/app/build/generated/assets/react/<<parameters.productFlavor>>/release/index.android.bundle

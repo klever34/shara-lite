@@ -23,6 +23,7 @@ import {
 } from 'react-native';
 import * as yup from 'yup';
 import {useInitRealm} from '@/services/realm';
+import {getAndroidId} from 'react-native-device-info';
 
 type Fields = {
   mobile: string;
@@ -88,7 +89,8 @@ export const Register = () => {
     setLoading(true);
 
     try {
-      await apiService.register(payload);
+      const device_id = await getAndroidId();
+      await apiService.register({...payload, device_id});
       await initRealm({isNewUser: true});
 
       getAnalyticsService()

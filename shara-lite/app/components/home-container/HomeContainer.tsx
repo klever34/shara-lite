@@ -33,7 +33,7 @@ type HomeContainerProps<T> = {
   headerStyle?: ViewStyle;
   hasSections?: boolean;
   placeholderText?: string;
-  onOpenFilter?: () => void;
+  onClearInput?: () => void;
   onCreateEntity?: () => void;
   searchPlaceholderText?: string;
   createEntityButtonText?: string;
@@ -59,7 +59,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
     hasSections,
     headerTitle,
     activeFilter,
-    onOpenFilter,
+    onClearInput,
     headerAmount,
     keyExtractor,
     headerStyle,
@@ -113,7 +113,7 @@ export function HomeContainer<T>(props: HomeContainerProps<T>) {
       <SearchFilter
         value={searchTerm}
         onSearch={onSearch}
-        onOpenFilter={onOpenFilter}
+        onClearInput={onClearInput}
         placeholderText={searchPlaceholderText}
       />
       {!!data && data.length ? (
