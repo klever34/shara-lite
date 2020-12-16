@@ -1,7 +1,7 @@
 import {AppInput, Button} from '@/components';
 import {Page} from '@/components/Page';
 import {ToastContext} from '@/components/Toast';
-import {getApiService, getAuthService} from '@/services';
+import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {applyStyles} from '@/styles';
 import {useAppNavigation} from 'app-v2/services/navigation';
 import React, {useCallback, useContext, useState} from 'react';
@@ -29,6 +29,9 @@ export default function ReferralScreen() {
       };
       await apiService.userProfileUpdate(payload);
       showSuccessToast('Referral code submitted');
+      getAnalyticsService()
+        .logEvent('referralCodeAdded', {})
+        .then(() => {});
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);

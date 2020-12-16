@@ -54,6 +54,8 @@ export type SharaAppEventsProperties = {
   deliveryAgentAdded: {};
   syncStarted: {};
   syncCompleted: {};
+  //Referral
+  referralCodeAdded: {};
 };
 
 export interface IAnalyticsService {
