@@ -30,6 +30,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import * as Animatable from 'react-native-animatable';
 
 type CustomerListItem = ICustomer;
 
@@ -257,12 +258,32 @@ export const CustomerListScreen = () => {
           source={require('@/assets/images/emblem.png')}
           imageStyle={applyStyles('pb-32', {width: 80, height: 80})}>
           <View style={applyStyles('center')}>
-            <Text style={applyStyles('text-black text-xl pb-4')}>
-              You have no customers yet.
+            <Text style={applyStyles('text-black text-xl pb-4 text-center')}>
+              {searchTerm ? 'No results found' : 'You have no customers yet.'}
             </Text>
-            <Text style={applyStyles('text-black text-xl')}>
-              Start adding customers by creating a record
+            <Text style={applyStyles('text-black text-xl text-center')}>
+              {searchTerm
+                ? 'Start adding records by tapping here'
+                : 'Start adding customers by creating a record here'}
             </Text>
+          </View>
+          <View style={applyStyles('center p-16 w-full')}>
+            <Animatable.View
+              duration={200}
+              animation={{
+                from: {translateY: -10},
+                to: {translateY: 0},
+              }}
+              direction="alternate"
+              useNativeDriver={true}
+              iterationCount="infinite">
+              <Icon
+                size={200}
+                name="arrow-down"
+                type="feathericons"
+                color={colors.primary}
+              />
+            </Animatable.View>
           </View>
         </EmptyState>
       )}

@@ -261,7 +261,7 @@ export const TransactionListScreen = () => {
           imageStyle={applyStyles('pb-32', {width: 80, height: 80})}>
           <View style={applyStyles('center')}>
             <Text style={applyStyles('text-black text-xl pb-4')}>
-              You have no records yet.
+              {searchTerm ? 'No results found' : 'You have no records yet.'}
             </Text>
             <Text style={applyStyles('text-black text-xl')}>
               Start adding records by tapping here
