@@ -38,7 +38,7 @@ export const HomeScreen = () => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <MainNav.Navigator
-        initialRouteName="EntryTab"
+        initialRouteName="TransactionsTab"
         tabBarOptions={{
           labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: colors['red-200'],
@@ -53,7 +53,7 @@ export const HomeScreen = () => {
           component={TransactionsScreen}
           options={{
             tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Transactions</TabBarLabel>
+              <TabBarLabel {...labelProps}>Activities</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
               <Icon type="feathericons" name="layers" size={20} color={color} />

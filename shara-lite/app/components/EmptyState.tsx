@@ -57,7 +57,7 @@ const EmptyState = (props: EmptyStateProps) => {
       {!!text && (
         <Text
           style={applyStyles(
-            'text-400 text-sm text-gray-200 text-center',
+            'text-400 text-base text-black text-center',
             {
               maxWidth: 300,
               marginHorizontal: 'auto',

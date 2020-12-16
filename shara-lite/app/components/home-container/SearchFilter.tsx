@@ -19,7 +19,7 @@ export const SearchFilter = ({
 }: SearchFilterProps) => {
   return (
     <View
-      style={applyStyles('px-16 py-8 bg-gray-10', {
+      style={applyStyles('px-16 bg-white', {
         zIndex: 10,
       })}>
       <View>
@@ -42,9 +42,6 @@ export const SearchFilter = ({
           style={applyStyles('px-40 text-400 bg-white', {
             height: 40,
             fontSize: 16,
-            borderWidth: 1.5,
-            borderRadius: 8,
-            borderColor: colors['gray-10'],
           })}
           onChangeText={onSearch}
           placeholder={placeholderText}
