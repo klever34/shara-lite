@@ -26,6 +26,7 @@ import {
   CustomerEntryScreenParams,
 } from './customers/CustomerEntryScreen';
 import ReferralScreen from './more/referral';
+import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -37,6 +38,7 @@ export type MainStackParamList = {
 
   // Transaction
   TransactionDetails: {transaction: IReceipt};
+  LedgerEntry: {transaction: IReceipt};
 
   // More
   UserProfileSettings: undefined;
@@ -140,6 +142,13 @@ const MainScreens = () => {
       <MainStack.Screen
         name="TransactionDetails"
         component={TransactionDetailsScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <MainStack.Screen
+        name="LedgerEntry"
+        component={LedgerEntryScreen}
         options={{
           headerShown: false,
         }}

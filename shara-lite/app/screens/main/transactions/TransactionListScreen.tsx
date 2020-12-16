@@ -146,7 +146,7 @@ export const TransactionListScreen = () => {
 
   const handleReceiptItemSelect = useCallback(
     (receipt: IReceipt) => {
-      navigation.navigate('TransactionDetails', {transaction: receipt});
+      navigation.navigate('LedgerEntry', {transaction: receipt});
     },
     [navigation],
   );

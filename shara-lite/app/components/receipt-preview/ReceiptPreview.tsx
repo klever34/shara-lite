@@ -569,16 +569,11 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
 
       <View style={applyStyles({opacity: 0, height: 0})}>
         <ReceiptImage
-          user={user}
-          tax={receipt?.tax}
-          captureMode="update"
-          products={receipt?.items}
           amountPaid={totalAmountPaid}
           creditDueDate={creditDueDate}
           creditAmount={creditAmountLeft}
           createdAt={receipt?.created_at}
           totalAmount={receipt?.total_amount}
-          isCancelled={receipt?.is_cancelled}
           customer={customer || receipt?.customer}
           getImageUri={(data) => setReceiptImage(data)}
           receiptNo={receipt?._id?.toString().substring(0, 6)}
