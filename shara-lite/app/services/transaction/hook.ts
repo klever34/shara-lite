@@ -5,7 +5,7 @@ import {useReceipt} from '@/services/receipt';
 import {useCreditPayment} from '@/services/credit-payment';
 import {useCredit} from '@/services/credit';
 import {omit} from 'lodash';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getAuthService} from '@/services';
 
 interface youGaveInterface {
   customer: ICustomer;
@@ -46,6 +46,7 @@ export const useTransaction = (): useTransactionInterface => {
   const {updateCredit} = useCredit();
 
   const getTransactions = getReceipts;
+  const user = getAuthService().getUser();
 
   const youGave = async ({
     customer,
@@ -65,8 +66,18 @@ export const useTransaction = (): useTransactionInterface => {
       receiptItems: [],
     };
     getAnalyticsService()
-      .logEvent('userGaveTransaction', {amount})
+      .logEvent('userGaveTransaction', {
+        amount,
+        currency_code: user?.country_code ?? '',
+      })
       .then(() => {});
+    if (note) {
+      getAnalyticsService()
+        .logEvent('detailsEnteredToTransaction', {
+          note,
+        })
+        .then(() => {});
+    }
     return await saveReceipt(receiptData);
   };
 
@@ -98,8 +109,18 @@ export const useTransaction = (): useTransactionInterface => {
       });
     }
     getAnalyticsService()
-      .logEvent('userGotTransaction', {amount})
+      .logEvent('userGotTransaction', {
+        amount,
+        currency_code: user?.country_code ?? '',
+      })
       .then(() => {});
+    if (note) {
+      getAnalyticsService()
+        .logEvent('detailsEnteredToTransaction', {
+          note,
+        })
+        .then(() => {});
+    }
     return createdReceipt;
   };
 
@@ -142,6 +163,9 @@ export const useTransaction = (): useTransactionInterface => {
         updates,
       });
     });
+    getAnalyticsService()
+      .logEvent('setCollectionDate', {})
+      .then(() => {});
   };
 
   return {
