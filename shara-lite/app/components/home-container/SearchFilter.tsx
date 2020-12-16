@@ -19,7 +19,7 @@ export const SearchFilter = ({
 }: SearchFilterProps) => {
   return (
     <View
-      style={applyStyles('px-16 bg-white', {
+      style={applyStyles('bg-white', {
         zIndex: 10,
       })}>
       <View>

@@ -18,7 +18,7 @@ const TransactionListHeader = ({style}: {style?: ViewStyle}) => {
         })}>
         <Text
           style={applyStyles('text-xxs text-700 text-gray-200 text-uppercase')}>
-          You gave
+          Collected
         </Text>
       </View>
       <View
@@ -27,7 +27,7 @@ const TransactionListHeader = ({style}: {style?: ViewStyle}) => {
         })}>
         <Text
           style={applyStyles('text-xxs text-700 text-gray-200 text-uppercase')}>
-          You got
+          Outstanding
         </Text>
       </View>
     </View>

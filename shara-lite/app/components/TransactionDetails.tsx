@@ -56,10 +56,11 @@ const TransactionDetails = withModal(
     dueDate: creditDueDate,
     showActionButtons = true,
   }: TransactionDetailsProps & ModalWrapperFields) => {
+    const {saveCustomer} = useCustomer();
+    const navigation = useAppNavigation();
     const analyticsService = getAnalyticsService();
     const businessInfo = getAuthService().getBusinessInfo();
-    const {addCustomerToTransaction} = useTransaction();
-    const {saveCustomer} = useCustomer();
+    const {youGave, youGot, addCustomerToTransaction} = useTransaction();
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
@@ -89,7 +90,9 @@ const TransactionDetails = withModal(
       message: paymentReminderMessage,
     };
 
-    const {handleSmsShare, handleWhatsappShare} = useShare(shareProps);
+    const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
+      shareProps,
+    );
     const {updateDueDate} = useTransaction();
 
     const onSmsShare = useCallback(() => {
@@ -113,6 +116,17 @@ const TransactionDetails = withModal(
         .then(() => {});
       handleWhatsappShare();
     }, [analyticsService, handleWhatsappShare]);
+
+    const onOthersShare = useCallback(() => {
+      analyticsService
+        .logEvent('share', {
+          method: 'others',
+          content_type: 'payment-reminder',
+          item_id: '',
+        })
+        .then(() => {});
+      handleEmailShare();
+    }, [analyticsService, handleEmailShare]);
 
     const handleDueDateChange = useCallback(
       async (date?: Date) => {
@@ -158,14 +172,31 @@ const TransactionDetails = withModal(
       }
     }, [saveCustomer, transactions, addCustomerToTransaction]);
 
+    const handleLedgerItemSelect = useCallback(
+      (transaction: IReceipt) => {
+        getAnalyticsService()
+          .logEvent('selectContent', {
+            content_type: 'transaction',
+            item_id: transaction?._id?.toString() ?? '',
+          })
+          .then(() => {});
+        navigation.navigate('LedgerEntry', {transaction, showCustomer: false});
+      },
+      [navigation],
+    );
+
     const renderTransactionItem = useCallback(
       ({item: transaction}: {item: IReceipt}) => {
-        return <TransactionListItem transaction={transaction} />;
+        return (
+          <TransactionListItem
+            transaction={transaction}
+            onPress={() => handleLedgerItemSelect(transaction)}
+          />
+        );
       },
-      [],
+      [handleLedgerItemSelect],
     );
-    const navigation = useAppNavigation();
-    const {youGave, youGot} = useTransaction();
+
     actionButtons = useMemo(() => {
       if (!customer) {
         return [];
@@ -286,7 +317,7 @@ const TransactionDetails = withModal(
                   <View style={applyStyles('flex-row items-center')}>
                     <Text
                       style={applyStyles(
-                        'text-xs text-uppercase text-gray-50 text-700',
+                        'text-sm text-uppercase text-gray-300 text-700',
                       )}>
                       Send reminder:
                     </Text>
@@ -297,14 +328,14 @@ const TransactionDetails = withModal(
                             height: 48,
                           })}>
                           <Icon
-                            size={16}
+                            size={18}
                             type="ionicons"
                             name="logo-whatsapp"
                             color={colors.whatsapp}
                           />
                           <Text
                             style={applyStyles(
-                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                              'pl-xs text-sm text-400 text-uppercase text-gray-200',
                             )}>
                             whatsapp
                           </Text>
@@ -318,16 +349,37 @@ const TransactionDetails = withModal(
                             height: 48,
                           })}>
                           <Icon
-                            size={16}
+                            size={18}
                             name="message-circle"
                             type="feathericons"
                             color={colors.primary}
                           />
                           <Text
                             style={applyStyles(
-                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                              'pl-xs text-sm text-400 text-uppercase text-gray-200',
                             )}>
                             sms
+                          </Text>
+                        </View>
+                      </Touchable>
+                    </View>
+                    <View style={applyStyles('px-4')}>
+                      <Touchable onPress={onOthersShare}>
+                        <View
+                          style={applyStyles('px-2 flex-row center', {
+                            height: 48,
+                          })}>
+                          <Icon
+                            size={18}
+                            type="feathericons"
+                            name="more-vertical"
+                            color={colors['red-100']}
+                          />
+                          <Text
+                            style={applyStyles(
+                              'pl-xs text-sm text-400 text-uppercase text-gray-200',
+                            )}>
+                            other
                           </Text>
                         </View>
                       </Touchable>

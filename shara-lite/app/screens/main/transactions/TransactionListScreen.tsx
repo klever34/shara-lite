@@ -4,6 +4,7 @@ import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {getAnalyticsService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
@@ -145,18 +146,24 @@ export const TransactionListScreen = () => {
   }, [navigation]);
 
   const handleReceiptItemSelect = useCallback(
-    (receipt: IReceipt) => {
-      navigation.navigate('LedgerEntry', {transaction: receipt});
+    (transaction: IReceipt) => {
+      getAnalyticsService()
+        .logEvent('selectContent', {
+          content_type: 'transaction',
+          item_id: transaction?._id?.toString() ?? '',
+        })
+        .then(() => {});
+      navigation.navigate('LedgerEntry', {transaction, showCustomer: true});
     },
     [navigation],
   );
 
   const renderTransactionItem = useCallback(
-    ({item: receipt}: {item: IReceipt}) => {
+    ({item: transaction}: {item: IReceipt}) => {
       return (
         <TransactionListItem
-          receipt={receipt}
-          onPress={() => handleReceiptItemSelect(receipt)}
+          receipt={transaction}
+          onPress={() => handleReceiptItemSelect(transaction)}
         />
       );
     },
@@ -164,7 +171,7 @@ export const TransactionListScreen = () => {
   );
 
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
+    <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <View
         style={applyStyles({
           borderWidth: 1.5,

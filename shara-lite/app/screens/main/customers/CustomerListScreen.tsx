@@ -1,4 +1,4 @@
-import {HomeContainer} from '@/components';
+import {SearchFilter} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import Icon from '@/components/Icon';
 import PlaceholderImage from '@/components/PlaceholderImage';
@@ -14,7 +14,7 @@ import {
   HeaderBackButton,
   StackHeaderLeftButtonProps,
 } from '@react-navigation/stack';
-import {format, formatDistanceToNowStrict} from 'date-fns';
+import {formatDistanceToNowStrict} from 'date-fns';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -24,8 +24,9 @@ import React, {
   useState,
 } from 'react';
 import {
-  KeyboardAvoidingView,
+  FlatList,
   ListRenderItemInfo,
+  SafeAreaView,
   Text,
   View,
 } from 'react-native';
@@ -65,55 +66,47 @@ export const CustomerListScreen = () => {
     ({
       item: customer,
       onPress,
-    }: Pick<ListRenderItemInfo<CustomerListItem | null>, 'item'> & {
+    }: Pick<ListRenderItemInfo<CustomerListItem>, 'item'> & {
       onPress?: () => void;
     }) => {
-      const credit =
-        customer?.credits && customer.credits[customer?.credits.length - 1];
-      if (!customer) {
-        return (
-          <EmptyState
-            heading="You don't have any customers on Shara yet"
-            text="Add a new customer from the list below"
-            source={require('../../../assets/images/coming-soon.png')}
-          />
-        );
-      }
-
       const getDateText = () => {
-        if (customer?.dueDate) {
+        if (customer.dueDate) {
           if (customer.overdueCreditAmount) {
             return (
-              <Text
-                style={applyStyles(
-                  'text-xxs text-700 text-red-200 text-uppercase',
-                )}>
+              <Text style={applyStyles('text-xs text-700 text-red-100')}>
                 Due{' '}
                 {formatDistanceToNowStrict(customer.dueDate, {
                   addSuffix: true,
                 })}
               </Text>
             );
-          } else {
+          }
+          if (customer.remainingCreditAmount && !customer.overdueCreditAmount) {
             return (
-              <Text
-                style={applyStyles(
-                  'text-xxs text-700 text-gray-200 text-uppercase',
-                )}>
-                collect on {format(customer.dueDate, 'dd MMM yyyy')}
+              <Text style={applyStyles('text-xs text-700 text-red-100')}>
+                Collect in{' '}
+                {formatDistanceToNowStrict(customer.dueDate, {
+                  addSuffix: true,
+                })}
               </Text>
             );
           }
-        } else {
+        }
+        if (!customer.dueDate && customer.remainingCreditAmount) {
           return (
-            <Text
-              style={applyStyles(
-                'text-xxs text-700 text-gray-50 text-uppercase',
-              )}>
-              set collection date
+            <Text style={applyStyles('text-xs text-700 text-gray-100')}>
+              No Collection Date
             </Text>
           );
         }
+        return (
+          <Text style={applyStyles('text-xs text-700 text-gray-100')}>
+            {customer?.created_at &&
+              formatDistanceToNowStrict(customer?.created_at, {
+                addSuffix: true,
+              })}
+          </Text>
+        );
       };
 
       return (
@@ -137,28 +130,26 @@ export const CustomerListScreen = () => {
             <PlaceholderImage text={customer?.name ?? ''} />
             <View style={applyStyles('flex-1 pl-sm')}>
               <Text
-                style={applyStyles(
-                  'text-sm text-700 text-gray-300 text-uppercase',
-                )}>
+                style={applyStyles('pb-4 text-base text-400 text-gray-300')}>
                 {customer.name}
               </Text>
-              <Text style={applyStyles('text-sm text-400 text-gray-300')}>
-                {credit
-                  ? credit?.created_at &&
-                    formatDistanceToNowStrict(credit.created_at, {
-                      addSuffix: true,
-                    })
-                  : customer?.mobile}
-              </Text>
+              {getDateText()}
             </View>
-            {!!customer.remainingCreditAmount && (
-              <View style={applyStyles('items-end')}>
-                <Text style={applyStyles('text-sm text-700 text-red-200')}>
-                  {amountWithCurrency(customer.remainingCreditAmount)}
-                </Text>
-                {getDateText()}
-              </View>
-            )}
+            <View style={applyStyles('items-end flex-row')}>
+              <Text style={applyStyles('text-base text-700 text-black')}>
+                {amountWithCurrency(customer.remainingCreditAmount ?? 0)}
+              </Text>
+              {!!customer.remainingCreditAmount && (
+                <View style={applyStyles('pl-4')}>
+                  <Icon
+                    size={18}
+                    name="arrow-up"
+                    type="feathericons"
+                    color={colors['red-100']}
+                  />
+                </View>
+              )}
+            </View>
           </View>
         </Touchable>
       );
@@ -231,21 +222,50 @@ export const CustomerListScreen = () => {
   }, [navigation, realm, reloadMyCustomers]);
 
   return (
-    <KeyboardAvoidingView
-      style={applyStyles('flex-1', {
-        backgroundColor: colors.white,
-      })}>
-      <HomeContainer<ICustomer>
-        showFAB={false}
-        initialNumToRender={10}
-        searchTerm={searchTerm}
-        data={filteredCustomers}
-        keyExtractor={keyExtractor}
-        onSearch={handleCustomerSearch}
-        renderListItem={renderCustomerListItem}
-        onClearInput={() => handleCustomerSearch('')}
-        searchPlaceholderText={`Search ${filteredCustomers.length} Customers`}
-      />
-    </KeyboardAvoidingView>
+    <SafeAreaView style={applyStyles('flex-1')}>
+      <View
+        style={applyStyles({
+          borderWidth: 1.5,
+          borderColor: colors['gray-20'],
+        })}>
+        <SearchFilter
+          value={searchTerm}
+          onSearch={handleCustomerSearch}
+          placeholderText="Search customers here"
+          onClearInput={() => handleCustomerSearch('')}
+        />
+      </View>
+
+      {!!filteredCustomers && filteredCustomers.length ? (
+        <>
+          <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
+            <Text style={applyStyles('text-base text-gray-300')}>
+              {filteredCustomers.length} Customers
+            </Text>
+          </View>
+          <FlatList
+            initialNumToRender={10}
+            data={filteredCustomers}
+            keyExtractor={keyExtractor}
+            style={applyStyles('bg-white')}
+            renderItem={renderCustomerListItem}
+          />
+        </>
+      ) : (
+        <EmptyState
+          style={applyStyles('bg-white')}
+          source={require('@/assets/images/emblem.png')}
+          imageStyle={applyStyles('pb-32', {width: 80, height: 80})}>
+          <View style={applyStyles('center')}>
+            <Text style={applyStyles('text-black text-xl pb-4')}>
+              You have no customers yet.
+            </Text>
+            <Text style={applyStyles('text-black text-xl')}>
+              Start adding customers by creating a record
+            </Text>
+          </View>
+        </EmptyState>
+      )}
+    </SafeAreaView>
   );
 };

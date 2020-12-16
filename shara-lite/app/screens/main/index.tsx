@@ -38,7 +38,7 @@ export type MainStackParamList = {
 
   // Transaction
   TransactionDetails: {transaction: IReceipt};
-  LedgerEntry: {transaction: IReceipt};
+  LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
 
   // More
   UserProfileSettings: undefined;

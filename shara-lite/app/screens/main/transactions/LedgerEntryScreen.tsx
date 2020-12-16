@@ -1,3 +1,4 @@
+import {Button} from '@/components';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
 import PaymentReminderImage from '@/components/PaymentReminderImage';
@@ -6,6 +7,7 @@ import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {getAnalyticsService, getAuthService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
 import {useReceipt} from '@/services/receipt';
 import {ShareHookProps, useShare} from '@/services/share';
 import {applyStyles, colors} from '@/styles';
@@ -22,7 +24,8 @@ type LedgerEntryScreenProps = {
 
 export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
   const {route} = props;
-  const {transaction} = route.params;
+  const {transaction, showCustomer} = route.params;
+  const navigation = useAppNavigation();
   const {getReceiptAmounts} = useReceipt();
   const analyticsService = getAnalyticsService();
   const businessInfo = getAuthService().getBusinessInfo();
@@ -72,47 +75,66 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
     ? receiptShareProps
     : reminderShareProps;
 
-  const {handleSmsShare, handleWhatsappShare} = useShare(shareProps);
+  const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
+    shareProps,
+  );
 
   const onSmsShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
         method: 'sms',
-        content_type: 'payment-reminder',
-        item_id: '',
+        item_id: transaction?._id?.toString() ?? '',
+        content_type: transaction.isPaid ? 'share-receipt' : 'payment-reminder',
       })
       .then(() => {});
     handleSmsShare();
-  }, [analyticsService, handleSmsShare]);
+  }, [analyticsService, handleSmsShare, transaction]);
 
   const onWhatsappShare = useCallback(() => {
     analyticsService
       .logEvent('share', {
         method: 'whatsapp',
-        content_type: 'payment-reminder',
-        item_id: '',
+        item_id: transaction?._id?.toString() ?? '',
+        content_type: transaction.isPaid ? 'share-receipt' : 'payment-reminder',
       })
       .then(() => {});
     handleWhatsappShare();
-  }, [analyticsService, handleWhatsappShare]);
+  }, [analyticsService, handleWhatsappShare, transaction]);
+
+  const onOthersShare = useCallback(() => {
+    analyticsService
+      .logEvent('share', {
+        method: 'others',
+        item_id: transaction?._id?.toString() ?? '',
+        content_type: transaction.isPaid ? 'share-receipt' : 'payment-reminder',
+      })
+      .then(() => {});
+    handleEmailShare();
+  }, [analyticsService, transaction, handleEmailShare]);
+
   return (
-    <SafeAreaView>
+    <SafeAreaView style={applyStyles('flex-1')}>
       <View
-        style={applyStyles('flex-row py-8 pr-16 bg-white justify-between', {
-          borderBottomWidth: 1.5,
-          borderBottomColor: colors['gray-20'],
-        })}>
+        style={applyStyles(
+          'flex-row py-8 pr-16 bg-white items-center justify-between',
+          {
+            borderBottomWidth: 1.5,
+            borderBottomColor: colors['gray-20'],
+          },
+        )}>
         <HeaderBackButton iconName="arrow-left" />
         <View style={applyStyles('items-end')}>
-          <View style={applyStyles('pb-4 flex-row items-center')}>
-            <Text style={applyStyles('text-400 text-black text-base')}>
-              {transaction.customer?.name}
-            </Text>
-            <PlaceholderImage
-              style={applyStyles('ml-4')}
-              text={transaction?.customer?.name ?? ''}
-            />
-          </View>
+          {!!showCustomer && (
+            <View style={applyStyles('pb-4 flex-row items-center')}>
+              <Text style={applyStyles('text-400 text-black text-base')}>
+                {transaction.customer?.name}
+              </Text>
+              <PlaceholderImage
+                style={applyStyles('ml-4')}
+                text={transaction?.customer?.name ?? ''}
+              />
+            </View>
+          )}
           {transaction?.created_at && (
             <Text style={applyStyles('text-700 text-gray-50 text-xs')}>
               {format(transaction.created_at, 'dd MMM, yyyy')} -{' '}
@@ -224,7 +246,7 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
             </Touchable>
           </View>
           <View style={applyStyles('px-4')}>
-            <Touchable onPress={onWhatsappShare}>
+            <Touchable onPress={onOthersShare}>
               <View
                 style={applyStyles('px-2 flex-row center', {
                   height: 48,
@@ -246,6 +268,20 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
           </View>
         </View>
       </View>
+
+      {!!transaction.customer && !!showCustomer && (
+        <View style={applyStyles('py-16 right-16 bottom-0 absolute')}>
+          <Button
+            style={applyStyles({width: 200})}
+            title="View Customer"
+            onPress={() =>
+              navigation.navigate('CustomerDetails', {
+                customer: transaction.customer,
+              })
+            }
+          />
+        </View>
+      )}
       <View style={applyStyles({opacity: 0, height: 0})}>
         <PaymentReminderImage
           date={transaction.dueDate}
