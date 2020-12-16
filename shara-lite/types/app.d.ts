@@ -16,6 +16,7 @@ type User = {
   businesses: Business[];
   referrer_code?: string;
   device_id?: string;
+  ux_cam_id: string;
 };
 
 type Business = {
