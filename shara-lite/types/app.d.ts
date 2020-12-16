@@ -16,6 +16,7 @@ type User = {
   businesses: Business[];
   referrer_code?: string;
   device_id?: string;
+  ux_cam_id: string;
 };
 
 type Business = {
@@ -28,6 +29,7 @@ type Business = {
   created_at: string;
   updated_at: string;
   country_code?: string;
+  payment_label?: string;
   profile_image?: {url: string};
   signature_image?: {url: string};
 };

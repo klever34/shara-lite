@@ -5,6 +5,7 @@ import {useReceipt} from '@/services/receipt';
 import {useCreditPayment} from '@/services/credit-payment';
 import {useCredit} from '@/services/credit';
 import {omit} from 'lodash';
+import {getAnalyticsService} from '@/services';
 
 interface youGaveInterface {
   customer: ICustomer;
@@ -63,7 +64,9 @@ export const useTransaction = (): useTransactionInterface => {
       payments: [],
       receiptItems: [],
     };
-
+    getAnalyticsService()
+      .logEvent('userGaveTransaction', {amount})
+      .then(() => {});
     return await saveReceipt(receiptData);
   };
 
@@ -94,7 +97,9 @@ export const useTransaction = (): useTransactionInterface => {
         method: '',
       });
     }
-
+    getAnalyticsService()
+      .logEvent('userGotTransaction', {amount})
+      .then(() => {});
     return createdReceipt;
   };
 

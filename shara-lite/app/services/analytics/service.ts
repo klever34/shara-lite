@@ -62,6 +62,16 @@ export type SharaAppEventsProperties = {
   paymentOptionEdited: {};
   previewPaymentInfo: {};
   paymentOptionRemoved: {};
+  //Transactions
+  userGaveTransaction: {
+    amount: number;
+  };
+  userGotTransaction: {
+    amount: number;
+  };
+  paymentPreviewLabelEdited: {};
+  //Referral
+  referralCodeAdded: {};
 };
 
 export interface IAnalyticsService {
@@ -130,7 +140,7 @@ export class AnalyticsService implements IAnalyticsService {
           ? `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim()
           : String(user.id);
 
-      RNUxcam.setUserIdentity(alias);
+      RNUxcam.setUserIdentity(user.ux_cam_id || alias);
       for (let prop in userData) {
         RNUxcam.setUserProperty(prop, userData[prop]);
       }
