@@ -1,11 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useCallback, useContext, useLayoutEffect, useMemo} from 'react';
 import {Alert, Image, ScrollView, Text, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import Clipboard from '@react-native-community/clipboard';
@@ -30,6 +23,7 @@ import {ToastContext} from '@/components/Toast';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
+import {useInfo} from '@/helpers/hooks';
 
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
@@ -95,7 +89,7 @@ export const MoreOptionsScreen = withModal(
     const moreOptions = useMemo(() => {
       return [
         {
-          title: 'Profile Settings',
+          title: 'My Profile',
           icon: 'user',
           onPress: () => {
             navigation.navigate('UserProfileSettings');
@@ -105,6 +99,13 @@ export const MoreOptionsScreen = withModal(
           title: 'Business Settings',
           icon: 'sliders',
           onPress: onEditBusinessSettings,
+        },
+        {
+          title: 'Payment Settings',
+          icon: 'sliders',
+          onPress: () => {
+            navigation.navigate('PaymentSettings');
+          },
         },
         {
           title: 'Referral',
@@ -182,9 +183,7 @@ export const MoreOptionsScreen = withModal(
     }, [handleLogout, openModal, hasAllRecordsBeenSynced]);
 
     const user = getAuthService().getUser();
-    const [business, setBusiness] = useState(
-      getAuthService().getBusinessInfo(),
-    );
+    const business = useInfo(() => getAuthService().getBusinessInfo());
     const paymentLink = `${Config.WEB_BASE_URL}/pay/${business.slug}`;
 
     const getMobieNumber = useCallback(() => {
@@ -202,12 +201,6 @@ export const MoreOptionsScreen = withModal(
         .logEvent('copiedPaymentLink', {})
         .then(() => {});
     }, [paymentLink, showSuccessToast]);
-
-    useEffect(() => {
-      return navigation.addListener('focus', () => {
-        setBusiness(getAuthService().getBusinessInfo());
-      });
-    }, [navigation]);
 
     return (
       <ScrollView>

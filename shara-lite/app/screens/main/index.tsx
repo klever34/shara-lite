@@ -27,6 +27,8 @@ import {
 } from './customers/CustomerEntryScreen';
 import ReferralScreen from './more/referral';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
+import {MoreScreen} from '@/screens/main/more';
+import {PaymentsScreen} from '@/screens/main/payments';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -41,6 +43,8 @@ export type MainStackParamList = {
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
 
   // More
+  Settings: undefined;
+  PaymentSettings: undefined;
   UserProfileSettings: undefined;
   BusinessSettings: undefined;
   Referral: undefined;
@@ -136,6 +140,20 @@ const MainScreens = () => {
         name="Referral"
         component={ReferralScreen}
         options={{headerShown: false}}
+      />
+      <MainStack.Screen
+        name="Settings"
+        component={MoreScreen}
+        options={{
+          headerShown: false,
+        }}
+      />
+      <MainStack.Screen
+        name="PaymentSettings"
+        component={PaymentsScreen}
+        options={{
+          headerShown: false,
+        }}
       />
 
       {/* Transactions */}
