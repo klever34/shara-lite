@@ -44,23 +44,15 @@ export const Header = ({
   return (
     <View
       style={applyStyles(
-        'flex-row py-16 bg-white relative',
+        'flex-row py-16 bg-white relative items-center',
         {
-          borderBottomWidth: 1,
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 5,
-          },
-          shadowOpacity: 0.34,
-          shadowRadius: 6.27,
-          elevation: 10,
-          borderBottomColor: colors['gray-10'],
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors['gray-20'],
         },
         style,
       )}>
       {iconLeft && (
-        <View style={applyStyles('absolute h-full top-8 left-8')}>
+        <View style={applyStyles('absolute h-full')}>
           <HeaderBackButton {...iconLeft} />
         </View>
       )}
