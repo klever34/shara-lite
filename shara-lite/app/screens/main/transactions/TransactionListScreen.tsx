@@ -1,6 +1,5 @@
 import {SearchFilter} from '@/components';
 import EmptyState from '@/components/EmptyState';
-import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
@@ -8,7 +7,6 @@ import {getAnalyticsService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
-import {StackHeaderLeftButtonProps} from '@react-navigation/stack';
 import React, {
   useCallback,
   useEffect,
@@ -111,37 +109,7 @@ export const TransactionListScreen = () => {
 
   useLayoutEffect(() => {
     navigation.setOptions({
-      headerLeft: (props: StackHeaderLeftButtonProps) => {
-        return (
-          <HeaderBackButton
-            {...props}
-            backImage={() => {
-              return (
-                <View style={applyStyles('flex-row center')}>
-                  <Icon
-                    size={22}
-                    name="layers"
-                    borderRadius={12}
-                    type="feathericons"
-                    color={colors['gray-300']}
-                  />
-                  <Text
-                    style={applyStyles(
-                      'pl-sm text-md text-gray-300 text-uppercase',
-                      {
-                        fontFamily: 'Rubik-Medium',
-                      },
-                    )}
-                    numberOfLines={1}>
-                    Transactions
-                  </Text>
-                </View>
-              );
-            }}
-          />
-        );
-      },
-      headerTitle: () => null,
+      header: () => null,
     });
   }, [navigation]);
 
@@ -174,8 +142,8 @@ export const TransactionListScreen = () => {
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
       <View
         style={applyStyles({
-          borderWidth: 1.5,
-          borderColor: colors['gray-20'],
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors['gray-20'],
         })}>
         <SearchFilter
           value={searchTerm}
