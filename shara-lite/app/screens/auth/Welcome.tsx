@@ -12,7 +12,7 @@ export const Welcome = () => {
   const [count, setCount] = useState(0);
 
   const handleSkip = useCallback(() => {
-    navigation.navigate('Register');
+    navigation.navigate('Login');
   }, [navigation]);
 
   const handleNext = useCallback(() => {
@@ -65,7 +65,7 @@ export const Welcome = () => {
           />
           <Text
             style={applyStyles(
-              'mb-8 text-center text-gray-300 text-700 text-2xl',
+              'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
             Get repaid before you get desperate
           </Text>
@@ -80,7 +80,7 @@ export const Welcome = () => {
           />
           <Text
             style={applyStyles(
-              'mb-8 text-center text-gray-300 text-700 text-2xl',
+              'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
             Data free
           </Text>
@@ -95,7 +95,7 @@ export const Welcome = () => {
           />
           <Text
             style={applyStyles(
-              'mb-8 text-center text-gray-300 text-700 text-2xl',
+              'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
             Reminders
           </Text>

@@ -130,6 +130,12 @@ export interface IApiService {
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
   getUserIPDetails(): Promise<any>;
+
+  otpVerification(payload: {
+    otp?: string;
+    mobile?: string;
+    device_id?: string;
+  }): any;
 }
 
 export class ApiService implements IApiService {
@@ -604,5 +610,13 @@ export class ApiService implements IApiService {
     } catch (e) {
       throw e;
     }
+  }
+
+  async otpVerification(payload: {
+    otp?: string;
+    mobile?: string;
+    device_id?: string;
+  }) {
+    console.log(payload);
   }
 }

@@ -1,10 +1,8 @@
+import {HeaderTitleProps} from '@/components/Header';
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
-import {Text, View, ViewStyle} from 'react-native';
-import {Button} from './Button';
-import {Page} from './Page';
+import {KeyboardAvoidingView, Text, View, ViewStyle} from 'react-native';
 import {SecureEmblem} from './SecureEmblem';
-import {HeaderTitleProps} from '@/components/Header';
 
 export type AuthViewProps = {
   header?: HeaderTitleProps;
@@ -21,32 +19,14 @@ export type AuthViewProps = {
 
 export const AuthView = ({
   style,
-  header,
   heading,
-  onSubmit,
   children,
-  isLoading,
   description,
-  buttonTitle,
-  showButton = true,
   showEmblem = true,
 }: AuthViewProps) => {
   return (
-    <Page
-      style={style}
-      header={header}
-      footer={
-        showButton ? (
-          <Button
-            variantColor="red"
-            onPress={onSubmit}
-            title={buttonTitle}
-            isLoading={isLoading}
-            style={applyStyles('w-full')}
-          />
-        ) : undefined
-      }>
-      <View style={applyStyles('mb-32 pt-24 center')}>
+    <KeyboardAvoidingView style={applyStyles('flex-1 bg-white px-16', style)}>
+      <View style={applyStyles('mb-64 pt-48 center')}>
         <Text
           style={applyStyles('text-2xl pb-8 text-700 text-center', {
             color: colors['gray-300'],
@@ -66,6 +46,6 @@ export const AuthView = ({
           <SecureEmblem />
         </View>
       )}
-    </Page>
+    </KeyboardAvoidingView>
   );
 };
