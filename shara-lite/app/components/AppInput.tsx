@@ -41,10 +41,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
       action = null,
       ...rest
     } = props;
-    const [bgStyle, setBgStyle] = useState({
-      borderWidth: 1.5,
-      backgroundColor: colors['gray-10'],
-    } as ViewStyle);
+    const [bgStyle, setBgStyle] = useState({} as ViewStyle);
 
     const withLeftIconStyle = leftIcon
       ? applyStyles('pl-56')
@@ -58,9 +55,8 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     const handleFocus = React.useCallback(
       (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
         setBgStyle({
-          borderWidth: 1.5,
+          borderWidth: 2,
           borderColor: colors['red-50'],
-          backgroundColor: colors.white,
         });
         onFocus && onFocus(e);
       },
@@ -70,7 +66,8 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     const handleBlur = React.useCallback(
       (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
         setBgStyle({
-          backgroundColor: colors['gray-10'],
+          borderWidth: 2,
+          borderColor: colors['gray-20'],
         });
         onBlur && onBlur(e);
       },
@@ -123,13 +120,13 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
             onFocus={handleFocus}
             onBlur={handleBlur}
             style={applyStyles(
-              'text-500',
+              'text-500 bg-white',
               {
                 height: 56,
                 fontSize: 16,
-                borderWidth: 1.5,
+                borderWidth: 2,
                 borderRadius: 8,
-                borderColor: colors['gray-10'],
+                borderColor: colors['gray-20'],
               },
               bgStyle,
               withLeftIconStyle,

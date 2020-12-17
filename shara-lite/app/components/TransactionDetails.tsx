@@ -328,14 +328,14 @@ const TransactionDetails = withModal(
                             height: 48,
                           })}>
                           <Icon
-                            size={18}
+                            size={16}
                             type="ionicons"
                             name="logo-whatsapp"
                             color={colors.whatsapp}
                           />
                           <Text
                             style={applyStyles(
-                              'pl-xs text-sm text-400 text-uppercase text-gray-200',
+                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
                             whatsapp
                           </Text>
@@ -349,14 +349,14 @@ const TransactionDetails = withModal(
                             height: 48,
                           })}>
                           <Icon
-                            size={18}
+                            size={16}
                             name="message-circle"
                             type="feathericons"
                             color={colors.primary}
                           />
                           <Text
                             style={applyStyles(
-                              'pl-xs text-sm text-400 text-uppercase text-gray-200',
+                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
                             sms
                           </Text>
@@ -370,14 +370,14 @@ const TransactionDetails = withModal(
                             height: 48,
                           })}>
                           <Icon
-                            size={18}
+                            size={16}
                             type="feathericons"
                             name="more-vertical"
                             color={colors['red-100']}
                           />
                           <Text
                             style={applyStyles(
-                              'pl-xs text-sm text-400 text-uppercase text-gray-200',
+                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
                             other
                           </Text>
