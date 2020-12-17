@@ -29,6 +29,7 @@ import ReferralScreen from './more/referral';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import {MoreScreen} from '@/screens/main/more';
 import {PaymentsScreen} from '@/screens/main/payments';
+import {Entry} from '@/components/Entry';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -84,96 +85,98 @@ const MainScreens = () => {
   }
 
   return (
-    <MainStack.Navigator
-      initialRouteName="Home"
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.white,
-        },
-        headerTitleStyle: {
-          fontSize: 16,
-          fontFamily: 'Roboto-Regular',
-        },
-        headerTintColor: colors['gray-300'],
-      }}>
-      {/* Home */}
-      <MainStack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{headerShown: false}}
-      />
+    <Entry>
+      <MainStack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.white,
+          },
+          headerTitleStyle: {
+            fontSize: 16,
+            fontFamily: 'Roboto-Regular',
+          },
+          headerTintColor: colors['gray-300'],
+        }}>
+        {/* Home */}
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
 
-      {/* Customers */}
-      <MainStack.Screen
-        name="CustomerDetails"
-        component={CustomerDetailsScreen}
-        options={({route}) => ({
-          title: route.params.customer?.name,
-          headerShown: false,
-        })}
-      />
+        {/* Customers */}
+        <MainStack.Screen
+          name="CustomerDetails"
+          component={CustomerDetailsScreen}
+          options={({route}) => ({
+            title: route.params.customer?.name,
+            headerShown: false,
+          })}
+        />
 
-      <MainStack.Screen
-        name="SelectCustomerList"
-        component={SelectCustomerListScreen}
-        options={{headerShown: false}}
-      />
+        <MainStack.Screen
+          name="SelectCustomerList"
+          component={SelectCustomerListScreen}
+          options={{headerShown: false}}
+        />
 
-      <MainStack.Screen
-        name="CustomerEntry"
-        component={CustomerEntryScreen}
-        options={{headerShown: false}}
-      />
+        <MainStack.Screen
+          name="CustomerEntry"
+          component={CustomerEntryScreen}
+          options={{headerShown: false}}
+        />
 
-      {/* More */}
-      <MainStack.Screen
-        name="BusinessSettings"
-        component={BusinessSettings}
-        options={{headerShown: false}}
-      />
-      <MainStack.Screen
-        name="UserProfileSettings"
-        component={UserProfileSettings}
-        options={{headerShown: false}}
-      />
-      <MainStack.Screen
-        name="Referral"
-        component={ReferralScreen}
-        options={{headerShown: false}}
-      />
-      <MainStack.Screen
-        name="Settings"
-        component={MoreScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <MainStack.Screen
-        name="PaymentSettings"
-        component={PaymentsScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
+        {/* More */}
+        <MainStack.Screen
+          name="BusinessSettings"
+          component={BusinessSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Referral"
+          component={ReferralScreen}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Settings"
+          component={MoreScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="PaymentSettings"
+          component={PaymentsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
 
-      {/* Transactions */}
-      <MainStack.Screen
-        name="TransactionDetails"
-        component={TransactionDetailsScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
-      <MainStack.Screen
-        name="LedgerEntry"
-        component={LedgerEntryScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
+        {/* Transactions */}
+        <MainStack.Screen
+          name="TransactionDetails"
+          component={TransactionDetailsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="LedgerEntry"
+          component={LedgerEntryScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
 
-      {/* Payments */}
-    </MainStack.Navigator>
+        {/* Payments */}
+      </MainStack.Navigator>
+    </Entry>
   );
 };
 

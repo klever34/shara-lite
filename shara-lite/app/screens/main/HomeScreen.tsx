@@ -2,18 +2,15 @@ import {Icon} from '@/components/Icon';
 import {TabBarLabel} from '@/components/TabBarLabel';
 import {CustomersScreen} from '@/screens/main/customers';
 import {TransactionsScreen} from '@/screens/main/transactions';
-import {TransactionEntryScreen} from '@/screens/main/entry';
 import {applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useCallback, useState} from 'react';
+import React, {useContext} from 'react';
 import {SafeAreaView, View, Text, Image} from 'react-native';
-import Keypad from '@/assets/images/keypad.svg';
-import {HeaderBackButton} from '@react-navigation/stack';
-import {EventArg} from '@react-navigation/native';
 import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {getAuthService} from '@/services';
+import {EntryButton, EntryContext} from '@/components/Entry';
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
@@ -25,19 +22,12 @@ export type MainNavParamList = {
 
 const MainNav = createBottomTabNavigator<MainNavParamList>();
 
-export const HomeScreen = () => {
-  const [currentTab, setCurrentTab] = useState<keyof MainNavParamList>(
-    'EntryTab',
-  );
+const Nothing = () => null;
 
-  const handleTabPress = useCallback(
-    (evt: EventArg<Extract<'tabPress', string>, true>) => {
-      setCurrentTab(evt.target?.split('-')?.[0] as keyof MainNavParamList);
-    },
-    [],
-  );
+export const HomeScreen = () => {
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
+  const {showEntryDialog, setEntryButtonPosition} = useContext(EntryContext);
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header
@@ -92,37 +82,24 @@ export const HomeScreen = () => {
               <Icon type="feathericons" name="home" size={20} color={color} />
             ),
           }}
-          listeners={{
-            tabPress: handleTabPress,
-          }}
         />
         <MainNav.Screen
           name="EntryTab"
-          component={TransactionEntryScreen}
+          component={Nothing}
           options={{
-            tabBarButton: ({onPress}) => {
+            tabBarButton: () => {
               return (
-                <HeaderBackButton
-                  backImage={() => {
-                    return (
-                      <View
-                        style={applyStyles(
-                          'w-60 h-60 my-12 rounded-32 center',
-                          currentTab === 'EntryTab'
-                            ? 'bg-primary'
-                            : 'bg-gray-100',
-                        )}>
-                        <Keypad width={24} height={24} />
-                      </View>
-                    );
+                <EntryButton
+                  onLayout={(layout) => {
+                    setEntryButtonPosition?.({
+                      x: layout.x,
+                      y: layout.y,
+                    });
                   }}
-                  onPress={onPress as () => void}
+                  onPress={showEntryDialog}
                 />
               );
             },
-          }}
-          listeners={{
-            tabPress: handleTabPress,
           }}
         />
         <MainNav.Screen
@@ -135,9 +112,6 @@ export const HomeScreen = () => {
             tabBarIcon: ({color}) => (
               <Icon type="feathericons" name="user" size={20} color={color} />
             ),
-          }}
-          listeners={{
-            tabPress: handleTabPress,
           }}
         />
       </MainNav.Navigator>
