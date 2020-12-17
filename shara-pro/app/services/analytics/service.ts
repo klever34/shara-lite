@@ -39,6 +39,7 @@ export type SharaAppEventsProperties = {
   };
   productAddedToReceipt: {};
   customerAddedToReceipt: {};
+  detailsEnteredToReceipt: {};
   // Content
   share: {item_id: string; content_type: string; method: string};
   selectContent: {item_id: string; content_type: string};
@@ -52,9 +53,11 @@ export type SharaAppEventsProperties = {
   productAdded: {};
   inventoryReceived: {};
   deliveryAgentAdded: {};
+  //Sync
   syncStarted: {};
   syncCompleted: {};
   //Referral
+  friendInvited: {};
   referralCodeAdded: {};
 };
 

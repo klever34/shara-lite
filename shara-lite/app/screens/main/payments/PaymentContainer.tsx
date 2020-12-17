@@ -15,10 +15,12 @@ import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
 import {omit} from 'lodash';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, FlatList, ScrollView, Text, View} from 'react-native';
+import {Alert, FlatList, Text, View} from 'react-native';
 import {PaymentProvider} from 'types/app';
 import {PaymentForm} from './PaymentForm';
 import {PaymentPreviewModal} from './PaymentPreviewModal';
+//@ts-ignore
+import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -244,8 +246,9 @@ function PaymentContainer(props: ModalWrapperFields) {
   }, [fectchPaymentProviders]);
 
   return (
-    <ScrollView
-      persistentScrollbar
+    <KeyboardAwareScrollView
+      nestedScrollEnabled
+      persistentScrollbar={true}
       keyboardShouldPersistTaps="always"
       style={applyStyles('py-24 bg-white flex-1')}>
       {paymentOptions.length === 0 ? (
@@ -349,7 +352,7 @@ function PaymentContainer(props: ModalWrapperFields) {
           />
         </View>
       )}
-    </ScrollView>
+    </KeyboardAwareScrollView>
   );
 }
 

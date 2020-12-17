@@ -5,7 +5,7 @@ import {MoreScreen} from '@/screens/main/more';
 import {PaymentsScreen} from '@/screens/main/payments';
 import {TransactionsScreen} from '@/screens/main/transactions';
 import {TransactionEntryScreen} from '@/screens/main/entry';
-import {applyStyles, colors} from '@/styles';
+import {applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useCallback, useState} from 'react';
 import {SafeAreaView, View} from 'react-native';
@@ -36,16 +36,17 @@ export const HomeScreen = () => {
   );
 
   return (
-    <SafeAreaView style={applyStyles('h-screen')}>
+    <SafeAreaView style={applyStyles('flex-1')}>
       <MainNav.Navigator
         initialRouteName="EntryTab"
         tabBarOptions={{
           labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: colors['red-200'],
           inactiveTintColor: colors['gray-50'],
-          style: applyStyles('h-80'),
+          style: applyStyles({height: navBarHeight}),
           tabStyle: applyStyles('py-20'),
           iconStyle: applyStyles('py-4'),
+          keyboardHidesTabBar: true,
         }}>
         <MainNav.Screen
           name="TransactionsTab"

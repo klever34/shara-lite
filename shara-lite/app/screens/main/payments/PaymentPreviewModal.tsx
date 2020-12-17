@@ -67,10 +67,10 @@ export const PaymentPreviewModal = withModal(
             keyboardShouldPersistTaps="always"
             style={applyStyles('bg-white rounded-16 flex-1')}>
             <View style={applyStyles('bg-white rounded-16 p-16')}>
-              {business.name && (
+              {!!business.name && (
                 <View style={applyStyles('flex-row items-center')}>
                   <View style={applyStyles('w-80 h-80')}>
-                    {business.profile_image && (
+                    {!!business.profile_image && (
                       <Image
                         style={applyStyles('w-full h-full rounded-lg')}
                         source={{
