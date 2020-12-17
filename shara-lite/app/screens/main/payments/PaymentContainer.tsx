@@ -254,7 +254,7 @@ function PaymentContainer(props: ModalWrapperFields) {
         nestedScrollEnabled
         persistentScrollbar={true}
         keyboardShouldPersistTaps="always"
-        style={applyStyles('py-24 bg-white flex-1')}>
+        style={applyStyles('py-18 bg-white flex-1')}>
         {paymentOptions.length === 0 ? (
           <View style={applyStyles('flex-1')}>
             <View style={applyStyles('center pb-32')}>

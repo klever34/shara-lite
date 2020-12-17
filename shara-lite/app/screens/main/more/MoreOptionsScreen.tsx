@@ -51,34 +51,20 @@ export const MoreOptionsScreen = withModal(
 
     useLayoutEffect(() => {
       navigation.setOptions({
-        headerStyle: applyStyles('border-b-1', {
-          elevation: 0,
-        }),
         headerLeft: (props: StackHeaderLeftButtonProps) => {
           return (
             <HeaderBackButton
               {...props}
               backImage={() => {
                 return (
-                  <View style={applyStyles('flex-row center')}>
-                    <Icon
-                      type="feathericons"
-                      color={colors['gray-300']}
-                      name="menu"
-                      size={22}
-                      borderRadius={12}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-sm text-md text-gray-300 text-uppercase',
-                        {
-                          fontFamily: 'Rubik-Medium',
-                        },
-                      )}
-                      numberOfLines={1}>
-                      More
-                    </Text>
-                  </View>
+                  <Icon
+                    type="feathericons"
+                    color={colors['gray-300']}
+                    name="arrow-left"
+                    size={22}
+                    borderRadius={12}
+                    onPress={() => navigation.goBack()}
+                  />
                 );
               }}
             />
@@ -225,6 +211,14 @@ export const MoreOptionsScreen = withModal(
             {minHeight: dimensions.fullHeight - 120},
             'bg-white',
           )}>
+          <View style={applyStyles('p-14')}>
+            <Text style={applyStyles('text-xl text-400 text-gray-300')}>
+              My Account
+            </Text>
+            <Text style={applyStyles('text-gray-200 py-8')}>
+              Quickly record a transaction or obligation
+            </Text>
+          </View>
           {!business.name && (
             <Touchable onPress={onEditBusinessSettings}>
               <View

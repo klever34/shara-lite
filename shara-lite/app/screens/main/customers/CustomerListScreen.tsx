@@ -10,10 +10,6 @@ import {getCustomers} from '@/services/customer/service';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
-import {
-  HeaderBackButton,
-  StackHeaderLeftButtonProps,
-} from '@react-navigation/stack';
 import {formatDistanceToNowStrict} from 'date-fns';
 import orderBy from 'lodash/orderBy';
 import React, {
@@ -158,42 +154,6 @@ export const CustomerListScreen = () => {
     [handleSelectCustomer],
   );
 
-  useLayoutEffect(() => {
-    navigation.setOptions({
-      headerLeft: (props: StackHeaderLeftButtonProps) => {
-        return (
-          <HeaderBackButton
-            {...props}
-            backImage={() => {
-              return (
-                <View style={applyStyles('flex-row center')}>
-                  <Icon
-                    size={22}
-                    name="users"
-                    borderRadius={12}
-                    type="feathericons"
-                    color={colors['gray-300']}
-                  />
-                  <Text
-                    style={applyStyles(
-                      'pl-sm text-md text-gray-300 text-uppercase',
-                      {
-                        fontFamily: 'Rubik-Medium',
-                      },
-                    )}
-                    numberOfLines={1}>
-                    Customers
-                  </Text>
-                </View>
-              );
-            }}
-          />
-        );
-      },
-      headerTitle: () => null,
-    });
-  }, [navigation]);
-
   const keyExtractor = useCallback((item) => {
     if (!item) {
       return '';
@@ -218,6 +178,12 @@ export const CustomerListScreen = () => {
     ]);
   }, [myCustomers, searchTerm]);
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      header: () => null,
+    });
+  }, [navigation]);
+
   useEffect(() => {
     return navigation.addListener('focus', reloadMyCustomers);
   }, [navigation, realm, reloadMyCustomers]);
@@ -226,8 +192,8 @@ export const CustomerListScreen = () => {
     <SafeAreaView style={applyStyles('flex-1')}>
       <View
         style={applyStyles({
-          borderWidth: 1.5,
-          borderColor: colors['gray-20'],
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors['gray-20'],
         })}>
         <SearchFilter
           value={searchTerm}
