@@ -8,11 +8,13 @@ import React, {
   useState,
   useEffect,
 } from 'react';
-import {View, ViewProps} from 'react-native';
-import {applyStyles} from '@/styles';
+import {Text, View, ViewProps} from 'react-native';
+import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 import Keypad from '@/assets/images/keypad.svg';
 import Touchable from './Touchable';
+import {Icon} from './Icon';
+import * as Animatable from 'react-native-animatable';
 
 type EntryContextProps = {
   showEntryDialog?: () => void;
@@ -52,9 +54,64 @@ export const Entry = ({children}: EntryProps) => {
               })}
             />
           </Touchable>
+          <Touchable onPress={hideEntryDialog}>
+            <View
+              style={applyStyles('absolute items-center w-full', {
+                zIndex: 10,
+                top: entryButtonPosition.y - 108,
+              })}>
+              <Animatable.View
+                animation="fadeInUp"
+                duration={400}
+                delay={10}
+                style={applyStyles(
+                  'flex-row p-8 bg-red-200 center rounded-24',
+                )}>
+                <Icon
+                  type="feathericons"
+                  name="arrow-up"
+                  color={colors.white}
+                  size={20}
+                />
+                <Text
+                  style={applyStyles(
+                    'mx-8 text-700 font-bold text-xs text-white',
+                  )}>
+                  Record Sale
+                </Text>
+              </Animatable.View>
+            </View>
+          </Touchable>
+          <Touchable onPress={hideEntryDialog}>
+            <View
+              style={applyStyles('absolute items-center w-full', {
+                zIndex: 10,
+                top: entryButtonPosition.y - 48,
+              })}>
+              <Animatable.View
+                animation="fadeInUp"
+                duration={400}
+                style={applyStyles(
+                  'flex-row p-8 bg-green-200 center rounded-24',
+                )}>
+                <Icon
+                  type="feathericons"
+                  name="arrow-down"
+                  color={colors.white}
+                  size={20}
+                />
+                <Text
+                  style={applyStyles(
+                    'mx-8 text-700 font-bold text-xs text-white',
+                  )}>
+                  Record Collection
+                </Text>
+              </Animatable.View>
+            </View>
+          </Touchable>
           <EntryButton
             container={{
-              style: applyStyles('relative', {
+              style: applyStyles('absolute', {
                 zIndex: 10,
                 top: entryButtonPosition.y,
                 left: entryButtonPosition.x,
