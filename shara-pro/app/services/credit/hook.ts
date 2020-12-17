@@ -37,7 +37,7 @@ export const useCredit = (): useCreditInterface => {
   const getCredits = (): ICredit[] => {
     return (realm
       .objects<ICredit>(modelName)
-      .filtered('is_deleted = false') as unknown) as ICredit[];
+      .filtered('is_deleted != true') as unknown) as ICredit[];
   };
 
   const saveCredit = async ({

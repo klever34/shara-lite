@@ -130,7 +130,7 @@ export const useTransaction = (): useTransactionInterface => {
     customer,
   }: updateDueDateInterface) => {
     const credits = customer.credits?.filtered(
-      'is_deleted = false AND fulfilled = false',
+      'is_deleted != true AND fulfilled = false',
     );
 
     const updates = {

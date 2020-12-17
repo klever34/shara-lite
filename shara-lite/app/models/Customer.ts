@@ -111,7 +111,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
   public get dueDate() {
     const credits = this.credits
       ?.filtered(
-        'is_deleted = false AND due_date != null AND fulfilled = false',
+        'is_deleted != true AND due_date != null AND fulfilled = false',
       )
       .sorted('due_date');
 
