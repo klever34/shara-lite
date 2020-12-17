@@ -117,7 +117,7 @@ export const MoreOptionsScreen = withModal(
         },
         {
           title: 'Referral',
-          text: 'Enter and edit your Referral information',
+          text: 'Enter Referral code',
           onPress: () => {
             navigation.navigate('Referral');
           },
