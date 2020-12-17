@@ -15,6 +15,7 @@ import Keypad from '@/assets/images/keypad.svg';
 import Touchable from './Touchable';
 import {Icon} from './Icon';
 import * as Animatable from 'react-native-animatable';
+import {useAppNavigation} from '@/services/navigation';
 
 type EntryContextProps = {
   showEntryDialog?: () => void;
@@ -38,6 +39,7 @@ export const Entry = ({children}: EntryProps) => {
     return hideEntryDialog;
   }, [hideEntryDialog]);
   const [entryButtonPosition, setEntryButtonPosition] = useState({x: 0, y: 0});
+  const navigation = useAppNavigation();
   return (
     <EntryContext.Provider
       value={{showEntryDialog, hideEntryDialog, setEntryButtonPosition}}>
@@ -54,15 +56,18 @@ export const Entry = ({children}: EntryProps) => {
               })}
             />
           </Touchable>
-          <Touchable onPress={hideEntryDialog}>
-            <View
-              style={applyStyles('absolute items-center w-full', {
-                zIndex: 10,
-                top: entryButtonPosition.y - 108,
-              })}>
+          <View
+            style={applyStyles('absolute items-center w-full', {
+              zIndex: 10,
+              top: entryButtonPosition.y - 108,
+            })}>
+            <Touchable
+              onPress={() => {
+                navigation.navigate('RecordSale');
+              }}>
               <Animatable.View
                 animation="fadeInUp"
-                duration={400}
+                duration={300}
                 delay={10}
                 style={applyStyles(
                   'flex-row p-8 bg-red-200 center rounded-24',
@@ -80,17 +85,20 @@ export const Entry = ({children}: EntryProps) => {
                   Record Sale
                 </Text>
               </Animatable.View>
-            </View>
-          </Touchable>
-          <Touchable onPress={hideEntryDialog}>
-            <View
-              style={applyStyles('absolute items-center w-full', {
-                zIndex: 10,
-                top: entryButtonPosition.y - 48,
-              })}>
+            </Touchable>
+          </View>
+          <View
+            style={applyStyles('absolute items-center w-full', {
+              zIndex: 10,
+              top: entryButtonPosition.y - 48,
+            })}>
+            <Touchable
+              onPress={() => {
+                navigation.navigate('RecordCollection');
+              }}>
               <Animatable.View
                 animation="fadeInUp"
-                duration={400}
+                duration={300}
                 style={applyStyles(
                   'flex-row p-8 bg-green-200 center rounded-24',
                 )}>
@@ -107,8 +115,8 @@ export const Entry = ({children}: EntryProps) => {
                   Record Collection
                 </Text>
               </Animatable.View>
-            </View>
-          </Touchable>
+            </Touchable>
+          </View>
           <EntryButton
             container={{
               style: applyStyles('absolute', {
@@ -149,7 +157,11 @@ export const EntryButton = ({
   }, [nextOnLayout]);
   return (
     <View
-      style={applyStyles('relative', {zIndex: 20, opacity: 1})}
+      style={applyStyles('relative', {
+        zIndex: 20,
+        opacity: 1,
+        bottom: 6,
+      })}
       {...container}
       ref={containerRef}>
       <HeaderBackButton
