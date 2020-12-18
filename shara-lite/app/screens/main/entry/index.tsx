@@ -11,88 +11,36 @@ import {Text} from 'react-native';
 
 export const TransactionEntryScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
-    const {youGave, youGot} = useTransaction();
-
     const navigation = useAppNavigation();
 
-    const handleYouGave = useCallback(
-      ({amount, note, reset}) => {
-        getContactService()
-          .selectContactPhone()
-          .then((selection) => {
-            if (!selection) {
-              return;
-            }
-            const {contact, selectedPhone} = selection;
-            const customer: SelectCustomerListItem = {
-              name: contact.name,
-              mobile: selectedPhone.number,
-            };
-            const closeLoadingModal = openModal('loading', {
-              text: 'Adding Transaction...',
-            });
-            getAnalyticsService()
-              .logEvent('selectContent', {
-                item_id:
-                  '_id' in customer ? customer?._id?.toString() ?? '' : '',
-                content_type: 'customer',
-              })
-              .then(() => {});
-            //@ts-ignore
-            youGave({customer, amount: amount?.value ?? 0, note})
-              .then((receipt) => {
-                const {customer: nextCustomer} = receipt;
-                navigation.navigate('CustomerDetails', {
-                  customer: nextCustomer,
-                  header: {
-                    backButton: false,
-                    style: applyStyles({left: 0}),
-                  },
-                  sendReminder: false,
-                  actionButtons: [
-                    {
-                      onPress: () => {
-                        navigation.navigate('EntryTab');
-                      },
-                      variantColor: 'red',
-                      style: applyStyles({width: '50%'}),
-                      children: (
-                        <Text
-                          style={applyStyles(
-                            'text-uppercase text-white text-700',
-                          )}>
-                          Finish
-                        </Text>
-                      ),
-                    },
-                  ],
-                });
-                reset?.();
-              })
-              .catch(handleError)
-              .finally(closeLoadingModal);
-          });
-      },
-      [navigation, openModal, youGave],
-    );
+    const handleYouGave = useCallback(() => {
+      getContactService()
+        .selectContactPhone()
+        .then((selection) => {
+          if (!selection) {
+            return;
+          }
+          const {contact, selectedPhone} = selection;
+          const customer: SelectCustomerListItem = {
+            name: contact.name,
+            mobile: selectedPhone.number,
+          };
+          getAnalyticsService()
+            .logEvent('selectContent', {
+              item_id: '_id' in customer ? customer?._id?.toString() ?? '' : '',
+              content_type: 'customer',
+            })
+            .then(() => {});
+        });
+    }, [navigation, openModal]);
 
     const handleYouCollected = useCallback(
       ({amount, reset, note, showSuccessView, hideSuccessView}) => {
         const closeLoadingModal = openModal('loading', {
           text: 'Adding Transaction...',
         });
-        youGot({amount: amount?.value ?? 0, note})
-          .then(() => {
-            showSuccessView?.();
-            setTimeout(() => {
-              hideSuccessView?.();
-            }, 3000);
-            reset?.();
-          })
-          .catch(handleError)
-          .finally(closeLoadingModal);
       },
-      [openModal, youGot],
+      [openModal],
     );
 
     return (

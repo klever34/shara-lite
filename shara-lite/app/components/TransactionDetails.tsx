@@ -60,7 +60,7 @@ const TransactionDetails = withModal(
     const navigation = useAppNavigation();
     const analyticsService = getAnalyticsService();
     const businessInfo = getAuthService().getBusinessInfo();
-    const {youGave, youGot, addCustomerToTransaction} = useTransaction();
+    const {addCustomerToTransaction} = useTransaction();
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
@@ -211,13 +211,6 @@ const TransactionDetails = withModal(
                   const closeLoadingModal = openModal('loading', {
                     text: 'Adding Transaction...',
                   });
-                  youGot({
-                    customer,
-                    amount: amount?.value ?? 0,
-                    note,
-                  })
-                    .catch(handleError)
-                    .finally(closeLoadingModal);
                 },
               });
             },
@@ -237,13 +230,6 @@ const TransactionDetails = withModal(
                   const closeLoadingModal = openModal('loading', {
                     text: 'Adding Transaction...',
                   });
-                  youGave({
-                    customer,
-                    amount: amount?.value ?? 0,
-                    note,
-                  })
-                    .catch(handleError)
-                    .finally(closeLoadingModal);
                 },
               });
             },
@@ -258,7 +244,7 @@ const TransactionDetails = withModal(
         ];
       }
       return actionButtons;
-    }, [actionButtons, customer, navigation, openModal, youGave, youGot]);
+    }, [actionButtons, customer, navigation, openModal]);
 
     return (
       <SafeAreaView style={applyStyles('flex-1')}>
