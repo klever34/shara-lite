@@ -8,11 +8,11 @@ import React, {
 } from 'react';
 import {AppInput, AppInputProps} from '@/components/AppInput';
 import {applyStyles} from '@/styles';
-import {View} from 'react-native';
 import Icon from '@/components/Icon';
 import {TransactionEntryButton} from '@/components/TransactionEntryView';
 import {Keyboard} from 'react-native-ui-lib';
-const KeyboardUtils = Keyboard.KeyboardUtils;
+import {View, ScrollView} from 'react-native';
+// const KeyboardUtils = Keyboard.KeyboardUtils;
 const KeyboardAccessoryView = Keyboard.KeyboardAccessoryView;
 const KeyboardRegistry = Keyboard.KeyboardRegistry;
 
@@ -129,58 +129,63 @@ const CalculatorKeyboard = () => {
   }, []);
 
   return (
-    <View style={applyStyles('flex-1 flex-row px-16')}>
-      <View style={applyStyles('flex-1')}>
-        <TransactionEntryButton onPress={handleDelete}>
-          <Icon type="feathericons" name="delete" size={24} />
-        </TransactionEntryButton>
-        <TransactionEntryButton label="7" onPress={enterValue('7')} />
-        <TransactionEntryButton label="4" onPress={enterValue('4')} />
-        <TransactionEntryButton label="1" onPress={enterValue('1')} />
-        <TransactionEntryButton label="00" onPress={enterValue('00')} />
+    <ScrollView
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={applyStyles('w-screen')}>
+      <View style={applyStyles('flex-1 flex-row px-16')}>
+        <View style={applyStyles('flex-1')}>
+          <TransactionEntryButton onPress={handleDelete}>
+            <Icon type="feathericons" name="delete" size={24} />
+          </TransactionEntryButton>
+          <TransactionEntryButton label="7" onPress={enterValue('7')} />
+          <TransactionEntryButton label="4" onPress={enterValue('4')} />
+          <TransactionEntryButton label="1" onPress={enterValue('1')} />
+          <TransactionEntryButton label="00" onPress={enterValue('00')} />
+        </View>
+        <View style={applyStyles('flex-1')}>
+          <TransactionEntryButton label="%" onPress={enterValue('%')} />
+          <TransactionEntryButton label="8" onPress={enterValue('8')} />
+          <TransactionEntryButton label="5" onPress={enterValue('5')} />
+          <TransactionEntryButton label="2" onPress={enterValue('2')} />
+          <TransactionEntryButton label="0" onPress={enterValue('0')} />
+        </View>
+        <View style={applyStyles('flex-1')}>
+          <TransactionEntryButton
+            label="÷"
+            onPress={enterValue('÷')}
+            textStyle={applyStyles('text-red-100')}
+          />
+          <TransactionEntryButton label="9" onPress={enterValue('9')} />
+          <TransactionEntryButton label="6" onPress={enterValue('6')} />
+          <TransactionEntryButton label="3" onPress={enterValue('3')} />
+          <TransactionEntryButton label="." onPress={enterValue('.')} />
+        </View>
+        <View style={applyStyles('flex-1')}>
+          <TransactionEntryButton
+            label="x"
+            onPress={enterValue('*')}
+            textStyle={applyStyles('text-red-100')}
+          />
+          <TransactionEntryButton
+            label="-"
+            onPress={enterValue('-')}
+            textStyle={applyStyles('text-red-100')}
+          />
+          <TransactionEntryButton
+            label="+"
+            onPress={enterValue('+')}
+            textStyle={applyStyles('text-red-100')}
+          />
+          <TransactionEntryButton
+            label="="
+            onPress={handleCalculate}
+            style={applyStyles('bg-red-200', {flex: 2.1})}
+            textStyle={applyStyles('text-white')}
+          />
+        </View>
       </View>
-      <View style={applyStyles('flex-1')}>
-        <TransactionEntryButton label="%" onPress={enterValue('%')} />
-        <TransactionEntryButton label="8" onPress={enterValue('8')} />
-        <TransactionEntryButton label="5" onPress={enterValue('5')} />
-        <TransactionEntryButton label="2" onPress={enterValue('2')} />
-        <TransactionEntryButton label="0" onPress={enterValue('0')} />
-      </View>
-      <View style={applyStyles('flex-1')}>
-        <TransactionEntryButton
-          label="÷"
-          onPress={enterValue('÷')}
-          textStyle={applyStyles('text-red-100')}
-        />
-        <TransactionEntryButton label="9" onPress={enterValue('9')} />
-        <TransactionEntryButton label="6" onPress={enterValue('6')} />
-        <TransactionEntryButton label="3" onPress={enterValue('3')} />
-        <TransactionEntryButton label="." onPress={enterValue('.')} />
-      </View>
-      <View style={applyStyles('flex-1')}>
-        <TransactionEntryButton
-          label="x"
-          onPress={enterValue('*')}
-          textStyle={applyStyles('text-red-100')}
-        />
-        <TransactionEntryButton
-          label="-"
-          onPress={enterValue('-')}
-          textStyle={applyStyles('text-red-100')}
-        />
-        <TransactionEntryButton
-          label="+"
-          onPress={enterValue('+')}
-          textStyle={applyStyles('text-red-100')}
-        />
-        <TransactionEntryButton
-          label="="
-          onPress={handleCalculate}
-          style={applyStyles('bg-red-200', {flex: 2.1})}
-          textStyle={applyStyles('text-white')}
-        />
-      </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -198,8 +203,8 @@ export const CalculatorInput = (props: CalculatorInputProps) => {
   useEffect(() => {
     if (addEventListener) {
       addEventListener((event) => {
-        console.log('event', event); // event {"action": "ANSWER"}
-        KeyboardUtils.dismiss();
+        console.log('event', event);
+        //   KeyboardUtils.dismiss();
       });
     }
   }, [addEventListener]);
