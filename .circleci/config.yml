@@ -364,7 +364,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - checkout_code:
           app: shara-pro
           context: shara-qa
@@ -377,7 +376,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - test:
           app: shara-pro
           requires:
@@ -397,7 +395,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - fastlane:
           app: shara-pro
           context: shara-qa
@@ -414,7 +411,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
   shara-lite-qa-workflow:
     jobs:
       - request-approval:
