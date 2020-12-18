@@ -4,13 +4,13 @@ import {CustomersScreen} from '@/screens/main/customers';
 import {TransactionsScreen} from '@/screens/main/transactions';
 import {applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useContext} from 'react';
+import React from 'react';
 import {SafeAreaView, View, Text, Image} from 'react-native';
 import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {getAuthService} from '@/services';
-import {EntryButton, EntryContext} from '@/components/Entry';
+import {EntryButton} from '@/components/Entry';
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
@@ -27,7 +27,6 @@ const Nothing = () => null;
 export const HomeScreen = () => {
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
-  const {showEntryDialog, setEntryButtonPosition} = useContext(EntryContext);
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header
@@ -88,17 +87,7 @@ export const HomeScreen = () => {
           component={Nothing}
           options={{
             tabBarButton: () => {
-              return (
-                <EntryButton
-                  onLayout={(layout) => {
-                    setEntryButtonPosition?.({
-                      x: layout.x,
-                      y: layout.y,
-                    });
-                  }}
-                  onPress={showEntryDialog}
-                />
-              );
+              return <EntryButton />;
             },
           }}
         />

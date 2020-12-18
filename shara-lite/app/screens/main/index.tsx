@@ -21,15 +21,14 @@ import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
 } from './entry/SelectCustomerScreen';
-import {
-  CustomerEntryScreen,
-  CustomerEntryScreenParams,
-} from './customers/CustomerEntryScreen';
+import {CustomerEntryScreenParams} from './customers/CustomerEntryScreen';
 import ReferralScreen from './more/referral';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import {MoreScreen} from '@/screens/main/more';
 import {PaymentsScreen} from '@/screens/main/payments';
 import {Entry} from '@/components/Entry';
+import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
+import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -40,6 +39,8 @@ export type MainStackParamList = {
   CustomerEntry: CustomerEntryScreenParams;
 
   // Transaction
+  RecordSale: undefined;
+  RecordCollection: undefined;
   TransactionDetails: {transaction: IReceipt};
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
 
@@ -122,8 +123,14 @@ const MainScreens = () => {
         />
 
         <MainStack.Screen
-          name="CustomerEntry"
-          component={CustomerEntryScreen}
+          name="RecordSale"
+          component={RecordSaleScreen}
+          options={{headerShown: false}}
+        />
+
+        <MainStack.Screen
+          name="RecordCollection"
+          component={RecordCollectionScreen}
           options={{headerShown: false}}
         />
 

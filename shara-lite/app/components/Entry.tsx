@@ -6,9 +6,16 @@ import React, {
   useCallback,
   useRef,
   useState,
-  useEffect,
+  useLayoutEffect,
+  useContext,
 } from 'react';
-import {Text, View, ViewProps} from 'react-native';
+import {
+  findNodeHandle,
+  SafeAreaView,
+  Text,
+  View,
+  ViewProps,
+} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 import Keypad from '@/assets/images/keypad.svg';
@@ -18,6 +25,7 @@ import * as Animatable from 'react-native-animatable';
 import {useAppNavigation} from '@/services/navigation';
 
 type EntryContextProps = {
+  wrapper?: View | null;
   showEntryDialog?: () => void;
   hideEntryDialog?: () => void;
   setEntryButtonPosition?: Dispatch<SetStateAction<{x: number; y: number}>>;
@@ -40,121 +48,136 @@ export const Entry = ({children}: EntryProps) => {
   }, [hideEntryDialog]);
   const [entryButtonPosition, setEntryButtonPosition] = useState({x: 0, y: 0});
   const navigation = useAppNavigation();
+  const wrapperRef = useRef<View | null>(null);
+  const wrapper = wrapperRef.current;
   return (
     <EntryContext.Provider
-      value={{showEntryDialog, hideEntryDialog, setEntryButtonPosition}}>
-      {show && (
-        <View
-          style={applyStyles('w-screen h-screen absolute', {
-            zIndex: 10,
-          })}>
-          <Touchable onPress={hideEntryDialog}>
+      value={{
+        showEntryDialog,
+        hideEntryDialog,
+        setEntryButtonPosition,
+        wrapper,
+      }}>
+      <SafeAreaView style={applyStyles('flex-1')} ref={wrapperRef}>
+        {show && (
+          <View
+            style={applyStyles('w-screen h-screen absolute', {
+              zIndex: 10,
+            })}>
+            <Touchable onPress={hideEntryDialog}>
+              <View
+                style={applyStyles('w-full h-full absolute', {
+                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
+                  zIndex: 0,
+                })}
+              />
+            </Touchable>
             <View
-              style={applyStyles('w-full h-full absolute', {
-                backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                zIndex: 0,
-              })}
-            />
-          </Touchable>
-          <View
-            style={applyStyles('absolute items-center w-full', {
-              zIndex: 10,
-              top: entryButtonPosition.y - 108,
-            })}>
-            <Touchable
-              onPress={() => {
-                navigation.navigate('RecordSale');
-              }}>
-              <Animatable.View
-                animation="fadeInUp"
-                duration={300}
-                delay={10}
-                style={applyStyles(
-                  'flex-row p-8 bg-red-200 center rounded-24',
-                )}>
-                <Icon
-                  type="feathericons"
-                  name="arrow-up"
-                  color={colors.white}
-                  size={20}
-                />
-                <Text
-                  style={applyStyles(
-                    'mx-8 text-700 font-bold text-xs text-white',
-                  )}>
-                  Record Sale
-                </Text>
-              </Animatable.View>
-            </Touchable>
-          </View>
-          <View
-            style={applyStyles('absolute items-center w-full', {
-              zIndex: 10,
-              top: entryButtonPosition.y - 48,
-            })}>
-            <Touchable
-              onPress={() => {
-                navigation.navigate('RecordCollection');
-              }}>
-              <Animatable.View
-                animation="fadeInUp"
-                duration={300}
-                style={applyStyles(
-                  'flex-row p-8 bg-green-200 center rounded-24',
-                )}>
-                <Icon
-                  type="feathericons"
-                  name="arrow-down"
-                  color={colors.white}
-                  size={20}
-                />
-                <Text
-                  style={applyStyles(
-                    'mx-8 text-700 font-bold text-xs text-white',
-                  )}>
-                  Record Collection
-                </Text>
-              </Animatable.View>
-            </Touchable>
-          </View>
-          <EntryButton
-            container={{
-              style: applyStyles('absolute', {
+              style={applyStyles('absolute items-center w-full', {
                 zIndex: 10,
-                top: entryButtonPosition.y,
-                left: entryButtonPosition.x,
-              }),
-            }}
-          />
-        </View>
-      )}
-      {children}
+                top: entryButtonPosition.y - 108,
+              })}>
+              <Touchable
+                onPress={() => {
+                  navigation.navigate('RecordSale');
+                  hideEntryDialog();
+                }}>
+                <Animatable.View
+                  animation="fadeInUp"
+                  duration={300}
+                  delay={10}
+                  style={applyStyles(
+                    'flex-row p-8 bg-red-200 center rounded-24',
+                  )}>
+                  <Icon
+                    type="feathericons"
+                    name="arrow-up"
+                    color={colors.white}
+                    size={20}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'mx-8 text-700 font-bold text-xs text-white',
+                    )}>
+                    Record Sale
+                  </Text>
+                </Animatable.View>
+              </Touchable>
+            </View>
+            <View
+              style={applyStyles('absolute items-center w-full', {
+                zIndex: 10,
+                top: entryButtonPosition.y - 48,
+              })}>
+              <Touchable
+                onPress={() => {
+                  navigation.navigate('RecordCollection');
+                  hideEntryDialog();
+                }}>
+                <Animatable.View
+                  animation="fadeInUp"
+                  duration={300}
+                  style={applyStyles(
+                    'flex-row p-8 bg-green-200 center rounded-24',
+                  )}>
+                  <Icon
+                    type="feathericons"
+                    name="arrow-down"
+                    color={colors.white}
+                    size={20}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'mx-8 text-700 font-bold text-xs text-white',
+                    )}>
+                    Record Collection
+                  </Text>
+                </Animatable.View>
+              </Touchable>
+            </View>
+            <EntryButton
+              ghost
+              container={{
+                style: applyStyles('absolute', {
+                  zIndex: 10,
+                  top: entryButtonPosition.y,
+                  left: entryButtonPosition.x,
+                }),
+              }}
+            />
+          </View>
+        )}
+        {children}
+      </SafeAreaView>
     </EntryContext.Provider>
   );
 };
 
 type EntryButtonProps = {
   container?: ViewProps;
-  onLayout?: (position: {x: number; y: number}) => void;
-  onPress?: () => void;
+  ghost?: boolean;
 };
 
-export const EntryButton = ({
-  container,
-  onLayout,
-  onPress,
-}: EntryButtonProps) => {
+export const EntryButton = ({container, ghost}: EntryButtonProps) => {
   const containerRef = useRef<View | null>(null);
-  const nextOnLayout = useRef(onLayout).current;
-  useEffect(() => {
-    setTimeout(() => {
-      if (containerRef.current) {
-        containerRef.current?.measure?.((fx, fy, width, height, px, py) => {
-          nextOnLayout?.({x: px, y: py});
-        });
-      }
-    }, 0);
-  }, [nextOnLayout]);
+  const {wrapper, setEntryButtonPosition, showEntryDialog} = useContext(
+    EntryContext,
+  );
+  useLayoutEffect(() => {
+    if (!ghost) {
+      setTimeout(() => {
+        if (containerRef.current && wrapper) {
+          containerRef.current.measureLayout(
+            findNodeHandle(wrapper) as number,
+            (x, y) => {
+              setEntryButtonPosition?.({x, y});
+            },
+            () => {},
+          );
+        }
+      }, 0);
+    }
+  }, [ghost, setEntryButtonPosition, wrapper]);
   return (
     <View
       style={applyStyles('relative', {
@@ -175,7 +198,7 @@ export const EntryButton = ({
             </View>
           );
         }}
-        onPress={onPress}
+        onPress={ghost ? undefined : showEntryDialog}
       />
     </View>
   );
