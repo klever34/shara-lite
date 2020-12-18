@@ -17,7 +17,7 @@ export const getCreditPayments = ({
 }): ICreditPayment[] => {
   return (realm
     .objects<ICreditPayment>(modelName)
-    .filtered('is_deleted = false') as unknown) as ICreditPayment[];
+    .filtered('is_deleted != true') as unknown) as ICreditPayment[];
 };
 
 export const saveCreditPayment = ({

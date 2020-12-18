@@ -243,6 +243,7 @@ export const CustomerListScreen = () => {
         keyExtractor={keyExtractor}
         onSearch={handleCustomerSearch}
         renderListItem={renderCustomerListItem}
+        onClearInput={() => handleCustomerSearch('')}
         searchPlaceholderText={`Search ${filteredCustomers.length} Customers`}
       />
     </KeyboardAvoidingView>

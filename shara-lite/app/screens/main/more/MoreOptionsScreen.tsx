@@ -137,6 +137,9 @@ export const MoreOptionsScreen = withModal(
           item_id: '',
         })
         .then(() => {});
+      getAnalyticsService()
+        .logEvent('friendInvited', {})
+        .then(() => {});
       handleWhatsappShare();
     }, [handleWhatsappShare]);
 
@@ -195,6 +198,9 @@ export const MoreOptionsScreen = withModal(
     const copyToClipboard = useCallback(() => {
       Clipboard.setString(paymentLink);
       showSuccessToast('Copied');
+      getAnalyticsService()
+        .logEvent('copiedPaymentLink', {})
+        .then(() => {});
     }, [paymentLink, showSuccessToast]);
 
     useEffect(() => {

@@ -75,3 +75,5 @@ export const spacing: {[key: string]: number} = {
   lg: 16,
   xl: 24,
 };
+
+export const navBarHeight = 80;

@@ -39,6 +39,7 @@ export type SharaAppEventsProperties = {
   };
   productAddedToReceipt: {};
   customerAddedToReceipt: {};
+  detailsEnteredToReceipt: {};
   // Content
   share: {item_id: string; content_type: string; method: string};
   selectContent: {item_id: string; content_type: string};
@@ -52,12 +53,17 @@ export type SharaAppEventsProperties = {
   productAdded: {};
   inventoryReceived: {};
   deliveryAgentAdded: {};
+  //Sync
   syncStarted: {};
   syncCompleted: {};
+  //Referral
+  friendInvited: {};
+  referralCodeAdded: {};
 };
 
 export interface IAnalyticsService {
   initialize(): Promise<void>;
+
   setUser(user: User): Promise<void>;
 
   logEvent<K extends keyof SharaAppEventsProperties>(
@@ -70,6 +76,7 @@ export interface IAnalyticsService {
 
 export class AnalyticsService implements IAnalyticsService {
   private firebaseAnalytics = getFirebaseAnalytics();
+
   async initialize(): Promise<void> {
     try {
       if (
@@ -80,6 +87,7 @@ export class AnalyticsService implements IAnalyticsService {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
+
         RNUxcam.optIntoSchematicRecordings();
         RNUxcam.setAutomaticScreenNameTagging(false);
         RNUxcam.startWithKey(Config.UXCAM_KEY);
@@ -118,7 +126,7 @@ export class AnalyticsService implements IAnalyticsService {
           ? `${user.firstname ?? ''} ${user.lastname ?? ''}`.trim()
           : String(user.id);
 
-      RNUxcam.setUserIdentity(alias);
+      RNUxcam.setUserIdentity(user.ux_cam_id || alias);
       for (let prop in userData) {
         RNUxcam.setUserProperty(prop, userData[prop]);
       }
