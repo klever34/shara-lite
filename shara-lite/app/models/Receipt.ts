@@ -98,10 +98,10 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
   }
 
   public get isInflow() {
-    return !!this.credit_amount;
+    return !this.credit_amount;
   }
 
   public get isOutflow() {
-    return !this.credit_amount;
+    return !!this.credit_amount;
   }
 }

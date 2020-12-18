@@ -73,6 +73,7 @@ export type SharaAppEventsProperties = {
   };
   setCollectionDate: {};
   userUpdatedTransaction: {};
+  userDeletedTransaction: {};
   detailsEnteredToTransaction: {};
   //Referral
   friendInvited: {};

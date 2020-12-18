@@ -24,6 +24,10 @@ interface updateTransactionInterface {
   transaction: IReceipt;
 }
 
+interface deleteTransactionInterface {
+  transaction: IReceipt;
+}
+
 interface updateDueDateInterface {
   due_date: Date;
   transaction: Partial<IReceipt & Realm.Object>;
@@ -33,6 +37,7 @@ interface useTransactionInterface {
   getTransactions: () => IReceipt[];
   saveTransaction: (data: saveTransactionInterface) => Promise<IReceipt>;
   updateTransaction: (data: updateTransactionInterface) => Promise<void>;
+  deleteTransaction: (data: deleteTransactionInterface) => Promise<void>;
   addCustomerToTransaction: (
     data: addCustomerToTransactionInterface,
   ) => Promise<void>;
@@ -131,10 +136,25 @@ export const useTransaction = (): useTransactionInterface => {
       .then(() => {});
   };
 
+  const deleteTransaction = async ({
+    transaction,
+  }: deleteTransactionInterface) => {
+    await updateReceiptRecord({
+      updates: {
+        is_deleted: true,
+      },
+      receipt: transaction,
+    });
+    getAnalyticsService()
+      .logEvent('userDeletedTransaction', {})
+      .then(() => {});
+  };
+
   return {
     getTransactions,
     saveTransaction,
     updateTransaction,
+    deleteTransaction,
     addCustomerToTransaction,
     updateDueDate,
   };
