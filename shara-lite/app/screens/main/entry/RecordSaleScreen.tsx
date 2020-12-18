@@ -1,11 +1,14 @@
 import React from 'react';
-import {Text} from 'react-native';
 import {Page} from '@/components/Page';
+import {TitleContainer} from '@/components/TitleContainer';
 
 const RecordSaleScreen = () => {
   return (
     <Page header={{iconLeft: {}, title: ' '}}>
-      <Text>Record Sale</Text>
+      <TitleContainer
+        title="Record Sale"
+        description="Quickly record a collection or outstanding"
+      />
     </Page>
   );
 };

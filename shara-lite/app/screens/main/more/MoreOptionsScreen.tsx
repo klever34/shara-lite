@@ -30,6 +30,7 @@ import {ToastContext} from '@/components/Toast';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
+import {TitleContainer} from '@/components/TitleContainer';
 
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
@@ -211,14 +212,11 @@ export const MoreOptionsScreen = withModal(
             {minHeight: dimensions.fullHeight - 120},
             'bg-white',
           )}>
-          <View style={applyStyles('p-14')}>
-            <Text style={applyStyles('text-xl text-400 text-gray-300')}>
-              My Account
-            </Text>
-            <Text style={applyStyles('text-gray-200 py-8')}>
-              Quickly record a transaction or obligation
-            </Text>
-          </View>
+          <TitleContainer
+            title="My Account"
+            description="Quickly record a transaction or obligation"
+            style={applyStyles('p-16')}
+          />
           {!business.name && (
             <Touchable onPress={onEditBusinessSettings}>
               <View
