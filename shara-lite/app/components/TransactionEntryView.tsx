@@ -3,7 +3,6 @@ import {AppInput} from '@/components';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
-import {useReceiptList} from '@/screens/main/transactions/AllTransactionsListScreen';
 import {getAuthService} from '@/services';
 import {applyStyles, navBarHeight} from '@/styles';
 import React, {
@@ -29,6 +28,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import {dimensions} from '@/styles';
+import {useReceiptList} from '@/screens/main/transactions/TransactionListScreen';
 
 const getLastToken = (tokens: string[]) => {
   return tokens[tokens.length - 1];

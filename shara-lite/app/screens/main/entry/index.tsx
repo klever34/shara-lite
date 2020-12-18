@@ -38,6 +38,7 @@ export const TransactionEntryScreen = withModal(
                 content_type: 'customer',
               })
               .then(() => {});
+            //@ts-ignore
             youGave({customer, amount: amount?.value ?? 0, note})
               .then((receipt) => {
                 const {customer: nextCustomer} = receipt;

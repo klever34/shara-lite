@@ -1,12 +1,13 @@
 import {applyStyles} from '@/styles';
 import {upperCase} from 'lodash';
 import React from 'react';
-import {StyleProp, Text, View, ViewStyle} from 'react-native';
+import {StyleProp, Text, TextStyle, View, ViewStyle} from 'react-native';
 import Icon, {IconProps} from './Icon';
 
 export type PlaceholderImageProps = {
   text: string;
   style?: ViewStyle;
+  textStyle?: TextStyle;
   indicator?: {
     style: StyleProp<ViewStyle>;
     icon: IconProps;
@@ -17,6 +18,7 @@ const PlaceholderImage = ({
   text,
   style = {},
   indicator,
+  textStyle,
 }: PlaceholderImageProps) => {
   let displayLetter: string;
   if (text && text[0].match(/[A-Za-z]/)) {
@@ -37,7 +39,7 @@ const PlaceholderImage = ({
         }),
         style,
       )}>
-      <Text style={applyStyles('text-xl text-white text-400')}>
+      <Text style={applyStyles('text-xl text-white text-400', textStyle)}>
         {displayLetter}
       </Text>
       {indicator && (

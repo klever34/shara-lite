@@ -6,9 +6,8 @@ import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
-import {getCustomers} from '@/services/customer/service';
+import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation} from '@/services/navigation';
-import {useRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
 import orderBy from 'lodash/orderBy';
@@ -30,21 +29,75 @@ import * as Animatable from 'react-native-animatable';
 
 type CustomerListItem = ICustomer;
 
-export const CustomerListScreen = () => {
-  const realm = useRealm();
+interface UseCustomerListOptions {
+  orderByQuery: string[];
+  orderByOrder:
+    | boolean
+    | 'asc'
+    | 'desc'
+    | readonly (boolean | 'asc' | 'desc')[]
+    | undefined;
+}
+
+export const useCustomerList = (options = {}) => {
+  const {
+    orderByQuery = ['debtLevel', 'name'],
+    orderByOrder = ['desc', 'asc'],
+  } = options as UseCustomerListOptions;
+  const {getCustomers} = useCustomer();
   const navigation = useAppNavigation();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [myCustomers, setMyCustomers] = useState(getCustomers({realm}));
-
-  const analyticsService = getAnalyticsService();
+  const [myCustomers, setMyCustomers] = useState(getCustomers());
 
   const reloadMyCustomers = useCallback(() => {
-    if (realm) {
-      const nextMyCustomers = getCustomers({realm});
-      setMyCustomers(nextMyCustomers);
+    const nextMyCustomers = getCustomers();
+    setMyCustomers(nextMyCustomers);
+  }, [getCustomers]);
+
+  const handleCustomerSearch = useCallback((query) => {
+    setSearchTerm(query);
+  }, []);
+
+  const filteredCustomers = useMemo(() => {
+    let customers = (myCustomers as unknown) as Realm.Results<
+      ICustomer & Realm.Object
+    >;
+    if (searchTerm) {
+      customers = customers.filtered(
+        `name CONTAINS[c] "${searchTerm}" OR mobile CONTAINS[c] "${searchTerm}"`,
+      );
     }
-  }, [realm]);
+    return orderBy(
+      customers,
+      orderByQuery as (keyof ICustomer)[],
+      orderByOrder,
+    );
+  }, [myCustomers, searchTerm, orderByQuery, orderByOrder]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', reloadMyCustomers);
+  }, [navigation, reloadMyCustomers]);
+
+  return useMemo(
+    () => ({
+      searchTerm,
+      filteredCustomers,
+      handleCustomerSearch,
+    }),
+    [searchTerm, filteredCustomers, handleCustomerSearch],
+  );
+};
+
+export const CustomerListScreen = () => {
+  const navigation = useAppNavigation();
+  const analyticsService = getAnalyticsService();
+
+  const {
+    searchTerm,
+    filteredCustomers,
+    handleCustomerSearch,
+  } = useCustomerList();
 
   const handleSelectCustomer = useCallback(
     (item?: ICustomer) => {
@@ -161,32 +214,11 @@ export const CustomerListScreen = () => {
     return `${'_id' in item ? item._id + '-' : ''}${item.mobile}`;
   }, []);
 
-  const handleCustomerSearch = useCallback((query) => {
-    setSearchTerm(query);
-  }, []);
-
-  const filteredCustomers = useMemo(() => {
-    let customers = myCustomers;
-    if (searchTerm) {
-      customers = customers.filtered(
-        `name CONTAINS[c] "${searchTerm}" OR mobile CONTAINS[c] "${searchTerm}"`,
-      );
-    }
-    return orderBy(customers, ['debtLevel', 'name'] as (keyof ICustomer)[], [
-      'desc',
-      'asc',
-    ]);
-  }, [myCustomers, searchTerm]);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => null,
     });
   }, [navigation]);
-
-  useEffect(() => {
-    return navigation.addListener('focus', reloadMyCustomers);
-  }, [navigation, realm, reloadMyCustomers]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

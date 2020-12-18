@@ -128,7 +128,11 @@ export const BusinessSettings = () => {
 
   return (
     <Page
-      header={{title: 'Business Settings', iconLeft: {}}}
+      header={{
+        title: 'Business Settings',
+        iconLeft: {},
+        style: applyStyles('py-8'),
+      }}
       style={applyStyles('bg-white')}>
       <>
         <FormBuilder

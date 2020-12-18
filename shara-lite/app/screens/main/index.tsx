@@ -88,7 +88,7 @@ const MainScreens = () => {
   return (
     <Entry>
       <MainStack.Navigator
-        initialRouteName="Home"
+        initialRouteName="SelectCustomerList"
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.white,
@@ -120,6 +120,7 @@ const MainScreens = () => {
           name="SelectCustomerList"
           component={SelectCustomerListScreen}
           options={{headerShown: false}}
+          initialParams={{onSelectCustomer: () => {}}}
         />
 
         <MainStack.Screen
