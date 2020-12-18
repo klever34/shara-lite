@@ -5,7 +5,6 @@ import CustomerDetailsHeader, {
 import {Icon} from '@/components/Icon';
 import PaymentReminderImage from '@/components/PaymentReminderImage';
 import Touchable from '@/components/Touchable';
-import {TransactionEntryContextProps} from '@/components/TransactionEntryView';
 import TransactionListHeader from '@/components/TransactionListHeader';
 import TransactionListItem from '@/components/TransactionListItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
@@ -17,17 +16,17 @@ import {
   getAuthService,
   getContactService,
 } from '@/services';
+import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import Config from 'react-native-config';
 import React, {useCallback, useMemo, useState} from 'react';
 import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import {useCustomer} from '@/services/customer/hook';
+import Config from 'react-native-config';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
@@ -46,7 +45,6 @@ const TransactionDetails = withModal(
   ({
     header,
     isPaid,
-    openModal,
     creditAmount,
     transactions,
     actionButtons,
@@ -134,7 +132,7 @@ const TransactionDetails = withModal(
           setDueDate(date);
           if (customer) {
             try {
-              await updateDueDate({due_date: date, customer});
+              await updateDueDate({due_date: date, transaction: {}});
             } catch (e) {
               console.log(e);
             }
@@ -206,11 +204,8 @@ const TransactionDetails = withModal(
           {
             onPress: () => {
               navigation.navigate('CustomerEntry', {
-                onEntrySave: ({amount, note}: TransactionEntryContextProps) => {
+                onEntrySave: () => {
                   navigation.goBack();
-                  const closeLoadingModal = openModal('loading', {
-                    text: 'Adding Transaction...',
-                  });
                 },
               });
             },
@@ -225,11 +220,8 @@ const TransactionDetails = withModal(
           {
             onPress: () => {
               navigation.navigate('CustomerEntry', {
-                onEntrySave: ({amount, note}: TransactionEntryContextProps) => {
+                onEntrySave: () => {
                   navigation.goBack();
-                  const closeLoadingModal = openModal('loading', {
-                    text: 'Adding Transaction...',
-                  });
                 },
               });
             },
@@ -244,7 +236,7 @@ const TransactionDetails = withModal(
         ];
       }
       return actionButtons;
-    }, [actionButtons, customer, navigation, openModal]);
+    }, [actionButtons, customer, navigation]);
 
     return (
       <SafeAreaView style={applyStyles('flex-1')}>
