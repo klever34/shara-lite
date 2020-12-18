@@ -41,7 +41,7 @@ const ForgotPassword = () => {
       showButton={false}>
       <FormBuilder
         fields={formFields}
-        submitBtn={{title: 'submit'}}
+        actionBtns={[{title: 'submit'}]}
         onSubmit={(values) => {
           const phoneNumber = values?.mobile as PhoneNumber;
           const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;

@@ -72,7 +72,7 @@ export const UserProfileSettings = () => {
       <FormBuilder
         forceUseFormButton
         fields={formFields}
-        submitBtn={{title: 'Save'}}
+        actionBtns={[undefined, {title: 'Save'}]}
         onSubmit={async (values) => {
           const phoneNumber = values.mobile as PhoneNumber;
           const formValues = {

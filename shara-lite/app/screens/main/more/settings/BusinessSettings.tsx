@@ -134,7 +134,7 @@ export const BusinessSettings = () => {
         <FormBuilder
           forceUseFormButton
           fields={formFields}
-          submitBtn={{title: 'Save'}}
+          actionBtns={[undefined, {title: 'Save'}]}
           onSubmit={handleSubmit}
         />
       </>

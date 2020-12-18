@@ -67,7 +67,7 @@ type FormBuilderProps<
 > = {
   fields: Fields;
   onInputChange?: (values: {[name in keyof Fields]: any}) => void;
-  submitBtn?: ButtonProps;
+  actionBtns?: [ButtonProps?, ButtonProps?];
   onSubmit?: (values: {[name in keyof Fields]: any}) => Promise<any>;
   forceUseFormButton?: boolean;
 };
@@ -75,7 +75,7 @@ type FormBuilderProps<
 export const FormBuilder = <FieldName extends keyof any>({
   fields,
   onInputChange,
-  submitBtn,
+  actionBtns = [],
   onSubmit,
   forceUseFormButton = false,
 }: FormBuilderProps<FieldName>) => {
@@ -211,20 +211,33 @@ export const FormBuilder = <FieldName extends keyof any>({
     [],
   );
 
-  const button = useMemo(
-    () => (
-      <Button
-        style={applyStyles('w-full')}
-        {...submitBtn}
-        onPress={runHandleSubmitBtnPress}
-        isLoading={loading}
-      />
-    ),
-    [loading, runHandleSubmitBtnPress, submitBtn],
-  );
+  const button = useMemo(() => {
+    return (
+      <View style={applyStyles('w-full flex-row')}>
+        {actionBtns.map((actionBtn, index, arr) => {
+          return (
+            <View
+              style={applyStyles(
+                'flex-1',
+                index !== 0 && 'ml-4',
+                index !== arr.length - 1 && 'mr-4',
+              )}>
+              {actionBtn && (
+                <Button
+                  onPress={runHandleSubmitBtnPress}
+                  isLoading={loading}
+                  {...actionBtn}
+                />
+              )}
+            </View>
+          );
+        })}
+      </View>
+    );
+  }, [loading, runHandleSubmitBtnPress, actionBtns]);
 
   useEffect(() => {
-    if (submitBtn && setFooter && !forceUseFormButton) {
+    if (actionBtns.length && setFooter && !forceUseFormButton) {
       setFooter(button);
     }
   }, [
@@ -233,7 +246,7 @@ export const FormBuilder = <FieldName extends keyof any>({
     loading,
     runHandleSubmitBtnPress,
     setFooter,
-    submitBtn,
+    actionBtns.length,
   ]);
 
   return (
@@ -330,7 +343,7 @@ export const FormBuilder = <FieldName extends keyof any>({
             return null;
         }
       })}
-      {submitBtn && (!setFooter || forceUseFormButton) && button}
+      {actionBtns.length && (!setFooter || forceUseFormButton) && button}
     </View>
   );
 };
