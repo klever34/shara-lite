@@ -134,7 +134,19 @@ export const BusinessSettings = () => {
         <FormBuilder
           forceUseFormButton
           fields={formFields}
-          actionBtns={[undefined, {title: 'Save'}]}
+          actionBtns={[
+            {
+              title: 'Preview Receipt',
+              variantColor: 'transparent',
+              onPress: () => {
+                Alert.alert(
+                  'Coming Soon',
+                  'This feature is coming in the next update',
+                );
+              },
+            },
+            {title: 'Save'},
+          ]}
           onSubmit={handleSubmit}
         />
       </>

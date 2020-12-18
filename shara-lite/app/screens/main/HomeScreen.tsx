@@ -46,7 +46,7 @@ export const HomeScreen = () => {
             source={{
               uri: business.profile_image?.url,
             }}
-            style={applyStyles('w-full rounded-8', {
+            style={applyStyles('w-full rounded-12', {
               width: 24,
               height: 24,
             })}
