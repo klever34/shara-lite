@@ -198,7 +198,7 @@ export const CalculatorInput = (props: CalculatorInputProps) => {
   useEffect(() => {
     if (addEventListener) {
       addEventListener((event) => {
-        console.log('event', event);
+        console.log('event', event); // event {"action": "ANSWER"}
         KeyboardUtils.dismiss();
       });
     }
