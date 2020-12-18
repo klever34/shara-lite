@@ -263,7 +263,11 @@ function PaymentContainer(props: ModalWrapperFields) {
 
   return (
     <Page
-      header={{title: 'Payment Settings', iconLeft: {}}}
+      header={{
+        title: 'Payment Settings',
+        iconLeft: {},
+        style: applyStyles('py-8'),
+      }}
       style={applyStyles('px-0')}>
       <KeyboardAwareScrollView
         nestedScrollEnabled

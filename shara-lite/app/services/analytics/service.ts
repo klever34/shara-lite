@@ -65,15 +65,15 @@ export type SharaAppEventsProperties = {
   paymentPreviewLabelEdited: {};
   copiedPaymentLink: {};
   //Transactions
-  userGaveTransaction: {
-    amount: number;
-    currency_code: string;
-  };
-  userGotTransaction: {
-    amount: number;
+  userSavedTransaction: {
+    amountPaid: number;
+    creditAmount: number;
+    totalAmount: number;
     currency_code: string;
   };
   setCollectionDate: {};
+  userUpdatedTransaction: {};
+  userDeletedTransaction: {};
   detailsEnteredToTransaction: {};
   //Referral
   friendInvited: {};

@@ -1,19 +1,21 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {View, TextInput} from 'react-native';
+import {View, TextInput, ViewStyle} from 'react-native';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 
 type SearchFilterProps = {
   value?: string;
-  onClearInput?: () => void;
+  inputStyle?: ViewStyle;
   placeholderText?: string;
+  onClearInput?: () => void;
   onSearch?: (text: string) => void;
 };
 
 export const SearchFilter = ({
   value,
   onSearch,
+  inputStyle,
   onClearInput,
   placeholderText = 'Search',
 }: SearchFilterProps) => {
@@ -39,10 +41,14 @@ export const SearchFilter = ({
         </View>
         <TextInput
           value={value}
-          style={applyStyles('px-40 text-400 bg-white', {
-            height: 40,
-            fontSize: 16,
-          })}
+          style={applyStyles(
+            'px-40 text-400 bg-white',
+            {
+              height: 40,
+              fontSize: 16,
+            },
+            inputStyle,
+          )}
           onChangeText={onSearch}
           placeholder={placeholderText}
         />

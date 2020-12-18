@@ -67,7 +67,11 @@ export const UserProfileSettings = () => {
 
   return (
     <Page
-      header={{title: 'Profile Settings', iconLeft: {}}}
+      header={{
+        title: 'Profile Settings',
+        iconLeft: {},
+        style: applyStyles('py-8'),
+      }}
       style={applyStyles('bg-white')}>
       <FormBuilder
         forceUseFormButton
