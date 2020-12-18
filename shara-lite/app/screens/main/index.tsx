@@ -88,7 +88,7 @@ const MainScreens = () => {
   return (
     <Entry>
       <MainStack.Navigator
-        initialRouteName="SelectCustomerList"
+        initialRouteName="Home"
         screenOptions={{
           headerStyle: {
             backgroundColor: colors.white,

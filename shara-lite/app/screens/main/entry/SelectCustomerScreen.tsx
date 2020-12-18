@@ -87,6 +87,14 @@ export const SelectCustomerListScreen = ({
     }
   }, [saveCustomer, handleSetCustomer]);
 
+  const handleSearch = useCallback(
+    (text) => {
+      handleCustomerSearch(text);
+      setCustomer(undefined);
+    },
+    [handleCustomerSearch],
+  );
+
   const handleClearSearch = useCallback(() => {
     handleCustomerSearch('');
     //@ts-ignore
@@ -161,7 +169,7 @@ export const SelectCustomerListScreen = ({
       <View style={applyStyles('px-16 py-12')}>
         <SearchFilter
           value={searchTerm}
-          onSearch={handleCustomerSearch}
+          onSearch={handleSearch}
           onClearInput={handleClearSearch}
           placeholderText="Type customer name"
           inputStyle={applyStyles('bg-gray-10', {borderRadius: 8})}
