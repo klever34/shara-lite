@@ -1,4 +1,11 @@
-import React, {useCallback, useContext, useLayoutEffect, useMemo} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {Alert, Image, ScrollView, Text, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import Clipboard from '@react-native-community/clipboard';
@@ -23,7 +30,6 @@ import {ToastContext} from '@/components/Toast';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
-import {useInfo} from '@/helpers/hooks';
 
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
@@ -45,34 +51,20 @@ export const MoreOptionsScreen = withModal(
 
     useLayoutEffect(() => {
       navigation.setOptions({
-        headerStyle: applyStyles('border-b-1', {
-          elevation: 0,
-        }),
         headerLeft: (props: StackHeaderLeftButtonProps) => {
           return (
             <HeaderBackButton
               {...props}
               backImage={() => {
                 return (
-                  <View style={applyStyles('flex-row center')}>
-                    <Icon
-                      type="feathericons"
-                      color={colors['gray-300']}
-                      name="menu"
-                      size={22}
-                      borderRadius={12}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-sm text-md text-gray-300 text-uppercase',
-                        {
-                          fontFamily: 'Rubik-Medium',
-                        },
-                      )}
-                      numberOfLines={1}>
-                      More
-                    </Text>
-                  </View>
+                  <Icon
+                    type="feathericons"
+                    color={colors['gray-300']}
+                    name="arrow-left"
+                    size={22}
+                    borderRadius={12}
+                    onPress={() => navigation.goBack()}
+                  />
                 );
               }}
             />
@@ -86,37 +78,39 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('BusinessSettings');
     }, [navigation]);
 
+    const PaymentSettings = useCallback(() => {
+      navigation.navigate('PaymentSettings');
+    }, [navigation]);
+
     const moreOptions = useMemo(() => {
       return [
         {
           title: 'My Profile',
-          icon: 'user',
+          text: 'View and update your personal information',
           onPress: () => {
             navigation.navigate('UserProfileSettings');
           },
         },
         {
           title: 'Business Settings',
-          icon: 'sliders',
+          text: 'View and edit your business information',
           onPress: onEditBusinessSettings,
         },
         {
           title: 'Payment Settings',
-          icon: 'sliders',
-          onPress: () => {
-            navigation.navigate('PaymentSettings');
-          },
+          text: 'View and edit your payment information',
+          onPress: PaymentSettings,
         },
         {
           title: 'Referral',
-          icon: 'users',
+          text: 'Enter Referral code',
           onPress: () => {
             navigation.navigate('Referral');
           },
         },
         {
           title: 'Help & Support',
-          icon: 'help-circle',
+          text: 'Looking for help?',
           onPress: () => {
             Alert.alert(
               'Coming Soon',
@@ -125,7 +119,7 @@ export const MoreOptionsScreen = withModal(
           },
         },
       ];
-    }, [navigation, onEditBusinessSettings]);
+    }, [navigation, onEditBusinessSettings, PaymentSettings]);
 
     const {logoutFromRealm} = useRealmLogout();
     const handleError = useErrorHandler();
@@ -183,7 +177,9 @@ export const MoreOptionsScreen = withModal(
     }, [handleLogout, openModal, hasAllRecordsBeenSynced]);
 
     const user = getAuthService().getUser();
-    const business = useInfo(() => getAuthService().getBusinessInfo());
+    const [business, setBusiness] = useState(
+      getAuthService().getBusinessInfo(),
+    );
     const paymentLink = `${Config.WEB_BASE_URL}/pay/${business.slug}`;
 
     const getMobieNumber = useCallback(() => {
@@ -202,9 +198,27 @@ export const MoreOptionsScreen = withModal(
         .then(() => {});
     }, [paymentLink, showSuccessToast]);
 
+    useEffect(() => {
+      return navigation.addListener('focus', () => {
+        setBusiness(getAuthService().getBusinessInfo());
+      });
+    }, [navigation]);
+
     return (
       <ScrollView>
-        <View style={applyStyles({minHeight: dimensions.fullHeight - 120})}>
+        <View
+          style={applyStyles(
+            {minHeight: dimensions.fullHeight - 120},
+            'bg-white',
+          )}>
+          <View style={applyStyles('p-14')}>
+            <Text style={applyStyles('text-xl text-400 text-gray-300')}>
+              My Account
+            </Text>
+            <Text style={applyStyles('text-gray-200 py-8')}>
+              Quickly record a transaction or obligation
+            </Text>
+          </View>
           {!business.name && (
             <Touchable onPress={onEditBusinessSettings}>
               <View
@@ -331,25 +345,22 @@ export const MoreOptionsScreen = withModal(
             </>
           )}
           <View style={applyStyles('mb-24')}>
-            {moreOptions.map(({title, icon, onPress}, index) => {
+            {moreOptions.map(({title, text, onPress}, index) => {
               return (
                 <Touchable onPress={onPress} key={title}>
                   <View
                     style={applyStyles(
-                      'flex-row items-center py-16 px-16 border-t-1 border-gray-20',
+                      'flex-row items-center py-10 px-10 border-t-1 border-gray-20',
                       index === moreOptions.length - 1 && 'border-b-1',
                     )}>
-                    <View style={applyStyles('flex-row flex-1')}>
-                      <Icon
-                        type="feathericons"
-                        color={colors['red-100']}
-                        name={icon}
-                        size={20}
-                        style={applyStyles('mr-8')}
-                      />
+                    <View style={applyStyles('flex-1 pl-sm')}>
                       <Text
                         style={applyStyles('text-400 text-sm text-gray-300')}>
                         {title}
+                      </Text>
+                      <Text
+                        style={applyStyles('text-400 text-xs text-gray-200')}>
+                        {text}
                       </Text>
                     </View>
                     <Icon

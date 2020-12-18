@@ -47,7 +47,7 @@ export const UserProfileSettings = () => {
         type: 'mobile',
         props: {
           value: {number: nationalNumber, callingCode: country_code},
-          label: 'Phone Number',
+          label: 'What’s your phone number?',
           editable: false,
           focusable: false,
         },

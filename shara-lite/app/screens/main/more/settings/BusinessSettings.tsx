@@ -40,7 +40,7 @@ export const BusinessSettings = () => {
         type: 'text',
         props: {
           value: name,
-          label: "What's the name of your business",
+          label: 'What’s the name of your business?',
           rightIcon: 'home',
         },
       },
@@ -53,14 +53,14 @@ export const BusinessSettings = () => {
               : mobile,
             callingCode: callingCode,
           },
-          label: "What's your business phone number",
+          label: 'What’s your business phone number?',
         },
       },
       address: {
         type: 'text',
         props: {
           value: address,
-          label: 'where is your business located?',
+          label: 'Where is your business located?',
           rightIcon: 'map-pin',
         },
       },
@@ -83,7 +83,7 @@ export const BusinessSettings = () => {
       profileImageFile: {
         type: 'image',
         props: {
-          label: 'Business logo',
+          label: 'Do you have a logo?',
           placeholder: 'Upload logo',
           value: {uri: profile_image?.url ?? ''},
         },
