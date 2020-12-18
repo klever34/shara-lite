@@ -127,7 +127,7 @@ export const useTransaction = (): useTransactionInterface => {
       receipt: transaction,
     });
     getAnalyticsService()
-      .logEvent('setCollectionDate', {})
+      .logEvent('userUpdatedTransaction', {})
       .then(() => {});
   };
 

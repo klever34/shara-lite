@@ -72,6 +72,7 @@ export type SharaAppEventsProperties = {
     currency_code: string;
   };
   setCollectionDate: {};
+  userUpdatedTransaction: {};
   detailsEnteredToTransaction: {};
   //Referral
   friendInvited: {};
