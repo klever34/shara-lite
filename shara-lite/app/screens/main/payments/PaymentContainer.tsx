@@ -173,8 +173,23 @@ function PaymentContainer(props: ModalWrapperFields) {
                     isLoading={isDeleting}
                     style={applyStyles({width: '48%'})}
                     onPress={() => {
-                      handleRemoveItem(item);
-                      closeModal();
+                      Alert.alert(
+                        'Warning',
+                        'Are you sure you want to remove the payment option',
+                        [
+                          {
+                            text: 'No',
+                            onPress: () => {},
+                          },
+                          {
+                            text: 'Yes',
+                            onPress: () => {
+                              handleRemoveItem(item);
+                              closeModal();
+                            },
+                          },
+                        ],
+                      );
                     }}
                     variantColor="transparent"
                   />
