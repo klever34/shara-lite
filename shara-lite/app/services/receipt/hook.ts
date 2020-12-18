@@ -41,6 +41,11 @@ interface updateReceiptInterface {
   receipt: IReceipt;
 }
 
+interface updateReceiptRecordInterface {
+  updates: object;
+  receipt: IReceipt;
+}
+
 interface cancelReceiptInterface {
   receipt: IReceipt;
   cancellation_reason: String;
@@ -58,6 +63,7 @@ interface useReceiptInterface {
   getReceipts: () => IReceipt[];
   saveReceipt: (data: saveReceiptInterface) => Promise<IReceipt>;
   updateReceipt: (data: updateReceiptInterface) => Promise<void>;
+  updateReceiptRecord: (data: updateReceiptRecordInterface) => Promise<void>;
   cancelReceipt: (params: cancelReceiptInterface) => void;
   getAllPayments: (params: getAllPaymentsInterface) => Array<any>;
   getReceipt: (params: getReceiptInterface) => IReceipt;
@@ -359,6 +365,7 @@ export const useReceipt = (): useReceiptInterface => {
     getReceipts,
     saveReceipt,
     updateReceipt,
+    updateReceiptRecord,
     cancelReceipt,
     getAllPayments,
     getReceipt,
