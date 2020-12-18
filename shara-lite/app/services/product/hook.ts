@@ -41,7 +41,7 @@ export const useProduct = (): useProductInterface => {
   const getProducts = (): IProduct[] => {
     return (realm
       .objects<IProduct>(modelName)
-      .filtered('is_deleted = false') as unknown) as IProduct[];
+      .filtered('is_deleted != true') as unknown) as IProduct[];
   };
 
   const saveProduct = async ({

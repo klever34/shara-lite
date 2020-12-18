@@ -6,7 +6,7 @@ import Touchable from '../Touchable';
 
 type SearchFilterProps = {
   value?: string;
-  onOpenFilter?: () => void;
+  onClearInput?: () => void;
   placeholderText?: string;
   onSearch?: (text: string) => void;
 };
@@ -14,7 +14,7 @@ type SearchFilterProps = {
 export const SearchFilter = ({
   value,
   onSearch,
-  onOpenFilter,
+  onClearInput,
   placeholderText = 'Search',
 }: SearchFilterProps) => {
   return (
@@ -49,18 +49,18 @@ export const SearchFilter = ({
           onChangeText={onSearch}
           placeholder={placeholderText}
         />
-        {onOpenFilter && (
-          <Touchable onPress={onOpenFilter}>
+        {!!value && onClearInput && (
+          <Touchable onPress={onClearInput}>
             <View
               style={applyStyles('flex-row center', {
-                position: 'absolute',
-                right: 12,
                 top: 10,
+                right: 12,
                 zIndex: 10,
+                position: 'absolute',
               })}>
               <Icon
                 size={20}
-                name="sliders"
+                name="x-circle"
                 type="feathericons"
                 color={colors['gray-50']}
               />
