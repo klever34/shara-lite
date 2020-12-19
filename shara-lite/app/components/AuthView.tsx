@@ -2,6 +2,7 @@ import {HeaderTitleProps} from '@/components/Header';
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
 import {KeyboardAvoidingView, Text, View, ViewStyle} from 'react-native';
+import {HeaderBackButton} from './HeaderBackButton';
 import {SecureEmblem} from './SecureEmblem';
 
 export type AuthViewProps = {
@@ -15,6 +16,7 @@ export type AuthViewProps = {
   showButton?: boolean;
   showEmblem?: boolean;
   onSubmit?: () => void;
+  showBackButton?: boolean;
 };
 
 export const AuthView = ({
@@ -23,9 +25,15 @@ export const AuthView = ({
   children,
   description,
   showEmblem = true,
+  showBackButton = false,
 }: AuthViewProps) => {
   return (
     <KeyboardAvoidingView style={applyStyles('flex-1 bg-white px-16', style)}>
+      {showBackButton && (
+        <View style={applyStyles('pt-16')}>
+          <HeaderBackButton />
+        </View>
+      )}
       <View style={applyStyles('mb-64 pt-48 center')}>
         <Text
           style={applyStyles('text-2xl pb-8 text-700 text-center', {

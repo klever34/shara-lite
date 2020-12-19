@@ -6,8 +6,10 @@ import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
+import {getAndroidId} from 'react-native-device-info';
+import RNOtpVerify from 'react-native-otp-verify';
 import * as yup from 'yup';
 
 type Fields = {
@@ -24,6 +26,8 @@ const validationSchema = yup.object().shape({
 
 export const Login = () => {
   const {callingCode} = useIPGeolocation();
+
+  const navigation = useAppNavigation();
   const {errors, values, touched, handleSubmit, setFieldValue} = useFormik({
     validationSchema,
     initialValues: FormDefaults.get('login', {
@@ -32,6 +36,7 @@ export const Login = () => {
     }) as Fields,
     onSubmit: (payload) => onSubmit(payload),
   });
+  const [hash, setHash] = useState('');
   const [loading, setLoading] = useState(false);
 
   const onChangeMobile = (value: PhoneNumber) => {
@@ -45,20 +50,24 @@ export const Login = () => {
       Alert.alert('Error', 'Please select a country');
       return;
     }
-    const payload = {
-      mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
-    };
     const apiService = getApiService();
     setLoading(true);
     try {
-      await apiService.otpVerification(payload);
+      const device_id = await getAndroidId();
+      const payload = {
+        hash,
+        device_id,
+        country_code: countryCode,
+        mobile: `${countryCode}${mobile}`.replace(/\s/g, ''),
+      };
+      const message = await apiService.otp(payload);
 
-      console.log('here');
       getAnalyticsService()
         .logEvent('login', {method: 'mobile'})
         .catch(handleError);
       setLoading(false);
       navigation.navigate('OTPVerification', {
+        message,
         mobile: payload.mobile,
       });
     } catch (error) {
@@ -67,7 +76,14 @@ export const Login = () => {
     }
   };
 
-  const navigation = useAppNavigation();
+  const getHash = () =>
+    RNOtpVerify.getHash()
+      .then((text) => setHash(text[0]))
+      .catch(console.log);
+
+  useEffect(() => {
+    getHash();
+  }, []);
 
   return (
     <AuthView
@@ -91,7 +107,7 @@ export const Login = () => {
           value={{number: values.mobile, callingCode: values.countryCode}}
         />
         <Button
-          title="Sign In"
+          title="Next"
           isLoading={loading}
           onPress={handleSubmit}
           style={applyStyles('w-full')}

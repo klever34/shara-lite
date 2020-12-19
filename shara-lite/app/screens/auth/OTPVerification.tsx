@@ -8,7 +8,6 @@ import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert, Text, TouchableOpacity, View} from 'react-native';
-import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
 
@@ -26,18 +25,13 @@ export const OTPVerification = () => {
   }, []);
 
   const handleSubmit = useCallback(
-    async (code) => {
+    async (code: string) => {
       if (code) {
-        const device_id = await getAndroidId();
-        const payload = {
-          otp: code,
-          device_id,
-          mobile: params.mobile,
-        };
+        const payload = {password: code, mobile: params.mobile};
         const apiService = getApiService();
         setLoading(true);
         try {
-          await apiService.otpVerification(payload);
+          await apiService.logIn(payload);
           await initRealm({initSync: true});
 
           getAnalyticsService()
@@ -57,12 +51,7 @@ export const OTPVerification = () => {
     [handleError, initRealm, navigation, params.mobile],
   );
 
-  const getHash = () =>
-    RNOtpVerify.getHash().then(console.log).catch(console.log);
-
   useEffect(() => {
-    getHash();
-
     RNOtpVerify.getOtp()
       .then(() => {
         RNOtpVerify.addListener((message) => {
@@ -73,15 +62,12 @@ export const OTPVerification = () => {
               setOtp(code);
             }
           } catch (error) {
-            console.log(
-              error.message,
-              'RNOtpVerify.getOtp - read message, OtpVerification',
-            );
+            Alert.alert('Error', error.message);
           }
         });
       })
       .catch((error) => {
-        console.log(error.message, 'RNOtpVerify.getOtp, OtpVerification');
+        Alert.alert('Error', error.message);
       });
 
     // remove listener on unmount
@@ -90,18 +76,14 @@ export const OTPVerification = () => {
     };
   }, []);
 
-  useEffect(() => {
-    if (otp) {
-      handleSubmit(otp);
-    }
-  }, [handleSubmit, otp]);
+  // useEffect(() => {
+  //   if (otp) {
+  //     handleSubmit(otp);
+  //   }
+  // }, [handleSubmit, otp]);
 
   return (
-    <AuthView
-      heading="OTP"
-      description={
-        'We’ve sent a one-time password to your phone.\n Please enter it below'
-      }>
+    <AuthView showBackButton={true} heading="OTP" description={params.message}>
       <View style={applyStyles('items-center')}>
         <OTPInputView
           code={otp}
@@ -148,6 +130,7 @@ export const OTPVerification = () => {
           title="Get Started"
           isLoading={loading}
           style={applyStyles('w-full')}
+          onPress={() => handleSubmit(otp)}
         />
       </View>
     </AuthView>
