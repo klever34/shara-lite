@@ -10,7 +10,6 @@ export class FormDefaults {
     return {
       login: {
         mobile: '8056636694',
-        password: 'some-password',
         countryCode: '234',
       },
       signup: {

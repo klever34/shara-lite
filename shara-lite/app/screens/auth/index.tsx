@@ -7,6 +7,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import {Login} from './Login';
+import {OTPVerification} from './OTPVerification';
 import {Register} from './Register';
 import {Welcome} from './Welcome';
 
@@ -17,6 +18,7 @@ export type AuthStackParamList = {
   BusinessSetup: undefined;
   ResetPassword: {mobile: string};
   ForgotPassword: {mobile?: PhoneNumber};
+  OTPVerification: {mobile: string; message: string};
 };
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
@@ -79,6 +81,11 @@ const AuthScreens = () => {
       <AuthStack.Screen
         name="ResetPassword"
         component={ResetPassword}
+        options={{headerShown: false}}
+      />
+      <AuthStack.Screen
+        name="OTPVerification"
+        component={OTPVerification}
         options={{headerShown: false}}
       />
     </AuthStack.Navigator>
