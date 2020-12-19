@@ -29,6 +29,7 @@ import {PaymentsScreen} from '@/screens/main/payments';
 import {Entry} from '@/components/Entry';
 import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
+import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -43,6 +44,7 @@ export type MainStackParamList = {
   RecordCollection: undefined;
   TransactionDetails: {transaction: IReceipt};
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
+  TransactionSuccess: {transaction: IReceipt; onDone?: () => void};
 
   // More
   Settings: undefined;
@@ -177,6 +179,13 @@ const MainScreens = () => {
         <MainStack.Screen
           name="LedgerEntry"
           component={LedgerEntryScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="TransactionSuccess"
+          component={TransactionSuccessScreen}
           options={{
             headerShown: false,
           }}
