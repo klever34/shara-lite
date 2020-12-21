@@ -116,19 +116,9 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
 
   const handleDeleteTransaction = useCallback(() => {
     deleteTransaction({transaction});
-    analyticsService
-      .logEvent('userDeletedTransaction', {})
-      .then(() => {})
-      .catch(handleError);
     showSuccessToast('TRANSACTION DELETED');
     navigation.goBack();
-  }, [
-    navigation,
-    transaction,
-    analyticsService,
-    deleteTransaction,
-    showSuccessToast,
-  ]);
+  }, [navigation, transaction, deleteTransaction, showSuccessToast]);
 
   const handleAddCustomer = useCallback(
     async (selectedCustomer) => {

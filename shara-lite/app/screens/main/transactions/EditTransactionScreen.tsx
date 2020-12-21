@@ -10,8 +10,6 @@ import {Icon} from '@/components/Icon';
 import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
-import {getAnalyticsService} from '@/services';
-import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
@@ -41,10 +39,6 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
       console.log(updates);
       if (updates.amount_paid || updates.credit_amount) {
         updateTransaction({updates, transaction});
-        getAnalyticsService()
-          .logEvent('userUpdatedTransaction', {})
-          .then(() => {})
-          .catch(handleError);
         showSuccessToast('TRANSACTION UPDATED');
         navigation.goBack();
       } else {
