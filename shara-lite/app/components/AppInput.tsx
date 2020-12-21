@@ -81,7 +81,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
         <View style={applyStyles('flex-row')}>
           {!!label && (
             <Text
-              style={applyStyles('text-xs text-500 text-gray-100 pb-8 flex-1')}>
+              style={applyStyles('text-sm text-500 text-gray-50 pb-8 flex-1')}>
               {label}
             </Text>
           )}

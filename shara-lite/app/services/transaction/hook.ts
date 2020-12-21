@@ -11,6 +11,7 @@ interface saveTransactionInterface {
   collectedAmount: number;
   outstandingAmount: number;
   note?: string;
+  is_collection?: boolean;
   dueDate?: Date;
 }
 
@@ -62,11 +63,13 @@ export const useTransaction = (): useTransactionInterface => {
     collectedAmount,
     outstandingAmount,
     dueDate,
+    is_collection,
   }: saveTransactionInterface): Promise<IReceipt> => {
     const receiptData = {
       customer,
       note,
       dueDate,
+      is_collection,
       amountPaid: collectedAmount,
       totalAmount: collectedAmount + outstandingAmount,
       creditAmount: outstandingAmount,
