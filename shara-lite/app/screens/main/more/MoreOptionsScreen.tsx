@@ -190,7 +190,7 @@ export const MoreOptionsScreen = withModal(
           <TitleContainer
             title="My Account"
             description="Quickly record a transaction or obligation"
-            style={applyStyles('p-16')}
+            containerStyle={applyStyles('p-16')}
           />
           {!business.name && (
             <Touchable onPress={onEditBusinessSettings}>

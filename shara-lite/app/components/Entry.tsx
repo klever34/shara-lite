@@ -23,6 +23,7 @@ import Touchable from './Touchable';
 import {Icon} from './Icon';
 import * as Animatable from 'react-native-animatable';
 import {useAppNavigation} from '@/services/navigation';
+import {ICustomer} from '@/models';
 
 type EntryContextProps = {
   wrapper?: View | null;
@@ -111,7 +112,12 @@ export const Entry = ({children}: EntryProps) => {
               })}>
               <Touchable
                 onPress={() => {
-                  navigation.navigate('RecordCollection');
+                  navigation.navigate('SelectCustomerList', {
+                    withCustomer: false,
+                    onSelectCustomer: (customer: ICustomer) => {
+                      navigation.replace('RecordCollection', {customer});
+                    },
+                  });
                   hideEntryDialog();
                 }}>
                 <Animatable.View

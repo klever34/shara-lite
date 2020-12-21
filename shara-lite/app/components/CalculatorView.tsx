@@ -466,7 +466,8 @@ export const CalculatorInput = (props: CalculatorInputProps) => {
       onFocus={showKbComponent}
       onTouchStart={showKbComponent}
       onBlur={resetKbComponent}
-      showSoftInputOnFocus={false}
+      // showSoftInputOnFocus={false}
+      keyboardType="number-pad"
     />
   );
 };
