@@ -187,7 +187,6 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
       console.log('here');
       const thisTransaction =
         transactionProp?._id && getTransaction(transactionProp?._id);
-      console.log(thisTransaction?.amount_paid);
       thisTransaction && setTransaction(thisTransaction);
     });
   }, [navigation, transactionProp, getTransaction]);

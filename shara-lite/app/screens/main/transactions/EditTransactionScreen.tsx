@@ -35,9 +35,9 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
   const initialValues = omit(transaction);
 
   const handleSave = useCallback(
-    (updates) => {
+    async (updates) => {
       if (updates.amount_paid || updates.credit_amount) {
-        updateTransaction({updates, transaction});
+        await updateTransaction({updates, transaction});
         showSuccessToast('TRANSACTION UPDATED');
         navigation.goBack();
       } else {
