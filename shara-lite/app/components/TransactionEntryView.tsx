@@ -594,10 +594,14 @@ export const TransactionEntryButton = ({
       onPress={() => {
         onPress?.(context);
       }}>
-      <View style={applyStyles('flex-1 center bg-white rounded-8 m-4', style)}>
+      <View
+        style={applyStyles(
+          'flex-1 center bg-white rounded-8 mx-4 my-6',
+          style,
+        )}>
         {children || (
           <Text
-            style={applyStyles('text-base text-uppercase body-500', textStyle)}>
+            style={applyStyles('text-lg text-uppercase body-500', textStyle)}>
             {label}
           </Text>
         )}
