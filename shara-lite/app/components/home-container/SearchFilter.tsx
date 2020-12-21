@@ -9,6 +9,7 @@ type SearchFilterProps = {
   inputStyle?: ViewStyle;
   placeholderText?: string;
   onClearInput?: () => void;
+  containerStyle?: ViewStyle;
   onSearch?: (text: string) => void;
 };
 
@@ -17,13 +18,18 @@ export const SearchFilter = ({
   onSearch,
   inputStyle,
   onClearInput,
+  containerStyle,
   placeholderText = 'Search',
 }: SearchFilterProps) => {
   return (
     <View
-      style={applyStyles('bg-white', {
-        zIndex: 10,
-      })}>
+      style={applyStyles(
+        'bg-white',
+        {
+          zIndex: 10,
+        },
+        containerStyle,
+      )}>
       <View>
         <View
           style={applyStyles('flex-row center', {
@@ -63,7 +69,7 @@ export const SearchFilter = ({
               })}>
               <Icon
                 size={20}
-                name="x-circle"
+                name="delete"
                 type="feathericons"
                 color={colors['gray-50']}
               />
