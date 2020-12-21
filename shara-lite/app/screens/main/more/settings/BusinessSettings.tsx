@@ -13,8 +13,11 @@ import React, {useCallback, useContext, useMemo} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert} from 'react-native';
 import {ToastContext} from '@/components/Toast';
+import {TransactionReview} from '@/components/TransactionReview';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 
-export const BusinessSettings = () => {
+export const BusinessSettings = withModal((props: ModalWrapperFields) => {
+  const {openModal} = props;
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const apiService = getApiService();
@@ -33,6 +36,23 @@ export const BusinessSettings = () => {
   } = businessInfo;
   callingCode = country_code ?? callingCode;
   const {showSuccessToast} = useContext(ToastContext);
+
+  const dummyTransaction = {
+    tax: 120,
+    amount_paid: 2500,
+    total_amount: 5500,
+    credit_amount: 0,
+    created_at: new Date(),
+    transaction_date: new Date(),
+  };
+
+  const handleOpenPreviewReceipt = useCallback(() => {
+    const closeModal = openModal('full', {
+      renderContent: () => (
+        <TransactionReview onDone={closeModal} transaction={dummyTransaction} />
+      ),
+    });
+  }, [openModal, dummyTransaction]);
 
   const formFields = useMemo(() => {
     const fields: FormFields<keyof Omit<BusinessFormPayload, 'countryCode'>> = {
@@ -143,10 +163,7 @@ export const BusinessSettings = () => {
               title: 'Preview Receipt',
               variantColor: 'transparent',
               onPress: () => {
-                Alert.alert(
-                  'Coming Soon',
-                  'This feature is coming in the next update',
-                );
+                handleOpenPreviewReceipt;
               },
             },
             {title: 'Save'},
@@ -156,4 +173,4 @@ export const BusinessSettings = () => {
       </>
     </Page>
   );
-};
+});

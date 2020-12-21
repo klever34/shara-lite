@@ -19,6 +19,7 @@ type TransactionReviewProps = {
   transaction: IReceipt;
   showAnimation?: boolean;
   showShareButtons?: boolean;
+  // onClose?: () => void;
 };
 
 export const TransactionReview = (props: TransactionReviewProps) => {
@@ -29,6 +30,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     transaction,
     showAnimation = true,
     showShareButtons = true,
+    // onClose,
   } = props;
 
   const analyticsService = getAnalyticsService();
