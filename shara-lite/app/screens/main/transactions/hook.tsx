@@ -78,28 +78,28 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
           break;
         case 'today':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at <= $1',
+            'transaction_date >= $0 && transaction_date <= $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case '1-week':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
+            'transaction_date >= $0 && transaction_date < $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case '1-month':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
+            'transaction_date >= $0 && transaction_date < $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case 'date-range':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
+            'transaction_date >= $0 && transaction_date < $1',
             filterStartDate,
             filterEndDate,
           );
@@ -114,7 +114,10 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
         `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
-    return (userReceipts.sorted('created_at', true) as unknown) as IReceipt[];
+    return (userReceipts.sorted(
+      'transaction_date',
+      true,
+    ) as unknown) as IReceipt[];
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
   const owedReceipts = useMemo(() => {
@@ -128,28 +131,28 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
           break;
         case 'today':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at <= $1',
+            'transaction_date >= $0 && transaction_date <= $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case '1-week':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
+            'transaction_date >= $0 && transaction_date < $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case '1-month':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
+            'transaction_date >= $0 && transaction_date < $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case 'date-range':
           userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
+            'transaction_date >= $0 && transaction_date < $1',
             filterStartDate,
             filterEndDate,
           );
@@ -162,7 +165,7 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
     if (searchTerm) {
       userReceipts = userReceipts
         .filtered(`customer.name CONTAINS[c] "${searchTerm}"`)
-        .sorted('created_at', true);
+        .sorted('transaction_date', true);
     }
     return userReceipts.filter((item) => !item.isPaid);
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);

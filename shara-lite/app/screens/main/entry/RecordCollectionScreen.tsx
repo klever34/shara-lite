@@ -12,7 +12,7 @@ import {View, Text} from 'react-native';
 import {format} from 'date-fns';
 import {Icon} from '@/components/Icon';
 import {useFormik} from 'formik';
-import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
+import {numberWithCommas} from '@/helpers/utils';
 import {getAuthService} from '@/services';
 
 type RecordCollectionScreenProps = {

@@ -54,7 +54,7 @@ export const Button = ({
     },
     clear: {
       button: styles.clearButton,
-      text: disabled ? styles.buttonTextDisabled : styles.whiteButtonText,
+      text: disabled ? styles.buttonTextDisabled : styles.clearButtonText,
     },
     transparent: {
       button: styles.transparentButton,
@@ -144,7 +144,9 @@ const styles = StyleSheet.create({
   },
   clearButton: {
     elevation: 0,
+    borderWidth: 1,
     backgroundColor: colors.white,
+    borderColor: colors['gray-20'],
   },
   transparentButton: {
     elevation: 0,
@@ -159,6 +161,9 @@ const styles = StyleSheet.create({
   },
   whiteButtonText: {
     color: colors.primary,
+  },
+  clearButtonText: {
+    color: colors['gray-300'],
   },
   redButtonText: {
     color: colors.white,

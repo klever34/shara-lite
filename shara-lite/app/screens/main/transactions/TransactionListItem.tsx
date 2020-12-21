@@ -21,10 +21,33 @@ export const TransactionListItem = ({
   receipt,
   onPress,
 }: TransactionListItemProps) => {
-  const {amount_paid = 0, credit_amount = 0} = receipt ?? {};
+  const {
+    note,
+    customer,
+    isInflow,
+    isOutflow,
+    amount_paid,
+    total_amount,
+    credit_amount,
+    is_collection,
+    transaction_date,
+  } = receipt ?? {};
 
   const renderTransactionText = useCallback(() => {
-    if (!receipt?.isPaid) {
+    if (is_collection) {
+      return (
+        <View>
+          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+            Collected{' '}
+            <Text style={applyStyles('text-700')}>
+              {amountWithCurrency(total_amount)}
+            </Text>
+            {customer && ` from ${customer.name}`}
+          </Text>
+        </View>
+      );
+    }
+    if (isOutflow) {
       if (credit_amount && amount_paid === 0) {
         return (
           <View>
@@ -33,7 +56,7 @@ export const TransactionListItem = ({
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(credit_amount)}
               </Text>
-              {receipt?.customer && ` to ${receipt.customer.name}`}
+              {customer && ` to ${customer.name}`}
             </Text>
           </View>
         );
@@ -44,9 +67,9 @@ export const TransactionListItem = ({
             <Text style={applyStyles('text-gray-300 text-400 text-base')}>
               Sale of{' '}
               <Text style={applyStyles('text-700')}>
-                {amountWithCurrency(receipt?.total_amount)}
+                {amountWithCurrency(total_amount)}
               </Text>
-              {receipt?.customer && ` to ${receipt.customer.name}`}
+              {customer && ` to ${customer.name}`}
               {`. Collected ${amountWithCurrency(
                 amount_paid,
               )} and outstanding of ${amountWithCurrency(credit_amount)}`}
@@ -60,13 +83,20 @@ export const TransactionListItem = ({
         <Text style={applyStyles('text-gray-300 text-400 text-base')}>
           Sale of{' '}
           <Text style={applyStyles('text-700')}>
-            {amountWithCurrency(receipt?.total_amount)}
+            {amountWithCurrency(total_amount)}
           </Text>
-          {receipt?.customer && ` to ${receipt.customer.name}`}
+          {customer && ` to ${customer.name}`}
         </Text>
       </View>
     );
-  }, [credit_amount, receipt, amount_paid]);
+  }, [
+    credit_amount,
+    amount_paid,
+    customer,
+    isOutflow,
+    is_collection,
+    total_amount,
+  ]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
@@ -80,17 +110,27 @@ export const TransactionListItem = ({
           style,
         )}>
         <View style={applyStyles('flex-row items-center', {width: '66%'})}>
-          <Icon
-            size={18}
-            type="feathericons"
-            name={receipt?.isPaid ? 'arrow-up' : 'arrow-down'}
-            color={receipt?.isPaid ? colors['green-200'] : colors['red-100']}
-          />
+          {isInflow && (
+            <Icon
+              size={18}
+              name="arrow-up"
+              type="feathericons"
+              color={colors['green-200']}
+            />
+          )}
+          {isOutflow && (
+            <Icon
+              size={18}
+              name="arrow-down"
+              type="feathericons"
+              color={colors['red-100']}
+            />
+          )}
           <View style={applyStyles('pl-4')}>
             <View>{renderTransactionText()}</View>
-            {!!receipt?.note && (
+            {!!note && (
               <Text style={applyStyles('text-gray-100 text-xxs pt-4')}>
-                {receipt?.note}
+                {note}
               </Text>
             )}
           </View>
@@ -104,20 +144,18 @@ export const TransactionListItem = ({
             <Text
               style={applyStyles(
                 `pb-4 text-700 text-xs ${
-                  receipt?.isPaid ? 'text-green-200' : 'text-red-200'
+                  isInflow ? 'text-green-200' : 'text-red-200'
                 }`,
               )}>
-              {amountWithCurrency(
-                receipt?.isPaid ? receipt?.total_amount : credit_amount,
-              )}
+              {amountWithCurrency(isInflow ? total_amount : credit_amount)}
             </Text>
           </View>
           <Text
             style={applyStyles(
               'text-400 text-uppercase text-xxs text-gray-100',
             )}>
-            {receipt?.created_at &&
-              formatDistanceToNowStrict(receipt?.created_at, {
+            {transaction_date &&
+              formatDistanceToNowStrict(transaction_date, {
                 addSuffix: true,
               })}
           </Text>

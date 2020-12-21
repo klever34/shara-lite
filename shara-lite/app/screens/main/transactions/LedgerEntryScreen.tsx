@@ -1,79 +1,87 @@
 import {Button} from '@/components';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
-import PaymentReminderImage from '@/components/PaymentReminderImage';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import {ReceiptImage} from '@/components/ReceiptImage';
+import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {getAnalyticsService, getAuthService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
-import {useReceipt} from '@/services/receipt';
 import {ShareHookProps, useShare} from '@/services/share';
+import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
-import {format} from 'date-fns';
-import React, {useCallback, useState} from 'react';
+import {format, isToday} from 'date-fns';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
-import Config from 'react-native-config';
+// import Config from 'react-native-config';
 import {MainStackParamList} from '..';
 
 type LedgerEntryScreenProps = {
   route: RouteProp<MainStackParamList, 'LedgerEntry'>;
-};
+} & ModalWrapperFields;
 
-export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
-  const {route} = props;
-  const {transaction, showCustomer} = route.params;
+export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
+  const {route, openModal} = props;
+  const {transaction: transactionProp} = route.params;
+
+  const [transaction, setTransaction] = useState(transactionProp);
+  const {
+    _id,
+    note,
+    dueDate,
+    amount_paid,
+    total_amount,
+    credit_amount,
+    transaction_date,
+    customer: customerProp,
+  } = transaction;
+
   const navigation = useAppNavigation();
-  const {getReceiptAmounts} = useReceipt();
+  const {showSuccessToast} = useContext(ToastContext);
+  const {
+    getTransaction,
+    deleteTransaction,
+    addCustomerToTransaction,
+  } = useTransaction();
+
   const analyticsService = getAnalyticsService();
   const businessInfo = getAuthService().getBusinessInfo();
-  const {creditAmountLeft, totalAmountPaid} = getReceiptAmounts(transaction);
 
   const [receiptImage, setReceiptImage] = useState('');
-  const [reminderImage, setReminderImage] = useState('');
+  const [customer, setCustomer] = useState(customerProp);
 
-  const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+  // const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
   const shareReceiptMessage = `Hi ${
-    transaction.customer?.name ?? ''
+    customer?.name ?? ''
   }, thank you for your recent purchase from ${
     businessInfo.name
   }. You paid ${amountWithCurrency(
-    totalAmountPaid,
+    total_amount,
   )}.\n\nPowered by Shara for free.\nwww.shara.co`;
-  const paymentReminderMessage = `Hello ${
-    transaction.customer?.name ?? ''
-  }, thank you for doing business with ${
-    businessInfo?.name
-  }. You owe ${amountWithCurrency(creditAmountLeft)}${
-    transaction.dueDate
-      ? ` which is due on ${format(
-          new Date(transaction.dueDate),
-          'MMM dd, yyyy',
-        )}`
-      : ''
-  }.\n\nTo pay click\n ${paymentLink}\n\nPowered by Shara for free.\nwww.shara.co`;
+  // const paymentReminderMessage = `Hello ${
+  //   customer?.name ?? ''
+  // }, thank you for doing business with ${
+  //   businessInfo?.name
+  // }. You owe ${amountWithCurrency(credit_amount)}${
+  //   transaction.dueDate
+  //     ? ` which is due on ${format(
+  //         new Date(transaction.dueDate),
+  //         'MMM dd, yyyy',
+  //       )}`
+  //     : ''
+  // }.\n\nTo pay click\n ${paymentLink}\n\nPowered by Shara for free.\nwww.shara.co`;
 
-  const reminderShareProps: ShareHookProps = {
-    image: reminderImage,
-    title: 'Payment Reminder',
-    subject: 'Payment Reminder',
-    message: paymentReminderMessage,
-    recipient: transaction?.customer?.mobile,
-  };
-
-  const receiptShareProps: ShareHookProps = {
+  const shareProps: ShareHookProps = {
     image: receiptImage,
     title: 'Share Receipt',
     subject: 'Share Receipt',
     message: shareReceiptMessage,
-    recipient: transaction?.customer?.mobile,
+    recipient: customer?.mobile,
   };
-
-  const shareProps = transaction.isPaid
-    ? receiptShareProps
-    : reminderShareProps;
 
   const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
     shareProps,
@@ -84,7 +92,7 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
       .logEvent('share', {
         method: 'sms',
         item_id: transaction?._id?.toString() ?? '',
-        content_type: transaction.isPaid ? 'share-receipt' : 'payment-reminder',
+        content_type: 'share-receipt',
       })
       .then(() => {});
     handleSmsShare();
@@ -95,7 +103,7 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
       .logEvent('share', {
         method: 'whatsapp',
         item_id: transaction?._id?.toString() ?? '',
-        content_type: transaction.isPaid ? 'share-receipt' : 'payment-reminder',
+        content_type: 'share-receipt',
       })
       .then(() => {});
     handleWhatsappShare();
@@ -106,11 +114,83 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
       .logEvent('share', {
         method: 'others',
         item_id: transaction?._id?.toString() ?? '',
-        content_type: transaction.isPaid ? 'share-receipt' : 'payment-reminder',
+        content_type: 'share-receipt',
       })
       .then(() => {});
     handleEmailShare();
   }, [analyticsService, transaction, handleEmailShare]);
+
+  const handleDeleteTransaction = useCallback(() => {
+    deleteTransaction({transaction});
+    showSuccessToast('TRANSACTION DELETED');
+    navigation.goBack();
+  }, [navigation, transaction, deleteTransaction, showSuccessToast]);
+
+  const handleAddCustomer = useCallback(
+    async (selectedCustomer) => {
+      try {
+        setCustomer(selectedCustomer);
+        await addCustomerToTransaction({
+          customer: selectedCustomer,
+          transaction: transaction,
+        });
+        navigation.goBack();
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    [navigation, transaction, addCustomerToTransaction],
+  );
+
+  const handleOpenConfirmModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <View style={applyStyles('px-16 pb-16')}>
+          <Text
+            style={applyStyles(
+              'text-700 text-lg text-gray-300 text-center py-24',
+            )}>
+            Are you sure you want to delete this transaction?
+          </Text>
+          <View
+            style={applyStyles('pt-16 flex-row items-center justify-between')}>
+            <Button
+              title="Yes, Delete"
+              variantColor="transparent"
+              onPress={handleDeleteTransaction}
+              style={applyStyles({width: '48%'})}
+            />
+            <Button
+              title="Cancel"
+              onPress={closeModal}
+              style={applyStyles({width: '48%'})}
+            />
+          </View>
+        </View>
+      ),
+    });
+  }, [openModal, handleDeleteTransaction]);
+
+  const handleEditTransaction = useCallback(() => {
+    navigation.navigate('EditTransaction', {transaction});
+  }, [navigation, transaction]);
+
+  const handleOpenSelectCustomerScreen = useCallback(() => {
+    navigation.navigate('SelectCustomerList', {
+      withCustomer: true,
+      onSelectCustomer: handleAddCustomer,
+    });
+  }, [navigation, handleAddCustomer]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      console.log('here');
+      const thisTransaction =
+        transactionProp?._id && getTransaction(transactionProp?._id);
+      console.log(thisTransaction?.amount_paid);
+      thisTransaction && setTransaction(thisTransaction);
+    });
+  }, [navigation, transactionProp, getTransaction]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
@@ -124,22 +204,40 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
         )}>
         <HeaderBackButton iconName="arrow-left" />
         <View style={applyStyles('items-end')}>
-          {!!showCustomer && (
-            <View style={applyStyles('pb-4 flex-row items-center')}>
+          {customer ? (
+            <View style={applyStyles('flex-row items-center')}>
               <Text style={applyStyles('text-400 text-black text-base')}>
-                {transaction.customer?.name}
+                {customer?.name}
               </Text>
               <PlaceholderImage
                 style={applyStyles('ml-4')}
-                text={transaction?.customer?.name ?? ''}
+                text={customer?.name ?? ''}
               />
             </View>
-          )}
-          {transaction?.created_at && (
-            <Text style={applyStyles('text-700 text-gray-50 text-xs')}>
-              {format(transaction.created_at, 'dd MMM, yyyy')} -{' '}
-              {format(transaction.created_at, 'hh:mm a')}
-            </Text>
+          ) : (
+            <Touchable onPress={handleOpenSelectCustomerScreen}>
+              <View style={applyStyles('flex-row items-center')}>
+                <Text
+                  style={applyStyles(
+                    'text-400 text-red-200 text-uppercase text-base pr-4',
+                  )}>
+                  Add Customer
+                </Text>
+                <View
+                  style={applyStyles('center bg-red-50', {
+                    width: 30,
+                    height: 30,
+                    borderRadius: 15,
+                  })}>
+                  <Icon
+                    size={16}
+                    name="plus"
+                    type="feathericons"
+                    color={colors['red-200']}
+                  />
+                </View>
+              </View>
+            </Touchable>
           )}
         </View>
       </View>
@@ -156,7 +254,7 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
             Total
           </Text>
           <Text style={applyStyles('text-700 text-black text-base')}>
-            {amountWithCurrency(transaction?.total_amount)}
+            {amountWithCurrency(total_amount)}
           </Text>
         </View>
         <View style={applyStyles('items-end', {width: '33%'})}>
@@ -167,7 +265,7 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
             Collected
           </Text>
           <Text style={applyStyles('text-700 text-gray-300 text-base')}>
-            {amountWithCurrency(totalAmountPaid)}
+            {amountWithCurrency(amount_paid)}
           </Text>
         </View>
         <View style={applyStyles('items-end', {width: '33%'})}>
@@ -178,11 +276,30 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
             Outstanding
           </Text>
           <Text style={applyStyles('text-700 text-red-100 text-base')}>
-            {amountWithCurrency(creditAmountLeft)}
+            {amountWithCurrency(credit_amount)}
           </Text>
         </View>
       </View>
-      <View style={applyStyles('px-16')}>
+      <View style={applyStyles('px-16 flex-1')}>
+        {transaction.dueDate && isToday(transaction.dueDate) && (
+          <View style={applyStyles('pt-16 center')}>
+            <View
+              style={applyStyles('bg-red-200 p-8 flex-row items-center', {
+                borderRadius: 8,
+              })}>
+              <Icon
+                size={16}
+                name="calendar"
+                type="feathericons"
+                color={colors['red-50']}
+              />
+              <Text
+                style={applyStyles('pl-4 text-white text-400 text-uppercase')}>
+                Collection due today
+              </Text>
+            </View>
+          </View>
+        )}
         {!!transaction.note && (
           <View style={applyStyles('pt-16')}>
             <Text
@@ -196,112 +313,115 @@ export const LedgerEntryScreen = (props: LedgerEntryScreenProps) => {
             </Text>
           </View>
         )}
-        <View style={applyStyles('flex-row items-center pt-16')}>
-          <Text
-            style={applyStyles(
-              'text-sm text-uppercase text-gray-300 text-700',
-            )}>
-            {transaction.isPaid ? 'Share receipt' : 'Send reminder'}:
-          </Text>
-          <View style={applyStyles('px-4')}>
-            <Touchable onPress={onWhatsappShare}>
-              <View
-                style={applyStyles('px-2 flex-row center', {
-                  height: 48,
-                })}>
-                <Icon
-                  size={16}
-                  type="ionicons"
-                  name="logo-whatsapp"
-                  color={colors.whatsapp}
-                />
-                <Text
-                  style={applyStyles(
-                    'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                  )}>
-                  whatsapp
-                </Text>
-              </View>
-            </Touchable>
-          </View>
-          <View style={applyStyles('px-4')}>
-            <Touchable onPress={onSmsShare}>
-              <View
-                style={applyStyles('px-2 flex-row center', {
-                  height: 48,
-                })}>
-                <Icon
-                  size={16}
-                  name="message-circle"
-                  type="feathericons"
-                  color={colors.primary}
-                />
-                <Text
-                  style={applyStyles(
-                    'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                  )}>
-                  sms
-                </Text>
-              </View>
-            </Touchable>
-          </View>
-          <View style={applyStyles('px-4')}>
-            <Touchable onPress={onOthersShare}>
-              <View
-                style={applyStyles('px-2 flex-row center', {
-                  height: 48,
-                })}>
-                <Icon
-                  size={16}
-                  type="feathericons"
-                  name="more-vertical"
-                  color={colors['red-100']}
-                />
-                <Text
-                  style={applyStyles(
-                    'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                  )}>
-                  other
-                </Text>
-              </View>
-            </Touchable>
+        <View style={applyStyles('pt-16')}>
+          {transaction.transaction_date && (
+            <Text
+              style={applyStyles(
+                'text-400 text-gray-100 text-xs text-uppercase',
+              )}>
+              {format(transaction.transaction_date, 'dd MMM, yyyy')}
+            </Text>
+          )}
+          <View style={applyStyles('flex-row items-center pt-4')}>
+            <Text
+              style={applyStyles(
+                'text-sm text-uppercase text-gray-300 text-700',
+              )}>
+              Share receipt:
+            </Text>
+            <View style={applyStyles('px-4')}>
+              <Touchable onPress={onWhatsappShare}>
+                <View
+                  style={applyStyles('px-2 flex-row center', {
+                    height: 48,
+                  })}>
+                  <Icon
+                    size={16}
+                    type="ionicons"
+                    name="logo-whatsapp"
+                    color={colors.whatsapp}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                    )}>
+                    whatsapp
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
+            <View style={applyStyles('px-4')}>
+              <Touchable onPress={onSmsShare}>
+                <View
+                  style={applyStyles('px-2 flex-row center', {
+                    height: 48,
+                  })}>
+                  <Icon
+                    size={16}
+                    name="message-circle"
+                    type="feathericons"
+                    color={colors.primary}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                    )}>
+                    sms
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
+            <View style={applyStyles('px-4')}>
+              <Touchable onPress={onOthersShare}>
+                <View
+                  style={applyStyles('px-2 flex-row center', {
+                    height: 48,
+                  })}>
+                  <Icon
+                    size={16}
+                    type="feathericons"
+                    name="more-vertical"
+                    color={colors['red-100']}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                    )}>
+                    other
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
           </View>
         </View>
       </View>
-
-      {!!transaction.customer && !!showCustomer && (
-        <View style={applyStyles('py-16 right-16 bottom-0 absolute')}>
-          <Button
-            style={applyStyles({width: 200})}
-            title="View Customer"
-            onPress={() =>
-              navigation.navigate('CustomerDetails', {
-                customer: transaction.customer,
-              })
-            }
-          />
-        </View>
-      )}
-      <View style={applyStyles({opacity: 0, height: 0})}>
-        <PaymentReminderImage
-          date={transaction.dueDate}
-          amount={creditAmountLeft}
-          getImageUri={(data) => setReminderImage(data)}
+      <View style={applyStyles('p-16 flex-row items-center justify-between')}>
+        <Button
+          title="Delete"
+          variantColor="transparent"
+          onPress={handleOpenConfirmModal}
+          style={applyStyles({width: '48%'})}
+        />
+        <Button
+          title="Edit"
+          variantColor="clear"
+          onPress={handleEditTransaction}
+          style={applyStyles({width: '48%'})}
         />
       </View>
       <View style={applyStyles({opacity: 0, height: 0})}>
         <ReceiptImage
-          note={transaction?.note}
-          amountPaid={totalAmountPaid}
-          creditAmount={creditAmountLeft}
-          customer={transaction?.customer}
-          createdAt={transaction?.created_at}
-          creditDueDate={transaction?.dueDate}
-          totalAmount={transaction.total_amount}
+          note={note}
+          customer={customer}
+          creditDueDate={dueDate}
+          amountPaid={amount_paid}
+          totalAmount={total_amount}
+          creditAmount={credit_amount}
+          createdAt={transaction_date}
+          receiptNo={_id?.toString().substring(0, 6)}
           getImageUri={(data) => setReceiptImage(data)}
-          receiptNo={transaction?._id?.toString().substring(0, 6)}
         />
       </View>
     </SafeAreaView>
   );
-};
+});

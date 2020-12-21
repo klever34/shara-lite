@@ -121,26 +121,29 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           value={searchTerm}
           onSearch={handleReceiptSearch}
           placeholderText="Search records here"
+          containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
         />
-        <Touchable onPress={handleOpenFilterModal}>
-          <View
-            style={applyStyles('py-4 px-8 flex-row items-center', {
-              borderWidth: 1,
-              borderRadius: 4,
-              borderColor: colors['gray-20'],
-            })}>
-            <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
-              Filters
-            </Text>
-            <Icon
-              size={16}
-              name="calendar"
-              type="feathericons"
-              color={colors['gray-50']}
-            />
-          </View>
-        </Touchable>
+        {!searchTerm && (
+          <Touchable onPress={handleOpenFilterModal}>
+            <View
+              style={applyStyles('py-4 px-8 flex-row items-center', {
+                borderWidth: 1,
+                borderRadius: 4,
+                borderColor: colors['gray-20'],
+              })}>
+              <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
+                Filters
+              </Text>
+              <Icon
+                size={16}
+                name="calendar"
+                type="feathericons"
+                color={colors['gray-50']}
+              />
+            </View>
+          </Touchable>
+        )}
       </View>
       {filter && filter !== 'all' && (
         <View
@@ -180,96 +183,115 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           </Touchable>
         </View>
       )}
-
-      <View
-        style={applyStyles('flex-row items-center bg-white', {
-          borderBottomWidth: 1,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <View
-          style={applyStyles('py-16 flex-row center', {
-            width: '48%',
-            borderRightWidth: 1,
-            borderRightColor: colors['gray-20'],
-          })}>
+      {!searchTerm && (
+        <>
+          <View
+            style={applyStyles('flex-row items-center bg-white', {
+              borderBottomWidth: 1,
+              borderBottomColor: colors['gray-20'],
+            })}>
+            <View
+              style={applyStyles('py-16 flex-row center', {
+                width: '48%',
+                borderRightWidth: 1,
+                borderRightColor: colors['gray-20'],
+              })}>
+              <View
+                style={applyStyles(
+                  'w-24 h-24 mr-8 rounded-16 center bg-green-200',
+                )}>
+                <Icon
+                  size={24}
+                  name="arrow-up"
+                  type="feathericons"
+                  color={colors.white}
+                />
+              </View>
+              <View>
+                <Text
+                  style={applyStyles(
+                    'pb-4 text-uppercase text-400 text-gray-200',
+                  )}>
+                  collected
+                </Text>
+                <Text style={applyStyles('text-700 text-black text-base')}>
+                  {amountWithCurrency(collectedAmount)}
+                </Text>
+              </View>
+            </View>
+            <View style={applyStyles('py-16 flex-row center', {width: '48%'})}>
+              <View
+                style={applyStyles(
+                  'w-24 h-24 mr-8 rounded-16 center bg-red-100',
+                )}>
+                <Icon
+                  size={24}
+                  name="arrow-down"
+                  type="feathericons"
+                  color={colors.white}
+                />
+              </View>
+              <View>
+                <Text
+                  style={applyStyles(
+                    'pb-4 text-uppercase text-400 text-gray-200',
+                  )}>
+                  outstanding
+                </Text>
+                <Text style={applyStyles('text-700 text-black text-base')}>
+                  {amountWithCurrency(outstandingAmount)}
+                </Text>
+              </View>
+            </View>
+          </View>
           <View
             style={applyStyles(
-              'w-24 h-24 mr-8 rounded-16 center bg-green-200',
+              'py-8 px-16 flex-row items-center justify-between',
+              {
+                borderBottomWidth: 1.5,
+                borderBottomColor: colors['gray-20'],
+              },
             )}>
-            <Icon
-              size={24}
-              name="arrow-up"
-              type="feathericons"
-              color={colors.white}
-            />
-          </View>
-          <View>
             <Text
-              style={applyStyles('pb-4 text-uppercase text-400 text-gray-200')}>
-              collected
+              style={applyStyles('text-black text-700 text-uppercase flex-1')}>
+              Total: {amountWithCurrency(totalAmount)}
             </Text>
-            <Text style={applyStyles('text-700 text-black text-base')}>
-              {amountWithCurrency(collectedAmount)}
-            </Text>
+            <Touchable>
+              <View
+                style={applyStyles(
+                  'py-4 px-8 flex-row items-center bg-gray-20',
+                  {
+                    borderWidth: 1,
+                    borderRadius: 24,
+                    borderColor: colors['gray-20'],
+                  },
+                )}>
+                <Text
+                  style={applyStyles(
+                    'text-xxs text-gray-200 text-700 text-uppercase pr-8',
+                  )}>
+                  View report
+                </Text>
+                <Icon
+                  size={16}
+                  type="feathericons"
+                  name="chevron-right"
+                  color={colors['gray-50']}
+                />
+              </View>
+            </Touchable>
           </View>
-        </View>
-        <View style={applyStyles('py-16 flex-row center', {width: '48%'})}>
-          <View
-            style={applyStyles('w-24 h-24 mr-8 rounded-16 center bg-red-100')}>
-            <Icon
-              size={24}
-              name="arrow-down"
-              type="feathericons"
-              color={colors.white}
-            />
-          </View>
-          <View>
-            <Text
-              style={applyStyles('pb-4 text-uppercase text-400 text-gray-200')}>
-              outstanding
-            </Text>
-            <Text style={applyStyles('text-700 text-black text-base')}>
-              {amountWithCurrency(outstandingAmount)}
-            </Text>
-          </View>
-        </View>
-      </View>
-      <View
-        style={applyStyles('py-8 px-16 flex-row items-center justify-between', {
-          borderBottomWidth: 1.5,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <Text style={applyStyles('text-black text-700 text-uppercase flex-1')}>
-          Total: {amountWithCurrency(totalAmount)}
-        </Text>
-        <Touchable>
-          <View
-            style={applyStyles('py-4 px-8 flex-row items-center bg-gray-20', {
-              borderWidth: 1,
-              borderRadius: 24,
-              borderColor: colors['gray-20'],
-            })}>
-            <Text
-              style={applyStyles(
-                'text-xs text-gray-200 text-700 text-uppercase pr-8',
-              )}>
-              View reports
-            </Text>
-            <Icon
-              size={16}
-              type="feathericons"
-              name="chevron-right"
-              color={colors['gray-50']}
-            />
-          </View>
-        </Touchable>
-      </View>
-
+        </>
+      )}
       {!!filteredReceipts && filteredReceipts.length ? (
         <>
           <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
             <Text style={applyStyles('text-base text-gray-300')}>
-              Activities
+              {searchTerm
+                ? `${filteredReceipts.length} ${
+                    filteredReceipts.length > 1 ? 'Results' : 'Result'
+                  }`
+                : 'Activities'}
             </Text>
           </View>
           <FlatList
