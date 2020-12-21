@@ -24,7 +24,7 @@ import {useCustomerList} from '../customers/CustomerListScreen';
 export type SelectCustomerListItem = Partial<ICustomer>;
 
 export type SelectCustomerListScreenParams = {
-  withCustomer: boolean;
+  withCustomer?: boolean;
   onSelectCustomer: (customer?: SelectCustomerListItem) => void;
 };
 
