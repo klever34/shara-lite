@@ -7,18 +7,19 @@ import {
 import {Page} from '@/components/Page';
 import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useContext, useMemo} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
 import {Alert} from 'react-native';
 import {ToastContext} from '@/components/Toast';
+import {TransactionReview} from '@/components/TransactionReview';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 
-export const BusinessSettings = () => {
+export const BusinessSettings = withModal((props: ModalWrapperFields) => {
+  const {openModal} = props;
   const handleError = useErrorHandler();
   const authService = getAuthService();
   const apiService = getApiService();
-  const navigation = useAppNavigation();
   let {callingCode} = useIPGeolocation();
   const user = authService.getUser();
   const businessInfo = authService.getBusinessInfo();
@@ -33,6 +34,44 @@ export const BusinessSettings = () => {
   } = businessInfo;
   callingCode = country_code ?? callingCode;
   const {showSuccessToast} = useContext(ToastContext);
+
+  const dummyTransaction = {
+    tax: 120,
+    amount_paid: 2500,
+    total_amount: 5500,
+    credit_amount: 0,
+    created_at: new Date(),
+    transaction_date: new Date(),
+  };
+
+  const handleOpenPreviewReceiptModal = useCallback(() => {
+    const closeModal = openModal('full', {
+      renderContent: () => (
+        <TransactionReview
+          heading="Receipt"
+          onDone={closeModal}
+          showAnimation={false}
+          showShareButtons={false}
+          transaction={dummyTransaction}
+          subheading="Here’s what your receipt looks like"
+        />
+      ),
+    });
+  }, [openModal, dummyTransaction]);
+
+  const handleOpenSaveModal = useCallback(() => {
+    const closeModal = openModal('full', {
+      renderContent: () => (
+        <TransactionReview
+          heading="Saved"
+          onDone={closeModal}
+          showShareButtons={false}
+          transaction={dummyTransaction}
+          subheading="Here’s what your receipt looks like"
+        />
+      ),
+    });
+  }, [openModal, dummyTransaction]);
 
   const formFields = useMemo(() => {
     const fields: FormFields<keyof Omit<BusinessFormPayload, 'countryCode'>> = {
@@ -118,12 +157,12 @@ export const BusinessSettings = () => {
           .logEvent('businessSetupComplete', {})
           .catch(handleError);
         showSuccessToast('Business settings update successful');
-        navigation.goBack();
+        handleOpenSaveModal();
       } catch (error) {
         Alert.alert('Error', error.message);
       }
     },
-    [user, apiService, navigation, id, handleError, showSuccessToast],
+    [user, apiService, id, handleError, showSuccessToast, handleOpenSaveModal],
   );
 
   return (
@@ -142,12 +181,7 @@ export const BusinessSettings = () => {
             {
               title: 'Preview Receipt',
               variantColor: 'transparent',
-              onPress: () => {
-                Alert.alert(
-                  'Coming Soon',
-                  'This feature is coming in the next update',
-                );
-              },
+              onPress: handleOpenPreviewReceiptModal,
             },
             {title: 'Save'},
           ]}
@@ -156,4 +190,4 @@ export const BusinessSettings = () => {
       </>
     </Page>
   );
-};
+});

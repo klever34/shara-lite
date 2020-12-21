@@ -190,7 +190,7 @@ export const MoreOptionsScreen = withModal(
           <TitleContainer
             title="My Account"
             description="Quickly record a transaction or obligation"
-            style={applyStyles('p-16')}
+            containerStyle={applyStyles('p-16')}
           />
           {!business.name && (
             <Touchable onPress={onEditBusinessSettings}>
@@ -236,7 +236,7 @@ export const MoreOptionsScreen = withModal(
           <View style={applyStyles('mb-24')}>
             {moreOptions.map(({title, text, onPress}, index) => {
               return (
-                <Touchable onPress={onPress} key={title}>
+                <Touchable onPress={onPress} key={`${title}-${index}`}>
                   <View
                     style={applyStyles(
                       'flex-row items-center py-10 px-10 border-t-1 border-gray-20',

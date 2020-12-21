@@ -15,7 +15,7 @@ import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format, isToday} from 'date-fns';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
 // import Config from 'react-native-config';
 import {MainStackParamList} from '..';
@@ -26,7 +26,9 @@ type LedgerEntryScreenProps = {
 
 export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   const {route, openModal} = props;
-  const {transaction} = route.params;
+  const {transaction: transactionProp} = route.params;
+
+  const [transaction, setTransaction] = useState(transactionProp);
   const {
     _id,
     note,
@@ -40,7 +42,11 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
 
   const navigation = useAppNavigation();
   const {showSuccessToast} = useContext(ToastContext);
-  const {deleteTransaction, addCustomerToTransaction} = useTransaction();
+  const {
+    getTransaction,
+    deleteTransaction,
+    addCustomerToTransaction,
+  } = useTransaction();
 
   const analyticsService = getAnalyticsService();
   const businessInfo = getAuthService().getBusinessInfo();
@@ -116,19 +122,9 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
 
   const handleDeleteTransaction = useCallback(() => {
     deleteTransaction({transaction});
-    analyticsService
-      .logEvent('userDeletedTransaction', {})
-      .then(() => {})
-      .catch(handleError);
     showSuccessToast('TRANSACTION DELETED');
     navigation.goBack();
-  }, [
-    navigation,
-    transaction,
-    analyticsService,
-    deleteTransaction,
-    showSuccessToast,
-  ]);
+  }, [navigation, transaction, deleteTransaction, showSuccessToast]);
 
   const handleAddCustomer = useCallback(
     async (selectedCustomer) => {
@@ -185,6 +181,14 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
       onSelectCustomer: handleAddCustomer,
     });
   }, [navigation, handleAddCustomer]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      const thisTransaction =
+        transactionProp?._id && getTransaction(transactionProp?._id);
+      thisTransaction && setTransaction(thisTransaction);
+    });
+  }, [navigation, transactionProp, getTransaction]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>

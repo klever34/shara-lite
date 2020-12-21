@@ -173,8 +173,7 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
   const collectedAmount = useMemo(
     () =>
       filteredReceipts
-        .filter((item) => item.isPaid)
-        .map((item) => item.total_amount)
+        .map((item) => item.amount_paid)
         .reduce((acc, item) => acc + item, 0),
     [filteredReceipts],
   );
@@ -185,10 +184,13 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
         .reduce((acc, item) => acc + item, 0),
     [owedReceipts],
   );
-  const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
-    collectedAmount,
-    outstandingAmount,
-  ]);
+  const totalAmount = useMemo(
+    () =>
+      filteredReceipts
+        .map((item) => item.total_amount)
+        .reduce((acc, item) => acc + item, 0),
+    [filteredReceipts],
+  );
 
   useEffect(() => {
     return navigation.addListener('focus', () => {

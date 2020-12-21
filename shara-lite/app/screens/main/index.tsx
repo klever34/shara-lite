@@ -30,30 +30,35 @@ import {Entry} from '@/components/Entry';
 import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
+import {ICustomer} from '@/models';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
+import {ReportScreen} from './report';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Customers
-  SelectCustomerList: SelectCustomerListScreenParams;
   CustomerDetails: TransactionDetailsProps;
   CustomerEntry: CustomerEntryScreenParams;
+  SelectCustomerList: SelectCustomerListScreenParams;
 
   // Transaction
-  RecordSale: undefined;
-  RecordCollection: undefined;
+  RecordSale: {goBack?: () => void};
+  EditTransaction: {transaction: IReceipt};
   TransactionDetails: {transaction: IReceipt};
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
-  EditTransaction: {transaction: IReceipt};
+  RecordCollection: {customer: ICustomer; goBack?: () => void};
   TransactionSuccess: {transaction: IReceipt; onDone?: () => void};
 
   // More
   Settings: undefined;
-  PaymentSettings: undefined;
-  UserProfileSettings: undefined;
-  BusinessSettings: undefined;
   Referral: undefined;
+  PaymentSettings: undefined;
+  BusinessSettings: undefined;
+  UserProfileSettings: undefined;
+
+  // Report
+  Report: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -200,7 +205,14 @@ const MainScreens = () => {
           }}
         />
 
-        {/* Payments */}
+        {/* Report */}
+        <MainStack.Screen
+          name="Report"
+          component={ReportScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
       </MainStack.Navigator>
     </Entry>
   );

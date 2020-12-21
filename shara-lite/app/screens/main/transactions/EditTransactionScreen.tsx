@@ -10,8 +10,6 @@ import {Icon} from '@/components/Icon';
 import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
-import {getAnalyticsService} from '@/services';
-import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
@@ -37,14 +35,9 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
   const initialValues = omit(transaction);
 
   const handleSave = useCallback(
-    (updates) => {
-      console.log(updates);
+    async (updates) => {
       if (updates.amount_paid || updates.credit_amount) {
-        updateTransaction({updates, transaction});
-        getAnalyticsService()
-          .logEvent('userUpdatedTransaction', {})
-          .then(() => {})
-          .catch(handleError);
+        await updateTransaction({updates, transaction});
         showSuccessToast('TRANSACTION UPDATED');
         navigation.goBack();
       } else {
@@ -59,14 +52,30 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
 
   const {values, handleSubmit, handleChange, setFieldValue} = useFormik({
     initialValues,
-    onSubmit: handleSave,
+    onSubmit: ({
+      amount_paid,
+      credit_amount,
+      total_amount,
+      note,
+      transaction_date,
+    }) =>
+      handleSave({
+        amount_paid,
+        credit_amount,
+        total_amount,
+        note,
+        transaction_date,
+      }),
   });
   const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
+  const total_amount = values.amount_paid + values.credit_amount;
 
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
-      <ScrollView style={applyStyles('flex-1')}>
+      <ScrollView
+        style={applyStyles('flex-1')}
+        keyboardShouldPersistTaps="always">
         <View
           style={applyStyles(
             'flex-row py-8 pr-16 bg-white items-center justify-between',
@@ -88,11 +97,14 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
             <View style={applyStyles({width: '48%'})}>
               <CurrencyInput
                 label="Collected"
+                placeholder="0.00"
                 returnKeyType="next"
                 value={values.amount_paid ?? 0}
-                onChangeText={(text) =>
-                  setFieldValue('amount_paid', toNumber(text))
-                }
+                onChangeText={(text) => {
+                  const value = toNumber(text);
+                  setFieldValue('amount_paid', value);
+                  setFieldValue('total_amount', values.credit_amount + value);
+                }}
                 onSubmitEditing={() => {
                   setImmediate(() => {
                     if (creditAmountFieldRef.current) {
@@ -104,14 +116,17 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
             </View>
             <View style={applyStyles({width: '48%'})}>
               <CurrencyInput
+                placeholder="0.00"
                 label="Outstanding"
                 returnKeyType="next"
                 value={values.credit_amount ?? 0}
                 style={applyStyles('text-red-100')}
                 iconStyle={applyStyles('text-red-100')}
-                onChangeText={(text) =>
-                  setFieldValue('credit_amount', toNumber(text))
-                }
+                onChangeText={(text) => {
+                  const value = toNumber(text);
+                  setFieldValue('credit_amount', value);
+                  setFieldValue('total_amount', values.amount_paid + value);
+                }}
                 onSubmitEditing={() => {
                   setImmediate(() => {
                     if (noteFieldRef.current) {
@@ -126,8 +141,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
             style={applyStyles(
               'pb-16 text-700 text-center text-uppercase text-black',
             )}>
-            Total:{' '}
-            {amountWithCurrency(values.amount_paid + values.credit_amount)}
+            Total: {amountWithCurrency(total_amount)}
           </Text>
           <AppInput
             multiline
