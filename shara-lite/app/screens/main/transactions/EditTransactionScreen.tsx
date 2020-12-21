@@ -69,6 +69,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
   });
   const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
+  const total_amount = values.amount_paid + values.credit_amount;
 
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
@@ -98,9 +99,11 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
                 label="Collected"
                 returnKeyType="next"
                 value={values.amount_paid ?? 0}
-                onChangeText={(text) =>
-                  setFieldValue('amount_paid', toNumber(text))
-                }
+                onChangeText={(text) => {
+                  const value = toNumber(text);
+                  setFieldValue('amount_paid', value);
+                  setFieldValue('total_amount', values.credit_amount + value);
+                }}
                 onSubmitEditing={() => {
                   setImmediate(() => {
                     if (creditAmountFieldRef.current) {
@@ -117,9 +120,11 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
                 value={values.credit_amount ?? 0}
                 style={applyStyles('text-red-100')}
                 iconStyle={applyStyles('text-red-100')}
-                onChangeText={(text) =>
-                  setFieldValue('credit_amount', toNumber(text))
-                }
+                onChangeText={(text) => {
+                  const value = toNumber(text);
+                  setFieldValue('credit_amount', value);
+                  setFieldValue('total_amount', values.amount_paid + value);
+                }}
                 onSubmitEditing={() => {
                   setImmediate(() => {
                     if (noteFieldRef.current) {
@@ -134,8 +139,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
             style={applyStyles(
               'pb-16 text-700 text-center text-uppercase text-black',
             )}>
-            Total:{' '}
-            {amountWithCurrency(values.amount_paid + values.credit_amount)}
+            Total: {amountWithCurrency(total_amount)}
           </Text>
           <AppInput
             multiline

@@ -87,6 +87,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     });
   }, [handleStatusFilter]);
 
+  const handleGoToReportScreen = useCallback(() => {
+    navigation.navigate('Report');
+  }, [navigation]);
+
   const getFilterLabelText = useCallback(() => {
     const activeOption = filterOptions.find((item) => item.value === filter);
     if (filter === 'date-range' && filterStartDate && filterEndDate) {
@@ -256,7 +260,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               style={applyStyles('text-black text-700 text-uppercase flex-1')}>
               Total: {amountWithCurrency(totalAmount)}
             </Text>
-            <Touchable>
+            <Touchable onPress={handleGoToReportScreen}>
               <View
                 style={applyStyles(
                   'py-4 px-8 flex-row items-center bg-gray-20',

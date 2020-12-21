@@ -184,7 +184,6 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      console.log('here');
       const thisTransaction =
         transactionProp?._id && getTransaction(transactionProp?._id);
       thisTransaction && setTransaction(thisTransaction);

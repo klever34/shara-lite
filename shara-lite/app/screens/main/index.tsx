@@ -31,6 +31,7 @@ import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
+import {ReportScreen} from './report';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -54,6 +55,9 @@ export type MainStackParamList = {
   UserProfileSettings: undefined;
   BusinessSettings: undefined;
   Referral: undefined;
+
+  // Report
+  Report: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -200,7 +204,14 @@ const MainScreens = () => {
           }}
         />
 
-        {/* Payments */}
+        {/* Report */}
+        <MainStack.Screen
+          name="Report"
+          component={ReportScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
       </MainStack.Navigator>
     </Entry>
   );
