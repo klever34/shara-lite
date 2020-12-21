@@ -116,9 +116,9 @@ export const useReceipt = (): useReceiptInterface => {
       is_hidden_in_pro,
       ...getBaseModelValues(),
     };
+    receipt.transaction_date = receipt.created_at;
 
     let receiptCustomer: ICustomer | Customer;
-
     if (customer.name) {
       receipt.customer_name = customer.name;
       receipt.customer_mobile = customer.mobile;
