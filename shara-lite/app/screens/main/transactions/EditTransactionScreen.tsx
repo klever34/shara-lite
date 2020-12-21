@@ -36,7 +36,6 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
 
   const handleSave = useCallback(
     (updates) => {
-      console.log(updates);
       if (updates.amount_paid || updates.credit_amount) {
         updateTransaction({updates, transaction});
         showSuccessToast('TRANSACTION UPDATED');
@@ -53,14 +52,29 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
 
   const {values, handleSubmit, handleChange, setFieldValue} = useFormik({
     initialValues,
-    onSubmit: handleSave,
+    onSubmit: ({
+      amount_paid,
+      credit_amount,
+      total_amount,
+      note,
+      transaction_date,
+    }) =>
+      handleSave({
+        amount_paid,
+        credit_amount,
+        total_amount,
+        note,
+        transaction_date,
+      }),
   });
   const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
 
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
-      <ScrollView style={applyStyles('flex-1')}>
+      <ScrollView
+        style={applyStyles('flex-1')}
+        keyboardShouldPersistTaps="always">
         <View
           style={applyStyles(
             'flex-row py-8 pr-16 bg-white items-center justify-between',
