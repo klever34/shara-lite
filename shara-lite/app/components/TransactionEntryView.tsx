@@ -28,7 +28,7 @@ import {
   ViewStyle,
 } from 'react-native';
 import {dimensions} from '@/styles';
-import {useReceiptList} from '@/screens/main/transactions/TransactionListScreen';
+import {useReceiptList} from '@/screens/main/transactions/hook';
 
 const getLastToken = (tokens: string[]) => {
   return tokens[tokens.length - 1];

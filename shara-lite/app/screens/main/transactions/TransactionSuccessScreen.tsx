@@ -18,8 +18,8 @@ export const TransactionSuccessScreen = (
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
       <TransactionReview
-        heading="Success"
         onDone={onDone}
+        heading="Success"
         transaction={transaction}
         subheading="Sale has been recorded Succesfully"
       />
