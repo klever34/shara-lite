@@ -1,15 +1,12 @@
 import {SearchFilter} from '@/components';
 import EmptyState from '@/components/EmptyState';
+import {CustomerListItem} from '@/components/CustomerListItem';
 import Icon from '@/components/Icon';
-import PlaceholderImage from '@/components/PlaceholderImage';
-import Touchable from '@/components/Touchable';
-import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
-import {formatDistanceToNowStrict} from 'date-fns';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -119,48 +116,9 @@ export const CustomerListScreen = () => {
     }: Pick<ListRenderItemInfo<CustomerListItem>, 'item'> & {
       onPress?: () => void;
     }) => {
-      const getDateText = () => {
-        if (customer.dueDate) {
-          if (customer.overdueCreditAmount) {
-            return (
-              <Text style={applyStyles('text-xs text-700 text-red-100')}>
-                Due{' '}
-                {formatDistanceToNowStrict(customer.dueDate, {
-                  addSuffix: true,
-                })}
-              </Text>
-            );
-          }
-          if (customer.remainingCreditAmount && !customer.overdueCreditAmount) {
-            return (
-              <Text style={applyStyles('text-xs text-700 text-red-100')}>
-                Collect in{' '}
-                {formatDistanceToNowStrict(customer.dueDate, {
-                  addSuffix: true,
-                })}
-              </Text>
-            );
-          }
-        }
-        if (!customer.dueDate && customer.remainingCreditAmount) {
-          return (
-            <Text style={applyStyles('text-xs text-700 text-gray-100')}>
-              No Collection Date
-            </Text>
-          );
-        }
-        return (
-          <Text style={applyStyles('text-xs text-700 text-gray-100')}>
-            {customer?.created_at &&
-              formatDistanceToNowStrict(customer?.created_at, {
-                addSuffix: true,
-              })}
-          </Text>
-        );
-      };
-
       return (
-        <Touchable
+        <CustomerListItem
+          customer={customer}
           onPress={
             '_id' in customer
               ? () => {
@@ -172,36 +130,9 @@ export const CustomerListScreen = () => {
                   handleSelectCustomer(customer);
                 }
               : undefined
-          }>
-          <View
-            style={applyStyles(
-              'flex-row items-center border-b-1 border-gray-20 p-16',
-            )}>
-            <PlaceholderImage text={customer?.name ?? ''} />
-            <View style={applyStyles('flex-1 pl-sm')}>
-              <Text
-                style={applyStyles('pb-4 text-base text-400 text-gray-300')}>
-                {customer.name}
-              </Text>
-              {getDateText()}
-            </View>
-            <View style={applyStyles('items-end flex-row')}>
-              <Text style={applyStyles('text-base text-700 text-black')}>
-                {amountWithCurrency(customer.remainingCreditAmount ?? 0)}
-              </Text>
-              {!!customer.remainingCreditAmount && (
-                <View style={applyStyles('pl-4')}>
-                  <Icon
-                    size={18}
-                    name="arrow-up"
-                    type="feathericons"
-                    color={colors['red-100']}
-                  />
-                </View>
-              )}
-            </View>
-          </View>
-        </Touchable>
+          }
+          containerStyle={applyStyles('p-16')}
+        />
       );
     },
     [handleSelectCustomer],

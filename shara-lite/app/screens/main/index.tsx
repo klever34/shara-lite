@@ -30,6 +30,7 @@ import {Entry} from '@/components/Entry';
 import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
+import {ICustomer} from '@/models';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -41,7 +42,7 @@ export type MainStackParamList = {
 
   // Transaction
   RecordSale: undefined;
-  RecordCollection: undefined;
+  RecordCollection: {customer: ICustomer};
   TransactionDetails: {transaction: IReceipt};
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
   TransactionSuccess: {transaction: IReceipt; onDone?: () => void};
