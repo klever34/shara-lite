@@ -63,16 +63,16 @@ workflows:
                 - /^hotfix.*/
   shara-lite-testing-workflow:
     jobs:
-#      - request-approval:
-#          type: approval
-#          filters:
-#            branches:
-#              ignore:
-#                - master
-#                - develop
-#                - discovery
-#                - /^release.*/
-#                - /^hotfix.*/
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              ignore:
+                - master
+                - develop
+                - discovery
+                - /^release.*/
+                - /^hotfix.*/
       - checkout_code:
           app: shara-lite
           appEnv: SHARA_LITE_ENV
