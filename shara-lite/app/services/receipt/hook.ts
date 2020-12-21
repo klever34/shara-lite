@@ -34,6 +34,7 @@ interface saveReceiptInterface {
   image_url?: string;
   local_image_url?: string;
   is_hidden_in_pro?: boolean;
+  is_collection?: boolean;
 }
 
 interface updateReceiptInterface {
@@ -102,6 +103,7 @@ export const useReceipt = (): useReceiptInterface => {
     local_image_url,
     image_url,
     is_hidden_in_pro,
+    is_collection,
   }: saveReceiptInterface) => {
     const fullTrace = await perf().startTrace('saveReceiptFullFlow');
 
@@ -114,6 +116,7 @@ export const useReceipt = (): useReceiptInterface => {
       local_image_url,
       image_url,
       is_hidden_in_pro,
+      is_collection,
       ...getBaseModelValues(),
     };
     receipt.transaction_date = receipt.created_at;
