@@ -1,8 +1,13 @@
-import {ICustomer} from './Customer';
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IPayment} from './Payment';
-import {IReceiptItem} from './ReceiptItem';
-import {ICredit} from './Credit';
+import {IPayment} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
+import {ICredit} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
+
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IReceiptItem} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/ReceiptItem';
+import {ICustomer} from '@/services/realm/migrations/1599826529206-customer-address/models/Customer';
 
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;
@@ -30,6 +35,8 @@ export interface IReceipt extends BaseModelInterface {
   hasCustomer?: boolean;
   dueDate?: Date;
   isPending?: boolean;
+  isInflow?: boolean;
+  isOutflow?: boolean;
 }
 
 export const modelName = 'Receipt';
@@ -75,15 +82,13 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
   };
   public total_amount: number | undefined;
   public amount_paid: number | undefined;
+  public credit_amount: number | undefined;
   public customer: ICustomer | undefined;
   public credits: ICredit[] | undefined;
+  public payments: IPayment[] | undefined;
   public local_image_url: IReceipt['local_image_url'];
   public image_url: IReceipt['image_url'];
   public items: IReceipt['items'];
-
-  public get isPaid() {
-    return this.total_amount === this.amount_paid;
-  }
 
   public get hasCustomer() {
     return !!this?.customer?._id;
@@ -95,5 +100,17 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
 
   public get isPending() {
     return !!(this.local_image_url || this.image_url) && !this.items?.length;
+  }
+
+  public get isPaid() {
+    return !this.credits?.filter((credit) => !credit.fulfilled).length;
+  }
+
+  public get isInflow() {
+    return !this.credit_amount;
+  }
+
+  public get isOutflow() {
+    return !!this.credit_amount;
   }
 }
