@@ -38,24 +38,24 @@ export type MainStackParamList = {
   Home: undefined;
 
   // Customers
-  SelectCustomerList: SelectCustomerListScreenParams;
   CustomerDetails: TransactionDetailsProps;
   CustomerEntry: CustomerEntryScreenParams;
+  SelectCustomerList: SelectCustomerListScreenParams;
 
   // Transaction
-  RecordSale: undefined;
-  RecordCollection: {customer: ICustomer};
+  RecordSale: {goBack?: () => void};
+  EditTransaction: {transaction: IReceipt};
   TransactionDetails: {transaction: IReceipt};
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
-  EditTransaction: {transaction: IReceipt};
+  RecordCollection: {customer: ICustomer; goBack?: () => void};
   TransactionSuccess: {transaction: IReceipt; onDone?: () => void};
 
   // More
   Settings: undefined;
-  PaymentSettings: undefined;
-  UserProfileSettings: undefined;
-  BusinessSettings: undefined;
   Referral: undefined;
+  PaymentSettings: undefined;
+  BusinessSettings: undefined;
+  UserProfileSettings: undefined;
 
   // Report
   Report: undefined;

@@ -97,6 +97,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
             <View style={applyStyles({width: '48%'})}>
               <CurrencyInput
                 label="Collected"
+                placeholder="0.00"
                 returnKeyType="next"
                 value={values.amount_paid ?? 0}
                 onChangeText={(text) => {
@@ -115,6 +116,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
             </View>
             <View style={applyStyles({width: '48%'})}>
               <CurrencyInput
+                placeholder="0.00"
                 label="Outstanding"
                 returnKeyType="next"
                 value={values.credit_amount ?? 0}
