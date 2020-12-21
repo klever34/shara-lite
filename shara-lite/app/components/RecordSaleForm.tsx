@@ -42,26 +42,24 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
   const {values, handleSubmit, handleChange, setFieldValue} = useFormik({
     initialValues,
     onSubmit: ({
+      note,
       amount_paid,
       credit_amount,
       total_amount,
-      note,
       transaction_date,
     }) =>
       onSubmit({
+        note,
         amount_paid,
         credit_amount,
         total_amount,
-        note,
         transaction_date,
       }),
   });
   const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
-  const total_amount =
-    values.amount_paid && values.credit_amount
-      ? values.amount_paid + values.credit_amount
-      : 0;
+
+  console.log(values.total_amount);
 
   return (
     <View>
@@ -77,7 +75,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
               setFieldValue('amount_paid', value);
               setFieldValue(
                 'total_amount',
-                values.credit_amount ? values.credit_amount + value : 0,
+                values.credit_amount ? values.credit_amount + value : value,
               );
             }}
             onSubmitEditing={() => {
@@ -102,7 +100,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
               setFieldValue('credit_amount', value);
               setFieldValue(
                 'total_amount',
-                values.amount_paid ? values.amount_paid + value : 0,
+                values.amount_paid ? values.amount_paid + value : value,
               );
             }}
             onSubmitEditing={() => {
@@ -120,7 +118,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           style={applyStyles(
             'pb-16 text-700 text-center text-uppercase text-black',
           )}>
-          Total: {amountWithCurrency(total_amount)}
+          Total: {amountWithCurrency(values.total_amount)}
         </Text>
       )}
       {(values.amount_paid || values.credit_amount) && (

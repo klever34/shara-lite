@@ -109,6 +109,9 @@ export const useTransaction = (): useTransactionInterface => {
     customer,
   }: addCustomerToTransactionInterface) => {
     const receipt = omit(transaction);
+    getAnalyticsService()
+      .logEvent('customerAddedToTransaction', {})
+      .then(() => {});
 
     await updateReceipt({
       receipt,

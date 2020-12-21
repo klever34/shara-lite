@@ -8,6 +8,7 @@ import {getAnalyticsService, getAuthService} from '@/services';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
+import {format} from 'date-fns';
 import LottieView from 'lottie-react-native';
 import React, {useCallback, useState} from 'react';
 import {Image, Text, View} from 'react-native';
@@ -222,6 +223,16 @@ export const TransactionReview = (props: TransactionReviewProps) => {
           </View>
         )}
       </View>
+      {dueDate && (
+        <View style={applyStyles('flex-row center')}>
+          <Text style={applyStyles('text-gray-100 text-uppercase')}>
+            Collect on{' '}
+          </Text>
+          <Text style={applyStyles('text-red-200 text-700')}>
+            {format(dueDate, 'dd MMM, yyyy')}
+          </Text>
+        </View>
+      )}
       <View
         style={applyStyles(
           `px-16 pt-16 bg-white flex-row items-center ${
@@ -238,9 +249,9 @@ export const TransactionReview = (props: TransactionReviewProps) => {
             {(toggleShow) => (
               <Button
                 onPress={toggleShow}
-                title="Collection Date"
                 variantColor="transparent"
                 style={applyStyles({width: '100%'})}
+                title={dueDate ? 'Change Collection Date' : 'Collection Date'}
               />
             )}
           </DatePicker>

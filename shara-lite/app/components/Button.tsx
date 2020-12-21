@@ -65,8 +65,12 @@ export const Button = ({
   };
 
   const activityIndicatorColor: variantColorHexColorOptions = {
-    white: colors.primary,
     red: colors.white,
+    clear: colors.white,
+    blue: colors.white,
+    green: colors.white,
+    white: colors.primary,
+    transparent: colors.white,
   };
 
   const [loading, setLoading] = useState(isLoading);
