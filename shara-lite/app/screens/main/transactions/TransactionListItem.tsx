@@ -2,7 +2,6 @@ import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
 import React, {useCallback} from 'react';
@@ -22,25 +21,24 @@ export const TransactionListItem = ({
   receipt,
   onPress,
 }: TransactionListItemProps) => {
-  const {getReceiptAmounts} = useReceipt();
-  const {creditAmountLeft, totalAmountPaid} = getReceiptAmounts(receipt);
+  const {amount_paid = 0, credit_amount = 0} = receipt ?? {};
 
   const renderTransactionText = useCallback(() => {
     if (!receipt?.isPaid) {
-      if (creditAmountLeft && totalAmountPaid === 0) {
+      if (credit_amount && amount_paid === 0) {
         return (
           <View>
             <Text style={applyStyles('text-gray-300 text-400 text-base')}>
               Outstanding of{' '}
               <Text style={applyStyles('text-700')}>
-                {amountWithCurrency(creditAmountLeft)}
+                {amountWithCurrency(credit_amount)}
               </Text>
               {receipt?.customer && ` to ${receipt.customer.name}`}
             </Text>
           </View>
         );
       }
-      if (creditAmountLeft) {
+      if (credit_amount) {
         return (
           <View>
             <Text style={applyStyles('text-gray-300 text-400 text-base')}>
@@ -50,8 +48,8 @@ export const TransactionListItem = ({
               </Text>
               {receipt?.customer && ` to ${receipt.customer.name}`}
               {`. Collected ${amountWithCurrency(
-                totalAmountPaid,
-              )} and outstanding of ${amountWithCurrency(creditAmountLeft)}`}
+                amount_paid,
+              )} and outstanding of ${amountWithCurrency(credit_amount)}`}
             </Text>
           </View>
         );
@@ -68,7 +66,7 @@ export const TransactionListItem = ({
         </Text>
       </View>
     );
-  }, [creditAmountLeft, receipt, totalAmountPaid]);
+  }, [credit_amount, receipt, amount_paid]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
@@ -110,7 +108,7 @@ export const TransactionListItem = ({
                 }`,
               )}>
               {amountWithCurrency(
-                receipt?.isPaid ? receipt?.total_amount : creditAmountLeft,
+                receipt?.isPaid ? receipt?.total_amount : credit_amount,
               )}
             </Text>
           </View>
