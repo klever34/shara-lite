@@ -217,6 +217,7 @@ export const FormBuilder = <FieldName extends keyof any>({
         {actionBtns.map((actionBtn, index, arr) => {
           return (
             <View
+              key={`${arr}-${index}`}
               style={applyStyles(
                 'flex-1',
                 index !== 0 && 'ml-4',
