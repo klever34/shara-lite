@@ -316,9 +316,9 @@ function PaymentContainer(props: ModalWrapperFields) {
           <View style={applyStyles('flex-1')}>
             <View style={applyStyles('center')}>
               <Touchable onPress={copyToClipboard}>
-                <View style={applyStyles('flex-row px-24 mb-24')}>
+                <View style={applyStyles('flex-row px-32 mb-24')}>
                   <Text
-                    style={applyStyles('text-400 leading-16 pr-8', {
+                    style={applyStyles('text-400 leading-16 flex-1', {
                       color: colors['red-200'],
                       textDecorationLine: 'underline',
                     })}>

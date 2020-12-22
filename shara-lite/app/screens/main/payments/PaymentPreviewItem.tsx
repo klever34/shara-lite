@@ -8,8 +8,8 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
   const [hasCopied, setHasCopied] = useState(false);
 
   const copyToClipboard = (option: IPaymentOption) => {
-    const value = `${option.name}\n${option?.fieldsData?.map(
-      (field) => `${field.label}: ${field.value}`,
+    const value = `${option.name}${option?.fieldsData?.map(
+      (field) => `\n${field.label}: ${field.value}`,
     )}`;
     Clipboard.setString(value);
     setHasCopied(true);
