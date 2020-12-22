@@ -7,7 +7,7 @@ enum ReminderUnit {
   MONTHS = 'months',
 }
 
-enum ReminderWhen {
+export enum ReminderWhen {
   BEFORE = 'before',
   AFTER = 'after',
 }
