@@ -97,9 +97,12 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     async (date?: Date) => {
       if (date) {
         setDueDate(date);
-        if (transaction) {
+        if (transaction && transaction.customer) {
           try {
-            await updateDueDate({due_date: date, transaction});
+            await updateDueDate({
+              due_date: date,
+              customer: transaction?.customer,
+            });
           } catch (e) {
             console.log(e);
           }
