@@ -103,10 +103,10 @@ function PaymentContainer(props: ModalWrapperFields) {
   const handleOpenAddItemModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
-        <View style={applyStyles('px-16 py-24')}>
+        <View style={applyStyles('py-24')}>
           <Text
             style={applyStyles(
-              'text-center text-uppercase text-700 text-gray-300',
+              'text-center text-uppercase text-700 text-gray-300 mb-16',
             )}>
             add Payment info
           </Text>
@@ -146,7 +146,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       const initialValues = omit(item);
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
-          <View style={applyStyles('px-16 py-24')}>
+          <View style={applyStyles('py-20')}>
             <Text
               style={applyStyles(
                 'text-center text-uppercase text-700 text-gray-300',
@@ -175,7 +175,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                     onPress={() => {
                       Alert.alert(
                         'Warning',
-                        'Are you sure you want to remove the payment option',
+                        'Are you sure you want to remove the payment option?',
                         [
                           {
                             text: 'No',
