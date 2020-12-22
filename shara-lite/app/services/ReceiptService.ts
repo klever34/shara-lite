@@ -21,7 +21,7 @@ import {saveCustomer} from './customer/service';
 export const getReceipts = ({realm}: {realm: Realm}): IReceipt[] => {
   return (realm
     .objects<IReceipt>(modelName)
-    .filtered('is_deleted = false') as unknown) as IReceipt[];
+    .filtered('is_deleted != true') as unknown) as IReceipt[];
 };
 
 export const saveReceipt = ({

@@ -10,7 +10,6 @@ import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
 
 export type CustomerDetailsHeaderProps = {
-  isPaid?: boolean;
   style?: ViewStyle;
   backButton?: boolean;
   customer?: ICustomer;
@@ -21,7 +20,6 @@ export type CustomerDetailsHeaderProps = {
 
 const CustomerDetailsHeader = ({
   style,
-  isPaid,
   onPress,
   customer,
   renderLeftSection,
@@ -79,6 +77,7 @@ const CustomerDetailsHeader = ({
               </Text>
             </View>
             <Text style={applyStyles('pb-4 text-700 text-black text-base')}>
+              {customer.balance && customer.balance < 0 ? '-' : ''}
               {amountWithCurrency(customer?.balance)}
             </Text>
           </>
@@ -146,11 +145,9 @@ const CustomerDetailsHeader = ({
               </>
             )}
           </View>
-          {!isPaid && (
-            <View style={applyStyles('items-end', {width: '48%'})}>
-              {renderRightSection()}
-            </View>
-          )}
+          <View style={applyStyles('items-end', {width: '48%'})}>
+            {renderRightSection()}
+          </View>
         </View>
       </View>
     </Touchable>

@@ -49,24 +49,27 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   } = useTransaction();
 
   const analyticsService = getAnalyticsService();
+  const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
 
   const [receiptImage, setReceiptImage] = useState('');
   const [customer, setCustomer] = useState(customerProp);
 
-  const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+  const paymentLink =
+    businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
   const shareReceiptMessage = `Hi ${
     customer?.name ?? ''
-  }, thank you for your recent purchase from ${
-    businessInfo.name
+  }, thank you for your recent purchase ${
+    businessInfo.name || user?.firstname
+      ? `from ${businessInfo.name ?? user?.firstname}`
+      : ''
   }. You paid ${amountWithCurrency(total_amount)}${
     dueDate
       ? ` and you owe ${amountWithCurrency(
           credit_amount,
-        )} which is due on ${format(
-          new Date(dueDate),
-          'MMM dd, yyyy',
-        )}\n\nTo pay click\n ${paymentLink}`
+        )} which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}${
+          paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''
+        }`
       : '.'
   }\n\nPowered by Shara for free.\nwww.shara.co`;
 

@@ -39,7 +39,7 @@ export const useDeliveryAgent = (): useDeliveryAgentInterface => {
   const getDeliveryAgents = (): IDeliveryAgent[] => {
     return (realm
       .objects<IDeliveryAgent>(modelName)
-      .filtered('is_deleted = false') as unknown) as IDeliveryAgent[];
+      .filtered('is_deleted != true') as unknown) as IDeliveryAgent[];
   };
 
   const getDeliveryAgentByMobile = ({

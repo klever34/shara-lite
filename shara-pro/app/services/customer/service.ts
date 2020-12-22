@@ -7,7 +7,7 @@ import {getAnalyticsService} from '@/services';
 import {SharaAppEventsProperties} from '../analytics';
 
 export const getCustomers = ({realm}: {realm: Realm}) => {
-  return realm.objects<ICustomer>(modelName).filtered('is_deleted = false');
+  return realm.objects<ICustomer>(modelName).filtered('is_deleted != true');
 };
 
 export const saveCustomer = ({
