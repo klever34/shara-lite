@@ -37,7 +37,9 @@ export const TransactionReview = (props: TransactionReviewProps) => {
   const {updateDueDate} = useTransaction();
 
   const [receiptImage, setReceiptImage] = useState('');
-  const [dueDate, setDueDate] = useState<Date | undefined>();
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    transaction?.customer?.due_date,
+  );
 
   const shareReceiptMessage = `Hi ${
     transaction.customer?.name ?? ''

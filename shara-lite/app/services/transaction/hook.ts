@@ -1,12 +1,11 @@
 import {omit} from 'lodash';
 import {ObjectId} from 'bson';
-import BluebirdPromise from 'bluebird';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {useReceipt} from '@/services/receipt';
-import {useCredit} from '@/services/credit';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {Customer} from 'types/app';
+import {useCustomer} from '@/services/customer/hook';
 
 interface saveTransactionInterface {
   customer?: ICustomer | Customer;
@@ -57,7 +56,7 @@ export const useTransaction = (): useTransactionInterface => {
     updateReceipt,
     updateReceiptRecord,
   } = useReceipt();
-  const {updateCredit} = useCredit();
+  const {updateCustomer} = useCustomer();
   const user = getAuthService().getUser();
 
   const getTransactions = getReceipts;
@@ -123,15 +122,16 @@ export const useTransaction = (): useTransactionInterface => {
     due_date,
     transaction,
   }: updateDueDateInterface) => {
-    const updates = {
-      due_date,
-    };
-    BluebirdPromise.each(transaction.credits || [], async (credit) => {
-      await updateCredit({
-        credit,
-        updates,
-      });
+    if (!transaction.customer) {
+      return;
+    }
+
+    const updates = {due_date};
+    await updateCustomer({
+      updates,
+      customer: transaction.customer,
     });
+
     getAnalyticsService()
       .logEvent('setCollectionDate', {})
       .then(() => {});
