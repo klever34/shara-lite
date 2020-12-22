@@ -44,11 +44,11 @@ export const SelectCustomerListScreen = ({
 }: SelectCustomerListScreenProps) => {
   const {withCustomer, onSelectCustomer} = route.params;
 
-  const {
-    searchTerm,
-    filteredCustomers,
-    handleCustomerSearch,
-  } = useCustomerList({orderByQuery: ['name'], orderByOrder: ['asc', 'desc']});
+  const {searchTerm, filteredCustomers, handleCustomerSearch} = useCustomerList(
+    {
+      orderByOptions: {orderByQuery: ['name'], orderByOrder: ['asc', 'desc']},
+    },
+  );
 
   const {saveCustomer} = useCustomer();
 

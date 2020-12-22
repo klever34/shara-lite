@@ -1,4 +1,3 @@
-import {FilterOption} from '@/screens/main/transactions/hook';
 import {applyStyles, colors} from '@/styles';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import React, {useCallback, useState} from 'react';
@@ -11,9 +10,20 @@ import Touchable from './Touchable';
 
 type TransactionFilterModalProps = {
   onClose: () => void;
-  initialFilter: string;
+  initialFilter?: string;
   options?: FilterOption[];
-  onDone: (payload: {status: string; startDate?: Date; endDate?: Date}) => void;
+  onDone: (payload: {
+    status?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }) => void;
+};
+
+export type FilterOption = {
+  text: string;
+  value: string;
+  endDate?: Date;
+  startDate?: Date;
 };
 
 export const TransactionFilterModal = ({
@@ -78,7 +88,14 @@ export const TransactionFilterModal = ({
                 style={applyStyles(
                   'pt-16 flex-row items-center justify-between',
                 )}>
-                <Text style={applyStyles('text-400 text-base')}>{text}</Text>
+                <Text
+                  style={applyStyles(
+                    `text-400 text-base ${
+                      isActive ? 'text-red-200' : 'text-black'
+                    }`,
+                  )}>
+                  {text}
+                </Text>
                 <RadioButton
                   value={value}
                   selected={isActive}

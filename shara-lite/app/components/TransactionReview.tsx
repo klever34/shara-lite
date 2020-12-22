@@ -225,7 +225,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
           </View>
         )}
       </View>
-      {dueDate && (
+      {dueDate && !transaction.is_collection && (
         <View style={applyStyles('flex-row center')}>
           <Text style={applyStyles('text-gray-100 text-uppercase')}>
             Collect on{' '}
@@ -238,10 +238,12 @@ export const TransactionReview = (props: TransactionReviewProps) => {
       <View
         style={applyStyles(
           `px-16 pt-16 bg-white flex-row items-center ${
-            transaction.credit_amount ? 'justify-between' : 'justify-center'
+            dueDate && !transaction.is_collection
+              ? 'justify-between'
+              : 'justify-center'
           }`,
         )}>
-        {!!transaction.credit_amount && (
+        {!!dueDate && !transaction.is_collection && (
           <DatePicker
             //@ts-ignore
             minimumDate={new Date()}

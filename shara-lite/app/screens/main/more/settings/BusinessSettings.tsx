@@ -179,6 +179,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
           fields={formFields}
           actionBtns={[
             {
+              isLoading: false,
               title: 'Preview Receipt',
               variantColor: 'transparent',
               onPress: handleOpenPreviewReceiptModal,

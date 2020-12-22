@@ -1,15 +1,9 @@
+import {FilterOption} from '@/components/TransactionFilterModal';
 import {IReceipt} from '@/models/Receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
 import {useCallback, useEffect, useMemo, useState} from 'react';
-
-export type FilterOption = {
-  text: string;
-  value: string;
-  endDate?: Date;
-  startDate?: Date;
-};
 
 export type UseReceiptListProps = {
   receipts?: IReceipt[];
@@ -26,10 +20,8 @@ export const useReceiptList = ({
   const {getTransactions} = useTransaction();
   receipts = receipts ?? getTransactions();
 
-  console.log(receipts[0].amount_paid);
-
   const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState(initialFilter);
+  const [filter, setFilter] = useState<string | undefined>(initialFilter);
   const [allReceipts, setAllReceipts] = useState(receipts);
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
@@ -37,7 +29,7 @@ export const useReceiptList = ({
   const [filterEndDate, setFilterEndDate] = useState(endOfDay(new Date()));
 
   const handleStatusFilter = useCallback(
-    (payload: {status: string; startDate?: Date; endDate?: Date}) => {
+    (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
       const {status, startDate, endDate} = payload;
       setFilter(status);
       startDate && setFilterStartDate(startDate);
