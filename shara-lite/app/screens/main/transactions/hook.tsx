@@ -11,10 +11,22 @@ export type FilterOption = {
   startDate?: Date;
 };
 
-export const useReceiptList = ({initialFilter = 'all'} = {}) => {
+export type UseReceiptListProps = {
+  receipts?: IReceipt[];
+  initialFilter?: string;
+  filterOptions?: FilterOption[];
+};
+
+export const useReceiptList = ({
+  receipts,
+  filterOptions,
+  initialFilter = 'all',
+}: UseReceiptListProps = {}) => {
   const navigation = useAppNavigation();
   const {getTransactions} = useTransaction();
-  const receipts = getTransactions();
+  receipts = receipts ?? getTransactions();
+
+  console.log(receipts[0].amount_paid);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState(initialFilter);
@@ -34,34 +46,36 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
     [],
   );
 
-  const filterOptions = useMemo(
-    () => [
-      {text: 'All', value: 'all'},
-      {
-        text: 'Single Day',
-        value: 'today',
-        startDate: startOfDay(new Date()),
-        endDate: endOfDay(new Date()),
-      },
-      {
-        text: 'Last Week',
-        value: '1-week',
-        startDate: subWeeks(new Date(), 1),
-        endDate: new Date(),
-      },
-      {
-        text: 'Last Month',
-        value: '1-month',
-        startDate: subMonths(new Date(), 1),
-        endDate: new Date(),
-      },
-      {
-        text: 'Date Range',
-        value: 'date-range',
-      },
-    ],
-    [],
-  );
+  filterOptions =
+    filterOptions ??
+    useMemo(
+      () => [
+        {text: 'All', value: 'all'},
+        {
+          text: 'Single Day',
+          value: 'today',
+          startDate: startOfDay(new Date()),
+          endDate: endOfDay(new Date()),
+        },
+        {
+          text: 'Last Week',
+          value: '1-week',
+          startDate: subWeeks(new Date(), 1),
+          endDate: new Date(),
+        },
+        {
+          text: 'Last Month',
+          value: '1-month',
+          startDate: subMonths(new Date(), 1),
+          endDate: new Date(),
+        },
+        {
+          text: 'Date Range',
+          value: 'date-range',
+        },
+      ],
+      [],
+    );
 
   const handleReceiptSearch = useCallback((text) => {
     setSearchTerm(text);
@@ -194,10 +208,10 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      const myReceipts = getTransactions();
+      const myReceipts = receipts ?? getTransactions();
       setAllReceipts(myReceipts);
     });
-  }, [getTransactions, navigation]);
+  }, [receipts, getTransactions, navigation]);
 
   return useMemo(
     () => ({

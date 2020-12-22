@@ -12,7 +12,7 @@ import Touchable from './Touchable';
 type TransactionFilterModalProps = {
   onClose: () => void;
   initialFilter: string;
-  options: FilterOption[];
+  options?: FilterOption[];
   onDone: (payload: {status: string; startDate?: Date; endDate?: Date}) => void;
 };
 
@@ -23,7 +23,7 @@ export const TransactionFilterModal = ({
   initialFilter,
 }: TransactionFilterModalProps) => {
   const [filter, setFilter] = useState(initialFilter);
-  const initialFilterOption = options.find(
+  const initialFilterOption = options?.find(
     (option) => option.value === initialFilter,
   );
   const [filterStartDate, setFilterStartDate] = useState(
@@ -35,7 +35,7 @@ export const TransactionFilterModal = ({
 
   const handleStatusFilter = useCallback(
     (status: string) => {
-      const filterOption = options.find((option) => option.value === status);
+      const filterOption = options?.find((option) => option.value === status);
       if (filterOption) {
         const {value, startDate, endDate} = filterOption;
         setFilter(value);
@@ -70,7 +70,7 @@ export const TransactionFilterModal = ({
         <RadioGroup
           initialValue={initialFilter}
           onValueChange={handleStatusFilter}>
-          {options.map(({text, value}, index) => {
+          {options?.map(({text, value}, index) => {
             const isActive = value === filter;
             return (
               <View

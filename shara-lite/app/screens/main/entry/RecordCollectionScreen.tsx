@@ -13,7 +13,6 @@ import {TitleContainer} from '@/components/TitleContainer';
 import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {MainStackParamList} from '@/screens/main';
-import {getAnalyticsService, getAuthService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -44,15 +43,6 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           is_collection: true,
           total_amount: payload.amount_paid,
         });
-        getAnalyticsService()
-          .logEvent('userSavedTransaction', {
-            creditAmount: 0,
-            amountPaid: payload.amount_paid,
-            totalAmount: payload.amount_paid,
-            currency_code: getAuthService().getUser()?.currency_code ?? '',
-          })
-          .then(() => {})
-          .catch((error) => handleError(error));
         showSuccessToast('COLLECTION RECORDED');
         navigation.navigate('TransactionSuccess', {
           transaction,

@@ -72,7 +72,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
   }, []);
 
   const getFilterLabelText = useCallback(() => {
-    const activeOption = filterOptions.find((item) => item.value === filter);
+    const activeOption = filterOptions?.find((item) => item.value === filter);
     if (filter === 'date-range' && filterStartDate && filterEndDate) {
       return (
         <Text>

@@ -11,6 +11,7 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
+import {useReceiptList} from '@/screens/main/transactions/hook';
 import {
   getAnalyticsService,
   getAuthService,
@@ -24,9 +25,17 @@ import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useMemo, useState} from 'react';
-import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
+import {TransactionFilterModal} from './TransactionFilterModal';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
@@ -45,6 +54,7 @@ const TransactionDetails = withModal(
   ({
     header,
     isPaid,
+    openModal,
     creditAmount,
     transactions,
     actionButtons,
@@ -58,7 +68,14 @@ const TransactionDetails = withModal(
     const navigation = useAppNavigation();
     const analyticsService = getAnalyticsService();
     const businessInfo = getAuthService().getBusinessInfo();
-    const {addCustomerToTransaction} = useTransaction();
+    const {addCustomerToTransaction, updateDueDate} = useTransaction();
+    const {
+      filter,
+      filterEndDate,
+      filterOptions,
+      filterStartDate,
+      handleStatusFilter,
+    } = useReceiptList({receipts: transactions});
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
@@ -91,7 +108,6 @@ const TransactionDetails = withModal(
     const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
       shareProps,
     );
-    const {updateDueDate} = useTransaction();
 
     const onSmsShare = useCallback(() => {
       analyticsService
@@ -125,6 +141,52 @@ const TransactionDetails = withModal(
         .then(() => {});
       handleEmailShare();
     }, [analyticsService, handleEmailShare]);
+
+    const handleOpenFilterModal = useCallback(() => {
+      const closeModal = openModal('bottom-half', {
+        renderContent: () => (
+          <TransactionFilterModal
+            onClose={closeModal}
+            initialFilter={filter}
+            options={filterOptions}
+            onDone={handleStatusFilter}
+          />
+        ),
+      });
+    }, [filter, filterOptions, openModal, handleStatusFilter]);
+
+    const handleDownloadReport = useCallback(() => {
+      Alert.alert('Info', 'This feature is coming soon');
+    }, []);
+
+    const handleClear = useCallback(() => {
+      handleStatusFilter({
+        status: 'all',
+      });
+    }, [handleStatusFilter]);
+
+    const getFilterLabelText = useCallback(() => {
+      const activeOption = filterOptions?.find((item) => item.value === filter);
+      if (filter === 'date-range' && filterStartDate && filterEndDate) {
+        return (
+          <Text>
+            <Text style={applyStyles('text-gray-300 text-400')}>From</Text>{' '}
+            <Text style={applyStyles('text-red-200 text-400')}>
+              {format(filterStartDate, 'dd MMM, yyyy')}
+            </Text>{' '}
+            <Text style={applyStyles('text-gray-300 text-400')}>to</Text>{' '}
+            <Text style={applyStyles('text-red-200 text-400')}>
+              {format(filterEndDate, 'dd MMM, yyyy')}
+            </Text>
+          </Text>
+        );
+      }
+      return (
+        <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
+          {activeOption?.text}
+        </Text>
+      );
+    }, [filter, filterEndDate, filterOptions, filterStartDate]);
 
     const handleDueDateChange = useCallback(
       async (date?: Date) => {
@@ -244,7 +306,6 @@ const TransactionDetails = withModal(
           {...header}
           isPaid={isPaid}
           customer={customer}
-          creditAmount={creditAmount}
           onPress={handleAddCustomer}
           style={applyStyles(
             {
@@ -364,6 +425,101 @@ const TransactionDetails = withModal(
                     </View>
                   </View>
                 )}
+              </View>
+            )}
+            <View
+              style={applyStyles(
+                'py-8 px-16 flex-row items-center justify-between',
+              )}>
+              <Touchable onPress={handleDownloadReport}>
+                <View
+                  style={applyStyles(
+                    'py-4 px-8 flex-row items-center bg-gray-20',
+                    {
+                      borderWidth: 1,
+                      borderRadius: 16,
+                      borderColor: colors['gray-20'],
+                    },
+                  )}>
+                  <Icon
+                    size={16}
+                    name="clipboard"
+                    type="feathericons"
+                    color={colors['gray-50']}
+                  />
+                  <Text
+                    style={applyStyles(
+                      'text-gray-200 text-700 text-xxs pl-8 text-uppercase',
+                    )}>
+                    Share statement
+                  </Text>
+                </View>
+              </Touchable>
+              <Touchable onPress={handleOpenFilterModal}>
+                <View
+                  style={applyStyles('py-4 px-8 flex-row items-center', {
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    borderColor: colors['gray-20'],
+                  })}>
+                  <Text
+                    style={applyStyles('text-gray-200 text-xs text-700 pr-8')}>
+                    Filters
+                  </Text>
+                  <Icon
+                    size={16}
+                    name="calendar"
+                    type="feathericons"
+                    color={colors['gray-50']}
+                  />
+                </View>
+              </Touchable>
+            </View>
+
+            {filter && filter !== 'all' && (
+              <View
+                style={applyStyles(
+                  'py-8 px-16 flex-row items-center justify-between',
+                  {
+                    borderTopWidth: 1.5,
+                    borderBottomWidth: 1.5,
+                    borderTopColor: colors['gray-20'],
+                    borderBottomColor: colors['gray-20'],
+                  },
+                )}>
+                <View style={applyStyles('flex-row items-center flex-1')}>
+                  <Text
+                    style={applyStyles('text-gray-50 text-700 text-uppercase')}>
+                    Filter:{' '}
+                  </Text>
+                  <View style={applyStyles('flex-1')}>
+                    {getFilterLabelText()}
+                  </View>
+                </View>
+                <Touchable onPress={handleClear}>
+                  <View
+                    style={applyStyles(
+                      'py-4 px-8 flex-row items-center bg-gray-20',
+                      {
+                        borderWidth: 1,
+                        borderRadius: 24,
+                        borderColor: colors['gray-20'],
+                      },
+                    )}>
+                    <Text
+                      style={applyStyles(
+                        'text-xs text-gray-200 text-700 text-uppercase pr-8',
+                      )}>
+                      Clear
+                    </Text>
+                    <Icon
+                      name="x"
+                      size={16}
+                      type="feathericons"
+                      color={colors['gray-50']}
+                    />
+                  </View>
+                </Touchable>
               </View>
             )}
 

@@ -15,7 +15,6 @@ export type CustomerDetailsHeaderProps = {
   backButton?: boolean;
   customer?: ICustomer;
   onPress?: () => void;
-  creditAmount?: number;
   renderLeftSection?: () => ReactNode;
   renderRightSection?: () => ReactNode;
 };
@@ -25,7 +24,6 @@ const CustomerDetailsHeader = ({
   isPaid,
   onPress,
   customer,
-  creditAmount,
   renderLeftSection,
   renderRightSection,
   backButton = true,
@@ -50,7 +48,7 @@ const CustomerDetailsHeader = ({
   renderRightSection = useMemo(() => {
     if (!renderRightSection) {
       return () =>
-        !!customer?.remainingCreditAmount && (
+        !!customer?.balance && (
           <>
             <View style={applyStyles('pb-4 flex-row items-center')}>
               <View style={applyStyles('pr-4')}>
@@ -69,15 +67,13 @@ const CustomerDetailsHeader = ({
               </Text>
             </View>
             <Text style={applyStyles('pb-4 text-700 text-black text-base')}>
-              {amountWithCurrency(
-                creditAmount || customer?.remainingCreditAmount,
-              )}
+              {amountWithCurrency(customer?.balance)}
             </Text>
           </>
         );
     }
     return renderRightSection;
-  }, [customer, creditAmount, renderRightSection]);
+  }, [customer, renderRightSection]);
 
   const navigation = useAppNavigation();
 
