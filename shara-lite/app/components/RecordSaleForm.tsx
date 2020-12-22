@@ -1,10 +1,4 @@
-import {
-  AppInput,
-  Button,
-  CurrencyInput,
-  DatePicker,
-  toNumber,
-} from '@/components';
+import {AppInput, Button, DatePicker, toNumber} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -15,6 +9,7 @@ import {useFormik} from 'formik';
 import {omit} from 'lodash';
 import React, {useRef} from 'react';
 import {Text, TextInput, View} from 'react-native';
+import {CalculatorInput} from '@/components/CalculatorView';
 
 type RecordSaleFormProps = {
   transaction?: IReceipt;
@@ -65,7 +60,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
     <View>
       <View style={applyStyles('pb-16 flex-row items-center justify-between')}>
         <View style={applyStyles({width: '48%'})}>
-          <CurrencyInput
+          <CalculatorInput
             label="Collected"
             placeholder="0.00"
             returnKeyType="next"
@@ -88,7 +83,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           />
         </View>
         <View style={applyStyles({width: '48%'})}>
-          <CurrencyInput
+          <CalculatorInput
             placeholder="0.00"
             label="Outstanding"
             returnKeyType="next"
@@ -113,7 +108,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           />
         </View>
       </View>
-      {(values.amount_paid || values.credit_amount) && (
+      {!!(values.amount_paid || values.credit_amount) && (
         <Text
           style={applyStyles(
             'pb-16 text-700 text-center text-uppercase text-black',
@@ -121,7 +116,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           Total: {amountWithCurrency(values.total_amount)}
         </Text>
       )}
-      {(values.amount_paid || values.credit_amount) && (
+      {!!(values.amount_paid || values.credit_amount) && (
         <AppInput
           multiline
           value={values.note}
@@ -139,7 +134,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
               : 'justify-end'
           }`,
         )}>
-        {(values.amount_paid || values.credit_amount) && (
+        {!!(values.amount_paid || values.credit_amount) && (
           <View style={applyStyles({width: '48%'})}>
             <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
               Start Date
@@ -149,7 +144,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
               maximumDate={new Date()}
               value={values.transaction_date ?? new Date()}
               onChange={(e: Event, date?: Date) =>
-                date && setFieldValue('transaction_date', date)
+                !!date && setFieldValue('transaction_date', date)
               }>
               {(toggleShow) => (
                 <Touchable onPress={toggleShow}>
@@ -169,7 +164,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
                       style={applyStyles(
                         'pl-sm text-xs text-uppercase text-700 text-gray-300',
                       )}>
-                      {values.transaction_date &&
+                      {!!values.transaction_date &&
                         format(values.transaction_date, 'MMM dd, yyyy')}
                     </Text>
                   </View>
