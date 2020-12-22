@@ -77,7 +77,7 @@ export const ReminderSettingsScreen = ({
           </Text>
           <DatePicker
             //@ts-ignore
-            maximumDate={new Date()}
+            minimumDate={new Date()}
             value={dueDate ?? new Date()}
             onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
             {(toggleShow) => (
