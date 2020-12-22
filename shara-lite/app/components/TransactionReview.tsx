@@ -241,12 +241,10 @@ export const TransactionReview = (props: TransactionReviewProps) => {
       <View
         style={applyStyles(
           `px-16 pt-16 bg-white flex-row items-center ${
-            dueDate && !transaction.is_collection
-              ? 'justify-between'
-              : 'justify-center'
+            !transaction.is_collection ? 'justify-between' : 'justify-center'
           }`,
         )}>
-        {!!dueDate && !transaction.is_collection && (
+        {!transaction.is_collection && (
           <DatePicker
             //@ts-ignore
             minimumDate={new Date()}
