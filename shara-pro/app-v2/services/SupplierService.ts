@@ -7,7 +7,7 @@ import {getAnalyticsService} from 'app-v2/services';
 export const getSuppliers = ({realm}: {realm: Realm}): ISupplier[] => {
   return (realm
     .objects<ISupplier>(modelName)
-    .filtered('is_deleted = false') as unknown) as ISupplier[];
+    .filtered('is_deleted != true') as unknown) as ISupplier[];
 };
 
 export const getSupplierByMobile = ({

@@ -1,17 +1,23 @@
 import {DatePicker} from '@/components';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
+import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields} from '@/helpers/hocs';
-import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
+import {
+  IPaymentReminder,
+  ReminderUnit,
+  ReminderWhen,
+} from '@/models/PaymentReminder';
+import {usePaymentReminder} from '@/services/payment-reminder';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
-import React, {useCallback, useState} from 'react';
-import {SafeAreaView, ScrollView, Text, View} from 'react-native';
+import React, {useCallback, useContext, useState} from 'react';
+import {Alert, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {MainStackParamList} from '..';
-import {Reminder, ReminderForm} from './ReminderForm';
+import {ReminderForm} from './ReminderForm';
 
 type ReminderSettingsScreenProps = {
   route: RouteProp<MainStackParamList, 'ReminderSettings'>;
@@ -22,8 +28,18 @@ export const ReminderSettingsScreen = ({
 }: ReminderSettingsScreenProps) => {
   const {customer} = route.params;
   const {updateDueDate} = useTransaction();
-  const [reminders, setReminders] = useState<Reminder[]>([]);
   const [dueDate, setDueDate] = useState<Date | undefined>(customer?.due_date);
+  const {
+    getPaymentReminders,
+    savePaymentReminder,
+    deletePaymentReminder,
+    updatePaymentReminder,
+  } = usePaymentReminder();
+  const [reminders, setReminders] = useState<IPaymentReminder[]>(
+    getPaymentReminders(),
+  );
+
+  const {showSuccessToast} = useContext(ToastContext);
 
   const handleDueDateChange = useCallback(
     async (date?: Date) => {
@@ -45,21 +61,49 @@ export const ReminderSettingsScreen = ({
   );
 
   const handleAddReminder = useCallback(() => {
-    setReminders([
-      {
+    savePaymentReminder({
+      paymentReminder: {
         amount: 1,
         unit: ReminderUnit.DAYS,
         when: ReminderWhen.AFTER,
+        due_date: dueDate,
+        customer: customer,
       },
-      ...reminders,
-    ]);
-  }, [reminders]);
+    }).then(() => {
+      showSuccessToast('REMINDER ADDED');
+      setReminders(getPaymentReminders());
+    });
+  }, [
+    showSuccessToast,
+    customer,
+    dueDate,
+    getPaymentReminders,
+    savePaymentReminder,
+  ]);
 
   const handleRemoveReminder = useCallback(
-    (index) => {
-      setReminders(reminders.filter((_, itemIndex) => itemIndex !== index));
+    (reminder) => {
+      Alert.alert(
+        'Warning',
+        'Are you sure you want to remove the payment reminder?',
+        [
+          {
+            text: 'No',
+            onPress: () => {},
+          },
+          {
+            text: 'Yes',
+            onPress: () => {
+              deletePaymentReminder({paymentReminder: reminder}).then(() => {
+                showSuccessToast('REMINDER REMOVED');
+                setReminders(getPaymentReminders());
+              });
+            },
+          },
+        ],
+      );
     },
-    [reminders],
+    [showSuccessToast, deletePaymentReminder, getPaymentReminders],
   );
 
   return (
@@ -142,15 +186,22 @@ export const ReminderSettingsScreen = ({
               </Text>
             </View>
             {!!reminders.length &&
-              reminders.map((reminder, index) => (
-                <ReminderForm
-                  key={`${index}`}
-                  index={index + 1}
-                  initialValues={reminder}
-                  onSubmit={(values) => console.log(values)}
-                  onDelete={() => handleRemoveReminder(index)}
-                />
-              ))}
+              reminders.map((reminder, index) => {
+                return (
+                  <ReminderForm
+                    key={String(reminder._id)}
+                    index={index + 1}
+                    initialValues={reminder}
+                    onSubmit={(values) =>
+                      updatePaymentReminder({
+                        paymentReminder: reminder,
+                        updates: values,
+                      })
+                    }
+                    onDelete={() => handleRemoveReminder(reminder)}
+                  />
+                );
+              })}
             <Touchable onPress={handleAddReminder}>
               <View
                 style={applyStyles(

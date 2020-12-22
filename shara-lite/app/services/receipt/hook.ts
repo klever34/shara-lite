@@ -87,7 +87,9 @@ export const useReceipt = (): useReceiptInterface => {
   const getReceipts = (): IReceipt[] => {
     return (realm
       .objects<IReceipt>(modelName)
-      .filtered('is_deleted = false') as unknown) as IReceipt[];
+      .filtered(
+        'is_deleted != true AND is_cancelled != true',
+      ) as unknown) as IReceipt[];
   };
 
   const saveReceipt = async ({

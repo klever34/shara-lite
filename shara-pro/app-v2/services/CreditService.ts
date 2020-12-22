@@ -10,7 +10,7 @@ import {deleteCreditPayment} from 'app-v2/services/CreditPaymentService';
 export const getCredits = ({realm}: {realm: Realm}): ICredit[] => {
   return (realm
     .objects<ICredit>(modelName)
-    .filtered('is_deleted = false') as unknown) as ICredit[];
+    .filtered('is_deleted != true') as unknown) as ICredit[];
 };
 
 export const saveCredit = ({

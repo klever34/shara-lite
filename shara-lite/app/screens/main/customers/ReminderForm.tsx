@@ -28,7 +28,11 @@ export const ReminderForm = ({
 }: Props) => {
   const {values, setFieldValue, submitForm} = useFormik({
     onSubmit,
-    initialValues: initialValues ?? {},
+    initialValues: {
+      when: initialValues.when,
+      amount: initialValues.amount,
+      unit: initialValues.unit,
+    },
   });
 
   return (

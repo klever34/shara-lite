@@ -29,7 +29,7 @@ export const useCustomer = (): useCustomerInterface => {
   const getCustomers = (): ICustomer[] => {
     return (realm
       .objects<ICustomer>(modelName)
-      .filtered('is_deleted = false') as unknown) as ICustomer[];
+      .filtered('is_deleted != true') as unknown) as ICustomer[];
   };
 
   const saveCustomer = async ({
