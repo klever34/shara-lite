@@ -40,8 +40,8 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
         note,
         amount_paid,
         credit_amount,
-        total_amount: (amount_paid ?? 0) + (credit_amount ?? 0),
         transaction_date,
+        total_amount: (amount_paid ?? 0) + (credit_amount ?? 0),
       }),
   });
   const noteFieldRef = useRef<TextInput | null>(null);
@@ -122,9 +122,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
         )}>
         {!!(values.amount_paid || values.credit_amount) && (
           <View style={applyStyles({width: '48%'})}>
-            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
-              Start Date
-            </Text>
+            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>Date</Text>
             <DatePicker
               //@ts-ignore
               maximumDate={new Date()}

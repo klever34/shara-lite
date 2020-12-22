@@ -15,7 +15,6 @@ export type CustomerDetailsHeaderProps = {
   backButton?: boolean;
   customer?: ICustomer;
   onPress?: () => void;
-  creditAmount?: number;
   renderLeftSection?: () => ReactNode;
   renderRightSection?: () => ReactNode;
 };
@@ -25,7 +24,6 @@ const CustomerDetailsHeader = ({
   isPaid,
   onPress,
   customer,
-  creditAmount,
   renderLeftSection,
   renderRightSection,
   backButton = true,
@@ -50,17 +48,29 @@ const CustomerDetailsHeader = ({
   renderRightSection = useMemo(() => {
     if (!renderRightSection) {
       return () =>
-        !!customer?.remainingCreditAmount && (
+        !!customer?.balance && (
           <>
             <View style={applyStyles('pb-4 flex-row items-center')}>
-              <View style={applyStyles('pr-4')}>
-                <Icon
-                  size={14}
-                  name="arrow-up"
-                  type="feathericons"
-                  color={colors['red-100']}
-                />
-              </View>
+              {!!customer?.balance && customer?.balance < 0 && (
+                <View style={applyStyles('pr-4')}>
+                  <Icon
+                    size={14}
+                    name="arrow-up"
+                    type="feathericons"
+                    color={colors['red-100']}
+                  />
+                </View>
+              )}
+              {!!customer?.balance && customer?.balance > 0 && (
+                <View style={applyStyles('pr-4')}>
+                  <Icon
+                    size={14}
+                    name="arrow-down"
+                    type="feathericons"
+                    color={colors['green-200']}
+                  />
+                </View>
+              )}
               <Text
                 style={applyStyles(
                   'text-700 text-uppercase text-xxs text-gray-200',
@@ -69,15 +79,13 @@ const CustomerDetailsHeader = ({
               </Text>
             </View>
             <Text style={applyStyles('pb-4 text-700 text-black text-base')}>
-              {amountWithCurrency(
-                creditAmount || customer?.remainingCreditAmount,
-              )}
+              {amountWithCurrency(customer?.balance)}
             </Text>
           </>
         );
     }
     return renderRightSection;
-  }, [customer, creditAmount, renderRightSection]);
+  }, [customer, renderRightSection]);
 
   const navigation = useAppNavigation();
 

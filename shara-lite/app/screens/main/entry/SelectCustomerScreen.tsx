@@ -182,136 +182,121 @@ export const SelectCustomerListScreen = ({
           inputStyle={applyStyles('bg-gray-10', {borderRadius: 8})}
         />
       </View>
-      {(!!searchTerm || !!customer) && (
-        <>
-          {!filteredCustomers.length && (
-            <>
-              <Touchable onPress={handleAddNewCustomer}>
-                <View
-                  style={applyStyles(
-                    'px-16 py-8 flex-row items-center justify-between',
-                    {
-                      borderTopWidth: 1.5,
-                      borderTopColor: colors['gray-20'],
-                    },
-                  )}>
-                  <View style={applyStyles('flex-row items-center')}>
-                    <View
-                      style={applyStyles(
-                        'w-36 h-36 rounded-36 center bg-red-50',
-                      )}>
-                      <Icon
-                        size={18}
-                        name="plus"
-                        type="feathericons"
-                        color={colors['red-100']}
-                      />
-                    </View>
-                    <Text
-                      style={applyStyles(
-                        'pl-8 text-base text-400 text-gray-50',
-                      )}>
-                      Add{' '}
-                      <Text style={applyStyles('text-700 text-gray-300')}>
-                        {searchTerm}
-                      </Text>{' '}
-                      as new customer
-                    </Text>
-                  </View>
-                  <View>
-                    <Icon
-                      size={24}
-                      name="plus"
-                      type="feathericons"
-                      color={colors['red-100']}
-                    />
-                  </View>
-                </View>
-              </Touchable>
-              <Touchable onPress={handleAddCustomerFromPhonebook}>
-                <View
-                  style={applyStyles(
-                    'px-16 py-8 flex-row items-center justify-between',
-                    {
-                      borderTopWidth: 1.5,
-                      borderTopColor: colors['gray-20'],
-                    },
-                  )}>
-                  <View style={applyStyles('flex-row items-center')}>
-                    <View
-                      style={applyStyles(
-                        'w-36 h-36 rounded-36 center bg-red-50',
-                      )}>
-                      <Icon
-                        size={18}
-                        name="users"
-                        type="feathericons"
-                        color={colors['red-100']}
-                      />
-                    </View>
-                    <Text style={applyStyles('pl-8 text-base')}>
-                      Select from Phonebook
-                    </Text>
-                  </View>
-                  <View>
-                    <Icon
-                      size={24}
-                      name="chevron-right"
-                      type="feathericons"
-                      color={colors['red-100']}
-                    />
-                  </View>
-                </View>
-              </Touchable>
-            </>
-          )}
-          {customer && (
-            <View
-              style={applyStyles(
-                'flex-row items-center border-b-1 border-gray-20 px-16 py-12 bg-red-200',
-              )}>
-              <PlaceholderImage
-                text={customer?.name ?? ''}
-                style={applyStyles('bg-white')}
-                textStyle={applyStyles('text-red-200')}
-              />
-              <View style={applyStyles('flex-1 ml-8')}>
-                <Text
-                  style={applyStyles(
-                    'text-sm text-700 text-gray-300 uppercase text-white',
-                  )}>
-                  {customer?.name}
-                </Text>
-              </View>
-              <View>
-                <Text
-                  style={applyStyles(
-                    'text-sm text-400 text-gray-300 text-white',
-                  )}>
-                  {customer?.mobile}
-                </Text>
-              </View>
-            </View>
-          )}
+
+      {!!searchTerm && (
+        <Touchable onPress={handleAddNewCustomer}>
           <View
-            style={applyStyles('px-16 py-12 flex-row bg-gray-10', {
+            style={applyStyles(
+              'px-16 py-8 flex-row items-center justify-between',
+              {
+                borderTopWidth: 1.5,
+                borderTopColor: colors['gray-20'],
+              },
+            )}>
+            <View style={applyStyles('flex-row items-center')}>
+              <View
+                style={applyStyles('w-36 h-36 rounded-36 center bg-red-50')}>
+                <Icon
+                  size={18}
+                  name="plus"
+                  type="feathericons"
+                  color={colors['red-100']}
+                />
+              </View>
+              <Text style={applyStyles('pl-8 text-base text-400 text-gray-50')}>
+                Add
+                <Text style={applyStyles('text-700 text-gray-300')}>
+                  {' '}
+                  {searchTerm}
+                </Text>{' '}
+                as new customer
+              </Text>
+            </View>
+            <View>
+              <Icon
+                size={24}
+                name="plus"
+                type="feathericons"
+                color={colors['red-100']}
+              />
+            </View>
+          </View>
+        </Touchable>
+      )}
+      <Touchable onPress={handleAddCustomerFromPhonebook}>
+        <View
+          style={applyStyles(
+            'px-16 py-8 flex-row items-center justify-between',
+            {
               borderTopWidth: 1.5,
-              borderBottomWidth: 1.5,
               borderTopColor: colors['gray-20'],
-              borderBottomColor: colors['gray-20'],
-            })}>
-            <Text style={applyStyles('text-base text-gray-300')}>
-              Customers
+            },
+          )}>
+          <View style={applyStyles('flex-row items-center')}>
+            <View style={applyStyles('w-36 h-36 rounded-36 center bg-red-50')}>
+              <Icon
+                size={18}
+                name="users"
+                type="feathericons"
+                color={colors['red-100']}
+              />
+            </View>
+            <Text style={applyStyles('pl-8 text-base')}>
+              Select from Phonebook
             </Text>
           </View>
-          <FlatList
-            data={filteredCustomers}
-            keyExtractor={keyExtractor}
-            keyboardShouldPersistTaps="always"
-            renderItem={renderCustomerListItem}
+          <View>
+            <Icon
+              size={24}
+              name="chevron-right"
+              type="feathericons"
+              color={colors['red-100']}
+            />
+          </View>
+        </View>
+      </Touchable>
+
+      {customer && (
+        <View
+          style={applyStyles(
+            'flex-row items-center border-b-1 border-gray-20 px-16 py-12 bg-red-200',
+          )}>
+          <PlaceholderImage
+            text={customer?.name ?? ''}
+            style={applyStyles('bg-white')}
+            textStyle={applyStyles('text-red-200')}
           />
-        </>
+          <View style={applyStyles('flex-1 ml-8')}>
+            <Text
+              style={applyStyles(
+                'text-sm text-700 text-gray-300 uppercase text-white',
+              )}>
+              {customer?.name}
+            </Text>
+          </View>
+          <View>
+            <Text
+              style={applyStyles('text-sm text-400 text-gray-300 text-white')}>
+              {customer?.mobile}
+            </Text>
+          </View>
+        </View>
       )}
+      <View
+        style={applyStyles('px-16 py-12 flex-row bg-gray-10', {
+          borderTopWidth: 1.5,
+          borderBottomWidth: 1.5,
+          borderTopColor: colors['gray-20'],
+          borderBottomColor: colors['gray-20'],
+        })}>
+        <Text style={applyStyles('text-base text-gray-300')}>Customers</Text>
+      </View>
+      <FlatList
+        data={filteredCustomers}
+        keyExtractor={keyExtractor}
+        keyboardShouldPersistTaps="always"
+        renderItem={renderCustomerListItem}
+      />
       {!withCustomer ? (
         customer ? (
           <View

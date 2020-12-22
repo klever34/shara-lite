@@ -2,7 +2,6 @@ import {Page} from '@/components/Page';
 import {RecordSaleForm} from '@/components/RecordSaleForm';
 import {TitleContainer} from '@/components/TitleContainer';
 import {ToastContext} from '@/components/Toast';
-import {getAnalyticsService, getAuthService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -30,15 +29,6 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
           ...payload,
           is_collection: false,
         });
-        getAnalyticsService()
-          .logEvent('userSavedTransaction', {
-            amountPaid: payload.amount_paid,
-            totalAmount: payload.total_amount,
-            creditAmount: payload.credit_amount,
-            currency_code: getAuthService().getUser()?.currency_code ?? '',
-          })
-          .then(() => {})
-          .catch((error) => handleError(error));
         showSuccessToast('SALE RECORDED');
         navigation.navigate('TransactionSuccess', {
           transaction,

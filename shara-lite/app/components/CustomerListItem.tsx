@@ -6,7 +6,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ICustomer} from '@/models';
-import {formatDistanceToNowStrict} from 'date-fns';
+import {formatDistanceToNowStrict, isToday} from 'date-fns';
 
 type CustomerListItemProps = {
   customer: ICustomer;
@@ -20,29 +20,27 @@ export const CustomerListItem = ({
   onPress,
 }: CustomerListItemProps) => {
   const getDateText = useCallback(() => {
-    if (customer.dueDate) {
-      if (customer.overdueCreditAmount) {
+    if (customer.due_date) {
+      if (!isToday(customer.due_date)) {
         return (
           <Text style={applyStyles('text-xs text-700 text-red-100')}>
             Due{' '}
-            {formatDistanceToNowStrict(customer.dueDate, {
+            {formatDistanceToNowStrict(customer.due_date, {
               addSuffix: true,
             })}
           </Text>
         );
       }
-      if (customer.remainingCreditAmount && !customer.overdueCreditAmount) {
-        return (
-          <Text style={applyStyles('text-xs text-700 text-red-100')}>
-            Collect in{' '}
-            {formatDistanceToNowStrict(customer.dueDate, {
-              addSuffix: true,
-            })}
-          </Text>
-        );
-      }
+      return (
+        <Text style={applyStyles('text-xs text-700 text-red-100')}>
+          Collect in{' '}
+          {formatDistanceToNowStrict(customer.due_date, {
+            addSuffix: true,
+          })}
+        </Text>
+      );
     }
-    if (!customer.dueDate && customer.remainingCreditAmount) {
+    if (!customer.due_date && customer.balance && customer.balance < 0) {
       return (
         <Text style={applyStyles('text-xs text-700 text-gray-100')}>
           No Collection Date
@@ -74,15 +72,25 @@ export const CustomerListItem = ({
         </View>
         <View style={applyStyles('items-end flex-row')}>
           <Text style={applyStyles('text-base text-700 text-black')}>
-            {amountWithCurrency(customer.remainingCreditAmount ?? 0)}
+            {amountWithCurrency(customer.balance)}
           </Text>
-          {!!customer.remainingCreditAmount && (
+          {!!customer?.balance && customer?.balance < 0 && (
             <View style={applyStyles('pl-4')}>
               <Icon
                 size={18}
                 name="arrow-up"
                 type="feathericons"
                 color={colors['red-100']}
+              />
+            </View>
+          )}
+          {!!customer?.balance && customer?.balance > 0 && (
+            <View style={applyStyles('pl-4')}>
+              <Icon
+                size={18}
+                name="arrow-down"
+                type="feathericons"
+                color={colors['green-200']}
               />
             </View>
           )}
