@@ -23,7 +23,7 @@ import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
   Dimensions,
@@ -34,13 +34,13 @@ import {
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
-import {EntryButton} from './Entry';
+import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
 
 export type TransactionDetailsProps = {
   dueDate?: Date;
   isPaid?: boolean;
-  customer?: ICustomer;
+  customer: ICustomer;
   creditAmount?: number;
   sendReminder?: boolean;
   transactions?: IReceipt[];
@@ -73,6 +73,12 @@ const TransactionDetails = withModal(
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
+
+    const {setCurrentCustomer} = useContext(EntryContext);
+
+    useEffect(() => {
+      setCurrentCustomer?.(customer);
+    }, [customer, setCurrentCustomer]);
 
     const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
 

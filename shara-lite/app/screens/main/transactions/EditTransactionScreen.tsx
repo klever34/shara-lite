@@ -60,7 +60,11 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
                 Edit Transaction
               </Text>
             </View>
-            <RecordSaleForm transaction={transaction} onSubmit={handleSave} />
+            <RecordSaleForm
+              transaction={transaction}
+              onSubmit={handleSave}
+              customer={transaction.customer}
+            />
           </View>
         </ScrollView>
       </SafeAreaView>

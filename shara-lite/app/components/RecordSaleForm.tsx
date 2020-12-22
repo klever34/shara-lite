@@ -10,6 +10,7 @@ import {omit} from 'lodash';
 import React, {useRef} from 'react';
 import {Text, TextInput, View} from 'react-native';
 import {CalculatorInput} from '@/components/CalculatorView';
+import {ICustomer} from '@/models';
 
 type RecordSaleFormProps = {
   transaction?: IReceipt;
@@ -20,10 +21,11 @@ type RecordSaleFormProps = {
     credit_amount?: number;
     transaction_date?: Date;
   }) => void;
+  customer?: ICustomer;
 };
 
 export const RecordSaleForm = (props: RecordSaleFormProps) => {
-  const {onSubmit, transaction} = props;
+  const {onSubmit, transaction, customer} = props;
   const initialValues = transaction
     ? omit(transaction)
     : {
@@ -160,7 +162,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
         )}
         <Button
           onPress={handleSubmit}
-          title={transaction ? 'Save' : 'Next'}
+          title={customer ? 'Save' : 'Next'}
           style={applyStyles('mt-20', {width: '48%'})}
         />
       </View>

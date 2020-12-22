@@ -11,13 +11,14 @@ import React, {useCallback, useContext} from 'react';
 import {MainStackParamList} from '..';
 import {SelectCustomerListItem} from './SelectCustomerScreen';
 import {CalculatorView} from '@/components/CalculatorView';
+import {CustomerListItem} from '@/components/CustomerListItem';
 
 type RecordSaleScreenProps = {
   route: RouteProp<MainStackParamList, 'RecordSale'>;
 };
 
 const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
-  const {goBack} = route.params;
+  const {goBack, customer} = route.params;
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
   const {showSuccessToast} = useContext(ToastContext);
@@ -49,14 +50,20 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
       credit_amount?: number;
       transaction_date?: Date;
     }) => {
-      navigation.navigate('SelectCustomerList', {
-        transaction: payload,
-        withCustomer: payload.credit_amount,
-        onSelectCustomer: (customer?: SelectCustomerListItem) =>
-          handleSaveRecordSale({...payload, customer}),
-      });
+      const onSelectCustomer = (customer?: SelectCustomerListItem) => {
+        handleSaveRecordSale({...payload, customer}).catch(handleError);
+      };
+      if (customer) {
+        onSelectCustomer(customer);
+      } else {
+        navigation.navigate('SelectCustomerList', {
+          transaction: payload,
+          withCustomer: payload.credit_amount,
+          onSelectCustomer,
+        });
+      }
     },
-    [navigation, handleSaveRecordSale],
+    [customer, navigation, handleSaveRecordSale],
   );
 
   return (
@@ -67,7 +74,14 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
           containerStyle={applyStyles('pb-24')}
           description="Quickly record a collection or outstanding"
         />
-        <RecordSaleForm onSubmit={handleSave} />
+        {customer && (
+          <CustomerListItem
+            customer={customer}
+            containerStyle={applyStyles('py-16 mb-16')}
+            getDateText={() => null}
+          />
+        )}
+        <RecordSaleForm onSubmit={handleSave} customer={customer} />
       </Page>
     </CalculatorView>
   );
