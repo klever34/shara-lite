@@ -84,7 +84,7 @@ export const PaymentForm = ({
         initialValues ? initialValues : {slug: '', name: '', fieldsData: []}
       }>
       {({values, setFieldValue, handleSubmit}) => (
-        <View>
+        <View style={applyStyles('px-14')}>
           {!hidePicker && (
             <Picker
               mode="dropdown"

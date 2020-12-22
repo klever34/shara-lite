@@ -22,6 +22,8 @@ import {PaymentPreviewModal} from './PaymentPreviewModal';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import {Page} from '@/components/Page';
+import Config from 'react-native-config';
+import Clipboard from '@react-native-community/clipboard';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -43,6 +45,15 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const {showSuccessToast} = useContext(ToastContext);
+  const paymentLink = `${Config.WEB_BASE_URL}/pay/${business.slug}`;
+
+  const copyToClipboard = useCallback(() => {
+    Clipboard.setString(paymentLink);
+    showSuccessToast('Copied');
+    getAnalyticsService()
+      .logEvent('copiedPaymentLink', {})
+      .then(() => {});
+  }, [paymentLink, showSuccessToast]);
 
   const onFormSubmit = useCallback(
     async (values: IPaymentOption) => {
@@ -103,10 +114,10 @@ function PaymentContainer(props: ModalWrapperFields) {
   const handleOpenAddItemModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
-        <View style={applyStyles('px-16 py-24')}>
+        <View style={applyStyles('py-24')}>
           <Text
             style={applyStyles(
-              'text-center text-uppercase text-700 text-gray-300',
+              'text-center text-uppercase text-700 text-gray-300 mb-16',
             )}>
             add Payment info
           </Text>
@@ -146,7 +157,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       const initialValues = omit(item);
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
-          <View style={applyStyles('px-16 py-24')}>
+          <View style={applyStyles('py-20')}>
             <Text
               style={applyStyles(
                 'text-center text-uppercase text-700 text-gray-300',
@@ -175,7 +186,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                     onPress={() => {
                       Alert.alert(
                         'Warning',
-                        'Are you sure you want to remove the payment option',
+                        'Are you sure you want to remove the payment option?',
                         [
                           {
                             text: 'No',
@@ -304,6 +315,33 @@ function PaymentContainer(props: ModalWrapperFields) {
         ) : (
           <View style={applyStyles('flex-1')}>
             <View style={applyStyles('center')}>
+              <Touchable onPress={copyToClipboard}>
+                <View style={applyStyles('flex-row px-24 mb-24')}>
+                  <Text
+                    style={applyStyles('text-400 leading-16 pr-8', {
+                      color: colors['red-200'],
+                      textDecorationLine: 'underline',
+                    })}>
+                    {paymentLink}
+                  </Text>
+
+                  <View style={applyStyles('flex-row items-center')}>
+                    <Icon
+                      type="feathericons"
+                      name="copy"
+                      size={18}
+                      color={colors['gray-50']}
+                      onPress={copyToClipboard}
+                    />
+                    <Text
+                      style={applyStyles(
+                        'text-gray-200 text-400 text-xxs pl-4',
+                      )}>
+                      COPY LINK
+                    </Text>
+                  </View>
+                </View>
+              </Touchable>
               <Touchable onPress={handleOpenPreviewModal}>
                 <View
                   style={applyStyles(
@@ -315,11 +353,8 @@ function PaymentContainer(props: ModalWrapperFields) {
                     type="feathericons"
                     color={colors['gray-50']}
                   />
-                  <Text
-                    style={applyStyles(
-                      'pl-4 text-700 text-gray-200 text-uppercase',
-                    )}>
-                    Preview your payment page
+                  <Text style={applyStyles('pl-4 text-400 text-gray-200')}>
+                    Preview Payment Page
                   </Text>
                 </View>
               </Touchable>
