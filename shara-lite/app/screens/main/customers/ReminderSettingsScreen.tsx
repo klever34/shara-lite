@@ -4,7 +4,11 @@ import {Icon} from '@/components/Icon';
 import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields} from '@/helpers/hocs';
-import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
+import {
+  IPaymentReminder,
+  ReminderUnit,
+  ReminderWhen,
+} from '@/models/PaymentReminder';
 import {usePaymentReminder} from '@/services/payment-reminder';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
@@ -13,7 +17,7 @@ import {format} from 'date-fns';
 import React, {useCallback, useContext, useState} from 'react';
 import {Alert, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {MainStackParamList} from '..';
-import {Reminder, ReminderForm} from './ReminderForm';
+import {ReminderForm} from './ReminderForm';
 
 type ReminderSettingsScreenProps = {
   route: RouteProp<MainStackParamList, 'ReminderSettings'>;
@@ -29,8 +33,11 @@ export const ReminderSettingsScreen = ({
     getPaymentReminders,
     savePaymentReminder,
     deletePaymentReminder,
+    updatePaymentReminder,
   } = usePaymentReminder();
-  const [reminders, setReminders] = useState<Reminder[]>(getPaymentReminders());
+  const [reminders, setReminders] = useState<IPaymentReminder[]>(
+    getPaymentReminders(),
+  );
 
   const {showSuccessToast} = useContext(ToastContext);
 
@@ -62,11 +69,11 @@ export const ReminderSettingsScreen = ({
         due_date: dueDate,
         customer: customer,
       },
+    }).then(() => {
+      showSuccessToast('REMINDER ADDED');
+      setReminders(getPaymentReminders());
     });
-    showSuccessToast('REMINDER ADDED');
-    setReminders([...getPaymentReminders()]);
   }, [
-    reminders,
     showSuccessToast,
     customer,
     dueDate,
@@ -87,15 +94,16 @@ export const ReminderSettingsScreen = ({
           {
             text: 'Yes',
             onPress: () => {
-              deletePaymentReminder({paymentReminder: reminder});
+              deletePaymentReminder({paymentReminder: reminder}).then(() => {
+                showSuccessToast('REMINDER REMOVED');
+                setReminders(getPaymentReminders());
+              });
             },
           },
         ],
       );
-      showSuccessToast('REMINDER REMOVED');
-      setReminders([...getPaymentReminders()]);
     },
-    [reminders, showSuccessToast, deletePaymentReminder, getPaymentReminders],
+    [showSuccessToast, deletePaymentReminder, getPaymentReminders],
   );
 
   return (
@@ -178,15 +186,22 @@ export const ReminderSettingsScreen = ({
               </Text>
             </View>
             {!!reminders.length &&
-              reminders.map((reminder, index) => (
-                <ReminderForm
-                  key={`${index}`}
-                  index={index + 1}
-                  initialValues={reminder}
-                  onSubmit={(values) => console.log(values)}
-                  onDelete={() => handleRemoveReminder(reminder)}
-                />
-              ))}
+              reminders.map((reminder, index) => {
+                return (
+                  <ReminderForm
+                    key={String(reminder._id)}
+                    index={index + 1}
+                    initialValues={reminder}
+                    onSubmit={(values) =>
+                      updatePaymentReminder({
+                        paymentReminder: reminder,
+                        updates: values,
+                      })
+                    }
+                    onDelete={() => handleRemoveReminder(reminder)}
+                  />
+                );
+              })}
             <Touchable onPress={handleAddReminder}>
               <View
                 style={applyStyles(
