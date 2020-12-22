@@ -155,6 +155,10 @@ const TransactionDetails = withModal(
     }, [filter, filterOptions, openModal, handleStatusFilter]);
 
     const handleDownloadReport = useCallback(() => {
+      getAnalyticsService()
+        .logEvent('userDownloadedReport', {})
+        .then(() => {})
+        .catch(handleError);
       Alert.alert('Info', 'This feature is coming soon');
     }, []);
 

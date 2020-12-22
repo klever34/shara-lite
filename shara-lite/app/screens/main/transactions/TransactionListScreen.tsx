@@ -7,6 +7,7 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
@@ -88,6 +89,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   }, [handleStatusFilter]);
 
   const handleGoToReportScreen = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('userViewedReport', {})
+      .then(() => {})
+      .catch(handleError);
     navigation.navigate('Report');
   }, [navigation]);
 

@@ -327,11 +327,10 @@ function PaymentContainer(props: ModalWrapperFields) {
 
                   <View style={applyStyles('flex-row items-center')}>
                     <Icon
-                      type="feathericons"
-                      name="copy"
                       size={18}
+                      name="copy"
+                      type="feathericons"
                       color={colors['gray-50']}
-                      onPress={copyToClipboard}
                     />
                     <Text
                       style={applyStyles(

@@ -20,6 +20,7 @@ export type SharaAppEventsProperties = {
   login: {method: string};
   logout: {};
   signup: {method: string};
+  userProfileUpdated: {};
   // Customer
   customerLocationAdded: {user_id: string};
   customerAdded: {source: 'manual' | 'phonebook'};
@@ -60,6 +61,7 @@ export type SharaAppEventsProperties = {
   //Payment
   paymentOptionAdded: {};
   paymentOptionEdited: {};
+  copiedPaymentOption: {};
   previewPaymentInfo: {};
   paymentOptionRemoved: {};
   paymentPreviewLabelEdited: {};
@@ -79,6 +81,9 @@ export type SharaAppEventsProperties = {
   //Referral
   friendInvited: {};
   referralCodeAdded: {};
+  //Report
+  userViewedReport: {};
+  userDownloadedReport: {};
 };
 
 export interface IAnalyticsService {
