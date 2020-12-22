@@ -80,6 +80,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             const value = toNumber(text);
             setFieldValue('amount_paid', value);
           }}
+          autoFocus
         />
         {!!values.amount_paid && (
           <AppInput
