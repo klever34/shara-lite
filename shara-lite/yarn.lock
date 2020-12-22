@@ -1189,10 +1189,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/perf/-/perf-7.4.3.tgz#3fb92daf3a8a68a22ec95260a7a5fef91002a237"
   integrity sha512-uaeBL7vfC8g7OUnwhwBAuiZ4wUbpY51RwfA5qbT+uDZwpSrHgrzNX1XhcRWQ7qkhboS66nDlGG/MpthRqCbdNQ==
 
-"@react-native-firebase/remote-config@^9.0.5":
-  version "9.0.5"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-9.0.5.tgz#374d0e1f4ca4d026427a85941f088afb28c47a57"
-  integrity sha512-qltfFb+nnK1pgBaJiG5xfGy7bQZPEhS47Hwa9brjpfWciVgpcIzdNIoZ9M5RCxYXwEuwH4r5e23vI05e/yIEjw==
+"@react-native-firebase/remote-config@^10.3.1":
+  version "10.3.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-10.3.1.tgz#5b8cf5db503107aaf1b317af8e04c9679332ae80"
+  integrity sha512-cCfBagdTu9ppM1EWR/GbUAy5vWBwbalZz0MnRMUemDILhopYnPkOb9wBK5iSSrWD4bCcCGipUM5ZahVj94cjBQ==
 
 "@react-navigation/bottom-tabs@^5.10.0":
   version "5.10.0"
