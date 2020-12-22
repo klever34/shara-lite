@@ -257,19 +257,22 @@ const TransactionDetails = withModal(
         <View style={applyStyles('flex-1')}>
           {!!transactions?.length && (
             <>
-              {customer?.balance && customer?.balance < 0 ? (
+              {!!customer?.due_date ||
+              (customer?.balance && customer.balance < 0) ? (
                 <View style={applyStyles('bg-white center pb-16')}>
-                  <View style={applyStyles('py-16 center')}>
-                    <Text
-                      style={applyStyles(
-                        'text-uppercase text-gray-100 text-700 text-xs',
-                      )}>
-                      {customer?.name} owes you{' '}
-                      <Text style={applyStyles('text-red-200')}>
-                        {amountWithCurrency(customer.balance)}
+                  {!!customer.balance && customer.balance < 0 && (
+                    <View style={applyStyles('py-16 center')}>
+                      <Text
+                        style={applyStyles(
+                          'text-uppercase text-gray-100 text-700 text-xs',
+                        )}>
+                        {customer?.name} owes you{' '}
+                        <Text style={applyStyles('text-red-200')}>
+                          {amountWithCurrency(customer.balance)}
+                        </Text>
                       </Text>
-                    </Text>
-                  </View>
+                    </View>
+                  )}
                   <Touchable
                     onPress={() =>
                       navigation.navigate('ReminderSettings', {customer})
@@ -280,7 +283,13 @@ const TransactionDetails = withModal(
                           `p-8 flex-row items-center ${
                             dueDate ? 'bg-white' : 'bg-red-200'
                           }`,
-                          {borderRadius: 8},
+                          dueDate
+                            ? {
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                borderColor: colors['gray-50'],
+                              }
+                            : {borderRadius: 8},
                         )}>
                         <Icon
                           size={16}

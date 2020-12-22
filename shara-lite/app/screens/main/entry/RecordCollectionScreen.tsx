@@ -101,9 +101,9 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             <DatePicker
               value={new Date(values.transaction_date)}
               containerStyle={applyStyles({width: '48%'})}
-              onChange={(e: Event, date?: Date) => {
-                setFieldValue('transaction_date', date);
-              }}>
+              onChange={(e: Event, date?: Date) =>
+                !!date && setFieldValue('transaction_date', date)
+              }>
               {(toggleShow) => {
                 return (
                   <>

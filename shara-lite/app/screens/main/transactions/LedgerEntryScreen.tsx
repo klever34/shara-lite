@@ -17,7 +17,7 @@ import {RouteProp} from '@react-navigation/native';
 import {format, isToday} from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
-// import Config from 'react-native-config';
+import Config from 'react-native-config';
 import {MainStackParamList} from '..';
 
 type LedgerEntryScreenProps = {
@@ -54,26 +54,21 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   const [receiptImage, setReceiptImage] = useState('');
   const [customer, setCustomer] = useState(customerProp);
 
-  // const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+  const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
   const shareReceiptMessage = `Hi ${
     customer?.name ?? ''
   }, thank you for your recent purchase from ${
     businessInfo.name
-  }. You paid ${amountWithCurrency(
-    total_amount,
-  )}.\n\nPowered by Shara for free.\nwww.shara.co`;
-  // const paymentReminderMessage = `Hello ${
-  //   customer?.name ?? ''
-  // }, thank you for doing business with ${
-  //   businessInfo?.name
-  // }. You owe ${amountWithCurrency(credit_amount)}${
-  //   transaction.dueDate
-  //     ? ` which is due on ${format(
-  //         new Date(transaction.dueDate),
-  //         'MMM dd, yyyy',
-  //       )}`
-  //     : ''
-  // }.\n\nTo pay click\n ${paymentLink}\n\nPowered by Shara for free.\nwww.shara.co`;
+  }. You paid ${amountWithCurrency(total_amount)}${
+    dueDate
+      ? ` and you owe ${amountWithCurrency(
+          credit_amount,
+        )} which is due on ${format(
+          new Date(dueDate),
+          'MMM dd, yyyy',
+        )}\n\nTo pay click\n ${paymentLink}`
+      : '.'
+  }\n\nPowered by Shara for free.\nwww.shara.co`;
 
   const shareProps: ShareHookProps = {
     image: receiptImage,

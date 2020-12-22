@@ -50,8 +50,10 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
       credit_amount?: number;
       transaction_date?: Date;
     }) => {
-      const onSelectCustomer = (customer?: SelectCustomerListItem) => {
-        handleSaveRecordSale({...payload, customer}).catch(handleError);
+      const onSelectCustomer = (selectedCustomer?: SelectCustomerListItem) => {
+        handleSaveRecordSale({...payload, customer: selectedCustomer}).catch(
+          handleError,
+        );
       };
       if (customer) {
         onSelectCustomer(customer);
