@@ -35,7 +35,7 @@ interface deleteTransactionInterface {
 
 interface updateDueDateInterface {
   due_date: Date;
-  transaction: Partial<IReceipt & Realm.Object>;
+  customer: ICustomer;
 }
 
 interface useTransactionInterface {
@@ -123,20 +123,16 @@ export const useTransaction = (): useTransactionInterface => {
 
   const updateDueDate = async ({
     due_date,
-    transaction,
+    customer,
   }: updateDueDateInterface) => {
-    if (!transaction.customer) {
-      return;
-    }
-
     const updates = {due_date};
     await updateCustomer({
       updates,
-      customer: transaction.customer,
+      customer,
     });
 
     await BluebirdPromise.map(
-      transaction.customer.paymentReminders || [],
+      customer.paymentReminders || [],
       async (paymentReminder) => {
         await updatePaymentReminder({paymentReminder, updates: {}});
       },
