@@ -300,7 +300,7 @@ export class ApiService implements IApiService {
     hash?: string;
   }) {
     try {
-      const fetchResponse = await this.requester.post('/login', payload);
+      const fetchResponse = await this.requester.post('/auth/login', payload);
       const {
         data: {
           credentials: {token},

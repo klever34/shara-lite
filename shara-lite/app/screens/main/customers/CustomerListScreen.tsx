@@ -354,9 +354,7 @@ export const CustomerListScreen = withModal(
                 {searchTerm ? 'No results found' : 'You have no customers yet.'}
               </Text>
               <Text style={applyStyles('text-black text-xl text-center')}>
-                {searchTerm
-                  ? 'Start adding records by tapping here'
-                  : 'Start adding customers by creating a record here'}
+                Start adding customers by creating a record here
               </Text>
             </View>
             <View style={applyStyles('center p-16 w-full')}>
@@ -370,7 +368,7 @@ export const CustomerListScreen = withModal(
                 useNativeDriver={true}
                 iterationCount="infinite">
                 <Icon
-                  size={200}
+                  size={80}
                   name="arrow-down"
                   type="feathericons"
                   color={colors.primary}
