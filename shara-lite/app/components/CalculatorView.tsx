@@ -402,12 +402,9 @@ export const CalculatorInput = ({
   onChangeText: prevOnChangeText,
   ...props
 }: CalculatorInputProps) => {
-  const {
-    showKbComponent,
-    resetKbComponent,
-    addEventListener,
-    handleReset,
-  } = useContext(CalculatorContext);
+  const {showKbComponent, addEventListener, handleReset} = useContext(
+    CalculatorContext,
+  );
   const [value, setValue] = useState<number | undefined>(initialValue);
   const onChangeText = useRef(prevOnChangeText).current;
 
@@ -434,9 +431,6 @@ export const CalculatorInput = ({
       });
     }
   }, [addEventListener, handleReset, onChangeText, showKbComponent, value]);
-  const handleBlur = useCallback(() => {
-    resetKbComponent?.();
-  }, [resetKbComponent]);
 
   return (
     <CurrencyInput
@@ -444,7 +438,6 @@ export const CalculatorInput = ({
       value={value}
       onFocus={handleFocus}
       onTouchStart={handleFocus}
-      onBlur={handleBlur}
       showSoftInputOnFocus={false}
     />
   );

@@ -87,7 +87,6 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           value={values.amount_paid}
           containerStyle={applyStyles('mb-16')}
           onChangeText={(text) => {
-            console.log('text', text);
             const value = toNumber(text);
             setFieldValue('amount_paid', value);
           }}
