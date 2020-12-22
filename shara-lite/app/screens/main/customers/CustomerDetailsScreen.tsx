@@ -26,7 +26,6 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
   return (
     <CustomerContext.Provider value={customer}>
       <TransactionDetails
-        dueDate={customer?.due_date}
         transactions={filteredReceipts}
         {...transactionDetailsProps}
       />

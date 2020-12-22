@@ -38,10 +38,7 @@ import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
 
 export type TransactionDetailsProps = {
-  dueDate?: Date;
-  isPaid?: boolean;
   customer: ICustomer;
-  sendReminder?: boolean;
   transactions?: IReceipt[];
   header?: Partial<CustomerDetailsHeaderProps>;
 };
@@ -49,8 +46,6 @@ export type TransactionDetailsProps = {
 const TransactionDetails = withModal(
   ({
     header,
-    isPaid,
-    dueDate,
     openModal,
     transactions,
     customer: customerProp,
@@ -72,6 +67,7 @@ const TransactionDetails = withModal(
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
+    const {due_date: dueDate} = customer;
 
     const {setCurrentCustomer} = useContext(EntryContext);
 
@@ -248,7 +244,6 @@ const TransactionDetails = withModal(
       <SafeAreaView style={applyStyles('flex-1')}>
         <CustomerDetailsHeader
           {...header}
-          isPaid={isPaid}
           customer={customer}
           onPress={handleAddCustomer}
           style={applyStyles(
