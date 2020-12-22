@@ -66,6 +66,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
                 }
               });
             }}
+            autoFocus
           />
         </View>
         <View style={applyStyles({width: '48%'})}>

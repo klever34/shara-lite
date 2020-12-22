@@ -9,10 +9,10 @@ import React, {
   useRef,
 } from 'react';
 import {applyStyles} from '@/styles';
-import {TransactionEntryButton} from '@/components/TransactionEntryView';
 import {Keyboard} from 'react-native-ui-lib';
-import {View, ScrollView, Text} from 'react-native';
+import {View, ScrollView, Text, ViewStyle, TextStyle} from 'react-native';
 import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
+import Touchable from '@/components/Touchable';
 const KeyboardAccessoryView = Keyboard.KeyboardAccessoryView;
 const KeyboardRegistry = Keyboard.KeyboardRegistry;
 
@@ -337,51 +337,51 @@ const CalculatorKeyboard = () => {
         </View>
         <View style={applyStyles('flex-1 flex-row px-16 w-full')}>
           <View style={applyStyles('flex-1')}>
-            <TransactionEntryButton label="C" onPress={handleClear} />
-            <TransactionEntryButton label="7" onPress={enterValue?.('7')} />
-            <TransactionEntryButton label="4" onPress={enterValue?.('4')} />
-            <TransactionEntryButton label="1" onPress={enterValue?.('1')} />
-            <TransactionEntryButton label="00" onPress={enterValue?.('00')} />
+            <CalculatorButton label="C" onPress={handleClear} />
+            <CalculatorButton label="7" onPress={enterValue?.('7')} />
+            <CalculatorButton label="4" onPress={enterValue?.('4')} />
+            <CalculatorButton label="1" onPress={enterValue?.('1')} />
+            <CalculatorButton label="00" onPress={enterValue?.('00')} />
           </View>
           <View style={applyStyles('flex-1')}>
-            <TransactionEntryButton label="%" onPress={enterValue?.('%')} />
-            <TransactionEntryButton label="8" onPress={enterValue?.('8')} />
-            <TransactionEntryButton label="5" onPress={enterValue?.('5')} />
-            <TransactionEntryButton label="2" onPress={enterValue?.('2')} />
-            <TransactionEntryButton label="0" onPress={enterValue?.('0')} />
+            <CalculatorButton label="%" onPress={enterValue?.('%')} />
+            <CalculatorButton label="8" onPress={enterValue?.('8')} />
+            <CalculatorButton label="5" onPress={enterValue?.('5')} />
+            <CalculatorButton label="2" onPress={enterValue?.('2')} />
+            <CalculatorButton label="0" onPress={enterValue?.('0')} />
           </View>
           <View style={applyStyles('flex-1')}>
-            <TransactionEntryButton
+            <CalculatorButton
               label="÷"
               onPress={enterValue?.('÷')}
-              textStyle={applyStyles('text-red-100')}
+              textStyle={applyStyles('text-red-100 text-2xl')}
             />
-            <TransactionEntryButton label="9" onPress={enterValue?.('9')} />
-            <TransactionEntryButton label="6" onPress={enterValue?.('6')} />
-            <TransactionEntryButton label="3" onPress={enterValue?.('3')} />
-            <TransactionEntryButton label="." onPress={enterValue?.('.')} />
+            <CalculatorButton label="9" onPress={enterValue?.('9')} />
+            <CalculatorButton label="6" onPress={enterValue?.('6')} />
+            <CalculatorButton label="3" onPress={enterValue?.('3')} />
+            <CalculatorButton label="." onPress={enterValue?.('.')} />
           </View>
           <View style={applyStyles('flex-1')}>
-            <TransactionEntryButton
+            <CalculatorButton
               label="x"
               onPress={enterValue?.('x')}
               textStyle={applyStyles('text-red-100')}
             />
-            <TransactionEntryButton
+            <CalculatorButton
               label="-"
               onPress={enterValue?.('-')}
-              textStyle={applyStyles('text-red-100')}
+              textStyle={applyStyles('text-red-100 text-2xl')}
             />
-            <TransactionEntryButton
+            <CalculatorButton
               label="+"
               onPress={enterValue?.('+')}
-              textStyle={applyStyles('text-red-100')}
+              textStyle={applyStyles('text-red-100 text-2xl')}
             />
-            <TransactionEntryButton
+            <CalculatorButton
               label="="
               onPress={handleCalculate}
               style={applyStyles('bg-red-200', {flex: 2.22})}
-              textStyle={applyStyles('text-white')}
+              textStyle={applyStyles('text-white text-2xl')}
             />
           </View>
         </View>
@@ -394,6 +394,39 @@ KeyboardRegistry.registerKeyboard(
   CalculatorKeyboardName,
   () => CalculatorKeyboard,
 );
+
+type CalculatorButtonProps = {
+  label?: string;
+  children?: ReactNode;
+  onPress?: () => void;
+  style?: ViewStyle;
+  textStyle?: TextStyle;
+};
+
+export const CalculatorButton = ({
+  label = '',
+  children = null,
+  onPress,
+  style,
+  textStyle,
+}: CalculatorButtonProps) => {
+  return (
+    <Touchable onPress={onPress}>
+      <View
+        style={applyStyles(
+          'flex-1 center bg-white rounded-8 mx-4 my-6',
+          style,
+        )}>
+        {children || (
+          <Text
+            style={applyStyles('text-xl text-uppercase body-500', textStyle)}>
+            {label}
+          </Text>
+        )}
+      </View>
+    </Touchable>
+  );
+};
 
 type CalculatorInputProps = CurrencyInputProps & {};
 

@@ -21,7 +21,6 @@ import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
 } from './entry/SelectCustomerScreen';
-import {CustomerEntryScreenParams} from './customers/CustomerEntryScreen';
 import ReferralScreen from './more/referral';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import {MoreScreen} from '@/screens/main/more';
@@ -40,7 +39,6 @@ export type MainStackParamList = {
 
   // Customers
   CustomerDetails: TransactionDetailsProps;
-  CustomerEntry: CustomerEntryScreenParams;
   ReminderSettings: {customer?: ICustomer};
   SelectCustomerList: SelectCustomerListScreenParams;
 
