@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {ReactNode, useCallback} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import PlaceholderImage from '@/components/PlaceholderImage';
@@ -12,50 +12,54 @@ type CustomerListItemProps = {
   customer: ICustomer;
   containerStyle?: ViewStyle;
   onPress?: () => void;
+  getDateText?: () => ReactNode;
 };
 
 export const CustomerListItem = ({
   customer,
   containerStyle,
   onPress,
+  getDateText,
 }: CustomerListItemProps) => {
-  const getDateText = useCallback(() => {
-    if (customer.due_date) {
-      if (!isToday(customer.due_date)) {
+  getDateText =
+    getDateText ??
+    useCallback(() => {
+      if (customer.due_date) {
+        if (!isToday(customer.due_date)) {
+          return (
+            <Text style={applyStyles('text-xs text-700 text-red-100')}>
+              Due{' '}
+              {formatDistanceToNowStrict(customer.due_date, {
+                addSuffix: true,
+              })}
+            </Text>
+          );
+        }
         return (
           <Text style={applyStyles('text-xs text-700 text-red-100')}>
-            Due{' '}
+            Collect in{' '}
             {formatDistanceToNowStrict(customer.due_date, {
               addSuffix: true,
             })}
           </Text>
         );
       }
-      return (
-        <Text style={applyStyles('text-xs text-700 text-red-100')}>
-          Collect in{' '}
-          {formatDistanceToNowStrict(customer.due_date, {
-            addSuffix: true,
-          })}
-        </Text>
-      );
-    }
-    if (!customer.due_date && customer.balance && customer.balance < 0) {
+      if (!customer.due_date && customer.balance && customer.balance < 0) {
+        return (
+          <Text style={applyStyles('text-xs text-700 text-gray-100')}>
+            No Collection Date
+          </Text>
+        );
+      }
       return (
         <Text style={applyStyles('text-xs text-700 text-gray-100')}>
-          No Collection Date
+          {customer?.created_at &&
+            formatDistanceToNowStrict(customer?.created_at, {
+              addSuffix: true,
+            })}
         </Text>
       );
-    }
-    return (
-      <Text style={applyStyles('text-xs text-700 text-gray-100')}>
-        {customer?.created_at &&
-          formatDistanceToNowStrict(customer?.created_at, {
-            addSuffix: true,
-          })}
-      </Text>
-    );
-  }, [customer]);
+    }, [customer]);
   return (
     <Touchable onPress={onPress}>
       <View

@@ -25,7 +25,7 @@ import ReferralScreen from './more/referral';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import {MoreScreen} from '@/screens/main/more';
 import {PaymentsScreen} from '@/screens/main/payments';
-import {Entry} from '@/components/Entry';
+import {EntryView} from '@/components/EntryView';
 import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
@@ -45,6 +45,7 @@ export type MainStackParamList = {
   // Transaction
   RecordSale: {
     goBack?: () => void;
+    customer?: ICustomer;
   };
   EditTransaction: {transaction: IReceipt};
   TransactionDetails: {transaction: IReceipt};
@@ -97,7 +98,7 @@ const MainScreens = () => {
   }
 
   return (
-    <Entry>
+    <EntryView>
       <MainStack.Navigator
         initialRouteName="Home"
         screenOptions={{
@@ -222,7 +223,7 @@ const MainScreens = () => {
           }}
         />
       </MainStack.Navigator>
-    </Entry>
+    </EntryView>
   );
 };
 
