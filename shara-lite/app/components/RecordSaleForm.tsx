@@ -54,8 +54,6 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
   const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
 
-  console.log(values.total_amount);
-
   return (
     <View>
       <View style={applyStyles('pb-16 flex-row items-center justify-between')}>

@@ -26,6 +26,7 @@ type CalculatorContextProps = {
   ) => () => void;
   enterValue?: (value: string) => () => void;
   handleClear?: () => void;
+  handleReset?: (value?: string) => void;
   handleDelete?: () => void;
   handleCalculate?: () => void;
   label?: string;
@@ -189,25 +190,14 @@ export function CalculatorView({children}: CalculatorViewProps) {
   const resetKbComponent = useCallback(() => {
     setKbComponent(undefined);
   }, []);
-  const [valueChangeListeners, setValueChangeListeners] = useState<
-    CalculatorKeyboardItemSelectedEventCallback[]
-  >([]);
+  const [valueChangeListener, setValueChangeListener] = useState<
+    CalculatorKeyboardItemSelectedEventCallback
+  >();
   const addEventListener = useCallback(
     (callback: CalculatorKeyboardItemSelectedEventCallback) => {
-      setValueChangeListeners((prevValueChangeListeners) => [
-        ...prevValueChangeListeners,
-        callback,
-      ]);
+      setValueChangeListener(() => callback);
       return () => {
-        setValueChangeListeners((prevValueChangeListeners) => {
-          const index = prevValueChangeListeners.findIndex(
-            (cb) => cb === callback,
-          );
-          return [
-            ...prevValueChangeListeners.slice(0, index),
-            ...prevValueChangeListeners.slice(index + 1),
-          ];
-        });
+        setValueChangeListener(undefined);
       };
     },
     [],
@@ -226,12 +216,10 @@ export function CalculatorView({children}: CalculatorViewProps) {
   const handleCalculate = useCallback(() => {
     try {
       const nextResult = calculate(tokens as string[]) as number;
-      valueChangeListeners.forEach((valueChangeListeners) =>
-        valueChangeListeners(result),
-      );
+      valueChangeListener?.(result);
       setResult(nextResult);
     } catch (e) {}
-  }, [result, tokens, valueChangeListeners]);
+  }, [result, tokens, valueChangeListener]);
 
   useMemo(() => {
     handleCalculate();
@@ -268,9 +256,13 @@ export function CalculatorView({children}: CalculatorViewProps) {
     [setTokens],
   );
 
-  const handleClear = useCallback(() => {
-    setTokens(['0']);
+  const handleReset = useCallback((initialValue = '0') => {
+    setTokens([initialValue]);
   }, []);
+
+  const handleClear = useCallback(() => {
+    handleReset();
+  }, [handleReset]);
 
   const handleDelete = useCallback(() => {
     const lastToken = getLastToken(tokens as string[]);
@@ -300,6 +292,7 @@ export function CalculatorView({children}: CalculatorViewProps) {
         addEventListener,
         enterValue,
         handleClear,
+        handleReset,
         handleDelete,
         handleCalculate,
         label,
@@ -387,7 +380,7 @@ const CalculatorKeyboard = () => {
             <TransactionEntryButton
               label="="
               onPress={handleCalculate}
-              style={applyStyles('bg-red-200', {flex: 2.2})}
+              style={applyStyles('bg-red-200', {flex: 2.22})}
               textStyle={applyStyles('text-white')}
             />
           </View>
@@ -409,9 +402,12 @@ export const CalculatorInput = ({
   onChangeText: prevOnChangeText,
   ...props
 }: CalculatorInputProps) => {
-  const {showKbComponent, resetKbComponent, addEventListener} = useContext(
-    CalculatorContext,
-  );
+  const {
+    showKbComponent,
+    resetKbComponent,
+    addEventListener,
+    handleReset,
+  } = useContext(CalculatorContext);
   const [value, setValue] = useState<number | undefined>(initialValue);
   const onChangeText = useRef(prevOnChangeText).current;
 
@@ -426,13 +422,29 @@ export const CalculatorInput = ({
     }
   }, [addEventListener, onChangeText, value]);
 
+  const handleFocus = useCallback(() => {
+    handleReset?.(String(value ?? '0'));
+    showKbComponent?.();
+    if (addEventListener) {
+      addEventListener((nextValue) => {
+        setValue(nextValue);
+        if (onChangeText) {
+          onChangeText(String(nextValue));
+        }
+      });
+    }
+  }, [addEventListener, handleReset, onChangeText, showKbComponent, value]);
+  const handleBlur = useCallback(() => {
+    resetKbComponent?.();
+  }, [resetKbComponent]);
+
   return (
     <CurrencyInput
       {...props}
       value={value}
-      onFocus={showKbComponent}
-      onTouchStart={showKbComponent}
-      onBlur={resetKbComponent}
+      onFocus={handleFocus}
+      onTouchStart={handleFocus}
+      onBlur={handleBlur}
       showSoftInputOnFocus={false}
     />
   );
