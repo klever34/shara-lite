@@ -68,7 +68,7 @@ export const ReminderForm = ({
             }}>
             {Array(30)
               .fill(1)
-              .map((_, index) => index + 1)
+              .map((_, i) => i + 1)
               .map((item) => (
                 <Picker.Item key={`${item}`} label={`${item}`} value={item} />
               ))}

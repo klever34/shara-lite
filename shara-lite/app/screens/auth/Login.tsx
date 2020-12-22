@@ -69,6 +69,7 @@ export const Login = () => {
       navigation.navigate('OTPVerification', {
         message,
         mobile: payload.mobile,
+        countryCode: payload.country_code,
       });
     } catch (error) {
       setLoading(false);
