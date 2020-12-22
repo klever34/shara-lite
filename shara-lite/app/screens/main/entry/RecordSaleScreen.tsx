@@ -10,6 +10,7 @@ import {RouteProp} from '@react-navigation/native';
 import React, {useCallback, useContext} from 'react';
 import {MainStackParamList} from '..';
 import {SelectCustomerListItem} from './SelectCustomerScreen';
+import {CalculatorView} from '@/components/CalculatorView';
 
 type RecordSaleScreenProps = {
   route: RouteProp<MainStackParamList, 'RecordSale'>;
@@ -59,14 +60,16 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
   );
 
   return (
-    <Page header={{iconLeft: {}, title: ' '}}>
-      <TitleContainer
-        title="Record Sale"
-        containerStyle={applyStyles('pb-24')}
-        description="Quickly record a collection or outstanding"
-      />
-      <RecordSaleForm onSubmit={handleSave} />
-    </Page>
+    <CalculatorView>
+      <Page header={{iconLeft: {}, title: ' '}}>
+        <TitleContainer
+          title="Record Sale"
+          containerStyle={applyStyles('pb-24')}
+          description="Quickly record a collection or outstanding"
+        />
+        <RecordSaleForm onSubmit={handleSave} />
+      </Page>
+    </CalculatorView>
   );
 };
 

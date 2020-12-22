@@ -5,28 +5,17 @@ import React, {
   createContext,
   useContext,
   useEffect,
+  useMemo,
+  useRef,
 } from 'react';
-import {AppInput, AppInputProps} from '@/components/AppInput';
 import {applyStyles} from '@/styles';
 import {TransactionEntryButton} from '@/components/TransactionEntryView';
 import {Keyboard} from 'react-native-ui-lib';
 import {View, ScrollView, Text} from 'react-native';
-import {numberWithCommas} from '@/helpers/utils';
-// const KeyboardUtils = Keyboard.KeyboardUtils;
+import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
 const KeyboardAccessoryView = Keyboard.KeyboardAccessoryView;
 const KeyboardRegistry = Keyboard.KeyboardRegistry;
 
-enum CalculatorKeyboardActions {
-  TYPE = 'TYPE',
-  // DELETE = 'DELETE',
-  CLEAR = 'CLEAR',
-  ANSWER = 'ANSWER',
-}
-
-type CalculatorKeyboardItemSelectedEvent = {
-  action: CalculatorKeyboardActions;
-  value?: any;
-};
 type CalculatorKeyboardItemSelectedEventCallback = (value: number) => void;
 
 type CalculatorContextProps = {
@@ -37,8 +26,12 @@ type CalculatorContextProps = {
   ) => () => void;
   enterValue?: (value: string) => () => void;
   handleClear?: () => void;
+  handleReset?: (value?: string) => void;
   handleDelete?: () => void;
   handleCalculate?: () => void;
+  label?: string;
+  result?: number;
+  tokens?: string[];
 };
 
 const CalculatorContext = createContext<CalculatorContextProps>({});
@@ -50,6 +43,10 @@ const getLastToken = (tokens: string[]) => {
 const trimZeros = (nextToken: string) => {
   return nextToken.replace(/^0+/, '') || '0';
 };
+
+const isValidNumber = (number: string) => !isNaN(parseInt(number, 10));
+const isBinaryOperator = (operator: string) =>
+  ['+', '-', 'x', '÷'].includes(operator);
 
 const createEnumerator = (tokens: string[]) => {
   let counter = -1;
@@ -65,7 +62,6 @@ const createEnumerator = (tokens: string[]) => {
 };
 
 const calculate = (tokens: string[]) => {
-  console.log(tokens.length);
   const tokensEnumerator = createEnumerator(tokens);
   const stack: number[] = [];
   let lookahead = tokensEnumerator.moveNext()
@@ -75,7 +71,6 @@ const calculate = (tokens: string[]) => {
   const mathError = new Error('Math Error');
 
   const match = (token: string) => {
-    console.log('match');
     if (lookahead === token) {
       lookahead = tokensEnumerator.moveNext()
         ? tokensEnumerator.getCurrent()
@@ -96,7 +91,7 @@ const calculate = (tokens: string[]) => {
       case '-':
         result = firstOperand - secondOperand;
         break;
-      case '*':
+      case 'x':
         result = firstOperand * secondOperand;
         break;
       case '÷':
@@ -158,10 +153,10 @@ const calculate = (tokens: string[]) => {
         match('-');
         term();
         solveBinary('-');
-      } else if (lookahead === '*') {
-        match('*');
+      } else if (lookahead === 'x') {
+        match('x');
         term();
-        solveBinary('*');
+        solveBinary('x');
       } else if (lookahead === '÷') {
         match('÷');
         term();
@@ -195,27 +190,14 @@ export function CalculatorView({children}: CalculatorViewProps) {
   const resetKbComponent = useCallback(() => {
     setKbComponent(undefined);
   }, []);
-  const [
-    ,
-    // valueChangeListeners,
-    setValueChangeListeners,
-  ] = useState<CalculatorKeyboardItemSelectedEventCallback[]>([]);
+  const [valueChangeListener, setValueChangeListener] = useState<
+    CalculatorKeyboardItemSelectedEventCallback
+  >();
   const addEventListener = useCallback(
     (callback: CalculatorKeyboardItemSelectedEventCallback) => {
-      setValueChangeListeners((prevValueChangeListeners) => [
-        ...prevValueChangeListeners,
-        callback,
-      ]);
+      setValueChangeListener(() => callback);
       return () => {
-        setValueChangeListeners((prevValueChangeListeners) => {
-          const index = prevValueChangeListeners.findIndex(
-            (cb) => cb === callback,
-          );
-          return [
-            ...prevValueChangeListeners.slice(0, index),
-            ...prevValueChangeListeners.slice(index + 1),
-          ];
-        });
+        setValueChangeListener(undefined);
       };
     },
     [],
@@ -223,28 +205,47 @@ export function CalculatorView({children}: CalculatorViewProps) {
 
   const [tokens, setTokens] = useState<string[]>(['0']);
 
-  const [amount, setAmount] = useState({
-    label: '0',
-    value: 0,
-  });
+  const label = useMemo(() => {
+    return tokens.reduce((acc, token) => {
+      return acc + ' ' + token;
+    }, '');
+  }, [tokens]);
+
+  const [result, setResult] = useState(0);
+
+  const handleCalculate = useCallback(() => {
+    try {
+      const nextResult = calculate(tokens as string[]) as number;
+      valueChangeListener?.(result);
+      setResult(nextResult);
+    } catch (e) {}
+  }, [result, tokens, valueChangeListener]);
+
+  useMemo(() => {
+    handleCalculate();
+  }, [handleCalculate]);
 
   const enterValue = useCallback(
     (value: string) => {
       return () => {
-        setTokens?.((prevTokens) => {
+        setTokens((prevTokens) => {
           const lastToken = getLastToken(prevTokens);
-          if (
-            (!isNaN(parseInt(value, 10)) || value === '.') &&
-            !isNaN(parseInt(lastToken, 10))
+          if (lastToken.includes('.') && value === '.') {
+            return prevTokens;
+          } else if (
+            (isValidNumber(value) || value === '.') &&
+            isValidNumber(lastToken)
           ) {
-            if (lastToken.includes('.') && value === '.') {
-              return prevTokens;
-            }
             let nextToken;
             nextToken = lastToken + value;
             return [
               ...prevTokens.slice(0, prevTokens.length - 1),
               trimZeros(nextToken),
+            ];
+          } else if (isBinaryOperator(lastToken) && isBinaryOperator(value)) {
+            return [
+              ...prevTokens.slice(0, prevTokens.length - 1),
+              trimZeros(value),
             ];
           } else {
             return [...prevTokens, trimZeros(value)];
@@ -255,101 +256,33 @@ export function CalculatorView({children}: CalculatorViewProps) {
     [setTokens],
   );
 
+  const handleReset = useCallback((initialValue = '0') => {
+    setTokens([initialValue]);
+  }, []);
+
   const handleClear = useCallback(() => {
-    setTokens?.(['0']);
-  }, [setTokens]);
+    handleReset();
+  }, [handleReset]);
 
   const handleDelete = useCallback(() => {
     const lastToken = getLastToken(tokens as string[]);
     if (lastToken.length === 1) {
-      if (tokens?.length === 1) {
-        setTokens?.(['0']);
+      if (tokens.length === 1) {
+        setTokens(['0']);
       } else {
-        setTokens?.((prevTokens) => {
+        setTokens((prevTokens) => {
           return [...prevTokens.slice(0, prevTokens.length - 1)];
         });
       }
     } else {
-      setTokens?.((prevTokens) => {
+      setTokens((prevTokens) => {
         return [
           ...prevTokens.slice(0, prevTokens.length - 1),
           lastToken.slice(0, lastToken.length - 1),
         ];
       });
     }
-  }, [setTokens, tokens]);
-
-  const handleCalculate = useCallback(() => {
-    try {
-      const result = calculate(tokens as string[]) as number;
-      setAmount?.({
-        label: numberWithCommas(result),
-        value: result,
-      });
-    } catch (e) {
-      setAmount?.(() => {
-        return {
-          label:
-            tokens?.reduce((acc, curr) => {
-              return acc + curr;
-            }, '') ?? '',
-          value: 0,
-        };
-      });
-    }
-  }, [setAmount, tokens]);
-
-  const handleItemSelected = (
-    name: string,
-    event: CalculatorKeyboardItemSelectedEvent,
-  ) => {
-    switch (event.action) {
-      case CalculatorKeyboardActions.TYPE:
-        const value = event.value;
-        setTokens((prevTokens) => {
-          const lastToken = getLastToken(prevTokens);
-          if (
-            (!isNaN(parseInt(value, 10)) || value === '.') &&
-            !isNaN(parseInt(lastToken, 10))
-          ) {
-            if (lastToken.includes('.') && value === '.') {
-              return prevTokens;
-            }
-            let nextToken;
-            nextToken = lastToken + value;
-            return [
-              ...prevTokens.slice(0, prevTokens.length - 1),
-              trimZeros(nextToken),
-            ];
-          } else {
-            return [...prevTokens, trimZeros(value)];
-          }
-        });
-        break;
-      case CalculatorKeyboardActions.CLEAR:
-        setTokens(['0']);
-        break;
-      case CalculatorKeyboardActions.ANSWER:
-        try {
-          const result = calculate(tokens as string[]) as number;
-          setAmount?.({
-            label: numberWithCommas(result),
-            value: result,
-          });
-        } catch (e) {
-          setAmount?.(() => {
-            return {
-              label:
-                tokens?.reduce((acc, curr) => {
-                  return acc + curr;
-                }, '') ?? '',
-              value: 0,
-            };
-          });
-        }
-        break;
-    }
-  };
+  }, [tokens]);
 
   return (
     <CalculatorContext.Provider
@@ -359,14 +292,16 @@ export function CalculatorView({children}: CalculatorViewProps) {
         addEventListener,
         enterValue,
         handleClear,
+        handleReset,
         handleDelete,
         handleCalculate,
+        label,
+        result,
+        tokens,
       }}>
       {children}
       <KeyboardAccessoryView
-        renderContent={() => <Text>{amount.label}</Text>}
         kbComponent={kbComponent}
-        onItemSelected={handleItemSelected}
         onRequestShowKeyboard={showKbComponent}
         onKeyboardResigned={resetKbComponent}
       />
@@ -377,9 +312,14 @@ export function CalculatorView({children}: CalculatorViewProps) {
 export const CalculatorKeyboardName = 'CalculatorKeyboard';
 
 const CalculatorKeyboard = () => {
-  const {enterValue, handleClear, handleCalculate} = useContext(
-    CalculatorContext,
-  );
+  const {
+    enterValue,
+    handleClear,
+    handleCalculate,
+    tokens,
+    label,
+    result,
+  } = useContext(CalculatorContext);
 
   return (
     <ScrollView
@@ -387,54 +327,63 @@ const CalculatorKeyboard = () => {
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={applyStyles('w-screen')}
       keyboardShouldPersistTaps="always">
-      <View style={applyStyles('flex-1 flex-row px-16')}>
-        <View style={applyStyles('flex-1')}>
-          <TransactionEntryButton label="C" onPress={handleClear} />
-          <TransactionEntryButton label="7" onPress={enterValue?.('7')} />
-          <TransactionEntryButton label="4" onPress={enterValue?.('4')} />
-          <TransactionEntryButton label="1" onPress={enterValue?.('1')} />
-          <TransactionEntryButton label="00" onPress={enterValue?.('00')} />
+      <View style={applyStyles('w-full')}>
+        <View style={applyStyles('p-8 center w-full')}>
+          {tokens && tokens.length > 1 && (
+            <Text style={applyStyles('text-base text-700')}>
+              {`${label} = ${result}`}
+            </Text>
+          )}
         </View>
-        <View style={applyStyles('flex-1')}>
-          <TransactionEntryButton label="%" onPress={enterValue?.('%')} />
-          <TransactionEntryButton label="8" onPress={enterValue?.('8')} />
-          <TransactionEntryButton label="5" onPress={enterValue?.('5')} />
-          <TransactionEntryButton label="2" onPress={enterValue?.('2')} />
-          <TransactionEntryButton label="0" onPress={enterValue?.('0')} />
-        </View>
-        <View style={applyStyles('flex-1')}>
-          <TransactionEntryButton
-            label="÷"
-            onPress={enterValue?.('÷')}
-            textStyle={applyStyles('text-red-100')}
-          />
-          <TransactionEntryButton label="9" onPress={enterValue?.('9')} />
-          <TransactionEntryButton label="6" onPress={enterValue?.('6')} />
-          <TransactionEntryButton label="3" onPress={enterValue?.('3')} />
-          <TransactionEntryButton label="." onPress={enterValue?.('.')} />
-        </View>
-        <View style={applyStyles('flex-1')}>
-          <TransactionEntryButton
-            label="x"
-            onPress={enterValue?.('*')}
-            textStyle={applyStyles('text-red-100')}
-          />
-          <TransactionEntryButton
-            label="-"
-            onPress={enterValue?.('-')}
-            textStyle={applyStyles('text-red-100')}
-          />
-          <TransactionEntryButton
-            label="+"
-            onPress={enterValue?.('+')}
-            textStyle={applyStyles('text-red-100')}
-          />
-          <TransactionEntryButton
-            label="="
-            onPress={handleCalculate}
-            style={applyStyles('bg-red-200', {flex: 2.2})}
-            textStyle={applyStyles('text-white')}
-          />
+        <View style={applyStyles('flex-1 flex-row px-16 w-full')}>
+          <View style={applyStyles('flex-1')}>
+            <TransactionEntryButton label="C" onPress={handleClear} />
+            <TransactionEntryButton label="7" onPress={enterValue?.('7')} />
+            <TransactionEntryButton label="4" onPress={enterValue?.('4')} />
+            <TransactionEntryButton label="1" onPress={enterValue?.('1')} />
+            <TransactionEntryButton label="00" onPress={enterValue?.('00')} />
+          </View>
+          <View style={applyStyles('flex-1')}>
+            <TransactionEntryButton label="%" onPress={enterValue?.('%')} />
+            <TransactionEntryButton label="8" onPress={enterValue?.('8')} />
+            <TransactionEntryButton label="5" onPress={enterValue?.('5')} />
+            <TransactionEntryButton label="2" onPress={enterValue?.('2')} />
+            <TransactionEntryButton label="0" onPress={enterValue?.('0')} />
+          </View>
+          <View style={applyStyles('flex-1')}>
+            <TransactionEntryButton
+              label="÷"
+              onPress={enterValue?.('÷')}
+              textStyle={applyStyles('text-red-100')}
+            />
+            <TransactionEntryButton label="9" onPress={enterValue?.('9')} />
+            <TransactionEntryButton label="6" onPress={enterValue?.('6')} />
+            <TransactionEntryButton label="3" onPress={enterValue?.('3')} />
+            <TransactionEntryButton label="." onPress={enterValue?.('.')} />
+          </View>
+          <View style={applyStyles('flex-1')}>
+            <TransactionEntryButton
+              label="x"
+              onPress={enterValue?.('x')}
+              textStyle={applyStyles('text-red-100')}
+            />
+            <TransactionEntryButton
+              label="-"
+              onPress={enterValue?.('-')}
+              textStyle={applyStyles('text-red-100')}
+            />
+            <TransactionEntryButton
+              label="+"
+              onPress={enterValue?.('+')}
+              textStyle={applyStyles('text-red-100')}
+            />
+            <TransactionEntryButton
+              label="="
+              onPress={handleCalculate}
+              style={applyStyles('bg-red-200', {flex: 2.22})}
+              textStyle={applyStyles('text-white')}
+            />
+          </View>
         </View>
       </View>
     </ScrollView>
@@ -446,28 +395,50 @@ KeyboardRegistry.registerKeyboard(
   () => CalculatorKeyboard,
 );
 
-type CalculatorInputProps = AppInputProps & {};
+type CalculatorInputProps = CurrencyInputProps & {};
 
-export const CalculatorInput = (props: CalculatorInputProps) => {
-  const {showKbComponent, resetKbComponent, addEventListener} = useContext(
+export const CalculatorInput = ({
+  value: initialValue,
+  onChangeText: prevOnChangeText,
+  ...props
+}: CalculatorInputProps) => {
+  const {showKbComponent, addEventListener, handleReset} = useContext(
     CalculatorContext,
   );
+  const [value, setValue] = useState<number | undefined>(initialValue);
+  const onChangeText = useRef(prevOnChangeText).current;
+
   useEffect(() => {
     if (addEventListener) {
-      return addEventListener((value) => {
-        console.log(value);
+      return addEventListener((nextValue) => {
+        setValue(nextValue);
+        if (onChangeText) {
+          onChangeText(String(value));
+        }
       });
     }
-  }, [addEventListener]);
+  }, [addEventListener, onChangeText, value]);
+
+  const handleFocus = useCallback(() => {
+    handleReset?.(String(value ?? '0'));
+    showKbComponent?.();
+    if (addEventListener) {
+      addEventListener((nextValue) => {
+        setValue(nextValue);
+        if (onChangeText) {
+          onChangeText(String(nextValue));
+        }
+      });
+    }
+  }, [addEventListener, handleReset, onChangeText, showKbComponent, value]);
 
   return (
-    <AppInput
+    <CurrencyInput
       {...props}
-      onFocus={showKbComponent}
-      onTouchStart={showKbComponent}
-      onBlur={resetKbComponent}
-      // showSoftInputOnFocus={false}
-      keyboardType="number-pad"
+      value={value}
+      onFocus={handleFocus}
+      onTouchStart={handleFocus}
+      showSoftInputOnFocus={false}
     />
   );
 };
