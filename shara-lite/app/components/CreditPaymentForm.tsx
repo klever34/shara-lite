@@ -3,9 +3,9 @@ import React, {useCallback} from 'react';
 import {StyleSheet, Text, View} from 'react-native';
 import {Button} from './Button';
 import {colors} from '../styles';
-import {CurrencyInput} from './CurrencyInput';
 import {Formik} from 'formik';
 import {applyStyles} from '@/styles';
+import {CalculatorInput} from '@/components/CalculatorView';
 
 type Payload = {
   amount: number | undefined;
@@ -35,7 +35,7 @@ export const CreditPaymentForm = (props: Props) => {
         {({values, errors, touched, setFieldValue, handleSubmit}) => (
           <>
             <View style={applyStyles('flex-row', 'items-center')}>
-              <CurrencyInput
+              <CalculatorInput
                 label="Amount Paid"
                 keyboardType="number-pad"
                 containerStyle={styles.input}
