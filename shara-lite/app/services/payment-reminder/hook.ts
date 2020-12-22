@@ -44,7 +44,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
   const getPaymentReminders = (): IPaymentReminder[] => {
     return (realm
       .objects<IPaymentReminder>(modelName)
-      .filtered('is_deleted = false') as unknown) as IPaymentReminder[];
+      .filtered('is_deleted != true') as unknown) as IPaymentReminder[];
   };
 
   const savePaymentReminder = async ({

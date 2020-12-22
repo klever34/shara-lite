@@ -88,7 +88,7 @@ export const useReceipt = (): useReceiptInterface => {
     return (realm
       .objects<IReceipt>(modelName)
       .filtered(
-        'is_deleted = false AND is_cancelled != true',
+        'is_deleted != true AND is_cancelled != true',
       ) as unknown) as IReceipt[];
   };
 

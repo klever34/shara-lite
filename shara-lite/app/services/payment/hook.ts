@@ -38,7 +38,7 @@ export const usePayment = (): usePaymentInterface => {
   const getPayments = (): IPayment[] => {
     return (realm
       .objects<IPayment>(modelName)
-      .filtered('is_deleted = false') as unknown) as IPayment[];
+      .filtered('is_deleted != true') as unknown) as IPayment[];
   };
 
   const savePayment = async ({

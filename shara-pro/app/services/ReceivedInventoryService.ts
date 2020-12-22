@@ -19,7 +19,7 @@ export const getReceivedInventories = ({
 }): IReceivedInventory[] => {
   return (realm
     .objects<IReceivedInventory>(modelName)
-    .filtered('is_deleted = false') as unknown) as IReceivedInventory[];
+    .filtered('is_deleted != true') as unknown) as IReceivedInventory[];
 };
 
 export const addNewInventory = ({

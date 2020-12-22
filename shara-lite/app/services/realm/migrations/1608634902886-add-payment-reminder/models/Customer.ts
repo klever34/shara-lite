@@ -108,12 +108,12 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
   public get balance() {
     const totalCreditAmount =
       this.receipts
-        ?.filtered('is_deleted = false AND is_cancelled != true')
+        ?.filtered('is_deleted != true AND is_cancelled != true')
         .sum('credit_amount') || 0;
     const totalCollectedAmount =
       this.receipts
         ?.filtered(
-          'is_deleted = false AND is_cancelled != true AND credit_amount = 0',
+          'is_deleted != true AND is_cancelled != true AND credit_amount = 0',
         )
         .sum('amount_paid') || 0;
 
@@ -142,7 +142,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
   public get dueDate() {
     const credits = this.credits
       ?.filtered(
-        'is_deleted = false AND due_date != null AND fulfilled = false',
+        'is_deleted != true AND due_date != null AND fulfilled = false',
       )
       .sorted('due_date');
 
