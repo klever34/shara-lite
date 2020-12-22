@@ -6,6 +6,8 @@ import {useReceipt} from '@/services/receipt';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {Customer} from 'types/app';
 import {useCustomer} from '@/services/customer/hook';
+import BluebirdPromise from 'bluebird';
+import {usePaymentReminder} from '@/services/payment-reminder';
 
 interface saveTransactionInterface {
   customer?: ICustomer | Customer;
@@ -57,6 +59,7 @@ export const useTransaction = (): useTransactionInterface => {
     updateReceiptRecord,
   } = useReceipt();
   const {updateCustomer} = useCustomer();
+  const {updatePaymentReminder} = usePaymentReminder();
   const user = getAuthService().getUser();
 
   const getTransactions = getReceipts;
@@ -131,6 +134,13 @@ export const useTransaction = (): useTransactionInterface => {
       updates,
       customer: transaction.customer,
     });
+
+    await BluebirdPromise.map(
+      transaction.customer.paymentReminders || [],
+      async (paymentReminder) => {
+        await updatePaymentReminder({paymentReminder, updates: {}});
+      },
+    );
 
     getAnalyticsService()
       .logEvent('setCollectionDate', {})
