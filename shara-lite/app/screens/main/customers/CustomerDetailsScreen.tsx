@@ -18,7 +18,7 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
   const {customer} = transactionDetailsProps;
 
   const filteredReceipts = useMemo(() => {
-    return (customer?.receipts
+    return (customer.receipts
       ?.filtered('is_deleted = false')
       .sorted('created_at', true) as unknown) as IReceipt[];
   }, [customer]);

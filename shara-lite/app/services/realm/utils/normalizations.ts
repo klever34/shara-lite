@@ -19,7 +19,7 @@ export const normalizeDb = ({
       .objects<IReceipt>('Receipt')
       .filtered('transaction_date = null');
     receipts.forEach((receipt) => {
-      if (!receipt.transaction_date) {
+      if (receipt && !receipt.transaction_date) {
         receipt.transaction_date = receipt.created_at;
       }
     });
