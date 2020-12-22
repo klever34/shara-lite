@@ -29,31 +29,23 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
     : {
         note: '',
         amount_paid: undefined,
-        total_amount: undefined,
         credit_amount: undefined,
         transaction_date: new Date(),
       };
 
   const {values, handleSubmit, handleChange, setFieldValue} = useFormik({
     initialValues,
-    onSubmit: ({
-      note,
-      amount_paid,
-      credit_amount,
-      total_amount,
-      transaction_date,
-    }) =>
+    onSubmit: ({note, amount_paid, credit_amount, transaction_date}) =>
       onSubmit({
         note,
         amount_paid,
         credit_amount,
-        total_amount,
+        total_amount: (amount_paid ?? 0) + (credit_amount ?? 0),
         transaction_date,
       }),
   });
   const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
-
   return (
     <View>
       <View style={applyStyles('pb-16 flex-row items-center justify-between')}>
@@ -66,10 +58,6 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
             onChangeText={(text) => {
               const value = toNumber(text);
               setFieldValue('amount_paid', value);
-              setFieldValue(
-                'total_amount',
-                values.credit_amount ? values.credit_amount + value : value,
-              );
             }}
             onSubmitEditing={() => {
               setImmediate(() => {
@@ -91,10 +79,6 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
             onChangeText={(text) => {
               const value = toNumber(text);
               setFieldValue('credit_amount', value);
-              setFieldValue(
-                'total_amount',
-                values.amount_paid ? values.amount_paid + value : value,
-              );
             }}
             onSubmitEditing={() => {
               setImmediate(() => {
@@ -111,12 +95,16 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           style={applyStyles(
             'pb-16 text-700 text-center text-uppercase text-black',
           )}>
-          Total: {amountWithCurrency(values.total_amount)}
+          Total:{' '}
+          {amountWithCurrency(
+            (values.amount_paid ?? 0) + (values.credit_amount ?? 0),
+          )}
         </Text>
       )}
       {!!(values.amount_paid || values.credit_amount) && (
         <AppInput
           multiline
+          ref={noteFieldRef}
           value={values.note}
           label="Note (optional)"
           onChangeText={handleChange('note')}
