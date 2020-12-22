@@ -19,6 +19,7 @@ import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
+import {PaymentReminder} from '@/models/PaymentReminder';
 
 export const schema = [
   Address,
@@ -33,6 +34,7 @@ export const schema = [
   Message,
   Payment,
   PaymentOption,
+  PaymentReminder,
   Product,
   Receipt,
   ReceiptItem,
