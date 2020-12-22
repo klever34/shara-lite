@@ -1,11 +1,5 @@
-import {
-  AppInput,
-  Button,
-  CurrencyInput,
-  DatePicker,
-  toNumber,
-} from '@/components';
-import {CalculatorView} from '@/components/CalculatorView';
+import {AppInput, Button, DatePicker, toNumber} from '@/components';
+import {CalculatorInput, CalculatorView} from '@/components/CalculatorView';
 import {CustomerListItem} from '@/components/CustomerListItem';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
@@ -87,12 +81,13 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           customer={customer}
           containerStyle={applyStyles('py-16 mb-16')}
         />
-        <CurrencyInput
+        <CalculatorInput
           placeholder="0.00"
           label="Enter Amount"
           value={values.amount_paid}
           containerStyle={applyStyles('mb-16')}
           onChangeText={(text) => {
+            console.log('text', text);
             const value = toNumber(text);
             setFieldValue('amount_paid', value);
           }}

@@ -5,28 +5,16 @@ import React, {
   createContext,
   useContext,
   useEffect,
+  useMemo,
 } from 'react';
-import {AppInput, AppInputProps} from '@/components/AppInput';
 import {applyStyles} from '@/styles';
 import {TransactionEntryButton} from '@/components/TransactionEntryView';
 import {Keyboard} from 'react-native-ui-lib';
 import {View, ScrollView, Text} from 'react-native';
-import {numberWithCommas} from '@/helpers/utils';
-// const KeyboardUtils = Keyboard.KeyboardUtils;
+import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
 const KeyboardAccessoryView = Keyboard.KeyboardAccessoryView;
 const KeyboardRegistry = Keyboard.KeyboardRegistry;
 
-enum CalculatorKeyboardActions {
-  TYPE = 'TYPE',
-  // DELETE = 'DELETE',
-  CLEAR = 'CLEAR',
-  ANSWER = 'ANSWER',
-}
-
-type CalculatorKeyboardItemSelectedEvent = {
-  action: CalculatorKeyboardActions;
-  value?: any;
-};
 type CalculatorKeyboardItemSelectedEventCallback = (value: number) => void;
 
 type CalculatorContextProps = {
@@ -51,6 +39,10 @@ const trimZeros = (nextToken: string) => {
   return nextToken.replace(/^0+/, '') || '0';
 };
 
+const isValidNumber = (number: string) => !isNaN(parseInt(number, 10));
+const isBinaryOperator = (operator: string) =>
+  ['+', '-', 'x', '÷'].includes(operator);
+
 const createEnumerator = (tokens: string[]) => {
   let counter = -1;
   return {
@@ -65,7 +57,6 @@ const createEnumerator = (tokens: string[]) => {
 };
 
 const calculate = (tokens: string[]) => {
-  console.log(tokens.length);
   const tokensEnumerator = createEnumerator(tokens);
   const stack: number[] = [];
   let lookahead = tokensEnumerator.moveNext()
@@ -75,7 +66,6 @@ const calculate = (tokens: string[]) => {
   const mathError = new Error('Math Error');
 
   const match = (token: string) => {
-    console.log('match');
     if (lookahead === token) {
       lookahead = tokensEnumerator.moveNext()
         ? tokensEnumerator.getCurrent()
@@ -96,7 +86,7 @@ const calculate = (tokens: string[]) => {
       case '-':
         result = firstOperand - secondOperand;
         break;
-      case '*':
+      case 'x':
         result = firstOperand * secondOperand;
         break;
       case '÷':
@@ -158,10 +148,10 @@ const calculate = (tokens: string[]) => {
         match('-');
         term();
         solveBinary('-');
-      } else if (lookahead === '*') {
-        match('*');
+      } else if (lookahead === 'x') {
+        match('x');
         term();
-        solveBinary('*');
+        solveBinary('x');
       } else if (lookahead === '÷') {
         match('÷');
         term();
@@ -195,11 +185,9 @@ export function CalculatorView({children}: CalculatorViewProps) {
   const resetKbComponent = useCallback(() => {
     setKbComponent(undefined);
   }, []);
-  const [
-    ,
-    // valueChangeListeners,
-    setValueChangeListeners,
-  ] = useState<CalculatorKeyboardItemSelectedEventCallback[]>([]);
+  const [valueChangeListeners, setValueChangeListeners] = useState<
+    CalculatorKeyboardItemSelectedEventCallback[]
+  >([]);
   const addEventListener = useCallback(
     (callback: CalculatorKeyboardItemSelectedEventCallback) => {
       setValueChangeListeners((prevValueChangeListeners) => [
@@ -223,28 +211,49 @@ export function CalculatorView({children}: CalculatorViewProps) {
 
   const [tokens, setTokens] = useState<string[]>(['0']);
 
-  const [amount, setAmount] = useState({
-    label: '0',
-    value: 0,
-  });
+  const label = useMemo(() => {
+    return tokens.reduce((acc, token) => {
+      return acc + ' ' + token;
+    }, '');
+  }, [tokens]);
+
+  const [result, setResult] = useState(0);
+
+  const handleCalculate = useCallback(() => {
+    try {
+      const nextResult = calculate(tokens as string[]) as number;
+      valueChangeListeners.forEach((valueChangeListeners) =>
+        valueChangeListeners(result),
+      );
+      setResult(nextResult);
+    } catch (e) {}
+  }, [result, tokens, valueChangeListeners]);
+
+  useMemo(() => {
+    handleCalculate();
+  }, [handleCalculate]);
 
   const enterValue = useCallback(
     (value: string) => {
       return () => {
-        setTokens?.((prevTokens) => {
+        setTokens((prevTokens) => {
           const lastToken = getLastToken(prevTokens);
-          if (
-            (!isNaN(parseInt(value, 10)) || value === '.') &&
-            !isNaN(parseInt(lastToken, 10))
+          if (lastToken.includes('.') && value === '.') {
+            return prevTokens;
+          } else if (
+            (isValidNumber(value) || value === '.') &&
+            isValidNumber(lastToken)
           ) {
-            if (lastToken.includes('.') && value === '.') {
-              return prevTokens;
-            }
             let nextToken;
             nextToken = lastToken + value;
             return [
               ...prevTokens.slice(0, prevTokens.length - 1),
               trimZeros(nextToken),
+            ];
+          } else if (isBinaryOperator(lastToken) && isBinaryOperator(value)) {
+            return [
+              ...prevTokens.slice(0, prevTokens.length - 1),
+              trimZeros(value),
             ];
           } else {
             return [...prevTokens, trimZeros(value)];
@@ -256,100 +265,28 @@ export function CalculatorView({children}: CalculatorViewProps) {
   );
 
   const handleClear = useCallback(() => {
-    setTokens?.(['0']);
-  }, [setTokens]);
+    setTokens(['0']);
+  }, []);
 
   const handleDelete = useCallback(() => {
     const lastToken = getLastToken(tokens as string[]);
     if (lastToken.length === 1) {
-      if (tokens?.length === 1) {
-        setTokens?.(['0']);
+      if (tokens.length === 1) {
+        setTokens(['0']);
       } else {
-        setTokens?.((prevTokens) => {
+        setTokens((prevTokens) => {
           return [...prevTokens.slice(0, prevTokens.length - 1)];
         });
       }
     } else {
-      setTokens?.((prevTokens) => {
+      setTokens((prevTokens) => {
         return [
           ...prevTokens.slice(0, prevTokens.length - 1),
           lastToken.slice(0, lastToken.length - 1),
         ];
       });
     }
-  }, [setTokens, tokens]);
-
-  const handleCalculate = useCallback(() => {
-    try {
-      const result = calculate(tokens as string[]) as number;
-      setAmount?.({
-        label: numberWithCommas(result),
-        value: result,
-      });
-    } catch (e) {
-      setAmount?.(() => {
-        return {
-          label:
-            tokens?.reduce((acc, curr) => {
-              return acc + curr;
-            }, '') ?? '',
-          value: 0,
-        };
-      });
-    }
-  }, [setAmount, tokens]);
-
-  const handleItemSelected = (
-    name: string,
-    event: CalculatorKeyboardItemSelectedEvent,
-  ) => {
-    switch (event.action) {
-      case CalculatorKeyboardActions.TYPE:
-        const value = event.value;
-        setTokens((prevTokens) => {
-          const lastToken = getLastToken(prevTokens);
-          if (
-            (!isNaN(parseInt(value, 10)) || value === '.') &&
-            !isNaN(parseInt(lastToken, 10))
-          ) {
-            if (lastToken.includes('.') && value === '.') {
-              return prevTokens;
-            }
-            let nextToken;
-            nextToken = lastToken + value;
-            return [
-              ...prevTokens.slice(0, prevTokens.length - 1),
-              trimZeros(nextToken),
-            ];
-          } else {
-            return [...prevTokens, trimZeros(value)];
-          }
-        });
-        break;
-      case CalculatorKeyboardActions.CLEAR:
-        setTokens(['0']);
-        break;
-      case CalculatorKeyboardActions.ANSWER:
-        try {
-          const result = calculate(tokens as string[]) as number;
-          setAmount?.({
-            label: numberWithCommas(result),
-            value: result,
-          });
-        } catch (e) {
-          setAmount?.(() => {
-            return {
-              label:
-                tokens?.reduce((acc, curr) => {
-                  return acc + curr;
-                }, '') ?? '',
-              value: 0,
-            };
-          });
-        }
-        break;
-    }
-  };
+  }, [tokens]);
 
   return (
     <CalculatorContext.Provider
@@ -364,9 +301,16 @@ export function CalculatorView({children}: CalculatorViewProps) {
       }}>
       {children}
       <KeyboardAccessoryView
-        renderContent={() => <Text>{amount.label}</Text>}
+        renderContent={() => (
+          <View style={applyStyles('p-8 center')}>
+            {tokens.length > 1 && (
+              <Text style={applyStyles('text-base text-700')}>
+                {`${label} = ${result}`}
+              </Text>
+            )}
+          </View>
+        )}
         kbComponent={kbComponent}
-        onItemSelected={handleItemSelected}
         onRequestShowKeyboard={showKbComponent}
         onKeyboardResigned={resetKbComponent}
       />
@@ -416,7 +360,7 @@ const CalculatorKeyboard = () => {
         <View style={applyStyles('flex-1')}>
           <TransactionEntryButton
             label="x"
-            onPress={enterValue?.('*')}
+            onPress={enterValue?.('x')}
             textStyle={applyStyles('text-red-100')}
           />
           <TransactionEntryButton
@@ -446,28 +390,37 @@ KeyboardRegistry.registerKeyboard(
   () => CalculatorKeyboard,
 );
 
-type CalculatorInputProps = AppInputProps & {};
+type CalculatorInputProps = CurrencyInputProps & {};
 
-export const CalculatorInput = (props: CalculatorInputProps) => {
+export const CalculatorInput = ({
+  value: initialValue,
+  // onChangeText,
+  ...props
+}: CalculatorInputProps) => {
   const {showKbComponent, resetKbComponent, addEventListener} = useContext(
     CalculatorContext,
   );
+  const [value, setValue] = useState<number | undefined>(initialValue);
+  console.log(value);
   useEffect(() => {
     if (addEventListener) {
-      return addEventListener((value) => {
-        console.log(value);
+      return addEventListener((nextValue) => {
+        setValue(nextValue);
+        // if (onChangeText) {
+        //   onChangeText(String(nextValue));
+        // }
       });
     }
   }, [addEventListener]);
 
   return (
-    <AppInput
+    <CurrencyInput
       {...props}
+      value={value}
       onFocus={showKbComponent}
       onTouchStart={showKbComponent}
       onBlur={resetKbComponent}
-      // showSoftInputOnFocus={false}
-      keyboardType="number-pad"
+      showSoftInputOnFocus={false}
     />
   );
 };
