@@ -2,6 +2,7 @@ import {UpdateMode} from 'realm';
 import perf from '@react-native-firebase/perf';
 import sub from 'date-fns/sub';
 import add from 'date-fns/sub';
+import omit from 'lodash/omit';
 import {useRealm} from '@/services/realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {
@@ -9,6 +10,7 @@ import {
   modelName,
   ReminderWhen,
 } from '@/models/PaymentReminder';
+import {ICustomer} from '@/models';
 
 interface savePaymentReminderInterface {
   paymentReminder: IPaymentReminder;
@@ -48,7 +50,10 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
   const savePaymentReminder = async ({
     paymentReminder,
   }: savePaymentReminderInterface): Promise<IPaymentReminder> => {
-    const due_date = calculateDueDate(paymentReminder);
+    const due_date = calculateDueDate({
+      paymentReminder,
+      customer: paymentReminder.customer,
+    });
 
     const updatedPaymentReminder: IPaymentReminder = {
       ...paymentReminder,
@@ -64,6 +69,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
         UpdateMode.Modified,
       );
     });
+
     await trace.stop();
 
     return paymentReminder;
@@ -73,7 +79,10 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
     paymentReminder,
     updates,
   }: updatePaymentReminderInterface) => {
-    const due_date = calculateDueDate({...paymentReminder, ...updates});
+    const due_date = calculateDueDate({
+      paymentReminder: {...omit(paymentReminder), ...updates},
+      customer: paymentReminder.customer,
+    });
     const updatedPaymentReminder = {
       _id: paymentReminder._id,
       ...updates,
@@ -94,13 +103,19 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
     await updatePaymentReminder({paymentReminder, updates: {is_deleted: true}});
   };
 
-  const calculateDueDate = (paymentReminder: IPaymentReminder) => {
-    if (!paymentReminder.customer.due_date) {
+  const calculateDueDate = ({
+    paymentReminder,
+    customer,
+  }: {
+    paymentReminder: IPaymentReminder;
+    customer: ICustomer;
+  }) => {
+    if (!customer.due_date) {
       return;
     }
 
     const dateFn = paymentReminder.when === ReminderWhen.BEFORE ? sub : add;
-    return dateFn(paymentReminder.customer.due_date, {
+    return dateFn(customer.due_date, {
       [paymentReminder.unit]: paymentReminder.amount,
     });
   };
