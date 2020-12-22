@@ -6,7 +6,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {ICustomer} from '@/models';
-import {formatDistanceToNowStrict} from 'date-fns';
+import {formatDistanceToNowStrict, isToday} from 'date-fns';
 
 type CustomerListItemProps = {
   customer: ICustomer;
@@ -21,7 +21,7 @@ export const CustomerListItem = ({
 }: CustomerListItemProps) => {
   const getDateText = useCallback(() => {
     if (customer.due_date) {
-      if (customer.balance) {
+      if (!isToday(customer.due_date)) {
         return (
           <Text style={applyStyles('text-xs text-700 text-red-100')}>
             Due{' '}
@@ -40,7 +40,7 @@ export const CustomerListItem = ({
         </Text>
       );
     }
-    if (!customer.due_date) {
+    if (!customer.due_date && customer.balance && customer.balance < 0) {
       return (
         <Text style={applyStyles('text-xs text-700 text-gray-100')}>
           No Collection Date

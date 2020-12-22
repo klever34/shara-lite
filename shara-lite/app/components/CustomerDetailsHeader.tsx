@@ -51,14 +51,26 @@ const CustomerDetailsHeader = ({
         !!customer?.balance && (
           <>
             <View style={applyStyles('pb-4 flex-row items-center')}>
-              <View style={applyStyles('pr-4')}>
-                <Icon
-                  size={14}
-                  name="arrow-up"
-                  type="feathericons"
-                  color={colors['red-100']}
-                />
-              </View>
+              {!!customer?.balance && customer?.balance < 0 && (
+                <View style={applyStyles('pr-4')}>
+                  <Icon
+                    size={14}
+                    name="arrow-up"
+                    type="feathericons"
+                    color={colors['red-100']}
+                  />
+                </View>
+              )}
+              {!!customer?.balance && customer?.balance > 0 && (
+                <View style={applyStyles('pr-4')}>
+                  <Icon
+                    size={14}
+                    name="arrow-down"
+                    type="feathericons"
+                    color={colors['green-200']}
+                  />
+                </View>
+              )}
               <Text
                 style={applyStyles(
                   'text-700 text-uppercase text-xxs text-gray-200',

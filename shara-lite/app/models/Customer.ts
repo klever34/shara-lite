@@ -109,9 +109,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
         ?.filtered('is_deleted = false AND credit_amount = 0')
         .sum('amount_paid') || 0;
 
-    const balance = totalCreditAmount - totalCollectedAmount;
-
-    return balance >= 0 ? balance : 0;
+    return totalCollectedAmount - totalCreditAmount;
   }
 
   public get overdueCreditAmount() {

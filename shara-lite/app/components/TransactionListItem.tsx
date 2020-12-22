@@ -71,14 +71,12 @@ const TransactionListItem = ({
           style={applyStyles('p-8 bg-gray-10 justify-center', {
             width: '30%',
           })}>
-          {!!total_amount && (
-            <Text
-              style={applyStyles(
-                'text-xs text-700 text-gray-300 text-uppercase',
-              )}>
-              {amountWithCurrency(total_amount)}
-            </Text>
-          )}
+          <Text
+            style={applyStyles(
+              'text-xs text-700 text-gray-300 text-uppercase',
+            )}>
+            {amountWithCurrency(total_amount)}
+          </Text>
         </View>
         <View
           style={applyStyles('p-8 bg-white justify-center items-end', {
@@ -86,14 +84,12 @@ const TransactionListItem = ({
             borderTopRightRadius: 8,
             borderBottomRightRadius: 8,
           })}>
-          {!!amount_paid && (
-            <Text
-              style={applyStyles(
-                'text-xs text-700 text-green-200 text-uppercase',
-              )}>
-              {amountWithCurrency(amount_paid)}
-            </Text>
-          )}
+          <Text
+            style={applyStyles(
+              'text-xs text-700 text-green-200 text-uppercase',
+            )}>
+            {amountWithCurrency(amount_paid)}
+          </Text>
         </View>
       </View>
     </Touchable>

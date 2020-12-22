@@ -1,7 +1,7 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {ICustomer} from '@/models/Customer';
 
-enum ReminderUnit {
+export enum ReminderUnit {
   DAYS = 'days',
   WEEKS = 'weeks',
   MONTHS = 'months',

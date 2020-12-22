@@ -1,4 +1,4 @@
-import {Button, ButtonProps, DatePicker} from '@/components';
+import {Button, ButtonProps} from '@/components';
 import CustomerDetailsHeader, {
   CustomerDetailsHeaderProps,
 } from '@/components/CustomerDetailsHeader';
@@ -42,33 +42,30 @@ export type TransactionDetailsProps = {
   isPaid?: boolean;
   customer?: ICustomer;
   creditAmount?: number;
+  sendReminder?: boolean;
   transactions?: IReceipt[];
   showActionButtons?: boolean;
-  header?: Partial<CustomerDetailsHeaderProps>;
-  sendReminder?: boolean;
   actionButtons?: ButtonProps[];
-  onViewAllTransactions?: (customer?: ICustomer) => void;
+  header?: Partial<CustomerDetailsHeaderProps>;
 };
 
 const TransactionDetails = withModal(
   ({
     header,
     isPaid,
+    dueDate,
     openModal,
     creditAmount,
     transactions,
     actionButtons,
-    sendReminder = true,
-    onViewAllTransactions,
     customer: customerProp,
-    dueDate: creditDueDate,
     showActionButtons = true,
   }: TransactionDetailsProps & ModalWrapperFields) => {
     const {saveCustomer} = useCustomer();
     const navigation = useAppNavigation();
     const analyticsService = getAnalyticsService();
+    const {addCustomerToTransaction} = useTransaction();
     const businessInfo = getAuthService().getBusinessInfo();
-    const {addCustomerToTransaction, updateDueDate} = useTransaction();
     const {
       filter,
       filterEndDate,
@@ -79,9 +76,6 @@ const TransactionDetails = withModal(
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
-    const [dueDate, setDueDate] = useState<Date | undefined>(
-      creditDueDate || undefined,
-    );
 
     const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
 
@@ -187,22 +181,6 @@ const TransactionDetails = withModal(
         </Text>
       );
     }, [filter, filterEndDate, filterOptions, filterStartDate]);
-
-    const handleDueDateChange = useCallback(
-      async (date?: Date) => {
-        if (date) {
-          setDueDate(date);
-          if (customer) {
-            try {
-              await updateDueDate({due_date: date, transaction: {}});
-            } catch (e) {
-              console.log(e);
-            }
-          }
-        }
-      },
-      [customer, updateDueDate],
-    );
 
     const handleAddCustomer = useCallback(async () => {
       try {
@@ -318,113 +296,139 @@ const TransactionDetails = withModal(
         />
         {!!transactions?.length && (
           <>
-            {(isPaid !== undefined
-              ? !isPaid
-              : !!customer?.remainingCreditAmount) && (
-              <View style={applyStyles('bg-white center py-16')}>
-                <DatePicker
-                  //@ts-ignore
-                  minimumDate={new Date()}
-                  value={dueDate ?? new Date()}
-                  onChange={(e: Event, date?: Date) =>
-                    handleDueDateChange(date)
+            {customer?.balance && customer?.balance < 0 ? (
+              <View style={applyStyles('bg-white center pb-16')}>
+                <View style={applyStyles('py-16 center')}>
+                  <Text
+                    style={applyStyles(
+                      'text-uppercase text-gray-100 text-700 text-xs',
+                    )}>
+                    {customer?.name} owes you{' '}
+                    <Text style={applyStyles('text-red-200')}>
+                      {amountWithCurrency(customer.balance)}
+                    </Text>
+                  </Text>
+                </View>
+                <Touchable
+                  onPress={() =>
+                    navigation.navigate('ReminderSettings', {customer})
                   }>
-                  {(toggleShow) => (
-                    <Touchable onPress={toggleShow}>
-                      <View style={applyStyles('p-8 flex-row items-center')}>
+                  <View style={applyStyles('flex-row center p-8')}>
+                    <View
+                      style={applyStyles(
+                        `p-8 flex-row items-center ${
+                          dueDate ? 'bg-white' : 'bg-red-200'
+                        }`,
+                        {borderRadius: 8},
+                      )}>
+                      <Icon
+                        size={16}
+                        name="calendar"
+                        type="feathericons"
+                        color={dueDate ? colors['red-200'] : colors['red-50']}
+                      />
+                      <Text
+                        style={applyStyles(
+                          `pl-sm text-xs text-uppercase text-700 ${
+                            dueDate ? 'text-gray-300' : 'text-white'
+                          }`,
+                        )}>
+                        {dueDate
+                          ? `on ${format(dueDate, 'ccc, dd MMM yyyy')}`
+                          : 'set collection date'}
+                      </Text>
+                    </View>
+                    <Text
+                      style={applyStyles(
+                        'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                      )}>
+                      No reminder set
+                    </Text>
+                  </View>
+                </Touchable>
+                <View style={applyStyles('flex-row items-center')}>
+                  <Text
+                    style={applyStyles(
+                      'text-sm text-uppercase text-gray-300 text-700',
+                    )}>
+                    Send reminder:
+                  </Text>
+                  <View style={applyStyles('px-4')}>
+                    <Touchable onPress={onWhatsappShare}>
+                      <View
+                        style={applyStyles('px-2 flex-row center', {
+                          height: 48,
+                        })}>
                         <Icon
                           size={16}
-                          name="calendar"
-                          type="feathericons"
-                          color={colors['red-200']}
+                          type="ionicons"
+                          name="logo-whatsapp"
+                          color={colors.whatsapp}
                         />
                         <Text
                           style={applyStyles(
-                            `pl-sm text-xs text-uppercase text-700 ${
-                              dueDate ? 'text-gray-300' : 'text-red-200'
-                            }`,
+                            'pl-xs text-xs text-400 text-uppercase text-gray-200',
                           )}>
-                          {dueDate
-                            ? `on ${format(dueDate, 'ccc, dd MMM yyyy')}`
-                            : 'set collection date'}
+                          whatsapp
                         </Text>
                       </View>
                     </Touchable>
-                  )}
-                </DatePicker>
-                {!!sendReminder && (
-                  <View style={applyStyles('flex-row items-center')}>
-                    <Text
-                      style={applyStyles(
-                        'text-sm text-uppercase text-gray-300 text-700',
-                      )}>
-                      Send reminder:
-                    </Text>
-                    <View style={applyStyles('px-4')}>
-                      <Touchable onPress={onWhatsappShare}>
-                        <View
-                          style={applyStyles('px-2 flex-row center', {
-                            height: 48,
-                          })}>
-                          <Icon
-                            size={16}
-                            type="ionicons"
-                            name="logo-whatsapp"
-                            color={colors.whatsapp}
-                          />
-                          <Text
-                            style={applyStyles(
-                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                            )}>
-                            whatsapp
-                          </Text>
-                        </View>
-                      </Touchable>
-                    </View>
-                    <View style={applyStyles('px-4')}>
-                      <Touchable onPress={onSmsShare}>
-                        <View
-                          style={applyStyles('px-2 flex-row center', {
-                            height: 48,
-                          })}>
-                          <Icon
-                            size={16}
-                            name="message-circle"
-                            type="feathericons"
-                            color={colors.primary}
-                          />
-                          <Text
-                            style={applyStyles(
-                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                            )}>
-                            sms
-                          </Text>
-                        </View>
-                      </Touchable>
-                    </View>
-                    <View style={applyStyles('px-4')}>
-                      <Touchable onPress={onOthersShare}>
-                        <View
-                          style={applyStyles('px-2 flex-row center', {
-                            height: 48,
-                          })}>
-                          <Icon
-                            size={16}
-                            type="feathericons"
-                            name="more-vertical"
-                            color={colors['red-100']}
-                          />
-                          <Text
-                            style={applyStyles(
-                              'pl-xs text-xs text-400 text-uppercase text-gray-200',
-                            )}>
-                            other
-                          </Text>
-                        </View>
-                      </Touchable>
-                    </View>
                   </View>
-                )}
+                  <View style={applyStyles('px-4')}>
+                    <Touchable onPress={onSmsShare}>
+                      <View
+                        style={applyStyles('px-2 flex-row center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={16}
+                          name="message-circle"
+                          type="feathericons"
+                          color={colors.primary}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                          )}>
+                          sms
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
+                  <View style={applyStyles('px-4')}>
+                    <Touchable onPress={onOthersShare}>
+                      <View
+                        style={applyStyles('px-2 flex-row center', {
+                          height: 48,
+                        })}>
+                        <Icon
+                          size={16}
+                          type="feathericons"
+                          name="more-vertical"
+                          color={colors['red-100']}
+                        />
+                        <Text
+                          style={applyStyles(
+                            'pl-xs text-xs text-400 text-uppercase text-gray-200',
+                          )}>
+                          other
+                        </Text>
+                      </View>
+                    </Touchable>
+                  </View>
+                </View>
+              </View>
+            ) : (
+              <View style={applyStyles('p-16 center')}>
+                <Text
+                  style={applyStyles(
+                    'text-uppercase text-gray-100 text-700 text-xs',
+                  )}>
+                  {customer?.name}{' '}
+                  {customer?.balance && customer?.balance > 0
+                    ? `has ${amountWithCurrency(customer.balance)} with you`
+                    : 'is not owing'}
+                </Text>
               </View>
             )}
             <View
@@ -531,33 +535,7 @@ const TransactionDetails = withModal(
               keyExtractor={(item, index) =>
                 `${item?._id?.toString()}-${index}`
               }
-              ListFooterComponent={
-                customer && onViewAllTransactions ? (
-                  <View style={applyStyles('mt-24 flex-row center')}>
-                    <Touchable onPress={() => onViewAllTransactions(customer)}>
-                      <View
-                        style={applyStyles(
-                          'py-8 px-16 rounded-8 flex-row center bg-gray-20',
-                        )}>
-                        <Icon
-                          name="eye"
-                          size={16}
-                          type="feathericons"
-                          color={colors['gray-50']}
-                        />
-                        <Text
-                          style={applyStyles(
-                            'pl-4 text-700 text-gray-200 text-uppercase',
-                          )}>
-                          view all transactions
-                        </Text>
-                      </View>
-                    </Touchable>
-                  </View>
-                ) : (
-                  <View style={applyStyles({height: 200})} />
-                )
-              }
+              ListFooterComponent={<View style={applyStyles({height: 200})} />}
             />
             <View style={applyStyles({opacity: 0, height: 0})}>
               <PaymentReminderImage
