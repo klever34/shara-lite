@@ -18,7 +18,7 @@ export type AuthStackParamList = {
   BusinessSetup: undefined;
   ResetPassword: {mobile: string};
   ForgotPassword: {mobile?: PhoneNumber};
-  OTPVerification: {mobile: string; message: string};
+  OTPVerification: {mobile: string; message: string; countryCode: string};
 };
 
 const AuthStack = createStackNavigator<AuthStackParamList>();
