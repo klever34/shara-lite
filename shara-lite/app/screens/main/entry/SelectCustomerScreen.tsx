@@ -25,6 +25,13 @@ export type SelectCustomerListItem = Partial<ICustomer>;
 
 export type SelectCustomerListScreenParams = {
   withCustomer?: boolean;
+  transaction?: {
+    note?: string;
+    amount_paid?: number;
+    total_amount?: number;
+    credit_amount?: number;
+    transaction_date?: Date;
+  };
   onSelectCustomer: (customer?: SelectCustomerListItem) => void;
 };
 

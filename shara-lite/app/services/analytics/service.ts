@@ -75,6 +75,7 @@ export type SharaAppEventsProperties = {
   userUpdatedTransaction: {};
   userDeletedTransaction: {};
   detailsEnteredToTransaction: {};
+  customerAddedToTransaction: {};
   //Referral
   friendInvited: {};
   referralCodeAdded: {};

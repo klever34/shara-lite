@@ -43,7 +43,9 @@ export type MainStackParamList = {
   SelectCustomerList: SelectCustomerListScreenParams;
 
   // Transaction
-  RecordSale: {goBack?: () => void};
+  RecordSale: {
+    goBack?: () => void;
+  };
   EditTransaction: {transaction: IReceipt};
   TransactionDetails: {transaction: IReceipt};
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};

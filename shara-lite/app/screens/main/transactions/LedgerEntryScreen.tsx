@@ -120,11 +120,19 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     handleEmailShare();
   }, [analyticsService, transaction, handleEmailShare]);
 
-  const handleDeleteTransaction = useCallback(() => {
-    deleteTransaction({transaction});
-    showSuccessToast('TRANSACTION DELETED');
-    navigation.goBack();
-  }, [navigation, transaction, deleteTransaction, showSuccessToast]);
+  const handleDeleteTransaction = useCallback(
+    async (callback: () => void) => {
+      try {
+        await deleteTransaction({transaction});
+        showSuccessToast('TRANSACTION DELETED');
+        callback();
+        navigation.goBack();
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    [navigation, transaction, deleteTransaction, showSuccessToast],
+  );
 
   const handleAddCustomer = useCallback(
     async (selectedCustomer) => {
@@ -157,8 +165,8 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             <Button
               title="Yes, Delete"
               variantColor="transparent"
-              onPress={handleDeleteTransaction}
               style={applyStyles({width: '48%'})}
+              onPress={() => handleDeleteTransaction(closeModal)}
             />
             <Button
               title="Cancel"
