@@ -39,7 +39,7 @@ export type MainStackParamList = {
 
   // Customers
   CustomerDetails: TransactionDetailsProps;
-  ReminderSettings: {customer?: ICustomer};
+  ReminderSettings: {customer: ICustomer};
   SelectCustomerList: SelectCustomerListScreenParams;
 
   // Transaction
