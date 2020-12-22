@@ -79,6 +79,7 @@ const CustomerDetailsHeader = ({
               </Text>
             </View>
             <Text style={applyStyles('pb-4 text-700 text-black text-base')}>
+              {customer.balance && customer.balance < 0 ? '-' : ''}
               {amountWithCurrency(customer?.balance)}
             </Text>
           </>
