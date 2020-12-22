@@ -23,6 +23,7 @@ import Touchable from './Touchable';
 import {Icon} from './Icon';
 import * as Animatable from 'react-native-animatable';
 import {useAppNavigation} from '@/services/navigation';
+import {ICustomer} from '@/models';
 
 type EntryContextProps = {
   wrapper?: View | null;
@@ -35,9 +36,15 @@ export const EntryContext = createContext<EntryContextProps>({});
 
 type EntryProps = {
   children: ReactNode;
+  onRecordSale?: () => void;
+  onRecordCollection?: () => void;
 };
 
-export const Entry = ({children}: EntryProps) => {
+export const Entry = ({
+  children,
+  onRecordSale,
+  onRecordCollection,
+}: EntryProps) => {
   const [show, setShow] = useState(false);
   const hideEntryDialog = useCallback(() => {
     setShow(false);
@@ -50,6 +57,29 @@ export const Entry = ({children}: EntryProps) => {
   const navigation = useAppNavigation();
   const wrapperRef = useRef<View | null>(null);
   const wrapper = wrapperRef.current;
+
+  onRecordSale =
+    onRecordSale ??
+    useCallback(() => {
+      navigation.navigate('RecordSale', {
+        goBack: () => navigation.navigate('Home'),
+      });
+    }, [navigation]);
+
+  onRecordCollection =
+    onRecordCollection ??
+    useCallback(() => {
+      navigation.navigate('SelectCustomerList', {
+        withCustomer: true,
+        onSelectCustomer: (customer: ICustomer) => {
+          navigation.replace('RecordCollection', {
+            customer,
+            goBack: () => navigation.navigate('Home'),
+          });
+        },
+      });
+    }, [navigation]);
+
   return (
     <EntryContext.Provider
       value={{
@@ -79,7 +109,7 @@ export const Entry = ({children}: EntryProps) => {
               })}>
               <Touchable
                 onPress={() => {
-                  navigation.navigate('RecordSale');
+                  onRecordSale && onRecordSale();
                   hideEntryDialog();
                 }}>
                 <Animatable.View
@@ -111,7 +141,7 @@ export const Entry = ({children}: EntryProps) => {
               })}>
               <Touchable
                 onPress={() => {
-                  navigation.navigate('RecordCollection');
+                  onRecordCollection && onRecordCollection();
                   hideEntryDialog();
                 }}>
                 <Animatable.View

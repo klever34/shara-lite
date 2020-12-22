@@ -135,17 +135,21 @@ export const ReceiptImage = (props: Props) => {
             </View>
           </View>
           <View style={applyStyles('py-16')}>
-            <View style={applyStyles('flex-row items-center')}>
-              <Text style={applyStyles('print-text-400 text-black text-lg')}>
-                Receipt For:
-              </Text>
-              <Text
-                style={applyStyles('pl-sm print-text-400 text-black text-lg')}>
-                {customer?.name}
-              </Text>
-            </View>
+            {!!customer?.name && (
+              <View style={applyStyles('pb-16 flex-row items-center')}>
+                <Text style={applyStyles('print-text-400 text-black text-lg')}>
+                  Receipt For:
+                </Text>
+                <Text
+                  style={applyStyles(
+                    'pl-sm print-text-400 text-black text-lg',
+                  )}>
+                  {customer?.name}
+                </Text>
+              </View>
+            )}
             {!!note && (
-              <View style={applyStyles('pt-16 ')}>
+              <View>
                 <Text
                   style={applyStyles('pb-4 print-text-400 text-black text-lg')}>
                   Note:

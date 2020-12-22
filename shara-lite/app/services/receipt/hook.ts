@@ -24,7 +24,7 @@ import perf from '@react-native-firebase/perf';
 interface saveReceiptInterface {
   note?: string;
   dueDate?: Date;
-  customer: ICustomer | Customer;
+  customer?: ICustomer | Customer;
   amountPaid: number;
   totalAmount: number;
   creditAmount: number;
@@ -34,6 +34,7 @@ interface saveReceiptInterface {
   image_url?: string;
   local_image_url?: string;
   is_hidden_in_pro?: boolean;
+  is_collection?: boolean;
 }
 
 interface updateReceiptInterface {
@@ -102,6 +103,7 @@ export const useReceipt = (): useReceiptInterface => {
     local_image_url,
     image_url,
     is_hidden_in_pro,
+    is_collection,
   }: saveReceiptInterface) => {
     const fullTrace = await perf().startTrace('saveReceiptFullFlow');
 
@@ -114,20 +116,21 @@ export const useReceipt = (): useReceiptInterface => {
       local_image_url,
       image_url,
       is_hidden_in_pro,
+      is_collection,
       ...getBaseModelValues(),
     };
+    receipt.transaction_date = receipt.created_at;
 
     let receiptCustomer: ICustomer | Customer;
-
-    if (customer.name) {
+    if (customer?.name) {
       receipt.customer_name = customer.name;
       receipt.customer_mobile = customer.mobile;
     }
 
-    if (!customer._id && customer.name) {
+    if (!customer?._id && customer?.name) {
       receiptCustomer = await saveCustomer({customer, source: 'manual'});
     }
-    if (customer._id) {
+    if (customer?._id) {
       receiptCustomer = customer;
       getAnalyticsService()
         .logEvent('customerAddedToReceipt', {})

@@ -22,6 +22,8 @@ export interface IReceipt extends BaseModelInterface {
   cancellation_reason?: string;
   note?: string;
   is_hidden_in_pro?: boolean;
+  is_collection?: boolean;
+  transaction_date?: Date;
 
   //Getters
   isPaid?: boolean;
@@ -53,6 +55,8 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       is_cancelled: {type: 'bool', default: false, optional: true},
       cancellation_reason: 'string?',
       is_hidden_in_pro: {type: 'bool', default: false, optional: true},
+      is_collection: {type: 'bool', default: false, optional: true},
+      transaction_date: 'date?',
       note: 'string?',
       items: {
         type: 'linkingObjects',

@@ -8,6 +8,7 @@ import schema7 from './1603716195553-add-receipt-note-field';
 import schema8 from './1604671961817-add-email-to-customer';
 import schema9 from './1606389607325-add-payment-options';
 import schema10 from './1606416269345-add-is-hidden-in-pro-to-receipt';
+import schema11 from './1608550098360-add-is-collection-x-transaction-date-to-receipt';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -20,6 +21,7 @@ const schemas: any[] = [
   {schemaVersion: 8, ...schema8},
   {schemaVersion: 9, ...schema9},
   {schemaVersion: 10, ...schema10},
+  {schemaVersion: 11, ...schema11},
 ];
 
 export default schemas;

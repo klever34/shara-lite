@@ -1,16 +1,20 @@
+import {omit} from 'lodash';
+import {ObjectId} from 'bson';
 import BluebirdPromise from 'bluebird';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {useReceipt} from '@/services/receipt';
 import {useCredit} from '@/services/credit';
-import {omit} from 'lodash';
 import {getAnalyticsService, getAuthService} from '@/services';
+import {Customer} from 'types/app';
 
 interface saveTransactionInterface {
-  customer: ICustomer;
-  collectedAmount: number;
-  outstandingAmount: number;
+  customer?: ICustomer | Customer;
+  amount_paid: number;
+  credit_amount: number;
+  total_amount: number;
   note?: string;
+  is_collection?: boolean;
   dueDate?: Date;
 }
 
@@ -35,6 +39,7 @@ interface updateDueDateInterface {
 
 interface useTransactionInterface {
   getTransactions: () => IReceipt[];
+  getTransaction: (id: ObjectId) => IReceipt;
   saveTransaction: (data: saveTransactionInterface) => Promise<IReceipt>;
   updateTransaction: (data: updateTransactionInterface) => Promise<void>;
   deleteTransaction: (data: deleteTransactionInterface) => Promise<void>;
@@ -46,6 +51,7 @@ interface useTransactionInterface {
 
 export const useTransaction = (): useTransactionInterface => {
   const {
+    getReceipt,
     getReceipts,
     saveReceipt,
     updateReceipt,
@@ -56,20 +62,25 @@ export const useTransaction = (): useTransactionInterface => {
 
   const getTransactions = getReceipts;
 
+  const getTransaction = (id: ObjectId) => getReceipt({receiptId: id});
+
   const saveTransaction = async ({
     customer,
     note,
-    collectedAmount,
-    outstandingAmount,
+    amount_paid,
+    credit_amount,
+    total_amount,
     dueDate,
+    is_collection,
   }: saveTransactionInterface): Promise<IReceipt> => {
     const receiptData = {
       customer,
       note,
       dueDate,
-      amountPaid: collectedAmount,
-      totalAmount: collectedAmount + outstandingAmount,
-      creditAmount: outstandingAmount,
+      is_collection,
+      amountPaid: amount_paid,
+      totalAmount: total_amount,
+      creditAmount: credit_amount,
       tax: 0,
       payments: [],
       receiptItems: [],
@@ -98,6 +109,9 @@ export const useTransaction = (): useTransactionInterface => {
     customer,
   }: addCustomerToTransactionInterface) => {
     const receipt = omit(transaction);
+    getAnalyticsService()
+      .logEvent('customerAddedToTransaction', {})
+      .then(() => {});
 
     await updateReceipt({
       receipt,
@@ -152,6 +166,7 @@ export const useTransaction = (): useTransactionInterface => {
 
   return {
     getTransactions,
+    getTransaction,
     saveTransaction,
     updateTransaction,
     deleteTransaction,
