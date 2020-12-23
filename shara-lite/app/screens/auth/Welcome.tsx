@@ -106,7 +106,7 @@ export const Welcome = () => {
               maxWidth: 280,
               lineHeight: 20,
             })}>
-            Take control of your trade and bring it io the next level
+            Take control of your trade and bring it to the next level
           </Text>
         </View>
       </Swiper>
