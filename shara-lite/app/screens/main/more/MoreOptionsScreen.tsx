@@ -106,10 +106,7 @@ export const MoreOptionsScreen = withModal(
           title: 'Help & Support',
           text: 'Looking for help?',
           onPress: () => {
-            Alert.alert(
-              'Coming Soon',
-              'This feature is coming in the next update',
-            );
+            Alert.alert('Coming Soon', 'This feature is coming soon');
           },
         },
       ];

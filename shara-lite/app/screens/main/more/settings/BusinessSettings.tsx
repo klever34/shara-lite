@@ -40,6 +40,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
     amount_paid: 2500,
     total_amount: 5500,
     credit_amount: 0,
+    is_collection: true,
     created_at: new Date(),
     transaction_date: new Date(),
     customer: {name: 'John Doe'},

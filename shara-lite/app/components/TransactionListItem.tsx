@@ -20,6 +20,7 @@ const TransactionListItem = ({
     amount_paid,
     total_amount,
     credit_amount,
+    is_collection,
     transaction_date,
   } = transaction;
 
@@ -45,13 +46,12 @@ const TransactionListItem = ({
               style={applyStyles(
                 'pb-2 text-xxs text-700 text-gray-100 text-uppercase',
               )}>
-              {format(transaction_date, 'dd MMM, yyyy')} -{' '}
+              {format(transaction_date, 'dd MMM yyyy')} -{' '}
               {format(transaction_date, 'hh:mm a')}
             </Text>
           )}
           {!!note && (
             <Text
-              numberOfLines={1}
               style={applyStyles(
                 'pb-2 text-xs text-700 text-gray-200 text-uppercase',
               )}>
@@ -71,12 +71,14 @@ const TransactionListItem = ({
           style={applyStyles('p-8 bg-gray-10 justify-center', {
             width: '30%',
           })}>
-          <Text
-            style={applyStyles(
-              'text-xs text-700 text-gray-300 text-uppercase',
-            )}>
-            {amountWithCurrency(total_amount)}
-          </Text>
+          {!is_collection && (
+            <Text
+              style={applyStyles(
+                'text-xs text-700 text-gray-300 text-uppercase',
+              )}>
+              {amountWithCurrency(total_amount)}
+            </Text>
+          )}
         </View>
         <View
           style={applyStyles('p-8 bg-white justify-center items-end', {

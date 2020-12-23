@@ -211,7 +211,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 )}>
                 <Icon
                   size={24}
-                  name="arrow-up"
+                  name="arrow-down"
                   type="feathericons"
                   color={colors.white}
                 />
@@ -235,7 +235,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 )}>
                 <Icon
                   size={24}
-                  name="arrow-down"
+                  name="arrow-up"
                   type="feathericons"
                   color={colors.white}
                 />
@@ -315,12 +315,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         <EmptyState
           style={applyStyles('bg-white')}
           source={require('@/assets/images/emblem.png')}
-          imageStyle={applyStyles('pb-32', {width: 80, height: 80})}>
+          imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
           <View style={applyStyles('center')}>
             <Text style={applyStyles('text-black text-xl pb-4')}>
-              {searchTerm || filter
-                ? 'No results found'
-                : 'You have no records yet.'}
+              {searchTerm ? 'No results found' : ''}
             </Text>
             <Text style={applyStyles('text-black text-xl')}>
               Start adding records by tapping here
@@ -337,7 +335,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               useNativeDriver={true}
               iterationCount="infinite">
               <Icon
-                size={100}
+                size={80}
                 name="arrow-down"
                 type="feathericons"
                 color={colors.primary}

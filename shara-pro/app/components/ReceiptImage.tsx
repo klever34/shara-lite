@@ -31,6 +31,7 @@ type Props = {
 export const ReceiptImage = (props: Props) => {
   const {
     user,
+    customer,
     products,
     createdAt,
     receiptNo,
@@ -167,6 +168,19 @@ export const ReceiptImage = (props: Props) => {
                 </Text>
               </View>
             </View>
+            {!!customer?.name && (
+              <View style={applyStyles('pb-16 flex-row items-center')}>
+                <Text style={applyStyles('print-text-400 text-black text-lg')}>
+                  Receipt For:
+                </Text>
+                <Text
+                  style={applyStyles(
+                    'pl-sm print-text-400 text-black text-lg',
+                  )}>
+                  {customer?.name}
+                </Text>
+              </View>
+            )}
           </>
           <FlatList
             data={products}

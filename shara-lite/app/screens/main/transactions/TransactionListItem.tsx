@@ -1,4 +1,3 @@
-import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
@@ -110,22 +109,6 @@ export const TransactionListItem = ({
           style,
         )}>
         <View style={applyStyles('flex-row items-center', {width: '66%'})}>
-          {isInflow && (
-            <Icon
-              size={18}
-              name="arrow-up"
-              type="feathericons"
-              color={colors['green-200']}
-            />
-          )}
-          {isOutflow && (
-            <Icon
-              size={18}
-              name="arrow-down"
-              type="feathericons"
-              color={colors['red-100']}
-            />
-          )}
           <View style={applyStyles('pl-4')}>
             <View>{renderTransactionText()}</View>
             {!!note && (
