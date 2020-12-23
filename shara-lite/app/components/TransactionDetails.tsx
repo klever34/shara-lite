@@ -38,11 +38,7 @@ import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
 
 export type TransactionDetailsProps = {
-  dueDate?: Date;
-  isPaid?: boolean;
   customer: ICustomer;
-  creditAmount?: number;
-  sendReminder?: boolean;
   transactions?: IReceipt[];
   header?: Partial<CustomerDetailsHeaderProps>;
 };
@@ -50,10 +46,7 @@ export type TransactionDetailsProps = {
 const TransactionDetails = withModal(
   ({
     header,
-    isPaid,
-    dueDate,
     openModal,
-    creditAmount,
     transactions,
     customer: customerProp,
   }: TransactionDetailsProps & ModalWrapperFields) => {
@@ -61,6 +54,7 @@ const TransactionDetails = withModal(
     const navigation = useAppNavigation();
     const analyticsService = getAnalyticsService();
     const {addCustomerToTransaction} = useTransaction();
+    const user = getAuthService().getUser();
     const businessInfo = getAuthService().getBusinessInfo();
     const {
       filter,
@@ -73,6 +67,7 @@ const TransactionDetails = withModal(
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
+    const {due_date: dueDate} = customer;
 
     const {setCurrentCustomer} = useContext(EntryContext);
 
@@ -80,19 +75,26 @@ const TransactionDetails = withModal(
       setCurrentCustomer?.(customer);
     }, [customer, setCurrentCustomer]);
 
-    const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+    const paymentLink =
+      businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
 
-    const paymentReminderMessage = `Hello ${
-      customer?.name ?? ''
-    }, thank you for doing business with ${
-      businessInfo?.name
-    }. You owe ${amountWithCurrency(
-      creditAmount || customer?.remainingCreditAmount,
-    )}${
+    const paymentReminderMessage = `Hello ${customer?.name ?? ''}${
+      businessInfo?.name || user?.firstname
+        ? `, thank you for doing business with ${
+            businessInfo.name ?? user?.firstname
+          }`
+        : ''
+    }. ${
+      customer.balance && customer.balance < 0
+        ? `You owe ${amountWithCurrency(customer.balance)}`
+        : ''
+    }${
       dueDate
         ? ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
         : ''
-    }.\n\nTo pay click\n ${paymentLink}\n\nPowered by Shara for free.\nwww.shara.co`;
+    }. ${
+      paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''
+    }\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
@@ -153,6 +155,10 @@ const TransactionDetails = withModal(
     }, [filter, filterOptions, openModal, handleStatusFilter]);
 
     const handleDownloadReport = useCallback(() => {
+      getAnalyticsService()
+        .logEvent('userDownloadedReport', {})
+        .then(() => {})
+        .catch(handleError);
       Alert.alert('Info', 'This feature is coming soon');
     }, []);
 
@@ -242,7 +248,6 @@ const TransactionDetails = withModal(
       <SafeAreaView style={applyStyles('flex-1')}>
         <CustomerDetailsHeader
           {...header}
-          isPaid={isPaid}
           customer={customer}
           onPress={handleAddCustomer}
           style={applyStyles(
@@ -257,8 +262,7 @@ const TransactionDetails = withModal(
         <View style={applyStyles('flex-1')}>
           {!!transactions?.length && (
             <>
-              {!!customer?.due_date ||
-              (customer?.balance && customer.balance < 0) ? (
+              {customer?.balance && customer.balance < 0 ? (
                 <View style={applyStyles('bg-white center pb-16')}>
                   {!!customer.balance && customer.balance < 0 && (
                     <View style={applyStyles('py-16 center')}>
@@ -544,7 +548,7 @@ const TransactionDetails = withModal(
                 <PaymentReminderImage
                   date={dueDate}
                   getImageUri={(data) => setReceiptImage(data)}
-                  amount={creditAmount || customer?.remainingCreditAmount}
+                  amount={customer.balance && Math.abs(customer.balance)}
                 />
               </View>
             </>

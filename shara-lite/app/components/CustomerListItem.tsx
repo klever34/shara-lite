@@ -1,12 +1,12 @@
+import Icon from '@/components/Icon';
+import PlaceholderImage from '@/components/PlaceholderImage';
+import Touchable from '@/components/Touchable';
+import {amountWithCurrency} from '@/helpers/utils';
+import {ICustomer} from '@/models';
+import {applyStyles, colors} from '@/styles';
+import {formatDistanceToNowStrict, isBefore, isToday} from 'date-fns';
 import React, {ReactNode, useCallback} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
-import {applyStyles, colors} from '@/styles';
-import PlaceholderImage from '@/components/PlaceholderImage';
-import {amountWithCurrency} from '@/helpers/utils';
-import Icon from '@/components/Icon';
-import Touchable from '@/components/Touchable';
-import {ICustomer} from '@/models';
-import {formatDistanceToNowStrict, isToday} from 'date-fns';
 
 type CustomerListItemProps = {
   customer: ICustomer;
@@ -24,27 +24,34 @@ export const CustomerListItem = ({
   getDateText =
     getDateText ??
     useCallback(() => {
-      if (customer.due_date) {
-        if (!isToday(customer.due_date)) {
+      if (customer.balance && customer.balance < 0) {
+        if (customer.due_date) {
+          if (isToday(customer.due_date)) {
+            return (
+              <Text style={applyStyles('text-xs text-700 text-red-100')}>
+                Due today
+              </Text>
+            );
+          }
+          if (isBefore(customer.due_date, new Date())) {
+            return (
+              <Text style={applyStyles('text-xs text-700 text-red-100')}>
+                Due{' '}
+                {formatDistanceToNowStrict(customer.due_date, {
+                  addSuffix: true,
+                })}
+              </Text>
+            );
+          }
           return (
             <Text style={applyStyles('text-xs text-700 text-red-100')}>
-              Due{' '}
+              Collect{' '}
               {formatDistanceToNowStrict(customer.due_date, {
                 addSuffix: true,
               })}
             </Text>
           );
         }
-        return (
-          <Text style={applyStyles('text-xs text-700 text-red-100')}>
-            Collect in{' '}
-            {formatDistanceToNowStrict(customer.due_date, {
-              addSuffix: true,
-            })}
-          </Text>
-        );
-      }
-      if (!customer.due_date && customer.balance && customer.balance < 0) {
         return (
           <Text style={applyStyles('text-xs text-700 text-gray-100')}>
             No Collection Date
@@ -76,7 +83,8 @@ export const CustomerListItem = ({
         </View>
         <View style={applyStyles('items-end flex-row')}>
           <Text style={applyStyles('text-base text-700 text-black')}>
-            {amountWithCurrency(customer.balance)}
+            {customer.balance && customer.balance < 0 ? '-' : ''}
+            {amountWithCurrency(customer?.balance)}
           </Text>
           {!!customer?.balance && customer?.balance < 0 && (
             <View style={applyStyles('pl-4')}>

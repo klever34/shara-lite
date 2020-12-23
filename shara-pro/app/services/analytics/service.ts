@@ -18,6 +18,7 @@ export type SharaAppEventsProperties = {
   login: {method: string};
   logout: {};
   signup: {method: string};
+  userProfileUpdated: {};
   // Customer
   customerLocationAdded: {user_id: string};
   customerAdded: {source: 'manual' | 'phonebook'};
