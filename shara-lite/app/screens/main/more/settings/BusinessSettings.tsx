@@ -14,6 +14,7 @@ import {Alert} from 'react-native';
 import {ToastContext} from '@/components/Toast';
 import {TransactionReview} from '@/components/TransactionReview';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {IReceipt} from '@/models/Receipt';
 
 export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   const {openModal} = props;
@@ -26,7 +27,6 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   const {
     name,
     id,
-    slug,
     address,
     mobile = '',
     country_code,
@@ -35,13 +35,14 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   callingCode = country_code ?? callingCode;
   const {showSuccessToast} = useContext(ToastContext);
 
-  const dummyTransaction = {
+  const dummyTransaction: IReceipt = {
     tax: 120,
     amount_paid: 2500,
     total_amount: 5500,
     credit_amount: 0,
     created_at: new Date(),
     transaction_date: new Date(),
+    customer: {name: 'John Doe'},
   };
 
   const handleOpenPreviewReceiptModal = useCallback(() => {
@@ -103,22 +104,6 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
           rightIcon: 'map-pin',
         },
       },
-      slug: {
-        type: 'text',
-        props: {
-          value: slug,
-          rightIcon: 'globe',
-          label: 'Enter your payment link?',
-        },
-        validations: [
-          (fieldName, values) => {
-            if (values[fieldName].match(/[^a-z-0-9]/)) {
-              return 'Payment link should contain only lowercase and dash';
-            }
-            return null;
-          },
-        ],
-      },
       profileImageFile: {
         type: 'image',
         props: {
@@ -129,7 +114,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       },
     };
     return fields;
-  }, [address, callingCode, mobile, name, slug, profile_image]);
+  }, [address, callingCode, mobile, name, profile_image]);
 
   const handleSubmit = useCallback(
     async (formValues) => {
@@ -142,7 +127,6 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       const payload = new FormData();
       payload.append('name', formValues?.name);
       payload.append('address', formValues?.address);
-      formValues?.slug && payload.append('slug', formValues?.slug);
       formValues?.mobile && payload.append('mobile', formValues?.mobile);
       formValues?.countryCode &&
         payload.append('country_code', formValues?.countryCode);
