@@ -32,6 +32,11 @@ export const HomeScreen = () => {
   useEffect(() => {
     setCurrentCustomer?.(null);
   }, [setCurrentCustomer]);
+
+  navigation.addListener('focus', () => {
+    setCurrentCustomer?.(null);
+  });
+
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header

@@ -4,7 +4,6 @@ import React, {
   useState,
   createContext,
   useContext,
-  useEffect,
   useMemo,
   useRef,
 } from 'react';
@@ -440,17 +439,6 @@ export const CalculatorInput = ({
   );
   const [value, setValue] = useState<number | undefined>(initialValue);
   const onChangeText = useRef(prevOnChangeText).current;
-
-  useEffect(() => {
-    if (addEventListener) {
-      return addEventListener((nextValue) => {
-        setValue(nextValue);
-        if (onChangeText) {
-          onChangeText(String(value));
-        }
-      });
-    }
-  }, [addEventListener, onChangeText, value]);
 
   const handleFocus = useCallback(() => {
     handleReset?.(String(value ?? '0'));
