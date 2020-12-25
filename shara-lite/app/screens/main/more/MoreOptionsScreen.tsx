@@ -5,12 +5,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, Image, ScrollView, Text, View} from 'react-native';
+import {Alert, Image, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
-import {
-  HeaderBackButton,
-  StackHeaderLeftButtonProps,
-} from '@react-navigation/stack';
 import {Icon} from '@/components/Icon';
 import {applyStyles, colors, dimensions} from '@/styles';
 import {getAnalyticsService, getAuthService} from '@/services';
@@ -26,6 +22,7 @@ import {inviteImageBase64String} from './inviteImageBase64String';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
 import {TitleContainer} from '@/components/TitleContainer';
+import {HeaderBackButton} from '@/components/HeaderBackButton';
 
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
@@ -45,26 +42,7 @@ export const MoreOptionsScreen = withModal(
 
     useLayoutEffect(() => {
       navigation.setOptions({
-        headerLeft: (props: StackHeaderLeftButtonProps) => {
-          return (
-            <HeaderBackButton
-              {...props}
-              backImage={() => {
-                return (
-                  <Icon
-                    type="feathericons"
-                    color={colors['gray-300']}
-                    name="arrow-left"
-                    size={22}
-                    borderRadius={12}
-                    onPress={() => navigation.goBack()}
-                  />
-                );
-              }}
-            />
-          );
-        },
-        headerTitle: () => null,
+        header: () => null,
       });
     }, [navigation]);
 
@@ -178,130 +156,148 @@ export const MoreOptionsScreen = withModal(
     }, [navigation]);
 
     return (
-      <ScrollView>
+      <SafeAreaView style={applyStyles('flex-1')}>
         <View
           style={applyStyles(
-            {minHeight: dimensions.fullHeight - 120},
-            'bg-white',
+            'flex-row py-8 pr-16 bg-white items-center justify-between',
+            {
+              borderBottomWidth: 1.5,
+              borderBottomColor: colors['gray-20'],
+            },
           )}>
-          <TitleContainer
-            title="My Account"
-            description="Quickly record a transaction or obligation"
-            containerStyle={applyStyles('p-16')}
+          <HeaderBackButton
+            iconName="arrow-left"
+            onPress={() => navigation.navigate('Home')}
           />
-          {!business.name && (
-            <Touchable onPress={onEditBusinessSettings}>
-              <View
-                style={applyStyles('my-lg mx-lg py-sm', {
-                  fontSize: 14,
-                  borderRadius: 8,
-                  backgroundColor: colors['red-50'],
-                })}>
-                <Text
-                  style={applyStyles('text-500 text-center', {
-                    color: colors['red-200'],
+        </View>
+        <ScrollView>
+          <View
+            style={applyStyles(
+              {minHeight: dimensions.fullHeight - 120},
+              'bg-white',
+            )}>
+            <TitleContainer
+              title="My Account"
+              description="Quickly record a transaction or obligation"
+              containerStyle={applyStyles('p-16')}
+            />
+            {!business.name && (
+              <Touchable onPress={onEditBusinessSettings}>
+                <View
+                  style={applyStyles('my-lg mx-lg py-sm', {
+                    fontSize: 14,
+                    borderRadius: 8,
+                    backgroundColor: colors['red-50'],
                   })}>
-                  Tap here to complete your Business Settings
-                </Text>
-              </View>
-            </Touchable>
-          )}
-          {!!business.name && (
-            <>
-              <View
-                style={applyStyles('flex-row items-center ml-16 py-18 mb-32')}>
-                <Image
-                  source={{
-                    uri: business.profile_image?.url,
-                  }}
-                  style={applyStyles('w-full rounded-12', {
-                    width: 24,
-                    height: 24,
-                  })}
-                />
-                <View style={applyStyles('pl-12')}>
                   <Text
-                    style={applyStyles(
-                      'text-uppercase text-sm text-700 text-black',
-                    )}>
-                    {business.name}
+                    style={applyStyles('text-500 text-center', {
+                      color: colors['red-200'],
+                    })}>
+                    Tap here to complete your Business Settings
                   </Text>
                 </View>
-              </View>
-            </>
-          )}
-          <View style={applyStyles('mb-24')}>
-            {moreOptions.map(({title, text, onPress}, index) => {
-              return (
-                <Touchable onPress={onPress} key={`${title}-${index}`}>
-                  <View
-                    style={applyStyles(
-                      'flex-row items-center py-10 px-10 border-t-1 border-gray-20',
-                      index === moreOptions.length - 1 && 'border-b-1',
-                    )}>
-                    <View style={applyStyles('flex-1 pl-sm')}>
-                      <Text
-                        style={applyStyles('text-400 text-sm text-gray-300')}>
-                        {title}
-                      </Text>
-                      <Text
-                        style={applyStyles('text-400 text-xs text-gray-200')}>
-                        {text}
-                      </Text>
-                    </View>
-                    <Icon
-                      type="feathericons"
-                      color={colors['gray-50']}
-                      name="chevron-right"
-                      size={20}
-                    />
+              </Touchable>
+            )}
+            {!!business.name && (
+              <>
+                <View
+                  style={applyStyles(
+                    'flex-row items-center ml-16 py-18 mb-32',
+                  )}>
+                  <Image
+                    source={{
+                      uri: business.profile_image?.url,
+                    }}
+                    style={applyStyles('w-full rounded-12', {
+                      width: 24,
+                      height: 24,
+                    })}
+                  />
+                  <View style={applyStyles('pl-12')}>
+                    <Text
+                      style={applyStyles(
+                        'text-uppercase text-sm text-700 text-black',
+                      )}>
+                      {business.name}
+                    </Text>
                   </View>
-                </Touchable>
-              );
-            })}
-          </View>
-          <View style={applyStyles('px-16')}>
-            <Touchable onPress={handleInviteFriends}>
+                </View>
+              </>
+            )}
+            <View style={applyStyles('mb-24')}>
+              {moreOptions.map(({title, text, onPress}, index) => {
+                return (
+                  <Touchable onPress={onPress} key={`${title}-${index}`}>
+                    <View
+                      style={applyStyles(
+                        'flex-row items-center py-10 px-10 border-t-1 border-gray-20',
+                        index === moreOptions.length - 1 && 'border-b-1',
+                      )}>
+                      <View style={applyStyles('flex-1 pl-sm')}>
+                        <Text
+                          style={applyStyles('text-400 text-sm text-gray-300')}>
+                          {title}
+                        </Text>
+                        <Text
+                          style={applyStyles('text-400 text-xs text-gray-200')}>
+                          {text}
+                        </Text>
+                      </View>
+                      <Icon
+                        type="feathericons"
+                        color={colors['gray-50']}
+                        name="chevron-right"
+                        size={20}
+                      />
+                    </View>
+                  </Touchable>
+                );
+              })}
+            </View>
+            <View style={applyStyles('px-16')}>
+              <Touchable onPress={handleInviteFriends}>
+                <Image
+                  resizeMode="center"
+                  source={require('@/assets/images/invite-banner.png')}
+                  style={applyStyles('mb-24', {width: '100%', height: 80})}
+                />
+              </Touchable>
+              <View style={applyStyles('center pb-24')}>
+                <SecureEmblem />
+              </View>
+            </View>
+            <View style={applyStyles('flex-1')}>
+              <Touchable onPress={handleLogoutConfirm}>
+                <View
+                  style={applyStyles(
+                    'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',
+                  )}>
+                  <Icon
+                    type="feathericons"
+                    color={colors['gray-50']}
+                    name="log-out"
+                    size={20}
+                    style={applyStyles('mr-24')}
+                  />
+                  <Text style={applyStyles('text-gray-100 text-sm font-bold')}>
+                    Log Out
+                  </Text>
+                </View>
+              </Touchable>
+            </View>
+            <View style={applyStyles('py-32 center')}>
+              <Text
+                style={applyStyles('text-gray-50 text-xxs font-bold mb-16')}>
+                Version {version}
+              </Text>
               <Image
-                resizeMode="center"
-                source={require('@/assets/images/invite-banner.png')}
-                style={applyStyles('mb-24', {width: '100%', height: 80})}
+                source={require('../../../assets/images/shara_logo_grey.png')}
+                style={applyStyles('w-72 h-16')}
               />
-            </Touchable>
-            <View style={applyStyles('center pb-24')}>
-              <SecureEmblem />
             </View>
           </View>
-          <View style={applyStyles('flex-1')}>
-            <Touchable onPress={handleLogoutConfirm}>
-              <View
-                style={applyStyles(
-                  'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',
-                )}>
-                <Icon
-                  type="feathericons"
-                  color={colors['gray-50']}
-                  name="log-out"
-                  size={20}
-                  style={applyStyles('mr-24')}
-                />
-                <Text style={applyStyles('text-gray-100 text-sm font-bold')}>
-                  Log Out
-                </Text>
-              </View>
-            </Touchable>
-          </View>
-          <View style={applyStyles('py-32 center')}>
-            <Text style={applyStyles('text-gray-50 text-xxs font-bold mb-16')}>
-              Version {version}
-            </Text>
-            <Image
-              source={require('../../../assets/images/shara_logo_grey.png')}
-              style={applyStyles('w-72 h-16')}
-            />
-          </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </SafeAreaView>
     );
   },
 );

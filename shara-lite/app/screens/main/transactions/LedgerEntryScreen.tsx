@@ -188,6 +188,10 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     });
   }, [navigation, handleAddCustomer]);
 
+  const handleOpenCustomerScreen = useCallback(() => {
+    navigation.navigate('CustomerDetails', {customer});
+  }, [navigation, customer]);
+
   useEffect(() => {
     return navigation.addListener('focus', () => {
       const thisTransaction =
@@ -209,15 +213,17 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
         <HeaderBackButton iconName="arrow-left" />
         <View style={applyStyles('items-end')}>
           {customer ? (
-            <View style={applyStyles('flex-row items-center')}>
-              <Text style={applyStyles('text-400 text-black text-base')}>
-                {customer?.name}
-              </Text>
-              <PlaceholderImage
-                style={applyStyles('ml-4')}
-                text={customer?.name ?? ''}
-              />
-            </View>
+            <Touchable onPress={handleOpenCustomerScreen}>
+              <View style={applyStyles('flex-row items-center')}>
+                <Text style={applyStyles('text-400 text-black text-base')}>
+                  {customer?.name}
+                </Text>
+                <PlaceholderImage
+                  style={applyStyles('ml-4')}
+                  text={customer?.name ?? ''}
+                />
+              </View>
+            </Touchable>
           ) : (
             <Touchable onPress={handleOpenSelectCustomerScreen}>
               <View style={applyStyles('flex-row items-center')}>
@@ -326,7 +332,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               {format(transaction.transaction_date, 'dd MMM, yyyy')}
             </Text>
           )}
-          <View style={applyStyles('flex-row items-center pt-4')}>
+          <View style={applyStyles('flex-row items-center flex-wrap pt-4')}>
             <Text
               style={applyStyles(
                 'text-sm text-uppercase text-gray-300 text-700',

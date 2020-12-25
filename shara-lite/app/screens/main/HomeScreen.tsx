@@ -11,6 +11,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {getAuthService} from '@/services';
 import {EntryButton, EntryContext} from '@/components/EntryView';
+import Touchable from '@/components/Touchable';
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
@@ -51,23 +52,27 @@ export const HomeScreen = () => {
             },
           ],
         }}>
-        <View style={applyStyles('flex-row items-center ml-16')}>
-          <Image
-            source={{
-              uri: business.profile_image?.url,
-            }}
-            style={applyStyles('w-full rounded-12', {
-              width: 24,
-              height: 24,
-            })}
-          />
-          <View style={applyStyles('pl-12')}>
-            <Text
-              style={applyStyles('text-uppercase text-sm text-700 text-white')}>
-              {business.name}
-            </Text>
+        <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
+          <View style={applyStyles('flex-row items-center ml-16')}>
+            <Image
+              source={{
+                uri: business.profile_image?.url,
+              }}
+              style={applyStyles('w-full rounded-12', {
+                width: 24,
+                height: 24,
+              })}
+            />
+            <View style={applyStyles('pl-12')}>
+              <Text
+                style={applyStyles(
+                  'text-uppercase text-sm text-700 text-white',
+                )}>
+                {business.name}
+              </Text>
+            </View>
           </View>
-        </View>
+        </Touchable>
       </Header>
       <MainNav.Navigator
         initialRouteName="TransactionsTab"

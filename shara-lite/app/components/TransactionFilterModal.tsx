@@ -2,10 +2,10 @@ import {applyStyles, colors} from '@/styles';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import React, {useCallback, useState} from 'react';
 import {Text, View} from 'react-native';
-import {RadioButton, RadioGroup} from 'react-native-ui-lib';
 import {Button} from './Button';
 import {DatePicker} from './DatePicker';
 import {Icon} from './Icon';
+import {RadioButton} from './RadioButton';
 import Touchable from './Touchable';
 
 type TransactionFilterModalProps = {
@@ -77,9 +77,7 @@ export const TransactionFilterModal = ({
   return (
     <View style={applyStyles('p-16 pt-0')}>
       {filter !== 'date-range' ? (
-        <RadioGroup
-          initialValue={initialFilter}
-          onValueChange={handleStatusFilter}>
+        <>
           {options?.map(({text, value}, index) => {
             const isActive = value === filter;
             return (
@@ -97,14 +95,15 @@ export const TransactionFilterModal = ({
                   {text}
                 </Text>
                 <RadioButton
-                  value={value}
-                  selected={isActive}
-                  color={isActive ? colors['red-200'] : colors['gray-50']}
+                  isChecked={isActive}
+                  style={applyStyles('rounded-24')}
+                  checkedStyle={applyStyles('rounded-24')}
+                  onChange={() => handleStatusFilter(value)}
                 />
               </View>
             );
           })}
-        </RadioGroup>
+        </>
       ) : (
         <View
           style={applyStyles('pt-24 flex-row items-center justify-between')}>

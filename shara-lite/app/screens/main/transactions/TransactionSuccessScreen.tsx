@@ -17,7 +17,7 @@ export const TransactionSuccessScreen = (
 
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
-      <ScrollView style={applyStyles('flex-1')}>
+      <ScrollView persistentScrollbar style={applyStyles('flex-1')}>
         <TransactionReview
           onDone={onDone}
           heading="Success"

@@ -58,7 +58,7 @@ const TransactionListItem = ({
               {note}
             </Text>
           )}
-          {!!credit_amount && (
+          {!is_collection && !!credit_amount && (
             <Text
               style={applyStyles(
                 'text-700 text-xxs text-gray-100 text-uppercase',
