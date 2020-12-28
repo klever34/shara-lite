@@ -45,9 +45,7 @@ export const useReceiptList = ({
         {text: 'All', value: 'all'},
         {
           text: 'Single Day',
-          value: 'today',
-          startDate: startOfDay(new Date()),
-          endDate: endOfDay(new Date()),
+          value: 'single-day',
         },
         {
           text: 'Last Week',
@@ -82,7 +80,7 @@ export const useReceiptList = ({
         case 'all':
           userReceipts = userReceipts;
           break;
-        case 'today':
+        case 'single-day':
           userReceipts = userReceipts.filtered(
             'transaction_date >= $0 && transaction_date <= $1',
             filterStartDate,
@@ -135,7 +133,7 @@ export const useReceiptList = ({
         case 'all':
           userReceipts = userReceipts;
           break;
-        case 'today':
+        case 'single-day':
           userReceipts = userReceipts.filtered(
             'transaction_date >= $0 && transaction_date <= $1',
             filterStartDate,

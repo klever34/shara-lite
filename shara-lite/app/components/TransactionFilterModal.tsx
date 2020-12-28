@@ -74,50 +74,99 @@ export const TransactionFilterModal = ({
     onClose();
   }, [onDone, onClose]);
 
-  return (
-    <View style={applyStyles('p-16 pt-0')}>
-      {filter !== 'date-range' ? (
-        <>
-          {options?.map(({text, value}, index) => {
-            const isActive = value === filter;
-            return (
-              <View
-                key={`${value}-${index}`}
-                style={applyStyles(
-                  'pt-16 flex-row items-center justify-between',
-                )}>
-                <Text
-                  style={applyStyles(
-                    `text-400 text-base ${
-                      isActive ? 'text-red-200' : 'text-black'
-                    }`,
-                  )}>
-                  {text}
-                </Text>
-                <RadioButton
-                  isChecked={isActive}
-                  style={applyStyles('rounded-24')}
-                  checkedStyle={applyStyles('rounded-24')}
-                  onChange={() => handleStatusFilter(value)}
-                />
-              </View>
-            );
-          })}
-        </>
-      ) : (
-        <View
-          style={applyStyles('pt-24 flex-row items-center justify-between')}>
-          <View style={applyStyles({width: '48%'})}>
-            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
-              Start Date
-            </Text>
+  const renderContent = useCallback(() => {
+    switch (filter) {
+      case 'date-range':
+        return (
+          <View
+            style={applyStyles('pt-24 flex-row items-center justify-between')}>
+            <View style={applyStyles({width: '48%'})}>
+              <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
+                Start Date
+              </Text>
+              <DatePicker
+                //@ts-ignore
+                maximumDate={new Date()}
+                value={filterStartDate ?? new Date()}
+                onChange={(e: Event, date?: Date) =>
+                  date && setFilterStartDate(date)
+                }>
+                {(toggleShow) => (
+                  <Touchable onPress={toggleShow}>
+                    <View
+                      style={applyStyles('px-8 py-16 flex-row items-center', {
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderColor: colors['gray-20'],
+                      })}>
+                      <Icon
+                        size={16}
+                        name="calendar"
+                        type="feathericons"
+                        color={colors['gray-50']}
+                      />
+                      <Text
+                        style={applyStyles(
+                          'pl-sm text-xs text-uppercase text-700 text-gray-300',
+                        )}>
+                        {format(filterStartDate, 'MMM dd, yyyy')}
+                      </Text>
+                    </View>
+                  </Touchable>
+                )}
+              </DatePicker>
+            </View>
+            <View style={applyStyles({width: '48%'})}>
+              <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
+                End Date
+              </Text>
+              <DatePicker
+                //@ts-ignore
+                maximumDate={new Date()}
+                value={filterEndDate ?? new Date()}
+                onChange={(e: Event, date?: Date) =>
+                  date && setFilterEndDate(date)
+                }>
+                {(toggleShow) => (
+                  <Touchable onPress={toggleShow}>
+                    <View
+                      style={applyStyles('px-8 py-16 flex-row items-center', {
+                        borderWidth: 2,
+                        borderRadius: 8,
+                        borderColor: colors['gray-20'],
+                      })}>
+                      <Icon
+                        size={16}
+                        name="calendar"
+                        type="feathericons"
+                        color={colors['gray-50']}
+                      />
+                      <Text
+                        style={applyStyles(
+                          'pl-sm text-xs text-uppercase text-700 text-gray-300',
+                        )}>
+                        {format(filterEndDate, 'MMM dd, yyyy')}
+                      </Text>
+                    </View>
+                  </Touchable>
+                )}
+              </DatePicker>
+            </View>
+          </View>
+        );
+
+      case 'single-day':
+        return (
+          <View style={applyStyles('pt-24')}>
+            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>Date</Text>
             <DatePicker
               //@ts-ignore
               maximumDate={new Date()}
               value={filterStartDate ?? new Date()}
-              onChange={(e: Event, date?: Date) =>
-                date && setFilterStartDate(date)
-              }>
+              onChange={(e: Event, date?: Date) => {
+                date && setFilterStartDate(date);
+                setFilterEndDate(endOfDay(new Date()));
+              }}>
               {(toggleShow) => (
                 <Touchable onPress={toggleShow}>
                   <View
@@ -143,44 +192,44 @@ export const TransactionFilterModal = ({
               )}
             </DatePicker>
           </View>
-          <View style={applyStyles({width: '48%'})}>
-            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
-              End Date
-            </Text>
-            <DatePicker
-              //@ts-ignore
-              maximumDate={new Date()}
-              value={filterEndDate ?? new Date()}
-              onChange={(e: Event, date?: Date) =>
-                date && setFilterEndDate(date)
-              }>
-              {(toggleShow) => (
-                <Touchable onPress={toggleShow}>
-                  <View
-                    style={applyStyles('px-8 py-16 flex-row items-center', {
-                      borderWidth: 2,
-                      borderRadius: 8,
-                      borderColor: colors['gray-20'],
-                    })}>
-                    <Icon
-                      size={16}
-                      name="calendar"
-                      type="feathericons"
-                      color={colors['gray-50']}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-sm text-xs text-uppercase text-700 text-gray-300',
-                      )}>
-                      {format(filterEndDate, 'MMM dd, yyyy')}
-                    </Text>
-                  </View>
-                </Touchable>
-              )}
-            </DatePicker>
-          </View>
-        </View>
-      )}
+        );
+
+      default:
+        return (
+          <>
+            {options?.map(({text, value}, index) => {
+              const isActive = value === filter;
+              return (
+                <View
+                  key={`${value}-${index}`}
+                  style={applyStyles(
+                    'pt-16 flex-row items-center justify-between',
+                  )}>
+                  <Text
+                    style={applyStyles(
+                      `text-400 text-base ${
+                        isActive ? 'text-red-200' : 'text-black'
+                      }`,
+                    )}>
+                    {text}
+                  </Text>
+                  <RadioButton
+                    isChecked={isActive}
+                    style={applyStyles('rounded-24')}
+                    checkedStyle={applyStyles('rounded-24')}
+                    onChange={() => handleStatusFilter(value)}
+                  />
+                </View>
+              );
+            })}
+          </>
+        );
+    }
+  }, [filter, options, filterEndDate, filterStartDate, handleStatusFilter]);
+
+  return (
+    <View style={applyStyles('p-16 pt-0')}>
+      {renderContent()}
       <View style={applyStyles('pt-24 flex-row items-center justify-between')}>
         <Button
           title="Clear filter"
