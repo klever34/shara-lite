@@ -2,7 +2,7 @@ import Realm from 'realm';
 import {ObjectId} from 'bson';
 import {getStorageService} from '@/services';
 
-export const lastLocalSyncStorageKey = 'lastLocalSync';
+export const lastLocalSyncStorageKey = 'lastLocalSyncV2';
 export const lastModelSyncStorageKey = 'lastModelSync';
 
 type lastModelSyncData = {
