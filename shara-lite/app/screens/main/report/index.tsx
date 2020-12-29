@@ -7,6 +7,8 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {getAnalyticsService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
@@ -68,11 +70,15 @@ export const ReportScreen = withModal(({openModal}: Props) => {
   }, [handleStatusFilter]);
 
   const handleDownloadReport = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('userDownloadedReport', {})
+      .then(() => {})
+      .catch(handleError);
     Alert.alert('Info', 'This feature is coming soon');
   }, []);
 
   const getFilterLabelText = useCallback(() => {
-    const activeOption = filterOptions.find((item) => item.value === filter);
+    const activeOption = filterOptions?.find((item) => item.value === filter);
     if (filter === 'date-range' && filterStartDate && filterEndDate) {
       return (
         <Text>

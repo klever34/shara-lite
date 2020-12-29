@@ -1,4 +1,3 @@
-import {Button, ButtonProps, DatePicker} from '@/components';
 import CustomerDetailsHeader, {
   CustomerDetailsHeaderProps,
 } from '@/components/CustomerDetailsHeader';
@@ -10,7 +9,9 @@ import TransactionListItem from '@/components/TransactionListItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
+import {useReceiptList} from '@/screens/main/transactions/hook';
 import {
   getAnalyticsService,
   getAuthService,
@@ -19,66 +20,135 @@ import {
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import {usePaymentReminder} from '@/services/payment-reminder';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
-import {format} from 'date-fns';
-import React, {useCallback, useMemo, useState} from 'react';
-import {Dimensions, FlatList, SafeAreaView, Text, View} from 'react-native';
+import {
+  addDays,
+  subDays,
+  addMonths,
+  addWeeks,
+  format,
+  subMonths,
+  subWeeks,
+  formatDistanceToNowStrict,
+} from 'date-fns';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
+import {
+  Alert,
+  Dimensions,
+  FlatList,
+  SafeAreaView,
+  Text,
+  View,
+} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
+import {EntryButton, EntryContext} from './EntryView';
+import {TransactionFilterModal} from './TransactionFilterModal';
 
 export type TransactionDetailsProps = {
-  dueDate?: Date;
-  isPaid?: boolean;
-  customer?: ICustomer;
-  creditAmount?: number;
+  customer: ICustomer;
   transactions?: IReceipt[];
-  showActionButtons?: boolean;
   header?: Partial<CustomerDetailsHeaderProps>;
-  sendReminder?: boolean;
-  actionButtons?: ButtonProps[];
-  onViewAllTransactions?: (customer?: ICustomer) => void;
 };
 
 const TransactionDetails = withModal(
   ({
     header,
-    isPaid,
-    creditAmount,
+    openModal,
     transactions,
-    actionButtons,
-    sendReminder = true,
-    onViewAllTransactions,
     customer: customerProp,
-    dueDate: creditDueDate,
-    showActionButtons = true,
   }: TransactionDetailsProps & ModalWrapperFields) => {
     const {saveCustomer} = useCustomer();
     const navigation = useAppNavigation();
     const analyticsService = getAnalyticsService();
-    const businessInfo = getAuthService().getBusinessInfo();
     const {addCustomerToTransaction} = useTransaction();
+    const {getPaymentReminders} = usePaymentReminder();
+    const user = getAuthService().getUser();
+    const businessInfo = getAuthService().getBusinessInfo();
+    const {
+      filter,
+      filterEndDate,
+      filterOptions,
+      filterStartDate,
+      filteredReceipts,
+      handleStatusFilter,
+    } = useReceiptList({receipts: transactions});
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
-    const [dueDate, setDueDate] = useState<Date | undefined>(
-      creditDueDate || undefined,
-    );
+    const {due_date: dueDate} = customer;
 
-    const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+    const {setCurrentCustomer} = useContext(EntryContext);
 
-    const paymentReminderMessage = `Hello ${
-      customer?.name ?? ''
-    }, thank you for doing business with ${
-      businessInfo?.name
-    }. You owe ${amountWithCurrency(
-      creditAmount || customer?.remainingCreditAmount,
-    )}${
+    useEffect(() => {
+      setCurrentCustomer?.(customer);
+    }, [customer, setCurrentCustomer]);
+
+    const getNextReminderDateText = useCallback(() => {
+      const dates: Date[] = [];
+      if (dueDate) {
+        getPaymentReminders().forEach((item) => {
+          switch (item.unit) {
+            case ReminderUnit.DAYS:
+              if (item.when === ReminderWhen.AFTER) {
+                dates.push(addDays(dueDate, item.amount));
+              } else {
+                dates.push(subDays(dueDate, item.amount));
+              }
+              break;
+            case ReminderUnit.WEEKS:
+              if (item.when === ReminderWhen.AFTER) {
+                dates.push(addWeeks(dueDate, item.amount));
+              } else {
+                dates.push(subWeeks(dueDate, item.amount));
+              }
+              break;
+            case ReminderUnit.MONTHS:
+              if (item.when === ReminderWhen.AFTER) {
+                dates.push(addMonths(dueDate, item.amount));
+              } else {
+                dates.push(subMonths(dueDate, item.amount));
+              }
+              break;
+
+            default:
+              break;
+          }
+        });
+        if (dates.length) {
+          return formatDistanceToNowStrict(dates[0], {
+            addSuffix: true,
+          });
+        }
+        return formatDistanceToNowStrict(addDays(dueDate, 1), {
+          addSuffix: true,
+        });
+      }
+    }, [dueDate, getPaymentReminders]);
+
+    const paymentLink =
+      businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+
+    const paymentReminderMessage = `Hello ${customer?.name ?? ''}${
+      businessInfo?.name || user?.firstname
+        ? `, thank you for doing business with ${
+            businessInfo.name ?? user?.firstname
+          }`
+        : ''
+    }. ${
+      customer.balance && customer.balance < 0
+        ? `You owe ${amountWithCurrency(customer.balance)}`
+        : ''
+    }${
       dueDate
         ? ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
         : ''
-    }.\n\nTo pay click\n ${paymentLink}\n\nPowered by Shara for free.\nwww.shara.co`;
+    }. ${
+      paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''
+    }\n\nPowered by Shara for free.\nwww.shara.co`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
@@ -91,7 +161,6 @@ const TransactionDetails = withModal(
     const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
       shareProps,
     );
-    const {updateDueDate} = useTransaction();
 
     const onSmsShare = useCallback(() => {
       analyticsService
@@ -126,21 +195,55 @@ const TransactionDetails = withModal(
       handleEmailShare();
     }, [analyticsService, handleEmailShare]);
 
-    const handleDueDateChange = useCallback(
-      async (date?: Date) => {
-        if (date) {
-          setDueDate(date);
-          if (customer) {
-            try {
-              await updateDueDate({due_date: date, transaction: {}});
-            } catch (e) {
-              console.log(e);
-            }
-          }
-        }
-      },
-      [customer, updateDueDate],
-    );
+    const handleOpenFilterModal = useCallback(() => {
+      const closeModal = openModal('bottom-half', {
+        renderContent: () => (
+          <TransactionFilterModal
+            onClose={closeModal}
+            initialFilter={filter}
+            options={filterOptions}
+            onDone={handleStatusFilter}
+          />
+        ),
+      });
+    }, [filter, filterOptions, openModal, handleStatusFilter]);
+
+    const handleDownloadReport = useCallback(() => {
+      getAnalyticsService()
+        .logEvent('userDownloadedReport', {})
+        .then(() => {})
+        .catch(handleError);
+      Alert.alert('Info', 'This feature is coming soon');
+    }, []);
+
+    const handleClear = useCallback(() => {
+      handleStatusFilter({
+        status: 'all',
+      });
+    }, [handleStatusFilter]);
+
+    const getFilterLabelText = useCallback(() => {
+      const activeOption = filterOptions?.find((item) => item.value === filter);
+      if (filter === 'date-range' && filterStartDate && filterEndDate) {
+        return (
+          <Text>
+            <Text style={applyStyles('text-gray-300 text-400')}>From</Text>{' '}
+            <Text style={applyStyles('text-red-200 text-400')}>
+              {format(filterStartDate, 'dd MMM, yyyy')}
+            </Text>{' '}
+            <Text style={applyStyles('text-gray-300 text-400')}>to</Text>{' '}
+            <Text style={applyStyles('text-red-200 text-400')}>
+              {format(filterEndDate, 'dd MMM, yyyy')}
+            </Text>
+          </Text>
+        );
+      }
+      return (
+        <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
+          {activeOption?.text}
+        </Text>
+      );
+    }, [filter, filterEndDate, filterOptions, filterStartDate]);
 
     const handleAddCustomer = useCallback(async () => {
       try {
@@ -195,56 +298,11 @@ const TransactionDetails = withModal(
       [handleLedgerItemSelect],
     );
 
-    actionButtons = useMemo(() => {
-      if (!customer) {
-        return [];
-      }
-      if (!actionButtons) {
-        return [
-          {
-            onPress: () => {
-              navigation.navigate('CustomerEntry', {
-                onEntrySave: () => {
-                  navigation.goBack();
-                },
-              });
-            },
-            variantColor: 'green',
-            style: applyStyles('flex-1 mr-4'),
-            children: (
-              <Text style={applyStyles('text-uppercase text-white text-700')}>
-                You Collected
-              </Text>
-            ),
-          },
-          {
-            onPress: () => {
-              navigation.navigate('CustomerEntry', {
-                onEntrySave: () => {
-                  navigation.goBack();
-                },
-              });
-            },
-            variantColor: 'red',
-            style: applyStyles('flex-1 ml-4'),
-            children: (
-              <Text style={applyStyles('text-uppercase text-white text-700')}>
-                You Gave
-              </Text>
-            ),
-          },
-        ];
-      }
-      return actionButtons;
-    }, [actionButtons, customer, navigation]);
-
     return (
       <SafeAreaView style={applyStyles('flex-1')}>
         <CustomerDetailsHeader
           {...header}
-          isPaid={isPaid}
           customer={customer}
-          creditAmount={creditAmount}
           onPress={handleAddCustomer}
           style={applyStyles(
             {
@@ -255,32 +313,52 @@ const TransactionDetails = withModal(
             header?.style,
           )}
         />
-        {!!transactions?.length && (
-          <>
-            {(isPaid !== undefined
-              ? !isPaid
-              : !!customer?.remainingCreditAmount) && (
-              <View style={applyStyles('bg-white center py-16')}>
-                <DatePicker
-                  //@ts-ignore
-                  minimumDate={new Date()}
-                  value={dueDate ?? new Date()}
-                  onChange={(e: Event, date?: Date) =>
-                    handleDueDateChange(date)
-                  }>
-                  {(toggleShow) => (
-                    <Touchable onPress={toggleShow}>
-                      <View style={applyStyles('p-8 flex-row items-center')}>
+        <View style={applyStyles('flex-1')}>
+          {!!transactions?.length && (
+            <>
+              {customer?.balance && customer.balance < 0 ? (
+                <View style={applyStyles('bg-white center pb-16 px-8')}>
+                  {!!customer.balance && customer.balance < 0 && (
+                    <View style={applyStyles('py-16 center')}>
+                      <Text
+                        style={applyStyles(
+                          'text-uppercase text-gray-100 text-700 text-xs',
+                        )}>
+                        {customer?.name} owes you{' '}
+                        <Text style={applyStyles('text-red-200')}>
+                          {amountWithCurrency(customer.balance)}
+                        </Text>
+                      </Text>
+                    </View>
+                  )}
+                  <Touchable
+                    onPress={() =>
+                      navigation.navigate('ReminderSettings', {customer})
+                    }>
+                    <View style={applyStyles('flex-row center py-8 flex-wrap')}>
+                      <View
+                        style={applyStyles(
+                          `p-8 flex-row items-center ${
+                            dueDate ? 'bg-white' : 'bg-red-200'
+                          }`,
+                          dueDate
+                            ? {
+                                borderWidth: 1,
+                                borderRadius: 8,
+                                borderColor: colors['gray-50'],
+                              }
+                            : {borderRadius: 8},
+                        )}>
                         <Icon
                           size={16}
                           name="calendar"
                           type="feathericons"
-                          color={colors['red-200']}
+                          color={dueDate ? colors['red-200'] : colors['red-50']}
                         />
                         <Text
                           style={applyStyles(
                             `pl-sm text-xs text-uppercase text-700 ${
-                              dueDate ? 'text-gray-300' : 'text-red-200'
+                              dueDate ? 'text-gray-300' : 'text-white'
                             }`,
                           )}>
                           {dueDate
@@ -288,11 +366,27 @@ const TransactionDetails = withModal(
                             : 'set collection date'}
                         </Text>
                       </View>
-                    </Touchable>
-                  )}
-                </DatePicker>
-                {!!sendReminder && (
-                  <View style={applyStyles('flex-row items-center')}>
+                      {!!dueDate && !!getPaymentReminders().length ? (
+                        <Text
+                          style={applyStyles(
+                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                          )}>
+                          Next reminder{' '}
+                          <Text style={applyStyles('text-red-200')}>
+                            {getNextReminderDateText()}
+                          </Text>
+                        </Text>
+                      ) : (
+                        <Text
+                          style={applyStyles(
+                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                          )}>
+                          No reminder set
+                        </Text>
+                      )}
+                    </View>
+                  </Touchable>
+                  <View style={applyStyles('flex-row items-center flex-wrap')}>
                     <Text
                       style={applyStyles(
                         'text-sm text-uppercase text-gray-300 text-700',
@@ -363,59 +457,173 @@ const TransactionDetails = withModal(
                       </Touchable>
                     </View>
                   </View>
-                )}
-              </View>
-            )}
-
-            <FlatList
-              data={transactions}
-              renderItem={renderTransactionItem}
-              style={applyStyles('px-16 py-16 flex-1')}
-              ListHeaderComponent={<TransactionListHeader />}
-              keyExtractor={(item, index) =>
-                `${item?._id?.toString()}-${index}`
-              }
-              ListFooterComponent={
-                customer && onViewAllTransactions ? (
-                  <View style={applyStyles('mt-24 flex-row center')}>
-                    <Touchable onPress={() => onViewAllTransactions(customer)}>
-                      <View
-                        style={applyStyles(
-                          'py-8 px-16 rounded-8 flex-row center bg-gray-20',
-                        )}>
-                        <Icon
-                          name="eye"
-                          size={16}
-                          type="feathericons"
-                          color={colors['gray-50']}
-                        />
-                        <Text
-                          style={applyStyles(
-                            'pl-4 text-700 text-gray-200 text-uppercase',
-                          )}>
-                          view all transactions
-                        </Text>
-                      </View>
-                    </Touchable>
+                </View>
+              ) : (
+                <View style={applyStyles('p-16 center')}>
+                  <Text
+                    style={applyStyles(
+                      'text-uppercase text-gray-100 text-700 text-xs',
+                    )}>
+                    {customer?.name}{' '}
+                    {customer?.balance && customer?.balance > 0
+                      ? `has ${amountWithCurrency(customer.balance)} with you`
+                      : 'is not owing'}
+                  </Text>
+                </View>
+              )}
+              <View
+                style={applyStyles(
+                  'py-8 px-16 flex-row items-center justify-between',
+                )}>
+                <Touchable onPress={handleDownloadReport}>
+                  <View
+                    style={applyStyles(
+                      'py-4 px-8 flex-row items-center bg-gray-20',
+                      {
+                        borderWidth: 1,
+                        borderRadius: 16,
+                        borderColor: colors['gray-20'],
+                      },
+                    )}>
+                    <Icon
+                      size={16}
+                      name="clipboard"
+                      type="feathericons"
+                      color={colors['gray-50']}
+                    />
+                    <Text
+                      style={applyStyles(
+                        'text-gray-200 text-700 text-xxs pl-8 text-uppercase',
+                      )}>
+                      Share statement
+                    </Text>
                   </View>
-                ) : (
-                  <View style={applyStyles({height: 200})} />
-                )
-              }
-            />
-            <View style={applyStyles({opacity: 0, height: 0})}>
-              <PaymentReminderImage
-                date={dueDate}
-                getImageUri={(data) => setReceiptImage(data)}
-                amount={creditAmount || customer?.remainingCreditAmount}
+                </Touchable>
+                <Touchable onPress={handleOpenFilterModal}>
+                  <View
+                    style={applyStyles('py-4 px-8 flex-row items-center', {
+                      borderWidth: 1,
+                      borderRadius: 4,
+                      borderColor: colors['gray-20'],
+                    })}>
+                    <Text
+                      style={applyStyles(
+                        'text-gray-200 text-xs text-700 pr-8',
+                      )}>
+                      Filters
+                    </Text>
+                    <Icon
+                      size={16}
+                      name="calendar"
+                      type="feathericons"
+                      color={colors['gray-50']}
+                    />
+                  </View>
+                </Touchable>
+              </View>
+
+              {filter && filter !== 'all' && (
+                <View
+                  style={applyStyles(
+                    'py-8 px-16 flex-row items-center justify-between',
+                    {
+                      borderTopWidth: 1.5,
+                      borderBottomWidth: 1.5,
+                      borderTopColor: colors['gray-20'],
+                      borderBottomColor: colors['gray-20'],
+                    },
+                  )}>
+                  <View style={applyStyles('flex-row items-center flex-1')}>
+                    <Text
+                      style={applyStyles(
+                        'text-gray-50 text-700 text-uppercase',
+                      )}>
+                      Filter:{' '}
+                    </Text>
+                    <View style={applyStyles('flex-1')}>
+                      {getFilterLabelText()}
+                    </View>
+                  </View>
+                  <Touchable onPress={handleClear}>
+                    <View
+                      style={applyStyles(
+                        'py-4 px-8 flex-row items-center bg-gray-20',
+                        {
+                          borderWidth: 1,
+                          borderRadius: 24,
+                          borderColor: colors['gray-20'],
+                        },
+                      )}>
+                      <Text
+                        style={applyStyles(
+                          'text-xs text-gray-200 text-700 text-uppercase pr-8',
+                        )}>
+                        Clear
+                      </Text>
+                      <Icon
+                        name="x"
+                        size={16}
+                        type="feathericons"
+                        color={colors['gray-50']}
+                      />
+                    </View>
+                  </Touchable>
+                </View>
+              )}
+              <FlatList
+                persistentScrollbar
+                data={filteredReceipts}
+                renderItem={renderTransactionItem}
+                style={applyStyles('px-16 py-16 flex-1')}
+                ListHeaderComponent={<TransactionListHeader />}
+                keyExtractor={(item, index) =>
+                  `${item?._id?.toString()}-${index}`
+                }
+                ListEmptyComponent={
+                  <View style={applyStyles('center h-full')}>
+                    <Text
+                      style={applyStyles('pb-8 text-center text-400 text-lg')}>
+                      No results found
+                    </Text>
+                    <Text style={applyStyles('text-black text-center text-lg')}>
+                      Start adding records by tapping here
+                    </Text>
+                    <View style={applyStyles('center p-16 w-full')}>
+                      <Animatable.View
+                        duration={200}
+                        animation={{
+                          from: {translateY: -10},
+                          to: {translateY: 0},
+                        }}
+                        direction="alternate"
+                        useNativeDriver={true}
+                        iterationCount="infinite">
+                        <Icon
+                          size={100}
+                          name="arrow-down"
+                          type="feathericons"
+                          color={colors.primary}
+                        />
+                      </Animatable.View>
+                    </View>
+                  </View>
+                }
+                ListFooterComponent={<View style={applyStyles({height: 50})} />}
               />
-            </View>
-          </>
-        )}
+              <View style={applyStyles({opacity: 0, height: 0})}>
+                <PaymentReminderImage
+                  date={dueDate}
+                  getImageUri={(data) => setReceiptImage(data)}
+                  amount={customer.balance && Math.abs(customer.balance)}
+                />
+              </View>
+            </>
+          )}
+        </View>
         {customer && !transactions?.length && (
           <View
             style={applyStyles(
-              'center bg-gray-20 p-16 bottom-80 absolute w-full',
+              'center bg-gray-10 p-16 bottom-80 absolute w-full',
             )}>
             <Text style={applyStyles('pb-16 text-center text-700')}>
               Add first transaction for {customer?.name}
@@ -438,16 +646,9 @@ const TransactionDetails = withModal(
             </Animatable.View>
           </View>
         )}
-        {!!showActionButtons && (
-          <View
-            style={applyStyles(
-              'p-16 w-full bg-white flex-row justify-center items-center bottom-0 absolute',
-            )}>
-            {actionButtons.map((actionButton) => (
-              <Button {...actionButton} />
-            ))}
-          </View>
-        )}
+        <View style={applyStyles('center')}>
+          <EntryButton />
+        </View>
       </SafeAreaView>
     );
   },

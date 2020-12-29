@@ -32,8 +32,7 @@ const EmptyState = (props: EmptyStateProps) => {
     textStyle,
   } = props;
   return (
-    <View
-      style={applyStyles('flex-1', 'justify-center', 'items-center', style)}>
+    <View style={applyStyles('flex-1 justify-center items-center', style)}>
       {source && (
         <Image
           source={source}

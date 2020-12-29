@@ -30,21 +30,16 @@ type EntryContextProps = {
   showEntryDialog?: () => void;
   hideEntryDialog?: () => void;
   setEntryButtonPosition?: Dispatch<SetStateAction<{x: number; y: number}>>;
+  setCurrentCustomer?: Dispatch<SetStateAction<ICustomer | null>>;
 };
 
 export const EntryContext = createContext<EntryContextProps>({});
 
-type EntryProps = {
+type EntryViewProps = {
   children: ReactNode;
-  onRecordSale?: () => void;
-  onRecordCollection?: () => void;
 };
 
-export const Entry = ({
-  children,
-  onRecordSale,
-  onRecordCollection,
-}: EntryProps) => {
+export const EntryView = ({children}: EntryViewProps) => {
   const [show, setShow] = useState(false);
   const hideEntryDialog = useCallback(() => {
     setShow(false);
@@ -57,28 +52,33 @@ export const Entry = ({
   const navigation = useAppNavigation();
   const wrapperRef = useRef<View | null>(null);
   const wrapper = wrapperRef.current;
+  const [currentCustomer, setCurrentCustomer] = useState<ICustomer | null>(
+    null,
+  );
 
-  onRecordSale =
-    onRecordSale ??
-    useCallback(() => {
-      navigation.navigate('RecordSale', {
+  const onRecordSale = useCallback(() => {
+    navigation.navigate('RecordSale', {
+      goBack: () => navigation.navigate('Home'),
+      customer: currentCustomer,
+    });
+  }, [currentCustomer, navigation]);
+
+  const onRecordCollection = useCallback(() => {
+    const onSelectCustomer = (customer: ICustomer) => {
+      navigation.replace('RecordCollection', {
+        customer,
         goBack: () => navigation.navigate('Home'),
       });
-    }, [navigation]);
-
-  onRecordCollection =
-    onRecordCollection ??
-    useCallback(() => {
+    };
+    if (currentCustomer) {
+      onSelectCustomer(currentCustomer);
+    } else {
       navigation.navigate('SelectCustomerList', {
         withCustomer: true,
-        onSelectCustomer: (customer: ICustomer) => {
-          navigation.replace('RecordCollection', {
-            customer,
-            goBack: () => navigation.navigate('Home'),
-          });
-        },
+        onSelectCustomer,
       });
-    }, [navigation]);
+    }
+  }, [currentCustomer, navigation]);
 
   return (
     <EntryContext.Provider
@@ -87,6 +87,7 @@ export const Entry = ({
         hideEntryDialog,
         setEntryButtonPosition,
         wrapper,
+        setCurrentCustomer,
       }}>
       <SafeAreaView style={applyStyles('flex-1')} ref={wrapperRef}>
         {show && (
@@ -109,7 +110,7 @@ export const Entry = ({
               })}>
               <Touchable
                 onPress={() => {
-                  onRecordSale && onRecordSale();
+                  onRecordSale();
                   hideEntryDialog();
                 }}>
                 <Animatable.View
@@ -141,7 +142,7 @@ export const Entry = ({
               })}>
               <Touchable
                 onPress={() => {
-                  onRecordCollection && onRecordCollection();
+                  onRecordCollection();
                   hideEntryDialog();
                 }}>
                 <Animatable.View

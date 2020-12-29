@@ -60,6 +60,10 @@ export const ReceiptImage = (props: Props) => {
     [getImageUri],
   );
 
+  const onImageLoad = useCallback(() => {
+    viewShot.current.capture().then(onCapture);
+  }, [onCapture]);
+
   useEffect(() => {
     viewShot.current.capture().then(onCapture);
   }, [customer, creditDueDate, creditAmount, onCapture]);
@@ -74,13 +78,14 @@ export const ReceiptImage = (props: Props) => {
           <View style={applyStyles('py-lg items-center justify-center')}>
             {!!businessInfo?.profile_image?.url && (
               <Image
+                onLoad={onImageLoad}
                 style={applyStyles('mb-4 items-center justify-center', {
                   width: 80,
                   height: 80,
                   borderRadius: 16,
                   backgroundColor: colors['gray-20'],
                 })}
-                source={{uri: businessInfo?.profile_image.url}}
+                source={{uri: businessInfo?.profile_image?.url}}
               />
             )}
             {!!businessInfo.name && (

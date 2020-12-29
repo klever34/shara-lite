@@ -1,11 +1,5 @@
-import {
-  AppInput,
-  Button,
-  CurrencyInput,
-  DatePicker,
-  toNumber,
-} from '@/components';
-import {CalculatorView} from '@/components/CalculatorView';
+import {AppInput, Button, DatePicker, toNumber} from '@/components';
+import {CalculatorInput, CalculatorView} from '@/components/CalculatorView';
 import {CustomerListItem} from '@/components/CustomerListItem';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
@@ -13,7 +7,6 @@ import {TitleContainer} from '@/components/TitleContainer';
 import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {MainStackParamList} from '@/screens/main';
-import {getAnalyticsService, getAuthService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -44,15 +37,6 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           is_collection: true,
           total_amount: payload.amount_paid,
         });
-        getAnalyticsService()
-          .logEvent('userSavedTransaction', {
-            creditAmount: 0,
-            amountPaid: payload.amount_paid,
-            totalAmount: payload.amount_paid,
-            currency_code: getAuthService().getUser()?.currency_code ?? '',
-          })
-          .then(() => {})
-          .catch((error) => handleError(error));
         showSuccessToast('COLLECTION RECORDED');
         navigation.navigate('TransactionSuccess', {
           transaction,
@@ -87,7 +71,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           customer={customer}
           containerStyle={applyStyles('py-16 mb-16')}
         />
-        <CurrencyInput
+        <CalculatorInput
           placeholder="0.00"
           label="Enter Amount"
           value={values.amount_paid}
@@ -96,6 +80,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             const value = toNumber(text);
             setFieldValue('amount_paid', value);
           }}
+          autoFocus
         />
         {!!values.amount_paid && (
           <AppInput
@@ -116,9 +101,9 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             <DatePicker
               value={new Date(values.transaction_date)}
               containerStyle={applyStyles({width: '48%'})}
-              onChange={(e: Event, date?: Date) => {
-                setFieldValue('transaction_date', date);
-              }}>
+              onChange={(e: Event, date?: Date) =>
+                !!date && setFieldValue('transaction_date', date)
+              }>
               {(toggleShow) => {
                 return (
                   <>

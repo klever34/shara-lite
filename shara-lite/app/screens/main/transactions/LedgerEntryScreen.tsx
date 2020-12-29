@@ -17,7 +17,7 @@ import {RouteProp} from '@react-navigation/native';
 import {format, isToday} from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
-// import Config from 'react-native-config';
+import Config from 'react-native-config';
 import {MainStackParamList} from '..';
 
 type LedgerEntryScreenProps = {
@@ -49,31 +49,29 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   } = useTransaction();
 
   const analyticsService = getAnalyticsService();
+  const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
 
   const [receiptImage, setReceiptImage] = useState('');
   const [customer, setCustomer] = useState(customerProp);
 
-  // const paymentLink = `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+  const paymentLink =
+    businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
   const shareReceiptMessage = `Hi ${
     customer?.name ?? ''
-  }, thank you for your recent purchase from ${
-    businessInfo.name
-  }. You paid ${amountWithCurrency(
-    total_amount,
-  )}.\n\nPowered by Shara for free.\nwww.shara.co`;
-  // const paymentReminderMessage = `Hello ${
-  //   customer?.name ?? ''
-  // }, thank you for doing business with ${
-  //   businessInfo?.name
-  // }. You owe ${amountWithCurrency(credit_amount)}${
-  //   transaction.dueDate
-  //     ? ` which is due on ${format(
-  //         new Date(transaction.dueDate),
-  //         'MMM dd, yyyy',
-  //       )}`
-  //     : ''
-  // }.\n\nTo pay click\n ${paymentLink}\n\nPowered by Shara for free.\nwww.shara.co`;
+  }, thank you for your recent purchase ${
+    businessInfo.name || user?.firstname
+      ? `from ${businessInfo.name ?? user?.firstname}`
+      : ''
+  }. You paid ${amountWithCurrency(total_amount)}${
+    dueDate
+      ? ` and you owe ${amountWithCurrency(
+          credit_amount,
+        )} which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}${
+          paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''
+        }`
+      : '.'
+  }\n\nPowered by Shara for free.\nwww.shara.co`;
 
   const shareProps: ShareHookProps = {
     image: receiptImage,
@@ -190,6 +188,10 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     });
   }, [navigation, handleAddCustomer]);
 
+  const handleOpenCustomerScreen = useCallback(() => {
+    navigation.navigate('CustomerDetails', {customer});
+  }, [navigation, customer]);
+
   useEffect(() => {
     return navigation.addListener('focus', () => {
       const thisTransaction =
@@ -211,15 +213,17 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
         <HeaderBackButton iconName="arrow-left" />
         <View style={applyStyles('items-end')}>
           {customer ? (
-            <View style={applyStyles('flex-row items-center')}>
-              <Text style={applyStyles('text-400 text-black text-base')}>
-                {customer?.name}
-              </Text>
-              <PlaceholderImage
-                style={applyStyles('ml-4')}
-                text={customer?.name ?? ''}
-              />
-            </View>
+            <Touchable onPress={handleOpenCustomerScreen}>
+              <View style={applyStyles('flex-row items-center')}>
+                <Text style={applyStyles('text-400 text-black text-base')}>
+                  {customer?.name}
+                </Text>
+                <PlaceholderImage
+                  style={applyStyles('ml-4')}
+                  text={customer?.name ?? ''}
+                />
+              </View>
+            </Touchable>
           ) : (
             <Touchable onPress={handleOpenSelectCustomerScreen}>
               <View style={applyStyles('flex-row items-center')}>
@@ -328,7 +332,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               {format(transaction.transaction_date, 'dd MMM, yyyy')}
             </Text>
           )}
-          <View style={applyStyles('flex-row items-center pt-4')}>
+          <View style={applyStyles('flex-row items-center flex-wrap pt-4')}>
             <Text
               style={applyStyles(
                 'text-sm text-uppercase text-gray-300 text-700',

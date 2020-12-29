@@ -1,5 +1,4 @@
 import Realm from 'realm';
-import subWeeks from 'date-fns/subWeeks';
 import {shouldUpdateRealmObject} from '@/services/realm/utils';
 import {addItemToQueue} from '@/services/realm/utils/queue';
 import {BaseModelInterface} from '@/models/baseSchema';
@@ -102,7 +101,7 @@ export const copyRealm = ({
   lastLocalSync?: any;
 }) => {
   const sourceRealmSchema = sourceRealm.schema;
-  const threeWeeksAgo = subWeeks(new Date(), 3);
+  // const threeWeeksAgo = subWeeks(new Date(), 3);
 
   sourceRealmSchema.forEach((objSchema) => {
     let allObjects = sourceRealm.objects(objSchema.name);
@@ -110,7 +109,7 @@ export const copyRealm = ({
       lastLocalSync && lastLocalSync[objSchema.name]
         ? isLocal
           ? new Date(lastLocalSync[objSchema.name])
-          : threeWeeksAgo
+          : ''
         : '';
 
     allObjects = syncDate

@@ -1,12 +1,13 @@
 import {omit} from 'lodash';
 import {ObjectId} from 'bson';
-import BluebirdPromise from 'bluebird';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {useReceipt} from '@/services/receipt';
-import {useCredit} from '@/services/credit';
 import {getAnalyticsService, getAuthService} from '@/services';
 import {Customer} from 'types/app';
+import {useCustomer} from '@/services/customer/hook';
+import BluebirdPromise from 'bluebird';
+import {usePaymentReminder} from '@/services/payment-reminder';
 
 interface saveTransactionInterface {
   customer?: ICustomer | Customer;
@@ -34,7 +35,7 @@ interface deleteTransactionInterface {
 
 interface updateDueDateInterface {
   due_date: Date;
-  transaction: Partial<IReceipt & Realm.Object>;
+  customer: ICustomer;
 }
 
 interface useTransactionInterface {
@@ -57,7 +58,8 @@ export const useTransaction = (): useTransactionInterface => {
     updateReceipt,
     updateReceiptRecord,
   } = useReceipt();
-  const {updateCredit} = useCredit();
+  const {updateCustomer} = useCustomer();
+  const {updatePaymentReminder} = usePaymentReminder();
   const user = getAuthService().getUser();
 
   const getTransactions = getReceipts;
@@ -121,17 +123,21 @@ export const useTransaction = (): useTransactionInterface => {
 
   const updateDueDate = async ({
     due_date,
-    transaction,
+    customer,
   }: updateDueDateInterface) => {
-    const updates = {
-      due_date,
-    };
-    BluebirdPromise.each(transaction.credits || [], async (credit) => {
-      await updateCredit({
-        credit,
-        updates,
-      });
+    const updates = {due_date};
+    await updateCustomer({
+      updates,
+      customer,
     });
+
+    await BluebirdPromise.map(
+      customer.paymentReminders || [],
+      async (paymentReminder) => {
+        await updatePaymentReminder({paymentReminder, updates: {}});
+      },
+    );
+
     getAnalyticsService()
       .logEvent('setCollectionDate', {})
       .then(() => {});

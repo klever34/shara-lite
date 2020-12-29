@@ -18,16 +18,14 @@ const CustomerDetailsScreen = ({route}: CustomerDetailsScreenProps) => {
   const {customer} = transactionDetailsProps;
 
   const filteredReceipts = useMemo(() => {
-    return (customer?.receipts?.sorted(
-      'created_at',
-      true,
-    ) as unknown) as IReceipt[];
+    return (customer.receipts
+      ?.filtered('is_deleted != true')
+      .sorted('created_at', true) as unknown) as IReceipt[];
   }, [customer]);
 
   return (
     <CustomerContext.Provider value={customer}>
       <TransactionDetails
-        dueDate={customer?.dueDate}
         transactions={filteredReceipts}
         {...transactionDetailsProps}
       />

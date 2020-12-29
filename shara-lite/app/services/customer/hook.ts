@@ -1,16 +1,21 @@
 import {UpdateMode} from 'realm';
 import {ObjectId} from 'bson';
 import {omit} from 'lodash';
+import perf from '@react-native-firebase/perf';
 import {useRealm} from '@/services/realm';
 import {ICustomer, modelName} from '@/models';
 import {getBaseModelValues} from '@/helpers/models';
 import {getAnalyticsService} from '@/services';
-import perf from '@react-native-firebase/perf';
 import {SharaAppEventsProperties} from '@/services/analytics';
 
 interface saveCustomerInterface {
   customer: ICustomer;
   source: SharaAppEventsProperties['customerAdded']['source'];
+}
+
+interface updateCustomerInterface {
+  customer: ICustomer;
+  updates: Partial<ICustomer>;
 }
 
 interface getCustomerInterface {
@@ -21,6 +26,7 @@ interface useCustomerInterface {
   getCustomers: () => ICustomer[];
   saveCustomer: (data: saveCustomerInterface) => Promise<ICustomer>;
   getCustomer: (data: getCustomerInterface) => ICustomer;
+  updateCustomer: (data: updateCustomerInterface) => Promise<void>;
 }
 
 export const useCustomer = (): useCustomerInterface => {
@@ -29,7 +35,7 @@ export const useCustomer = (): useCustomerInterface => {
   const getCustomers = (): ICustomer[] => {
     return (realm
       .objects<ICustomer>(modelName)
-      .filtered('is_deleted = false') as unknown) as ICustomer[];
+      .filtered('is_deleted != true') as unknown) as ICustomer[];
   };
 
   const saveCustomer = async ({
@@ -81,9 +87,27 @@ export const useCustomer = (): useCustomerInterface => {
       : null;
   };
 
+  const updateCustomer = async ({
+    customer,
+    updates,
+  }: updateCustomerInterface) => {
+    const updatedCustomer = {
+      _id: customer._id,
+      ...updates,
+      updated_at: new Date(),
+    };
+
+    const trace = await perf().startTrace('updatedCustomer');
+    realm.write(() => {
+      realm.create(modelName, updatedCustomer, UpdateMode.Modified);
+    });
+    await trace.stop();
+  };
+
   return {
     getCustomers,
     saveCustomer,
     getCustomer,
+    updateCustomer,
   };
 };

@@ -37,7 +37,9 @@ export const TransactionReview = (props: TransactionReviewProps) => {
   const {updateDueDate} = useTransaction();
 
   const [receiptImage, setReceiptImage] = useState('');
-  const [dueDate, setDueDate] = useState<Date | undefined>();
+  const [dueDate, setDueDate] = useState<Date | undefined>(
+    transaction?.customer?.due_date,
+  );
 
   const shareReceiptMessage = `Hi ${
     transaction.customer?.name ?? ''
@@ -95,9 +97,12 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     async (date?: Date) => {
       if (date) {
         setDueDate(date);
-        if (transaction) {
+        if (transaction && transaction.customer) {
           try {
-            await updateDueDate({due_date: date, transaction});
+            await updateDueDate({
+              due_date: date,
+              customer: transaction?.customer,
+            });
           } catch (e) {
             console.log(e);
           }
@@ -223,7 +228,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
           </View>
         )}
       </View>
-      {dueDate && (
+      {dueDate && !transaction.is_collection && (
         <View style={applyStyles('flex-row center')}>
           <Text style={applyStyles('text-gray-100 text-uppercase')}>
             Collect on{' '}
@@ -236,10 +241,10 @@ export const TransactionReview = (props: TransactionReviewProps) => {
       <View
         style={applyStyles(
           `px-16 pt-16 bg-white flex-row items-center ${
-            transaction.credit_amount ? 'justify-between' : 'justify-center'
+            !transaction.is_collection ? 'justify-between' : 'justify-center'
           }`,
         )}>
-        {!!transaction.credit_amount && (
+        {!transaction.is_collection && (
           <DatePicker
             //@ts-ignore
             minimumDate={new Date()}

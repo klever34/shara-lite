@@ -30,7 +30,7 @@ const migration = (oldRealm: Realm, newRealm: Realm) => {
   newRealmSchema.forEach((objSchema) => {
     const allObjects = newRealm.objects(objSchema.name);
     allObjects.forEach((obj: any) => {
-      obj.is_deleted = false;
+      obj.is_deleted != true;
     });
   });
 };

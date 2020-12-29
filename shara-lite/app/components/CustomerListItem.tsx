@@ -1,63 +1,72 @@
-import React, {useCallback} from 'react';
-import {Text, View, ViewStyle} from 'react-native';
-import {applyStyles, colors} from '@/styles';
-import PlaceholderImage from '@/components/PlaceholderImage';
-import {amountWithCurrency} from '@/helpers/utils';
 import Icon from '@/components/Icon';
+import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
+import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {formatDistanceToNowStrict} from 'date-fns';
+import {applyStyles, colors} from '@/styles';
+import {formatDistanceToNowStrict, isBefore, isToday} from 'date-fns';
+import React, {ReactNode, useCallback} from 'react';
+import {Text, View, ViewStyle} from 'react-native';
 
 type CustomerListItemProps = {
   customer: ICustomer;
   containerStyle?: ViewStyle;
   onPress?: () => void;
+  getDateText?: () => ReactNode;
 };
 
 export const CustomerListItem = ({
   customer,
   containerStyle,
   onPress,
+  getDateText,
 }: CustomerListItemProps) => {
-  const getDateText = useCallback(() => {
-    if (customer.dueDate) {
-      if (customer.overdueCreditAmount) {
+  getDateText =
+    getDateText ??
+    useCallback(() => {
+      if (customer.balance && customer.balance < 0) {
+        if (customer.due_date) {
+          if (isToday(customer.due_date)) {
+            return (
+              <Text style={applyStyles('text-xs text-700 text-red-100')}>
+                Due today
+              </Text>
+            );
+          }
+          if (isBefore(customer.due_date, new Date())) {
+            return (
+              <Text style={applyStyles('text-xs text-700 text-red-100')}>
+                Due{' '}
+                {formatDistanceToNowStrict(customer.due_date, {
+                  addSuffix: true,
+                })}
+              </Text>
+            );
+          }
+          return (
+            <Text style={applyStyles('text-xs text-700 text-red-100')}>
+              Collect{' '}
+              {formatDistanceToNowStrict(customer.due_date, {
+                addSuffix: true,
+              })}
+            </Text>
+          );
+        }
         return (
-          <Text style={applyStyles('text-xs text-700 text-red-100')}>
-            Due{' '}
-            {formatDistanceToNowStrict(customer.dueDate, {
-              addSuffix: true,
-            })}
+          <Text style={applyStyles('text-xs text-700 text-gray-100')}>
+            No Collection Date
           </Text>
         );
       }
-      if (customer.remainingCreditAmount && !customer.overdueCreditAmount) {
-        return (
-          <Text style={applyStyles('text-xs text-700 text-red-100')}>
-            Collect in{' '}
-            {formatDistanceToNowStrict(customer.dueDate, {
-              addSuffix: true,
-            })}
-          </Text>
-        );
-      }
-    }
-    if (!customer.dueDate && customer.remainingCreditAmount) {
       return (
         <Text style={applyStyles('text-xs text-700 text-gray-100')}>
-          No Collection Date
+          {customer?.created_at &&
+            formatDistanceToNowStrict(customer?.created_at, {
+              addSuffix: true,
+            })}
         </Text>
       );
-    }
-    return (
-      <Text style={applyStyles('text-xs text-700 text-gray-100')}>
-        {customer?.created_at &&
-          formatDistanceToNowStrict(customer?.created_at, {
-            addSuffix: true,
-          })}
-      </Text>
-    );
-  }, [customer]);
+    }, [customer]);
   return (
     <Touchable onPress={onPress}>
       <View
@@ -74,15 +83,26 @@ export const CustomerListItem = ({
         </View>
         <View style={applyStyles('items-end flex-row')}>
           <Text style={applyStyles('text-base text-700 text-black')}>
-            {amountWithCurrency(customer.remainingCreditAmount ?? 0)}
+            {customer.balance && customer.balance < 0 ? '-' : ''}
+            {amountWithCurrency(customer?.balance)}
           </Text>
-          {!!customer.remainingCreditAmount && (
+          {!!customer?.balance && customer?.balance < 0 && (
             <View style={applyStyles('pl-4')}>
               <Icon
                 size={18}
                 name="arrow-up"
                 type="feathericons"
                 color={colors['red-100']}
+              />
+            </View>
+          )}
+          {!!customer?.balance && customer?.balance > 0 && (
+            <View style={applyStyles('pl-4')}>
+              <Icon
+                size={18}
+                name="arrow-down"
+                type="feathericons"
+                color={colors['green-200']}
               />
             </View>
           )}

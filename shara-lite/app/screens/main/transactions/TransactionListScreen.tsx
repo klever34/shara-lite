@@ -7,6 +7,7 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
@@ -88,11 +89,15 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   }, [handleStatusFilter]);
 
   const handleGoToReportScreen = useCallback(() => {
+    getAnalyticsService()
+      .logEvent('userViewedReport', {})
+      .then(() => {})
+      .catch(handleError);
     navigation.navigate('Report');
   }, [navigation]);
 
   const getFilterLabelText = useCallback(() => {
-    const activeOption = filterOptions.find((item) => item.value === filter);
+    const activeOption = filterOptions?.find((item) => item.value === filter);
     if (filter === 'date-range' && filterStartDate && filterEndDate) {
       return (
         <Text>
@@ -190,10 +195,13 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
       {!searchTerm && (
         <>
           <View
-            style={applyStyles('flex-row items-center bg-white', {
-              borderBottomWidth: 1,
-              borderBottomColor: colors['gray-20'],
-            })}>
+            style={applyStyles(
+              'flex-row items-center bg-white justify-between',
+              {
+                borderBottomWidth: 1,
+                borderBottomColor: colors['gray-20'],
+              },
+            )}>
             <View
               style={applyStyles('py-16 flex-row center', {
                 width: '48%',
@@ -206,7 +214,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 )}>
                 <Icon
                   size={24}
-                  name="arrow-up"
+                  name="arrow-down"
                   type="feathericons"
                   color={colors.white}
                 />
@@ -214,9 +222,9 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
                   )}>
-                  collected
+                  amount collected
                 </Text>
                 <Text style={applyStyles('text-700 text-black text-base')}>
                   {amountWithCurrency(collectedAmount)}
@@ -230,7 +238,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 )}>
                 <Icon
                   size={24}
-                  name="arrow-down"
+                  name="arrow-up"
                   type="feathericons"
                   color={colors.white}
                 />
@@ -238,9 +246,9 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
                   )}>
-                  outstanding
+                  amount outstanding
                 </Text>
                 <Text style={applyStyles('text-700 text-black text-base')}>
                   {amountWithCurrency(outstandingAmount)}
@@ -258,7 +266,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             )}>
             <Text
               style={applyStyles('text-black text-700 text-uppercase flex-1')}>
-              Total: {amountWithCurrency(totalAmount)}
+              Total amount: {amountWithCurrency(totalAmount)}
             </Text>
             <Touchable onPress={handleGoToReportScreen}>
               <View
@@ -287,60 +295,60 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           </View>
         </>
       )}
-      {!!filteredReceipts && filteredReceipts.length ? (
-        <>
-          <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
-            <Text style={applyStyles('text-base text-gray-300')}>
-              {searchTerm
-                ? `${filteredReceipts.length} ${
-                    filteredReceipts.length > 1 ? 'Results' : 'Result'
-                  }`
-                : 'Activities'}
-            </Text>
-          </View>
-          <FlatList
-            data={filteredReceipts}
-            initialNumToRender={10}
-            style={applyStyles('bg-white')}
-            renderItem={renderTransactionItem}
-            keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
-          />
-        </>
-      ) : (
-        <EmptyState
-          style={applyStyles('bg-white')}
-          source={require('@/assets/images/emblem.png')}
-          imageStyle={applyStyles('pb-32', {width: 80, height: 80})}>
-          <View style={applyStyles('center')}>
-            <Text style={applyStyles('text-black text-xl pb-4')}>
-              {searchTerm || filter
-                ? 'No results found'
-                : 'You have no records yet.'}
-            </Text>
-            <Text style={applyStyles('text-black text-xl')}>
-              Start adding records by tapping here
-            </Text>
-          </View>
-          <View style={applyStyles('center p-16 w-full')}>
-            <Animatable.View
-              duration={200}
-              animation={{
-                from: {translateY: -10},
-                to: {translateY: 0},
-              }}
-              direction="alternate"
-              useNativeDriver={true}
-              iterationCount="infinite">
-              <Icon
-                size={100}
-                name="arrow-down"
-                type="feathericons"
-                color={colors.primary}
-              />
-            </Animatable.View>
-          </View>
-        </EmptyState>
+      {!!filteredReceipts && !!filteredReceipts.length && (
+        <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
+          <Text style={applyStyles('text-base text-gray-300')}>
+            {searchTerm
+              ? `${filteredReceipts.length} ${
+                  filteredReceipts.length > 1 ? 'Results' : 'Result'
+                }`
+              : 'Activities'}
+          </Text>
+        </View>
       )}
+      <FlatList
+        data={filteredReceipts}
+        initialNumToRender={10}
+        style={applyStyles('bg-white')}
+        renderItem={renderTransactionItem}
+        keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+        ListEmptyComponent={
+          <EmptyState
+            style={applyStyles('bg-white')}
+            source={require('@/assets/images/emblem.png')}
+            imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
+            <View style={applyStyles('center')}>
+              {!!searchTerm && (
+                <Text
+                  style={applyStyles('text-black text-xl pb-4 text-center')}>
+                  No results found
+                </Text>
+              )}
+              <Text style={applyStyles('text-black text-xl text-center')}>
+                Start adding records by tapping here
+              </Text>
+            </View>
+            <View style={applyStyles('center p-16 w-full')}>
+              <Animatable.View
+                duration={200}
+                animation={{
+                  from: {translateY: -10},
+                  to: {translateY: 0},
+                }}
+                direction="alternate"
+                useNativeDriver={true}
+                iterationCount="infinite">
+                <Icon
+                  size={80}
+                  name="arrow-down"
+                  type="feathericons"
+                  color={colors.primary}
+                />
+              </Animatable.View>
+            </View>
+          </EmptyState>
+        }
+      />
     </SafeAreaView>
   );
 });

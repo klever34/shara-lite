@@ -10,10 +10,13 @@ import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useContext, useMemo} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {Alert} from 'react-native';
+import {Alert, ScrollView, View} from 'react-native';
 import {ToastContext} from '@/components/Toast';
 import {TransactionReview} from '@/components/TransactionReview';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {IReceipt} from '@/models/Receipt';
+import {useAppNavigation} from '@/services/navigation';
+import {ObjectId} from 'bson';
 
 export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   const {openModal} = props;
@@ -21,12 +24,12 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   const authService = getAuthService();
   const apiService = getApiService();
   let {callingCode} = useIPGeolocation();
+  const navigation = useAppNavigation();
   const user = authService.getUser();
   const businessInfo = authService.getBusinessInfo();
   const {
     name,
     id,
-    slug,
     address,
     mobile = '',
     country_code,
@@ -35,13 +38,16 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   callingCode = country_code ?? callingCode;
   const {showSuccessToast} = useContext(ToastContext);
 
-  const dummyTransaction = {
+  const dummyTransaction: IReceipt = {
     tax: 120,
+    credit_amount: 0,
     amount_paid: 2500,
     total_amount: 5500,
-    credit_amount: 0,
+    _id: new ObjectId(),
+    is_collection: true,
     created_at: new Date(),
     transaction_date: new Date(),
+    customer: {name: 'John Doe'},
   };
 
   const handleOpenPreviewReceiptModal = useCallback(() => {
@@ -59,16 +65,30 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
     });
   }, [openModal, dummyTransaction]);
 
+  const getMobieNumber = useCallback(() => {
+    const code = country_code ?? callingCode;
+    if (mobile) {
+      if (mobile?.startsWith(code)) {
+        return mobile.replace(code, '');
+      }
+      return mobile;
+    }
+    return user?.mobile ?? '';
+  }, [user, country_code, mobile, callingCode]);
+
   const handleOpenSaveModal = useCallback(() => {
     const closeModal = openModal('full', {
       renderContent: () => (
-        <TransactionReview
-          heading="Saved"
-          onDone={closeModal}
-          showShareButtons={false}
-          transaction={dummyTransaction}
-          subheading="Here’s what your receipt looks like"
-        />
+        <ScrollView>
+          <TransactionReview
+            heading="Saved"
+            showShareButtons={false}
+            onDone={() => closeModal()}
+            transaction={dummyTransaction}
+            subheading="Here’s what your receipt looks like"
+          />
+          <View style={applyStyles('h-50')} />
+        </ScrollView>
       ),
     });
   }, [openModal, dummyTransaction]);
@@ -87,9 +107,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
         type: 'mobile',
         props: {
           value: {
-            number: mobile?.startsWith(callingCode)
-              ? mobile.replace(callingCode, '')
-              : mobile,
+            number: getMobieNumber(),
             callingCode: callingCode,
           },
           label: 'What’s your business phone number?',
@@ -103,22 +121,6 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
           rightIcon: 'map-pin',
         },
       },
-      slug: {
-        type: 'text',
-        props: {
-          value: slug,
-          rightIcon: 'globe',
-          label: 'Enter your payment link?',
-        },
-        validations: [
-          (fieldName, values) => {
-            if (values[fieldName].match(/[^a-z-0-9]/)) {
-              return 'Payment link should contain only lowercase and dash';
-            }
-            return null;
-          },
-        ],
-      },
       profileImageFile: {
         type: 'image',
         props: {
@@ -129,7 +131,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       },
     };
     return fields;
-  }, [address, callingCode, mobile, name, slug, profile_image]);
+  }, [address, callingCode, name, profile_image, getMobieNumber]);
 
   const handleSubmit = useCallback(
     async (formValues) => {
@@ -142,7 +144,6 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       const payload = new FormData();
       payload.append('name', formValues?.name);
       payload.append('address', formValues?.address);
-      formValues?.slug && payload.append('slug', formValues?.slug);
       formValues?.mobile && payload.append('mobile', formValues?.mobile);
       formValues?.countryCode &&
         payload.append('country_code', formValues?.countryCode);
@@ -169,7 +170,9 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
     <Page
       header={{
         title: 'Business Settings',
-        iconLeft: {},
+        iconLeft: {
+          onPress: () => navigation.navigate('Settings'),
+        },
         style: applyStyles('py-8'),
       }}
       style={applyStyles('bg-white')}>
@@ -179,6 +182,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
           fields={formFields}
           actionBtns={[
             {
+              isLoading: false,
               title: 'Preview Receipt',
               variantColor: 'transparent',
               onPress: handleOpenPreviewReceiptModal,

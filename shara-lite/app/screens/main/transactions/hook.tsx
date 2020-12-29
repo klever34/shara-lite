@@ -1,23 +1,27 @@
+import {FilterOption} from '@/components/TransactionFilterModal';
 import {IReceipt} from '@/models/Receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
 import {useCallback, useEffect, useMemo, useState} from 'react';
 
-export type FilterOption = {
-  text: string;
-  value: string;
-  endDate?: Date;
-  startDate?: Date;
+export type UseReceiptListProps = {
+  receipts?: IReceipt[];
+  initialFilter?: string;
+  filterOptions?: FilterOption[];
 };
 
-export const useReceiptList = ({initialFilter = 'all'} = {}) => {
+export const useReceiptList = ({
+  receipts,
+  filterOptions,
+  initialFilter = 'all',
+}: UseReceiptListProps = {}) => {
   const navigation = useAppNavigation();
   const {getTransactions} = useTransaction();
-  const receipts = getTransactions();
+  receipts = receipts ?? getTransactions();
 
   const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState(initialFilter);
+  const [filter, setFilter] = useState<string | undefined>(initialFilter);
   const [allReceipts, setAllReceipts] = useState(receipts);
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
@@ -25,7 +29,7 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
   const [filterEndDate, setFilterEndDate] = useState(endOfDay(new Date()));
 
   const handleStatusFilter = useCallback(
-    (payload: {status: string; startDate?: Date; endDate?: Date}) => {
+    (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
       const {status, startDate, endDate} = payload;
       setFilter(status);
       startDate && setFilterStartDate(startDate);
@@ -34,34 +38,34 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
     [],
   );
 
-  const filterOptions = useMemo(
-    () => [
-      {text: 'All', value: 'all'},
-      {
-        text: 'Single Day',
-        value: 'today',
-        startDate: startOfDay(new Date()),
-        endDate: endOfDay(new Date()),
-      },
-      {
-        text: 'Last Week',
-        value: '1-week',
-        startDate: subWeeks(new Date(), 1),
-        endDate: new Date(),
-      },
-      {
-        text: 'Last Month',
-        value: '1-month',
-        startDate: subMonths(new Date(), 1),
-        endDate: new Date(),
-      },
-      {
-        text: 'Date Range',
-        value: 'date-range',
-      },
-    ],
-    [],
-  );
+  filterOptions =
+    filterOptions ??
+    useMemo(
+      () => [
+        {text: 'All', value: 'all'},
+        {
+          text: 'Single Day',
+          value: 'single-day',
+        },
+        {
+          text: 'Last Week',
+          value: '1-week',
+          startDate: subWeeks(new Date(), 1),
+          endDate: new Date(),
+        },
+        {
+          text: 'Last Month',
+          value: '1-month',
+          startDate: subMonths(new Date(), 1),
+          endDate: new Date(),
+        },
+        {
+          text: 'Date Range',
+          value: 'date-range',
+        },
+      ],
+      [],
+    );
 
   const handleReceiptSearch = useCallback((text) => {
     setSearchTerm(text);
@@ -76,7 +80,7 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
         case 'all':
           userReceipts = userReceipts;
           break;
-        case 'today':
+        case 'single-day':
           userReceipts = userReceipts.filtered(
             'transaction_date >= $0 && transaction_date <= $1',
             filterStartDate,
@@ -129,7 +133,7 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
         case 'all':
           userReceipts = userReceipts;
           break;
-        case 'today':
+        case 'single-day':
           userReceipts = userReceipts.filtered(
             'transaction_date >= $0 && transaction_date <= $1',
             filterStartDate,
@@ -194,10 +198,10 @@ export const useReceiptList = ({initialFilter = 'all'} = {}) => {
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
-      const myReceipts = getTransactions();
+      const myReceipts = receipts ?? getTransactions();
       setAllReceipts(myReceipts);
     });
-  }, [getTransactions, navigation]);
+  }, [receipts, getTransactions, navigation]);
 
   return useMemo(
     () => ({

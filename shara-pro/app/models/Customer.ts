@@ -3,6 +3,7 @@ import {IReceipt} from './Receipt';
 import {ICredit} from './Credit';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IAddress} from '@/models/Address';
+import {IPaymentReminder} from '@/models/PaymentReminder';
 
 export enum DEBT_LEVEL {
   NO_DEBT = 0,
@@ -14,9 +15,11 @@ export interface ICustomer extends BaseModelInterface {
   name: string;
   mobile?: string;
   email?: string;
+  due_date?: Date;
   receipts?: Realm.Results<IReceipt & Realm.Object>;
   payments?: IPayment[];
   credits?: Realm.Results<ICredit & Realm.Object>;
+  paymentReminders?: Realm.Results<IPaymentReminder & Realm.Object>;
   addresses?: IAddress[];
 
   // Getters
@@ -39,6 +42,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       name: 'string?',
       mobile: {type: 'string?', indexed: true},
       email: 'string?',
+      due_date: 'date?',
       receipts: {
         type: 'linkingObjects',
         objectType: 'Receipt',

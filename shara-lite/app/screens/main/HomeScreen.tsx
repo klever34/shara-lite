@@ -4,13 +4,14 @@ import {CustomersScreen} from '@/screens/main/customers';
 import {TransactionsScreen} from '@/screens/main/transactions';
 import {applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React from 'react';
+import React, {useContext, useEffect} from 'react';
 import {SafeAreaView, View, Text, Image} from 'react-native';
 import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {getAuthService} from '@/services';
-import {EntryButton} from '@/components/Entry';
+import {EntryButton, EntryContext} from '@/components/EntryView';
+import Touchable from '@/components/Touchable';
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
@@ -27,6 +28,16 @@ const Nothing = () => null;
 export const HomeScreen = () => {
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
+  const {setCurrentCustomer} = useContext(EntryContext);
+
+  useEffect(() => {
+    setCurrentCustomer?.(null);
+  }, [setCurrentCustomer]);
+
+  navigation.addListener('focus', () => {
+    setCurrentCustomer?.(null);
+  });
+
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header
@@ -41,23 +52,27 @@ export const HomeScreen = () => {
             },
           ],
         }}>
-        <View style={applyStyles('flex-row items-center ml-16')}>
-          <Image
-            source={{
-              uri: business.profile_image?.url,
-            }}
-            style={applyStyles('w-full rounded-12', {
-              width: 24,
-              height: 24,
-            })}
-          />
-          <View style={applyStyles('pl-12')}>
-            <Text
-              style={applyStyles('text-uppercase text-sm text-700 text-white')}>
-              {business.name}
-            </Text>
+        <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
+          <View style={applyStyles('flex-row items-center ml-16')}>
+            <Image
+              source={{
+                uri: business.profile_image?.url,
+              }}
+              style={applyStyles('w-full rounded-12', {
+                width: 24,
+                height: 24,
+              })}
+            />
+            <View style={applyStyles('pl-12')}>
+              <Text
+                style={applyStyles(
+                  'text-uppercase text-sm text-700 text-white',
+                )}>
+                {business.name}
+              </Text>
+            </View>
           </View>
-        </View>
+        </Touchable>
       </Header>
       <MainNav.Navigator
         initialRouteName="TransactionsTab"

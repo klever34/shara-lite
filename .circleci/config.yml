@@ -364,7 +364,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - checkout_code:
           app: shara-pro
           context: shara-qa
@@ -377,7 +376,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - test:
           app: shara-pro
           requires:
@@ -397,7 +395,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - fastlane:
           app: shara-pro
           context: shara-qa
@@ -414,7 +411,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
   shara-lite-qa-workflow:
     jobs:
       - request-approval:
@@ -423,7 +419,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - checkout_code:
           app: shara-lite
           context: shara-qa
@@ -437,7 +432,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - test:
           app: shara-lite
           requires:
@@ -457,7 +451,6 @@ workflows:
             branches:
               only:
                 - /^release.*/
-                - /^hotfix.*/
       - fastlane:
           app: shara-lite
           context: shara-qa
@@ -474,6 +467,116 @@ workflows:
             branches:
               only:
                 - /^release.*/
+  shara-pro-hotfix-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+      - checkout_code:
+          app: shara-pro
+          context: shara-beta
+          merged: true
+          commit: true
+          versioning: false
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+      - test:
+          app: shara-pro
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-pro
+          context: shara-beta
+          lane: play
+          track: internal
+          packageName: co.shara.app
+          sentryProject: shara-plus
+          firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+      - fastlane:
+          app: shara-pro
+          context: shara-beta
+          lane: internal
+          packageName: co.shara.app
+          sentryProject: shara-plus
+          firebaseAppId: 1:977580664493:android:ee3c28cde6d30952714824
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+  shara-lite-hotfix-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+      - checkout_code:
+          app: shara-lite
+          context: shara-beta
+          appEnv: SHARA_LITE_ENV
+          merged: true
+          commit: true
+          versioning: false
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: play
+          track: internal
+          packageName: co.shara.lite
+          sentryProject: shara-lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - /^hotfix.*/
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: internal
+          packageName: co.shara.lite
+          sentryProject: shara-lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
                 - /^hotfix.*/
   shara-pro-beta-workflow:
     jobs:

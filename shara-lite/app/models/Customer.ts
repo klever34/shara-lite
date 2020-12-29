@@ -3,6 +3,7 @@ import {IReceipt} from './Receipt';
 import {ICredit} from './Credit';
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IAddress} from '@/models/Address';
+import {IPaymentReminder} from '@/models/PaymentReminder';
 
 export enum DEBT_LEVEL {
   NO_DEBT = 0,
@@ -14,9 +15,11 @@ export interface ICustomer extends BaseModelInterface {
   name: string;
   mobile?: string;
   email?: string;
+  due_date?: Date;
   receipts?: Realm.Results<IReceipt & Realm.Object>;
   payments?: IPayment[];
   credits?: Realm.Results<ICredit & Realm.Object>;
+  paymentReminders?: Realm.Results<IPaymentReminder & Realm.Object>;
   addresses?: IAddress[];
 
   // Getters
@@ -41,6 +44,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       name: 'string?',
       mobile: {type: 'string?', indexed: true},
       email: 'string?',
+      due_date: 'date?',
       receipts: {
         type: 'linkingObjects',
         objectType: 'Receipt',
@@ -59,6 +63,11 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       addresses: {
         type: 'linkingObjects',
         objectType: 'Address',
+        property: 'customer',
+      },
+      paymentReminders: {
+        type: 'linkingObjects',
+        objectType: 'PaymentReminder',
         property: 'customer',
       },
     },
@@ -94,15 +103,13 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
 
   public get balance() {
     const totalCreditAmount =
-      this.receipts?.filtered('is_deleted = false').sum('credit_amount') || 0;
+      this.receipts?.filtered('is_deleted != true').sum('credit_amount') || 0;
     const totalCollectedAmount =
       this.receipts
-        ?.filtered('is_deleted = false AND credit_amount = 0')
+        ?.filtered('is_deleted != true AND credit_amount = 0')
         .sum('amount_paid') || 0;
 
-    const balance = totalCreditAmount - totalCollectedAmount;
-
-    return balance >= 0 ? balance : 0;
+    return totalCollectedAmount - totalCreditAmount;
   }
 
   public get overdueCreditAmount() {
@@ -125,7 +132,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
   public get dueDate() {
     const credits = this.credits
       ?.filtered(
-        'is_deleted = false AND due_date != null AND fulfilled = false',
+        'is_deleted != true AND due_date != null AND fulfilled = false',
       )
       .sorted('due_date');
 

@@ -21,30 +21,31 @@ import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
 } from './entry/SelectCustomerScreen';
-import {CustomerEntryScreenParams} from './customers/CustomerEntryScreen';
 import ReferralScreen from './more/referral';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import {MoreScreen} from '@/screens/main/more';
 import {PaymentsScreen} from '@/screens/main/payments';
-import {Entry} from '@/components/Entry';
+import {EntryView} from '@/components/EntryView';
 import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
 import {ICustomer} from '@/models';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {ReportScreen} from './report';
+import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Customers
   CustomerDetails: TransactionDetailsProps;
-  CustomerEntry: CustomerEntryScreenParams;
+  ReminderSettings: {customer: ICustomer};
   SelectCustomerList: SelectCustomerListScreenParams;
 
   // Transaction
   RecordSale: {
     goBack?: () => void;
+    customer?: ICustomer;
   };
   EditTransaction: {transaction: IReceipt};
   TransactionDetails: {transaction: IReceipt};
@@ -97,7 +98,7 @@ const MainScreens = () => {
   }
 
   return (
-    <Entry>
+    <EntryView>
       <MainStack.Navigator
         initialRouteName="Home"
         screenOptions={{
@@ -143,6 +144,12 @@ const MainScreens = () => {
         <MainStack.Screen
           name="RecordCollection"
           component={RecordCollectionScreen}
+          options={{headerShown: false}}
+        />
+
+        <MainStack.Screen
+          name="ReminderSettings"
+          component={ReminderSettingsScreen}
           options={{headerShown: false}}
         />
 
@@ -216,7 +223,7 @@ const MainScreens = () => {
           }}
         />
       </MainStack.Navigator>
-    </Entry>
+    </EntryView>
   );
 };
 

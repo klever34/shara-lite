@@ -13,11 +13,12 @@ export const ReportListItem = ({
   transaction: IReceipt;
 }) => {
   const {
-    customer,
-    transaction_date,
     note,
-    total_amount,
+    customer,
     amount_paid,
+    total_amount,
+    is_collection,
+    transaction_date,
   } = transaction;
   return (
     <View
@@ -60,10 +61,14 @@ export const ReportListItem = ({
         style={applyStyles('py-8 px-16 bg-gray-10 justify-center', {
           width: '30%',
         })}>
-        <Text
-          style={applyStyles('text-xs text-700 text-gray-300 text-uppercase')}>
-          {amountWithCurrency(total_amount)}
-        </Text>
+        {!is_collection && (
+          <Text
+            style={applyStyles(
+              'text-xs text-700 text-gray-300 text-uppercase',
+            )}>
+            {amountWithCurrency(total_amount)}
+          </Text>
+        )}
       </View>
       <View
         style={applyStyles('py-8 px-16 bg-white justify-center items-end', {

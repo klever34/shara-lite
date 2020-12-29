@@ -21,7 +21,7 @@ export const useSupplier = (): useSupplierInterface => {
   const getSuppliers = (): ISupplier[] => {
     return (realm
       .objects<ISupplier>(modelName)
-      .filtered('is_deleted = false') as unknown) as ISupplier[];
+      .filtered('is_deleted != true') as unknown) as ISupplier[];
   };
 
   const getSupplierByMobile = ({

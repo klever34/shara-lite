@@ -20,7 +20,7 @@ export const useStockItem = (): useStockItemInterface => {
   const getStockItems = (): IStockItem[] => {
     return (realm
       .objects<IStockItem>(modelName)
-      .filtered('is_deleted = false') as unknown) as IStockItem[];
+      .filtered('is_deleted != true') as unknown) as IStockItem[];
   };
 
   const addNewStockItem = async ({

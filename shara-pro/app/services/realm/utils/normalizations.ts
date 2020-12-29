@@ -28,8 +28,6 @@ export const normalizeDb = ({
     schema.forEach((objSchema) => {
       const allObjects = realm.objects(objSchema.name);
       allObjects.forEach((obj: any) => {
-        obj.is_deleted = false;
-
         if (!obj._partition) {
           obj._partition = partitionKey;
         }

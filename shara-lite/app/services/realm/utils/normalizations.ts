@@ -19,7 +19,7 @@ export const normalizeDb = ({
       .objects<IReceipt>('Receipt')
       .filtered('transaction_date = null');
     receipts.forEach((receipt) => {
-      if (!receipt.transaction_date) {
+      if (receipt && !receipt.transaction_date) {
         receipt.transaction_date = receipt.created_at;
       }
     });
@@ -28,8 +28,6 @@ export const normalizeDb = ({
     schema.forEach((objSchema) => {
       const allObjects = realm.objects(objSchema.name);
       allObjects.forEach((obj: any) => {
-        obj.is_deleted = false;
-
         if (!obj._partition) {
           obj._partition = partitionKey;
         }

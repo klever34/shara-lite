@@ -1,4 +1,6 @@
 import {IPaymentOption} from '@/models/PaymentOption';
+import {getAnalyticsService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {applyStyles, colors} from '@/styles';
 import Clipboard from '@react-native-community/clipboard';
 import React, {useState} from 'react';
@@ -8,10 +10,14 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
   const [hasCopied, setHasCopied] = useState(false);
 
   const copyToClipboard = (option: IPaymentOption) => {
-    const value = `${option.name}\n${option?.fieldsData?.map(
-      (field) => `${field.label}: ${field.value}`,
+    const value = `${option.name}${option?.fieldsData?.map(
+      (field) => `\n${field.label}: ${field.value}`,
     )}`;
     Clipboard.setString(value);
+    getAnalyticsService()
+      .logEvent('copiedPaymentOption', {})
+      .then(() => {})
+      .catch(handleError);
     setHasCopied(true);
 
     setTimeout(() => {

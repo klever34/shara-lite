@@ -46,7 +46,7 @@ export const amountWithCurrency = (amount?: number) => {
   const authService = getAuthService();
   const currency = authService.getUserCurrency();
   return amount
-    ? `${currency}${numberWithCommas(amount)}`
+    ? `${currency}${numberWithCommas(Math.abs(amount))}`
     : `${currency}${numberWithCommas(0)}`;
 };
 
