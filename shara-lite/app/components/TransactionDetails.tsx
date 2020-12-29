@@ -366,7 +366,7 @@ const TransactionDetails = withModal(
                             : 'set collection date'}
                         </Text>
                       </View>
-                      {getPaymentReminders().length ? (
+                      {!!dueDate && !!getPaymentReminders().length ? (
                         <Text
                           style={applyStyles(
                             'pl-4 text-gray-100 text-uppercase text-700 text-xs',

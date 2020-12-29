@@ -100,9 +100,9 @@ export const ReminderForm = ({
               setFieldValue('unit', itemValue);
               submitForm();
             }}>
-            <Picker.Item label="Day(s)" value={ReminderUnit.DAYS} />
-            <Picker.Item label="Week(s)" value={ReminderUnit.WEEKS} />
-            <Picker.Item label="Month(s)" value={ReminderUnit.MONTHS} />
+            <Picker.Item label="DAY(S)" value={ReminderUnit.DAYS} />
+            <Picker.Item label="WEEK(S)" value={ReminderUnit.WEEKS} />
+            <Picker.Item label="MONTH(S)" value={ReminderUnit.MONTHS} />
           </Picker>
         </View>
         <View
@@ -120,8 +120,8 @@ export const ReminderForm = ({
               setFieldValue('when', itemValue);
               submitForm();
             }}>
-            <Picker.Item label="Before" value={ReminderWhen.BEFORE} />
-            <Picker.Item label="After" value={ReminderWhen.AFTER} />
+            <Picker.Item label="BEFORE" value={ReminderWhen.BEFORE} />
+            <Picker.Item label="AFTER" value={ReminderWhen.AFTER} />
           </Picker>
         </View>
       </View>
