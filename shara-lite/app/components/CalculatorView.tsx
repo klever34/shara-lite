@@ -12,6 +12,7 @@ import {Keyboard} from 'react-native-ui-lib';
 import {View, ScrollView, Text, ViewStyle, TextStyle} from 'react-native';
 import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
 import Touchable from '@/components/Touchable';
+import Icon from './Icon';
 const KeyboardAccessoryView = Keyboard.KeyboardAccessoryView;
 const KeyboardRegistry = Keyboard.KeyboardRegistry;
 
@@ -173,6 +174,9 @@ const calculate = (tokens: string[]) => {
     }
     throw syntaxError;
   } catch (err) {
+    if (stack.length === 1) {
+      return stack.pop();
+    }
     throw err;
   }
 };
@@ -314,6 +318,7 @@ const CalculatorKeyboard = () => {
   const {
     enterValue,
     handleClear,
+    handleDelete,
     handleCalculate,
     tokens,
     label,
@@ -343,7 +348,9 @@ const CalculatorKeyboard = () => {
             <CalculatorButton label="00" onPress={enterValue?.('00')} />
           </View>
           <View style={applyStyles('flex-1')}>
-            <CalculatorButton label="%" onPress={enterValue?.('%')} />
+            <CalculatorButton onPress={handleDelete}>
+              <Icon type="feathericons" name="delete" size={24} />
+            </CalculatorButton>
             <CalculatorButton label="8" onPress={enterValue?.('8')} />
             <CalculatorButton label="5" onPress={enterValue?.('5')} />
             <CalculatorButton label="2" onPress={enterValue?.('2')} />
