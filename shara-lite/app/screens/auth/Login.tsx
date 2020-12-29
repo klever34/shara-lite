@@ -11,6 +11,7 @@ import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import * as yup from 'yup';
+import {strings} from '@/services/i18n';
 
 type Fields = {
   mobile: string;
@@ -89,26 +90,26 @@ export const Login = () => {
   return (
     <AuthView
       isLoading={loading}
-      buttonTitle="Sign In"
+      buttonTitle={strings('login.login_button')}
       onSubmit={handleSubmit}
       showButton={false}
       header={{title: 'Sign In'}}
-      heading="Get Started For Free"
+      heading={strings('login.heading')}
       style={applyStyles('bg-white')}
-      description="Log in to auto-backup and sync your data securely">
+      description={strings('login.subheading')}>
       <View style={applyStyles('pb-32')}>
         <PhoneNumberField
           errorMessage={errors.mobile}
           onSubmitEditing={handleSubmit}
-          placeholder="Enter your number"
-          label="What's your phone number?"
+          placeholder={strings('fields.phone_field.placeholder')}
+          label={strings('fields.phone_field.label')}
           containerStyle={applyStyles('mb-24')}
           onChangeText={(data) => onChangeMobile(data)}
           isInvalid={touched.mobile && !!errors.mobile}
           value={{number: values.mobile, callingCode: values.countryCode}}
         />
         <Button
-          title="Next"
+          title={strings('login.login_button')}
           isLoading={loading}
           onPress={handleSubmit}
           style={applyStyles('w-full')}
@@ -123,7 +124,7 @@ export const Login = () => {
           })
         }>
         <Text style={applyStyles('mb-12 text-gray-100', {fontSize: 16})}>
-          Forgot your password?
+          {strings('login.forgot_password')}
         </Text>
       </TouchableOpacity>
     </AuthView>

@@ -12,6 +12,7 @@ import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
+import {strings} from '@/services/i18n';
 
 export const OTPVerification = () => {
   const [otp, setOtp] = useState('');
@@ -110,7 +111,10 @@ export const OTPVerification = () => {
   }, []);
 
   return (
-    <AuthView showBackButton={true} heading="OTP" description={params.message}>
+    <AuthView
+      showBackButton={true}
+      heading={strings('otp.heading')}
+      description={params.message}>
       <View style={applyStyles('items-center')}>
         <OTPInputView
           code={otp}
@@ -139,7 +143,7 @@ export const OTPVerification = () => {
             style={applyStyles('flex-row center')}
             onPress={handleResendSubmit}>
             <Text style={applyStyles('text-gray-100 text-base')}>
-              Didn't receive the code?{' '}
+              {strings('otp.resend_text')}{' '}
             </Text>
             <Text
               style={applyStyles({
@@ -149,13 +153,13 @@ export const OTPVerification = () => {
                 textDecorationLine: 'underline',
                 textDecorationColor: colors.black,
               })}>
-              Resend Code
+              {strings('otp.resend_button')}
             </Text>
           </TouchableOpacity>
         </View>
         <Button
           variantColor="red"
-          title="Get Started"
+          title={strings('otp.otp_button')}
           isLoading={loading}
           style={applyStyles('w-full')}
           onPress={() => handleSubmit(otp)}

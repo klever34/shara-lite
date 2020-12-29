@@ -12,6 +12,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {Alert, ToastAndroid} from 'react-native';
+import {strings} from '@/services/i18n';
 
 const ForgotPassword = () => {
   const navigation = useAppNavigation();
@@ -34,14 +35,14 @@ const ForgotPassword = () => {
   return (
     <AuthView
       showEmblem={false}
-      header={{title: 'Forgot your password?', iconLeft: {}}}
-      heading="Forgot your password?"
+      header={{title: strings('forgot_password.heading'), iconLeft: {}}}
+      heading={strings('forgot_password.heading')}
       style={applyStyles('bg-white pt-24')}
-      description="Enter your mobile number to receive your OTP"
+      description={strings('forgot_password.subheading')}
       showButton={false}>
       <FormBuilder
         fields={formFields}
-        actionBtns={[{title: 'submit'}]}
+        actionBtns={[{title: strings('forgot_password.fp_button')}]}
         onSubmit={(values) => {
           const phoneNumber = values?.mobile as PhoneNumber;
           const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;
