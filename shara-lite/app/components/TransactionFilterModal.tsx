@@ -164,8 +164,8 @@ export const TransactionFilterModal = ({
               maximumDate={new Date()}
               value={filterStartDate ?? new Date()}
               onChange={(e: Event, date?: Date) => {
-                date && setFilterStartDate(date);
-                setFilterEndDate(endOfDay(new Date()));
+                date && setFilterStartDate(startOfDay(date));
+                date && setFilterEndDate(endOfDay(date));
               }}>
               {(toggleShow) => (
                 <Touchable onPress={toggleShow}>

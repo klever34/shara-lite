@@ -61,11 +61,18 @@ export const ReminderForm = ({
           />
         </Touchable>
       </View>
-      <View>
-        <View>
+      <View style={applyStyles('flex-row items-center justify-between')}>
+        <View
+          style={applyStyles('', {
+            width: '30%',
+            borderWidth: 1,
+            borderRadius: 8,
+            borderColor: colors['gray-20'],
+          })}>
           <Picker
             mode="dropdown"
             selectedValue={values.amount}
+            style={applyStyles({width: '100%'})}
             onValueChange={(itemValue) => {
               setFieldValue('amount', itemValue);
               submitForm();
@@ -78,10 +85,17 @@ export const ReminderForm = ({
               ))}
           </Picker>
         </View>
-        <View>
+        <View
+          style={applyStyles('', {
+            width: '33%',
+            borderWidth: 1,
+            borderRadius: 8,
+            borderColor: colors['gray-20'],
+          })}>
           <Picker
             mode="dropdown"
             selectedValue={values.unit}
+            style={applyStyles({width: '100%'})}
             onValueChange={(itemValue) => {
               setFieldValue('unit', itemValue);
               submitForm();
@@ -91,10 +105,17 @@ export const ReminderForm = ({
             <Picker.Item label="Month(s)" value={ReminderUnit.MONTHS} />
           </Picker>
         </View>
-        <View>
+        <View
+          style={applyStyles('', {
+            width: '33%',
+            borderWidth: 1,
+            borderRadius: 8,
+            borderColor: colors['gray-20'],
+          })}>
           <Picker
             mode="dropdown"
             selectedValue={values.when}
+            style={applyStyles({width: '100%'})}
             onValueChange={(itemValue) => {
               setFieldValue('when', itemValue);
               submitForm();

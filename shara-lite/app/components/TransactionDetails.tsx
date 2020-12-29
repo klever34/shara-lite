@@ -9,6 +9,7 @@ import TransactionListItem from '@/components/TransactionListItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
 import {useReceiptList} from '@/screens/main/transactions/hook';
 import {
@@ -19,10 +20,20 @@ import {
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import {usePaymentReminder} from '@/services/payment-reminder';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
-import {format} from 'date-fns';
+import {
+  addDays,
+  subDays,
+  addMonths,
+  addWeeks,
+  format,
+  subMonths,
+  subWeeks,
+  formatDistanceToNowStrict,
+} from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
   Alert,
@@ -54,6 +65,7 @@ const TransactionDetails = withModal(
     const navigation = useAppNavigation();
     const analyticsService = getAnalyticsService();
     const {addCustomerToTransaction} = useTransaction();
+    const {getPaymentReminders} = usePaymentReminder();
     const user = getAuthService().getUser();
     const businessInfo = getAuthService().getBusinessInfo();
     const {
@@ -74,6 +86,48 @@ const TransactionDetails = withModal(
     useEffect(() => {
       setCurrentCustomer?.(customer);
     }, [customer, setCurrentCustomer]);
+
+    const getNextReminderDateText = useCallback(() => {
+      const dates: Date[] = [];
+      if (dueDate) {
+        getPaymentReminders().forEach((item) => {
+          switch (item.unit) {
+            case ReminderUnit.DAYS:
+              if (item.when === ReminderWhen.AFTER) {
+                dates.push(addDays(dueDate, item.amount));
+              } else {
+                dates.push(subDays(dueDate, item.amount));
+              }
+              break;
+            case ReminderUnit.WEEKS:
+              if (item.when === ReminderWhen.AFTER) {
+                dates.push(addWeeks(dueDate, item.amount));
+              } else {
+                dates.push(subWeeks(dueDate, item.amount));
+              }
+              break;
+            case ReminderUnit.MONTHS:
+              if (item.when === ReminderWhen.AFTER) {
+                dates.push(addMonths(dueDate, item.amount));
+              } else {
+                dates.push(subMonths(dueDate, item.amount));
+              }
+              break;
+
+            default:
+              break;
+          }
+        });
+        if (dates.length) {
+          return formatDistanceToNowStrict(dates[0], {
+            addSuffix: true,
+          });
+        }
+        return formatDistanceToNowStrict(addDays(dueDate, 1), {
+          addSuffix: true,
+        });
+      }
+    }, [dueDate, getPaymentReminders]);
 
     const paymentLink =
       businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
@@ -263,7 +317,7 @@ const TransactionDetails = withModal(
           {!!transactions?.length && (
             <>
               {customer?.balance && customer.balance < 0 ? (
-                <View style={applyStyles('bg-white center pb-16')}>
+                <View style={applyStyles('bg-white center pb-16 px-8')}>
                   {!!customer.balance && customer.balance < 0 && (
                     <View style={applyStyles('py-16 center')}>
                       <Text
@@ -281,7 +335,7 @@ const TransactionDetails = withModal(
                     onPress={() =>
                       navigation.navigate('ReminderSettings', {customer})
                     }>
-                    <View style={applyStyles('flex-row center p-8')}>
+                    <View style={applyStyles('flex-row center py-8 flex-wrap')}>
                       <View
                         style={applyStyles(
                           `p-8 flex-row items-center ${
@@ -312,15 +366,27 @@ const TransactionDetails = withModal(
                             : 'set collection date'}
                         </Text>
                       </View>
-                      <Text
-                        style={applyStyles(
-                          'pl-4 text-gray-100 text-uppercase text-700 text-xs',
-                        )}>
-                        No reminder set
-                      </Text>
+                      {getPaymentReminders().length ? (
+                        <Text
+                          style={applyStyles(
+                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                          )}>
+                          Next reminder{' '}
+                          <Text style={applyStyles('text-red-200')}>
+                            {getNextReminderDateText()}
+                          </Text>
+                        </Text>
+                      ) : (
+                        <Text
+                          style={applyStyles(
+                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                          )}>
+                          No reminder set
+                        </Text>
+                      )}
                     </View>
                   </Touchable>
-                  <View style={applyStyles('flex-row items-center')}>
+                  <View style={applyStyles('flex-row items-center flex-wrap')}>
                     <Text
                       style={applyStyles(
                         'text-sm text-uppercase text-gray-300 text-700',

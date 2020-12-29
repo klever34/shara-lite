@@ -60,8 +60,8 @@ export const ReminderSettingsScreen = ({
     [customer, updateDueDate],
   );
 
-  const handleAddReminder = useCallback(() => {
-    savePaymentReminder({
+  const handleAddReminder = useCallback(async () => {
+    await savePaymentReminder({
       paymentReminder: {
         amount: 1,
         unit: ReminderUnit.DAYS,
@@ -69,17 +69,25 @@ export const ReminderSettingsScreen = ({
         due_date: dueDate,
         customer: customer,
       },
-    }).then(() => {
-      showSuccessToast('REMINDER ADDED');
-      setReminders(getPaymentReminders());
     });
+    showSuccessToast('REMINDER ADDED');
+    setReminders(getPaymentReminders());
   }, [
-    showSuccessToast,
-    customer,
     dueDate,
+    customer,
+    showSuccessToast,
     getPaymentReminders,
     savePaymentReminder,
   ]);
+
+  const handleDeleteReminder = useCallback(
+    async (reminder) => {
+      await deletePaymentReminder({paymentReminder: reminder});
+      showSuccessToast('REMINDER REMOVED');
+      setReminders(getPaymentReminders());
+    },
+    [showSuccessToast, deletePaymentReminder, getPaymentReminders],
+  );
 
   const handleRemoveReminder = useCallback(
     (reminder) => {
@@ -93,17 +101,12 @@ export const ReminderSettingsScreen = ({
           },
           {
             text: 'Yes',
-            onPress: () => {
-              deletePaymentReminder({paymentReminder: reminder}).then(() => {
-                showSuccessToast('REMINDER REMOVED');
-                setReminders(getPaymentReminders());
-              });
-            },
+            onPress: () => handleDeleteReminder(reminder),
           },
         ],
       );
     },
-    [showSuccessToast, deletePaymentReminder, getPaymentReminders],
+    [handleDeleteReminder],
   );
 
   return (
