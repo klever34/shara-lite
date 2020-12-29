@@ -16,6 +16,8 @@ import {Platform} from 'react-native';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 import {NavigationState} from '@react-navigation/routers';
 import {ToastProvider} from '@/components/Toast';
+import remoteConfig from '@react-native-firebase/remote-config';
+import remoteConfigDefaults from 'remote-config.json';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -38,6 +40,22 @@ const App = () => {
   }, [handleError]);
   useEffect(() => {
     getNotificationService().initialize();
+  }, []);
+  useEffect(() => {
+    remoteConfig()
+      .setDefaults({
+        minimumVersion: remoteConfigDefaults.minimumVersion,
+      })
+      .then(() => remoteConfig().fetchAndActivate())
+      .then((fetchedRemotely) => {
+        if (fetchedRemotely) {
+          console.log('Configs were retrieved from the backend and activated.');
+        } else {
+          console.log(
+            'No configs were fetched from the backend, and the local configs were already activated',
+          );
+        }
+      });
   }, []);
   const getActiveRouteName = useCallback((state: NavigationState): string => {
     const route = state.routes[state.index];
