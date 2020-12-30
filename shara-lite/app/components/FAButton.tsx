@@ -36,7 +36,7 @@ export const FAButton = ({
   }, [children, iconType, iconName]);
 
   return (
-    <Touchable onPress={onPress}>
+    <Touchable onPress={isLoading ? undefined : onPress}>
       <View
         style={applyStyles(styles.container, style, {backgroundColor: color})}>
         {isLoading ? (
