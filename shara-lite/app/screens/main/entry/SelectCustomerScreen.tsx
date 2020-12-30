@@ -341,6 +341,20 @@ export const SelectCustomerListScreen = withModal(
           keyExtractor={keyExtractor}
           keyboardShouldPersistTaps="always"
           renderItem={renderCustomerListItem}
+          ListEmptyComponent={
+            <View style={applyStyles('center py-48')}>
+              <Icon
+                size={24}
+                name="users"
+                type="feathericons"
+                color={colors['gray-50']}
+                style={applyStyles('mb-12')}
+              />
+              <Text style={applyStyles('text-center text-400 text-gray-50')}>
+                You have no Customers yet
+              </Text>
+            </View>
+          }
         />
         {!withCustomer ? (
           customer ? (
