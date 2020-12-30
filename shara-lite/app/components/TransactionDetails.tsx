@@ -245,6 +245,10 @@ const TransactionDetails = withModal(
       );
     }, [filter, filterEndDate, filterOptions, filterStartDate]);
 
+    const handleViewCustomer = useCallback(() => {
+      navigation.navigate('EditCustomer', {customer});
+    }, [customer, navigation]);
+
     const handleAddCustomer = useCallback(async () => {
       try {
         const selection = await getContactService().selectContactPhone();
@@ -303,7 +307,7 @@ const TransactionDetails = withModal(
         <CustomerDetailsHeader
           {...header}
           customer={customer}
-          onPress={handleAddCustomer}
+          onPress={customer ? handleViewCustomer : handleAddCustomer}
           style={applyStyles(
             {
               left: -14,
