@@ -7,7 +7,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useEffect, useState} from 'react';
-import {Alert, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import * as yup from 'yup';
@@ -114,18 +114,6 @@ export const Login = () => {
           style={applyStyles('w-full')}
         />
       </View>
-
-      <TouchableOpacity
-        style={applyStyles('flex-row center')}
-        onPress={() =>
-          navigation.navigate('ForgotPassword', {
-            mobile: {number: values.mobile, code: values.countryCode},
-          })
-        }>
-        <Text style={applyStyles('mb-12 text-gray-100', {fontSize: 16})}>
-          Forgot your password?
-        </Text>
-      </TouchableOpacity>
     </AuthView>
   );
 };
