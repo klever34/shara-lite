@@ -1,5 +1,5 @@
-import React from 'react';
-import {StyleSheet, View, ViewStyle} from 'react-native';
+import React, {useCallback} from 'react';
+import {ActivityIndicator, StyleSheet, View, ViewStyle} from 'react-native';
 import {applyStyles, colors} from '../styles';
 import Icon from './Icon';
 import Touchable from './Touchable';
@@ -16,6 +16,7 @@ export type FAButtonProps = {
   iconName?: string;
   children?: React.ReactNode;
   onPress?: () => void;
+  isLoading?: boolean;
 };
 
 export const FAButton = ({
@@ -25,15 +26,23 @@ export const FAButton = ({
   iconType = 'ionicons',
   color = colors.primary,
   onPress,
+  isLoading,
 }: FAButtonProps) => {
+  const renderContent = useCallback(() => {
+    if (children) {
+      return children;
+    }
+    return <Icon type={iconType} name={iconName} color="white" size={24} />;
+  }, [children, iconType, iconName]);
+
   return (
     <Touchable onPress={onPress}>
       <View
         style={applyStyles(styles.container, style, {backgroundColor: color})}>
-        {children ? (
-          children
+        {isLoading ? (
+          <ActivityIndicator animating={isLoading} color={colors.white} />
         ) : (
-          <Icon type={iconType} name={iconName} color="white" size={24} />
+          renderContent()
         )}
       </View>
     </Touchable>

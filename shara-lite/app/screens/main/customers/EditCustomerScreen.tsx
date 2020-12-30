@@ -4,6 +4,7 @@ import PlaceholderImage from '@/components/PlaceholderImage';
 import {ToastContext} from '@/components/Toast';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {getCustomerWhatsappNumber} from '@/helpers/utils';
+import {getAnalyticsService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {useIPGeolocation} from '@/services/ip-geolocation';
@@ -38,6 +39,10 @@ export const EditCustomerScreen = withModal(
           await updateCustomer({customer, updates});
           setLoading(false);
           showSuccessToast('CUSTOMER EDITED');
+          getAnalyticsService()
+            .logEvent('customerEdited', {})
+            .then(() => {})
+            .catch(handleError);
           navigation.goBack();
         } catch (error) {
           setLoading(false);
@@ -54,6 +59,10 @@ export const EditCustomerScreen = withModal(
           await deleteCustomer({customer});
           setIsDeleting(false);
           showSuccessToast('CUSTOMER DELETED');
+          getAnalyticsService()
+            .logEvent('customerDeleted', {})
+            .then(() => {})
+            .catch(handleError);
           callback();
           navigation.navigate('Home');
         } catch (error) {

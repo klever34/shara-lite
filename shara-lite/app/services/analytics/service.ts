@@ -22,6 +22,8 @@ export type SharaAppEventsProperties = {
   signup: {method: string};
   userProfileUpdated: {};
   // Customer
+  customerEdited: {};
+  customerDeleted: {};
   customerLocationAdded: {user_id: string};
   customerAdded: {source: 'manual' | 'phonebook'};
   // Receipts
@@ -84,6 +86,7 @@ export type SharaAppEventsProperties = {
   //Report
   userViewedReport: {};
   userDownloadedReport: {};
+  userSharedReport: {};
 };
 
 export interface IAnalyticsService {
