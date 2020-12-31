@@ -377,7 +377,7 @@ const TransactionDetails = withModal(
         <View style={applyStyles('flex-1')}>
           {!!transactions?.length && (
             <>
-              {customer?.balance && customer.balance < 0 ? (
+              {!!customer?.balance && customer.balance < 0 ? (
                 <View style={applyStyles('bg-white center pb-16 px-8')}>
                   {!!customer.balance && customer.balance < 0 && (
                     <View style={applyStyles('py-16 center')}>
@@ -590,7 +590,7 @@ const TransactionDetails = withModal(
                 </Touchable>
               </View>
 
-              {filter && filter !== 'all' && (
+              {!!filter && filter !== 'all' && (
                 <View
                   style={applyStyles(
                     'py-8 px-16 flex-row items-center justify-between',
