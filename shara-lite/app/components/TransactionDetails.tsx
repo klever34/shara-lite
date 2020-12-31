@@ -387,7 +387,7 @@ const TransactionDetails = withModal(
                         style={applyStyles(
                           'text-uppercase text-gray-100 text-700 text-xs',
                         )}>
-                        {customer?.name} owes you{' '}
+                        {customer?.name} has an outstanding of{' '}
                         <Text style={applyStyles('text-red-200')}>
                           {amountWithCurrency(customer.balance)}
                         </Text>
@@ -529,7 +529,9 @@ const TransactionDetails = withModal(
                     )}>
                     {customer?.name}{' '}
                     {customer?.balance && customer?.balance > 0
-                      ? `has ${amountWithCurrency(customer.balance)} with you`
+                      ? `has a positive balance of ${amountWithCurrency(
+                          customer.balance,
+                        )}`
                       : 'is not owing'}
                   </Text>
                 </View>
