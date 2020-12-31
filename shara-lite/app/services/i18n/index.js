@@ -9,7 +9,7 @@ const locales = remoteConfig().getValue('locales');
 I18n.fallbacks = true;
 
 // Define the supported translations
-console.log("locales", locales);  
+console.log('locales', locales);
 I18n.translations = JSON.parse(locales.asString());
 
 const currentLocale = I18n.currentLocale();

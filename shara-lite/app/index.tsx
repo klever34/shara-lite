@@ -10,7 +10,11 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
-import {getRemoteConfigService, getAnalyticsService, getNotificationService} from '@/services';
+import {
+  getRemoteConfigService,
+  getAnalyticsService,
+  getNotificationService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Platform} from 'react-native';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
