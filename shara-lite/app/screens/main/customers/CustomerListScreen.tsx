@@ -92,7 +92,7 @@ export const useCustomerList = (options: UseCustomerListOptions = {}) => {
           break;
         case 'not-owing':
           customers = (customers.filter(
-            (item) => item?.balance && item?.balance >= 0,
+            (item) => item?.balance !== undefined && item?.balance >= 0,
           ) as unknown) as Realm.Results<ICustomer & Realm.Object>;
           break;
         case 'surplus':

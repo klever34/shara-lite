@@ -22,11 +22,16 @@ interface getCustomerInterface {
   customerId: ObjectId;
 }
 
+interface deleteCustomerInterface {
+  customer: ICustomer;
+}
+
 interface useCustomerInterface {
   getCustomers: () => ICustomer[];
   saveCustomer: (data: saveCustomerInterface) => Promise<ICustomer>;
   getCustomer: (data: getCustomerInterface) => ICustomer;
   updateCustomer: (data: updateCustomerInterface) => Promise<void>;
+  deleteCustomer: (data: deleteCustomerInterface) => Promise<void>;
 }
 
 export const useCustomer = (): useCustomerInterface => {
@@ -104,10 +109,20 @@ export const useCustomer = (): useCustomerInterface => {
     await trace.stop();
   };
 
+  const deleteCustomer = async ({customer}: deleteCustomerInterface) => {
+    await updateCustomer({
+      updates: {
+        is_deleted: true,
+      },
+      customer,
+    });
+  };
+
   return {
     getCustomers,
     saveCustomer,
     getCustomer,
     updateCustomer,
+    deleteCustomer,
   };
 };

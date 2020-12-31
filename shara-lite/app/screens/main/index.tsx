@@ -33,11 +33,13 @@ import {ICustomer} from '@/models';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {ReportScreen} from './report';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
+import {EditCustomerScreen} from './customers/EditCustomerScreen';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Customers
+  EditCustomer: {customer: ICustomer};
   CustomerDetails: TransactionDetailsProps;
   ReminderSettings: {customer: ICustomer};
   SelectCustomerList: SelectCustomerListScreenParams;
@@ -150,6 +152,12 @@ const MainScreens = () => {
         <MainStack.Screen
           name="ReminderSettings"
           component={ReminderSettingsScreen}
+          options={{headerShown: false}}
+        />
+
+        <MainStack.Screen
+          name="EditCustomer"
+          component={EditCustomerScreen}
           options={{headerShown: false}}
         />
 

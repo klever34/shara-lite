@@ -83,7 +83,10 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
           <TransactionReview
             heading="Saved"
             showShareButtons={false}
-            onDone={() => closeModal()}
+            onDone={() => {
+              closeModal();
+              navigation.navigate('Settings');
+            }}
             transaction={dummyTransaction}
             subheading="Here’s what your receipt looks like"
           />
@@ -91,7 +94,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
         </ScrollView>
       ),
     });
-  }, [openModal, dummyTransaction]);
+  }, [openModal, navigation, dummyTransaction]);
 
   const formFields = useMemo(() => {
     const fields: FormFields<keyof Omit<BusinessFormPayload, 'countryCode'>> = {

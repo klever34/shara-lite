@@ -66,7 +66,7 @@ export const ReceiptImage = (props: Props) => {
 
   useEffect(() => {
     viewShot.current.capture().then(onCapture);
-  }, [customer, creditDueDate, creditAmount, onCapture]);
+  }, [customer, creditDueDate, creditAmount, onCapture, businessInfo]);
 
   return (
     <ScrollView>
