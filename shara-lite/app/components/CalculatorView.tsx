@@ -8,6 +8,7 @@ import React, {
   useRef,
 } from 'react';
 import {applyStyles} from '@/styles';
+import Big from 'big.js';
 import {Keyboard} from 'react-native-ui-lib';
 import {View, ScrollView, Text, ViewStyle, TextStyle} from 'react-native';
 import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
@@ -16,7 +17,7 @@ import Icon from './Icon';
 const KeyboardAccessoryView = Keyboard.KeyboardAccessoryView;
 const KeyboardRegistry = Keyboard.KeyboardRegistry;
 
-type CalculatorKeyboardItemSelectedEventCallback = (value: number) => void;
+type CalculatorKeyboardItemSelectedEventCallback = (value: Big) => void;
 
 type CalculatorContextProps = {
   showKbComponent?: () => void;
@@ -30,7 +31,7 @@ type CalculatorContextProps = {
   handleDelete?: () => void;
   handleCalculate?: () => void;
   label?: string;
-  result?: number;
+  result?: Big;
   tokens?: string[];
 };
 
@@ -63,7 +64,7 @@ const createEnumerator = (tokens: string[]) => {
 
 const calculate = (tokens: string[]) => {
   const tokensEnumerator = createEnumerator(tokens);
-  const stack: number[] = [];
+  const stack: Big[] = [];
   let lookahead = tokensEnumerator.moveNext()
     ? tokensEnumerator.getCurrent()
     : '</>';
@@ -81,57 +82,56 @@ const calculate = (tokens: string[]) => {
   };
 
   const solveBinary = (operator: string) => {
-    const secondOperand = stack.pop() as number;
-    const firstOperand = stack.pop() as number;
-    let result;
-    switch (operator) {
-      case '+':
-        result = firstOperand + secondOperand;
-        break;
-      case '-':
-        result = firstOperand - secondOperand;
-        break;
-      case 'x':
-        result = firstOperand * secondOperand;
-        break;
-      case '÷':
-        result = firstOperand / secondOperand;
-        break;
-      default:
-        throw 'Invalid Operator';
-    }
-    if (isFinite(result)) {
+    try {
+      const secondOperand = stack.pop() as Big;
+      const firstOperand = stack.pop() as Big;
+      let result;
+      switch (operator) {
+        case '+':
+          result = firstOperand.add(secondOperand);
+          break;
+        case '-':
+          result = firstOperand.sub(secondOperand);
+          break;
+        case 'x':
+          result = firstOperand.mul(secondOperand);
+          break;
+        case '÷':
+          result = firstOperand.div(secondOperand);
+          break;
+        default:
+          throw 'Invalid Operator';
+      }
       stack.push(result);
-    } else {
+    } catch (e) {
       throw mathError;
     }
   };
 
   const solveUnary = (operator: string) => {
-    const operand = stack.pop() as number;
-    let result;
-    switch (operator) {
-      case '%':
-        result = operand / 100;
-        break;
-      default:
-        throw 'Invalid Operator';
-    }
-    if (isFinite(result)) {
+    try {
+      const operand = stack.pop() as Big;
+      let result;
+      switch (operator) {
+        case '%':
+          result = operand.div(100);
+          break;
+        default:
+          throw 'Invalid Operator';
+      }
       stack.push(result);
-    } else {
+    } catch (e) {
       throw mathError;
     }
   };
 
   const term = () => {
-    if (!isNaN(parseFloat(lookahead))) {
-      stack.push(parseFloat(lookahead));
+    try {
+      stack.push(new Big(lookahead));
       match(lookahead);
-    } else {
+    } catch (e) {
       throw syntaxError;
     }
-
     while (true) {
       if (lookahead === '%') {
         match('%');
@@ -214,15 +214,16 @@ export function CalculatorView({children}: CalculatorViewProps) {
     }, '');
   }, [tokens]);
 
-  const [result, setResult] = useState(0);
+  const [result, setResult] = useState(new Big(0));
 
   const handleCalculate = useCallback(() => {
     try {
-      const nextResult = calculate(tokens as string[]) as number;
-      valueChangeListener?.(result);
+      let nextResult = calculate(tokens as string[]) as Big;
+      nextResult = new Big(nextResult.toFixed(2));
+      valueChangeListener?.(nextResult);
       setResult(nextResult);
     } catch (e) {}
-  }, [result, tokens, valueChangeListener]);
+  }, [tokens, valueChangeListener]);
 
   useMemo(() => {
     handleCalculate();
@@ -233,7 +234,11 @@ export function CalculatorView({children}: CalculatorViewProps) {
       return () => {
         setTokens((prevTokens) => {
           const lastToken = getLastToken(prevTokens);
-          if (lastToken.includes('.') && value === '.') {
+          if (
+            lastToken.includes('.') &&
+            (value === '.' ||
+              (isValidNumber(value) && lastToken.split('.')[1].length >= 2))
+          ) {
             return prevTokens;
           } else if (
             (isValidNumber(value) || value === '.') &&
@@ -452,7 +457,7 @@ export const CalculatorInput = ({
     showKbComponent?.();
     if (addEventListener) {
       addEventListener((nextValue) => {
-        setValue(nextValue);
+        setValue(nextValue.toNumber());
         if (onChangeText) {
           onChangeText(String(nextValue));
         }
