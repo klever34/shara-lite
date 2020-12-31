@@ -8,11 +8,8 @@ import {Text, View, ViewStyle} from 'react-native';
 
 export type TransactionListItemProps = {
   style?: ViewStyle;
-  isHeader?: boolean;
   receipt?: IReceipt;
   onPress?: () => void;
-  getReceiptItemLeftText?: (receipt?: IReceipt) => string;
-  getReceiptItemRightText?: (receipt?: IReceipt) => string;
 };
 
 export const TransactionListItem = ({
@@ -37,11 +34,15 @@ export const TransactionListItem = ({
       return (
         <View>
           <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            Collected{' '}
+            You Collected{' '}
             <Text style={applyStyles('text-700')}>
               {amountWithCurrency(total_amount)}
             </Text>
-            {customer && ` from ${customer.name}`}
+            {customer && ` from ${customer.name}.`} He has a{' '}
+            {customer?.balance !== undefined && customer?.balance > 0
+              ? 'positive'
+              : 'negative'}{' '}
+            balance of {amountWithCurrency(customer?.balance)}
           </Text>
         </View>
       );
@@ -50,13 +51,22 @@ export const TransactionListItem = ({
       if (credit_amount && amount_paid === 0) {
         return (
           <View>
-            <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-              Outstanding of{' '}
-              <Text style={applyStyles('text-700')}>
-                {amountWithCurrency(credit_amount)}
+            {customer ? (
+              <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+                {customer.name} owes{' '}
+                <Text style={applyStyles('text-700')}>
+                  {amountWithCurrency(credit_amount)}
+                </Text>
               </Text>
-              {customer && ` to ${customer.name}`}
-            </Text>
+            ) : (
+              <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+                You were paid{' '}
+                <Text style={applyStyles('text-700')}>
+                  {amountWithCurrency(credit_amount)}
+                </Text>{' '}
+                (No customer selected)
+              </Text>
+            )}
           </View>
         );
       }
@@ -64,14 +74,15 @@ export const TransactionListItem = ({
         return (
           <View>
             <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-              Sale of{' '}
+              {customer && `${customer.name}`} paid you{' '}
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(total_amount)}
-              </Text>
-              {customer && ` to ${customer.name}`}
-              {`. Collected ${amountWithCurrency(
-                amount_paid,
-              )} and outstanding of ${amountWithCurrency(credit_amount)}`}
+              </Text>{' '}
+              and has an outstanding of{' '}
+              <Text style={applyStyles('text-700')}>
+                {amountWithCurrency(credit_amount)}
+              </Text>{' '}
+              to pay
             </Text>
           </View>
         );
@@ -79,13 +90,22 @@ export const TransactionListItem = ({
     }
     return (
       <View>
-        <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-          Sale of{' '}
-          <Text style={applyStyles('text-700')}>
-            {amountWithCurrency(total_amount)}
+        {customer ? (
+          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+            {customer.name} paid you{' '}
+            <Text style={applyStyles('text-700')}>
+              {amountWithCurrency(total_amount)}
+            </Text>
           </Text>
-          {customer && ` to ${customer.name}`}
-        </Text>
+        ) : (
+          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+            You were paid{' '}
+            <Text style={applyStyles('text-700')}>
+              {amountWithCurrency(total_amount)}
+            </Text>{' '}
+            (No customer selected)
+          </Text>
+        )}
       </View>
     );
   }, [

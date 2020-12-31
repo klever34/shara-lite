@@ -205,20 +205,20 @@ export const TransactionFilterModal = ({
                   style={applyStyles(
                     'pt-16 flex-row items-center justify-between',
                   )}>
-                  <Text
-                    style={applyStyles(
-                      `text-400 text-base ${
-                        isActive ? 'text-red-200' : 'text-black'
-                      }`,
-                    )}>
-                    {text}
-                  </Text>
                   <RadioButton
                     isChecked={isActive}
                     style={applyStyles('rounded-24')}
                     checkedStyle={applyStyles('rounded-24')}
-                    onChange={() => handleStatusFilter(value)}
-                  />
+                    onChange={() => handleStatusFilter(value)}>
+                    <Text
+                      style={applyStyles(
+                        `text-400 text-base ${
+                          isActive ? 'text-red-200' : 'text-black'
+                        }`,
+                      )}>
+                      {text}
+                    </Text>
+                  </RadioButton>
                 </View>
               );
             })}

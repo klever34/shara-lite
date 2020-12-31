@@ -1482,6 +1482,11 @@
   dependencies:
     "@babel/types" "^7.3.0"
 
+"@types/big.js@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@types/big.js/-/big.js-6.0.1.tgz#66f85c0d11073997a3a1c11660e46304b61af8f1"
+  integrity sha512-Ru+oDee9WHvcWVcjrDoIIRJ7lFSsL18Yg5461SVdGj0W0SJoFc5wQEfjDdHdpBrg1W9WjNraCE6Ydic7/HrSTw==
+
 "@types/bluebird@^3.5.33":
   version "3.5.33"
   resolved "https://registry.yarnpkg.com/@types/bluebird/-/bluebird-3.5.33.tgz#d79c020f283bd50bd76101d7d300313c107325fc"
@@ -2203,6 +2208,11 @@ bcrypt-pbkdf@^1.0.0:
 big-integer@^1.6.44:
   version "1.6.48"
   resolved "https://registry.yarnpkg.com/big-integer/-/big-integer-1.6.48.tgz#8fd88bd1632cba4a1c8c3e3d7159f08bb95b4b9e"
+
+big.js@^6.0.3:
+  version "6.0.3"
+  resolved "https://registry.yarnpkg.com/big.js/-/big.js-6.0.3.tgz#8b4d99ac7023668e0e465d3f78c23b8ac29ad381"
+  integrity sha512-n6yn1FyVL1EW2DBAr4jlU/kObhRzmr+NNRESl65VIOT8WBJj/Kezpx2zFdhJUqYI6qrtTW7moCStYL5VxeVdPA==
 
 bindings@^1.5.0:
   version "1.5.0"

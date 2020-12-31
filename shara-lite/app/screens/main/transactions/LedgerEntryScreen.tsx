@@ -337,7 +337,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               style={applyStyles(
                 'text-sm text-uppercase text-gray-300 text-700',
               )}>
-              Share receipt:
+              Share:
             </Text>
             <View style={applyStyles('px-4')}>
               <Touchable onPress={onWhatsappShare}>

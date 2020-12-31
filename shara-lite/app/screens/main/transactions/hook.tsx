@@ -48,13 +48,13 @@ export const useReceiptList = ({
           value: 'single-day',
         },
         {
-          text: 'Last Week',
+          text: 'Last 7 Days',
           value: '1-week',
           startDate: subWeeks(new Date(), 1),
           endDate: new Date(),
         },
         {
-          text: 'Last Month',
+          text: 'Last 30 Days',
           value: '1-month',
           startDate: subMonths(new Date(), 1),
           endDate: new Date(),

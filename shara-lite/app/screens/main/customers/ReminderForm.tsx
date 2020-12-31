@@ -49,7 +49,7 @@ export const ReminderForm = ({
             Reminder {index}
           </Text>
           <Text style={applyStyles('pb-12 text-xs text-gray-200 text-400')}>
-            We will remind your customer on this day
+            A reminder will be sent to your customer on this day
           </Text>
         </View>
         <Touchable onPress={onDelete}>

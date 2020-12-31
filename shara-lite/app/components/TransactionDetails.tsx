@@ -7,7 +7,7 @@ import Touchable from '@/components/Touchable';
 import TransactionListHeader from '@/components/TransactionListHeader';
 import TransactionListItem from '@/components/TransactionListItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency} from '@/helpers/utils';
+import {amountWithCurrency, getCustomerWhatsappNumber} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
@@ -21,18 +21,19 @@ import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentReminder} from '@/services/payment-reminder';
+import {useReports} from '@/services/reports';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {
   addDays,
-  subDays,
   addMonths,
   addWeeks,
   format,
+  formatDistanceToNowStrict,
+  subDays,
   subMonths,
   subWeeks,
-  formatDistanceToNowStrict,
 } from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {
@@ -45,6 +46,8 @@ import {
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
+import Share from 'react-native-share';
+import RNFetchBlob from 'rn-fetch-blob';
 import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
 
@@ -63,10 +66,11 @@ const TransactionDetails = withModal(
   }: TransactionDetailsProps & ModalWrapperFields) => {
     const {saveCustomer} = useCustomer();
     const navigation = useAppNavigation();
-    const analyticsService = getAnalyticsService();
-    const {addCustomerToTransaction} = useTransaction();
-    const {getPaymentReminders} = usePaymentReminder();
     const user = getAuthService().getUser();
+    const analyticsService = getAnalyticsService();
+    const {getPaymentReminders} = usePaymentReminder();
+    const {exportCustomerReportsToExcel} = useReports();
+    const {addCustomerToTransaction} = useTransaction();
     const businessInfo = getAuthService().getBusinessInfo();
     const {
       filter,
@@ -79,6 +83,7 @@ const TransactionDetails = withModal(
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
+    const [isSharingStatement, setIsSharingStatment] = useState(false);
     const {due_date: dueDate} = customer;
 
     const {setCurrentCustomer} = useContext(EntryContext);
@@ -129,8 +134,15 @@ const TransactionDetails = withModal(
       }
     }, [dueDate, getPaymentReminders]);
 
+    const whatsAppNumber = customer.mobile
+      ? getCustomerWhatsappNumber(customer.mobile, user?.country_code)
+      : '';
+
     const paymentLink =
-      businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+      businessInfo.slug &&
+      `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+        customer._id ? `?customer=${String(customer._id)}` : ''
+      }`;
 
     const paymentReminderMessage = `Hello ${customer?.name ?? ''}${
       businessInfo?.name || user?.firstname
@@ -195,33 +207,6 @@ const TransactionDetails = withModal(
       handleEmailShare();
     }, [analyticsService, handleEmailShare]);
 
-    const handleOpenFilterModal = useCallback(() => {
-      const closeModal = openModal('bottom-half', {
-        renderContent: () => (
-          <TransactionFilterModal
-            onClose={closeModal}
-            initialFilter={filter}
-            options={filterOptions}
-            onDone={handleStatusFilter}
-          />
-        ),
-      });
-    }, [filter, filterOptions, openModal, handleStatusFilter]);
-
-    const handleDownloadReport = useCallback(() => {
-      getAnalyticsService()
-        .logEvent('userDownloadedReport', {})
-        .then(() => {})
-        .catch(handleError);
-      Alert.alert('Info', 'This feature is coming soon');
-    }, []);
-
-    const handleClear = useCallback(() => {
-      handleStatusFilter({
-        status: 'all',
-      });
-    }, [handleStatusFilter]);
-
     const getFilterLabelText = useCallback(() => {
       const activeOption = filterOptions?.find((item) => item.value === filter);
       if (filter === 'date-range' && filterStartDate && filterEndDate) {
@@ -244,6 +229,82 @@ const TransactionDetails = withModal(
         </Text>
       );
     }, [filter, filterEndDate, filterOptions, filterStartDate]);
+
+    const handleOpenFilterModal = useCallback(() => {
+      const closeModal = openModal('bottom-half', {
+        renderContent: () => (
+          <TransactionFilterModal
+            onClose={closeModal}
+            initialFilter={filter}
+            options={filterOptions}
+            onDone={handleStatusFilter}
+          />
+        ),
+      });
+    }, [filter, filterOptions, openModal, handleStatusFilter]);
+
+    const handleShareStatement = useCallback(async () => {
+      try {
+        setIsSharingStatment(true);
+        const path = await exportCustomerReportsToExcel({
+          receipts: filteredReceipts,
+        });
+        RNFetchBlob.fs
+          .readFile(path, 'base64')
+          .then(async (base64Data) => {
+            base64Data =
+              'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' +
+              base64Data;
+            const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
+            if (hasWhatsapp && whatsAppNumber) {
+              setIsSharingStatment(false);
+              await Share.shareSingle({
+                //@ts-ignore
+                whatsAppNumber,
+                url: base64Data,
+                social: Share.Social.WHATSAPP,
+                title: 'Share Customer Statement',
+                filename: `${customer ? customer.name : ''} Ledger Statement`,
+                message: `Find attached your ledger statement from ${businessInfo.name}`,
+              });
+            } else {
+              setIsSharingStatment(false);
+              await Share.open({
+                url: base64Data,
+                title: 'Share Customer Statement',
+                filename: `${customer ? customer.name : ''} Ledger Statement`,
+                message: `Find attached your ledger statement from ${businessInfo.name}`,
+              });
+            }
+          })
+          .catch((error) => {
+            setIsSharingStatment(false);
+            handleError(error);
+          });
+        getAnalyticsService()
+          .logEvent('userSharedReport', {})
+          .then(() => {})
+          .catch(handleError);
+      } catch (error) {
+        Alert.alert('Error', error.message);
+      }
+    }, [
+      customer,
+      whatsAppNumber,
+      filteredReceipts,
+      businessInfo.name,
+      exportCustomerReportsToExcel,
+    ]);
+
+    const handleClear = useCallback(() => {
+      handleStatusFilter({
+        status: 'all',
+      });
+    }, [handleStatusFilter]);
+
+    const handleViewCustomer = useCallback(() => {
+      navigation.navigate('EditCustomer', {customer});
+    }, [customer, navigation]);
 
     const handleAddCustomer = useCallback(async () => {
       try {
@@ -303,7 +364,7 @@ const TransactionDetails = withModal(
         <CustomerDetailsHeader
           {...header}
           customer={customer}
-          onPress={handleAddCustomer}
+          onPress={customer ? handleViewCustomer : handleAddCustomer}
           style={applyStyles(
             {
               left: -14,
@@ -316,7 +377,7 @@ const TransactionDetails = withModal(
         <View style={applyStyles('flex-1')}>
           {!!transactions?.length && (
             <>
-              {customer?.balance && customer.balance < 0 ? (
+              {!!customer?.balance && customer.balance < 0 ? (
                 <View style={applyStyles('bg-white center pb-16 px-8')}>
                   {!!customer.balance && customer.balance < 0 && (
                     <View style={applyStyles('py-16 center')}>
@@ -324,7 +385,7 @@ const TransactionDetails = withModal(
                         style={applyStyles(
                           'text-uppercase text-gray-100 text-700 text-xs',
                         )}>
-                        {customer?.name} owes you{' '}
+                        {customer?.name} has an outstanding of{' '}
                         <Text style={applyStyles('text-red-200')}>
                           {amountWithCurrency(customer.balance)}
                         </Text>
@@ -466,7 +527,9 @@ const TransactionDetails = withModal(
                     )}>
                     {customer?.name}{' '}
                     {customer?.balance && customer?.balance > 0
-                      ? `has ${amountWithCurrency(customer.balance)} with you`
+                      ? `has a positive balance of ${amountWithCurrency(
+                          customer.balance,
+                        )}`
                       : 'is not owing'}
                   </Text>
                 </View>
@@ -475,7 +538,10 @@ const TransactionDetails = withModal(
                 style={applyStyles(
                   'py-8 px-16 flex-row items-center justify-between',
                 )}>
-                <Touchable onPress={handleDownloadReport}>
+                <Touchable
+                  onPress={
+                    isSharingStatement ? undefined : handleShareStatement
+                  }>
                   <View
                     style={applyStyles(
                       'py-4 px-8 flex-row items-center bg-gray-20',
@@ -495,7 +561,9 @@ const TransactionDetails = withModal(
                       style={applyStyles(
                         'text-gray-200 text-700 text-xxs pl-8 text-uppercase',
                       )}>
-                      Share statement
+                      {isSharingStatement
+                        ? 'Generating Statement...'
+                        : 'Share statement'}
                     </Text>
                   </View>
                 </Touchable>
@@ -522,7 +590,7 @@ const TransactionDetails = withModal(
                 </Touchable>
               </View>
 
-              {filter && filter !== 'all' && (
+              {!!filter && filter !== 'all' && (
                 <View
                   style={applyStyles(
                     'py-8 px-16 flex-row items-center justify-between',

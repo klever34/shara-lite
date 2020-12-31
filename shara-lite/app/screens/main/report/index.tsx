@@ -2,6 +2,7 @@ import {FAButton, SearchFilter} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
+import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
@@ -10,9 +11,10 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import {useReports} from '@/services/reports';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useLayoutEffect} from 'react';
+import React, {useCallback, useContext, useLayoutEffect, useState} from 'react';
 import {Alert, FlatList, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
@@ -22,6 +24,8 @@ type Props = ModalWrapperFields;
 
 export const ReportScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
+  const {exportReportsToExcel} = useReports();
+  const {showSuccessToast} = useContext(ToastContext);
   const {
     filter,
     searchTerm,
@@ -34,6 +38,8 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     handleStatusFilter,
     handleReceiptSearch,
   } = useReceiptList();
+
+  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
 
   const balance = collectedAmount - totalAmount;
 
@@ -69,13 +75,21 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     });
   }, [handleStatusFilter]);
 
-  const handleDownloadReport = useCallback(() => {
-    getAnalyticsService()
-      .logEvent('userDownloadedReport', {})
-      .then(() => {})
-      .catch(handleError);
-    Alert.alert('Info', 'This feature is coming soon');
-  }, []);
+  const handleDownloadReport = useCallback(async () => {
+    try {
+      setIsDownloadingReport(true);
+      await exportReportsToExcel({receipts: filteredReceipts});
+      setIsDownloadingReport(false);
+      getAnalyticsService()
+        .logEvent('userDownloadedReport', {})
+        .then(() => {})
+        .catch(handleError);
+      showSuccessToast('REPORT DOWNLOADED');
+    } catch (error) {
+      setIsDownloadingReport(false);
+      Alert.alert('Error', error.message);
+    }
+  }, [filteredReceipts, showSuccessToast, exportReportsToExcel]);
 
   const getFilterLabelText = useCallback(() => {
     const activeOption = filterOptions?.find((item) => item.value === filter);
@@ -243,12 +257,13 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         </EmptyState>
       )}
       <FAButton
+        isLoading={isDownloadingReport}
         style={applyStyles(
           'w-auto rounded-16 py-16 px-20 flex-row items-center',
         )}
         onPress={handleDownloadReport}>
         <Text style={applyStyles('text-700 text-uppercase text-sm text-white')}>
-          Download PDF
+          Download Report
         </Text>
       </FAButton>
     </SafeAreaView>

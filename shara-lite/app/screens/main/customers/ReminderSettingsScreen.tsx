@@ -227,7 +227,8 @@ export const ReminderSettingsScreen = withModal(
                 </Text>
                 <Text
                   style={applyStyles('pb-12 text-xs text-gray-200 text-400')}>
-                  We will send a reminder automatically on the collection date
+                  An automatic reminder will be sent to your customer on the
+                  collection date
                 </Text>
                 <Text style={applyStyles('text-gray-300 text-700')}>
                   On the day of collection

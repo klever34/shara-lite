@@ -33,6 +33,10 @@ interface deleteTransactionInterface {
   transaction: IReceipt;
 }
 
+interface deleteCustomerTransactionsInterface {
+  customer: ICustomer;
+}
+
 interface updateDueDateInterface {
   due_date: Date;
   customer: ICustomer;
@@ -44,6 +48,9 @@ interface useTransactionInterface {
   saveTransaction: (data: saveTransactionInterface) => Promise<IReceipt>;
   updateTransaction: (data: updateTransactionInterface) => Promise<void>;
   deleteTransaction: (data: deleteTransactionInterface) => Promise<void>;
+  deleteCustomerTransactions: (
+    data: deleteCustomerTransactionsInterface,
+  ) => Promise<void>;
   addCustomerToTransaction: (
     data: addCustomerToTransactionInterface,
   ) => Promise<void>;
@@ -170,12 +177,22 @@ export const useTransaction = (): useTransactionInterface => {
       .then(() => {});
   };
 
+  const deleteCustomerTransactions = async ({
+    customer,
+  }: deleteCustomerTransactionsInterface) => {
+    const transactions = customer.receipts;
+    await BluebirdPromise.map(transactions || [], async (transaction) => {
+      await deleteTransaction({transaction});
+    });
+  };
+
   return {
     getTransactions,
     getTransaction,
     saveTransaction,
     updateTransaction,
     deleteTransaction,
+    deleteCustomerTransactions,
     addCustomerToTransaction,
     updateDueDate,
   };

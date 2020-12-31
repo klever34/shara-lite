@@ -65,7 +65,7 @@ export const EntryView = ({children}: EntryViewProps) => {
 
   const onRecordCollection = useCallback(() => {
     const onSelectCustomer = (customer: ICustomer) => {
-      navigation.replace('RecordCollection', {
+      navigation.navigate('RecordCollection', {
         customer,
         goBack: () => navigation.navigate('Home'),
       });
