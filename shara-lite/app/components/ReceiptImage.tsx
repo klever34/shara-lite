@@ -157,10 +157,7 @@ export const ReceiptImage = (props: Props) => {
               <View>
                 <Text
                   style={applyStyles('pb-4 print-text-400 text-black text-lg')}>
-                  Note:
-                </Text>
-                <Text style={applyStyles('print-text-400 text-black text-lg')}>
-                  {note}
+                  Note: {note}
                 </Text>
               </View>
             )}

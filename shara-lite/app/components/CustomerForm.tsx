@@ -49,7 +49,9 @@ export const CustomerForm = ({
       countryCode: callingCode,
     },
     onSubmit: async ({countryCode, ...rest}) => {
-      const mobile = rest?.mobile ? `+${countryCode}${rest?.mobile}` : '';
+      const mobile = rest?.mobile
+        ? `+${countryCode}${rest?.mobile}`
+        : undefined;
       if (saveToPhoneBook) {
         try {
           await getContactService().addContact({

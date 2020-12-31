@@ -112,6 +112,13 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         </Text>
       );
     }
+    if (filter === 'single-day') {
+      return (
+        <Text style={applyStyles('text-red-200 text-400')}>
+          {format(filterStartDate, 'dd MMM, yyyy')}
+        </Text>
+      );
+    }
     return (
       <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
         {activeOption?.text}
@@ -222,7 +229,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xxs text-uppercase text-400 text-gray-200',
                   )}>
                   amount collected
                 </Text>
@@ -246,7 +253,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xxs text-uppercase text-400 text-gray-200',
                   )}>
                   amount outstanding
                 </Text>
@@ -317,14 +324,20 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             style={applyStyles('bg-white')}
             source={require('@/assets/images/emblem.png')}
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
-            <View style={applyStyles('center')}>
+            <View style={applyStyles('center px-8')}>
               {!!searchTerm && (
                 <Text
-                  style={applyStyles('text-black text-xl pb-4 text-center')}>
+                  style={applyStyles('text-black text-sm pb-4 text-center')}>
                   No results found
                 </Text>
               )}
-              <Text style={applyStyles('text-black text-xl text-center')}>
+              {!!filter && (
+                <Text
+                  style={applyStyles('text-black text-sm pb-4 text-center')}>
+                  No activities were recorded for the chosen duration
+                </Text>
+              )}
+              <Text style={applyStyles('text-black text-sm text-center')}>
                 Start adding records by tapping here
               </Text>
             </View>

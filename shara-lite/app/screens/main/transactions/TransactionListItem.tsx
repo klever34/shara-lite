@@ -38,8 +38,11 @@ export const TransactionListItem = ({
             <Text style={applyStyles('text-700')}>
               {amountWithCurrency(total_amount)}
             </Text>
-            {customer && ` from ${customer.name}.`} He has a balance of{' '}
-            {amountWithCurrency(customer?.balance)}
+            {customer && ` from ${customer.name}.`} He has a{' '}
+            {customer?.balance !== undefined && customer?.balance > 0
+              ? 'positive'
+              : 'negative'}{' '}
+            balance of {amountWithCurrency(customer?.balance)}
           </Text>
         </View>
       );

@@ -41,6 +41,11 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     transaction?.customer?.due_date,
   );
 
+  const showCollectionDate =
+    !transaction.is_collection &&
+    transaction.customer &&
+    (transaction.credit_amount || dueDate);
+
   const shareReceiptMessage = `Hi ${
     transaction.customer?.name ?? ''
   }, thank you for your recent purchase from ${
@@ -241,10 +246,10 @@ export const TransactionReview = (props: TransactionReviewProps) => {
       <View
         style={applyStyles(
           `px-16 pt-16 bg-white flex-row items-center ${
-            !transaction.is_collection ? 'justify-between' : 'justify-center'
+            showCollectionDate ? 'justify-between' : 'justify-center'
           }`,
         )}>
-        {!transaction.is_collection && (
+        {showCollectionDate && (
           <DatePicker
             //@ts-ignore
             minimumDate={new Date()}

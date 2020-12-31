@@ -350,10 +350,10 @@ export const CustomerListScreen = withModal(
             source={require('@/assets/images/emblem.png')}
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
             <View style={applyStyles('center')}>
-              <Text style={applyStyles('text-black text-xl pb-4 text-center')}>
+              <Text style={applyStyles('text-black text-sm pb-4 text-center')}>
                 {searchTerm ? 'No results found' : 'You have no customers yet.'}
               </Text>
-              <Text style={applyStyles('text-black text-xl text-center')}>
+              <Text style={applyStyles('text-black text-sm text-center')}>
                 Start adding customers by creating a record here
               </Text>
             </View>

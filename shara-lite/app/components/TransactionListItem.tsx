@@ -52,6 +52,7 @@ const TransactionListItem = ({
           )}
           {!!note && (
             <Text
+              numberOfLines={3}
               style={applyStyles(
                 'pb-2 text-xs text-700 text-gray-200 text-uppercase',
               )}>
@@ -86,12 +87,14 @@ const TransactionListItem = ({
             borderTopRightRadius: 8,
             borderBottomRightRadius: 8,
           })}>
-          <Text
-            style={applyStyles(
-              'text-xs text-700 text-green-200 text-uppercase',
-            )}>
-            {amountWithCurrency(amount_paid)}
-          </Text>
+          {amount_paid && (
+            <Text
+              style={applyStyles(
+                'text-xs text-700 text-green-200 text-uppercase',
+              )}>
+              {amountWithCurrency(amount_paid)}
+            </Text>
+          )}
         </View>
       </View>
     </Touchable>

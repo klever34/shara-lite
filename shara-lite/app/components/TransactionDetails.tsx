@@ -261,9 +261,7 @@ const TransactionDetails = withModal(
                 url: base64Data,
                 social: Share.Social.WHATSAPP,
                 title: 'Share Customer Statement',
-                filename: `${
-                  customer ? customer.name : ''
-                } Ledger Statement - ${getFilterLabelText()}`,
+                filename: `${customer ? customer.name : ''} Ledger Statement`,
                 message: `Find attached your ledger statement from ${businessInfo.name}`,
               });
             } else {
@@ -271,9 +269,7 @@ const TransactionDetails = withModal(
               await Share.open({
                 url: base64Data,
                 title: 'Share Customer Statement',
-                filename: `${
-                  customer ? customer.name : ''
-                } Ledger Statement - ${getFilterLabelText()}`,
+                filename: `${customer ? customer.name : ''} Ledger Statement`,
                 message: `Find attached your ledger statement from ${businessInfo.name}`,
               });
             }
@@ -294,7 +290,6 @@ const TransactionDetails = withModal(
       whatsAppNumber,
       filteredReceipts,
       businessInfo.name,
-      getFilterLabelText,
       exportCustomerReportsToExcel,
     ]);
 
