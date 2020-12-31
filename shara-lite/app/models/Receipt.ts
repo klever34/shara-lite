@@ -22,14 +22,16 @@ export interface IReceipt extends BaseModelInterface {
   cancellation_reason?: string;
   note?: string;
   is_hidden_in_pro?: boolean;
+  is_collection?: boolean;
+  transaction_date?: Date;
 
   //Getters
   isPaid?: boolean;
   hasCustomer?: boolean;
   dueDate?: Date;
   isPending?: boolean;
-  isYouGot?: boolean;
-  isYouGave?: boolean;
+  isInflow?: boolean;
+  isOutflow?: boolean;
 }
 
 export const modelName = 'Receipt';
@@ -53,6 +55,8 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       is_cancelled: {type: 'bool', default: false, optional: true},
       cancellation_reason: 'string?',
       is_hidden_in_pro: {type: 'bool', default: false, optional: true},
+      is_collection: {type: 'bool', default: false, optional: true},
+      transaction_date: 'date?',
       note: 'string?',
       items: {
         type: 'linkingObjects',
@@ -73,6 +77,7 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
   };
   public total_amount: number | undefined;
   public amount_paid: number | undefined;
+  public credit_amount: number | undefined;
   public customer: ICustomer | undefined;
   public credits: ICredit[] | undefined;
   public payments: IPayment[] | undefined;
@@ -96,11 +101,11 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
     return !this.credits?.filter((credit) => !credit.fulfilled).length;
   }
 
-  public get isYouGave() {
-    return !!(this.credits && this.credits.length);
+  public get isInflow() {
+    return !this.credit_amount;
   }
 
-  public get isYouGot() {
-    return !this.isYouGave;
+  public get isOutflow() {
+    return !!this.credit_amount;
   }
 }

@@ -1,27 +1,35 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {View, TextInput} from 'react-native';
+import {View, TextInput, ViewStyle} from 'react-native';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 
 type SearchFilterProps = {
   value?: string;
-  onClearInput?: () => void;
+  inputStyle?: ViewStyle;
   placeholderText?: string;
+  onClearInput?: () => void;
+  containerStyle?: ViewStyle;
   onSearch?: (text: string) => void;
 };
 
 export const SearchFilter = ({
   value,
   onSearch,
+  inputStyle,
   onClearInput,
+  containerStyle,
   placeholderText = 'Search',
 }: SearchFilterProps) => {
   return (
     <View
-      style={applyStyles('px-16 py-8 bg-gray-10', {
-        zIndex: 10,
-      })}>
+      style={applyStyles(
+        'bg-white',
+        {
+          zIndex: 10,
+        },
+        containerStyle,
+      )}>
       <View>
         <View
           style={applyStyles('flex-row center', {
@@ -39,13 +47,14 @@ export const SearchFilter = ({
         </View>
         <TextInput
           value={value}
-          style={applyStyles('px-40 text-400 bg-white', {
-            height: 40,
-            fontSize: 16,
-            borderWidth: 1.5,
-            borderRadius: 8,
-            borderColor: colors['gray-10'],
-          })}
+          style={applyStyles(
+            'px-40 text-400 bg-white',
+            {
+              height: 40,
+              fontSize: 16,
+            },
+            inputStyle,
+          )}
           onChangeText={onSearch}
           placeholder={placeholderText}
         />
@@ -60,7 +69,7 @@ export const SearchFilter = ({
               })}>
               <Icon
                 size={20}
-                name="x-circle"
+                name="delete"
                 type="feathericons"
                 color={colors['gray-50']}
               />

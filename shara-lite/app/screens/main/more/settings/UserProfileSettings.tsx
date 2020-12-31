@@ -1,5 +1,5 @@
 import {FormBuilder, FormFields, PhoneNumber} from '@/components';
-import {getApiService, getAuthService} from '@/services';
+import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useContext, useMemo} from 'react';
@@ -8,6 +8,7 @@ import {Page} from '@/components/Page';
 import parsePhoneNumber from 'libphonenumber-js';
 import {UserProfileFormPayload} from '@/services/api';
 import {ToastContext} from '@/components/Toast';
+import {handleError} from '@/services/error-boundary';
 
 export const UserProfileSettings = () => {
   const authService = getAuthService();
@@ -47,7 +48,7 @@ export const UserProfileSettings = () => {
         type: 'mobile',
         props: {
           value: {number: nationalNumber, callingCode: country_code},
-          label: 'Phone Number',
+          label: 'What’s your phone number?',
           editable: false,
           focusable: false,
         },
@@ -67,12 +68,16 @@ export const UserProfileSettings = () => {
 
   return (
     <Page
-      header={{title: 'Profile Settings', iconLeft: {}}}
+      header={{
+        title: 'Profile Settings',
+        iconLeft: {},
+        style: applyStyles('py-8'),
+      }}
       style={applyStyles('bg-white')}>
       <FormBuilder
         forceUseFormButton
         fields={formFields}
-        submitBtn={{title: 'Save'}}
+        actionBtns={[undefined, {title: 'Save'}]}
         onSubmit={async (values) => {
           const phoneNumber = values.mobile as PhoneNumber;
           const formValues = {
@@ -83,6 +88,10 @@ export const UserProfileSettings = () => {
           try {
             await apiService.userProfileUpdate(formValues);
             showSuccessToast('User profile updated successfully');
+            getAnalyticsService()
+              .logEvent('userProfileUpdated', {})
+              .then(() => {})
+              .catch(handleError);
             navigation.goBack();
           } catch (error) {
             Alert.alert('Error', error.message);

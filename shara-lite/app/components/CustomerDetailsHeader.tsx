@@ -3,7 +3,6 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
-import {formatDistanceToNowStrict} from 'date-fns';
 import React, {ReactNode, useMemo} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 import {Icon} from './Icon';
@@ -11,93 +10,90 @@ import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
 
 export type CustomerDetailsHeaderProps = {
-  isPaid?: boolean;
   style?: ViewStyle;
   backButton?: boolean;
   customer?: ICustomer;
   onPress?: () => void;
-  creditAmount?: number;
   renderLeftSection?: () => ReactNode;
   renderRightSection?: () => ReactNode;
 };
 
 const CustomerDetailsHeader = ({
   style,
-  isPaid,
   onPress,
   customer,
-  creditAmount,
   renderLeftSection,
   renderRightSection,
   backButton = true,
 }: CustomerDetailsHeaderProps) => {
-  const credit =
-    customer?.credits && customer.credits[customer?.credits.length - 1];
-  const creditCreatedAt = credit?.created_at;
-
   renderLeftSection = useMemo(() => {
     if (!renderLeftSection) {
       return () => (
         <>
           <Text
             numberOfLines={1}
-            style={applyStyles('text-uppercase text-700 text-gray-300')}>
-            {customer?.name}
-          </Text>
-          <Text
             style={applyStyles(
-              'text-uppercase text-400 text-gray-100 text-xxs',
+              'text-capitalize text-400 text-black text-base',
             )}>
-            {credit
-              ? creditCreatedAt &&
-                `${formatDistanceToNowStrict(creditCreatedAt, {
-                  addSuffix: true,
-                })}`
-              : customer?.mobile}
+            {customer?.name}
           </Text>
         </>
       );
     }
     return renderLeftSection;
-  }, [credit, customer, creditCreatedAt, renderLeftSection]);
+  }, [customer, renderLeftSection]);
 
   renderRightSection = useMemo(() => {
     if (!renderRightSection) {
       return () =>
-        !!customer?.remainingCreditAmount && (
+        !!customer?.balance && (
           <>
-            <Text
-              style={applyStyles(
-                'text-400 text-uppercase text-xxs text-gray-100',
-              )}>
-              You will collect
-            </Text>
-            <Text style={applyStyles('pb-4 text-700 text-red-200')}>
-              {amountWithCurrency(
-                creditAmount || customer?.remainingCreditAmount,
+            <View style={applyStyles('pb-4 flex-row items-center')}>
+              {!!customer?.balance && customer?.balance < 0 && (
+                <View style={applyStyles('pr-4')}>
+                  <Icon
+                    size={14}
+                    name="arrow-up"
+                    type="feathericons"
+                    color={colors['red-100']}
+                  />
+                </View>
               )}
+              {!!customer?.balance && customer?.balance > 0 && (
+                <View style={applyStyles('pr-4')}>
+                  <Icon
+                    size={14}
+                    name="arrow-down"
+                    type="feathericons"
+                    color={colors['green-200']}
+                  />
+                </View>
+              )}
+              <Text
+                style={applyStyles(
+                  'text-700 text-uppercase text-xxs text-gray-200',
+                )}>
+                Balance
+              </Text>
+            </View>
+            <Text style={applyStyles('pb-4 text-700 text-black text-base')}>
+              {customer.balance && customer.balance < 0 ? '-' : ''}
+              {amountWithCurrency(customer?.balance)}
             </Text>
           </>
         );
     }
     return renderRightSection;
-  }, [customer, creditAmount, renderRightSection]);
+  }, [customer, renderRightSection]);
 
   const navigation = useAppNavigation();
 
   return (
-    <Touchable onPress={!customer && onPress ? onPress : undefined}>
+    <Touchable onPress={onPress}>
       <View
         style={applyStyles('flex-row bg-white items-center', {
-          shadowColor: '#000',
-          shadowOffset: {
-            width: 0,
-            height: 2,
-          },
-          shadowOpacity: 0.34,
-          shadowRadius: 6.27,
-          elevation: 10,
-          borderBottomColor: colors['gray-10'],
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors['gray-20'],
         })}>
         {backButton && (
           <HeaderBackButton
@@ -149,11 +145,9 @@ const CustomerDetailsHeader = ({
               </>
             )}
           </View>
-          {!isPaid && (
-            <View style={applyStyles('items-end', {width: '48%'})}>
-              {renderRightSection()}
-            </View>
-          )}
+          <View style={applyStyles('items-end', {width: '48%'})}>
+            {renderRightSection()}
+          </View>
         </View>
       </View>
     </Touchable>

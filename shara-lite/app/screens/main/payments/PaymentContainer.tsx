@@ -21,6 +21,9 @@ import {PaymentForm} from './PaymentForm';
 import {PaymentPreviewModal} from './PaymentPreviewModal';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
+import {Page} from '@/components/Page';
+import Config from 'react-native-config';
+import Clipboard from '@react-native-community/clipboard';
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -42,6 +45,15 @@ function PaymentContainer(props: ModalWrapperFields) {
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
   const {showSuccessToast} = useContext(ToastContext);
+  const paymentLink = `${Config.WEB_BASE_URL}/pay/${business.slug}`;
+
+  const copyToClipboard = useCallback(() => {
+    Clipboard.setString(paymentLink);
+    showSuccessToast('Copied');
+    getAnalyticsService()
+      .logEvent('copiedPaymentLink', {})
+      .then(() => {});
+  }, [paymentLink, showSuccessToast]);
 
   const onFormSubmit = useCallback(
     async (values: IPaymentOption) => {
@@ -102,10 +114,10 @@ function PaymentContainer(props: ModalWrapperFields) {
   const handleOpenAddItemModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
-        <>
+        <View style={applyStyles('py-24')}>
           <Text
             style={applyStyles(
-              'text-center text-uppercase text-700 text-gray-300',
+              'text-center text-uppercase text-700 text-gray-300 mb-16',
             )}>
             add Payment info
           </Text>
@@ -135,7 +147,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               </View>
             )}
           />
-        </>
+        </View>
       ),
     });
   }, [openModal, isSaving, onFormSubmit, paymentProviders]);
@@ -145,7 +157,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       const initialValues = omit(item);
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
-          <>
+          <View style={applyStyles('py-20')}>
             <Text
               style={applyStyles(
                 'text-center text-uppercase text-700 text-gray-300',
@@ -172,8 +184,23 @@ function PaymentContainer(props: ModalWrapperFields) {
                     isLoading={isDeleting}
                     style={applyStyles({width: '48%'})}
                     onPress={() => {
-                      handleRemoveItem(item);
-                      closeModal();
+                      Alert.alert(
+                        'Warning',
+                        'Are you sure you want to remove the payment option?',
+                        [
+                          {
+                            text: 'No',
+                            onPress: () => {},
+                          },
+                          {
+                            text: 'Yes',
+                            onPress: () => {
+                              handleRemoveItem(item);
+                              closeModal();
+                            },
+                          },
+                        ],
+                      );
                     }}
                     variantColor="transparent"
                   />
@@ -189,7 +216,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                 </View>
               )}
             />
-          </>
+          </View>
         ),
       });
     },
@@ -246,113 +273,147 @@ function PaymentContainer(props: ModalWrapperFields) {
   }, [fectchPaymentProviders]);
 
   return (
-    <KeyboardAwareScrollView
-      nestedScrollEnabled
-      persistentScrollbar={true}
-      keyboardShouldPersistTaps="always"
-      style={applyStyles('py-24 bg-white flex-1')}>
-      {paymentOptions.length === 0 ? (
-        <View style={applyStyles('flex-1')}>
-          <View style={applyStyles('center pb-32')}>
-            <SecureEmblem />
-            <Text
-              style={applyStyles(
-                'text-center text-gray-200 text-base pt-16 px-8',
-              )}>
-              Add your preferred methods of collecting payment so your customers
-              can know how to pay you.
-            </Text>
-          </View>
-          <PaymentForm
-            onFormSubmit={onFormSubmit}
-            paymentProviders={paymentProviders}
-            renderButtons={(handleSubmit, values) => (
-              <View style={applyStyles('pt-24', {paddingBottom: 300})}>
-                <Button
-                  title="Save"
-                  isLoading={isSaving}
-                  onPress={handleSubmit}
-                  disabled={!values?.slug}
-                />
-              </View>
-            )}
-          />
-        </View>
-      ) : (
-        <View>
-          <View style={applyStyles('center')}>
-            <Touchable onPress={handleOpenPreviewModal}>
-              <View
+    <Page
+      header={{
+        title: 'Payment Settings',
+        iconLeft: {},
+        style: applyStyles('py-8'),
+      }}
+      style={applyStyles('px-0')}>
+      <KeyboardAwareScrollView
+        nestedScrollEnabled
+        persistentScrollbar={true}
+        keyboardShouldPersistTaps="always"
+        style={applyStyles('py-18 bg-white flex-1')}>
+        {paymentOptions.length === 0 ? (
+          <View style={applyStyles('flex-1')}>
+            <View style={applyStyles('center pb-32')}>
+              <SecureEmblem />
+              <Text
                 style={applyStyles(
-                  'py-8 px-16 rounded-8 flex-row items-center bg-gray-20',
+                  'text-center text-gray-200 text-base pt-16 px-8',
                 )}>
-                <Icon
-                  name="eye"
-                  size={16}
-                  type="feathericons"
-                  color={colors['gray-50']}
-                />
-                <Text
-                  style={applyStyles(
-                    'pl-4 text-700 text-gray-200 text-uppercase',
-                  )}>
-                  Preview your payment page
-                </Text>
-              </View>
-            </Touchable>
+                Add your preferred methods of collecting payment so your
+                customers can know how to pay you.
+              </Text>
+            </View>
+            <PaymentForm
+              onFormSubmit={onFormSubmit}
+              paymentProviders={paymentProviders}
+              renderButtons={(handleSubmit, values) => (
+                <View style={applyStyles('pt-24', {paddingBottom: 300})}>
+                  <Button
+                    title="Save"
+                    isLoading={isSaving}
+                    onPress={handleSubmit}
+                    disabled={!values?.slug}
+                  />
+                </View>
+              )}
+            />
           </View>
-
-          <View style={applyStyles('p-16')}>
-            <Button title="Add New Payment" onPress={handleOpenAddItemModal} />
-          </View>
-          <FlatList
-            data={paymentOptions}
-            style={applyStyles('pb-56')}
-            renderItem={({item}) => (
-              <View
-                style={applyStyles(
-                  'flex-row items-center py-8 px-16 bg-white justify-between',
-                  {
-                    borderTopColor: colors['gray-10'],
-                    borderTopWidth: 1,
-                    borderBottomColor: colors['gray-10'],
-                    borderBottomWidth: 1,
-                  },
-                )}>
-                <View style={applyStyles('py-8')}>
+        ) : (
+          <View style={applyStyles('flex-1')}>
+            <View style={applyStyles('center')}>
+              <Touchable onPress={copyToClipboard}>
+                <View style={applyStyles('flex-row px-32 mb-24')}>
                   <Text
-                    style={applyStyles('pb-2 text-gray-100 text-uppercase')}>
-                    {item.name}
+                    style={applyStyles('text-400 leading-16 flex-1', {
+                      color: colors['red-200'],
+                      textDecorationLine: 'underline',
+                    })}>
+                    {paymentLink}
                   </Text>
-                  {item?.fieldsData?.map((i) => (
+
+                  <View style={applyStyles('flex-row items-center')}>
+                    <Icon
+                      size={18}
+                      name="copy"
+                      type="feathericons"
+                      color={colors['gray-50']}
+                    />
                     <Text
-                      key={i.key}
                       style={applyStyles(
-                        'pb-2 text-gray-300 text-700 text-base',
+                        'text-gray-200 text-400 text-xxs pl-4',
                       )}>
-                      {i.label} - {i.value}
+                      COPY LINK
                     </Text>
-                  ))}
+                  </View>
                 </View>
-                <View>
-                  <Touchable onPress={() => handleOpenEditItemModal(item)}>
-                    <View style={applyStyles('px-16 py-8')}>
-                      <Icon
-                        size={20}
-                        name="edit"
-                        type="feathericons"
-                        color={colors['gray-50']}
-                      />
-                    </View>
-                  </Touchable>
+              </Touchable>
+              <Touchable onPress={handleOpenPreviewModal}>
+                <View
+                  style={applyStyles(
+                    'py-8 px-16 rounded-8 flex-row items-center bg-gray-20',
+                  )}>
+                  <Icon
+                    name="eye"
+                    size={16}
+                    type="feathericons"
+                    color={colors['gray-50']}
+                  />
+                  <Text style={applyStyles('pl-4 text-400 text-gray-200')}>
+                    Preview Payment Page
+                  </Text>
                 </View>
-              </View>
-            )}
-            keyExtractor={(item, index) => `${item.slug}-${index}`}
-          />
-        </View>
-      )}
-    </KeyboardAwareScrollView>
+              </Touchable>
+            </View>
+
+            <View style={applyStyles('p-16')}>
+              <Button
+                title="Add New Payment"
+                onPress={handleOpenAddItemModal}
+              />
+            </View>
+            <FlatList
+              data={paymentOptions}
+              style={applyStyles('pb-56')}
+              renderItem={({item}) => (
+                <View
+                  style={applyStyles(
+                    'flex-row items-center py-8 px-16 bg-white justify-between',
+                    {
+                      borderTopColor: colors['gray-10'],
+                      borderTopWidth: 1,
+                      borderBottomColor: colors['gray-10'],
+                      borderBottomWidth: 1,
+                    },
+                  )}>
+                  <View style={applyStyles('py-8')}>
+                    <Text
+                      style={applyStyles('pb-2 text-gray-100 text-uppercase')}>
+                      {item.name}
+                    </Text>
+                    {item?.fieldsData?.map((i) => (
+                      <Text
+                        key={i.key}
+                        style={applyStyles(
+                          'pb-2 text-gray-300 text-700 text-base',
+                        )}>
+                        {i.label} - {i.value}
+                      </Text>
+                    ))}
+                  </View>
+                  <View>
+                    <Touchable onPress={() => handleOpenEditItemModal(item)}>
+                      <View style={applyStyles('px-16 py-8')}>
+                        <Icon
+                          size={20}
+                          name="edit"
+                          type="feathericons"
+                          color={colors['gray-50']}
+                        />
+                      </View>
+                    </Touchable>
+                  </View>
+                </View>
+              )}
+              keyExtractor={(item, index) => `${item.slug}-${index}`}
+            />
+          </View>
+        )}
+      </KeyboardAwareScrollView>
+    </Page>
   );
 }
 

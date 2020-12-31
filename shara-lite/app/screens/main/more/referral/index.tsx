@@ -40,7 +40,7 @@ export default function ReferralScreen() {
 
   return (
     <Page
-      header={{title: 'Referral', iconLeft: {}}}
+      header={{title: 'Referral', iconLeft: {}, style: applyStyles('py-8')}}
       style={applyStyles('bg-white')}>
       <View style={applyStyles('flex-1')}>
         <AppInput

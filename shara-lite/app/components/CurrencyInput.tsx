@@ -5,7 +5,7 @@ import {Text, TextInput, TextStyle} from 'react-native';
 import {getAuthService} from '../services';
 import {AppInput, AppInputProps} from './AppInput';
 
-type CurrencyInputProps = Omit<AppInputProps, 'value'> & {
+export type CurrencyInputProps = Omit<AppInputProps, 'value'> & {
   value?: number;
   iconStyle?: TextStyle;
 };

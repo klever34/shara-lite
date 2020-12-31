@@ -1,23 +1,22 @@
-import BluebirdPromise from 'bluebird';
+import {omit} from 'lodash';
+import {ObjectId} from 'bson';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {useReceipt} from '@/services/receipt';
-import {useCreditPayment} from '@/services/credit-payment';
-import {useCredit} from '@/services/credit';
-import {omit} from 'lodash';
 import {getAnalyticsService, getAuthService} from '@/services';
+import {Customer} from 'types/app';
+import {useCustomer} from '@/services/customer/hook';
+import BluebirdPromise from 'bluebird';
+import {usePaymentReminder} from '@/services/payment-reminder';
 
-interface youGaveInterface {
-  customer: ICustomer;
-  amount: number;
+interface saveTransactionInterface {
+  customer?: ICustomer | Customer;
+  amount_paid: number;
+  credit_amount: number;
+  total_amount: number;
   note?: string;
+  is_collection?: boolean;
   dueDate?: Date;
-}
-
-interface youGotInterface {
-  customer?: ICustomer;
-  amount: number;
-  note?: string;
 }
 
 interface addCustomerToTransactionInterface {
@@ -25,15 +24,33 @@ interface addCustomerToTransactionInterface {
   customer: ICustomer;
 }
 
+interface updateTransactionInterface {
+  updates: Partial<IReceipt & Realm.Object>;
+  transaction: IReceipt;
+}
+
+interface deleteTransactionInterface {
+  transaction: IReceipt;
+}
+
+interface deleteCustomerTransactionsInterface {
+  customer: ICustomer;
+}
+
 interface updateDueDateInterface {
   due_date: Date;
-  customer: Partial<ICustomer & Realm.Object>;
+  customer: ICustomer;
 }
 
 interface useTransactionInterface {
   getTransactions: () => IReceipt[];
-  youGave: (data: youGaveInterface) => Promise<IReceipt>;
-  youGot: (data: youGotInterface) => Promise<IReceipt>;
+  getTransaction: (id: ObjectId) => IReceipt;
+  saveTransaction: (data: saveTransactionInterface) => Promise<IReceipt>;
+  updateTransaction: (data: updateTransactionInterface) => Promise<void>;
+  deleteTransaction: (data: deleteTransactionInterface) => Promise<void>;
+  deleteCustomerTransactions: (
+    data: deleteCustomerTransactionsInterface,
+  ) => Promise<void>;
   addCustomerToTransaction: (
     data: addCustomerToTransactionInterface,
   ) => Promise<void>;
@@ -41,33 +58,48 @@ interface useTransactionInterface {
 }
 
 export const useTransaction = (): useTransactionInterface => {
-  const {getReceipts, saveReceipt, updateReceipt} = useReceipt();
-  const {saveCreditPayment} = useCreditPayment();
-  const {updateCredit} = useCredit();
-
-  const getTransactions = getReceipts;
+  const {
+    getReceipt,
+    getReceipts,
+    saveReceipt,
+    updateReceipt,
+    updateReceiptRecord,
+  } = useReceipt();
+  const {updateCustomer} = useCustomer();
+  const {updatePaymentReminder} = usePaymentReminder();
   const user = getAuthService().getUser();
 
-  const youGave = async ({
+  const getTransactions = getReceipts;
+
+  const getTransaction = (id: ObjectId) => getReceipt({receiptId: id});
+
+  const saveTransaction = async ({
     customer,
     note,
-    amount,
+    amount_paid,
+    credit_amount,
+    total_amount,
     dueDate,
-  }: youGaveInterface): Promise<IReceipt> => {
+    is_collection,
+  }: saveTransactionInterface): Promise<IReceipt> => {
     const receiptData = {
       customer,
       note,
       dueDate,
-      amountPaid: 0,
-      totalAmount: amount,
-      creditAmount: amount,
+      is_collection,
+      amountPaid: amount_paid,
+      totalAmount: total_amount,
+      creditAmount: credit_amount,
       tax: 0,
       payments: [],
       receiptItems: [],
     };
+
     getAnalyticsService()
-      .logEvent('userGaveTransaction', {
-        amount,
+      .logEvent('userSavedTransaction', {
+        amountPaid: receiptData.amountPaid,
+        creditAmount: receiptData.creditAmount,
+        totalAmount: receiptData.totalAmount,
         currency_code: user?.country_code ?? '',
       })
       .then(() => {});
@@ -81,68 +113,18 @@ export const useTransaction = (): useTransactionInterface => {
     return await saveReceipt(receiptData);
   };
 
-  const youGot = async ({
-    customer,
-    note,
-    amount,
-  }: youGotInterface): Promise<IReceipt> => {
-    const receiptData = {
-      customer: customer || ({} as ICustomer),
-      note,
-      amountPaid: amount,
-      totalAmount: amount,
-      creditAmount: 0,
-      tax: 0,
-      payments: [],
-      receiptItems: [],
-      is_hidden_in_pro: true,
-    };
-
-    const createdReceipt = await saveReceipt(receiptData);
-
-    if (customer) {
-      await saveCreditPayment({
-        customer,
-        note,
-        amount,
-        method: '',
-      });
-    }
-    getAnalyticsService()
-      .logEvent('userGotTransaction', {
-        amount,
-        currency_code: user?.country_code ?? '',
-      })
-      .then(() => {});
-    if (note) {
-      getAnalyticsService()
-        .logEvent('detailsEnteredToTransaction', {
-          note,
-        })
-        .then(() => {});
-    }
-    return createdReceipt;
-  };
-
   const addCustomerToTransaction = async ({
     transaction,
     customer,
   }: addCustomerToTransactionInterface) => {
-    const receipt = {
-      ...omit(transaction),
-      is_hidden_in_pro: false,
-    };
+    const receipt = omit(transaction);
+    getAnalyticsService()
+      .logEvent('customerAddedToTransaction', {})
+      .then(() => {});
 
     await updateReceipt({
       receipt,
       customer,
-    });
-
-    await saveCreditPayment({
-      customer,
-      note: transaction.note,
-      amount: transaction.amount_paid,
-      method: '',
     });
   };
 
@@ -150,28 +132,67 @@ export const useTransaction = (): useTransactionInterface => {
     due_date,
     customer,
   }: updateDueDateInterface) => {
-    const credits = customer.credits?.filtered(
-      'is_deleted != true AND fulfilled = false',
+    const updates = {due_date};
+    await updateCustomer({
+      updates,
+      customer,
+    });
+
+    await BluebirdPromise.map(
+      customer.paymentReminders || [],
+      async (paymentReminder) => {
+        await updatePaymentReminder({paymentReminder, updates: {}});
+      },
     );
 
-    const updates = {
-      due_date,
-    };
-    BluebirdPromise.each(credits || [], async (credit) => {
-      await updateCredit({
-        credit,
-        updates,
-      });
-    });
     getAnalyticsService()
       .logEvent('setCollectionDate', {})
       .then(() => {});
   };
 
+  const updateTransaction = async ({
+    updates,
+    transaction,
+  }: updateTransactionInterface) => {
+    await updateReceiptRecord({
+      updates,
+      receipt: transaction,
+    });
+    getAnalyticsService()
+      .logEvent('userUpdatedTransaction', {})
+      .then(() => {});
+  };
+
+  const deleteTransaction = async ({
+    transaction,
+  }: deleteTransactionInterface) => {
+    await updateReceiptRecord({
+      updates: {
+        is_deleted: true,
+      },
+      receipt: transaction,
+    });
+    getAnalyticsService()
+      .logEvent('userDeletedTransaction', {})
+      .then(() => {});
+  };
+
+  const deleteCustomerTransactions = async ({
+    customer,
+  }: deleteCustomerTransactionsInterface) => {
+    const transactions = customer.receipts;
+    await BluebirdPromise.map(transactions || [], async (transaction) => {
+      await deleteTransaction({transaction});
+    });
+  };
+
   return {
     getTransactions,
-    youGave,
-    youGot,
+    getTransaction,
+    saveTransaction,
+    updateTransaction,
+    deleteTransaction,
+    deleteCustomerTransactions,
     addCustomerToTransaction,
     updateDueDate,
   };

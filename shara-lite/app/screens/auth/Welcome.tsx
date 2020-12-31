@@ -12,7 +12,7 @@ export const Welcome = () => {
   const [count, setCount] = useState(0);
 
   const handleSkip = useCallback(() => {
-    navigation.navigate('Register');
+    navigation.navigate('Login');
   }, [navigation]);
 
   const handleNext = useCallback(() => {
@@ -65,12 +65,12 @@ export const Welcome = () => {
           />
           <Text
             style={applyStyles(
-              'mb-8 text-center text-gray-300 text-700 text-2xl',
+              'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
             Get repaid before you get desperate
           </Text>
           <Text style={applyStyles('text-center text-gray-200 text-400')}>
-            Some copy here...
+            Get repayments from your customers 3X faster
           </Text>
         </View>
         <View style={applyStyles('center flex-1')}>
@@ -80,12 +80,13 @@ export const Welcome = () => {
           />
           <Text
             style={applyStyles(
-              'mb-8 text-center text-gray-300 text-700 text-2xl',
+              'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
-            Data free
+            Never forget to send reminders to your customers with our free
+            reminders & notifications
           </Text>
           <Text style={applyStyles('text-center text-gray-200 text-400')}>
-            Something about data free...
+            Free SMS & WhatsApp reminders to your customers
           </Text>
         </View>
         <View style={applyStyles('flex-1 center')}>
@@ -95,9 +96,9 @@ export const Welcome = () => {
           />
           <Text
             style={applyStyles(
-              'mb-8 text-center text-gray-300 text-700 text-2xl',
+              'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
-            Reminders
+            You and your business - as one
           </Text>
           <Text
             style={applyStyles('text-center text-gray-200 text-400 mx-auto', {
@@ -105,8 +106,7 @@ export const Welcome = () => {
               maxWidth: 280,
               lineHeight: 20,
             })}>
-            Get your customers to download so they can also be reminded when
-            their repayment is due
+            Take control of your trade and bring it to the next level
           </Text>
         </View>
       </Swiper>

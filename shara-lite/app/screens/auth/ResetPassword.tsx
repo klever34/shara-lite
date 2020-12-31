@@ -44,7 +44,7 @@ const ResetPassword = () => {
       showButton={false}>
       <FormBuilder
         fields={formFields}
-        submitBtn={{title: 'submit'}}
+        actionBtns={[{title: 'submit'}]}
         onSubmit={(values) => {
           if (values?.repeat_password !== values?.password) {
             ToastAndroid.show('Passwords do not match', ToastAndroid.LONG);

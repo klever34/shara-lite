@@ -1,5 +1,5 @@
 import {FormBuilder, FormFields, Button, PhoneNumber} from '@/components';
-import {getApiService, getAuthService} from '@/services';
+import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useContext, useMemo, useRef} from 'react';
@@ -8,6 +8,7 @@ import {Page} from '@/components/Page';
 import parsePhoneNumber from 'libphonenumber-js';
 import {UserProfileFormPayload} from '@/services/api';
 import {ToastContext} from '@/components/Toast';
+import {handleError} from '@/services/error-boundary';
 
 export const UserProfileSettings = () => {
   const authService = getAuthService();
@@ -77,6 +78,10 @@ export const UserProfileSettings = () => {
     try {
       await apiService.userProfileUpdate(formValues);
       showSuccessToast('User profile updated successfully');
+      getAnalyticsService()
+        .logEvent('userProfileUpdated', {})
+        .then(() => {})
+        .catch(handleError);
       navigation.goBack();
     } catch (error) {
       Alert.alert('Error', error.message);

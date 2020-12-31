@@ -19,6 +19,7 @@ import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
+import {PaymentReminder} from '@/models/PaymentReminder';
 
 export const schema = [
   Address,
@@ -33,6 +34,7 @@ export const schema = [
   Message,
   Payment,
   PaymentOption,
+  PaymentReminder,
   Product,
   Receipt,
   ReceiptItem,
@@ -65,14 +67,14 @@ export const createSyncRealm = async ({
   try {
     const trace = await perf().startTrace('loginToRealm');
     const partitionValue = await getRealmPartitionKey();
-    // @ts-ignore
-    const credentials = Realm.Credentials.custom(jwt);
+    const credentials = Realm.Credentials.jwt(jwt);
     const appConfig = {
       id: Config.ATLAS_REALM_APP_ID,
     };
 
-    // @ts-ignore
     const app = new Realm.App(appConfig);
+    Realm.App.Sync.setLogLevel(app, 'all');
+
     const realmUser = await app.logIn(credentials);
     const realm = await createRealm({realmUser});
     await trace.stop();
@@ -111,8 +113,7 @@ const createRealm = async (options?: any): Promise<Realm> => {
       user: options.realmUser,
       partitionValue,
     };
-    config.path = `sync-user-data-${partitionValue}-v3-${partitionValue}`;
-    Realm.Sync.setLogLevel('all');
+    config.path = `sync-user-data-${partitionValue}-v4-${partitionValue}`;
   }
 
   if (options && options.schemaVersion) {

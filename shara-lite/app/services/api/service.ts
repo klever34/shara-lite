@@ -59,7 +59,11 @@ export interface IApiService {
     device_id: string;
   }): Promise<ApiResponse>;
 
-  logIn(payload: {mobile: string; password: string}): Promise<ApiResponse>;
+  logIn(payload: {
+    mobile: string;
+    password: string;
+    hash?: string;
+  }): Promise<ApiResponse>;
 
   forgotPassword(payload: {mobile: string}): Promise<ApiResponse>;
 
@@ -130,6 +134,12 @@ export interface IApiService {
   backupData({data, type}: {data: any; type: string}): Promise<void>;
 
   getUserIPDetails(): Promise<any>;
+
+  otp(payload: {
+    mobile?: string;
+    device_id?: string;
+    country_code?: string;
+  }): Promise<string>;
 }
 
 export class ApiService implements IApiService {
@@ -284,9 +294,13 @@ export class ApiService implements IApiService {
     }
   }
 
-  public async logIn(payload: {mobile: string; password: string}) {
+  public async logIn(payload: {
+    mobile: string;
+    password: string;
+    hash?: string;
+  }) {
     try {
-      const fetchResponse = await this.requester.post('/login', payload);
+      const fetchResponse = await this.requester.post('/auth/login', payload);
       const {
         data: {
           credentials: {token},
@@ -603,6 +617,21 @@ export class ApiService implements IApiService {
       });
     } catch (e) {
       throw e;
+    }
+  }
+
+  async otp(payload: {
+    mobile?: string;
+    device_id?: string;
+    country_code?: string;
+  }): Promise<string> {
+    try {
+      const fetchResponse = await this.requester.post('/auth/otp', payload);
+      const {message} = fetchResponse;
+
+      return message;
+    } catch (error) {
+      throw error;
     }
   }
 }
