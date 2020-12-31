@@ -1,20 +1,16 @@
 import ReactNative from 'react-native';
 import I18n from 'react-native-i18n';
+import remoteConfig from '@react-native-firebase/remote-config';
 
-// Import all locales
-import en from './locales/en.json';
-import fr from './locales/fr.json';
-
-// TODO Update locales from Firebase Remote Config
+// Update locales from Firebase Remote Config
+const locales = remoteConfig().getValue('locales');
 
 // Should the app fallback to English if user locale doesn't exists
 I18n.fallbacks = true;
 
 // Define the supported translations
-I18n.translations = {
-  en,
-  fr,
-};
+console.log("locales", locales);  
+I18n.translations = JSON.parse(locales.asString());
 
 const currentLocale = I18n.currentLocale();
 

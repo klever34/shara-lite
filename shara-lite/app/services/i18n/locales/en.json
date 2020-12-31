@@ -1,0 +1,26 @@
+{
+  "login": {
+    "heading": "Get Started For Free",
+    "subheading": "Log in to auto-backup and sync your data securely",
+    "login_button": "Next",
+    "forgot_password": "Forgot your password?"
+  },
+  "otp": {
+    "heading": "OTP",
+    "subheading": "=== From API response ===",
+    "otp_button": "Get Started",
+    "resend_text": "Didn't receive the code?",
+    "resend_button": "Resend Code"
+  },
+  "forgot_password": {
+    "heading": "Forgot your password?",
+    "subheading": "Enter your mobile number to receive your OTP",
+    "fp_button": "Submit"
+  },
+  "fields": {
+    "phone_field" : {
+      "label": "What's your phone number?",
+      "placeholder": "Enter your number"
+    }
+  }
+}

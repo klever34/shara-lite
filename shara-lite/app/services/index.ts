@@ -19,6 +19,7 @@ import {
   IIPGeolocationService,
   IPGeolocationService,
 } from '@/services/ip-geolocation';
+import {IRemoteConfigService} from '@/services/remote-config';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
@@ -95,3 +96,6 @@ export const getAddressService = () =>
 
 export const getIPGeolocationService = () =>
   container.get<IIPGeolocationService>('IPGeolocation');
+
+export const getRemoteConfigService = () =>
+  container.get<IRemoteConfigService>('RemoteConfig');
