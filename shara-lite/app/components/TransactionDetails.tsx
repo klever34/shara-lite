@@ -139,7 +139,10 @@ const TransactionDetails = withModal(
       : '';
 
     const paymentLink =
-      businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+      businessInfo.slug &&
+      `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+        customer._id ? `?customer=${String(customer._id)}` : ''
+      }`;
 
     const paymentReminderMessage = `Hello ${customer?.name ?? ''}${
       businessInfo?.name || user?.firstname

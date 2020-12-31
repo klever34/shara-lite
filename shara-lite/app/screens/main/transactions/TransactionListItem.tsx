@@ -74,13 +74,15 @@ export const TransactionListItem = ({
         return (
           <View>
             <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-              You made a sale of{' '}
+              {customer && `${customer.name}`} paid you{' '}
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(total_amount)}
-              </Text>
-              {customer && ` to ${customer.name} `}
-              and he has a balance of {amountWithCurrency(credit_amount)} to
-              pay.
+              </Text>{' '}
+              and has an outstanding of{' '}
+              <Text style={applyStyles('text-700')}>
+                {amountWithCurrency(credit_amount)}
+              </Text>{' '}
+              to pay
             </Text>
           </View>
         );
