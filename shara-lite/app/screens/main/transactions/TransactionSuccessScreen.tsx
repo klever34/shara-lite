@@ -24,7 +24,7 @@ export const TransactionSuccessScreen = (
           transaction={transaction}
           subheading={`${
             transaction.is_collection ? 'Collection' : 'Sale'
-          } has been recorded Succesfully"`}
+          } has been recorded Succesfully`}
         />
         <View style={applyStyles({height: 50})} />
       </ScrollView>
