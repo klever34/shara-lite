@@ -1,5 +1,7 @@
-import remoteConfig, {FirebaseRemoteConfigTypes} from '@react-native-firebase/remote-config';
-import remoteConfigDefaults from 'remote-config.json';
+import remoteConfig, {
+  FirebaseRemoteConfigTypes,
+} from '@react-native-firebase/remote-config';
+import remoteConfigDefaults from './remote-config.json';
 import ConfigValue = FirebaseRemoteConfigTypes.ConfigValue;
 
 export interface IRemoteConfigService {
@@ -18,16 +20,16 @@ export class RemoteConfigService implements IRemoteConfigService {
         .then(() => remoteConfig().fetchAndActivate())
         .then((fetchedRemotely) => {
           if (fetchedRemotely) {
-            console.log('Configs were retrieved from the backend and activated.');
+            console.log(
+              'Configs were retrieved from the backend and activated.',
+            );
           } else {
             console.log(
               'No configs were fetched from the backend, and the local configs were already activated',
             );
           }
         });
-    } catch (e) {
-
-    }
+    } catch (e) {}
   }
 
   getValue(key: string): ConfigValue {
