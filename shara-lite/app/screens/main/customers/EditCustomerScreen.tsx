@@ -15,6 +15,7 @@ import {useFormik} from 'formik';
 import React, {useCallback, useContext, useState} from 'react';
 import {Text, View} from 'react-native';
 import {MainStackParamList} from '..';
+import {useTransaction} from '@/services/transaction';
 
 type EditCustomerScreenProps = {
   route: RouteProp<MainStackParamList, 'EditCustomer'>;
@@ -26,6 +27,7 @@ export const EditCustomerScreen = withModal(
     const {customer} = route.params;
     const navigation = useAppNavigation();
     const {updateCustomer, deleteCustomer} = useCustomer();
+    const {deleteCustomerTransactions} = useTransaction();
     const {callingCode} = useIPGeolocation();
     const {showSuccessToast} = useContext(ToastContext);
 
@@ -57,6 +59,7 @@ export const EditCustomerScreen = withModal(
         try {
           setIsDeleting(true);
           await deleteCustomer({customer});
+          deleteCustomerTransactions({customer}).then(() => {});
           setIsDeleting(false);
           showSuccessToast('CUSTOMER DELETED');
           getAnalyticsService()
@@ -70,7 +73,13 @@ export const EditCustomerScreen = withModal(
           handleError(error);
         }
       },
-      [customer, deleteCustomer, navigation, showSuccessToast],
+      [
+        customer,
+        deleteCustomer,
+        deleteCustomerTransactions,
+        navigation,
+        showSuccessToast,
+      ],
     );
 
     const handleOpenDeleteConfirmation = useCallback(() => {
