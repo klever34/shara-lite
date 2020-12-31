@@ -1,162 +1,166 @@
-import {Icon} from '@/components/Icon';
-import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors} from '@/styles';
-import {format, formatDistanceToNowStrict} from 'date-fns';
-import React, {useCallback, useMemo} from 'react';
+import {formatDistanceToNowStrict} from 'date-fns';
+import React, {useCallback} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 
-export type ReceiptListItemProps = {
+export type TransactionListItemProps = {
   style?: ViewStyle;
-  isHeader?: boolean;
   receipt?: IReceipt;
   onPress?: () => void;
-  getReceiptItemLeftText?: (receipt?: IReceipt) => string;
-  getReceiptItemRightText?: (receipt?: IReceipt) => string;
 };
 
 export const TransactionListItem = ({
   style,
   receipt,
   onPress,
-  getReceiptItemLeftText,
-  getReceiptItemRightText,
-}: ReceiptListItemProps) => {
-  const {getReceiptAmounts} = useReceipt();
-  const {creditAmountLeft} = getReceiptAmounts(receipt);
+}: TransactionListItemProps) => {
+  const {
+    note,
+    customer,
+    isInflow,
+    isOutflow,
+    amount_paid,
+    total_amount,
+    credit_amount,
+    is_collection,
+    transaction_date,
+  } = receipt ?? {};
 
-  const getStatusText = useCallback(() => {
-    if (receipt?.isPaid) {
-      return '';
+  const renderTransactionText = useCallback(() => {
+    if (is_collection) {
+      return (
+        <View>
+          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+            You Collected{' '}
+            <Text style={applyStyles('text-700')}>
+              {amountWithCurrency(total_amount)}
+            </Text>
+            {customer && ` from ${customer.name}.`} He has a{' '}
+            {customer?.balance !== undefined && customer?.balance > 0
+              ? 'positive'
+              : 'negative'}{' '}
+            balance of {amountWithCurrency(customer?.balance)}
+          </Text>
+        </View>
+      );
     }
-    if (receipt?.dueDate) {
-      if (receipt.dueDate.getTime() < Date.now()) {
-        return `due ${formatDistanceToNowStrict(receipt.dueDate, {
-          addSuffix: true,
-        })}`;
-      } else {
-        return `collect on ${format(receipt?.dueDate, 'dd MMM, yyy')}`;
+    if (isOutflow) {
+      if (credit_amount && amount_paid === 0) {
+        return (
+          <View>
+            {customer ? (
+              <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+                {customer.name} owes{' '}
+                <Text style={applyStyles('text-700')}>
+                  {amountWithCurrency(credit_amount)}
+                </Text>
+              </Text>
+            ) : (
+              <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+                You were paid{' '}
+                <Text style={applyStyles('text-700')}>
+                  {amountWithCurrency(credit_amount)}
+                </Text>{' '}
+                (No customer selected)
+              </Text>
+            )}
+          </View>
+        );
       }
-    } else {
-      return 'set collection date';
-    }
-  }, [receipt]);
-
-  const getStatusTextColor = useCallback(() => {
-    if (receipt?.dueDate) {
-      if (receipt.dueDate.getTime() < Date.now()) {
-        return 'text-red-200';
+      if (credit_amount) {
+        return (
+          <View>
+            <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+              {customer && `${customer.name}`} paid you{' '}
+              <Text style={applyStyles('text-700')}>
+                {amountWithCurrency(total_amount)}
+              </Text>{' '}
+              and has an outstanding of{' '}
+              <Text style={applyStyles('text-700')}>
+                {amountWithCurrency(credit_amount)}
+              </Text>{' '}
+              to pay
+            </Text>
+          </View>
+        );
       }
-      return 'text-gray-200';
-    } else {
-      return 'text-gray-50';
     }
-  }, [receipt]);
-
-  getReceiptItemLeftText = useMemo(() => {
-    if (!getReceiptItemLeftText) {
-      return (currentReceipt) => {
-        return currentReceipt?.customer?.name ?? 'No customer';
-      };
-    }
-    return getReceiptItemLeftText;
-  }, [getReceiptItemLeftText]);
-
-  getReceiptItemRightText = useMemo(() => {
-    if (!getReceiptItemRightText) {
-      return (currentReceipt) => {
-        return currentReceipt?.created_at
-          ? formatDistanceToNowStrict(currentReceipt?.created_at, {
-              addSuffix: true,
-            })
-          : '';
-      };
-    }
-    return getReceiptItemRightText;
-  }, [getReceiptItemRightText]);
+    return (
+      <View>
+        {customer ? (
+          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+            {customer.name} paid you{' '}
+            <Text style={applyStyles('text-700')}>
+              {amountWithCurrency(total_amount)}
+            </Text>
+          </Text>
+        ) : (
+          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
+            You were paid{' '}
+            <Text style={applyStyles('text-700')}>
+              {amountWithCurrency(total_amount)}
+            </Text>{' '}
+            (No customer selected)
+          </Text>
+        )}
+      </View>
+    );
+  }, [
+    credit_amount,
+    amount_paid,
+    customer,
+    isOutflow,
+    is_collection,
+    total_amount,
+  ]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
       <View
         style={applyStyles(
-          'px-16 py-16 flex-row items-center justify-between',
+          'px-16 py-8 flex-row items-center justify-between',
           {
-            borderBottomWidth: 1,
+            borderBottomWidth: 1.2,
             borderBottomColor: colors['gray-10'],
           },
           style,
         )}>
-        <View style={applyStyles('flex-row items-center', {width: '48%'})}>
-          {receipt?.isPaid && !receipt.customer ? (
-            <View style={applyStyles('flex-row items-center')}>
-              <View
-                style={applyStyles('center bg-green-200', {
-                  width: 40,
-                  height: 40,
-                  borderRadius: 20,
-                })}>
-                <Icon
-                  size={20}
-                  name="dollar-sign"
-                  type="feathericons"
-                  color={colors.white}
-                />
-              </View>
-              <View style={applyStyles('pl-8')}>
-                <Text
-                  style={applyStyles(
-                    'pb-4 text-gray-50 text-700 text-sm text-uppercase',
-                  )}>
-                  Payment received
-                </Text>
-                <Text
-                  style={applyStyles(
-                    'text-uppercase text-400 text-gray-200 text-xxs',
-                  )}>
-                  {getReceiptItemRightText(receipt)}
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <>
-              <PlaceholderImage text={receipt?.customer?.name ?? ''} />
-              <View style={applyStyles('pl-sm')}>
-                <Text
-                  numberOfLines={1}
-                  style={applyStyles(
-                    'pb-4 text-uppercase text-700 text-gray-300',
-                  )}>
-                  {getReceiptItemLeftText(receipt)}
-                </Text>
-                <Text
-                  style={applyStyles(
-                    'text-uppercase text-400 text-gray-200 text-xxs',
-                  )}>
-                  {getReceiptItemRightText(receipt)}
-                </Text>
-              </View>
-            </>
-          )}
-        </View>
-        <View style={applyStyles('items-end', {width: '48%'})}>
-          <Text
-            style={applyStyles(
-              `pb-4 text-700 ${
-                receipt?.isPaid ? 'text-gray-300' : 'text-red-200'
-              }`,
-            )}>
-            {amountWithCurrency(
-              receipt?.isPaid ? receipt?.total_amount : creditAmountLeft,
+        <View style={applyStyles('flex-row items-center', {width: '66%'})}>
+          <View style={applyStyles('pl-4')}>
+            <View>{renderTransactionText()}</View>
+            {!!note && (
+              <Text style={applyStyles('text-gray-100 text-xxs pt-4')}>
+                {note}
+              </Text>
             )}
-          </Text>
+          </View>
+        </View>
+        <View style={applyStyles('items-end', {width: '30%'})}>
+          <View
+            style={applyStyles('mb-2 py-4 px-8 bg-gray-10 rounded-16 center', {
+              borderWidth: 1,
+              borderColor: colors['gray-20'],
+            })}>
+            <Text
+              style={applyStyles(
+                `pb-4 text-700 text-xs ${
+                  isInflow ? 'text-green-200' : 'text-red-200'
+                }`,
+              )}>
+              {amountWithCurrency(isInflow ? total_amount : credit_amount)}
+            </Text>
+          </View>
           <Text
             style={applyStyles(
-              `text-700 text-uppercase text-xxs ${getStatusTextColor()}`,
+              'text-400 text-uppercase text-xxs text-gray-100',
             )}>
-            {getStatusText()}
+            {transaction_date &&
+              formatDistanceToNowStrict(transaction_date, {
+                addSuffix: true,
+              })}
           </Text>
         </View>
       </View>

@@ -2,7 +2,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles} from '@/styles';
-import {format} from 'date-fns';
+import {format, isToday} from 'date-fns';
 import React, {useCallback, useEffect, useRef} from 'react';
 import {Image, ScrollView, Text, View} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
@@ -66,12 +66,24 @@ function PaymentReminderImage({
               )}>
               {amountWithCurrency(amount)}
             </Text>
-            <Text
-              style={applyStyles(
-                'pb-40 text-center text-400 text-xs text-gray-100 text-uppercase',
-              )}>
-              {date && format(date, 'dd MMM yyyy')}
-            </Text>
+            {date && isToday(date) ? (
+              <View
+                style={applyStyles('p-8 mb-40 bg-red-200 center', {
+                  borderRadius: 8,
+                })}>
+                <Text style={applyStyles('text-center text-white text-400')}>
+                  Payment Due{' '}
+                  <Text style={applyStyles('text-white text-700')}>Today</Text>
+                </Text>
+              </View>
+            ) : (
+              <Text
+                style={applyStyles(
+                  'pb-40 text-center text-400 text-xs text-gray-100 text-uppercase',
+                )}>
+                This payment is due on {date && format(date, 'dd MMM yyyy')}
+              </Text>
+            )}
             <View style={applyStyles('center pb-32')}>
               {!!business.profile_image && (
                 <View style={applyStyles('w-40 h-40 mb-12')}>

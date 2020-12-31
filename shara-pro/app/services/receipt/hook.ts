@@ -107,9 +107,9 @@ export const useReceipt = (): useReceiptInterface => {
       image_url,
       ...getBaseModelValues(),
     };
+    receipt.transaction_date = receipt.created_at;
 
     let receiptCustomer: ICustomer | Customer;
-
     if (customer.name) {
       receipt.customer_name = customer.name;
       receipt.customer_mobile = customer.mobile;

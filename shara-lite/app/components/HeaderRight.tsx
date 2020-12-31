@@ -1,6 +1,6 @@
 import React from 'react';
 import {ActivityIndicator, View} from 'react-native';
-import Icon from './Icon';
+import Icon, {IconProps} from './Icon';
 import {
   Menu,
   MenuOption,
@@ -10,7 +10,7 @@ import {
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 
-export type HeaderRightOption = {icon: string; onPress: () => void};
+export type HeaderRightOption = {icon: Partial<IconProps>; onPress: () => void};
 export type HeaderRightMenuOption = {text: string; onSelect: () => void};
 
 export type HeaderRightProps = {
@@ -36,7 +36,7 @@ export const HeaderRight = ({
       {options.map(({icon, onPress}) => {
         return (
           <HeaderBackButton
-            key={icon}
+            key={icon.name}
             onPress={onPress}
             backImage={() => {
               return (
@@ -45,7 +45,7 @@ export const HeaderRight = ({
                     type="feathericons"
                     color={colors['gray-300']}
                     size={24}
-                    name={icon}
+                    {...icon}
                   />
                 </View>
               );

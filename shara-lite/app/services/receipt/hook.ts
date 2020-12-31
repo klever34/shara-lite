@@ -24,7 +24,7 @@ import perf from '@react-native-firebase/perf';
 interface saveReceiptInterface {
   note?: string;
   dueDate?: Date;
-  customer: ICustomer | Customer;
+  customer?: ICustomer | Customer;
   amountPaid: number;
   totalAmount: number;
   creditAmount: number;
@@ -34,10 +34,16 @@ interface saveReceiptInterface {
   image_url?: string;
   local_image_url?: string;
   is_hidden_in_pro?: boolean;
+  is_collection?: boolean;
 }
 
 interface updateReceiptInterface {
   customer: ICustomer;
+  receipt: IReceipt;
+}
+
+interface updateReceiptRecordInterface {
+  updates: object;
   receipt: IReceipt;
 }
 
@@ -58,6 +64,7 @@ interface useReceiptInterface {
   getReceipts: () => IReceipt[];
   saveReceipt: (data: saveReceiptInterface) => Promise<IReceipt>;
   updateReceipt: (data: updateReceiptInterface) => Promise<void>;
+  updateReceiptRecord: (data: updateReceiptRecordInterface) => Promise<void>;
   cancelReceipt: (params: cancelReceiptInterface) => void;
   getAllPayments: (params: getAllPaymentsInterface) => Array<any>;
   getReceipt: (params: getReceiptInterface) => IReceipt;
@@ -80,7 +87,9 @@ export const useReceipt = (): useReceiptInterface => {
   const getReceipts = (): IReceipt[] => {
     return (realm
       .objects<IReceipt>(modelName)
-      .filtered('is_deleted != true') as unknown) as IReceipt[];
+      .filtered(
+        'is_deleted != true AND is_cancelled != true',
+      ) as unknown) as IReceipt[];
   };
 
   const saveReceipt = async ({
@@ -96,6 +105,7 @@ export const useReceipt = (): useReceiptInterface => {
     local_image_url,
     image_url,
     is_hidden_in_pro,
+    is_collection,
   }: saveReceiptInterface) => {
     const fullTrace = await perf().startTrace('saveReceiptFullFlow');
 
@@ -108,20 +118,21 @@ export const useReceipt = (): useReceiptInterface => {
       local_image_url,
       image_url,
       is_hidden_in_pro,
+      is_collection,
       ...getBaseModelValues(),
     };
+    receipt.transaction_date = receipt.created_at;
 
     let receiptCustomer: ICustomer | Customer;
-
-    if (customer.name) {
+    if (customer?.name) {
       receipt.customer_name = customer.name;
       receipt.customer_mobile = customer.mobile;
     }
 
-    if (!customer._id && customer.name) {
+    if (!customer?._id && customer?.name) {
       receiptCustomer = await saveCustomer({customer, source: 'manual'});
     }
-    if (customer._id) {
+    if (customer?._id) {
       receiptCustomer = customer;
       getAnalyticsService()
         .logEvent('customerAddedToReceipt', {})
@@ -359,6 +370,7 @@ export const useReceipt = (): useReceiptInterface => {
     getReceipts,
     saveReceipt,
     updateReceipt,
+    updateReceiptRecord,
     cancelReceipt,
     getAllPayments,
     getReceipt,

@@ -32,13 +32,7 @@ const EmptyState = (props: EmptyStateProps) => {
     textStyle,
   } = props;
   return (
-    <View
-      style={applyStyles(
-        'flex-1 my-xl',
-        'justify-center',
-        'items-center',
-        style,
-      )}>
+    <View style={applyStyles('flex-1 justify-center items-center', style)}>
       {source && (
         <Image
           source={source}
@@ -57,7 +51,7 @@ const EmptyState = (props: EmptyStateProps) => {
       {!!text && (
         <Text
           style={applyStyles(
-            'text-400 text-sm text-gray-200 text-center',
+            'text-400 text-base text-black text-center',
             {
               maxWidth: 300,
               marginHorizontal: 'auto',

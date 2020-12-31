@@ -7,9 +7,10 @@ export type RadioButtonProps = {
   style?: ViewStyle;
   isChecked?: boolean;
   children?: ReactNode;
+  disabled?: boolean;
+  checkedStyle?: ViewStyle;
   containerStyle?: ViewStyle;
   onChange?: (value: boolean) => void;
-  disabled?: boolean;
 };
 
 export const RadioButton = (props: RadioButtonProps) => {
@@ -18,11 +19,12 @@ export const RadioButton = (props: RadioButtonProps) => {
     style,
     onChange,
     isChecked,
+    checkedStyle,
     containerStyle,
     disabled = false,
   } = props;
   const borderStyles = isChecked
-    ? {borderWidth: 2, borderColor: colors['red-50']}
+    ? {borderWidth: 2, borderColor: colors['red-200']}
     : {borderWidth: 2, borderColor: colors['gray-50']};
 
   const onPress = useCallback(() => {
@@ -40,10 +42,15 @@ export const RadioButton = (props: RadioButtonProps) => {
               style,
             )}>
             {isChecked && (
-              <View style={applyStyles('w-16 h-16 bg-red-100 rounded-6')} />
+              <View
+                style={applyStyles(
+                  'w-16 h-16 bg-red-200 rounded-6',
+                  checkedStyle,
+                )}
+              />
             )}
           </View>
-          <View style={applyStyles('ml-8')}>{children}</View>
+          {children && <View style={applyStyles('ml-8')}>{children}</View>}
         </View>
       </View>
     </Touchable>

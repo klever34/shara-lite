@@ -34,12 +34,20 @@ export const useShare = ({
     };
 
     if (!recipient) {
-      Alert.alert('Info', 'Please add a customer to share receipt via SMS');
+      const options = {
+        title,
+        message,
+      };
+      try {
+        await Share.open(options);
+      } catch (e) {
+        console.log('Error', e.error);
+      }
     } else {
       try {
         await Share.shareSingle(shareOptions);
       } catch (e) {
-        Alert.alert('Error', e.error);
+        console.log('Error', e.error);
       }
     }
   }, [message, recipient, title]);
@@ -76,10 +84,16 @@ export const useShare = ({
     } as {[key: string]: any};
 
     if (!recipient) {
-      Alert.alert(
-        'Info',
-        'Please add a customer to share receipt via Whatsapp',
-      );
+      const options = {
+        title,
+        message,
+        url: `data:image/png;base64,${image}`,
+      };
+      try {
+        await Share.open(options);
+      } catch (e) {
+        console.log('Error', e.error);
+      }
     } else {
       try {
         isWhatsappInstalled = await AppInstalledChecker.checkPackageName(

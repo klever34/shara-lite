@@ -49,24 +49,27 @@ export const ImageInput = ({
   return (
     <View style={applyStyles(' w-full', containerStyle)}>
       {!!label && (
-        <Text
-          style={applyStyles(
-            'text-xs text-uppercase text-500 text-gray-100 pb-8',
-          )}>
+        <Text style={applyStyles('text-xs text-500 text-gray-100 pb-8')}>
           {label}
         </Text>
       )}
       <Touchable onPress={handleImageInputChange}>
         <View
           style={applyStyles(
-            'bg-gray-10 w-full h-128 rounded-lg overflow-hidden center',
+            'bg-gray-10 w-full h-128 rounded-lg overflow-hidden center p-8 mb-10',
+            {
+              borderWidth: 2,
+              borderStyle: 'dashed',
+              borderColor: '#ECECEC',
+              borderRadius: 8,
+            },
           )}>
           {value?.uri ? (
             <Image
               resizeMode="contain"
               style={applyStyles('items-center justify-center', {
                 width: '100%',
-                height: 128,
+                height: '100%',
                 backgroundColor: colors['gray-20'],
               })}
               source={{

@@ -21,27 +21,49 @@ import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
 } from './entry/SelectCustomerScreen';
-import {
-  CustomerEntryScreen,
-  CustomerEntryScreenParams,
-} from './customers/CustomerEntryScreen';
 import ReferralScreen from './more/referral';
+import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
+import {MoreScreen} from '@/screens/main/more';
+import {PaymentsScreen} from '@/screens/main/payments';
+import {EntryView} from '@/components/EntryView';
+import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
+import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
+import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
+import {ICustomer} from '@/models';
+import {EditTransactionScreen} from './transactions/EditTransactionScreen';
+import {ReportScreen} from './report';
+import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
+import {EditCustomerScreen} from './customers/EditCustomerScreen';
 
 export type MainStackParamList = {
   Home: undefined;
 
   // Customers
-  SelectCustomerList: SelectCustomerListScreenParams;
+  EditCustomer: {customer: ICustomer};
   CustomerDetails: TransactionDetailsProps;
-  CustomerEntry: CustomerEntryScreenParams;
+  ReminderSettings: {customer: ICustomer};
+  SelectCustomerList: SelectCustomerListScreenParams;
 
   // Transaction
+  RecordSale: {
+    goBack?: () => void;
+    customer?: ICustomer;
+  };
+  EditTransaction: {transaction: IReceipt};
   TransactionDetails: {transaction: IReceipt};
+  LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
+  RecordCollection: {customer: ICustomer; goBack?: () => void};
+  TransactionSuccess: {transaction: IReceipt; onDone?: () => void};
 
   // More
-  UserProfileSettings: undefined;
-  BusinessSettings: undefined;
+  Settings: undefined;
   Referral: undefined;
+  PaymentSettings: undefined;
+  BusinessSettings: undefined;
+  UserProfileSettings: undefined;
+
+  // Report
+  Report: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -78,75 +100,138 @@ const MainScreens = () => {
   }
 
   return (
-    <MainStack.Navigator
-      initialRouteName="Home"
-      screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.white,
-        },
-        headerTitleStyle: {
-          fontSize: 16,
-          fontFamily: 'Roboto-Regular',
-        },
-        headerTintColor: colors['gray-300'],
-      }}>
-      {/* Home */}
-      <MainStack.Screen
-        name="Home"
-        component={HomeScreen}
-        options={{headerShown: false}}
-      />
+    <EntryView>
+      <MainStack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.white,
+          },
+          headerTitleStyle: {
+            fontSize: 16,
+            fontFamily: 'Roboto-Regular',
+          },
+          headerTintColor: colors['gray-300'],
+        }}>
+        {/* Home */}
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
 
-      {/* Customers */}
-      <MainStack.Screen
-        name="CustomerDetails"
-        component={CustomerDetailsScreen}
-        options={({route}) => ({
-          title: route.params.customer?.name,
-          headerShown: false,
-        })}
-      />
+        {/* Customers */}
+        <MainStack.Screen
+          name="CustomerDetails"
+          component={CustomerDetailsScreen}
+          options={({route}) => ({
+            title: route.params.customer?.name,
+            headerShown: false,
+          })}
+        />
 
-      <MainStack.Screen
-        name="SelectCustomerList"
-        component={SelectCustomerListScreen}
-        options={{headerShown: false}}
-      />
+        <MainStack.Screen
+          name="SelectCustomerList"
+          component={SelectCustomerListScreen}
+          options={{headerShown: false}}
+          initialParams={{onSelectCustomer: () => {}}}
+        />
 
-      <MainStack.Screen
-        name="CustomerEntry"
-        component={CustomerEntryScreen}
-        options={{headerShown: false}}
-      />
+        <MainStack.Screen
+          name="RecordSale"
+          component={RecordSaleScreen}
+          options={{headerShown: false}}
+        />
 
-      {/* More */}
-      <MainStack.Screen
-        name="BusinessSettings"
-        component={BusinessSettings}
-        options={{headerShown: false}}
-      />
-      <MainStack.Screen
-        name="UserProfileSettings"
-        component={UserProfileSettings}
-        options={{headerShown: false}}
-      />
-      <MainStack.Screen
-        name="Referral"
-        component={ReferralScreen}
-        options={{headerShown: false}}
-      />
+        <MainStack.Screen
+          name="RecordCollection"
+          component={RecordCollectionScreen}
+          options={{headerShown: false}}
+        />
 
-      {/* Transactions */}
-      <MainStack.Screen
-        name="TransactionDetails"
-        component={TransactionDetailsScreen}
-        options={{
-          headerShown: false,
-        }}
-      />
+        <MainStack.Screen
+          name="ReminderSettings"
+          component={ReminderSettingsScreen}
+          options={{headerShown: false}}
+        />
 
-      {/* Payments */}
-    </MainStack.Navigator>
+        <MainStack.Screen
+          name="EditCustomer"
+          component={EditCustomerScreen}
+          options={{headerShown: false}}
+        />
+
+        {/* More */}
+        <MainStack.Screen
+          name="BusinessSettings"
+          component={BusinessSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Referral"
+          component={ReferralScreen}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Settings"
+          component={MoreScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="PaymentSettings"
+          component={PaymentsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        {/* Transactions */}
+        <MainStack.Screen
+          name="TransactionDetails"
+          component={TransactionDetailsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="LedgerEntry"
+          component={LedgerEntryScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="EditTransaction"
+          component={EditTransactionScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="TransactionSuccess"
+          component={TransactionSuccessScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+
+        {/* Report */}
+        <MainStack.Screen
+          name="Report"
+          component={ReportScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </MainStack.Navigator>
+    </EntryView>
   );
 };
 

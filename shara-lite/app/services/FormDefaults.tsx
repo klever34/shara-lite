@@ -1,5 +1,4 @@
 import Config from 'react-native-config';
-import faker from 'faker';
 
 export class FormDefaults {
   /**
@@ -11,7 +10,6 @@ export class FormDefaults {
     return {
       login: {
         mobile: '8056636694',
-        password: 'some-password',
         countryCode: '234',
       },
       signup: {
@@ -20,22 +18,22 @@ export class FormDefaults {
         countryCode: '234',
       },
       supplier: {
-        name: faker.name.findName(),
-        address: faker.address.streetAddress(),
-        mobile: faker.phone.phoneNumber(),
+        name: 'James',
+        address: 'Harden',
+        mobile: '+2348056636694',
       },
       deliveryAgent: {
-        full_name: faker.name.findName(),
-        mobile: faker.phone.phoneNumber(),
+        full_name: 'Sundai Pichai',
+        mobile: '+2348056636694',
       },
-      quantity: `${Math.floor(Math.random() * 100)}`,
+      quantity: '100',
       newProduct: {
-        name: faker.commerce.productName(),
-        price: faker.random.number(),
-        sku: faker.commerce.product(),
+        name: 'Hollandia Yoghurt',
+        price: 5000,
+        sku: 'HY',
       },
-      newCustomerName: faker.name.findName(),
-      newCustomerMobile: faker.phone.phoneNumber(),
+      newCustomerName: 'Kepa Allison',
+      newCustomerMobile: '+2348056636694',
     };
   }
 

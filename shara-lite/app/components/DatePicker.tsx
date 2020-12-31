@@ -3,12 +3,15 @@ import DateTimePicker, {
   AndroidNativeProps,
 } from '@react-native-community/datetimepicker';
 import React, {ReactNode, useCallback, useState} from 'react';
-import {View} from 'react-native';
+import {View, ViewStyle} from 'react-native';
 
-type Props = AndroidNativeProps & {children(handleShow: () => void): ReactNode};
+type Props = AndroidNativeProps & {
+  children(handleShow: () => void): ReactNode;
+  containerStyle?: ViewStyle;
+};
 
 export const DatePicker = (props: Props) => {
-  const {children, onChange, ...rest} = props;
+  const {children, onChange, style, containerStyle, ...rest} = props;
   const [show, setShow] = useState(false);
 
   const handleShow = useCallback(() => {
@@ -24,9 +27,11 @@ export const DatePicker = (props: Props) => {
   );
 
   return (
-    <View>
+    <View style={containerStyle}>
       {children(handleShow)}
-      {show && <DateTimePicker onChange={handleChange} {...rest} />}
+      {show && (
+        <DateTimePicker style={style} onChange={handleChange} {...rest} />
+      )}
     </View>
   );
 };

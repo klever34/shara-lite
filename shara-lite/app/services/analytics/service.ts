@@ -20,7 +20,10 @@ export type SharaAppEventsProperties = {
   login: {method: string};
   logout: {};
   signup: {method: string};
+  userProfileUpdated: {};
   // Customer
+  customerEdited: {};
+  customerDeleted: {};
   customerLocationAdded: {user_id: string};
   customerAdded: {source: 'manual' | 'phonebook'};
   // Receipts
@@ -60,24 +63,30 @@ export type SharaAppEventsProperties = {
   //Payment
   paymentOptionAdded: {};
   paymentOptionEdited: {};
+  copiedPaymentOption: {};
   previewPaymentInfo: {};
   paymentOptionRemoved: {};
   paymentPreviewLabelEdited: {};
   copiedPaymentLink: {};
   //Transactions
-  userGaveTransaction: {
-    amount: number;
-    currency_code: string;
-  };
-  userGotTransaction: {
-    amount: number;
+  userSavedTransaction: {
+    amountPaid: number;
+    creditAmount: number;
+    totalAmount: number;
     currency_code: string;
   };
   setCollectionDate: {};
+  userUpdatedTransaction: {};
+  userDeletedTransaction: {};
   detailsEnteredToTransaction: {};
+  customerAddedToTransaction: {};
   //Referral
   friendInvited: {};
   referralCodeAdded: {};
+  //Report
+  userViewedReport: {};
+  userDownloadedReport: {};
+  userSharedReport: {};
 };
 
 export interface IAnalyticsService {

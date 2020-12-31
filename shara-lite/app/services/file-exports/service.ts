@@ -35,6 +35,8 @@ export const exportToExcel = async (options: ExcelExportInterface) => {
     encoding,
     notificationTitle,
   });
+
+  return path;
 };
 
 export const saveToFile = async ({
