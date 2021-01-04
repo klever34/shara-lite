@@ -39,7 +39,6 @@ export const OTPVerification = () => {
         device_id,
         country_code: countryCode,
       };
-      console.log(payload);
       await apiService.otp(payload);
       showSuccessToast('OTP RESENT');
     } catch (error) {
@@ -81,9 +80,10 @@ export const OTPVerification = () => {
         RNOtpVerify.addListener((message) => {
           try {
             if (message) {
-              //@ts-ignore
-              const code = /(\d{6})/g.exec(message)[1];
-              setOtp(code);
+              const code = /(\d{6})/g.exec(message);
+              if (code) {
+                setOtp(code[1]);
+              }
             }
           } catch (error) {
             Alert.alert('Error', error.message);
