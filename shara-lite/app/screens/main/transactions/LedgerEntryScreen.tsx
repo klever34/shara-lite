@@ -63,7 +63,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     businessInfo.name || user?.firstname
       ? `from ${businessInfo.name ?? user?.firstname}`
       : ''
-  }. You paid ${amountWithCurrency(total_amount)}${
+  }. You paid ${amountWithCurrency(amount_paid)}${
     credit_amount
       ? ` and you owe ${amountWithCurrency(credit_amount)}
          ${
