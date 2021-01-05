@@ -7,11 +7,11 @@ import {useReceipt} from '@/services/receipt';
 import {IReceipt} from '@/models/Receipt';
 
 interface getReceiptsDataInterface {
-  receipts?: IReceipt[];
+  receipts?: Realm.Results<IReceipt & Realm.Object>;
 }
 
 interface exportReportsToExcelInterface {
-  receipts?: IReceipt[];
+  receipts?: Realm.Results<IReceipt & Realm.Object>;
 }
 
 export const useReports = () => {
@@ -31,7 +31,7 @@ export const useReports = () => {
         ],
       ];
 
-      currentReceipts.forEach((receipt) => {
+      currentReceipts.forEach((receipt: IReceipt) => {
         if (receipt.is_cancelled) {
           return;
         }
@@ -77,7 +77,7 @@ export const useReports = () => {
         ],
       ];
 
-      currentReceipts.forEach((receipt) => {
+      currentReceipts.forEach((receipt: IReceipt) => {
         if (receipt.is_cancelled) {
           return;
         }

@@ -34,14 +34,13 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     filterOptions,
     filterStartDate,
     collectedAmount,
+    outstandingAmount,
     filteredReceipts,
     handleStatusFilter,
     handleReceiptSearch,
   } = useReceiptList();
 
   const [isDownloadingReport, setIsDownloadingReport] = useState(false);
-
-  const balance = collectedAmount - totalAmount;
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -211,10 +210,10 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         <Text
           style={applyStyles(
             `text-gray-50 text-700 text-uppercase ${
-              balance > 0 ? 'text-green-200' : 'text-red-200'
+              outstandingAmount > 0 ? 'text-green-200' : 'text-red-200'
             }`,
           )}>
-          {amountWithCurrency(balance)}
+          {amountWithCurrency(outstandingAmount)}
         </Text>
       </View>
 

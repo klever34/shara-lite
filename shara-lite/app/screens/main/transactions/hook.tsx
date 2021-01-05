@@ -121,7 +121,7 @@ export const useReceiptList = ({
     return (userReceipts.sorted(
       'transaction_date',
       true,
-    ) as unknown) as IReceipt[];
+    ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
   const owedReceipts = useMemo(() => {
@@ -175,26 +175,19 @@ export const useReceiptList = ({
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
   const collectedAmount = useMemo(
-    () =>
-      filteredReceipts
-        .map((item) => item.amount_paid)
-        .reduce((acc, item) => acc + item, 0),
+    () => filteredReceipts.sum('credit_amount') || 0,
     [filteredReceipts],
   );
-  const outstandingAmount = useMemo(
-    () =>
-      owedReceipts
-        .map((item) => item.credit_amount)
-        .reduce((acc, item) => acc + item, 0),
-    [owedReceipts],
-  );
-  const totalAmount = useMemo(
-    () =>
-      filteredReceipts
-        .map((item) => item.total_amount)
-        .reduce((acc, item) => acc + item, 0),
-    [filteredReceipts],
-  );
+
+  const outstandingAmount = useMemo(() => {
+    const totalCreditAmount = filteredReceipts.sum('credit_amount') || 0;
+    const balance = totalCreditAmount - collectedAmount;
+    return balance < 0 ? 0 : balance;
+  }, [filteredReceipts, collectedAmount]);
+
+  const totalAmount = useMemo(() => filteredReceipts.sum('total_amount') || 0, [
+    filteredReceipts,
+  ]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
