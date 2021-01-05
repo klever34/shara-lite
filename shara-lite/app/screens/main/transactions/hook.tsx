@@ -175,15 +175,17 @@ export const useReceiptList = ({
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
   const collectedAmount = useMemo(
-    () => filteredReceipts.sum('credit_amount') || 0,
+    () => filteredReceipts.sum('amount_paid') || 0,
     [filteredReceipts],
   );
 
   const outstandingAmount = useMemo(() => {
     const totalCreditAmount = filteredReceipts.sum('credit_amount') || 0;
-    const balance = totalCreditAmount - collectedAmount;
+    const totalCollectedAmount =
+      filteredReceipts.filtered('credit_amount = 0').sum('credit_amount') || 0;
+    const balance = totalCreditAmount - totalCollectedAmount;
     return balance < 0 ? 0 : balance;
-  }, [filteredReceipts, collectedAmount]);
+  }, [filteredReceipts]);
 
   const totalAmount = useMemo(() => filteredReceipts.sum('total_amount') || 0, [
     filteredReceipts,
