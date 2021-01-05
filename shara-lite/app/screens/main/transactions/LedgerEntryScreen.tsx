@@ -67,8 +67,9 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     credit_amount
       ? ` and you owe ${amountWithCurrency(credit_amount)}
          ${
-           !!dueDate &&
-           ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
+           dueDate
+             ? ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
+             : ''
          }
          ${paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''}`
       : '.'
