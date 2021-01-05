@@ -64,12 +64,13 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
       ? `from ${businessInfo.name ?? user?.firstname}`
       : ''
   }. You paid ${amountWithCurrency(total_amount)}${
-    dueDate
-      ? ` and you owe ${amountWithCurrency(
-          credit_amount,
-        )} which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}${
-          paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''
-        }`
+    credit_amount
+      ? ` and you owe ${amountWithCurrency(credit_amount)}
+         ${
+           !!dueDate &&
+           ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
+         }
+         ${paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''}`
       : '.'
   }\n\nPowered by Shara for free.\nwww.shara.co`;
 
