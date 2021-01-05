@@ -182,7 +182,7 @@ export const useReceiptList = ({
   const outstandingAmount = useMemo(() => {
     const totalCreditAmount = filteredReceipts.sum('credit_amount') || 0;
     const totalCollectedAmount =
-      filteredReceipts.filtered('credit_amount = 0').sum('credit_amount') || 0;
+      filteredReceipts.filtered('credit_amount = 0').sum('amount_paid') || 0;
     const balance = totalCreditAmount - totalCollectedAmount;
     return balance < 0 ? 0 : balance;
   }, [filteredReceipts]);
