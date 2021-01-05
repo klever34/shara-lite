@@ -187,8 +187,9 @@ export const useReceiptList = ({
     return balance < 0 ? 0 : balance;
   }, [filteredReceipts]);
 
-  const totalAmount = useMemo(() => filteredReceipts.sum('total_amount') || 0, [
-    filteredReceipts,
+  const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
+    collectedAmount,
+    outstandingAmount,
   ]);
 
   useEffect(() => {
