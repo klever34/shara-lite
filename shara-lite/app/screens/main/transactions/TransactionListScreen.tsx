@@ -49,10 +49,12 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           item_id: transaction?._id?.toString() ?? '',
         })
         .then(() => {});
-      navigation.navigate('LedgerEntry', {
-        transaction,
-        showCustomer: true,
-      });
+      requestAnimationFrame(() =>
+        navigation.navigate('LedgerEntry', {
+          transaction,
+          showCustomer: true,
+        }),
+      );
     },
     [navigation],
   );

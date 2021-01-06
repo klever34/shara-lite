@@ -342,7 +342,12 @@ const TransactionDetails = withModal(
             item_id: transaction?._id?.toString() ?? '',
           })
           .then(() => {});
-        navigation.navigate('LedgerEntry', {transaction, showCustomer: false});
+        requestAnimationFrame(() =>
+          navigation.navigate('LedgerEntry', {
+            transaction,
+            showCustomer: false,
+          }),
+        );
       },
       [navigation],
     );

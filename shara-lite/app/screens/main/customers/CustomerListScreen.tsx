@@ -179,7 +179,9 @@ export const CustomerListScreen = withModal(
             content_type: 'customer',
           })
           .then(() => {});
-        navigation.navigate('CustomerDetails', {customer: item});
+        requestAnimationFrame(() =>
+          navigation.navigate('CustomerDetails', {customer: item}),
+        );
       },
       [navigation, analyticsService],
     );
