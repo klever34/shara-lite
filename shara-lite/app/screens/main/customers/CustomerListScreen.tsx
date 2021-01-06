@@ -344,6 +344,11 @@ export const CustomerListScreen = withModal(
               keyExtractor={keyExtractor}
               style={applyStyles('bg-white')}
               renderItem={renderCustomerListItem}
+              getItemLayout={(_, index) => ({
+                length: 73.1,
+                offset: 73.1 * index,
+                index,
+              })}
             />
           </>
         ) : (

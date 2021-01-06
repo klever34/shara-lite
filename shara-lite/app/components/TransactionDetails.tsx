@@ -366,6 +366,12 @@ const TransactionDetails = withModal(
       [handleLedgerItemSelect],
     );
 
+    const handleGoToReminderSettings = useCallback(() => {
+      requestAnimationFrame(() =>
+        navigation.navigate('ReminderSettings', {customer}),
+      );
+    }, [navigation, customer]);
+
     return (
       <SafeAreaView style={applyStyles('flex-1')}>
         <CustomerDetailsHeader
@@ -399,10 +405,7 @@ const TransactionDetails = withModal(
                       </Text>
                     </View>
                   )}
-                  <Touchable
-                    onPress={() =>
-                      navigation.navigate('ReminderSettings', {customer})
-                    }>
+                  <Touchable onPress={handleGoToReminderSettings}>
                     <View style={applyStyles('flex-row center py-8 flex-wrap')}>
                       <View
                         style={applyStyles(
