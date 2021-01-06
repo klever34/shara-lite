@@ -303,7 +303,9 @@ const TransactionDetails = withModal(
     }, [handleStatusFilter]);
 
     const handleViewCustomer = useCallback(() => {
-      navigation.navigate('EditCustomer', {customer});
+      requestAnimationFrame(() =>
+        navigation.navigate('EditCustomer', {customer}),
+      );
     }, [customer, navigation]);
 
     const handleAddCustomer = useCallback(async () => {
