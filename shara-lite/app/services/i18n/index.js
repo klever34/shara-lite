@@ -10,6 +10,8 @@ I18n.fallbacks = true;
 
 // Define the supported translations
 console.log('locales', locales);
+
+// TODO check if locals is emtpy
 I18n.translations = JSON.parse(locales.asString());
 
 const currentLocale = I18n.currentLocale();
