@@ -3,19 +3,22 @@ import {Page} from '@/components/Page';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import {ToastContext} from '@/components/Toast';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {getCustomerWhatsappNumber} from '@/helpers/utils';
+import {getCustomerWhatsappNumber, useImageInput} from '@/helpers/utils';
 import {getAnalyticsService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {useFormik} from 'formik';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {MainStackParamList} from '..';
 import {useTransaction} from '@/services/transaction';
+import Touchable from '@/components/Touchable';
+import {Icon} from '@/components/Icon';
+import RNFetchBlob from 'rn-fetch-blob';
 
 type EditCustomerScreenProps = {
   route: RouteProp<MainStackParamList, 'EditCustomer'>;
@@ -33,6 +36,7 @@ export const EditCustomerScreen = withModal(
 
     const [loading, setLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
+    const [isUploadingImage, setIsUploadingImage] = useState(false);
 
     const handleEditCustomer = useCallback(
       async (updates) => {
@@ -131,19 +135,33 @@ export const EditCustomerScreen = withModal(
       [callingCode],
     );
 
+    const {imageUrl, handleImageInputChange} = useImageInput(undefined, {
+      maxWidth: 256,
+      maxHeight: 256,
+      noData: true,
+      mediaType: 'photo',
+      allowsEditing: true,
+      title: 'Select a picture',
+      takePhotoButtonTitle: 'Take a Photo',
+      storageOptions: {
+        cameraRoll: true,
+      },
+    });
+
     const {values, setFieldValue, handleChange, handleSubmit} = useFormik({
       initialValues: {
         name: customer.name,
+        notes: customer.notes,
+        image: customer.image,
         countryCode: callingCode,
         mobile: getMobileNumber(customer.mobile),
       },
-      onSubmit: (payload) => {
+      onSubmit: ({name, image, mobile, countryCode, notes}) => {
         handleEditCustomer({
-          name: payload.name,
-          mobile: getCustomerWhatsappNumber(
-            payload.mobile,
-            payload.countryCode,
-          ),
+          name,
+          notes,
+          image,
+          mobile: getCustomerWhatsappNumber(mobile, countryCode),
         });
       },
     });
@@ -156,6 +174,36 @@ export const EditCustomerScreen = withModal(
       [setFieldValue],
     );
 
+    const convertImageUriToBase64 = useCallback(async (uri) => {
+      try {
+        const data = await RNFetchBlob.fs.readFile(uri, 'base64');
+        return data;
+      } catch (error) {
+        handleError(error);
+      }
+    }, []);
+
+    const setCustomerImage = useCallback(
+      async (uri) => {
+        try {
+          const base64Image = await convertImageUriToBase64(uri);
+          setFieldValue('image', `data:image/png;base64,${base64Image}`);
+          setIsUploadingImage(false);
+        } catch (error) {
+          handleError(error);
+        }
+      },
+      [convertImageUriToBase64, setFieldValue],
+    );
+
+    useEffect(() => {
+      const uri = imageUrl?.uri;
+      if (uri) {
+        setIsUploadingImage(true);
+        setCustomerImage(uri);
+      }
+    }, [imageUrl, setCustomerImage]);
+
     return (
       <Page
         header={{
@@ -165,10 +213,27 @@ export const EditCustomerScreen = withModal(
         }}
         style={applyStyles('bg-white')}>
         <View style={applyStyles('mb-24 center')}>
-          <PlaceholderImage
-            text={values?.name ?? ''}
-            style={applyStyles(' w-60 h-60 rounded-32')}
-          />
+          <Touchable onPress={handleImageInputChange}>
+            <View>
+              <PlaceholderImage
+                text={values?.name ?? ''}
+                isLoading={isUploadingImage}
+                style={applyStyles(' w-64 h-64 rounded-32')}
+                image={values.image ? {uri: values.image} : undefined}
+              />
+              <View
+                style={applyStyles(
+                  'center bg-white w-24 h-24 rounded-12 absolute right-0 bottom-0',
+                )}>
+                <Icon
+                  size={14}
+                  name="camera"
+                  type="feathericons"
+                  color={colors['gray-50']}
+                />
+              </View>
+            </View>
+          </Touchable>
         </View>
         <AppInput
           label="Name"
@@ -186,6 +251,14 @@ export const EditCustomerScreen = withModal(
             number: values.mobile ? values.mobile : '',
             callingCode: values.countryCode ? values.countryCode : '',
           }}
+        />
+        <AppInput
+          multiline
+          label="Notes"
+          value={values.notes}
+          onChangeText={handleChange('notes')}
+          containerStyle={applyStyles('mb-24')}
+          placeholder="Additional information about the customer"
         />
         <View
           style={applyStyles('pt-24 flex-row items-center justify-between')}>

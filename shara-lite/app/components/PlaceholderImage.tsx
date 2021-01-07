@@ -1,24 +1,37 @@
-import {applyStyles} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {upperCase} from 'lodash';
-import React from 'react';
-import {StyleProp, Text, TextStyle, View, ViewStyle} from 'react-native';
+import React, {useCallback} from 'react';
+import {
+  ImageProps,
+  StyleProp,
+  Text,
+  TextStyle,
+  View,
+  ViewStyle,
+  Image,
+  ActivityIndicator,
+} from 'react-native';
 import Icon, {IconProps} from './Icon';
 
 export type PlaceholderImageProps = {
   text: string;
   style?: ViewStyle;
+  isLoading?: boolean;
   textStyle?: TextStyle;
   indicator?: {
     style: StyleProp<ViewStyle>;
     icon: IconProps;
   };
+  image?: ImageProps['source'];
 };
 
 const PlaceholderImage = ({
   text,
-  style = {},
+  image,
   indicator,
   textStyle,
+  isLoading,
+  style = {},
 }: PlaceholderImageProps) => {
   let displayLetter: string;
   if (text && text[0].match(/[A-Za-z]/)) {
@@ -31,6 +44,32 @@ const PlaceholderImage = ({
   } else {
     displayLetter = '#';
   }
+  const renderContent = useCallback(() => {
+    if (isLoading) {
+      return (
+        <ActivityIndicator
+          size="small"
+          animating={isLoading}
+          color={colors['red-200']}
+        />
+      );
+    }
+    if (image) {
+      return (
+        <Image
+          source={image}
+          resizeMode="cover"
+          style={applyStyles('rounded-40', {width: '100%', height: '100%'})}
+        />
+      );
+    }
+    return (
+      <Text style={applyStyles('text-xl text-white text-400', textStyle)}>
+        {displayLetter}
+      </Text>
+    );
+  }, [image, isLoading, displayLetter, textStyle]);
+
   return (
     <View
       style={applyStyles(
@@ -39,9 +78,7 @@ const PlaceholderImage = ({
         }),
         style,
       )}>
-      <Text style={applyStyles('text-xl text-white text-400', textStyle)}>
-        {displayLetter}
-      </Text>
+      {renderContent()}
       {indicator && (
         <View
           style={applyStyles(
