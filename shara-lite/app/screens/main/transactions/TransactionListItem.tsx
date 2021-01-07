@@ -38,7 +38,9 @@ export const TransactionListItem = ({
             <Text style={applyStyles('text-700')}>
               {amountWithCurrency(total_amount)}
             </Text>
-            {customer && ` from ${customer.name}.`}
+            <Text style={applyStyles('text-500')}>
+              {customer && ` from ${customer.name}.`}
+            </Text>
             {customer?.balance
               ? ` He has a ${
                   customer?.balance !== undefined && customer?.balance > 0
@@ -56,7 +58,8 @@ export const TransactionListItem = ({
           <View>
             {customer ? (
               <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-                {customer.name} owes{' '}
+                <Text style={applyStyles('text-500')}>{customer.name}</Text>{' '}
+                owes{' '}
                 <Text style={applyStyles('text-700')}>
                   {amountWithCurrency(credit_amount)}
                 </Text>
@@ -77,7 +80,10 @@ export const TransactionListItem = ({
         return (
           <View>
             <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-              {customer && `${customer.name}`} paid you{' '}
+              <Text style={applyStyles('text-500')}>
+                {customer && `${customer.name}`}
+              </Text>{' '}
+              paid you{' '}
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(total_amount)}
               </Text>{' '}
@@ -95,7 +101,8 @@ export const TransactionListItem = ({
       <View>
         {customer ? (
           <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            {customer.name} paid you{' '}
+            <Text style={applyStyles('text-500')}>{customer.name}</Text> paid
+            you{' '}
             <Text style={applyStyles('text-700')}>
               {amountWithCurrency(total_amount)}
             </Text>
