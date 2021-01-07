@@ -14,13 +14,16 @@ export class I18nService implements II18nService {
   constructor(private remoteConfigService: IRemoteConfigService) {}
 
   initialize() {
-    const locales = this.remoteConfigService.getValue('locales').asString();
-
     I18n.fallbacks = true;
+
+    const locales: string = this.remoteConfigService
+      .getValue('locales')
+      .asString();
 
     if (!locales) {
       return;
     }
+
     I18n.translations = JSON.parse(locales);
 
     ReactNative.I18nManager.allowRTL(this.isRTL());

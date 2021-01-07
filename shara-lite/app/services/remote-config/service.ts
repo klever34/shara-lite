@@ -1,11 +1,48 @@
 import remoteConfig, {
   FirebaseRemoteConfigTypes,
 } from '@react-native-firebase/remote-config';
-import remoteConfigDefaults from './remote-config.json';
+
+const remoteConfigDefaults: RemoteConfig = {
+  locales: {
+    en: {
+      login: {
+        heading: 'Get Started For Free',
+        subheading: 'Log in to auto-backup and sync your data securely',
+        login_button: 'Next',
+        forgot_password: 'Forgot your password?',
+      },
+      otp: {
+        heading: 'OTP',
+        subheading: '=== From API response ===',
+        otp_button: 'Get Started',
+        resend_text: "Didn't receive the code?",
+        resend_button: 'Resend Code',
+      },
+      forgot_password: {
+        heading: 'Forgot your password?',
+        subheading: 'Enter your mobile number to receive your OTP',
+        fp_button: 'Submit',
+      },
+      fields: {
+        phone_field: {
+          label: "What's your phone number?",
+          placeholder: 'Enter your number',
+        },
+      },
+    },
+  },
+  countries: {
+    ng: {
+      default: 'en',
+      options: ['hausa', 'yoruba', 'igbo'],
+    },
+  },
+  minimumVersion: '0.1.0',
+};
 
 export interface IRemoteConfigService {
   initialize(): Promise<void>;
-  getValue(key: string): FirebaseRemoteConfigTypes.ConfigValue;
+  getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue;
 }
 
 export class RemoteConfigService implements IRemoteConfigService {
@@ -27,7 +64,7 @@ export class RemoteConfigService implements IRemoteConfigService {
       });
   }
 
-  getValue(key: string): FirebaseRemoteConfigTypes.ConfigValue {
+  getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
     return remoteConfig().getValue(key);
   }
 }
