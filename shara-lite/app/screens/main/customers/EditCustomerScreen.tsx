@@ -1,24 +1,23 @@
 import {AppInput, Button, PhoneNumber, PhoneNumberField} from '@/components';
+import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import {ToastContext} from '@/components/Toast';
+import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {getCustomerWhatsappNumber, useImageInput} from '@/helpers/utils';
+import {convertUriToBase64, useImageInput} from '@/helpers/utils';
 import {getAnalyticsService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {useAppNavigation} from '@/services/navigation';
+import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {useFormik} from 'formik';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {MainStackParamList} from '..';
-import {useTransaction} from '@/services/transaction';
-import Touchable from '@/components/Touchable';
-import {Icon} from '@/components/Icon';
-import RNFetchBlob from 'rn-fetch-blob';
 
 type EditCustomerScreenProps = {
   route: RouteProp<MainStackParamList, 'EditCustomer'>;
@@ -161,7 +160,7 @@ export const EditCustomerScreen = withModal(
           name,
           notes,
           image,
-          mobile: getCustomerWhatsappNumber(mobile, countryCode),
+          mobile: `+${countryCode}${mobile}`,
         });
       },
     });
@@ -174,26 +173,17 @@ export const EditCustomerScreen = withModal(
       [setFieldValue],
     );
 
-    const convertImageUriToBase64 = useCallback(async (uri) => {
-      try {
-        const data = await RNFetchBlob.fs.readFile(uri, 'base64');
-        return data;
-      } catch (error) {
-        handleError(error);
-      }
-    }, []);
-
     const setCustomerImage = useCallback(
       async (uri) => {
         try {
-          const base64Image = await convertImageUriToBase64(uri);
+          const base64Image = await convertUriToBase64(uri);
           setFieldValue('image', `data:image/png;base64,${base64Image}`);
           setIsUploadingImage(false);
         } catch (error) {
           handleError(error);
         }
       },
-      [convertImageUriToBase64, setFieldValue],
+      [setFieldValue],
     );
 
     useEffect(() => {

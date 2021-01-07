@@ -40,7 +40,7 @@ export const TransactionListItem = ({
             </Text>
             {customer && ` from ${customer.name}.`}
             {customer?.balance
-              ? `He has a ${
+              ? ` He has a ${
                   customer?.balance !== undefined && customer?.balance > 0
                     ? 'positive'
                     : 'negative'

@@ -12,6 +12,8 @@ import ImagePicker, {
   ImagePickerResponse,
 } from 'react-native-image-picker';
 import {Alert, ToastAndroid} from 'react-native';
+import RNFetchBlob from 'rn-fetch-blob';
+import {handleError} from '@/services/error-boundary';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -179,3 +181,12 @@ export default function mergeRefs<T = any>(
     });
   };
 }
+
+export const convertUriToBase64 = async (uri: string) => {
+  try {
+    const data = await RNFetchBlob.fs.readFile(uri, 'base64');
+    return data;
+  } catch (error) {
+    handleError(error);
+  }
+};
