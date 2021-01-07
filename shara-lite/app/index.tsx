@@ -14,6 +14,7 @@ import {
   getRemoteConfigService,
   getAnalyticsService,
   getNotificationService,
+  getI18nService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Platform} from 'react-native';
@@ -44,8 +45,13 @@ const App = () => {
     getNotificationService().initialize();
   }, []);
   useEffect(() => {
-    getRemoteConfigService().initialize();
-  }, []);
+    getRemoteConfigService()
+      .initialize()
+      .then(() => {
+        getI18nService().initialize();
+      })
+      .catch(handleError);
+  }, [handleError]);
   const getActiveRouteName = useCallback((state: NavigationState): string => {
     const route = state.routes[state.index];
 

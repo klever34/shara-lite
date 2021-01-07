@@ -1,6 +1,6 @@
 import {AuthView, Button} from '@/components';
 import {ToastContext} from '@/components/Toast';
-import {getAnalyticsService, getApiService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useInitRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
@@ -12,7 +12,8 @@ import {Alert, Text, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
-import {strings} from '@/services/i18n';
+
+const i18nService = getI18nService();
 
 export const OTPVerification = () => {
   const [otp, setOtp] = useState('');
@@ -113,7 +114,7 @@ export const OTPVerification = () => {
   return (
     <AuthView
       showBackButton={true}
-      heading={strings('otp.heading')}
+      heading={i18nService.strings('otp.heading')}
       description={params.message}>
       <View style={applyStyles('items-center')}>
         <OTPInputView
@@ -143,7 +144,7 @@ export const OTPVerification = () => {
             style={applyStyles('flex-row center')}
             onPress={handleResendSubmit}>
             <Text style={applyStyles('text-gray-100 text-base')}>
-              {strings('otp.resend_text')}{' '}
+              {i18nService.strings('otp.resend_text')}{' '}
             </Text>
             <Text
               style={applyStyles({
@@ -153,13 +154,13 @@ export const OTPVerification = () => {
                 textDecorationLine: 'underline',
                 textDecorationColor: colors.black,
               })}>
-              {strings('otp.resend_button')}
+              {i18nService.strings('otp.resend_button')}
             </Text>
           </TouchableOpacity>
         </View>
         <Button
           variantColor="red"
-          title={strings('otp.otp_button')}
+          title={i18nService.strings('otp.otp_button')}
           isLoading={loading}
           style={applyStyles('w-full')}
           onPress={() => handleSubmit(otp)}

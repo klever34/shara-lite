@@ -1,5 +1,5 @@
 import {AuthView, Button, PhoneNumber, PhoneNumberField} from '@/components';
-import {getAnalyticsService, getApiService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
@@ -11,7 +11,8 @@ import {Alert, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import * as yup from 'yup';
-import {strings} from '@/services/i18n';
+
+const i18nService = getI18nService();
 
 type Fields = {
   mobile: string;
@@ -90,26 +91,26 @@ export const Login = () => {
   return (
     <AuthView
       isLoading={loading}
-      buttonTitle={strings('login.login_button')}
+      buttonTitle={i18nService.strings('login.login_button')}
       onSubmit={handleSubmit}
       showButton={false}
       header={{title: 'Sign In'}}
-      heading={strings('login.heading')}
+      heading={i18nService.strings('login.heading')}
       style={applyStyles('bg-white')}
-      description={strings('login.subheading')}>
+      description={i18nService.strings('login.subheading')}>
       <View style={applyStyles('pb-32')}>
         <PhoneNumberField
           errorMessage={errors.mobile}
           onSubmitEditing={handleSubmit}
-          placeholder={strings('fields.phone_field.placeholder')}
-          label={strings('fields.phone_field.label')}
+          placeholder={i18nService.strings('fields.phone_field.placeholder')}
+          label={i18nService.strings('fields.phone_field.label')}
           containerStyle={applyStyles('mb-24')}
           onChangeText={(data) => onChangeMobile(data)}
           isInvalid={touched.mobile && !!errors.mobile}
           value={{number: values.mobile, callingCode: values.countryCode}}
         />
         <Button
-          title={strings('login.login_button')}
+          title={i18nService.strings('login.login_button')}
           isLoading={loading}
           onPress={handleSubmit}
           style={applyStyles('w-full')}

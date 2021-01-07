@@ -19,7 +19,11 @@ import {
   IIPGeolocationService,
   IPGeolocationService,
 } from '@/services/ip-geolocation';
-import {IRemoteConfigService} from '@/services/remote-config';
+import {
+  IRemoteConfigService,
+  RemoteConfigService,
+} from '@/services/remote-config';
+import {I18nService, II18nService} from '@/services/i18n';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
@@ -53,6 +57,8 @@ const createDIContainer = (): IDIContainer => {
       get('Contact'),
     ),
     Address: object(AddressService).construct(get('Realm')),
+    RemoteConfig: object(RemoteConfigService),
+    I18n: object(I18nService).construct(get('RemoteConfig')),
   });
   return container;
 };
@@ -99,3 +105,5 @@ export const getIPGeolocationService = () =>
 
 export const getRemoteConfigService = () =>
   container.get<IRemoteConfigService>('RemoteConfig');
+
+export const getI18nService = () => container.get<II18nService>('I18n');
