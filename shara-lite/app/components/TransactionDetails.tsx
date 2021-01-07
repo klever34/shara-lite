@@ -303,7 +303,9 @@ const TransactionDetails = withModal(
     }, [handleStatusFilter]);
 
     const handleViewCustomer = useCallback(() => {
-      navigation.navigate('EditCustomer', {customer});
+      requestAnimationFrame(() =>
+        navigation.navigate('EditCustomer', {customer}),
+      );
     }, [customer, navigation]);
 
     const handleAddCustomer = useCallback(async () => {
@@ -342,7 +344,12 @@ const TransactionDetails = withModal(
             item_id: transaction?._id?.toString() ?? '',
           })
           .then(() => {});
-        navigation.navigate('LedgerEntry', {transaction, showCustomer: false});
+        requestAnimationFrame(() =>
+          navigation.navigate('LedgerEntry', {
+            transaction,
+            showCustomer: false,
+          }),
+        );
       },
       [navigation],
     );
@@ -358,6 +365,12 @@ const TransactionDetails = withModal(
       },
       [handleLedgerItemSelect],
     );
+
+    const handleGoToReminderSettings = useCallback(() => {
+      requestAnimationFrame(() =>
+        navigation.navigate('ReminderSettings', {customer}),
+      );
+    }, [navigation, customer]);
 
     return (
       <SafeAreaView style={applyStyles('flex-1')}>
@@ -392,10 +405,7 @@ const TransactionDetails = withModal(
                       </Text>
                     </View>
                   )}
-                  <Touchable
-                    onPress={() =>
-                      navigation.navigate('ReminderSettings', {customer})
-                    }>
+                  <Touchable onPress={handleGoToReminderSettings}>
                     <View style={applyStyles('flex-row center py-8 flex-wrap')}>
                       <View
                         style={applyStyles(

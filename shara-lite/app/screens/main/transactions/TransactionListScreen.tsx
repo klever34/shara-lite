@@ -49,10 +49,12 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           item_id: transaction?._id?.toString() ?? '',
         })
         .then(() => {});
-      navigation.navigate('LedgerEntry', {
-        transaction,
-        showCustomer: true,
-      });
+      requestAnimationFrame(() =>
+        navigation.navigate('LedgerEntry', {
+          transaction,
+          showCustomer: true,
+        }),
+      );
     },
     [navigation],
   );
@@ -321,7 +323,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         ListEmptyComponent={
           <EmptyState
-            style={applyStyles('bg-white')}
+            style={applyStyles('bg-white pt-20')}
             source={require('@/assets/images/emblem.png')}
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
             <View style={applyStyles('center px-8')}>
