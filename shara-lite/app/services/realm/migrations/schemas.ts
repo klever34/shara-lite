@@ -10,6 +10,7 @@ import schema9 from './1606389607325-add-payment-options';
 import schema10 from './1606416269345-add-is-hidden-in-pro-to-receipt';
 import schema11 from './1608550098360-add-is-collection-x-transaction-date-to-receipt';
 import schema12 from './1608634902886-add-payment-reminder';
+import schema13 from './1610020714362-add-notes-image-to-customer';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -24,6 +25,7 @@ const schemas: any[] = [
   {schemaVersion: 10, ...schema10},
   {schemaVersion: 11, ...schema11},
   {schemaVersion: 12, ...schema12},
+  {schemaVersion: 13, ...schema13},
 ];
 
 export default schemas;

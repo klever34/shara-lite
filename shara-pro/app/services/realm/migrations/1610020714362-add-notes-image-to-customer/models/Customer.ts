@@ -1,9 +1,13 @@
-import {IPayment} from './Payment';
-import {IReceipt} from './Receipt';
-import {ICredit} from './Credit';
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IAddress} from '@/models/Address';
-import {IPaymentReminder} from '@/models/PaymentReminder';
+import {IPayment} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
+import {IReceipt} from '@/services/realm/migrations/1603716195553-add-receipt-note-field/models/Receipt';
+import {ICredit} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IAddress} from '@/services/realm/migrations/1599826529206-customer-address/models/Address';
+import {IPaymentReminder} from '@/services/realm/migrations/1608634902886-add-payment-reminder/models/PaymentReminder';
 
 export enum DEBT_LEVEL {
   NO_DEBT = 0,
@@ -26,11 +30,13 @@ export interface ICustomer extends BaseModelInterface {
 
   // Getters
   totalAmount?: number;
+  balance?: number;
   overdueCredit?: Realm.Results<ICredit & Realm.Object>;
   overdueCreditAmount?: number;
   remainingCredit?: Realm.Results<ICredit & Realm.Object>;
   remainingCreditAmount?: number;
   debtLevel?: DEBT_LEVEL;
+  dueDate?: Date | undefined;
 }
 
 export const modelName = 'Customer';
@@ -67,6 +73,11 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
         objectType: 'Address',
         property: 'customer',
       },
+      paymentReminders: {
+        type: 'linkingObjects',
+        objectType: 'PaymentReminder',
+        property: 'customer',
+      },
     },
   };
   public receipts: Realm.Results<IReceipt & Realm.Object> | undefined;
@@ -80,7 +91,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
   }
 
   public get remainingCredit() {
-    return this.credits?.filtered('amount_left > 0');
+    return this.credits?.filtered('fulfilled = false AND amount_left > 0');
   }
 
   public get remainingCreditAmount() {
@@ -98,6 +109,23 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
     );
   }
 
+  public get balance() {
+    const totalCreditAmount =
+      this.receipts
+        ?.filtered('is_deleted != true AND is_cancelled != true')
+        .sum('credit_amount') || 0;
+    const totalCollectedAmount =
+      this.receipts
+        ?.filtered(
+          'is_deleted != true AND is_cancelled != true AND credit_amount = 0',
+        )
+        .sum('amount_paid') || 0;
+
+    const balance = totalCreditAmount - totalCollectedAmount;
+
+    return balance >= 0 ? balance : 0;
+  }
+
   public get overdueCreditAmount() {
     return this.overdueCredit?.reduce(
       (total, {amount_left}) => total + amount_left,
@@ -113,5 +141,15 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       return DEBT_LEVEL.IN_DEBT;
     }
     return DEBT_LEVEL.NO_DEBT;
+  }
+
+  public get dueDate() {
+    const credits = this.credits
+      ?.filtered(
+        'is_deleted != true AND due_date != null AND fulfilled = false',
+      )
+      .sorted('due_date');
+
+    return credits?.length ? credits[0].due_date : undefined;
   }
 }
