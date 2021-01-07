@@ -120,13 +120,14 @@ export const getPaymentsFromCredit = ({credits}: {credits?: ICredit[]}) => {
     return [];
   }
 
-  return credits.reduce(
-    (allCredits: IPayment[], credit) => [
-      ...allCredits,
-      ...(credit.payments || []).map(({payment}) => payment),
-    ],
-    [],
-  );
+  return credits.reduce((allCredits: IPayment[], credit) => {
+    const creditPayments =
+      credit.payments?.map(
+        (creditPayment: ICreditPayment) => creditPayment.payment,
+      ) || [];
+
+    return [...allCredits, ...creditPayments];
+  }, []);
 };
 
 export const updateCreditPayment = ({

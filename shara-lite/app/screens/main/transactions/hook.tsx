@@ -174,18 +174,40 @@ export const useReceiptList = ({
     return userReceipts.filter((item) => !item.isPaid);
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
-  const collectedAmount = useMemo(
-    () => filteredReceipts.sum('amount_paid') || 0,
+  const sharaProCreditPayments = useMemo(
+    () =>
+      filteredReceipts.reduce(
+        // @ts-ignore
+        (total: number, receipt) => {
+          if (!receipt.credits || !receipt.credits.length) {
+            return total;
+          }
+
+          const payments = receipt.credits[0].payments;
+
+          return total + (payments ? payments.sum('amount_paid') || 0 : 0);
+        },
+        0,
+      ),
     [filteredReceipts],
+  );
+
+  const collectedAmount = useMemo(
+    () => (filteredReceipts.sum('amount_paid') || 0) + sharaProCreditPayments,
+    [sharaProCreditPayments, filteredReceipts],
   );
 
   const outstandingAmount = useMemo(() => {
     const totalCreditAmount = filteredReceipts.sum('credit_amount') || 0;
     const totalCollectedAmount =
-      filteredReceipts.filtered('credit_amount = 0').sum('amount_paid') || 0;
-    const balance = totalCreditAmount - totalCollectedAmount;
+      filteredReceipts
+        .filtered('is_collection != true AND credit_amount = 0')
+        .sum('amount_paid') || 0;
+
+    const balance =
+      totalCreditAmount - totalCollectedAmount + sharaProCreditPayments;
     return balance < 0 ? 0 : balance;
-  }, [filteredReceipts]);
+  }, [sharaProCreditPayments, filteredReceipts]);
 
   const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
     collectedAmount,
