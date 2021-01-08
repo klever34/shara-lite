@@ -32,7 +32,7 @@ const remoteConfigDefaults: RemoteConfig = {
       },
       otp: {
         heading: 'OTP',
-        subheading: '=== From API response ===',
+        subheading: '{{From API response}}',
         otp_resent: 'OTP RESENT',
         otp_button: 'Get Started',
         resend_text: "Didn't receive the code?",
@@ -86,6 +86,39 @@ const remoteConfigDefaults: RemoteConfig = {
   minimumVersion: '0.1.0-local',
 };
 
+// console.log(
+//   (() => {
+//     const {locales} = remoteConfigDefaults;
+//     return JSON.stringify(locales);
+//   })(),
+// );
+
+// console.log(
+//   (() => {
+//     const generate = (object: {[key: string]: any}, prefix = '') => {
+//       let file = '';
+//       Object.keys(object).forEach((name) => {
+//         const key = `${prefix}${prefix ? '.' : ''}${name}`;
+//         const value = object[name];
+//         if (typeof value === 'string') {
+//           file += `${key},`;
+//           file += `${value}\n`;
+//         } else if (typeof value === 'object') {
+//           file += generate(value, key);
+//         }
+//       });
+//       return file;
+//     };
+//     const {locales} = remoteConfigDefaults;
+//     let file = 'Key,';
+//     Object.keys(locales).forEach((langCode) => {
+//       file += langCode;
+//     });
+//     file += '\n';
+//     return file + generate(locales.en);
+//   })(),
+// );
+
 export interface IRemoteConfigService {
   initialize(): Promise<void>;
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue;
@@ -111,22 +144,6 @@ export class RemoteConfigService implements IRemoteConfigService {
   }
 
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
-    if (key === 'locales') {
-      return {
-        getSource() {
-          return 'default';
-        },
-        asNumber() {
-          return 0;
-        },
-        asBoolean() {
-          return false;
-        },
-        asString() {
-          return JSON.stringify(remoteConfigDefaults[key]);
-        },
-      };
-    }
     return remoteConfig().getValue(key);
   }
 }
