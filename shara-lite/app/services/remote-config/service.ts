@@ -111,20 +111,22 @@ export class RemoteConfigService implements IRemoteConfigService {
   }
 
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
-    return {
-      getSource() {
-        return 'default';
-      },
-      asNumber() {
-        return 0;
-      },
-      asBoolean() {
-        return false;
-      },
-      asString() {
-        return JSON.stringify(remoteConfigDefaults[key]);
-      },
-    };
-    // return remoteConfig().getValue(key);
+    if (key === 'locales') {
+      return {
+        getSource() {
+          return 'default';
+        },
+        asNumber() {
+          return 0;
+        },
+        asBoolean() {
+          return false;
+        },
+        asString() {
+          return JSON.stringify(remoteConfigDefaults[key]);
+        },
+      };
+    }
+    return remoteConfig().getValue(key);
   }
 }
