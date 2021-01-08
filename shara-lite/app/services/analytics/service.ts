@@ -75,6 +75,22 @@ export type SharaAppEventsProperties = {
     totalAmount: number;
     currency_code: string;
   };
+  userRecordCollection: {
+    amount: number;
+    currency_code: string;
+  };
+  userRecordSaleWithCredit: {
+    amountPaid: number;
+    creditAmount: number;
+    totalAmount: number;
+    currency_code: string;
+  };
+  userRecordSaleWithoutCredit: {
+    amountPaid: number;
+    creditAmount: number;
+    totalAmount: number;
+    currency_code: string;
+  };
   setCollectionDate: {};
   userUpdatedTransaction: {};
   userDeletedTransaction: {};
