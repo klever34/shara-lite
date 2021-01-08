@@ -1,5 +1,5 @@
 import {AuthView, Button, PhoneNumber, PhoneNumberField} from '@/components';
-import {getAnalyticsService, getApiService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
@@ -12,6 +12,8 @@ import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import * as yup from 'yup';
 
+const i18nService = getI18nService();
+
 type Fields = {
   mobile: string;
   countryCode: string;
@@ -20,8 +22,8 @@ type Fields = {
 const validationSchema = yup.object().shape({
   mobile: yup
     .string()
-    .min(5, 'Number should be minimum of 5 digits')
-    .required('Number is required'),
+    .min(5, i18nService.strings('alert.minimum_phone_digits'))
+    .required(i18nService.strings('alert.required.number')),
 });
 
 export const Login = () => {
@@ -47,7 +49,10 @@ export const Login = () => {
   const onSubmit = async (data: Fields) => {
     const {mobile, countryCode} = data;
     if (!countryCode) {
-      Alert.alert('Error', 'Please select a country');
+      Alert.alert(
+        i18nService.strings('alert.error'),
+        i18nService.strings('alert.select_country'),
+      );
       return;
     }
     const apiService = getApiService();
@@ -73,7 +78,7 @@ export const Login = () => {
       });
     } catch (error) {
       setLoading(false);
-      Alert.alert('Error', error.message);
+      Alert.alert(i18nService.strings('alert.error'), error.message);
     }
   };
 
@@ -89,26 +94,26 @@ export const Login = () => {
   return (
     <AuthView
       isLoading={loading}
-      buttonTitle="Sign In"
+      buttonTitle={i18nService.strings('login.login_button')}
       onSubmit={handleSubmit}
       showButton={false}
       header={{title: 'Sign In'}}
-      heading="Get Started For Free"
+      heading={i18nService.strings('login.heading')}
       style={applyStyles('bg-white')}
-      description="Log in to auto-backup and sync your data securely">
+      description={i18nService.strings('login.subheading')}>
       <View style={applyStyles('pb-32')}>
         <PhoneNumberField
           errorMessage={errors.mobile}
           onSubmitEditing={handleSubmit}
-          placeholder="Enter your number"
-          label="What's your phone number?"
+          placeholder={i18nService.strings('fields.phone.placeholder')}
+          label={i18nService.strings('fields.phone.label')}
           containerStyle={applyStyles('mb-24')}
           onChangeText={(data) => onChangeMobile(data)}
           isInvalid={touched.mobile && !!errors.mobile}
           value={{number: values.mobile, callingCode: values.countryCode}}
         />
         <Button
-          title="Next"
+          title={i18nService.strings('login.login_button')}
           isLoading={loading}
           onPress={handleSubmit}
           style={applyStyles('w-full')}

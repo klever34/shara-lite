@@ -4,6 +4,9 @@ import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useRef, useState} from 'react';
 import {Image, Text, View} from 'react-native';
 import Swiper from 'react-native-swiper';
+import {getI18nService} from '@/services';
+
+const i18nService = getI18nService();
 
 export const Welcome = () => {
   const swiperRef = useRef(null);
@@ -124,7 +127,7 @@ export const Welcome = () => {
         <View style={applyStyles('flex-row justify-between items-center')}>
           {count === 2 ? (
             <Button
-              title="Get Started"
+              title={i18nService.strings('get_started')}
               variantColor="red"
               onPress={handleSkip}
               style={applyStyles('w-full')}
@@ -132,13 +135,13 @@ export const Welcome = () => {
           ) : (
             <>
               <Button
-                title="Skip"
+                title={i18nService.strings('skip')}
                 onPress={handleSkip}
                 variantColor="transparent"
                 style={applyStyles({width: '48%'})}
               />
               <Button
-                title="Next"
+                title={i18nService.strings('next')}
                 variantColor="red"
                 onPress={handleNext}
                 style={applyStyles({width: '48%'})}

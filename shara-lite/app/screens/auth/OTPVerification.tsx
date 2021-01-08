@@ -1,6 +1,7 @@
 import {AuthView, Button} from '@/components';
 import {ToastContext} from '@/components/Toast';
-import {getAnalyticsService, getApiService} from '@/services';
+import {getFCMToken} from '@/helpers/utils';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useInitRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
@@ -8,10 +9,12 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {Alert, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
+
+const i18nService = getI18nService();
 
 export const OTPVerification = () => {
   const [otp, setOtp] = useState('');
@@ -40,10 +43,10 @@ export const OTPVerification = () => {
         country_code: countryCode,
       };
       await apiService.otp(payload);
-      showSuccessToast('OTP RESENT');
+      showSuccessToast(i18nService.strings('otp.resent'));
     } catch (error) {
       setLoading(false);
-      Alert.alert('Error', error.message);
+      Alert.alert(i18nService.strings('alert.error'), error.message);
     }
   }, [hash, showSuccessToast, params]);
 
@@ -54,7 +57,17 @@ export const OTPVerification = () => {
         const apiService = getApiService();
         setLoading(true);
         try {
+          const fcmToken = await getFCMToken();
           await apiService.logIn(payload);
+          fcmToken &&
+            (await apiService.fcmToken({
+              token: fcmToken,
+              platform: Platform.select({
+                ios: 'ios',
+                android: 'android',
+                windows: 'windows',
+              }),
+            }));
           await initRealm({initSync: true});
 
           getAnalyticsService()
@@ -67,7 +80,7 @@ export const OTPVerification = () => {
           });
         } catch (error) {
           setLoading(false);
-          Alert.alert('Error', error.message);
+          Alert.alert(i18nService.strings('alert.error'), error.message);
         }
       }
     },
@@ -86,12 +99,12 @@ export const OTPVerification = () => {
               }
             }
           } catch (error) {
-            Alert.alert('Error', error.message);
+            Alert.alert(i18nService.strings('alert.error'), error.message);
           }
         });
       })
       .catch((error) => {
-        Alert.alert('Error', error.message);
+        Alert.alert(i18nService.strings('alert.error'), error.message);
       });
 
     // remove listener on unmount
@@ -110,7 +123,10 @@ export const OTPVerification = () => {
   }, []);
 
   return (
-    <AuthView showBackButton={true} heading="OTP" description={params.message}>
+    <AuthView
+      showBackButton={true}
+      heading={i18nService.strings('otp.heading')}
+      description={params.message}>
       <View style={applyStyles('items-center')}>
         <OTPInputView
           code={otp}
@@ -139,7 +155,7 @@ export const OTPVerification = () => {
             style={applyStyles('flex-row center')}
             onPress={handleResendSubmit}>
             <Text style={applyStyles('text-gray-100 text-base')}>
-              Didn't receive the code?{' '}
+              {i18nService.strings('otp.resend_text')}{' '}
             </Text>
             <Text
               style={applyStyles({
@@ -149,13 +165,13 @@ export const OTPVerification = () => {
                 textDecorationLine: 'underline',
                 textDecorationColor: colors.black,
               })}>
-              Resend Code
+              {i18nService.strings('otp.resend_button')}
             </Text>
           </TouchableOpacity>
         </View>
         <Button
           variantColor="red"
-          title="Get Started"
+          title={i18nService.strings('otp.otp_button')}
           isLoading={loading}
           style={applyStyles('w-full')}
           onPress={() => handleSubmit(otp)}

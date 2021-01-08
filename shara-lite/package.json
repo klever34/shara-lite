@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.6.1-shara-lite-bugfix.v2-shara-lite+build.5992",
+  "version": "0.6.1-shara-lite-bugfix.v2-shara-lite+build.6025",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -24,7 +24,7 @@
     "@react-native-firebase/crashlytics": "^8.4.5",
     "@react-native-firebase/messaging": "^7.8.5",
     "@react-native-firebase/perf": "^7.4.3",
-    "@react-native-firebase/remote-config": "^9.0.5",
+    "@react-native-firebase/remote-config": "^10.3.1",
     "@react-navigation/bottom-tabs": "^5.10.0",
     "@react-navigation/material-top-tabs": "^5.2.12",
     "@react-navigation/native": "^5.5.1",
@@ -34,6 +34,7 @@
     "@twotalltotems/react-native-otp-input": "^1.3.11",
     "@types/bluebird": "^3.5.33",
     "@types/bson": "^4.0.2",
+    "@types/react-native-i18n": "^2.0.0",
     "@types/yup": "^0.29.6",
     "big.js": "^6.0.3",
     "bluebird": "^3.7.2",
@@ -67,6 +68,7 @@
     "react-native-fs": "^2.16.6",
     "react-native-gesture-handler": "^1.6.1",
     "react-native-get-random-values": "^1.4.0",
+    "react-native-i18n": "^2.0.15",
     "react-native-image-picker": "2.3.4",
     "react-native-keyboard-aware-scrollview": "^2.1.0",
     "react-native-location": "^2.5.0",

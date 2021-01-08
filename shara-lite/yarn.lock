@@ -1189,10 +1189,10 @@
   resolved "https://registry.yarnpkg.com/@react-native-firebase/perf/-/perf-7.4.3.tgz#3fb92daf3a8a68a22ec95260a7a5fef91002a237"
   integrity sha512-uaeBL7vfC8g7OUnwhwBAuiZ4wUbpY51RwfA5qbT+uDZwpSrHgrzNX1XhcRWQ7qkhboS66nDlGG/MpthRqCbdNQ==
 
-"@react-native-firebase/remote-config@^9.0.5":
-  version "9.0.5"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-9.0.5.tgz#374d0e1f4ca4d026427a85941f088afb28c47a57"
-  integrity sha512-qltfFb+nnK1pgBaJiG5xfGy7bQZPEhS47Hwa9brjpfWciVgpcIzdNIoZ9M5RCxYXwEuwH4r5e23vI05e/yIEjw==
+"@react-native-firebase/remote-config@^10.3.1":
+  version "10.3.1"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-10.3.1.tgz#5b8cf5db503107aaf1b317af8e04c9679332ae80"
+  integrity sha512-cCfBagdTu9ppM1EWR/GbUAy5vWBwbalZz0MnRMUemDILhopYnPkOb9wBK5iSSrWD4bCcCGipUM5ZahVj94cjBQ==
 
 "@react-navigation/bottom-tabs@^5.10.0":
   version "5.10.0"
@@ -1543,6 +1543,11 @@
     "@types/react" "*"
     hoist-non-react-statics "^3.3.0"
 
+"@types/i18n-js@*":
+  version "3.0.3"
+  resolved "https://registry.yarnpkg.com/@types/i18n-js/-/i18n-js-3.0.3.tgz#84f66fb969741fecd91b854387e0682aa7fd70b7"
+  integrity sha512-GiZzazvxQ5j+EA4Zf4MtDsSaokAR/gW7FxxTlHi2p2xKFUhwAUT0B/MB8WL77P1TcqAO3MefWorFFyZS8F7s0Q==
+
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/@types/istanbul-lib-coverage/-/istanbul-lib-coverage-2.0.3.tgz#4ba8ddb720221f432e443bd5f9117fd22cfd4762"
@@ -1618,6 +1623,13 @@
   resolved "https://registry.yarnpkg.com/@types/query-string/-/query-string-6.3.0.tgz#b6fa172a01405abcaedac681118e78429d62ea39"
   dependencies:
     query-string "*"
+
+"@types/react-native-i18n@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@types/react-native-i18n/-/react-native-i18n-2.0.0.tgz#2df92b3392d813b39530bd126aad429eedc9c3de"
+  integrity sha512-JwSsjGw99Kk7kMg2R1YPAby7v7dw4rHGDTc3WsLtQuw0DeyMRLLPNdmjg85RP3BVX94F/SU+eef65DUsUzc9fQ==
+  dependencies:
+    "@types/i18n-js" "*"
 
 "@types/react-native-push-notification@^5.0.2":
   version "5.0.2"
@@ -4205,6 +4217,11 @@ husky@^4.2.5:
     please-upgrade-node "^3.2.0"
     slash "^3.0.0"
     which-pm-runs "^1.0.0"
+
+i18n-js@3.0.11:
+  version "3.0.11"
+  resolved "https://registry.yarnpkg.com/i18n-js/-/i18n-js-3.0.11.tgz#f9e96bdb641c5b9d6be12759d7c422089987ef02"
+  integrity sha512-v7dG3kYJTQTyox3NqDabPDE/ZotWntyMI9kh4cYi+XlCSnsIR+KBTS2opPyObL8WndnklcLzbNU92FP/mLge3Q==
 
 iconv-lite@0.4.24, iconv-lite@^0.4.17, iconv-lite@^0.4.24, iconv-lite@^0.4.4, iconv-lite@~0.4.13:
   version "0.4.24"
@@ -6845,6 +6862,13 @@ react-native-get-random-values@^1.4.0:
   resolved "https://registry.yarnpkg.com/react-native-get-random-values/-/react-native-get-random-values-1.4.0.tgz#1234d4dde6b56b2fab0eaa7dc1719e2f8c32c336"
   dependencies:
     fast-base64-decode "^1.0.0"
+
+react-native-i18n@^2.0.15:
+  version "2.0.15"
+  resolved "https://registry.yarnpkg.com/react-native-i18n/-/react-native-i18n-2.0.15.tgz#09b5a9836116fa7dbd0054c46e2d1014c1ef3c65"
+  integrity sha512-V8VwUP0TLda3oJvgt5tdnFaOV7WXPhTjCTLO7sXI3C2SHggSbD4bCUryMzNJhesimJidH21V2Owvj4zAylHoQQ==
+  dependencies:
+    i18n-js "3.0.11"
 
 react-native-image-picker@2.3.4:
   version "2.3.4"

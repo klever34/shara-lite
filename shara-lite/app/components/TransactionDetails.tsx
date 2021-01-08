@@ -247,7 +247,7 @@ const TransactionDetails = withModal(
       try {
         setIsSharingStatment(true);
         const path = await exportCustomerReportsToExcel({
-          receipts: filteredReceipts,
+          receipts: filteredReceipts.sorted('transaction_date', false),
         });
         RNFetchBlob.fs
           .readFile(path, 'base64')
