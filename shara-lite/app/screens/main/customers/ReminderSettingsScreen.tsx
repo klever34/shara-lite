@@ -214,6 +214,35 @@ export const ReminderSettingsScreen = withModal(
                 )}>
                 Reminder settings
               </Text>
+              <Touchable onPress={handleAddReminder}>
+                <View
+                  style={applyStyles(
+                    'px-16 py-8 flex-row bg-white items-center justify-between',
+                    {
+                      borderTopWidth: 1,
+                      borderBottomWidth: 1,
+                      borderTopColor: colors['gray-20'],
+                      borderBottomColor: colors['gray-20'],
+                    },
+                  )}>
+                  <View style={applyStyles('flex-1')}>
+                    <Text
+                      style={applyStyles('pb-2 text-400 text-red-200 text-lg')}>
+                      Add Reminder
+                    </Text>
+                    <Text style={applyStyles('text-xs text-gray-200 text-400')}>
+                      Tap here to create a new reminder. You can create as many
+                      as you want.
+                    </Text>
+                  </View>
+                  <Icon
+                    size={24}
+                    name="plus"
+                    type="feathericons"
+                    color={colors['red-100']}
+                  />
+                </View>
+              </Touchable>
               <View
                 style={applyStyles('p-16 bg-white', {
                   borderTopWidth: 1,
@@ -251,35 +280,6 @@ export const ReminderSettingsScreen = withModal(
                     />
                   );
                 })}
-              <Touchable onPress={handleAddReminder}>
-                <View
-                  style={applyStyles(
-                    'px-16 py-8 flex-row bg-white items-center justify-between',
-                    {
-                      borderTopWidth: 1,
-                      borderBottomWidth: 1,
-                      borderTopColor: colors['gray-20'],
-                      borderBottomColor: colors['gray-20'],
-                    },
-                  )}>
-                  <View style={applyStyles('flex-1')}>
-                    <Text
-                      style={applyStyles('pb-2 text-400 text-red-200 text-lg')}>
-                      Add Reminder
-                    </Text>
-                    <Text style={applyStyles('text-xs text-gray-200 text-400')}>
-                      Tap here to create a new reminder. You can create as many
-                      as you want.
-                    </Text>
-                  </View>
-                  <Icon
-                    size={24}
-                    name="plus"
-                    type="feathericons"
-                    color={colors['red-100']}
-                  />
-                </View>
-              </Touchable>
             </View>
           )}
         </ScrollView>

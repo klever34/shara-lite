@@ -7,11 +7,13 @@ import {
   required,
 } from '@/components';
 import {AuthStackParamList} from '@/screens/auth/index';
-import {getApiService} from '@/services';
+import {getApiService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import {Alert, ToastAndroid} from 'react-native';
+
+const i18nService = getI18nService();
 
 const ForgotPassword = () => {
   const navigation = useAppNavigation();
@@ -34,14 +36,17 @@ const ForgotPassword = () => {
   return (
     <AuthView
       showEmblem={false}
-      header={{title: 'Forgot your password?', iconLeft: {}}}
-      heading="Forgot your password?"
+      header={{
+        title: i18nService.strings('forgot_password.heading'),
+        iconLeft: {},
+      }}
+      heading={i18nService.strings('forgot_password.heading')}
       style={applyStyles('bg-white pt-24')}
-      description="Enter your mobile number to receive your OTP"
+      description={i18nService.strings('forgot_password.subheading')}
       showButton={false}>
       <FormBuilder
         fields={formFields}
-        actionBtns={[{title: 'submit'}]}
+        actionBtns={[{title: i18nService.strings('forgot_password.fp_button')}]}
         onSubmit={(values) => {
           const phoneNumber = values?.mobile as PhoneNumber;
           const mobile = `${phoneNumber.callingCode}${phoneNumber.number}`;
@@ -54,7 +59,7 @@ const ForgotPassword = () => {
               navigation.replace('ResetPassword', {mobile});
             })
             .catch((error) => {
-              Alert.alert('Error', error.message);
+              Alert.alert(i18nService.strings('alert.error'), error.message);
             });
         }}
         forceUseFormButton

@@ -178,7 +178,7 @@ export const MoreOptionsScreen = withModal(
             )}>
             <TitleContainer
               title="My Account"
-              description="Quickly record a transaction or obligation"
+              description="Your account information at a glance"
               containerStyle={applyStyles('p-16')}
             />
             {!business.name && (

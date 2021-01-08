@@ -121,7 +121,7 @@ export const useReceiptList = ({
     return (userReceipts.sorted(
       'transaction_date',
       true,
-    ) as unknown) as IReceipt[];
+    ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
   const owedReceipts = useMemo(() => {
@@ -174,27 +174,45 @@ export const useReceiptList = ({
     return userReceipts.filter((item) => !item.isPaid);
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
+  const sharaProCreditPayments = useMemo(
+    () =>
+      filteredReceipts.reduce(
+        // @ts-ignore
+        (total: number, receipt) => {
+          if (!receipt.credits || !receipt.credits.length) {
+            return total;
+          }
+
+          const payments = receipt.credits[0].payments;
+
+          return total + (payments ? payments.sum('amount_paid') || 0 : 0);
+        },
+        0,
+      ),
+    [filteredReceipts],
+  );
+
   const collectedAmount = useMemo(
-    () =>
+    () => (filteredReceipts.sum('amount_paid') || 0) + sharaProCreditPayments,
+    [sharaProCreditPayments, filteredReceipts],
+  );
+
+  const outstandingAmount = useMemo(() => {
+    const totalCreditAmount = filteredReceipts.sum('credit_amount') || 0;
+    const totalCollectedAmount =
       filteredReceipts
-        .map((item) => item.amount_paid)
-        .reduce((acc, item) => acc + item, 0),
-    [filteredReceipts],
-  );
-  const outstandingAmount = useMemo(
-    () =>
-      owedReceipts
-        .map((item) => item.credit_amount)
-        .reduce((acc, item) => acc + item, 0),
-    [owedReceipts],
-  );
-  const totalAmount = useMemo(
-    () =>
-      filteredReceipts
-        .map((item) => item.total_amount)
-        .reduce((acc, item) => acc + item, 0),
-    [filteredReceipts],
-  );
+        .filtered('is_collection != true AND credit_amount = 0')
+        .sum('amount_paid') || 0;
+
+    const balance =
+      totalCreditAmount - totalCollectedAmount + sharaProCreditPayments;
+    return balance < 0 ? 0 : balance;
+  }, [sharaProCreditPayments, filteredReceipts]);
+
+  const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
+    collectedAmount,
+    outstandingAmount,
+  ]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {

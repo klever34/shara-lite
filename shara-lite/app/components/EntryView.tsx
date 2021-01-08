@@ -76,6 +76,7 @@ export const EntryView = ({children}: EntryViewProps) => {
       navigation.navigate('SelectCustomerList', {
         withCustomer: true,
         onSelectCustomer,
+        isCollection: true,
       });
     }
   }, [currentCustomer, navigation]);

@@ -8,6 +8,7 @@ import {
 import {
   getAnalyticsService,
   getApiService,
+  getI18nService,
   getStorageService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
@@ -29,6 +30,8 @@ import * as yup from 'yup';
 import {useInitRealm} from '@/services/realm';
 import {getAndroidId} from 'react-native-device-info';
 
+const i18nService = getI18nService();
+
 type Fields = {
   mobile: string;
   password: string;
@@ -40,15 +43,21 @@ const validationSchema = yup.object().shape({
   mobile: yup
     .string()
     .min(5, 'Number should be minimum of 5 digits')
-    .required('Number is required'),
+    .required(i18nService.strings('alert.required.number')),
   password: yup
     .string()
-    .oneOf([yup.ref('confirmPassword'), undefined], 'Passwords must match')
-    .required('Password is required'),
+    .oneOf(
+      [yup.ref('confirmPassword'), undefined],
+      i18nService.strings('alert.password_match'),
+    )
+    .required(i18nService.strings('alert.required.password')),
   confirmPassword: yup
     .string()
-    .oneOf([yup.ref('password'), undefined], 'Passwords must match')
-    .required('Password is required'),
+    .oneOf(
+      [yup.ref('password'), undefined],
+      i18nService.strings('alert.password_match'),
+    )
+    .required(i18nService.strings('alert.required.password')),
 });
 
 export const Register = () => {
@@ -82,7 +91,10 @@ export const Register = () => {
   const onSubmit = async (data: Fields) => {
     const {mobile, countryCode, password} = data;
     if (!countryCode) {
-      Alert.alert('Error', 'Please select a country');
+      Alert.alert(
+        i18nService.strings('alert.error'),
+        i18nService.strings('alert.select_country'),
+      );
       return;
     }
     const payload = {
@@ -108,7 +120,7 @@ export const Register = () => {
       });
     } catch (error) {
       setLoading(false);
-      Alert.alert('Error', error.message);
+      Alert.alert(i18nService.strings('alert.error'), error.message);
     }
   };
 
@@ -124,20 +136,20 @@ export const Register = () => {
 
   return (
     <AuthView
-      header={{title: 'Sign up'}}
+      header={{title: i18nService.strings('register.header')}}
       isLoading={loading}
-      buttonTitle="Sign Up"
+      buttonTitle={i18nService.strings('register.submit_button')}
       onSubmit={handleSubmit}
-      heading="Get Started For Free"
+      heading={i18nService.strings('register.heading')}
       showButton={false}
       style={applyStyles('bg-white')}
-      description="Sign up and enjoy all the features available on Shara. It only takes a few moments.">
+      description={i18nService.strings('register.subheading')}>
       <View>
         <View style={applyStyles('pb-16')}>
           <PhoneNumberField
             errorMessage={errors.mobile}
-            placeholder="Enter your number"
-            label="What's your phone number?"
+            placeholder={i18nService.strings('fields.phone.placeholder')}
+            label={i18nService.strings('fields.phone.label')}
             containerStyle={applyStyles('mb-24')}
             onChangeText={(data) => onChangeMobile(data)}
             isInvalid={touched.mobile && !!errors.mobile}
@@ -154,7 +166,7 @@ export const Register = () => {
           <PasswordField
             ref={passwordFieldRef}
             value={values.password}
-            label="Enter your password"
+            label={i18nService.strings('fields.password.label')}
             errorMessage={errors.password}
             containerStyle={applyStyles('mb-24')}
             onChangeText={handleChange('password')}
@@ -171,7 +183,7 @@ export const Register = () => {
           <PasswordField
             ref={confirmPasswordFieldRef}
             value={values.confirmPassword}
-            label="Confirm password"
+            label={i18nService.strings('fields.confirm_password.label')}
             errorMessage={errors.confirmPassword}
             onChangeText={handleChange('confirmPassword')}
             isInvalid={touched.confirmPassword && !!errors.confirmPassword}
@@ -180,7 +192,7 @@ export const Register = () => {
           <Button
             variantColor="red"
             onPress={handleSubmit}
-            title="Sign Up"
+            title={i18nService.strings('register.submit_button')}
             isLoading={loading}
             style={applyStyles('w-full mt-24')}
           />
@@ -191,9 +203,11 @@ export const Register = () => {
           style={applyStyles('flex-row center')}
           onPress={() => navigation.replace('Login')}>
           <Text style={applyStyles('text-gray-100 text-base')}>
-            Already have an account?{' '}
+            {i18nService.strings('register.have_account')}{' '}
           </Text>
-          <Text style={styles.helpSectionButtonText}>Sign In</Text>
+          <Text style={styles.helpSectionButtonText}>
+            {i18nService.strings('register.sign_in')}
+          </Text>
         </TouchableOpacity>
       </View>
     </AuthView>

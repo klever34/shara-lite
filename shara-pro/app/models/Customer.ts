@@ -15,6 +15,8 @@ export interface ICustomer extends BaseModelInterface {
   name: string;
   mobile?: string;
   email?: string;
+  notes?: string;
+  image?: string;
   due_date?: Date;
   receipts?: Realm.Results<IReceipt & Realm.Object>;
   payments?: IPayment[];
@@ -43,6 +45,8 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
       mobile: {type: 'string?', indexed: true},
       email: 'string?',
       due_date: 'date?',
+      notes: 'string?',
+      image: 'string?',
       receipts: {
         type: 'linkingObjects',
         objectType: 'Receipt',

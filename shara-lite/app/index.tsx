@@ -10,12 +10,18 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
-import {getAnalyticsService, getNotificationService} from '@/services';
+import {
+  getRemoteConfigService,
+  getAnalyticsService,
+  getNotificationService,
+  getI18nService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Platform} from 'react-native';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 import {NavigationState} from '@react-navigation/routers';
 import {ToastProvider} from '@/components/Toast';
+import UpdateSharaScreen from '@/screens/UpdateShara';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -24,6 +30,7 @@ if (Platform.OS === 'android') {
 }
 
 export type RootStackParamList = {
+  UpdateShara: undefined;
   Splash: undefined;
   Auth: undefined;
   Main: undefined;
@@ -39,6 +46,14 @@ const App = () => {
   useEffect(() => {
     getNotificationService().initialize();
   }, []);
+  useEffect(() => {
+    getRemoteConfigService()
+      .initialize()
+      .then(() => {
+        getI18nService().initialize();
+      })
+      .catch(handleError);
+  }, [handleError]);
   const getActiveRouteName = useCallback((state: NavigationState): string => {
     const route = state.routes[state.index];
 
@@ -68,6 +83,11 @@ const App = () => {
                 <RootStack.Screen
                   name="Splash"
                   component={SplashScreen}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen
+                  name="UpdateShara"
+                  component={UpdateSharaScreen}
                   options={{headerShown: false}}
                 />
                 <RootStack.Screen

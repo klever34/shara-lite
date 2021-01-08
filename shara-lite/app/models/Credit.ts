@@ -13,7 +13,7 @@ export interface ICredit extends BaseModelInterface {
   customer_mobile?: string;
   customer?: ICustomer;
   receipt?: IReceipt;
-  payments?: ICreditPayment[];
+  payments?: Realm.Results<ICreditPayment & Realm.Object>;
 }
 
 export const modelName = 'Credit';

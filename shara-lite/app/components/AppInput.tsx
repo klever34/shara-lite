@@ -137,10 +137,10 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
           {rightIcon && (
             <View
               style={applyStyles('flex-row center', {
-                position: 'absolute',
-                right: 12,
                 top: 16,
+                right: 12,
                 zIndex: 10,
+                position: 'absolute',
               })}>
               {typeof rightIcon === 'string' ? (
                 <Touchable

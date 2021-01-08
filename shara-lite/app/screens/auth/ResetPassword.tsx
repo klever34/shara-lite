@@ -1,6 +1,6 @@
 import React, {useContext} from 'react';
 import {AuthView, FormBuilder, FormFields, required} from '@/components';
-import {getApiService} from '@/services';
+import {getApiService, getI18nService} from '@/services';
 import {ToastAndroid} from 'react-native';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useRoute, RouteProp} from '@react-navigation/native';
@@ -8,6 +8,8 @@ import {AuthStackParamList} from '@/screens/auth/index';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import {ToastContext} from '@/components/Toast';
+
+const i18nService = getI18nService();
 
 const ResetPassword = () => {
   const handleError = useErrorHandler();
@@ -21,33 +23,50 @@ const ResetPassword = () => {
   const formFields: FormFields<FormFieldName> = {
     otp: {
       type: 'text',
-      props: {autoFocus: true, placeholder: 'OTP'},
-      validations: [required('OTP is required')],
+      props: {
+        autoFocus: true,
+        placeholder: i18nService.strings('reset_password.otp_label'),
+      },
+      validations: [required(i18nService.strings('alert.required.otp'))],
     },
     password: {
       type: 'password',
-      props: {placeholder: 'Enter you new password'},
-      validations: [required('Password is required')],
+      props: {
+        placeholder: i18nService.strings('reset_password.password_label'),
+      },
+      validations: [required(i18nService.strings('alert.required.password'))],
     },
     repeat_password: {
       type: 'password',
-      props: {placeholder: 'Enter your password again'},
-      validations: [required('Password is required')],
+      props: {
+        placeholder: i18nService.strings(
+          'reset_password.repeat_password_label',
+        ),
+      },
+      validations: [required(i18nService.strings('alert.required.password'))],
     },
   };
 
   return (
     <AuthView
-      header={{title: 'Reset your password', iconLeft: {}}}
-      heading="Reset your password"
+      header={{
+        title: i18nService.strings('reset_password.header'),
+        iconLeft: {},
+      }}
+      heading={i18nService.strings('reset_password.heading')}
       style={applyStyles('bg-white pt-24')}
       showButton={false}>
       <FormBuilder
         fields={formFields}
-        actionBtns={[{title: 'submit'}]}
+        actionBtns={[
+          {title: i18nService.strings('reset_password.submit_button')},
+        ]}
         onSubmit={(values) => {
           if (values?.repeat_password !== values?.password) {
-            ToastAndroid.show('Passwords do not match', ToastAndroid.LONG);
+            ToastAndroid.show(
+              i18nService.strings('reset_password.password_match'),
+              ToastAndroid.LONG,
+            );
             return Promise.resolve();
           }
           return getApiService()

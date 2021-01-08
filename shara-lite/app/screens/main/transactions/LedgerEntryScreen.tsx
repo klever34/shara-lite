@@ -63,13 +63,15 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     businessInfo.name || user?.firstname
       ? `from ${businessInfo.name ?? user?.firstname}`
       : ''
-  }. You paid ${amountWithCurrency(total_amount)}${
-    dueDate
-      ? ` and you owe ${amountWithCurrency(
-          credit_amount,
-        )} which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}${
-          paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''
-        }`
+  }. You paid ${amountWithCurrency(amount_paid)}${
+    credit_amount
+      ? ` and you owe ${amountWithCurrency(credit_amount)}
+         ${
+           dueDate
+             ? ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
+             : ''
+         }
+         ${paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''}`
       : '.'
   }\n\nPowered by Shara for free.\nwww.shara.co`;
 
@@ -221,6 +223,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                 <PlaceholderImage
                   style={applyStyles('ml-4')}
                   text={customer?.name ?? ''}
+                  image={customer.image ? {uri: customer?.image} : undefined}
                 />
               </View>
             </Touchable>
