@@ -8,6 +8,7 @@ import getFirebaseAnalytics from '@react-native-firebase/analytics';
 import getFirebaseCrashlytics from '@react-native-firebase/crashlytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 import * as Sentry from '@sentry/react-native';
+import {ReminderWhen, ReminderUnit} from '@/models/PaymentReminder';
 
 export type SharaAppEventsProperties = {
   // Chat
@@ -103,6 +104,31 @@ export type SharaAppEventsProperties = {
   userViewedReport: {};
   userDownloadedReport: {};
   userSharedReport: {};
+  // Reminders
+  userAddedReminder: {
+    id: string;
+    amount: number;
+    when: ReminderWhen;
+    unit: ReminderUnit;
+    due_date: string;
+    customer: string;
+  };
+  userUpdatedReminder: {
+    id: string;
+    amount: number;
+    when: ReminderWhen;
+    unit: ReminderUnit;
+    due_date: string;
+    customer: string;
+  };
+  userRemovedReminder: {
+    id: string;
+    amount: number;
+    when: ReminderWhen;
+    unit: ReminderUnit;
+    due_date: string;
+    customer: string;
+  };
 };
 
 export interface IAnalyticsService {

@@ -11,6 +11,7 @@ import {
   ReminderWhen,
 } from '@/models/PaymentReminder';
 import {ICustomer} from '@/models';
+import {getAnalyticsService} from '@/services';
 
 interface savePaymentReminderInterface {
   paymentReminder: IPaymentReminder;
@@ -72,6 +73,16 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
     });
 
     await trace.stop();
+    getAnalyticsService()
+      .logEvent('userAddedReminder', {
+        id: String(updatedPaymentReminder._id ?? ''),
+        amount: updatedPaymentReminder.amount,
+        when: updatedPaymentReminder.when,
+        unit: updatedPaymentReminder.unit,
+        due_date: updatedPaymentReminder.due_date?.toISOString() ?? '',
+        customer: String(updatedPaymentReminder.customer._id ?? ''),
+      })
+      .then(() => {});
 
     return paymentReminder;
   };
@@ -89,19 +100,39 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
       ...updates,
       due_date,
       updated_at: new Date(),
-    };
+    } as IPaymentReminder;
 
     const trace = await perf().startTrace('updatePaymentReminder');
     realm.write(() => {
       realm.create(modelName, updatedPaymentReminder, UpdateMode.Modified);
     });
     await trace.stop();
+    getAnalyticsService()
+      .logEvent('userUpdatedReminder', {
+        id: String(updatedPaymentReminder._id ?? ''),
+        amount: updatedPaymentReminder.amount,
+        when: updatedPaymentReminder.when,
+        unit: updatedPaymentReminder.unit,
+        due_date: updatedPaymentReminder.due_date?.toISOString() ?? '',
+        customer: String(updatedPaymentReminder.customer._id ?? ''),
+      })
+      .then(() => {});
   };
 
   const deletePaymentReminder = async ({
     paymentReminder,
   }: deletePaymentReminderInterface) => {
     await updatePaymentReminder({paymentReminder, updates: {is_deleted: true}});
+    getAnalyticsService()
+      .logEvent('userRemovedReminder', {
+        id: String(paymentReminder._id ?? ''),
+        amount: paymentReminder.amount,
+        when: paymentReminder.when,
+        unit: paymentReminder.unit,
+        due_date: paymentReminder.due_date?.toISOString() ?? '',
+        customer: String(paymentReminder.customer._id ?? ''),
+      })
+      .then(() => {});
   };
 
   const calculateDueDate = ({
