@@ -14,8 +14,8 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {useFormik} from 'formik';
-import React, {useCallback, useContext} from 'react';
-import {Text, View} from 'react-native';
+import React, {useCallback, useContext, useRef} from 'react';
+import {Text, TextInput, View} from 'react-native';
 
 type RecordCollectionScreenProps = {
   route: RouteProp<MainStackParamList, 'RecordCollection'>;
@@ -59,6 +59,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
       handleSaveCollection({note, amount_paid, transaction_date});
     },
   });
+  const noteFieldRef = useRef<TextInput | null>(null);
   return (
     <CalculatorView>
       <Page header={{iconLeft: {}, title: ' '}}>
@@ -81,6 +82,13 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             setFieldValue('amount_paid', value);
           }}
           autoFocus
+          onEquals={() => {
+            setImmediate(() => {
+              if (noteFieldRef.current) {
+                noteFieldRef.current.focus();
+              }
+            });
+          }}
         />
         {!!values.amount_paid && (
           <AppInput
@@ -89,6 +97,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             containerStyle={applyStyles('mb-24')}
             onChangeText={handleChange('note')}
             placeholder="Write a brief note about this transaction"
+            ref={noteFieldRef}
           />
         )}
         <View

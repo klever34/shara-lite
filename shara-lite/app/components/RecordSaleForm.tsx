@@ -61,7 +61,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
               const value = toNumber(text);
               setFieldValue('amount_paid', value);
             }}
-            onSubmitEditing={() => {
+            onEquals={() => {
               setImmediate(() => {
                 if (creditAmountFieldRef.current) {
                   creditAmountFieldRef.current.focus();
@@ -73,6 +73,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
         </View>
         <View style={applyStyles({width: '48%'})}>
           <CalculatorInput
+            ref={creditAmountFieldRef}
             placeholder="0.00"
             label="Outstanding"
             returnKeyType="next"
@@ -83,7 +84,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
               const value = toNumber(text);
               setFieldValue('credit_amount', value);
             }}
-            onSubmitEditing={() => {
+            onEquals={() => {
               setImmediate(() => {
                 if (noteFieldRef.current) {
                   noteFieldRef.current.focus();
