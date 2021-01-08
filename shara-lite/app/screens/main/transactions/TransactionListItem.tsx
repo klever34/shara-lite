@@ -87,11 +87,11 @@ export const TransactionListItem = ({
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(total_amount)}
               </Text>{' '}
-              and has an outstanding of{' '}
+              and{' '}
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(credit_amount)}
               </Text>{' '}
-              to pay
+              is outstanding
             </Text>
           </View>
         );
