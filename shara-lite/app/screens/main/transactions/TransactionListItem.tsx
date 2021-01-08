@@ -68,7 +68,7 @@ export const TransactionListItem = ({
               <Text style={applyStyles('text-gray-300 text-400 text-base')}>
                 You were paid{' '}
                 <Text style={applyStyles('text-700')}>
-                  {amountWithCurrency(credit_amount)}
+                  {amountWithCurrency(amount_paid)}
                 </Text>{' '}
                 (No customer selected)
               </Text>
@@ -85,13 +85,13 @@ export const TransactionListItem = ({
               </Text>{' '}
               paid you{' '}
               <Text style={applyStyles('text-700')}>
-                {amountWithCurrency(total_amount)}
+                {amountWithCurrency(amount_paid)}
               </Text>{' '}
-              and has an outstanding of{' '}
+              and{' '}
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(credit_amount)}
               </Text>{' '}
-              to pay
+              is outstanding
             </Text>
           </View>
         );
@@ -104,14 +104,14 @@ export const TransactionListItem = ({
             <Text style={applyStyles('text-500')}>{customer.name}</Text> paid
             you{' '}
             <Text style={applyStyles('text-700')}>
-              {amountWithCurrency(total_amount)}
+              {amountWithCurrency(amount_paid)}
             </Text>
           </Text>
         ) : (
           <Text style={applyStyles('text-gray-300 text-400 text-base')}>
             You were paid{' '}
             <Text style={applyStyles('text-700')}>
-              {amountWithCurrency(total_amount)}
+              {amountWithCurrency(amount_paid)}
             </Text>{' '}
             (No customer selected)
           </Text>

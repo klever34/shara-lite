@@ -60,7 +60,7 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
       } else {
         navigation.navigate('SelectCustomerList', {
           transaction: payload,
-          withCustomer: payload.credit_amount,
+          withCustomer: !!payload.credit_amount,
           onSelectCustomer,
         });
       }
