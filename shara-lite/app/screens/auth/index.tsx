@@ -26,7 +26,7 @@ const AuthStack = createStackNavigator<AuthStackParamList>();
 const AuthScreens = () => {
   const [initialRouteName, setInitialRouteName] = useState<
     keyof AuthStackParamList | undefined
-  >('Welcome');
+  >();
 
   useEffect(() => {
     // const realmService = getRealmService();
@@ -45,7 +45,7 @@ const AuthScreens = () => {
   }, [storageService]);
 
   useEffect(() => {
-    // setInitialRoute();
+    setInitialRoute();
   }, [setInitialRoute]);
 
   if (!initialRouteName) {

@@ -9,6 +9,11 @@ interface Locales {
 }
 
 interface Strings {
+  update_shara: {
+    title: string;
+    description: string;
+    submit_button: string;
+  };
   next: string;
   skip: string;
   get_started: string;

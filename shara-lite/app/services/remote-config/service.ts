@@ -5,6 +5,12 @@ import remoteConfig, {
 const remoteConfigDefaults: RemoteConfig = {
   locales: {
     en: {
+      update_shara: {
+        title: 'Update Shara',
+        description:
+          'A new version of the app is now available. Update now see what’s new',
+        submit_button: 'Update Now',
+      },
       next: 'next',
       skip: 'skip',
       get_started: 'Get Started',
@@ -77,7 +83,7 @@ const remoteConfigDefaults: RemoteConfig = {
       options: ['hausa', 'yoruba', 'igbo'],
     },
   },
-  minimumVersion: '0.1.0',
+  minimumVersion: '0.1.0-local',
 };
 
 export interface IRemoteConfigService {

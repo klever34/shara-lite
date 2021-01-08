@@ -21,6 +21,7 @@ import {Platform} from 'react-native';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 import {NavigationState} from '@react-navigation/routers';
 import {ToastProvider} from '@/components/Toast';
+import UpdateSharaScreen from '@/screens/UpdateShara';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -29,6 +30,7 @@ if (Platform.OS === 'android') {
 }
 
 export type RootStackParamList = {
+  UpdateShara: undefined;
   Splash: undefined;
   Auth: undefined;
   Main: undefined;
@@ -81,6 +83,11 @@ const App = () => {
                 <RootStack.Screen
                   name="Splash"
                   component={SplashScreen}
+                  options={{headerShown: false}}
+                />
+                <RootStack.Screen
+                  name="UpdateShara"
+                  component={UpdateSharaScreen}
                   options={{headerShown: false}}
                 />
                 <RootStack.Screen

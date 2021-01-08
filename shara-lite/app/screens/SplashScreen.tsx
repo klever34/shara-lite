@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {
   Alert,
   BackHandler,
@@ -9,9 +9,20 @@ import {
   View,
 } from 'react-native';
 import {colors, dimensions} from '../styles';
-import {getAuthService, getNavigationService} from '../services';
+import {
+  getAuthService,
+  getNavigationService,
+  getRemoteConfigService,
+} from '../services';
 import {useNavigation} from '@react-navigation/native';
 import {useInitRealm} from '@/services/realm';
+import {version as currentVersion} from '../../package.json';
+
+const remoteConfigService = getRemoteConfigService();
+const minimumVersion = remoteConfigService
+  .getValue('minimumVersion')
+  .asString();
+console.log('minimumVersion: ', minimumVersion);
 
 const SplashScreen = () => {
   const navigation = useNavigation();
@@ -21,6 +32,18 @@ const SplashScreen = () => {
     const navigationService = getNavigationService();
     navigationService.setInstance(navigation);
   });
+
+  const sholdUpdateApp = useMemo(() => {
+    if (!minimumVersion || !currentVersion) {
+      return false;
+    }
+    const [minimumVersionNumber] = minimumVersion.split('-');
+    const [currentVersionNumber] = currentVersion.split('-');
+    console.log(minimumVersionNumber, 'minimumVersionNumber');
+    console.log(currentVersionNumber, 'currentVersionNumber');
+    return true;
+  }, []);
+
   const handleRedirect = useCallback(
     async () => {
       const authService = getAuthService();
@@ -50,7 +73,12 @@ const SplashScreen = () => {
       }
 
       setTimeout(() => {
-        if (authService.isLoggedIn()) {
+        if (sholdUpdateApp) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'UpdateShara'}],
+          });
+        } else if (authService.isLoggedIn()) {
           navigation.reset({
             index: 0,
             routes: [{name: 'Main'}],
