@@ -74,39 +74,44 @@ export const CustomerListItem = ({
           'flex-row items-center border-b-1 border-gray-20',
           containerStyle,
         )}>
-        <PlaceholderImage text={customer?.name ?? ''} />
+        <PlaceholderImage
+          text={customer?.name ?? ''}
+          image={customer.image ? {uri: customer?.image} : undefined}
+        />
         <View style={applyStyles('flex-1 pl-sm')}>
           <Text style={applyStyles('pb-4 text-base text-400 text-gray-300')}>
             {customer.name}
           </Text>
           {getDateText()}
         </View>
-        <View style={applyStyles('items-end flex-row')}>
-          <Text style={applyStyles('text-base text-700 text-black')}>
-            {customer.balance && customer.balance < 0 ? '-' : ''}
-            {amountWithCurrency(customer?.balance)}
-          </Text>
-          {!!customer?.balance && customer?.balance < 0 && (
-            <View style={applyStyles('pl-4')}>
-              <Icon
-                size={18}
-                name="arrow-up"
-                type="feathericons"
-                color={colors['red-100']}
-              />
-            </View>
-          )}
-          {!!customer?.balance && customer?.balance > 0 && (
-            <View style={applyStyles('pl-4')}>
-              <Icon
-                size={18}
-                name="arrow-down"
-                type="feathericons"
-                color={colors['green-200']}
-              />
-            </View>
-          )}
-        </View>
+        {!!customer.balance && (
+          <View style={applyStyles('items-end flex-row')}>
+            <Text style={applyStyles('text-base text-700 text-black')}>
+              {customer.balance && customer.balance < 0 ? '-' : ''}
+              {amountWithCurrency(customer?.balance)}
+            </Text>
+            {!!customer?.balance && customer?.balance < 0 && (
+              <View style={applyStyles('pl-4')}>
+                <Icon
+                  size={18}
+                  name="arrow-up"
+                  type="feathericons"
+                  color={colors['red-100']}
+                />
+              </View>
+            )}
+            {!!customer?.balance && customer?.balance > 0 && (
+              <View style={applyStyles('pl-4')}>
+                <Icon
+                  size={18}
+                  name="arrow-down"
+                  type="feathericons"
+                  color={colors['green-200']}
+                />
+              </View>
+            )}
+          </View>
+        )}
       </View>
     </Touchable>
   );

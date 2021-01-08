@@ -14,8 +14,8 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {useFormik} from 'formik';
-import React, {useCallback, useContext} from 'react';
-import {Text, View} from 'react-native';
+import React, {useCallback, useContext, useRef, useState} from 'react';
+import {Text, TextInput, View} from 'react-native';
 
 type RecordCollectionScreenProps = {
   route: RouteProp<MainStackParamList, 'RecordCollection'>;
@@ -27,9 +27,12 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
   const {saveTransaction} = useTransaction();
   const {showSuccessToast} = useContext(ToastContext);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSaveCollection = useCallback(
     async (payload) => {
       try {
+        setIsLoading(true);
         const transaction = await saveTransaction({
           customer,
           ...payload,
@@ -37,12 +40,14 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           is_collection: true,
           total_amount: payload.amount_paid,
         });
+        setIsLoading(false);
         showSuccessToast('COLLECTION RECORDED');
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
         });
       } catch (error) {
+        setIsLoading(false);
         handleError(error);
       }
     },
@@ -59,6 +64,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
       handleSaveCollection({note, amount_paid, transaction_date});
     },
   });
+  const noteFieldRef = useRef<TextInput | null>(null);
   return (
     <CalculatorView>
       <Page header={{iconLeft: {}, title: ' '}}>
@@ -81,6 +87,13 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             setFieldValue('amount_paid', value);
           }}
           autoFocus
+          onEquals={() => {
+            setImmediate(() => {
+              if (noteFieldRef.current) {
+                noteFieldRef.current.focus();
+              }
+            });
+          }}
         />
         {!!values.amount_paid && (
           <AppInput
@@ -89,6 +102,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             containerStyle={applyStyles('mb-24')}
             onChangeText={handleChange('note')}
             placeholder="Write a brief note about this transaction"
+            ref={noteFieldRef}
           />
         )}
         <View
@@ -144,6 +158,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           )}
           <Button
             title="Save"
+            isLoading={isLoading}
             onPress={handleSubmit}
             style={applyStyles({width: '48%'})}
           />

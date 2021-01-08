@@ -28,6 +28,7 @@ export type SelectCustomerListItem = Partial<ICustomer>;
 
 export type SelectCustomerListScreenParams = {
   withCustomer?: boolean;
+  isCollection?: boolean;
   transaction?: {
     note?: string;
     amount_paid?: number;
@@ -44,7 +45,9 @@ export type SelectCustomerListScreenProps = {
 
 export const SelectCustomerListScreen = withModal(
   ({route, openModal}: SelectCustomerListScreenProps) => {
-    const {withCustomer, onSelectCustomer} = route.params;
+    const {withCustomer, onSelectCustomer, isCollection} = route.params;
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
       searchTerm,
@@ -152,6 +155,17 @@ export const SelectCustomerListScreen = withModal(
       handleSetCustomer(undefined);
     }, [handleCustomerSearch, handleSetCustomer]);
 
+    const handleRecordSale = useCallback(
+      (customerData?: Partial<ICustomer>) => {
+        setIsLoading(true);
+        setTimeout(() => {
+          onSelectCustomer(customerData);
+          setIsLoading(false);
+        }, 2000);
+      },
+      [onSelectCustomer],
+    );
+
     const keyExtractor = useCallback((item, index) => {
       if (!item) {
         return '';
@@ -176,7 +190,10 @@ export const SelectCustomerListScreen = withModal(
               style={applyStyles(
                 'flex-row items-center border-b-1 border-gray-20 px-16 py-12',
               )}>
-              <PlaceholderImage text={item?.name ?? ''} />
+              <PlaceholderImage
+                text={item?.name ?? ''}
+                image={item?.image ? {uri: item?.image} : undefined}
+              />
               <View style={applyStyles('flex-1 ml-8')}>
                 <Text
                   style={applyStyles(
@@ -308,6 +325,7 @@ export const SelectCustomerListScreen = withModal(
               text={customer?.name ?? ''}
               style={applyStyles('bg-white')}
               textStyle={applyStyles('text-red-200')}
+              image={customer.image ? {uri: customer?.image} : undefined}
             />
             <View style={applyStyles('flex-1 ml-8')}>
               <Text
@@ -370,8 +388,9 @@ export const SelectCustomerListScreen = withModal(
               />
               <Button
                 title="Save"
+                isLoading={isLoading}
                 style={applyStyles({width: '48%'})}
-                onPress={() => onSelectCustomer(customer)}
+                onPress={() => handleRecordSale(customer)}
               />
             </View>
           ) : (
@@ -381,9 +400,10 @@ export const SelectCustomerListScreen = withModal(
                   'px-16 py-8 bg-white flex-row items-center w-full justify-end absolute bottom-0 right-0',
                 )}>
                 <Button
+                  isLoading={isLoading}
                   title="Save (No Customer)"
                   style={applyStyles({width: 200})}
-                  onPress={() => onSelectCustomer()}
+                  onPress={() => handleRecordSale()}
                 />
               </View>
             )
@@ -395,9 +415,14 @@ export const SelectCustomerListScreen = withModal(
                 'px-16 py-8 bg-white flex-row items-center justify-end',
               )}>
               <Button
-                title="Save"
+                isLoading={isLoading}
                 style={applyStyles({width: '48%'})}
-                onPress={() => onSelectCustomer(customer)}
+                title={isCollection ? 'Next' : 'Save'}
+                onPress={
+                  isCollection
+                    ? () => onSelectCustomer(customer)
+                    : () => handleRecordSale(customer)
+                }
               />
             </View>
           )

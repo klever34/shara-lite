@@ -159,13 +159,13 @@ export const TransactionReview = (props: TransactionReviewProps) => {
         </View>
         {!!showShareButtons && (
           <View style={applyStyles('center')}>
-            <Text
-              style={applyStyles(
-                'text-sm text-uppercase text-gray-300 text-700 text-center',
-              )}>
-              Share
-            </Text>
             <View style={applyStyles('flex-row items-center')}>
+              <Text
+                style={applyStyles(
+                  'px-4 text-sm text-uppercase text-gray-300 text-700 text-center',
+                )}>
+                Share:
+              </Text>
               <View style={applyStyles('px-4')}>
                 <Touchable onPress={onWhatsappShare}>
                   <View

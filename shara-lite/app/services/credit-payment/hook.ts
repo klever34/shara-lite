@@ -149,13 +149,14 @@ export const useCreditPayment = (): useCreditPayment => {
       return [];
     }
 
-    return credits.reduce(
-      (allCredits: IPayment[], credit) => [
-        ...allCredits,
-        ...(credit.payments || []).map(({payment}) => payment),
-      ],
-      [],
-    );
+    return credits.reduce((allCredits: IPayment[], credit) => {
+      const creditPayments =
+        credit.payments?.map(
+          (creditPayment: ICreditPayment) => creditPayment.payment,
+        ) || [];
+
+      return [...allCredits, ...creditPayments];
+    }, []);
   };
 
   const updateCreditPayment = async ({

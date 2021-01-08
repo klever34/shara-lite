@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useMemo} from 'react';
 import {
   Alert,
   BackHandler,
@@ -9,9 +9,24 @@ import {
   View,
 } from 'react-native';
 import {colors, dimensions} from '../styles';
-import {getAuthService, getNavigationService} from '../services';
+import {
+  getAuthService,
+  getNavigationService,
+  getRemoteConfigService,
+} from '../services';
 import {useNavigation} from '@react-navigation/native';
 import {useInitRealm} from '@/services/realm';
+import {version as currentVersion} from '../../package.json';
+
+const remoteConfigService = getRemoteConfigService();
+let minimumVersion = remoteConfigService.getValue('minimumVersion').asString();
+if (minimumVersion) {
+  try {
+    minimumVersion = JSON.parse(minimumVersion);
+  } catch (e) {
+    minimumVersion = '';
+  }
+}
 
 const SplashScreen = () => {
   const navigation = useNavigation();
@@ -21,6 +36,25 @@ const SplashScreen = () => {
     const navigationService = getNavigationService();
     navigationService.setInstance(navigation);
   });
+
+  const shouldUpdateApp = useMemo(() => {
+    if (!minimumVersion || !currentVersion) {
+      return false;
+    }
+    const [minimumVersionNumber] = minimumVersion.split('-');
+    const [currentVersionNumber] = currentVersion.split('-');
+    let [minMajor, minMinor, minPatch] = minimumVersionNumber.split('.');
+    let [major, minor, patch] = currentVersionNumber.split('.');
+    if (Number(minMajor) !== Number(major)) {
+      return Number(minMajor) > Number(major);
+    } else if (Number(minMinor) !== Number(minor)) {
+      return Number(minMinor) > Number(minor);
+    } else if (Number(minPatch) !== Number(patch)) {
+      return Number(minPatch) > Number(patch);
+    }
+    return false;
+  }, []);
+
   const handleRedirect = useCallback(
     async () => {
       const authService = getAuthService();
@@ -50,7 +84,12 @@ const SplashScreen = () => {
       }
 
       setTimeout(() => {
-        if (authService.isLoggedIn()) {
+        if (shouldUpdateApp) {
+          navigation.reset({
+            index: 0,
+            routes: [{name: 'UpdateShara'}],
+          });
+        } else if (authService.isLoggedIn()) {
           navigation.reset({
             index: 0,
             routes: [{name: 'Main'}],

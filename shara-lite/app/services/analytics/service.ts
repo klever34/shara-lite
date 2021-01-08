@@ -8,6 +8,7 @@ import getFirebaseAnalytics from '@react-native-firebase/analytics';
 import getFirebaseCrashlytics from '@react-native-firebase/crashlytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 import * as Sentry from '@sentry/react-native';
+import {ReminderWhen, ReminderUnit} from '@/models/PaymentReminder';
 
 export type SharaAppEventsProperties = {
   // Chat
@@ -75,6 +76,22 @@ export type SharaAppEventsProperties = {
     totalAmount: number;
     currency_code: string;
   };
+  userRecordCollection: {
+    amount: number;
+    currency_code: string;
+  };
+  userRecordSaleWithCredit: {
+    amountPaid: number;
+    creditAmount: number;
+    totalAmount: number;
+    currency_code: string;
+  };
+  userRecordSaleWithoutCredit: {
+    amountPaid: number;
+    creditAmount: number;
+    totalAmount: number;
+    currency_code: string;
+  };
   setCollectionDate: {};
   userUpdatedTransaction: {};
   userDeletedTransaction: {};
@@ -87,6 +104,31 @@ export type SharaAppEventsProperties = {
   userViewedReport: {};
   userDownloadedReport: {};
   userSharedReport: {};
+  // Reminders
+  userAddedReminder: {
+    id: string;
+    amount: number;
+    when: ReminderWhen;
+    unit: ReminderUnit;
+    due_date: string;
+    customer: string;
+  };
+  userUpdatedReminder: {
+    id: string;
+    amount: number;
+    when: ReminderWhen;
+    unit: ReminderUnit;
+    due_date: string;
+    customer: string;
+  };
+  userRemovedReminder: {
+    id: string;
+    amount: number;
+    when: ReminderWhen;
+    unit: ReminderUnit;
+    due_date: string;
+    customer: string;
+  };
 };
 
 export interface IAnalyticsService {
@@ -114,12 +156,10 @@ export class AnalyticsService implements IAnalyticsService {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
-        // TODO: Uncomment the below line when UXCAM is upgraded
-        /*
-          RNUxcam.optIntoSchematicRecordings();
-          RNUxcam.setAutomaticScreenNameTagging(false);
-          RNUxcam.startWithKey(Config.UXCAM_KEY);
-        */
+
+        RNUxcam.optIntoSchematicRecordings();
+        RNUxcam.setAutomaticScreenNameTagging(false);
+        RNUxcam.startWithKey(Config.UXCAM_KEY);
       }
     } catch (e) {
       throw e;

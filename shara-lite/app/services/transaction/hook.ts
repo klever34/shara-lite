@@ -103,6 +103,34 @@ export const useTransaction = (): useTransactionInterface => {
         currency_code: user?.country_code ?? '',
       })
       .then(() => {});
+    if (is_collection) {
+      getAnalyticsService()
+        .logEvent('userRecordCollection', {
+          amount: receiptData.totalAmount,
+          currency_code: user?.country_code ?? '',
+        })
+        .then(() => {});
+    } else {
+      if (receiptData.creditAmount) {
+        getAnalyticsService()
+          .logEvent('userRecordSaleWithCredit', {
+            amountPaid: receiptData.amountPaid,
+            creditAmount: receiptData.creditAmount,
+            totalAmount: receiptData.totalAmount,
+            currency_code: user?.country_code ?? '',
+          })
+          .then(() => {});
+      } else {
+        getAnalyticsService()
+          .logEvent('userRecordSaleWithoutCredit', {
+            amountPaid: receiptData.amountPaid,
+            creditAmount: receiptData.creditAmount,
+            totalAmount: receiptData.totalAmount,
+            currency_code: user?.country_code ?? '',
+          })
+          .then(() => {});
+      }
+    }
     if (note) {
       getAnalyticsService()
         .logEvent('detailsEnteredToTransaction', {

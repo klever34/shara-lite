@@ -54,7 +54,7 @@ export const ReminderForm = ({
         </View>
         <Touchable onPress={onDelete}>
           <Icon
-            size={18}
+            size={20}
             name="trash-2"
             type="feathericons"
             color={colors['gray-50']}

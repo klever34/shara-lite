@@ -179,7 +179,9 @@ export const CustomerListScreen = withModal(
             content_type: 'customer',
           })
           .then(() => {});
-        navigation.navigate('CustomerDetails', {customer: item});
+        requestAnimationFrame(() =>
+          navigation.navigate('CustomerDetails', {customer: item}),
+        );
       },
       [navigation, analyticsService],
     );
@@ -342,6 +344,11 @@ export const CustomerListScreen = withModal(
               keyExtractor={keyExtractor}
               style={applyStyles('bg-white')}
               renderItem={renderCustomerListItem}
+              getItemLayout={(_, index) => ({
+                length: 73.1,
+                offset: 73.1 * index,
+                index,
+              })}
             />
           </>
         ) : (

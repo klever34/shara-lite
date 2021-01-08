@@ -37,6 +37,7 @@ const EmptyState = (props: EmptyStateProps) => {
         <Image
           source={source}
           style={applyStyles('mb-md', {width: 140, height: 140}, imageStyle)}
+          resizeMode="contain"
         />
       )}
       {!!heading && (
