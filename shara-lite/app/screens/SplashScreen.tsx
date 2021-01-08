@@ -21,7 +21,11 @@ import {version as currentVersion} from '../../package.json';
 const remoteConfigService = getRemoteConfigService();
 let minimumVersion = remoteConfigService.getValue('minimumVersion').asString();
 if (minimumVersion) {
-  minimumVersion = JSON.parse(minimumVersion);
+  try {
+    minimumVersion = JSON.parse(minimumVersion);
+  } catch (e) {
+    minimumVersion = '';
+  }
 }
 
 const SplashScreen = () => {
