@@ -18,7 +18,7 @@
     "fp_button": "Submit"
   },
   "fields": {
-    "phone_field" : {
+    "phone" : {
       "label": "What's your phone number?",
       "placeholder": "Enter your number"
     }

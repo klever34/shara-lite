@@ -22,8 +22,8 @@ type Fields = {
 const validationSchema = yup.object().shape({
   mobile: yup
     .string()
-    .min(5, 'Number should be minimum of 5 digits')
-    .required('Number is required'),
+    .min(5, i18nService.strings('alert.minimum_phone_digits'))
+    .required(i18nService.strings('alert.required.number')),
 });
 
 export const Login = () => {
@@ -49,7 +49,10 @@ export const Login = () => {
   const onSubmit = async (data: Fields) => {
     const {mobile, countryCode} = data;
     if (!countryCode) {
-      Alert.alert('Error', 'Please select a country');
+      Alert.alert(
+        i18nService.strings('alert.error'),
+        i18nService.strings('alert.select_country'),
+      );
       return;
     }
     const apiService = getApiService();
@@ -75,7 +78,7 @@ export const Login = () => {
       });
     } catch (error) {
       setLoading(false);
-      Alert.alert('Error', error.message);
+      Alert.alert(i18nService.strings('alert.error'), error.message);
     }
   };
 
@@ -102,8 +105,8 @@ export const Login = () => {
         <PhoneNumberField
           errorMessage={errors.mobile}
           onSubmitEditing={handleSubmit}
-          placeholder={i18nService.strings('fields.phone_field.placeholder')}
-          label={i18nService.strings('fields.phone_field.label')}
+          placeholder={i18nService.strings('fields.phone.placeholder')}
+          label={i18nService.strings('fields.phone.label')}
           containerStyle={applyStyles('mb-24')}
           onChangeText={(data) => onChangeMobile(data)}
           isInvalid={touched.mobile && !!errors.mobile}

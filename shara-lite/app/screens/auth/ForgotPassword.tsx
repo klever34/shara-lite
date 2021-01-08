@@ -59,7 +59,7 @@ const ForgotPassword = () => {
               navigation.replace('ResetPassword', {mobile});
             })
             .catch((error) => {
-              Alert.alert('Error', error.message);
+              Alert.alert(i18nService.strings('alert.error'), error.message);
             });
         }}
         forceUseFormButton

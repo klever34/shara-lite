@@ -43,10 +43,10 @@ export const OTPVerification = () => {
       };
       console.log(payload);
       await apiService.otp(payload);
-      showSuccessToast('OTP RESENT');
+      showSuccessToast(i18nService.strings('otp.resent'));
     } catch (error) {
       setLoading(false);
-      Alert.alert('Error', error.message);
+      Alert.alert(i18nService.strings('alert.error'), error.message);
     }
   }, [hash, showSuccessToast, params]);
 
@@ -70,7 +70,7 @@ export const OTPVerification = () => {
           });
         } catch (error) {
           setLoading(false);
-          Alert.alert('Error', error.message);
+          Alert.alert(i18nService.strings('alert.error'), error.message);
         }
       }
     },
@@ -88,12 +88,12 @@ export const OTPVerification = () => {
               setOtp(code);
             }
           } catch (error) {
-            Alert.alert('Error', error.message);
+            Alert.alert(i18nService.strings('alert.error'), error.message);
           }
         });
       })
       .catch((error) => {
-        Alert.alert('Error', error.message);
+        Alert.alert(i18nService.strings('alert.error'), error.message);
       });
 
     // remove listener on unmount
