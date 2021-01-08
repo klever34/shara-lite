@@ -19,10 +19,10 @@ import {useInitRealm} from '@/services/realm';
 import {version as currentVersion} from '../../package.json';
 
 const remoteConfigService = getRemoteConfigService();
-const minimumVersion = remoteConfigService
-  .getValue('minimumVersion')
-  .asString();
-console.log('minimumVersion: ', minimumVersion);
+let minimumVersion = remoteConfigService.getValue('minimumVersion').asString();
+if (minimumVersion) {
+  minimumVersion = JSON.parse(minimumVersion);
+}
 
 const SplashScreen = () => {
   const navigation = useNavigation();
@@ -33,15 +33,22 @@ const SplashScreen = () => {
     navigationService.setInstance(navigation);
   });
 
-  const sholdUpdateApp = useMemo(() => {
+  const shouldUpdateApp = useMemo(() => {
     if (!minimumVersion || !currentVersion) {
       return false;
     }
     const [minimumVersionNumber] = minimumVersion.split('-');
     const [currentVersionNumber] = currentVersion.split('-');
-    console.log(minimumVersionNumber, 'minimumVersionNumber');
-    console.log(currentVersionNumber, 'currentVersionNumber');
-    return true;
+    let [minMajor, minMinor, minPatch] = minimumVersionNumber.split('.');
+    let [major, minor, patch] = currentVersionNumber.split('.');
+    if (Number(minMajor) !== Number(major)) {
+      return Number(minMajor) > Number(major);
+    } else if (Number(minMinor) !== Number(minor)) {
+      return Number(minMinor) > Number(minor);
+    } else if (Number(minPatch) !== Number(patch)) {
+      return Number(minPatch) > Number(patch);
+    }
+    return false;
   }, []);
 
   const handleRedirect = useCallback(
@@ -73,7 +80,7 @@ const SplashScreen = () => {
       }
 
       setTimeout(() => {
-        if (sholdUpdateApp) {
+        if (shouldUpdateApp) {
           navigation.reset({
             index: 0,
             routes: [{name: 'UpdateShara'}],
