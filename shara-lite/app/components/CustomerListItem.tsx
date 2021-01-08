@@ -74,7 +74,10 @@ export const CustomerListItem = ({
           'flex-row items-center border-b-1 border-gray-20',
           containerStyle,
         )}>
-        <PlaceholderImage text={customer?.name ?? ''} />
+        <PlaceholderImage
+          text={customer?.name ?? ''}
+          image={customer.image ? {uri: customer?.image} : undefined}
+        />
         <View style={applyStyles('flex-1 pl-sm')}>
           <Text style={applyStyles('pb-4 text-base text-400 text-gray-300')}>
             {customer.name}

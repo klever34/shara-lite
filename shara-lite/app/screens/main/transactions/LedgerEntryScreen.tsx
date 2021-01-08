@@ -223,6 +223,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                 <PlaceholderImage
                   style={applyStyles('ml-4')}
                   text={customer?.name ?? ''}
+                  image={customer.image ? {uri: customer?.image} : undefined}
                 />
               </View>
             </Touchable>

@@ -176,7 +176,10 @@ export const SelectCustomerListScreen = withModal(
               style={applyStyles(
                 'flex-row items-center border-b-1 border-gray-20 px-16 py-12',
               )}>
-              <PlaceholderImage text={item?.name ?? ''} />
+              <PlaceholderImage
+                text={item?.name ?? ''}
+                image={item?.image ? {uri: item?.image} : undefined}
+              />
               <View style={applyStyles('flex-1 ml-8')}>
                 <Text
                   style={applyStyles(
@@ -308,6 +311,7 @@ export const SelectCustomerListScreen = withModal(
               text={customer?.name ?? ''}
               style={applyStyles('bg-white')}
               textStyle={applyStyles('text-red-200')}
+              image={customer.image ? {uri: customer?.image} : undefined}
             />
             <View style={applyStyles('flex-1 ml-8')}>
               <Text

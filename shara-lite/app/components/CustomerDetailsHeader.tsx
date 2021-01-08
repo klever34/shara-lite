@@ -140,7 +140,10 @@ const CustomerDetailsHeader = ({
               </View>
             ) : (
               <>
-                <PlaceholderImage text={customer?.name ?? ''} />
+                <PlaceholderImage
+                  text={customer?.name ?? ''}
+                  image={customer.image ? {uri: customer?.image} : undefined}
+                />
                 <View style={applyStyles('pl-sm')}>{renderLeftSection()}</View>
               </>
             )}
