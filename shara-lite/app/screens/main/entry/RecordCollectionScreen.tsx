@@ -14,7 +14,7 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {useFormik} from 'formik';
-import React, {useCallback, useContext} from 'react';
+import React, {useCallback, useContext, useState} from 'react';
 import {Text, View} from 'react-native';
 
 type RecordCollectionScreenProps = {
@@ -27,9 +27,12 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
   const {saveTransaction} = useTransaction();
   const {showSuccessToast} = useContext(ToastContext);
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const handleSaveCollection = useCallback(
     async (payload) => {
       try {
+        setIsLoading(true);
         const transaction = await saveTransaction({
           customer,
           ...payload,
@@ -37,12 +40,14 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           is_collection: true,
           total_amount: payload.amount_paid,
         });
+        setIsLoading(false);
         showSuccessToast('COLLECTION RECORDED');
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
         });
       } catch (error) {
+        setIsLoading(false);
         handleError(error);
       }
     },
@@ -144,6 +149,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           )}
           <Button
             title="Save"
+            isLoading={isLoading}
             onPress={handleSubmit}
             style={applyStyles({width: '48%'})}
           />

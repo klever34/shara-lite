@@ -28,6 +28,7 @@ export type SelectCustomerListItem = Partial<ICustomer>;
 
 export type SelectCustomerListScreenParams = {
   withCustomer?: boolean;
+  isCollection?: boolean;
   transaction?: {
     note?: string;
     amount_paid?: number;
@@ -44,7 +45,9 @@ export type SelectCustomerListScreenProps = {
 
 export const SelectCustomerListScreen = withModal(
   ({route, openModal}: SelectCustomerListScreenProps) => {
-    const {withCustomer, onSelectCustomer} = route.params;
+    const {withCustomer, onSelectCustomer, isCollection} = route.params;
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const {
       searchTerm,
@@ -151,6 +154,17 @@ export const SelectCustomerListScreen = withModal(
       //@ts-ignore
       handleSetCustomer(undefined);
     }, [handleCustomerSearch, handleSetCustomer]);
+
+    const handleRecordSale = useCallback(
+      (customerData?: Partial<ICustomer>) => {
+        setIsLoading(true);
+        setTimeout(() => {
+          onSelectCustomer(customerData);
+          setIsLoading(false);
+        }, 2000);
+      },
+      [onSelectCustomer],
+    );
 
     const keyExtractor = useCallback((item, index) => {
       if (!item) {
@@ -374,8 +388,9 @@ export const SelectCustomerListScreen = withModal(
               />
               <Button
                 title="Save"
+                isLoading={isLoading}
                 style={applyStyles({width: '48%'})}
-                onPress={() => onSelectCustomer(customer)}
+                onPress={() => handleRecordSale(customer)}
               />
             </View>
           ) : (
@@ -385,9 +400,10 @@ export const SelectCustomerListScreen = withModal(
                   'px-16 py-8 bg-white flex-row items-center w-full justify-end absolute bottom-0 right-0',
                 )}>
                 <Button
+                  isLoading={isLoading}
                   title="Save (No Customer)"
                   style={applyStyles({width: 200})}
-                  onPress={() => onSelectCustomer()}
+                  onPress={() => handleRecordSale()}
                 />
               </View>
             )
@@ -399,9 +415,14 @@ export const SelectCustomerListScreen = withModal(
                 'px-16 py-8 bg-white flex-row items-center justify-end',
               )}>
               <Button
-                title="Save"
+                isLoading={isLoading}
                 style={applyStyles({width: '48%'})}
-                onPress={() => onSelectCustomer(customer)}
+                title={isCollection ? 'Next' : 'Save'}
+                onPress={
+                  isCollection
+                    ? () => onSelectCustomer(customer)
+                    : () => handleRecordSale(customer)
+                }
               />
             </View>
           )
