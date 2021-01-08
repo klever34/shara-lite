@@ -195,7 +195,7 @@ workflows:
       - checkout_code:
           app: shara-lite
           context: shara-discovery
-          appEnv: SHARA_LITE_ENVgit
+          appEnv: SHARA_LITE_ENV
           merged: true
           commit: true
           versioning: true
