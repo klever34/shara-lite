@@ -1,5 +1,6 @@
 import {AuthView, Button} from '@/components';
 import {ToastContext} from '@/components/Toast';
+import {getFCMToken} from '@/helpers/utils';
 import {getAnalyticsService, getApiService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {useInitRealm} from '@/services/realm';
@@ -8,7 +9,7 @@ import {RouteProp, useRoute} from '@react-navigation/native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {useErrorHandler} from 'react-error-boundary';
-import {Alert, Text, TouchableOpacity, View} from 'react-native';
+import {Alert, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
@@ -54,7 +55,17 @@ export const OTPVerification = () => {
         const apiService = getApiService();
         setLoading(true);
         try {
+          const fcmToken = await getFCMToken();
           await apiService.logIn(payload);
+          fcmToken &&
+            (await apiService.fcmToken({
+              token: fcmToken,
+              platform: Platform.select({
+                ios: 'ios',
+                android: 'android',
+                windows: 'windows',
+              }),
+            }));
           await initRealm({initSync: true});
 
           getAnalyticsService()

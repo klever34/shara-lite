@@ -140,6 +140,8 @@ export interface IApiService {
     device_id?: string;
     country_code?: string;
   }): Promise<string>;
+
+  fcmToken(payload: {token: string; platform?: string}): Promise<ApiResponse>;
 }
 
 export class ApiService implements IApiService {
@@ -630,6 +632,18 @@ export class ApiService implements IApiService {
       const {message} = fetchResponse;
 
       return message;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async fcmToken(payload: {
+    token: string;
+    platform?: string;
+  }): Promise<ApiResponse> {
+    try {
+      const response = await this.requester.post('/fcm/token', payload);
+      return response;
     } catch (error) {
       throw error;
     }

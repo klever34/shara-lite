@@ -14,6 +14,7 @@ import ImagePicker, {
 import {Alert, ToastAndroid} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import {handleError} from '@/services/error-boundary';
+import messaging from '@react-native-firebase/messaging';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -186,6 +187,22 @@ export const convertUriToBase64 = async (uri: string) => {
   try {
     const data = await RNFetchBlob.fs.readFile(uri, 'base64');
     return data;
+  } catch (error) {
+    handleError(error);
+  }
+};
+
+export const getFCMToken = async () => {
+  try {
+    const authorized = await messaging().hasPermission();
+    const fcmToken = await messaging().getToken();
+
+    if (authorized) {
+      return fcmToken;
+    }
+
+    await messaging().requestPermission();
+    return fcmToken;
   } catch (error) {
     handleError(error);
   }
