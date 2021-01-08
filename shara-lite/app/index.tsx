@@ -10,7 +10,12 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import ErrorFallback from './components/ErrorFallback';
 import RealmProvider from './services/realm/provider';
-import {getAnalyticsService, getNotificationService} from '@/services';
+import {
+  getRemoteConfigService,
+  getAnalyticsService,
+  getNotificationService,
+  getI18nService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {Platform} from 'react-native';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
@@ -39,6 +44,14 @@ const App = () => {
   useEffect(() => {
     getNotificationService().initialize();
   }, []);
+  useEffect(() => {
+    getRemoteConfigService()
+      .initialize()
+      .then(() => {
+        getI18nService().initialize();
+      })
+      .catch(handleError);
+  }, [handleError]);
   const getActiveRouteName = useCallback((state: NavigationState): string => {
     const route = state.routes[state.index];
 

@@ -114,12 +114,10 @@ export class AnalyticsService implements IAnalyticsService {
           recordScreenViews: true,
           trackAppLifecycleEvents: true,
         });
-        // TODO: Uncomment the below line when UXCAM is upgraded
-        /*
-          RNUxcam.optIntoSchematicRecordings();
-          RNUxcam.setAutomaticScreenNameTagging(false);
-          RNUxcam.startWithKey(Config.UXCAM_KEY);
-        */
+
+        RNUxcam.optIntoSchematicRecordings();
+        RNUxcam.setAutomaticScreenNameTagging(false);
+        RNUxcam.startWithKey(Config.UXCAM_KEY);
       }
     } catch (e) {
       throw e;
