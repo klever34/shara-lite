@@ -77,7 +77,9 @@ export const ReportScreen = withModal(({openModal}: Props) => {
   const handleDownloadReport = useCallback(async () => {
     try {
       setIsDownloadingReport(true);
-      await exportReportsToExcel({receipts: filteredReceipts});
+      await exportReportsToExcel({
+        receipts: filteredReceipts.sorted('transaction_date', false),
+      });
       setIsDownloadingReport(false);
       getAnalyticsService()
         .logEvent('userDownloadedReport', {})

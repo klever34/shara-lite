@@ -76,7 +76,7 @@ export const ReportListItem = ({
           borderTopRightRadius: 8,
           borderBottomRightRadius: 8,
         })}>
-        {amount_paid && (
+        {!!amount_paid && (
           <Text
             style={applyStyles(
               'text-xs text-700 text-green-200 text-uppercase',
