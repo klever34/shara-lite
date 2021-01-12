@@ -14,7 +14,6 @@ const remoteConfigDefaults: RemoteConfig = {
       next: 'next',
       skip: 'skip',
       get_started: 'Get Started',
-      welcome: {},
       login: {
         heading: 'Get Started For Free',
         subheading: 'Log in to auto-backup and sync your data securely',
@@ -74,6 +73,29 @@ const remoteConfigDefaults: RemoteConfig = {
           password: 'Password is required',
           otp: 'OTP is required',
         },
+        something_went_wrong: 'Oops! Something went wrong.',
+        clear_app_data: 'Try clearing app data from application settings',
+        ok: 'OK',
+        sync: {
+          title: 'Sync in progress',
+          description:
+            'We are syncing your data across the Shara app. This might take a few seconds.',
+        },
+      },
+      shara_tagline: 'Keep track of who owes you and get paid faster',
+      onboarding_copy_1: {
+        title: 'Get repaid before you get desperate',
+        description: 'Get repayments from your customers 3X faster',
+      },
+      onboarding_copy_2: {
+        title:
+          'Never forget to send reminders to your customers with our free reminders & notifications',
+        description: 'Free SMS & WhatsApp reminders to your customers',
+      },
+      onboarding_copy_3: {
+        title: 'You and your business - as one',
+        description:
+          'Take control of your trade and bring it to the next level',
       },
     },
   },
@@ -144,6 +166,20 @@ export class RemoteConfigService implements IRemoteConfigService {
   }
 
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
-    return remoteConfig().getValue(key);
+    return {
+      asString(): string {
+        return JSON.stringify(remoteConfigDefaults[key]);
+      },
+      getSource(): 'remote' | 'default' | 'static' {
+        return 'default';
+      },
+      asNumber(): number {
+        return 0;
+      },
+      asBoolean(): boolean {
+        return false;
+      },
+    };
+    // return remoteConfig().getValue(key);
   }
 }

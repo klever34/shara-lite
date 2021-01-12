@@ -24,6 +24,7 @@ export class I18nService implements II18nService {
       return;
     }
 
+    I18n.defaultLocale = 'en';
     I18n.translations = JSON.parse(locales);
 
     ReactNative.I18nManager.allowRTL(this.isRTL());

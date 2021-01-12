@@ -6,7 +6,7 @@ import {Image, Text, View} from 'react-native';
 import Swiper from 'react-native-swiper';
 import {getI18nService} from '@/services';
 
-const i18nService = getI18nService();
+const strings = getI18nService().strings;
 
 export const Welcome = () => {
   const swiperRef = useRef(null);
@@ -70,10 +70,10 @@ export const Welcome = () => {
             style={applyStyles(
               'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
-            Get repaid before you get desperate
+            {strings('onboarding_copy_1.title')}
           </Text>
           <Text style={applyStyles('text-center text-gray-200 text-400')}>
-            Get repayments from your customers 3X faster
+            {strings('onboarding_copy_1.description')}
           </Text>
         </View>
         <View style={applyStyles('center flex-1')}>
@@ -85,11 +85,10 @@ export const Welcome = () => {
             style={applyStyles(
               'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
-            Never forget to send reminders to your customers with our free
-            reminders & notifications
+            {strings('onboarding_copy_2.title')}
           </Text>
           <Text style={applyStyles('text-center text-gray-200 text-400')}>
-            Free SMS & WhatsApp reminders to your customers
+            {strings('onboarding_copy_2.description')}
           </Text>
         </View>
         <View style={applyStyles('flex-1 center')}>
@@ -101,7 +100,7 @@ export const Welcome = () => {
             style={applyStyles(
               'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
             )}>
-            You and your business - as one
+            {strings('onboarding_copy_3.title')}
           </Text>
           <Text
             style={applyStyles('text-center text-gray-200 text-400 mx-auto', {
@@ -109,7 +108,7 @@ export const Welcome = () => {
               maxWidth: 280,
               lineHeight: 20,
             })}>
-            Take control of your trade and bring it to the next level
+            {strings('onboarding_copy_3.description')}
           </Text>
         </View>
       </Swiper>
@@ -127,7 +126,7 @@ export const Welcome = () => {
         <View style={applyStyles('flex-row justify-between items-center')}>
           {count === 2 ? (
             <Button
-              title={i18nService.strings('get_started')}
+              title={strings('get_started')}
               variantColor="red"
               onPress={handleSkip}
               style={applyStyles('w-full')}
@@ -135,13 +134,13 @@ export const Welcome = () => {
           ) : (
             <>
               <Button
-                title={i18nService.strings('skip')}
+                title={strings('skip')}
                 onPress={handleSkip}
                 variantColor="transparent"
                 style={applyStyles({width: '48%'})}
               />
               <Button
-                title={i18nService.strings('next')}
+                title={strings('next')}
                 variantColor="red"
                 onPress={handleNext}
                 style={applyStyles({width: '48%'})}

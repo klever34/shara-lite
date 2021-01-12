@@ -17,6 +17,8 @@ import {
 import {useNavigation} from '@react-navigation/native';
 import {useInitRealm} from '@/services/realm';
 import {version as currentVersion} from '../../package.json';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 const remoteConfigService = getRemoteConfigService();
 let minimumVersion = remoteConfigService.getValue('minimumVersion').asString();
@@ -65,11 +67,11 @@ const SplashScreen = () => {
           initRealm();
         } catch (e) {
           Alert.alert(
-            'Oops! Something went wrong.',
-            'Try clearing app data from application settings',
+            strings('alert.something_went_wrong'),
+            strings('alert.clear_app_data'),
             [
               {
-                text: 'OK',
+                text: strings('alert.ok'),
                 onPress: () => {
                   if (process.env.NODE_ENV === 'production') {
                     if (Platform.OS === 'android') {
@@ -116,9 +118,7 @@ const SplashScreen = () => {
         source={require('../assets/images/shara-lite_logo.png')}
         style={styles.image}
       />
-      <Text style={styles.text}>
-        Keep track of who owes you and get paid faster
-      </Text>
+      <Text style={styles.text}>{strings('shara_tagline')}</Text>
     </View>
   );
 };

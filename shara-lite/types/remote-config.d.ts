@@ -17,7 +17,6 @@ interface Strings {
   next: string;
   skip: string;
   get_started: string;
-  welcome: {};
   login: {
     heading: string;
     subheading: string;
@@ -69,7 +68,20 @@ interface Strings {
       password: string;
       otp: string;
     };
+    something_went_wrong: string;
+    clear_app_data: string;
+    ok: string;
+    sync: Card;
   };
+  shara_tagline: string;
+  onboarding_copy_1: Card;
+  onboarding_copy_2: Card;
+  onboarding_copy_3: Card;
+}
+
+interface Card {
+  title: string;
+  description: string;
 }
 
 interface FormField {
