@@ -5,7 +5,7 @@ export * from './PageModal';
 export * from './ActionCard';
 export * from './PasswordField';
 export * from './CurrencyInput';
-export * from './BluetoothModal';
+// export * from './BluetoothModal';
 export * from './PhoneNumberField';
 export * from './CreditPaymentForm';
 export * from './ContactsListModal';

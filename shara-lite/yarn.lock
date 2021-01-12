@@ -1159,40 +1159,40 @@
   dependencies:
     invariant "^2.2.4"
 
-"@react-native-firebase/analytics@^7.6.3":
-  version "7.6.4"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/analytics/-/analytics-7.6.4.tgz#f119ff9532f71537d980df267b1431f179941c53"
-  integrity sha512-Frwx/rgCeq3aHOUBA25chewcsaNPnA41YzhiuXIVwBFGOjBu3vA9nCnE0JagzYZoHauxMFfuEj8b7NzDxG1hkw==
+"@react-native-firebase/analytics@^7.6.10":
+  version "7.6.10"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/analytics/-/analytics-7.6.10.tgz#1c8cd7b31cebed53aeacd177bb01fead5f733738"
+  integrity sha512-Qok1s8oY1Gy3VHcCUSKK2oFc8ExghyKhf/KIjI/3gDVW6WDCB9eTGw/QmI5+br6nhZTKhWAgGfnToEQweJ24ig==
 
 "@react-native-firebase/app@^8.4.3":
-  version "8.4.3"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-8.4.3.tgz#7f5c0d16c8b56808a26625af34259c8c50e0307b"
-  integrity sha512-qkjY4gvX4B0x1PKwaZIxByxwtnSlpvRt6IAlygB4rkeUv9XTBvW2j2xCGprEbKYZswEgSeY4ZDWl5SXYe6FgCg==
+  version "8.4.7"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/app/-/app-8.4.7.tgz#7393ba7af36bd815bd5af7c64a20b0dd8a7e3341"
+  integrity sha512-jN788Q17aMOHc49wKc74RC3iZNhFoS+yTZhMBHFVyytf64uK3ofYAk3hjvukkylUTKF0Ni/L+04M0IDv8kStKg==
   dependencies:
     opencollective-postinstall "^2.0.1"
     superstruct "^0.6.2"
 
-"@react-native-firebase/crashlytics@^8.4.5":
-  version "8.4.5"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-8.4.5.tgz#4908e7aebb78cc7f02d882f6908a95371df047d4"
-  integrity sha512-unOFluKP/aDsdg7FN4r6fsBTNxWD5PWTeL8+VART+xq9iH2/2UXYGZNqY2bKLG8UUksz89zuyqQSl55SPJ2n8A==
+"@react-native-firebase/crashlytics@8.4.11":
+  version "8.4.11"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/crashlytics/-/crashlytics-8.4.11.tgz#0534666b95550ac02f23d52189ff763072009c63"
+  integrity sha512-/qdO2bXj9DPjKBMpatDbZa4fvEBMCJtTMNjPqvrDdKZY8Yjh6dxrKVRCcIoy3Fwrs1NR7aYuAJlPAxyK0jcMrg==
   dependencies:
     stacktrace-js "^2.0.0"
 
-"@react-native-firebase/messaging@^7.8.5":
-  version "7.8.6"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.8.6.tgz#360cec3f7f6c405a6c1c0a955f16c7c664e27b12"
-  integrity sha512-sZ8Ygje573rJEMLgHIgrnDZ5H73xpLDXGOSGncQYzD+p4QxRqyBYVKLdbCkFqBjeHNXZw/GmRjtRh56DeqA+PQ==
+"@react-native-firebase/messaging@^7.8.11":
+  version "7.9.2"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/messaging/-/messaging-7.9.2.tgz#f5946ce0da4c1454df4701de7284d52a4ccc8d5b"
+  integrity sha512-xK9oRkQAxJ5+9e3W9EUnxqhecA2iwZb4OCYPWyO5BzldIMa1B4UdYLHDHU8oYpgsefqS51bPDdczC0yn+/8RTA==
 
-"@react-native-firebase/perf@^7.4.3":
-  version "7.4.3"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/perf/-/perf-7.4.3.tgz#3fb92daf3a8a68a22ec95260a7a5fef91002a237"
-  integrity sha512-uaeBL7vfC8g7OUnwhwBAuiZ4wUbpY51RwfA5qbT+uDZwpSrHgrzNX1XhcRWQ7qkhboS66nDlGG/MpthRqCbdNQ==
+"@react-native-firebase/perf@7.4.10":
+  version "7.4.10"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/perf/-/perf-7.4.10.tgz#08e4eaea35e4b7853012d3b28265146d09d84ecf"
+  integrity sha512-c67/LweQHidFP4BFpO6iE3prb1iXhUnG1kB41d28ItkUfNMFlNu+BzjptpBLya+sb3as+XTXj1QINJUrJRrfuA==
 
-"@react-native-firebase/remote-config@^10.3.1":
-  version "10.3.1"
-  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-10.3.1.tgz#5b8cf5db503107aaf1b317af8e04c9679332ae80"
-  integrity sha512-cCfBagdTu9ppM1EWR/GbUAy5vWBwbalZz0MnRMUemDILhopYnPkOb9wBK5iSSrWD4bCcCGipUM5ZahVj94cjBQ==
+"@react-native-firebase/remote-config@^9.0.12":
+  version "9.0.12"
+  resolved "https://registry.yarnpkg.com/@react-native-firebase/remote-config/-/remote-config-9.0.12.tgz#72c0f5ed80be32f7444cb75e68ea10a284afa39e"
+  integrity sha512-Dipr/6l+bnhTwp1AXiIIN7hM4rSjAO/rBdQVtMsha4AWVsFhxA8zsxI5nwekfIutQB89XOS+H+u8lrBo+w1Q+Q==
 
 "@react-navigation/bottom-tabs@^5.10.0":
   version "5.10.0"
@@ -6789,11 +6789,6 @@ react-native-background-fetch@^3.1.0:
     plist "^3.0.1"
     xcode "^2.0.0"
 
-react-native-bluetooth-escpos-printer@^0.0.5:
-  version "0.0.5"
-  resolved "https://registry.yarnpkg.com/react-native-bluetooth-escpos-printer/-/react-native-bluetooth-escpos-printer-0.0.5.tgz#45a31d37c213f95f2cc590cebcb48e0574ce1b45"
-  integrity sha512-a+GTlz8dctb48wkoJ8woE7gV24NCOoA13J95A+RFEKhjONEWf3/dP5pIqrrlO5fsf/2QYDeMfU3P8bIVQoEqig==
-
 react-native-check-app-install@^0.0.5:
   version "0.0.5"
   resolved "https://registry.yarnpkg.com/react-native-check-app-install/-/react-native-check-app-install-0.0.5.tgz#1cd5bff09a7d294af7acc88da627984654cb1b9c"
@@ -6808,9 +6803,10 @@ react-native-color@0.0.10:
     react-native-slider "^0.11.0"
     tinycolor2 "^1.4.1"
 
-react-native-config@^1.2.1:
-  version "1.2.1"
-  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.2.1.tgz#f80454fc58ea89b549819ccb4bdab26518a9f0db"
+react-native-config@^1.4.0:
+  version "1.4.1"
+  resolved "https://registry.yarnpkg.com/react-native-config/-/react-native-config-1.4.1.tgz#3549d0d1f4545e45659b2c2105c0866bdce9967f"
+  integrity sha512-isK9z1ibzG0Z8HPRhCk0krmvtLknONCpEHLGSpBtf+oQ02PllAXljGMFN/XJCnq3G3MdmP1CffZh3vm4e/A50w==
 
 react-native-contacts@^5.2.3:
   version "5.2.3"
