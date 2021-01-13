@@ -11,6 +11,9 @@ import React, {useRef} from 'react';
 import {Text, TextInput, View} from 'react-native';
 import {CalculatorInput} from '@/components/CalculatorView';
 import {ICustomer} from '@/models';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type RecordSaleFormProps = {
   transaction?: IReceipt;
@@ -53,7 +56,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
       <View style={applyStyles('pb-16 flex-row items-center justify-between')}>
         <View style={applyStyles({width: '48%'})}>
           <CalculatorInput
-            label="Collected"
+            label={strings('sale.fields.amount.label')}
             placeholder="0.00"
             returnKeyType="next"
             value={values.amount_paid}
@@ -75,7 +78,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           <CalculatorInput
             ref={creditAmountFieldRef}
             placeholder="0.00"
-            label="Outstanding"
+            label={strings('sale.fields.credit.label')}
             returnKeyType="next"
             value={values.credit_amount}
             style={applyStyles('text-red-100')}
@@ -99,7 +102,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           style={applyStyles(
             'pb-16 text-700 text-center text-uppercase text-black',
           )}>
-          Total:{' '}
+          {strings('total')}:{' '}
           {amountWithCurrency(
             (values.amount_paid ?? 0) + (values.credit_amount ?? 0),
           )}
@@ -110,10 +113,12 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           multiline
           ref={noteFieldRef}
           value={values.note}
-          label="Note (optional)"
+          label={`${strings('sale.fields.note.label')} (${strings(
+            'optional',
+          )})`}
           onChangeText={handleChange('note')}
           containerStyle={applyStyles('pb-16')}
-          placeholder="Write a brief note about this transaction"
+          placeholder={strings('sale.fields.note.placeholder')}
         />
       )}
       <View
@@ -126,7 +131,9 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
         )}>
         {!!(values.amount_paid || values.credit_amount) && (
           <View style={applyStyles({width: '48%'})}>
-            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>Date</Text>
+            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
+              {strings('date')}
+            </Text>
             <DatePicker
               //@ts-ignore
               maximumDate={new Date()}
@@ -163,7 +170,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
         )}
         <Button
           onPress={handleSubmit}
-          title={customer ? 'Save' : 'Next'}
+          title={customer ? strings('save') : strings('next')}
           style={applyStyles('mt-20', {width: '48%'})}
         />
       </View>

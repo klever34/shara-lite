@@ -7,6 +7,8 @@ import React, {useCallback, useContext, useState} from 'react';
 import {Alert, Text, View} from 'react-native';
 import {Business} from 'types/app';
 import * as yup from 'yup';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 type Props = {
   onClose: () => void;
@@ -61,11 +63,10 @@ export const EditPaymetPreviewLabelModal = ({
         style={applyStyles(
           'pb-4 text-center text-uppercase text-700 text-gray-300',
         )}>
-        Payment preview label
+        {strings('payment.edit_payment_preview_label_modal.title')}
       </Text>
       <Text style={applyStyles('px-4 text-center text-gray-200')}>
-        The payment preview label will be. You can change it to a text that your
-        customers will understand.
+        {strings('payment.edit_payment_preview_label_modal.description')}
       </Text>
       <AppInput
         value={values.label}

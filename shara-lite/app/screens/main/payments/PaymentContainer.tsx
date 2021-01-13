@@ -24,6 +24,8 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import {Page} from '@/components/Page';
 import Config from 'react-native-config';
 import Clipboard from '@react-native-community/clipboard';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 function PaymentContainer(props: ModalWrapperFields) {
   const {openModal} = props;
@@ -119,7 +121,7 @@ function PaymentContainer(props: ModalWrapperFields) {
             style={applyStyles(
               'text-center text-uppercase text-700 text-gray-300 mb-16',
             )}>
-            add Payment info
+            {strings('payment.payment_container.add_payment_info')}
           </Text>
           <PaymentForm
             onFormSubmit={onFormSubmit}
@@ -162,7 +164,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               style={applyStyles(
                 'text-center text-uppercase text-700 text-gray-300',
               )}>
-              edit Payment info
+              {strings('payment.payment_container.edit_payment_info')}
             </Text>
             <PaymentForm
               hidePicker={true}
@@ -293,8 +295,9 @@ function PaymentContainer(props: ModalWrapperFields) {
                 style={applyStyles(
                   'text-center text-gray-200 text-base pt-16 px-8',
                 )}>
-                Add your preferred methods of collecting payment so your
-                customers can know how to pay you.
+                {strings(
+                  'payment.payment_container.no_payment_option.description',
+                )}
               </Text>
             </View>
             <PaymentForm
@@ -336,7 +339,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                       style={applyStyles(
                         'text-gray-200 text-400 text-xxs pl-4',
                       )}>
-                      COPY LINK
+                      {strings('payment.payment_container.copy_payment_link')}
                     </Text>
                   </View>
                 </View>
@@ -353,7 +356,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                     color={colors['gray-50']}
                   />
                   <Text style={applyStyles('pl-4 text-400 text-gray-200')}>
-                    Preview Payment Page
+                    {strings('payment.payment_container.preview_payment_page')}
                   </Text>
                 </View>
               </Touchable>

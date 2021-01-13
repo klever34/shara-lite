@@ -12,6 +12,9 @@ import {MainStackParamList} from '..';
 import {SelectCustomerListItem} from './SelectCustomerScreen';
 import {CalculatorView} from '@/components/CalculatorView';
 import {CustomerListItem} from '@/components/CustomerListItem';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type RecordSaleScreenProps = {
   route: RouteProp<MainStackParamList, 'RecordSale'>;
@@ -30,7 +33,7 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
           ...payload,
           is_collection: false,
         });
-        showSuccessToast('SALE RECORDED');
+        showSuccessToast(strings('sale.sale_recorded'));
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
@@ -72,9 +75,9 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
     <CalculatorView>
       <Page header={{iconLeft: {}, title: ' '}}>
         <TitleContainer
-          title="Record Sale"
+          title={strings('sale.header.title')}
           containerStyle={applyStyles('pb-24')}
-          description="Quickly record a collection or outstanding"
+          description={strings('sale.header.description')}
         />
         {customer && (
           <CustomerListItem
