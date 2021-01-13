@@ -213,6 +213,27 @@ const remoteConfigDefaults: RemoteConfig = {
           },
         },
       },
+      payment: {
+        edit_payment_preview_label_modal: {
+          title: 'Payment preview label',
+          description:
+            'The payment preview label will be. You can change it to a text that your customers will understand',
+        },
+        payment_container: {
+          add_payment_info: 'add Payment info',
+          edit_payment_info: 'edit Payment info',
+          no_payment_option: {
+            description:
+              'Add your preferred methods of collecting payment so your customers can know how to pay you',
+          },
+          copy_payment_link: 'COPY LINK',
+          preview_payment_page: 'Preview Payment Page',
+        },
+        payment_preview_item: {
+          copied: 'copied',
+          copy: 'copy',
+        },
+      },
     },
   },
   countries: {

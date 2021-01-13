@@ -164,6 +164,26 @@ interface Strings {
       notes: FormField;
     };
   };
+
+  payment: {
+    edit_payment_preview_label_modal: {
+      title: string;
+      description: string;
+    };
+    payment_container: {
+      add_payment_info: string;
+      edit_payment_info: string;
+      no_payment_option: {
+        description: string;
+      };
+      copy_payment_link: string;
+      preview_payment_page: string;
+    };
+    payment_preview_item: {
+      copied: string;
+      copy: string;
+    };
+  };
 }
 
 interface PluralizedString {
