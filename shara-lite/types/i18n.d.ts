@@ -124,6 +124,41 @@ interface Strings {
     start_here: string;
     add_first: string;
   };
+  collection: {
+    collection_recorded: string;
+    header: {
+      title: string;
+      description: string;
+    };
+    fields: {
+      amount: {
+        label: string;
+      };
+      note: {
+        label: string;
+        placeholder: string;
+      };
+    };
+  };
+  sale: {
+    sale_recorded: string;
+    header: {
+      title: string;
+      description: string;
+    };
+    fields: {
+      amount: {
+        label: string;
+      };
+      credit: {
+        label: string;
+      };
+      note: {
+        label: string;
+        placeholder: string;
+      };
+    };
+  };
   filter: PluralizedString;
   filter_options: {
     owing: string;
@@ -142,6 +177,8 @@ interface Strings {
   no_result_found: string;
   yes_delete: string;
   warning: string;
+  date: string;
+  total: string;
   yes: string;
   yes_proceed: string;
   no: string;

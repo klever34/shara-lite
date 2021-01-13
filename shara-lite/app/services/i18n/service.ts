@@ -1,20 +1,17 @@
 import ReactNative from 'react-native';
 import I18n from 'i18n-js';
-import {getLocales} from 'react-native-localize';
 import {IRemoteConfigService} from '@/services/remote-config';
 import {IAuthService} from '@/services/auth';
 import defaultTranslations from './translations';
 
 export interface II18nService {
   initialize(): void;
+  getCurrentLocale(): string;
   isRTL(): boolean;
   strings(name: string, params?: {[key: string]: any}): string;
 }
 
 export class I18nService implements II18nService {
-  private currentLocale = I18n.currentLocale();
-  private locales = getLocales();
-
   constructor(
     private remoteConfigService: IRemoteConfigService,
     private authService: IAuthService,
@@ -51,11 +48,15 @@ export class I18nService implements II18nService {
     return I18n.t(name, params);
   }
 
+  getCurrentLocale() {
+    return I18n.currentLocale();
+  }
+
   // Is it a RTL language?
   isRTL(): boolean {
     return (
-      this.currentLocale.indexOf('he') === 0 ||
-      this.currentLocale.indexOf('ar') === 0
+      this.getCurrentLocale().indexOf('he') === 0 ||
+      this.getCurrentLocale().indexOf('ar') === 0
     );
   }
 }

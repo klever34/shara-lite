@@ -5,8 +5,8 @@ const en: Strings = {
       'A new version of the app is now available. Update now see what’s new',
     submit_button: 'Update Now',
   },
-  next: 'next',
-  skip: 'skip',
+  next: 'Next',
+  skip: 'Skip',
   get_started: 'Get Started',
   login: {
     heading: 'Get Started For Free',
@@ -162,6 +162,41 @@ const en: Strings = {
     start_here: 'Start adding records by tapping here',
     add_first: 'Add first transaction for {{customer_name}}',
   },
+  collection: {
+    collection_recorded: 'COLLECTION RECORDED',
+    header: {
+      title: 'Record Collection',
+      description: 'Quickly record a transaction or obligation',
+    },
+    fields: {
+      amount: {
+        label: 'Enter Amount',
+      },
+      note: {
+        label: 'Note',
+        placeholder: 'Write a brief note about this transaction',
+      },
+    },
+  },
+  sale: {
+    sale_recorded: 'SALE RECORDED',
+    header: {
+      title: 'Record Sale',
+      description: 'Quickly record a collection or outstanding',
+    },
+    fields: {
+      amount: {
+        label: 'Collected',
+      },
+      credit: {
+        label: 'Outstanding',
+      },
+      note: {
+        label: 'Note',
+        placeholder: 'Write a brief note about this transaction',
+      },
+    },
+  },
   entry: {
     sale: 'Record Sale',
     collection: 'Record Collection',
@@ -172,7 +207,9 @@ const en: Strings = {
   save: 'Save',
   optional: 'Optional',
   warning: 'Warning',
+  date: 'Date',
   yes: 'Yes',
+  total: 'Total',
   yes_delete: 'Yes, Delete',
   yes_proceed: 'Yes, Proceed',
   no: 'No',
