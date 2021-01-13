@@ -1,10 +1,13 @@
+import OnboardingImage1 from '@/assets/images/onboarding_image_1.svg';
+import OnboardingImage2 from '@/assets/images/onboarding_image_2.svg';
+import OnboardingImage3 from '@/assets/images/onboarding_image_3.svg';
 import {Button} from '@/components';
+import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useRef, useState} from 'react';
-import {Image, Text, View} from 'react-native';
+import {Text, View} from 'react-native';
 import Swiper from 'react-native-swiper';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -62,10 +65,7 @@ export const Welcome = () => {
           />
         }>
         <View style={applyStyles('center flex-1')}>
-          <Image
-            style={applyStyles('mb-24', {width: 400, height: 200})}
-            source={require('@/assets/images/hand.png')}
-          />
+          <OnboardingImage1 style={applyStyles('ml-32 mb-64')} />
           <Text
             style={applyStyles(
               'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
@@ -76,11 +76,8 @@ export const Welcome = () => {
             {strings('onboarding_copy_1.description')}
           </Text>
         </View>
-        <View style={applyStyles('center flex-1')}>
-          <Image
-            style={applyStyles('mb-24', {width: 400, height: 200})}
-            source={require('@/assets/images/hand.png')}
-          />
+        <View style={applyStyles('center flex-1 px-24')}>
+          <OnboardingImage2 style={applyStyles('mb-64')} />
           <Text
             style={applyStyles(
               'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
@@ -91,11 +88,8 @@ export const Welcome = () => {
             {strings('onboarding_copy_2.description')}
           </Text>
         </View>
-        <View style={applyStyles('flex-1 center')}>
-          <Image
-            style={applyStyles('mb-24', {width: 400, height: 200})}
-            source={require('@/assets/images/hand.png')}
-          />
+        <View style={applyStyles('flex-1 center px-16')}>
+          <OnboardingImage3 style={applyStyles('mb-64')} />
           <Text
             style={applyStyles(
               'mb-8 px-16 text-center text-gray-300 text-700 text-2xl',
