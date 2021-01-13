@@ -1,6 +1,9 @@
 import ReactNative from 'react-native';
-import I18n from 'react-native-i18n';
+import I18n from 'i18n-js';
+import {getLocales} from 'react-native-localize';
 import {IRemoteConfigService} from '@/services/remote-config';
+import {IAuthService} from '@/services/auth';
+import defaultTranslations from './translations';
 
 export interface II18nService {
   initialize(): void;
@@ -10,22 +13,36 @@ export interface II18nService {
 
 export class I18nService implements II18nService {
   private currentLocale = I18n.currentLocale();
+  private locales = getLocales();
 
-  constructor(private remoteConfigService: IRemoteConfigService) {}
+  constructor(
+    private remoteConfigService: IRemoteConfigService,
+    private authService: IAuthService,
+  ) {}
 
   initialize() {
     I18n.fallbacks = true;
+    const user = this.authService.getUser();
 
-    const locales: string = this.remoteConfigService
-      .getValue('locales')
+    const translations: string = this.remoteConfigService
+      .getValue('translations')
       .asString();
 
-    if (!locales) {
-      return;
-    }
+    const countries: string = this.remoteConfigService
+      .getValue('countries')
+      .asString();
 
     I18n.defaultLocale = 'en';
-    I18n.translations = JSON.parse(locales);
+    try {
+      I18n.translations = JSON.parse(translations);
+      const locales: CountryLocale = JSON.parse(countries)[
+        user?.country_code ?? ''
+      ];
+      I18n.locale = locales.default;
+    } catch (e) {
+      I18n.translations = defaultTranslations;
+      I18n.locale = 'en';
+    }
 
     ReactNative.I18nManager.allowRTL(this.isRTL());
   }
