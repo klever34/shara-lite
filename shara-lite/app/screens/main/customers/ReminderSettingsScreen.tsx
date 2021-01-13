@@ -19,6 +19,9 @@ import React, {useCallback, useContext, useState} from 'react';
 import {Alert, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {MainStackParamList} from '..';
 import {ReminderForm} from './ReminderForm';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type ReminderSettingsScreenProps = {
   route: RouteProp<MainStackParamList, 'ReminderSettings'>;
@@ -73,7 +76,7 @@ export const ReminderSettingsScreen = withModal(
           customer: customer,
         },
       });
-      showSuccessToast('REMINDER ADDED');
+      showSuccessToast(strings('payment_reminder.reminder_added'));
       setReminders(getPaymentReminders());
     }, [
       dueDate,
@@ -86,7 +89,7 @@ export const ReminderSettingsScreen = withModal(
     const handleDeleteReminder = useCallback(
       async (reminder) => {
         await deletePaymentReminder({paymentReminder: reminder});
-        showSuccessToast('REMINDER REMOVED');
+        showSuccessToast(strings('payment_reminder.reminder_removed'));
         setReminders(getPaymentReminders());
       },
       [showSuccessToast, deletePaymentReminder, getPaymentReminders],
@@ -95,15 +98,15 @@ export const ReminderSettingsScreen = withModal(
     const handleRemoveReminder = useCallback(
       (reminder) => {
         Alert.alert(
-          'Warning',
-          'Are you sure you want to remove the payment reminder?',
+          strings('warning'),
+          strings('payment_reminder.confirm_delete'),
           [
             {
-              text: 'No',
+              text: strings('no'),
               onPress: () => {},
             },
             {
-              text: 'Yes',
+              text: strings('yes'),
               onPress: () => handleDeleteReminder(reminder),
             },
           ],
@@ -121,15 +124,14 @@ export const ReminderSettingsScreen = withModal(
                 style={applyStyles(
                   'text-center text-700 text-gray-300 text-base',
                 )}>
-                Are you sure you want to exit the page without setting a
-                reminder?
+                {strings('payment_reminder.confirm_exit')}
               </Text>
               <View
                 style={applyStyles(
                   'pt-24 flex-row items-center justify-between',
                 )}>
                 <Button
-                  title="Yes, Proceed"
+                  title={strings('yes_proceed')}
                   onPress={() => {
                     close();
                     navigation.goBack();
@@ -138,7 +140,7 @@ export const ReminderSettingsScreen = withModal(
                   style={applyStyles({width: '48%'})}
                 />
                 <Button
-                  title="Set Reminder"
+                  title={strings('payment_reminder.set_reminder')}
                   onPress={() => close()}
                   style={applyStyles({width: '48%'})}
                 />
@@ -162,7 +164,7 @@ export const ReminderSettingsScreen = withModal(
               style={applyStyles(
                 'pb-8 px-16 text-uppercase text-700 text-gray-300',
               )}>
-              Collection settings
+              {strings('payment_reminder.collection_settings')}
             </Text>
             <DatePicker
               //@ts-ignore

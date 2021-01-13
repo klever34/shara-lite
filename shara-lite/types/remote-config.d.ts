@@ -57,6 +57,7 @@ interface Strings {
     phone: FormField;
     password: FormField;
     confirm_password: FormField;
+    name: FormField;
   };
   alert: {
     minimum_phone_digits: string;
@@ -86,6 +87,26 @@ interface Strings {
     you_owe: string;
     due_on: string;
     pay_at: string;
+    reminder_count: {
+      one: string;
+      other: string;
+    };
+    reminder_description: string;
+    reminder_unit: {
+      days: string;
+      weeks: string;
+      months: string;
+    };
+    reminder_when: {
+      before: string;
+      after: string;
+    };
+    reminder_added: string;
+    reminder_removed: string;
+    confirm_delete: string;
+    confirm_exit: string;
+    set_reminder: string;
+    collection_settings: string;
   };
   customer_statement: {
     title: string;
@@ -116,16 +137,33 @@ interface Strings {
   };
   other: string;
   clear: string;
+  cancel: string;
+  save: string;
+  optional: string;
   no_result_found: string;
+  yes_delete: string;
+  warning: string;
+  yes: string;
+  yes_proceed: string;
+  no: string;
   customers: {
     start_adding: string;
     customer_count: PluralizedString;
+    customer_edited: string;
+    customer_deleted: string;
+    confirm_delete: string;
+    delete_customer: string;
+    customer_profile: string;
+    fields: {
+      phone: FormField;
+      notes: FormField;
+    };
   };
 }
 
 interface PluralizedString {
   zero?: string;
-  one?: string;
+  one: string;
   other: string;
 }
 

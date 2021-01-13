@@ -62,6 +62,9 @@ const remoteConfigDefaults: RemoteConfig = {
         confirm_password: {
           label: 'Confirm password',
         },
+        name: {
+          label: 'Name',
+        },
       },
       alert: {
         minimum_phone_digits: 'Number should be minimum of 5 digits',
@@ -108,6 +111,28 @@ const remoteConfigDefaults: RemoteConfig = {
         you_owe: 'You owe {{balance}}',
         due_on: ' which is due on {{due_date}}',
         pay_at: 'To pay click\n{{link}}\n\n',
+        reminder_count: {
+          one: 'Reminder 1',
+          other: 'Reminder {{count}}',
+        },
+        reminder_description:
+          'A reminder will be sent to your customer on this day',
+        reminder_unit: {
+          days: 'DAY(S)',
+          weeks: 'WEEK(S)',
+          months: 'MONTH(S)',
+        },
+        reminder_when: {
+          before: 'BEFORE',
+          after: 'AFTER',
+        },
+        reminder_added: 'REMINDER ADDED',
+        reminder_removed: 'REMINDER REMOVED',
+        confirm_delete: 'Are you sure you want to remove the payment reminder?',
+        confirm_exit:
+          'Are you sure you want to exit the page without setting a reminder?',
+        set_reminder: 'Set Reminder',
+        collection_settings: 'Collection settings',
       },
       customer_statement: {
         title: 'Share Customer Statement',
@@ -133,6 +158,14 @@ const remoteConfigDefaults: RemoteConfig = {
       },
       other: 'other',
       clear: 'Clear',
+      cancel: 'Cancel',
+      save: 'Save',
+      optional: 'Optional',
+      warning: 'Warning',
+      yes: 'Yes',
+      yes_delete: 'Yes, Delete',
+      yes_proceed: 'Yes, Proceed',
+      no: 'No',
       no_result_found: 'No result found',
       filter: {one: 'Filter', other: 'Filters'},
       filter_options: {
@@ -146,6 +179,22 @@ const remoteConfigDefaults: RemoteConfig = {
           zero: 'You have no customers yet.',
           one: '1 Customer',
           other: '{{count}} Customers',
+        },
+        customer_edited: 'CUSTOMER EDITED',
+        customer_deleted: 'CUSTOMER DELETED',
+        confirm_delete:
+          'Are you sure you want to delete {{customer_name}} as a customer?',
+        delete_customer: 'Delete Customer',
+        customer_profile: 'Customer Profile',
+        fields: {
+          phone: {
+            label: 'Phone number',
+            placeholder: 'Enter customer number',
+          },
+          notes: {
+            label: 'Notes',
+            placeholder: 'Additional information about the customer',
+          },
         },
       },
     },
