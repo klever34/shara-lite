@@ -91,9 +91,9 @@ const remoteConfigDefaults: RemoteConfig = {
         description: 'Get paid 2.5 times faster with Shara',
       },
       onboarding_copy_2: {
-        title:
-          'Send free reminders',
-        description: 'Send Free Professional Payment Reminders via SMS and WhatsApp',
+        title: 'Send free reminders',
+        description:
+          'Send Free Professional Payment Reminders via SMS and WhatsApp',
       },
       onboarding_copy_3: {
         title: 'Keep track of your revenue and who owes you',
@@ -133,6 +133,22 @@ const remoteConfigDefaults: RemoteConfig = {
           'Are you sure you want to exit the page without setting a reminder?',
         set_reminder: 'Set Reminder',
         collection_settings: 'Collection settings',
+        set_collection_date: {
+          title: 'Set Collection Date',
+          description: 'Select the day for customer to pay back',
+        },
+        reminder_settings: 'Reminder settings',
+        add_reminder: {
+          title: 'Add Reminder',
+          description:
+            'Tap here to create a new reminder. You can create as many as you want.',
+        },
+        default_reminder: {
+          title: 'Default Reminder',
+          description:
+            'An automatic reminder will be sent to your customer on the collection date',
+        },
+        on_the_day_of_collection: 'On the day of collection',
       },
       customer_statement: {
         title: 'Share Customer Statement',

@@ -107,6 +107,11 @@ interface Strings {
     confirm_exit: string;
     set_reminder: string;
     collection_settings: string;
+    set_collection_date: Card;
+    reminder_settings: string;
+    add_reminder: Card;
+    default_reminder: Card;
+    on_the_day_of_collection: String;
   };
   customer_statement: {
     title: string;
