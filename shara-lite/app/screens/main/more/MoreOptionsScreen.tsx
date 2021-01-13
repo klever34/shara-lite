@@ -81,10 +81,10 @@ export const MoreOptionsScreen = withModal(
           },
         },
         {
-          title: 'Help & Support',
-          text: 'Looking for help?',
+          title: 'Give Feedback',
+          text: 'Provide any feedback here',
           onPress: () => {
-            Alert.alert('Coming Soon', 'This feature is coming soon');
+            navigation.navigate('Feedback');
           },
         },
       ];

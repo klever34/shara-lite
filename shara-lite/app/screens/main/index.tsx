@@ -34,6 +34,7 @@ import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {ReportScreen} from './report';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
+import FeedbackScreen from './more/feedback';
 
 export type MainStackParamList = {
   Home: undefined;
@@ -58,6 +59,7 @@ export type MainStackParamList = {
   // More
   Settings: undefined;
   Referral: undefined;
+  Feedback: undefined;
   PaymentSettings: undefined;
   BusinessSettings: undefined;
   UserProfileSettings: undefined;
@@ -190,6 +192,11 @@ const MainScreens = () => {
           options={{
             headerShown: false,
           }}
+        />
+        <MainStack.Screen
+          name="Feedback"
+          component={FeedbackScreen}
+          options={{headerShown: false}}
         />
 
         {/* Transactions */}
