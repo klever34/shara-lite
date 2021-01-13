@@ -124,29 +124,6 @@ interface Strings {
     start_here: string;
     add_first: string;
   };
-  collection: {
-    collection_recorded: string;
-    header: {
-      title: string;
-      description: string;
-    };
-    fields: {
-      amount: {
-        label: string;
-      };
-      note: {
-        label: string;
-        placeholder: string;
-      };
-    };
-  };
-  sale: {
-    sale_recorded: string;
-    header: {
-      title: string;
-      description: string;
-    };
-  };
   filter: PluralizedString;
   filter_options: {
     owing: string;
@@ -165,7 +142,6 @@ interface Strings {
   no_result_found: string;
   yes_delete: string;
   warning: string;
-  date: string;
   yes: string;
   yes_proceed: string;
   no: string;
@@ -180,6 +156,25 @@ interface Strings {
     fields: {
       phone: FormField;
       notes: FormField;
+    };
+  };
+  payment: {
+    edit_payment_preview_label_modal: {
+      title: string;
+      description: string;
+    };
+    payment_container: {
+      add_payment_info: string;
+      edit_payment_info: string;
+      no_payment_option: {
+        description: string;
+      };
+      copy_payment_link: string;
+      preview_payment_page: string;
+    };
+    payment_preview_item: {
+      copied: string;
+      copy: string;
     };
   };
 }

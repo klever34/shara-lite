@@ -162,29 +162,6 @@ const en: Strings = {
     start_here: 'Start adding records by tapping here',
     add_first: 'Add first transaction for {{customer_name}}',
   },
-  collection: {
-    collection_recorded: 'COLLECTION RECORDED',
-    header: {
-      title: 'Record Collection',
-      description: 'Quickly record a transaction or obligation',
-    },
-    fields: {
-      amount: {
-        label: 'Enter Amount',
-      },
-      note: {
-        label: 'Note',
-        placeholder: 'Write a brief note about this transaction',
-      },
-    },
-  },
-  sale: {
-    sale_recorded: 'SALE RECORDED',
-    header: {
-      title: 'Record Sale',
-      description: 'Quickly record a collection or outstanding',
-    },
-  },
   entry: {
     sale: 'Record Sale',
     collection: 'Record Collection',
@@ -195,7 +172,6 @@ const en: Strings = {
   save: 'Save',
   optional: 'Optional',
   warning: 'Warning',
-  date: 'Date',
   yes: 'Yes',
   yes_delete: 'Yes, Delete',
   yes_proceed: 'Yes, Proceed',
@@ -229,6 +205,27 @@ const en: Strings = {
         label: 'Notes',
         placeholder: 'Additional information about the customer',
       },
+    },
+  },
+  payment: {
+    edit_payment_preview_label_modal: {
+      title: 'Payment preview label',
+      description:
+        'The payment preview label will be. You can change it to a text that your customers will understand',
+    },
+    payment_container: {
+      add_payment_info: 'add Payment info',
+      edit_payment_info: 'edit Payment info',
+      no_payment_option: {
+        description:
+          'Add your preferred methods of collecting payment so your customers can know how to pay you',
+      },
+      copy_payment_link: 'COPY LINK',
+      preview_payment_page: 'Preview Payment Page',
+    },
+    payment_preview_item: {
+      copied: 'copied',
+      copy: 'copy',
     },
   },
 };
