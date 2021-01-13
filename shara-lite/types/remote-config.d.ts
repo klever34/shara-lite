@@ -77,6 +77,56 @@ interface Strings {
   onboarding_copy_1: Card;
   onboarding_copy_2: Card;
   onboarding_copy_3: Card;
+  activities: string;
+  customer: PluralizedString;
+  payment_reminder: {
+    title: string;
+    message: string;
+    thank_you_for_doing_business: string;
+    you_owe: string;
+    due_on: string;
+    pay_at: string;
+  };
+  customer_statement: {
+    title: string;
+    filename: string;
+    message: string;
+  };
+  transaction: {
+    set_collection_date: string;
+    on_$date: string;
+    no_reminder_set: string;
+    send_reminder: string;
+    balance_statement: string;
+    not_owing: string;
+    generating_statement: string;
+    share_statement: string;
+    start_here: string;
+    add_first: string;
+  };
+  filter: PluralizedString;
+  filter_options: {
+    owing: string;
+    not_owing: string;
+    surplus: string;
+  };
+  entry: {
+    sale: string;
+    collection: string;
+  };
+  other: string;
+  clear: string;
+  no_result_found: string;
+  customers: {
+    start_adding: string;
+    customer_count: PluralizedString;
+  };
+}
+
+interface PluralizedString {
+  zero?: string;
+  one?: string;
+  other: string;
 }
 
 interface Card {

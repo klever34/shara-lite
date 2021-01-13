@@ -29,6 +29,9 @@ import {
   TransactionFilterModal,
 } from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type CustomerListItem = ICustomer;
 
@@ -118,15 +121,15 @@ export const useCustomerList = (options: UseCustomerListOptions = {}) => {
       () => [
         {text: 'All', value: 'all'},
         {
-          text: 'Owing',
+          text: strings('filter_options.owing'),
           value: 'owing',
         },
         {
-          text: 'Not Owing',
+          text: strings('filter_options.not_owing'),
           value: 'not-owing',
         },
         {
-          text: 'Surplus',
+          text: strings('filter_options.surplus'),
           value: 'surplus',
         },
       ],
@@ -274,7 +277,7 @@ export const CustomerListScreen = withModal(
             <Touchable onPress={handleOpenFilterModal}>
               <View style={applyStyles('py-4 px-8 flex-row items-center')}>
                 <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
-                  Filters
+                  {strings('filter', {count: 2})}
                 </Text>
                 <Icon
                   size={16}
@@ -301,7 +304,7 @@ export const CustomerListScreen = withModal(
                 <View style={applyStyles('flex-row items-center flex-1')}>
                   <Text
                     style={applyStyles('text-gray-50 text-700 text-uppercase')}>
-                    Filter:{' '}
+                    {strings('filter', {count: 1})}:{' '}
                   </Text>
                   <View style={applyStyles('flex-1')}>
                     {getFilterLabelText()}
@@ -321,7 +324,7 @@ export const CustomerListScreen = withModal(
                       style={applyStyles(
                         'text-xs text-gray-200 text-700 text-uppercase pr-8',
                       )}>
-                      Clear
+                      {strings('clear')}
                     </Text>
                     <Icon
                       name="x"
@@ -335,7 +338,9 @@ export const CustomerListScreen = withModal(
             )}
             <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
               <Text style={applyStyles('text-base text-gray-300')}>
-                {filteredCustomers.length} Customers
+                {strings('customers.customer_count', {
+                  count: filteredCustomers.length,
+                })}
               </Text>
             </View>
             <FlatList
@@ -358,10 +363,12 @@ export const CustomerListScreen = withModal(
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
             <View style={applyStyles('center')}>
               <Text style={applyStyles('text-black text-sm pb-4 text-center')}>
-                {searchTerm ? 'No results found' : 'You have no customers yet.'}
+                {searchTerm
+                  ? strings('no_result_found')
+                  : strings('customers.customer_count', {count: 0})}
               </Text>
               <Text style={applyStyles('text-black text-sm text-center')}>
-                Start adding customers by creating a record here
+                {strings('customers.start_adding')}
               </Text>
             </View>
             <View style={applyStyles('center p-16 w-full')}>

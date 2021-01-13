@@ -97,6 +97,57 @@ const remoteConfigDefaults: RemoteConfig = {
         description:
           'Take control of your trade and bring it to the next level',
       },
+      activities: 'Activities',
+      customer: {one: 'Customer', other: 'Customers'},
+      payment_reminder: {
+        title: 'Payment Reminder',
+        message:
+          'Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.\n\n{{pay_at}}Powered by Shara for free.\nwww.shara.co',
+        thank_you_for_doing_business:
+          'Thank you for doing business with {{business_name}}. ',
+        you_owe: 'You owe {{balance}}',
+        due_on: ' which is due on {{due_date}}',
+        pay_at: 'To pay click\n{{link}}\n\n',
+      },
+      customer_statement: {
+        title: 'Share Customer Statement',
+        filename: '{{customer_name}} Ledger Statement',
+        message: 'Find attached your ledger statement from {{business_name}}',
+      },
+      transaction: {
+        set_collection_date: 'set collection date',
+        on_$date: 'on {{date}}',
+        no_reminder_set: 'No Reminder Set',
+        send_reminder: 'Send reminder',
+        balance_statement:
+          '{{customer_name}} has a positive balance of {{balance}}',
+        not_owing: '{{customer_name}} is not owing',
+        generating_statement: 'Generating Statement',
+        share_statement: 'Generating Statement',
+        start_here: 'Start adding records by tapping here',
+        add_first: 'Add first transaction for {{customer_name}}',
+      },
+      entry: {
+        sale: 'Record Sale',
+        collection: 'Record Collection',
+      },
+      other: 'other',
+      clear: 'Clear',
+      no_result_found: 'No result found',
+      filter: {one: 'Filter', other: 'Filters'},
+      filter_options: {
+        owing: 'Owing',
+        not_owing: 'Not Owing',
+        surplus: 'Surplus',
+      },
+      customers: {
+        start_adding: 'Start adding customers by creating a record here',
+        customer_count: {
+          zero: 'You have no customers yet.',
+          one: '1 Customer',
+          other: '{{count}} Customers',
+        },
+      },
     },
   },
   countries: {
