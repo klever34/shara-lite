@@ -84,18 +84,18 @@ const remoteConfigDefaults: RemoteConfig = {
       },
       shara_tagline: 'Keep track of who owes you and get paid faster',
       onboarding_copy_1: {
-        title: 'Get repaid before you get desperate',
-        description: 'Get repayments from your customers 3X faster',
+        title: 'Get paid on time',
+        description: 'Get paid 2.5 times faster with Shara',
       },
       onboarding_copy_2: {
         title:
-          'Never forget to send reminders to your customers with our free reminders & notifications',
-        description: 'Free SMS & WhatsApp reminders to your customers',
+          'Send free reminders',
+        description: 'Send Free Professional Payment Reminders via SMS and WhatsApp',
       },
       onboarding_copy_3: {
-        title: 'You and your business - as one',
+        title: 'Keep track of your revenue and who owes you',
         description:
-          'Take control of your trade and bring it to the next level',
+          'Securely record your business data in a private, secure and backed up',
       },
       activities: 'Activities',
       customer: {one: 'Customer', other: 'Customers'},
