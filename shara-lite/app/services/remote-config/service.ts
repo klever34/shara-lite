@@ -88,9 +88,9 @@ const remoteConfigDefaults: RemoteConfig = {
         description: 'Get paid 2.5 times faster with Shara',
       },
       onboarding_copy_2: {
-        title:
-          'Send free reminders',
-        description: 'Send Free Professional Payment Reminders via SMS and WhatsApp',
+        title: 'Send free reminders',
+        description:
+          'Send Free Professional Payment Reminders via SMS and WhatsApp',
       },
       onboarding_copy_3: {
         title: 'Keep track of your revenue and who owes you',
