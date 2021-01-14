@@ -398,6 +398,17 @@ const en: Strings = {
     },
     submit_button: 'Submit',
   },
+  feedback: {
+    title: 'Feedback',
+    toast_text: 'Thank for your Feedback, we will get back to you shortly',
+    fields: {
+      code: {
+        label: 'Feedback',
+        placeholder: 'Enter feedback here',
+      },
+    },
+    submit_button: 'Submit',
+  },
 };
 
 export default en;

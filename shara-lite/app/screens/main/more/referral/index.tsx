@@ -56,15 +56,15 @@ export default function ReferralScreen() {
       <View style={applyStyles('flex-1')}>
         <AppInput
           value={code}
-          label={i18Service.strings('referral.fields.code.label')}
           onChangeText={handleChange}
           style={applyStyles('mb-16')}
+          label={i18Service.strings('referral.fields.code.label')}
           placeholder={i18Service.strings('referral.fields.code.placeholder')}
         />
         <Button
-          title={i18Service.strings('referral.submit_button')}
-          onPress={handleSubmit}
           disabled={!code}
+          onPress={handleSubmit}
+          title={i18Service.strings('referral.submit_button')}
         />
       </View>
     </Page>

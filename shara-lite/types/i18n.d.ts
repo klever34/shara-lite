@@ -291,6 +291,14 @@ interface Strings {
       code: FormField;
     },
     submit_button: string;
+  },
+  feedback: {
+    title: string;
+    toast_text: string;
+    fields: {
+      code: FormField;
+    },
+    submit_button: string;
   }
 }
 
