@@ -97,13 +97,12 @@ const en: Strings = {
   activities: 'Activities',
   payment_reminder: {
     title: 'Payment Reminder',
-    message:
-      'Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.\n\n{{pay_at}}Powered by Shara for free.\nwww.shara.co',
+    message: String.raw`Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.\n\n{{pay_at}}Powered by Shara for free.\nwww.shara.co`,
     thank_you_for_doing_business:
       'Thank you for doing business with {{business_name}}. ',
     you_owe: 'You owe {{balance}}',
     due_on: ' which is due on {{due_date}}',
-    pay_at: 'To pay click\n{{link}}\n\n',
+    pay_at: String.raw`To pay click\n{{link}}\n\n`,
     reminder_count: {
       one: 'Reminder 1',
       other: 'Reminder {{count}}',
@@ -192,13 +191,12 @@ const en: Strings = {
       date_range: 'Date Range',
     },
     receipt_share_title: 'Share Receipt',
-    receipt_share_message:
-      'Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}}\n\nPowered by Shara for free.\nwww.shara.co',
+    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}}\n\nPowered by Shara for free.\nwww.shara.co`,
     receipt_share_from_who: ' from {{business_name}}',
     receipt_share_credit_message:
       ' and you owe {{credit_amount}}{{due_date_message}}{{payment_link_message}}',
     receipt_share_due_date_message: ' which is due on {{due_date}}',
-    receipt_share_payment_link_message: '\n\nTo pay click\n{{payment_link}}',
+    receipt_share_payment_link_message: String.raw`\n\nTo pay click\n{{payment_link}}`,
     receipt_for: 'Receipt for',
     receipt_no: 'Receipt No',
   },

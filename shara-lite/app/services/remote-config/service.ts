@@ -16,11 +16,10 @@ const remoteConfigDefaults: RemoteConfig = {
 
 // console.log(
 //   (() => {
-//     const {locales} = remoteConfigDefaults;
-//     return JSON.stringify(locales);
+//     return JSON.stringify(translations);
 //   })(),
 // );
-
+//
 // console.log(
 //   (() => {
 //     const generate = (object: {[key: string]: any}, prefix = '') => {
@@ -37,13 +36,12 @@ const remoteConfigDefaults: RemoteConfig = {
 //       });
 //       return file;
 //     };
-//     const {locales} = remoteConfigDefaults;
 //     let file = 'Key,';
-//     Object.keys(locales).forEach((langCode) => {
+//     Object.keys(translations).forEach((langCode) => {
 //       file += langCode;
 //     });
 //     file += '\n';
-//     return file + generate(locales.en);
+//     return file + generate(translations.en);
 //   })(),
 // );
 
@@ -72,20 +70,20 @@ export class RemoteConfigService implements IRemoteConfigService {
   }
 
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
-    return {
-      asString(): string {
-        return JSON.stringify(remoteConfigDefaults[key]);
-      },
-      getSource(): 'remote' | 'default' | 'static' {
-        return 'default';
-      },
-      asNumber(): number {
-        return 0;
-      },
-      asBoolean(): boolean {
-        return false;
-      },
-    };
-    // return remoteConfig().getValue(key);
+    // return {
+    //   asString(): string {
+    //     return JSON.stringify(remoteConfigDefaults[key]);
+    //   },
+    //   getSource(): 'remote' | 'default' | 'static' {
+    //     return 'default';
+    //   },
+    //   asNumber(): number {
+    //     return 0;
+    //   },
+    //   asBoolean(): boolean {
+    //     return false;
+    //   },
+    // };
+    return remoteConfig().getValue(key);
   }
 }
