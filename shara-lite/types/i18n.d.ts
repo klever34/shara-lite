@@ -74,6 +74,16 @@ interface Strings {
   onboarding_copy_3: Card;
   activities: string;
   customer: PluralizedString;
+  done: string;
+  owe: PluralizedString;
+  result: PluralizedString;
+  clear_filter: string;
+  from: string;
+  To: string;
+  success: string;
+  start_date: string;
+  end_date: string;
+  and: string;
   payment_reminder: {
     title: string;
     message: string;
@@ -127,6 +137,22 @@ interface Strings {
     edit_transaction: string;
     transaction_deleted: string;
     confirm_delete: string;
+    collection_date: string;
+    change_collection_date: string;
+    collect_on: string;
+    you_collected: string;
+    collected_from_who: string;
+    customer_balance_statement: string;
+    you_were_paid: string;
+    paid_you: string;
+    is_outstanding: string;
+    amount_collected: string;
+    amount_outstanding: string;
+    total_amount: string;
+    view_report: string;
+    no_activities_recorded_for_duration: string;
+    start_adding_records: string;
+    transaction_success: string;
   };
   receipts: {
     filter_options: {
@@ -204,6 +230,7 @@ interface Strings {
   no: string;
   select_from_phonebook: string;
   customers: {
+    no_customer_selected: string;
     start_adding: string;
     customer_count: PluralizedString;
     customer_edited: string;
@@ -249,11 +276,11 @@ interface Strings {
       logout_data_verification_text: string;
       logout_confirmation_text: string;
       logout_unsaved_data_text: string;
-    },
+    };
     business_settings_edit_button: string;
     yes: string;
     no: string;
-  }
+  };
 }
 
 interface PluralizedString {
