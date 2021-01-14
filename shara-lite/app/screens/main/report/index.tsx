@@ -8,7 +8,7 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useReports} from '@/services/reports';
@@ -19,6 +19,8 @@ import {Alert, FlatList, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
+
+const i18Service = getI18nService();
 
 type Props = ModalWrapperFields;
 
@@ -124,7 +126,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         })}>
         <HeaderBackButton iconName="arrow-left" />
         <Text style={applyStyles('text-400 text-black text-lg')}>
-          View Report
+          {i18Service.strings('report.title')}
         </Text>
       </View>
       <View
@@ -135,7 +137,9 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         <SearchFilter
           value={searchTerm}
           onSearch={handleReceiptSearch}
-          placeholderText="Search customers here"
+          placeholderText={i18Service.strings(
+            'report.search_input_placeholder',
+          )}
           containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
         />
@@ -148,7 +152,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
                 borderColor: colors['gray-20'],
               })}>
               <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
-                Filters
+                {i18Service.strings('report.filter_button_text')}
               </Text>
               <Icon
                 size={16}
@@ -171,7 +175,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
           )}>
           <View style={applyStyles('flex-row items-center flex-1')}>
             <Text style={applyStyles('text-gray-50 text-700 text-uppercase')}>
-              Filter:{' '}
+              {i18Service.strings('report.active_filter_label_text')}:{' '}
             </Text>
             <View style={applyStyles('flex-1')}>{getFilterLabelText()}</View>
           </View>
@@ -186,7 +190,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
                 style={applyStyles(
                   'text-xs text-gray-200 text-700 text-uppercase pr-8',
                 )}>
-                Clear
+                {i18Service.strings('report.clear_filter_button_text')}
               </Text>
               <Icon
                 name="x"
@@ -207,7 +211,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
           },
         )}>
         <Text style={applyStyles('text-black text-700 text-uppercase')}>
-          Net Balance
+          {i18Service.strings('report.net_balance_text')}
         </Text>
         <Text
           style={applyStyles(
@@ -225,7 +229,9 @@ export const ReportScreen = withModal(({openModal}: Props) => {
             <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
               <Text style={applyStyles('text-base text-gray-300')}>
                 {`${filteredReceipts.length} ${
-                  filteredReceipts.length > 1 ? 'Results' : 'Result'
+                  filteredReceipts.length > 1
+                    ? i18Service.strings('report.results.other')
+                    : i18Service.strings('report.results.one')
                 }`}
               </Text>
             </View>
@@ -251,8 +257,8 @@ export const ReportScreen = withModal(({openModal}: Props) => {
           <View style={applyStyles('center')}>
             <Text style={applyStyles('text-black text-xl pb-4')}>
               {searchTerm || filter
-                ? 'No results found'
-                : 'You have no records yet.'}
+                ? i18Service.strings('report.empty_state_text.no_results_found')
+                : i18Service.strings('report.empty_state_text.no_records_yet')}
             </Text>
           </View>
         </EmptyState>
@@ -264,7 +270,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         )}
         onPress={handleDownloadReport}>
         <Text style={applyStyles('text-700 text-uppercase text-sm text-white')}>
-          Download Report
+          {i18Service.strings('report.download_report_button_text')}
         </Text>
       </FAButton>
     </SafeAreaView>

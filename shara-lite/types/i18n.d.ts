@@ -333,6 +333,27 @@ interface Strings {
     submit_button: string;
   };
   create_receipts_with_shara: string;
+  report: {
+    title: string;
+    filter_button_text: string;
+    search_input_placeholder: string;
+    active_filter_label_text: string;
+    clear_filter_button_text: string;
+    download_report_toast_text: string;
+    net_balance_text: string;
+    results: PluralizedString;
+    download_report_button_text: string;
+    empty_state_text: {
+      no_results_found: string;
+      no_records_yet: string;
+    },
+    report_list_header: {
+      transactions_text: string;
+      total_entries_text: string;
+      total_cost_text: string;
+      amount_paid_text: string;
+    }
+  }
 }
 
 interface PluralizedString {
