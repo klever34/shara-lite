@@ -9,7 +9,7 @@ import {Alert, Image, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {Icon} from '@/components/Icon';
 import {applyStyles, colors, dimensions} from '@/styles';
-import {getAnalyticsService, getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import Touchable from '@/components/Touchable';
 import {useErrorHandler} from '@/services/error-boundary';
 import {version} from '../../../../package.json';
@@ -23,6 +23,8 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
 import {TitleContainer} from '@/components/TitleContainer';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
+
+const i18nService = getI18nService();
 
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
@@ -57,32 +59,32 @@ export const MoreOptionsScreen = withModal(
     const moreOptions = useMemo(() => {
       return [
         {
-          title: 'My Profile',
-          text: 'View and update your personal information',
+          title: i18nService.strings('more.list.profile_settings.title'),
+          text: i18nService.strings('more.list.profile_settings.description'),
           onPress: () => {
             navigation.navigate('UserProfileSettings');
           },
         },
         {
-          title: 'Business Settings',
-          text: 'View and edit your business information',
+          title: i18nService.strings('more.list.business_settings.title'),
+          text: i18nService.strings('more.list.business_settings.description'),
           onPress: onEditBusinessSettings,
         },
         {
-          title: 'Payment Settings',
-          text: 'View and edit your payment information',
+          title: i18nService.strings('more.list.payment_settings.title'),
+          text: i18nService.strings('more.list.payment_settings.description'),
           onPress: PaymentSettings,
         },
         {
-          title: 'Referral',
-          text: 'Enter Referral code',
+          title: i18nService.strings('more.list.referral.title'),
+          text: i18nService.strings('more.list.referral.description'),
           onPress: () => {
             navigation.navigate('Referral');
           },
         },
         {
-          title: 'Give Feedback',
-          text: 'Provide any feedback here',
+          title: i18nService.strings('more.list.feedback.title'),
+          text: i18nService.strings('more.list.feedback.description'),
           onPress: () => {
             navigation.navigate('Feedback');
           },
@@ -124,22 +126,22 @@ export const MoreOptionsScreen = withModal(
 
     const handleLogoutConfirm = useCallback(async () => {
       const closeLoadingModal = openModal('loading', {
-        text: 'Verifying your saved data...',
+        text: i18nService.strings('more.logout.logout_data_verification_text'),
       });
       const {isSynced} = await hasAllRecordsBeenSynced();
       closeLoadingModal();
 
       const message = isSynced
-        ? 'Are you sure you want to logout?'
-        : 'You still have some unsaved data. Are you sure you want to logout?';
+        ? i18nService.strings('more.logout.logout_confirmation_text')
+        : i18nService.strings('more.logout.logout_unsaved_data_text');
 
       Alert.alert('Warning', message, [
         {
-          text: 'No',
+          text: i18nService.strings('more.no'),
           onPress: () => {},
         },
         {
-          text: 'Yes',
+          text: i18nService.strings('more.yes'),
           onPress: handleLogout,
         },
       ]);
@@ -177,9 +179,9 @@ export const MoreOptionsScreen = withModal(
               'bg-white',
             )}>
             <TitleContainer
-              title="My Account"
-              description="Your account information at a glance"
               containerStyle={applyStyles('p-16')}
+              title={i18nService.strings('more.header.title')}
+              description={i18nService.strings('more.header.description')}
             />
             {!business.name && (
               <Touchable onPress={onEditBusinessSettings}>
@@ -193,7 +195,7 @@ export const MoreOptionsScreen = withModal(
                     style={applyStyles('text-500 text-center', {
                       color: colors['red-200'],
                     })}>
-                    Tap here to complete your Business Settings
+                    {i18nService.strings('more.business_settings_edit_button')}
                   </Text>
                 </View>
               </Touchable>
@@ -244,10 +246,10 @@ export const MoreOptionsScreen = withModal(
                         </Text>
                       </View>
                       <Icon
-                        type="feathericons"
-                        color={colors['gray-50']}
-                        name="chevron-right"
                         size={20}
+                        type="feathericons"
+                        name="chevron-right"
+                        color={colors['gray-50']}
                       />
                     </View>
                   </Touchable>
@@ -273,14 +275,14 @@ export const MoreOptionsScreen = withModal(
                     'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',
                   )}>
                   <Icon
+                    size={20}
+                    name="log-out"
                     type="feathericons"
                     color={colors['gray-50']}
-                    name="log-out"
-                    size={20}
                     style={applyStyles('mr-24')}
                   />
                   <Text style={applyStyles('text-gray-100 text-sm font-bold')}>
-                    Log Out
+                    {i18nService.strings('more.logout_button')}
                   </Text>
                 </View>
               </Touchable>
@@ -291,8 +293,8 @@ export const MoreOptionsScreen = withModal(
                 Version {version}
               </Text>
               <Image
-                source={require('../../../assets/images/shara_logo_grey.png')}
                 style={applyStyles('w-72 h-16')}
+                source={require('@/assets/images/shara_logo_grey.png')}
               />
             </View>
           </View>

@@ -50,6 +50,9 @@ import Share from 'react-native-share';
 import RNFetchBlob from 'rn-fetch-blob';
 import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 export type TransactionDetailsProps = {
   customer: ICustomer;
@@ -144,28 +147,34 @@ const TransactionDetails = withModal(
         customer._id ? `?customer=${String(customer._id)}` : ''
       }`;
 
-    const paymentReminderMessage = `Hello ${customer?.name ?? ''}${
-      businessInfo?.name || user?.firstname
-        ? `, thank you for doing business with ${
-            businessInfo.name ?? user?.firstname
-          }`
-        : ''
-    }. ${
-      customer.balance && customer.balance < 0
-        ? `You owe ${amountWithCurrency(customer.balance)}`
-        : ''
-    }${
-      dueDate
-        ? ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
-        : ''
-    }. ${
-      paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''
-    }\n\nPowered by Shara for free.\nwww.shara.co`;
+    const paymentReminderMessage = strings('payment_reminder.message', {
+      customer_name: customer?.name ?? '',
+      extra_salutation:
+        businessInfo?.name || user?.firstname
+          ? strings('payment_reminder.thank_you_for_doing_business', {
+              business_name: businessInfo.name ?? user?.firstname ?? '',
+            })
+          : '',
+      you_owe:
+        customer.balance && customer.balance < 0
+          ? strings('payment_reminder.you_owe', {
+              balance: amountWithCurrency(customer.balance),
+            })
+          : '',
+      due_on: dueDate
+        ? strings('payment_reminder.due_on', {
+            due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+          })
+        : '',
+      pay_at: paymentLink
+        ? strings('payment_reminder.pay_at', {link: paymentLink})
+        : '',
+    });
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
-      title: 'Payment Reminder',
-      subject: 'Payment Reminder',
+      title: strings('payment_reminder.title'),
+      subject: strings('payment_reminder.title'),
       recipient: customer?.mobile,
       message: paymentReminderMessage,
     };
@@ -263,17 +272,25 @@ const TransactionDetails = withModal(
                 whatsAppNumber,
                 url: base64Data,
                 social: Share.Social.WHATSAPP,
-                title: 'Share Customer Statement',
-                filename: `${customer ? customer.name : ''} Ledger Statement`,
-                message: `Find attached your ledger statement from ${businessInfo.name}`,
+                title: strings('customer_statement.title'),
+                filename: strings('customer_statement.filename', {
+                  customer_name: customer ? customer.name : '',
+                }),
+                message: strings('customer_statement.message', {
+                  business_name: businessInfo.name,
+                }),
               });
             } else {
               setIsSharingStatment(false);
               await Share.open({
                 url: base64Data,
-                title: 'Share Customer Statement',
-                filename: `${customer ? customer.name : ''} Ledger Statement`,
-                message: `Find attached your ledger statement from ${businessInfo.name}`,
+                title: strings('customer_statement.title'),
+                filename: strings('customer_statement.filename', {
+                  customer_name: customer ? customer.name : '',
+                }),
+                message: strings('customer_statement.message', {
+                  business_name: businessInfo.name,
+                }),
               });
             }
           })
@@ -433,8 +450,10 @@ const TransactionDetails = withModal(
                             }`,
                           )}>
                           {dueDate
-                            ? `on ${format(dueDate, 'ccc, dd MMM yyyy')}`
-                            : 'set collection date'}
+                            ? strings('transaction.on_$date', {
+                                date: format(dueDate, 'ccc, dd MMM yyyy'),
+                              })
+                            : strings('transaction.set_collection_date')}
                         </Text>
                       </View>
                       {!!dueDate && !!getPaymentReminders().length ? (
@@ -452,7 +471,7 @@ const TransactionDetails = withModal(
                           style={applyStyles(
                             'pl-4 text-gray-100 text-uppercase text-700 text-xs',
                           )}>
-                          No reminder set
+                          {strings('transaction.no_reminder_set')}
                         </Text>
                       )}
                     </View>
@@ -462,7 +481,7 @@ const TransactionDetails = withModal(
                       style={applyStyles(
                         'text-sm text-uppercase text-gray-300 text-700',
                       )}>
-                      Send reminder:
+                      {strings('transaction.send_reminder')}:
                     </Text>
                     <View style={applyStyles('px-4')}>
                       <Touchable onPress={onWhatsappShare}>
@@ -522,7 +541,7 @@ const TransactionDetails = withModal(
                             style={applyStyles(
                               'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
-                            other
+                            {strings('other', {count: 1})}
                           </Text>
                         </View>
                       </Touchable>
@@ -535,12 +554,14 @@ const TransactionDetails = withModal(
                     style={applyStyles(
                       'text-uppercase text-gray-100 text-700 text-xs',
                     )}>
-                    {customer?.name}{' '}
                     {customer?.balance && customer?.balance > 0
-                      ? `has a positive balance of ${amountWithCurrency(
-                          customer.balance,
-                        )}`
-                      : 'is not owing'}
+                      ? strings('transaction.balance_statement', {
+                          customer_name: customer?.name,
+                          amount: amountWithCurrency(customer.balance),
+                        })
+                      : strings('transaction.not_owing', {
+                          customer_name: customer?.name,
+                        })}
                   </Text>
                 </View>
               )}
@@ -572,8 +593,8 @@ const TransactionDetails = withModal(
                         'text-gray-200 text-700 text-xxs pl-8 text-uppercase',
                       )}>
                       {isSharingStatement
-                        ? 'Generating Statement...'
-                        : 'Share statement'}
+                        ? `${strings('transaction.generating_statement')}...`
+                        : strings('transaction.share_statement')}
                     </Text>
                   </View>
                 </Touchable>
@@ -588,7 +609,7 @@ const TransactionDetails = withModal(
                       style={applyStyles(
                         'text-gray-200 text-xs text-700 pr-8',
                       )}>
-                      Filters
+                      {strings('filter', {count: 2})}
                     </Text>
                     <Icon
                       size={16}
@@ -616,7 +637,7 @@ const TransactionDetails = withModal(
                       style={applyStyles(
                         'text-gray-50 text-700 text-uppercase',
                       )}>
-                      Filter:{' '}
+                      {strings('filter', {count: 1})}:{' '}
                     </Text>
                     <View style={applyStyles('flex-1')}>
                       {getFilterLabelText()}
@@ -636,7 +657,7 @@ const TransactionDetails = withModal(
                         style={applyStyles(
                           'text-xs text-gray-200 text-700 text-uppercase pr-8',
                         )}>
-                        Clear
+                        {strings('clear')}
                       </Text>
                       <Icon
                         name="x"
@@ -661,10 +682,10 @@ const TransactionDetails = withModal(
                   <View style={applyStyles('center h-full')}>
                     <Text
                       style={applyStyles('pb-8 text-center text-400 text-lg')}>
-                      No results found
+                      {strings('no_result_found')}
                     </Text>
                     <Text style={applyStyles('text-black text-center text-lg')}>
-                      Start adding records by tapping here
+                      {strings('transaction.start_here')}
                     </Text>
                     <View style={applyStyles('center p-16 w-full')}>
                       <Animatable.View
@@ -704,7 +725,9 @@ const TransactionDetails = withModal(
               'center bg-gray-10 p-16 bottom-80 absolute w-full',
             )}>
             <Text style={applyStyles('pb-16 text-center text-700')}>
-              Add first transaction for {customer?.name}
+              {strings('transaction.add_first', {
+                customer_name: customer?.name,
+              })}
             </Text>
             <Animatable.View
               duration={200}

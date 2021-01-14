@@ -34,7 +34,10 @@ import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {ReportScreen} from './report';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
+import {getI18nService} from '@/services';
 import FeedbackScreen from './more/feedback';
+
+const strings = getI18nService().strings;
 
 export type MainStackParamList = {
   Home: undefined;
@@ -89,10 +92,8 @@ const MainScreens = () => {
   if (!isSyncCompleted) {
     return (
       <EmptyState
-        heading={'Sync in progress'}
-        text={
-          'We are syncing your data across the Shara app. This might take a few seconds.'
-        }
+        heading={strings('alert.sync.title')}
+        text={strings('alert.sync.description')}
         source={require('../../assets/images/coming-soon.png')}>
         <View style={applyStyles('mt-lg')}>
           <ActivityIndicator color={colors.primary} size={40} />

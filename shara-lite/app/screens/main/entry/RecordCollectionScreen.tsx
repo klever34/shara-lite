@@ -16,6 +16,9 @@ import {format} from 'date-fns';
 import {useFormik} from 'formik';
 import React, {useCallback, useContext, useRef, useState} from 'react';
 import {Text, TextInput, View} from 'react-native';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type RecordCollectionScreenProps = {
   route: RouteProp<MainStackParamList, 'RecordCollection'>;
@@ -41,7 +44,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           total_amount: payload.amount_paid,
         });
         setIsLoading(false);
-        showSuccessToast('COLLECTION RECORDED');
+        showSuccessToast(strings('collection.collection_recorded'));
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
@@ -69,8 +72,8 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
     <CalculatorView>
       <Page header={{iconLeft: {}, title: ' '}}>
         <TitleContainer
-          title="Record Collection"
-          description="Quickly record a transaction or obligation"
+          title={strings('collection.header.title')}
+          description={strings('collection.header.description')}
           containerStyle={applyStyles('mb-8')}
         />
         <CustomerListItem
@@ -79,7 +82,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
         />
         <CalculatorInput
           placeholder="0.00"
-          label="Enter Amount"
+          label={strings('collection.fields.amount.label')}
           value={values.amount_paid}
           containerStyle={applyStyles('mb-16')}
           onChangeText={(text) => {
@@ -98,10 +101,12 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
         {!!values.amount_paid && (
           <AppInput
             multiline
-            label="Note (Optional)"
+            label={`${strings('collection.fields.note.label')} (${strings(
+              'optional',
+            )})`}
             containerStyle={applyStyles('mb-24')}
             onChangeText={handleChange('note')}
-            placeholder="Write a brief note about this transaction"
+            placeholder={strings('collection.fields.note.placeholder')}
             ref={noteFieldRef}
           />
         )}
@@ -125,7 +130,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
                       style={applyStyles(
                         'text-sm text-500 text-gray-50 pb-8 flex-1',
                       )}>
-                      Date
+                      {strings('date')}
                     </Text>
                     <Touchable onPress={toggleShow}>
                       <View
@@ -157,7 +162,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             </DatePicker>
           )}
           <Button
-            title="Save"
+            title={strings('save')}
             isLoading={isLoading}
             onPress={handleSubmit}
             style={applyStyles({width: '48%'})}
