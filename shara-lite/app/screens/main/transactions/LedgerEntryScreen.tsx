@@ -19,6 +19,9 @@ import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {SafeAreaView, Text, View} from 'react-native';
 import Config from 'react-native-config';
 import {MainStackParamList} from '..';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type LedgerEntryScreenProps = {
   route: RouteProp<MainStackParamList, 'LedgerEntry'>;
@@ -57,28 +60,37 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
 
   const paymentLink =
     businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
-  const shareReceiptMessage = `Hi ${
-    customer?.name ?? ''
-  }, thank you for your recent purchase ${
-    businessInfo.name || user?.firstname
-      ? `from ${businessInfo.name ?? user?.firstname}`
-      : ''
-  }. You paid ${amountWithCurrency(amount_paid)}${
-    credit_amount
-      ? ` and you owe ${amountWithCurrency(credit_amount)}
-         ${
-           dueDate
-             ? ` which is due on ${format(new Date(dueDate), 'MMM dd, yyyy')}`
-             : ''
-         }
-         ${paymentLink ? `\n\nTo pay click\n${paymentLink}` : ''}`
-      : '.'
-  }\n\nPowered by Shara for free.\nwww.shara.co`;
+
+  const shareReceiptMessage = strings('receipts.receipt_share_message', {
+    customer_name: customer?.name ?? '',
+    from_who:
+      businessInfo.name || user?.firstname
+        ? strings('receipt_share_from_who', {
+            business_name: businessInfo.name ?? user?.firstname,
+          })
+        : '',
+    amount: amountWithCurrency(amount_paid),
+    credit_message: credit_amount
+      ? strings('receipts.receipt_share_credit_message', {
+          credit_amount: amountWithCurrency(credit_amount),
+          due_date_message: dueDate
+            ? strings('receipts.receipt_share_due_date_message', {
+                due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+              })
+            : '',
+          payment_link_message: paymentLink
+            ? strings('receipts.receipt_share_payment_link_message', {
+                payment_link: paymentLink,
+              })
+            : '',
+        })
+      : '.',
+  });
 
   const shareProps: ShareHookProps = {
     image: receiptImage,
-    title: 'Share Receipt',
-    subject: 'Share Receipt',
+    title: strings('receipts.receipt_share_title'),
+    subject: strings('receipts.receipt_share_title'),
     message: shareReceiptMessage,
     recipient: customer?.mobile,
   };
@@ -124,7 +136,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     async (callback: () => void) => {
       try {
         await deleteTransaction({transaction});
-        showSuccessToast('TRANSACTION DELETED');
+        showSuccessToast(strings('transaction.transaction_deleted'));
         callback();
         navigation.goBack();
       } catch (error) {
@@ -158,18 +170,18 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             style={applyStyles(
               'text-700 text-lg text-gray-300 text-center py-24',
             )}>
-            Are you sure you want to delete this transaction?
+            {strings('transaction.confirm_delete')}
           </Text>
           <View
             style={applyStyles('pt-16 flex-row items-center justify-between')}>
             <Button
-              title="Yes, Delete"
+              title={strings('yes_delete')}
               variantColor="transparent"
               style={applyStyles({width: '48%'})}
               onPress={() => handleDeleteTransaction(closeModal)}
             />
             <Button
-              title="Cancel"
+              title={strings('cancel')}
               onPress={closeModal}
               style={applyStyles({width: '48%'})}
             />
@@ -234,7 +246,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                   style={applyStyles(
                     'text-400 text-red-200 text-uppercase text-base pr-4',
                   )}>
-                  Add Customer
+                  {strings('customers.add_customer')}
                 </Text>
                 <View
                   style={applyStyles('center bg-red-50', {
@@ -264,7 +276,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             style={applyStyles(
               'pb-4 text-xxs text-700 text-gray-200 text-uppercase',
             )}>
-            Total
+            {strings('total')}
           </Text>
           <Text style={applyStyles('text-700 text-black text-base')}>
             {amountWithCurrency(total_amount)}
@@ -275,7 +287,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             style={applyStyles(
               'pb-4 text-xxs text-700 text-gray-200 text-uppercase',
             )}>
-            Collected
+            {strings('collected')}
           </Text>
           <Text style={applyStyles('text-700 text-gray-300 text-base')}>
             {amountWithCurrency(amount_paid)}
@@ -286,7 +298,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             style={applyStyles(
               'pb-4 text-xxs text-700 text-gray-200 text-uppercase',
             )}>
-            Outstanding
+            {strings('outstanding')}
           </Text>
           <Text style={applyStyles('text-700 text-red-100 text-base')}>
             {amountWithCurrency(credit_amount)}
@@ -308,7 +320,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               />
               <Text
                 style={applyStyles('pl-4 text-white text-400 text-uppercase')}>
-                Collection due today
+                {strings('collection_due_today')}
               </Text>
             </View>
           </View>
@@ -319,7 +331,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               style={applyStyles(
                 'pb-4 text-xxs text-700 text-gray-300 text-uppercase',
               )}>
-              Notes
+              {strings('note', {count: 2})}
             </Text>
             <Text style={applyStyles('text-400 text-gray-300 text-base')}>
               {transaction.note}
@@ -340,7 +352,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               style={applyStyles(
                 'text-sm text-uppercase text-gray-300 text-700',
               )}>
-              Share:
+              {strings('share')}:
             </Text>
             <View style={applyStyles('px-4')}>
               <Touchable onPress={onWhatsappShare}>
@@ -400,7 +412,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                     style={applyStyles(
                       'pl-xs text-xs text-400 text-uppercase text-gray-200',
                     )}>
-                    other
+                    {strings('other')}
                   </Text>
                 </View>
               </Touchable>
@@ -410,13 +422,13 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
       </View>
       <View style={applyStyles('p-16 flex-row items-center justify-between')}>
         <Button
-          title="Delete"
+          title={strings('delete')}
           variantColor="transparent"
           onPress={handleOpenConfirmModal}
           style={applyStyles({width: '48%'})}
         />
         <Button
-          title="Edit"
+          title={strings('edit')}
           variantColor="clear"
           onPress={handleEditTransaction}
           style={applyStyles({width: '48%'})}

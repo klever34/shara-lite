@@ -23,6 +23,9 @@ import {
   View,
 } from 'react-native';
 import {useCustomerList} from '../customers/CustomerListScreen';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 export type SelectCustomerListItem = Partial<ICustomer>;
 
@@ -224,10 +227,10 @@ export const SelectCustomerListScreen = withModal(
           <HeaderBackButton />
           <View style={applyStyles('pl-4')}>
             <Text style={applyStyles('pb-4 text-700 text-base text-gray-300')}>
-              Select Customer
+              {strings('customers.select_customer.title')}
             </Text>
             <Text style={applyStyles('text-400 text-gray-200')}>
-              Which customer is this transaction for?
+              {strings('customers.select_customer.description')}
             </Text>
           </View>
         </View>
@@ -263,12 +266,9 @@ export const SelectCustomerListScreen = withModal(
                 </View>
                 <Text
                   style={applyStyles('pl-8 text-base text-400 text-gray-50')}>
-                  Add
-                  <Text style={applyStyles('text-700 text-gray-300')}>
-                    {' '}
-                    {searchTerm}
-                  </Text>{' '}
-                  as new customer
+                  {strings('customers.add_as_new_customer', {
+                    customer_name: searchTerm,
+                  })}
                 </Text>
               </View>
               <View>
@@ -302,7 +302,7 @@ export const SelectCustomerListScreen = withModal(
                 />
               </View>
               <Text style={applyStyles('pl-8 text-base')}>
-                Select from Phonebook
+                {strings('select_from_phonebook')}
               </Text>
             </View>
             <View>
@@ -352,7 +352,9 @@ export const SelectCustomerListScreen = withModal(
             borderTopColor: colors['gray-20'],
             borderBottomColor: colors['gray-20'],
           })}>
-          <Text style={applyStyles('text-base text-gray-300')}>Customers</Text>
+          <Text style={applyStyles('text-base text-gray-300')}>
+            {strings('customer', {count: 2})}
+          </Text>
         </View>
         <FlatList
           data={filteredCustomers}
@@ -369,7 +371,7 @@ export const SelectCustomerListScreen = withModal(
                 style={applyStyles('mb-12')}
               />
               <Text style={applyStyles('text-center text-400 text-gray-50')}>
-                You have no Customers yet
+                {strings('customers.customer_count', {count: 0})}
               </Text>
             </View>
           }
