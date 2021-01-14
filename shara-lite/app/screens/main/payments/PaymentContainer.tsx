@@ -122,7 +122,11 @@ function PaymentContainer(props: ModalWrapperFields) {
   const handleOpenAddItemModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
-        <View style={applyStyles('py-24')}>
+        <KeyboardAwareScrollView
+          nestedScrollEnabled
+          persistentScrollbar={true}
+          style={applyStyles('py-24')}
+          keyboardShouldPersistTaps="always">
           <Text
             style={applyStyles(
               'text-center text-uppercase text-700 text-gray-300 mb-16',
@@ -155,7 +159,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               </View>
             )}
           />
-        </View>
+        </KeyboardAwareScrollView>
       ),
     });
   }, [openModal, isSaving, onFormSubmit, paymentProviders]);
@@ -165,7 +169,11 @@ function PaymentContainer(props: ModalWrapperFields) {
       const initialValues = omit(item);
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
-          <View style={applyStyles('py-20')}>
+          <KeyboardAwareScrollView
+            nestedScrollEnabled
+            persistentScrollbar={true}
+            style={applyStyles('py-20')}
+            keyboardShouldPersistTaps="always">
             <Text
               style={applyStyles(
                 'text-center text-uppercase text-700 text-gray-300',
@@ -224,7 +232,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                 </View>
               )}
             />
-          </View>
+          </KeyboardAwareScrollView>
         ),
       });
     },
