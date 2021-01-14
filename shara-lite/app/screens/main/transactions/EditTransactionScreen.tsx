@@ -10,6 +10,9 @@ import {Alert, SafeAreaView, Text, View} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {MainStackParamList} from '..';
 import {CalculatorView} from '@/components/CalculatorView';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type EditTransactionScreenProps = {
   route: RouteProp<MainStackParamList, 'EditTransaction'>;
@@ -30,8 +33,8 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
         navigation.goBack();
       } else {
         Alert.alert(
-          'Waring',
-          'Please enter collected amount or oustanding amount',
+          strings('warning'),
+          strings('transaction.no_credit_or_amount_warning'),
         );
       }
     },
@@ -57,7 +60,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
           <View style={applyStyles('px-16')}>
             <View style={applyStyles('pt-16 pb-32')}>
               <Text style={applyStyles('text-gray-300 text-400 text-xl')}>
-                Edit Transaction
+                {strings('edit_transaction')}
               </Text>
             </View>
             <RecordSaleForm

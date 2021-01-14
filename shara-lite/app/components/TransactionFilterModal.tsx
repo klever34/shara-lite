@@ -7,6 +7,9 @@ import {DatePicker} from './DatePicker';
 import {Icon} from './Icon';
 import {RadioButton} from './RadioButton';
 import Touchable from './Touchable';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type TransactionFilterModalProps = {
   onClose: () => void;
@@ -82,7 +85,7 @@ export const TransactionFilterModal = ({
             style={applyStyles('pt-24 flex-row items-center justify-between')}>
             <View style={applyStyles({width: '48%'})}>
               <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
-                Start Date
+                {strings('start_date')}
               </Text>
               <DatePicker
                 //@ts-ignore
@@ -118,7 +121,7 @@ export const TransactionFilterModal = ({
             </View>
             <View style={applyStyles({width: '48%'})}>
               <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
-                End Date
+                {strings('end_date')}
               </Text>
               <DatePicker
                 //@ts-ignore
@@ -158,7 +161,9 @@ export const TransactionFilterModal = ({
       case 'single-day':
         return (
           <View style={applyStyles('pt-24')}>
-            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>Date</Text>
+            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
+              {strings('date')}
+            </Text>
             <DatePicker
               //@ts-ignore
               maximumDate={new Date()}
@@ -232,13 +237,13 @@ export const TransactionFilterModal = ({
       {renderContent()}
       <View style={applyStyles('pt-24 flex-row items-center justify-between')}>
         <Button
-          title="Clear filter"
+          title={strings('clear_filter')}
           onPress={handleClear}
           variantColor="transparent"
           style={applyStyles({width: '48%'})}
         />
         <Button
-          title="Done"
+          title={strings('done')}
           onPress={handleDone}
           style={applyStyles({width: '48%'})}
         />

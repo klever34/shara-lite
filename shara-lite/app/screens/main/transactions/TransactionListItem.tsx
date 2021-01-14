@@ -5,6 +5,9 @@ import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
 import React, {useCallback} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 export type TransactionListItemProps = {
   style?: ViewStyle;
@@ -34,19 +37,21 @@ export const TransactionListItem = ({
       return (
         <View>
           <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            You Collected{' '}
+            {strings('transaction.you_collected')}{' '}
             <Text style={applyStyles('text-700')}>
               {amountWithCurrency(total_amount)}
             </Text>
             <Text style={applyStyles('text-500')}>
-              {customer && ` from ${customer.name}.`}
+              {customer &&
+                strings('transaction.collected_from_who', {
+                  customer_name: customer.name,
+                })}
             </Text>
             {customer?.balance
-              ? ` He has a ${
-                  customer?.balance !== undefined && customer?.balance > 0
-                    ? 'positive'
-                    : 'negative'
-                } balance of ${amountWithCurrency(customer?.balance)}`
+              ? strings('transaction.customer_balance_statement', {
+                  polarity: customer.balance > 0 ? 'positive' : 'negative',
+                  balance: amountWithCurrency(customer.balance),
+                })
               : ''}
           </Text>
         </View>
@@ -59,18 +64,18 @@ export const TransactionListItem = ({
             {customer ? (
               <Text style={applyStyles('text-gray-300 text-400 text-base')}>
                 <Text style={applyStyles('text-500')}>{customer.name}</Text>{' '}
-                owes{' '}
+                {strings('owe', {count: 2})}{' '}
                 <Text style={applyStyles('text-700')}>
                   {amountWithCurrency(credit_amount)}
                 </Text>
               </Text>
             ) : (
               <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-                You were paid{' '}
+                {strings('transaction.you_were_paid')}{' '}
                 <Text style={applyStyles('text-700')}>
                   {amountWithCurrency(amount_paid)}
                 </Text>{' '}
-                (No customer selected)
+                ({strings('customers.no_customer_selected')})
               </Text>
             )}
           </View>
@@ -83,15 +88,15 @@ export const TransactionListItem = ({
               <Text style={applyStyles('text-500')}>
                 {customer && `${customer.name}`}
               </Text>{' '}
-              paid you{' '}
+              {strings('transaction.paid_you')}{' '}
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(amount_paid)}
               </Text>{' '}
-              and{' '}
+              {strings('and')}{' '}
               <Text style={applyStyles('text-700')}>
                 {amountWithCurrency(credit_amount)}
               </Text>{' '}
-              is outstanding
+              {strings('transaction.is_outstanding')}
             </Text>
           </View>
         );
@@ -101,19 +106,19 @@ export const TransactionListItem = ({
       <View>
         {customer ? (
           <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            <Text style={applyStyles('text-500')}>{customer.name}</Text> paid
-            you{' '}
+            <Text style={applyStyles('text-500')}>{customer.name}</Text>{' '}
+            {strings('transaction.paid_you')}{' '}
             <Text style={applyStyles('text-700')}>
               {amountWithCurrency(amount_paid)}
             </Text>
           </Text>
         ) : (
           <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            You were paid{' '}
+            {strings('transaction.you_were_paid')}{' '}
             <Text style={applyStyles('text-700')}>
               {amountWithCurrency(amount_paid)}
             </Text>{' '}
-            (No customer selected)
+            ({strings('customers.no_customer_selected')})
           </Text>
         )}
       </View>

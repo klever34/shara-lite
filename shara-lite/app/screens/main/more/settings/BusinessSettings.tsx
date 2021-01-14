@@ -5,18 +5,25 @@ import {
   PhoneNumber,
 } from '@/components';
 import {Page} from '@/components/Page';
-import {getAnalyticsService, getApiService, getAuthService} from '@/services';
-import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {applyStyles} from '@/styles';
-import React, {useCallback, useContext, useMemo} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
-import {Alert, ScrollView, View} from 'react-native';
 import {ToastContext} from '@/components/Toast';
 import {TransactionReview} from '@/components/TransactionReview';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IReceipt} from '@/models/Receipt';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
+import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
+import {applyStyles} from '@/styles';
 import {ObjectId} from 'bson';
+import React, {useCallback, useContext, useMemo} from 'react';
+import {useErrorHandler} from 'react-error-boundary';
+import {Alert, ScrollView, View} from 'react-native';
+
+const i18Service = getI18nService();
 
 export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   const {openModal} = props;
@@ -54,12 +61,16 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
     const closeModal = openModal('full', {
       renderContent: () => (
         <TransactionReview
-          heading="Receipt"
+          heading={i18Service.strings(
+            'business_settings.receipt_preview.title',
+          )}
           onDone={closeModal}
           showAnimation={false}
           showShareButtons={false}
           transaction={dummyTransaction}
-          subheading="Here’s what your receipt looks like"
+          subheading={i18Service.strings(
+            'business_settings.receipt_preview.description',
+          )}
         />
       ),
     });
@@ -81,14 +92,18 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       renderContent: () => (
         <ScrollView>
           <TransactionReview
-            heading="Saved"
+            heading={i18Service.strings(
+              'business_settings.receipt_preview.saved',
+            )}
             showShareButtons={false}
             onDone={() => {
               closeModal();
               navigation.navigate('Settings');
             }}
             transaction={dummyTransaction}
-            subheading="Here’s what your receipt looks like"
+            subheading={i18Service.strings(
+              'business_settings.receipt_preview.description',
+            )}
           />
           <View style={applyStyles('h-50')} />
         </ScrollView>
@@ -102,7 +117,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
         type: 'text',
         props: {
           value: name,
-          label: 'What’s the name of your business?',
+          label: i18Service.strings('business_settings.fields.name.label'),
           rightIcon: 'home',
         },
       },
@@ -113,22 +128,24 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
             number: getMobieNumber(),
             callingCode: callingCode,
           },
-          label: 'What’s your business phone number?',
+          label: i18Service.strings('business_settings.fields.mobile.label'),
         },
       },
       address: {
         type: 'text',
         props: {
           value: address,
-          label: 'Where is your business located?',
+          label: i18Service.strings('business_settings.fields.address.label'),
           rightIcon: 'map-pin',
         },
       },
       profileImageFile: {
         type: 'image',
         props: {
-          label: 'Do you have a logo?',
-          placeholder: 'Upload logo',
+          label: i18Service.strings('business_settings.fields.image.label'),
+          placeholder: i18Service.strings(
+            'business_settings.fields.image.placeholder',
+          ),
           value: {uri: profile_image?.url ?? ''},
         },
       },
@@ -160,7 +177,9 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
         getAnalyticsService()
           .logEvent('businessSetupComplete', {})
           .catch(handleError);
-        showSuccessToast('Business settings update successful');
+        showSuccessToast(
+          i18Service.strings('business_settings.edit_success_text'),
+        );
         handleOpenSaveModal();
       } catch (error) {
         Alert.alert('Error', error.message);
@@ -172,7 +191,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
   return (
     <Page
       header={{
-        title: 'Business Settings',
+        title: i18Service.strings('business_settings.title'),
         iconLeft: {
           onPress: () => navigation.navigate('Settings'),
         },
@@ -186,11 +205,17 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
           actionBtns={[
             {
               isLoading: false,
-              title: 'Preview Receipt',
+              title: i18Service.strings(
+                'business_settings.action_buttons.preview_receipt_button',
+              ),
               variantColor: 'transparent',
               onPress: handleOpenPreviewReceiptModal,
             },
-            {title: 'Save'},
+            {
+              title: i18Service.strings(
+                'business_settings.action_buttons.save_button',
+              ),
+            },
           ]}
           onSubmit={handleSubmit}
         />
