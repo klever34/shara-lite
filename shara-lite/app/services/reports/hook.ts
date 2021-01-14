@@ -2,7 +2,7 @@ import {useCallback} from 'react';
 import {exportToExcel} from '@/services/file-exports';
 import {format} from 'date-fns';
 import {numberWithCommas} from '@/helpers/utils';
-import {getAuthService} from '@/services';
+import {getAuthService, getI18nService} from '@/services';
 import {useReceipt} from '@/services/receipt';
 import {IReceipt} from '@/models/Receipt';
 
@@ -14,6 +14,8 @@ interface exportReportsToExcelInterface {
   receipts?: Realm.Results<IReceipt & Realm.Object>;
 }
 
+const i18Service = getI18nService();
+
 export const useReports = () => {
   const {getReceipts} = useReceipt();
   const currencyCode = getAuthService().getUserCurrencyCode();
@@ -23,11 +25,15 @@ export const useReports = () => {
       const currentReceipts = receipts || getReceipts();
       const data = [
         [
-          'Date',
-          'Name',
-          'Note',
-          `Total Amount (${currencyCode})`,
-          `Amount Paid (${currencyCode})`,
+          i18Service.strings('report.excel_report_headings.date'),
+          i18Service.strings('report.excel_report_headings.name'),
+          i18Service.strings('report.excel_report_headings.note'),
+          `${i18Service.strings(
+            'report.excel_report_headings.total_amount',
+          )} (${currencyCode})`,
+          `${i18Service.strings(
+            'report.excel_report_headings.amount_paid',
+          )} (${currencyCode})`,
         ],
       ];
 
@@ -69,11 +75,17 @@ export const useReports = () => {
       const currentReceipts = receipts || getReceipts();
       const data = [
         [
-          'Date',
-          'Note',
-          `Total Amount (${currencyCode})`,
-          `Amount Paid (${currencyCode})`,
-          `Balance (${currencyCode})`,
+          i18Service.strings('report.excel_report_headings.date'),
+          i18Service.strings('report.excel_report_headings.note'),
+          `${i18Service.strings(
+            'report.excel_report_headings.total_amount',
+          )} (${currencyCode})`,
+          `${i18Service.strings(
+            'report.excel_report_headings.amount_paid',
+          )} (${currencyCode})`,
+          `${i18Service.strings(
+            'report.excel_report_headings.balance',
+          )} (${currencyCode})`,
         ],
       ];
 
@@ -110,7 +122,9 @@ export const useReports = () => {
         data,
         columns,
         filename: `Shara/Reports/Shara Reports - ${date}`,
-        notificationTitle: 'Report exported successfully',
+        notificationTitle: i18Service.strings(
+          'report.downloaded_report_notification_title',
+        ),
       });
     },
     [getReceiptsData],
@@ -125,7 +139,9 @@ export const useReports = () => {
         data,
         columns,
         filename: `Shara/Reports/Shara Reports - ${date}`,
-        notificationTitle: 'Report exported successfully',
+        notificationTitle: i18Service.strings(
+          'report.downloaded_report_notification_title',
+        ),
       });
     },
     [getCustomerReceiptsData],

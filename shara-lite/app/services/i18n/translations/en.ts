@@ -466,6 +466,40 @@ const en: Strings = {
     submit_button: 'Submit',
   },
   create_receipts_with_shara: 'CREATE RECEIPTS FOR FREE WITH SHARA',
+  report: {
+    title: 'View Report',
+    filter_button_text: 'Filters',
+    search_input_placeholder: 'Search customers here',
+    active_filter_label_text: 'Filter',
+    clear_filter_button_text: 'Clear',
+    net_balance_text: 'Net Balance',
+    download_report_toast_text: 'Download Report',
+    results: {
+      one: 'Result',
+      zero: '',
+      other: 'Results',
+    },
+    download_report_button_text: 'Download Report',
+    empty_state_text: {
+      no_results_found: 'No results found',
+      no_records_yet: 'You have no records yet',
+    },
+    report_list_header: {
+      transactions_text: 'Transactions',
+      total_entries_text: 'Entries',
+      total_cost_text: 'Total Cost',
+      amount_paid_text: 'Amount Paid',
+    },
+    excel_report_headings: {
+      date: 'Date',
+      name: 'Name',
+      note: 'Note',
+      total_amount: 'Total Amount',
+      amount_paid: 'Amount Paid',
+      balance: 'Balance',
+    },
+    downloaded_report_notification_title: 'Report exported successfully',
+  },
 };
 
 export default en;
