@@ -265,6 +265,45 @@ const en: Strings = {
       copy: 'copy',
     },
   },
+  more: {
+    header: {
+      title: 'My Account',
+      description: 'You account information at a glance',
+    },
+    list: {
+      profile_settings: {
+        title: 'My Profile',
+        description: 'View and edit your personal information',
+      },
+      business_settings: {
+        title: 'Business Settings',
+        description: 'View and edit your business information',
+      },
+      payment_settings: {
+        title: 'Payment Settings',
+        description: 'View and edit your payment information',
+      },
+      referral: {
+        title: 'Referral',
+        description: 'Enter referral code',
+      },
+      feedback: {
+        title: 'Give Feedback',
+        description: 'Provide any feedback here?',
+      },
+    },
+    logout: {
+      logout_data_verification_text: 'Verifying your saved data...',
+      logout_confirmation_text: 'Are you sure you want to logout?',
+      logout_unsaved_data_text:
+        'You still have some unsaved data. Are you sure you want to logout?',
+    },
+    business_settings_edit_button:
+      'Tap here to complete your Business Settings',
+    logout_button: 'Logout',
+    yes: 'Yes',
+    no: 'No',
+  },
 };
 
 export default en;
