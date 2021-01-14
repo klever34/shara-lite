@@ -470,6 +470,15 @@ const en: Strings = {
       total_cost_text: 'Total Cost',
       amount_paid_text: 'Amount Paid',
     },
+    excel_report_headings: {
+      date: 'Date',
+      name: 'Name',
+      note: 'Note',
+      total_amount: 'Total Amount',
+      amount_paid: 'Amount Paid',
+      balance: 'Balance',
+    },
+    downloaded_report_notification_title: 'Report exported successfully',
   },
 };
 

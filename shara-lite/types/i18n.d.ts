@@ -346,13 +346,22 @@ interface Strings {
     empty_state_text: {
       no_results_found: string;
       no_records_yet: string;
-    },
+    };
     report_list_header: {
       transactions_text: string;
       total_entries_text: string;
       total_cost_text: string;
       amount_paid_text: string;
-    }
+    };
+    excel_report_headings: {
+      date: string;
+      name: string;
+      note: string;
+      total_amount: string;
+      amount_paid: string;
+      balance: string;
+    },
+    downloaded_report_notification_title: string;
   }
 }
 
