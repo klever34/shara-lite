@@ -61,7 +61,7 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
                 style={applyStyles(
                   'text-uppercase text-400 text-gray-300 text-xs text-white',
                 )}>
-                {strings('payment.payment_preview_item.copied')}
+                {strings('payment.copied')}
               </Text>
             </View>
           ) : (
@@ -70,7 +70,7 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
                 style={applyStyles(
                   'text-uppercase text-400 text-gray-300 text-xs',
                 )}>
-                {strings('payment.payment_preview_item.copy')}
+                {strings('payment.copy')}
               </Text>
             </View>
           )}

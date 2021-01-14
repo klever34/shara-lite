@@ -182,6 +182,8 @@ interface Strings {
   yes: string;
   yes_proceed: string;
   no: string;
+  remove: string;
+  tel: string;
   customers: {
     start_adding: string;
     customer_count: PluralizedString;
@@ -199,19 +201,36 @@ interface Strings {
     edit_payment_preview_label_modal: {
       title: string;
       description: string;
+      payment_label_updated: string;
+      validation_message: string;
+      you_can_pay_me_via: string;
     };
     payment_container: {
+      payment_added: string;
+      warning_message: string;
+      payment_edited: string;
       add_payment_info: string;
       edit_payment_info: string;
+      remove_message: string;
+      payment_settings: string;
       no_payment_option: {
         description: string;
       };
       copy_payment_link: string;
       preview_payment_page: string;
+      add_new_payment: string;
     };
-    payment_preview_item: {
-      copied: string;
-      copy: string;
+    payment_form: {
+      label: string;
+    };
+    copied: string;
+    copy: string;
+    payment_preview_modal: {
+      heading: string;
+      footer: {
+        title: string;
+        website_url: string;
+      };
     };
   };
 }
