@@ -91,6 +91,8 @@ target 'SharaRN' do
 
   pod 'react-native-view-shot', :path => '../node_modules/react-native-view-shot'
 
+  pod 'react-native-html-to-pdf', :path => '../node_modules/react-native-html-to-pdf-lite'
+
   target 'SharaRNTests' do
     inherit! :complete
     # Pods for testing

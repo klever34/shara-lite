@@ -45,7 +45,7 @@
 		A10931EE96BE4564AA066EBE /* FontAwesome5_Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 412A2D109FE240A9BFEA5F62 /* FontAwesome5_Regular.ttf */; };
 		A19C5AA0DFE444A5BB700B1D /* Feather.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D65CABC7B0C54BE3ACE20FBE /* Feather.ttf */; };
 		AA5E91B2E0A14B9D9BDF0377 /* MaterialIcons.ttf in Resources */ = {isa = PBXBuildFile; fileRef = E271C4C50D45476C996EEF43 /* MaterialIcons.ttf */; };
-		BBAA3DE42FDB4E6AAA343B00 /*  CocogoosePro-UltraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */; };
+		BBAA3DE42FDB4E6AAA343B00 /* CocogoosePro-UltraLight.otf in Resources */ = {isa = PBXBuildFile; fileRef = 731D200EF38544E89AA13B0B /* CocogoosePro-UltraLight.otf */; };
 		BD4D17F4BF7254D84C6F1253 /* libPods-SharaRN-SharaRNTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4F16D15EF0B9721F82CDEF94 /* libPods-SharaRN-SharaRNTests.a */; };
 		C4277D3990FF4DDFACB666B0 /* FontAwesome5_Solid.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 08436228C6B94D3789D48884 /* FontAwesome5_Solid.ttf */; };
 		C8DF8D3040974480BB81B1D3 /* Fontisto.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 113015A500BE43809878983C /* Fontisto.ttf */; };
@@ -122,7 +122,7 @@
 		68989F10DFFF4FCCA0535707 /* EvilIcons.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = EvilIcons.ttf; path = "../node_modules/react-native-vector-icons/Fonts/EvilIcons.ttf"; sourceTree = "<group>"; };
 		6C0543D6E14F47008028B3B3 /* libRNBluetoothEscposPrinter.a */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = archive.ar; path = libRNBluetoothEscposPrinter.a; sourceTree = "<group>"; };
 		6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = "CocogoosePro-Light.otf"; path = "../app/assets/fonts/CocogoosePro-Light.otf"; sourceTree = "<group>"; };
-		731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = " CocogoosePro-UltraLight.otf"; path = "../app/assets/fonts/ CocogoosePro-UltraLight.otf"; sourceTree = "<group>"; };
+		731D200EF38544E89AA13B0B /* CocogoosePro-UltraLight.otf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = " CocogoosePro-UltraLight.otf"; path = "../app/assets/fonts/ CocogoosePro-UltraLight.otf"; sourceTree = "<group>"; };
 		81EF9A135ED221CE01F03727 /* Pods-SharaRN-tvOSTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SharaRN-tvOSTests.debug.xcconfig"; path = "Target Support Files/Pods-SharaRN-tvOSTests/Pods-SharaRN-tvOSTests.debug.xcconfig"; sourceTree = "<group>"; };
 		8B285C7D03D336E0B086E9B1 /* libPods-SharaRN-tvOSTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-SharaRN-tvOSTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		8CB4F684CF3F4F269AFDFD74 /* FontAwesome5_Brands.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 9; includeInIndex = 0; lastKnownFileType = unknown; name = FontAwesome5_Brands.ttf; path = "../node_modules/react-native-vector-icons/Fonts/FontAwesome5_Brands.ttf"; sourceTree = "<group>"; };
@@ -316,7 +316,7 @@
 				AFAC2FF7CEF143BBB6B71411 /* Octicons.ttf */,
 				0C4A3031661A4FC2ADF2F2C5 /* SimpleLineIcons.ttf */,
 				A3C6B74B43F945ECBD06F79B /* Zocial.ttf */,
-				731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */,
+				731D200EF38544E89AA13B0B /* CocogoosePro-UltraLight.otf */,
 				6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */,
 				09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */,
 				AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */,
@@ -517,7 +517,7 @@
 				81501C0E23A84F98A4B1C50A /* Octicons.ttf in Resources */,
 				8929E6D5E474477DA45904F6 /* SimpleLineIcons.ttf in Resources */,
 				808B522AF3124444995D9CE1 /* Zocial.ttf in Resources */,
-				BBAA3DE42FDB4E6AAA343B00 /*  CocogoosePro-UltraLight.otf in Resources */,
+				BBAA3DE42FDB4E6AAA343B00 /* CocogoosePro-UltraLight.otf in Resources */,
 				47A7D71C4B0943E99E992479 /* CocogoosePro-Light.otf in Resources */,
 				6A11E098B8E54643BFA9C944 /* CocogoosePro-Regular.otf in Resources */,
 				7D0557EA69C5427CBC568811 /* CocogoosePro-SemiLight.otf in Resources */,

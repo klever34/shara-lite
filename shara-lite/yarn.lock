@@ -6863,6 +6863,11 @@ react-native-get-random-values@^1.4.0:
   dependencies:
     fast-base64-decode "^1.0.0"
 
+react-native-html-to-pdf-lite@^0.9.1:
+  version "0.9.1"
+  resolved "https://registry.yarnpkg.com/react-native-html-to-pdf-lite/-/react-native-html-to-pdf-lite-0.9.1.tgz#7f73e6679ee90bcbd274971e58a16ee392a14966"
+  integrity sha512-HeD7YDHO7pL/4n/lAJCo1L4x0+JeKiME95B8jwH8lGBzkcHNX1hmb+CFM9SGSI//YtUL/a2sQjjkkoh6Cf7GNw==
+
 react-native-image-picker@2.3.4:
   version "2.3.4"
   resolved "https://registry.yarnpkg.com/react-native-image-picker/-/react-native-image-picker-2.3.4.tgz#1c31dbe9872ade17e2ed6457b0c669d63c322590"
