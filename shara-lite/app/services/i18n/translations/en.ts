@@ -95,7 +95,6 @@ const en: Strings = {
       'Securely record your business data in a private, secure and backed up',
   },
   activities: 'Activities',
-  customer: {one: 'Customer', other: 'Customers'},
   payment_reminder: {
     title: 'Payment Reminder',
     message:
@@ -161,6 +160,27 @@ const en: Strings = {
     share_statement: 'Generating Statement',
     start_here: 'Start adding records by tapping here',
     add_first: 'Add first transaction for {{customer_name}}',
+    no_credit_or_amount_warning:
+      'Please enter collected amount or outstanding amount',
+    edit_transaction: 'Edit Transaction',
+    transaction_deleted: 'TRANSACTION DELETED',
+    confirm_delete: 'Are you sure you want to delete this transaction?',
+  },
+  receipts: {
+    filter_options: {
+      single_day: 'Single Day',
+      '1_week': 'Last 7 Days',
+      '1_month': 'Last 30 Days',
+      date_range: 'Date Range',
+    },
+    receipt_share_title: 'Share Receipt',
+    receipt_share_message:
+      'Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}}\n\nPowered by Shara for free.\nwww.shara.co',
+    receipt_share_from_who: ' from {{business_name}}',
+    receipt_share_credit_message:
+      ' and you owe {{credit_amount}}{{due_date_message}}{{payment_link_message}}',
+    receipt_share_due_date_message: ' which is due on {{due_date}}',
+    receipt_share_payment_link_message: '\n\nTo pay click\n{{payment_link}}',
   },
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
@@ -201,9 +221,16 @@ const en: Strings = {
     sale: 'Record Sale',
     collection: 'Record Collection',
   },
-  other: 'other',
+  other: 'Other',
+  collected: 'Collected',
+  collection_due_today: 'Collection due today',
+  outstanding: 'Outstanding',
   clear: 'Clear',
   cancel: 'Cancel',
+  note: {one: 'Note', other: 'Notes'},
+  delete: 'Delete',
+  edit: 'Edit',
+  share: 'Share',
   save: 'Save',
   optional: 'Optional',
   warning: 'Warning',
@@ -213,13 +240,16 @@ const en: Strings = {
   yes_delete: 'Yes, Delete',
   yes_proceed: 'Yes, Proceed',
   no: 'No',
+  all: 'All',
   no_result_found: 'No result found',
+  select_from_phonebook: 'Select from Phonebook',
   filter: {one: 'Filter', other: 'Filters'},
   filter_options: {
     owing: 'Owing',
     not_owing: 'Not Owing',
     surplus: 'Surplus',
   },
+  customer: {one: 'Customer', other: 'Customers'},
   customers: {
     start_adding: 'Start adding customers by creating a record here',
     customer_count: {
@@ -243,6 +273,12 @@ const en: Strings = {
         placeholder: 'Additional information about the customer',
       },
     },
+    select_customer: {
+      title: 'Select Customer',
+      description: 'Which customer is this transaction for?',
+    },
+    add_as_new_customer: 'Add {{customer.name}} as new customer',
+    add_customer: 'Add Customer',
   },
   payment: {
     edit_payment_preview_label_modal: {

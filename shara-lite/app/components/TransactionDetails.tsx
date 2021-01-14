@@ -541,7 +541,7 @@ const TransactionDetails = withModal(
                             style={applyStyles(
                               'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
-                            {strings('other')}
+                            {strings('other', {count: 1})}
                           </Text>
                         </View>
                       </Touchable>

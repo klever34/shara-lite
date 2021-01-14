@@ -4,6 +4,9 @@ import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
 import {useCallback, useEffect, useMemo, useState} from 'react';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 export type UseReceiptListProps = {
   receipts?: IReceipt[];
@@ -42,25 +45,25 @@ export const useReceiptList = ({
     filterOptions ??
     useMemo(
       () => [
-        {text: 'All', value: 'all'},
+        {text: strings('all'), value: 'all'},
         {
-          text: 'Single Day',
+          text: strings('receipts.filter_options.single_day'),
           value: 'single-day',
         },
         {
-          text: 'Last 7 Days',
+          text: strings('receipts.filter_options.1_week'),
           value: '1-week',
           startDate: subWeeks(new Date(), 1),
           endDate: new Date(),
         },
         {
-          text: 'Last 30 Days',
+          text: strings('receipts.filter_options.1_month'),
           value: '1-month',
           startDate: subMonths(new Date(), 1),
           endDate: new Date(),
         },
         {
-          text: 'Date Range',
+          text: strings('receipts.filter_options.date_range'),
           value: 'date-range',
         },
       ],

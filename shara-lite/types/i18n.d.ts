@@ -123,13 +123,28 @@ interface Strings {
     share_statement: string;
     start_here: string;
     add_first: string;
+    no_credit_or_amount_warning: string;
+    edit_transaction: string;
+    transaction_deleted: string;
+    confirm_delete: string;
+  };
+  receipts: {
+    filter_options: {
+      single_day: string;
+      '1_week': string;
+      '1_month': string;
+      date_range: string;
+    };
+    receipt_share_title: string;
+    receipt_share_message: string;
+    receipt_share_from_who: string;
+    receipt_share_credit_message: string;
+    receipt_share_due_date_message: string;
+    receipt_share_payment_link_message: string;
   };
   collection: {
     collection_recorded: string;
-    header: {
-      title: string;
-      description: string;
-    };
+    header: Card;
     fields: {
       amount: {
         label: string;
@@ -142,10 +157,7 @@ interface Strings {
   };
   sale: {
     sale_recorded: string;
-    header: {
-      title: string;
-      description: string;
-    };
+    header: Card;
     fields: {
       amount: {
         label: string;
@@ -179,9 +191,18 @@ interface Strings {
   warning: string;
   date: string;
   total: string;
+  all: string;
+  collected: string;
+  collection_due_today: string;
+  outstanding: string;
+  note: PluralizedString;
+  delete: string;
+  edit: string;
+  share: string;
   yes: string;
   yes_proceed: string;
   no: string;
+  select_from_phonebook: string;
   customers: {
     start_adding: string;
     customer_count: PluralizedString;
@@ -194,12 +215,12 @@ interface Strings {
       phone: FormField;
       notes: FormField;
     };
+    select_customer: Card;
+    add_as_new_customer: string;
+    add_customer: string;
   };
   payment: {
-    edit_payment_preview_label_modal: {
-      title: string;
-      description: string;
-    };
+    edit_payment_preview_label_modal: Card;
     payment_container: {
       add_payment_info: string;
       edit_payment_info: string;
