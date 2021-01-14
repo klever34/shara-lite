@@ -86,7 +86,7 @@ export const MoreOptionsScreen = withModal(
           title: i18nService.strings('more.list.feedback.title'),
           text: i18nService.strings('more.list.feedback.description'),
           onPress: () => {
-            Alert.alert('Coming Soon', 'This feature is coming soon');
+            navigation.navigate('Feedback');
           },
         },
       ];

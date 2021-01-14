@@ -373,6 +373,75 @@ const en: Strings = {
     yes: 'Yes',
     no: 'No',
   },
+  profile_settings: {
+    title: 'Profile Settings',
+    toast_text: 'User profile updated successfully',
+    fields: {
+      firstName: {
+        label: 'First Name',
+      },
+      lastName: {
+        label: 'Last Name',
+      },
+      mobile: {
+        label: 'What’s your phone number?',
+      },
+      email: {
+        label: "What's your email? (Optional)",
+      },
+    },
+    save_button: 'Save',
+  },
+  business_settings: {
+    title: 'Business Settings',
+    toast_text: 'User profile updated successfully',
+    fields: {
+      name: {
+        label: 'What’s the name of your business?',
+      },
+      address: {
+        label: 'Where is your business located?',
+      },
+      mobile: {
+        label: 'What’s your business phone number?',
+      },
+      image: {
+        label: 'Do you have a logo?',
+        placeholder: 'Upload logo',
+      },
+    },
+    action_buttons: {
+      preview_receipt_button: 'Preview Receipt',
+      save_button: 'Save',
+    },
+    receipt_preview: {
+      title: 'Receipt',
+      saved: 'Saved',
+      description: 'Here’s what your receipt looks like',
+    },
+  },
+  referral: {
+    title: 'Referral',
+    toast_text: 'Referral code submitted',
+    fields: {
+      code: {
+        label: 'Referral Code',
+        placeholder: 'Enter referral code here',
+      },
+    },
+    submit_button: 'Submit',
+  },
+  feedback: {
+    title: 'Feedback',
+    toast_text: 'Thank for your Feedback, we will get back to you shortly',
+    fields: {
+      code: {
+        label: 'Feedback',
+        placeholder: 'Enter feedback here',
+      },
+    },
+    submit_button: 'Submit',
+  },
 };
 
 export default en;

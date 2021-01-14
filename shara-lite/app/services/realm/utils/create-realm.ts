@@ -16,10 +16,11 @@ import {DeliveryAgent} from '@/models/DeliveryAgent';
 import {PaymentOption} from '@/models/PaymentOption';
 import {StorageService} from '../../storage';
 import {ReceivedInventory} from '@/models/ReceivedInventory';
+import {PaymentReminder} from '@/models/PaymentReminder';
+import {Feedback} from '@/models/Feedback';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
-import {PaymentReminder} from '@/models/PaymentReminder';
 
 export const schema = [
   Address,
@@ -39,6 +40,7 @@ export const schema = [
   Receipt,
   ReceiptItem,
   Supplier,
+  Feedback,
 ];
 
 export const createLocalRealm = async () => {

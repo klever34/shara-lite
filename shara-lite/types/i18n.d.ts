@@ -281,6 +281,52 @@ interface Strings {
     yes: string;
     no: string;
   };
+  profile_settings: {
+    title: string;
+    toast_text: string;
+    fields: {
+      firstName: FormField;
+      lastName: FormField;
+      mobile: FormField;
+      email: FormField;
+    };
+    save_button: string;
+  };
+  business_settings: {
+    title: string;
+    toast_text: string;
+    fields: {
+      name: FormField;
+      address: FormField;
+      mobile: FormField;
+      image: FormField;
+    };
+    action_buttons: {
+      save_button: string;
+      preview_receipt_button: string;
+    };
+    receipt_preview: {
+      title: string;
+      saved: string;
+      description: string;
+    };
+  };
+  referral: {
+    title: string;
+    toast_text: string;
+    fields: {
+      code: FormField;
+    };
+    submit_button: string;
+  };
+  feedback: {
+    title: string;
+    toast_text: string;
+    fields: {
+      code: FormField;
+    };
+    submit_button: string;
+  };
 }
 
 interface PluralizedString {
