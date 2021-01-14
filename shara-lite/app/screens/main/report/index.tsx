@@ -8,7 +8,7 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService, getI18nService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useReports} from '@/services/reports';
@@ -20,13 +20,13 @@ import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
 
-const i18Service = getI18nService();
-
 type Props = ModalWrapperFields;
+
+const i18Service = getI18nService();
 
 export const ReportScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
-  const {exportReportsToExcel} = useReports();
+  const {exportUserReportToPDF} = useReports();
   const {showSuccessToast} = useContext(ToastContext);
   const {
     filter,
@@ -79,8 +79,12 @@ export const ReportScreen = withModal(({openModal}: Props) => {
   const handleDownloadReport = useCallback(async () => {
     try {
       setIsDownloadingReport(true);
-      await exportReportsToExcel({
-        receipts: filteredReceipts.sorted('transaction_date', false),
+      await exportUserReportToPDF({
+        totalAmount,
+        collectedAmount,
+        outstandingAmount,
+        businessName: getAuthService().getBusinessInfo().name,
+        data: filteredReceipts.sorted('transaction_date', false),
       });
       setIsDownloadingReport(false);
       getAnalyticsService()
@@ -92,7 +96,14 @@ export const ReportScreen = withModal(({openModal}: Props) => {
       setIsDownloadingReport(false);
       Alert.alert('Error', error.message);
     }
-  }, [filteredReceipts, showSuccessToast, exportReportsToExcel]);
+  }, [
+    filteredReceipts,
+    showSuccessToast,
+    exportUserReportToPDF,
+    totalAmount,
+    collectedAmount,
+    outstandingAmount,
+  ]);
 
   const getFilterLabelText = useCallback(() => {
     const activeOption = filterOptions?.find((item) => item.value === filter);
