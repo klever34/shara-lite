@@ -39,6 +39,9 @@ import {StickyFooter} from '../StickyFooter';
 import {Button} from '../Button';
 import {AddCustomerModal} from '../AddCustomerModal';
 import {ScrollView} from 'react-native-gesture-handler';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type Props = {
   receipt?: IReceipt;
@@ -301,16 +304,22 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          `Total: ${currencyCode} ${numberWithCommas(receipt?.total_amount)}\n`,
+          `${strings('total')}: ${currencyCode} ${numberWithCommas(
+            receipt?.total_amount,
+          )}\n`,
           {},
         );
         await BluetoothEscposPrinter.printText(
-          `Paid: ${currencyCode} ${numberWithCommas(totalAmountPaid)}\n`,
+          `${strings('paid')}: ${currencyCode} ${numberWithCommas(
+            totalAmountPaid,
+          )}\n`,
           {},
         );
         creditAmountLeft &&
           (await BluetoothEscposPrinter.printText(
-            `Balance: ${currencyCode} ${numberWithCommas(creditAmountLeft)}\n`,
+            `${strings('balance')}: ${currencyCode} ${numberWithCommas(
+              creditAmountLeft,
+            )}\n`,
             {},
           ));
         await BluetoothEscposPrinter.printText(
@@ -321,7 +330,7 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
           BluetoothEscposPrinter.ALIGN.CENTER,
         );
         await BluetoothEscposPrinter.printText(
-          'CREATE RECEIPTS FOR FREE WITH SHARA\n www.shara.co\n',
+          `${strings('create_receipts_with_shara')}\n www.shara.co\n`,
           receiptStyles.product,
         );
         await BluetoothEscposPrinter.printText(

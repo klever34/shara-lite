@@ -50,7 +50,7 @@ export const TransactionListItem = ({
             {customer?.balance
               ? strings('transaction.customer_balance_statement', {
                   polarity: customer.balance > 0 ? 'positive' : 'negative',
-                  balance: customer.balance,
+                  balance: amountWithCurrency(customer.balance),
                 })
               : ''}
           </Text>

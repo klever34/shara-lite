@@ -167,6 +167,8 @@ interface Strings {
     receipt_share_credit_message: string;
     receipt_share_due_date_message: string;
     receipt_share_payment_link_message: string;
+    receipt_for: string;
+    receipt_no: string;
   };
   collection: {
     collection_recorded: string;
@@ -225,6 +227,8 @@ interface Strings {
   delete: string;
   edit: string;
   share: string;
+  balance: string;
+  paid: string;
   yes: string;
   yes_proceed: string;
   no: string;
@@ -245,6 +249,7 @@ interface Strings {
     select_customer: Card;
     add_as_new_customer: string;
     add_customer: string;
+    add_customer_details: string;
   };
   payment: {
     edit_payment_preview_label_modal: Card;
@@ -327,6 +332,7 @@ interface Strings {
     };
     submit_button: string;
   };
+  create_receipts_with_shara: string;
 }
 
 interface PluralizedString {

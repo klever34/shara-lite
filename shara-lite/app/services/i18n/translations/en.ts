@@ -169,7 +169,7 @@ const en: Strings = {
     transaction_deleted: 'TRANSACTION DELETED',
     confirm_delete: 'Are you sure you want to delete this transaction?',
     you_collected: 'You Collected',
-    collected_from_who: ' from {{customer_name}}.',
+    collected_from_who: ' from {{customer_name}}. ',
     customer_balance_statement:
       'He/She has a {{polarity}} balance of {{balance}}',
     you_were_paid: 'You were paid',
@@ -199,6 +199,8 @@ const en: Strings = {
       ' and you owe {{credit_amount}}{{due_date_message}}{{payment_link_message}}',
     receipt_share_due_date_message: ' which is due on {{due_date}}',
     receipt_share_payment_link_message: '\n\nTo pay click\n{{payment_link}}',
+    receipt_for: 'Receipt for',
+    receipt_no: 'Receipt No',
   },
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
@@ -257,6 +259,8 @@ const en: Strings = {
   delete: 'Delete',
   edit: 'Edit',
   share: 'Share',
+  balance: 'Balance',
+  paid: 'Paid',
   save: 'Save',
   from: 'From',
   To: 'To',
@@ -312,6 +316,7 @@ const en: Strings = {
     },
     add_as_new_customer: 'Add {{customer.name}} as new customer',
     add_customer: 'Add Customer',
+    add_customer_details: 'Add Customer details',
   },
   payment: {
     edit_payment_preview_label_modal: {
@@ -442,6 +447,7 @@ const en: Strings = {
     },
     submit_button: 'Submit',
   },
+  create_receipts_with_shara: 'CREATE RECEIPTS FOR FREE WITH SHARA',
 };
 
 export default en;

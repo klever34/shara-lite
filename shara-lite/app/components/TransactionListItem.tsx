@@ -5,6 +5,9 @@ import {format} from 'date-fns';
 import React from 'react';
 import {Text, View, ViewStyle} from 'react-native';
 import Touchable from './Touchable';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 const TransactionListItem = ({
   style,
@@ -64,7 +67,7 @@ const TransactionListItem = ({
               style={applyStyles(
                 'text-700 text-xxs text-gray-100 text-uppercase',
               )}>
-              Balance: {amountWithCurrency(credit_amount)}
+              {strings('balance')}: {amountWithCurrency(credit_amount)}
             </Text>
           )}
         </View>
