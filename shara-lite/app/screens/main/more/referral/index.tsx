@@ -1,12 +1,19 @@
 import {AppInput, Button} from '@/components';
 import {Page} from '@/components/Page';
 import {ToastContext} from '@/components/Toast';
-import {getAnalyticsService, getApiService, getAuthService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useContext, useState} from 'react';
 import {Alert, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
+
+const i18Service = getI18nService();
 
 export default function ReferralScreen() {
   const apiService = getApiService();
@@ -28,7 +35,7 @@ export default function ReferralScreen() {
         device_id: id,
       };
       await apiService.userProfileUpdate(payload);
-      showSuccessToast('Referral code submitted');
+      showSuccessToast(i18Service.strings('referral.toast_text'));
       getAnalyticsService()
         .logEvent('referralCodeAdded', {})
         .then(() => {});
@@ -40,17 +47,25 @@ export default function ReferralScreen() {
 
   return (
     <Page
-      header={{title: 'Referral', iconLeft: {}, style: applyStyles('py-8')}}
+      header={{
+        title: i18Service.strings('referral.title'),
+        iconLeft: {},
+        style: applyStyles('py-8'),
+      }}
       style={applyStyles('bg-white')}>
       <View style={applyStyles('flex-1')}>
         <AppInput
           value={code}
-          label="Referral Code"
+          label={i18Service.strings('referral.fields.code.label')}
           onChangeText={handleChange}
           style={applyStyles('mb-16')}
-          placeholder="Enter referral code here"
+          placeholder={i18Service.strings('referral.fields.code.placeholder')}
         />
-        <Button title="Submit" onPress={handleSubmit} disabled={!code} />
+        <Button
+          title={i18Service.strings('referral.submit_button')}
+          onPress={handleSubmit}
+          disabled={!code}
+        />
       </View>
     </Page>
   );
