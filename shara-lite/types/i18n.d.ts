@@ -235,6 +235,25 @@ interface Strings {
       copy: string;
     };
   };
+  more: {
+    header: Card;
+    list: {
+      profile_settings: Card;
+      business_settings: Card;
+      payment_settings: Card;
+      referral: Card;
+      feedback: Card;
+    };
+    logout_button: string;
+    logout: {
+      logout_data_verification_text: string;
+      logout_confirmation_text: string;
+      logout_unsaved_data_text: string;
+    },
+    business_settings_edit_button: string;
+    yes: string;
+    no: string;
+  }
 }
 
 interface PluralizedString {

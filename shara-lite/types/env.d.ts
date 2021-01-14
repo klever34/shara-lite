@@ -18,6 +18,8 @@ declare module 'react-native-config' {
 
   export const WEB_BASE_URL: string;
 
+  export const FCM_NOTIFICATION_TOPIC: string;
+
   export const ENVIRONMENT:
     | 'delivery'
     | 'test'

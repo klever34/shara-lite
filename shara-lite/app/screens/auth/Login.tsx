@@ -1,6 +1,6 @@
 import {AuthView, Button, PhoneNumber, PhoneNumberField} from '@/components';
 import {getAnalyticsService, getApiService, getI18nService} from '@/services';
-import {useErrorHandler} from '@/services/error-boundary';
+import {handleError} from '@/services/error-boundary';
 import {FormDefaults} from '@/services/FormDefaults';
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
@@ -45,7 +45,6 @@ export const Login = () => {
     setFieldValue('countryCode', value.callingCode);
     setFieldValue('mobile', value.number);
   };
-  const handleError = useErrorHandler();
   const onSubmit = async (data: Fields) => {
     const {mobile, countryCode} = data;
     if (!countryCode) {
@@ -82,13 +81,10 @@ export const Login = () => {
     }
   };
 
-  const getHash = () =>
+  useEffect(() => {
     RNOtpVerify.getHash()
       .then((text) => setHash(text[0]))
-      .catch(console.log);
-
-  useEffect(() => {
-    getHash();
+      .catch(handleError);
   }, []);
 
   return (
