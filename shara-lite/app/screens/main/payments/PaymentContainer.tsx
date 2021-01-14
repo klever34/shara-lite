@@ -51,7 +51,7 @@ function PaymentContainer(props: ModalWrapperFields) {
 
   const copyToClipboard = useCallback(() => {
     Clipboard.setString(paymentLink);
-    showSuccessToast('Copied');
+    showSuccessToast(strings('payment.copied'));
     getAnalyticsService()
       .logEvent('copiedPaymentLink', {})
       .then(() => {});
@@ -69,10 +69,13 @@ function PaymentContainer(props: ModalWrapperFields) {
         getAnalyticsService()
           .logEvent('paymentOptionAdded', {})
           .then(() => {});
-        showSuccessToast('PAYMENT OPTION ADDED');
+        showSuccessToast(strings('payment.payment_container.payment_added'));
         setIsSaving(false);
       } else {
-        Alert.alert('Warning', 'Please fill all the fields in the form');
+        Alert.alert(
+          strings('warning'),
+          strings('payment.payment_container.warning_message'),
+        );
       }
     },
     [savePaymentOption, showSuccessToast],
@@ -91,10 +94,13 @@ function PaymentContainer(props: ModalWrapperFields) {
         getAnalyticsService()
           .logEvent('paymentOptionEdited', {})
           .then(() => {});
-        showSuccessToast('PAYMENT OPTION EDITED');
+        showSuccessToast(strings('payment.payment_container.payment_edited'));
         setIsSaving(false);
       } else {
-        Alert.alert('Warning', 'Please fill all the fields in the form');
+        Alert.alert(
+          strings('warning'),
+          strings('payment.payment_container.warning_message'),
+        );
       }
     },
     [updatePaymentOption, showSuccessToast],
@@ -132,13 +138,13 @@ function PaymentContainer(props: ModalWrapperFields) {
                   'pt-24 flex-row items-center justify-between',
                 )}>
                 <Button
-                  title="Cancel"
+                  title={strings('cancel')}
                   onPress={closeModal}
                   variantColor="transparent"
                   style={applyStyles({width: '48%'})}
                 />
                 <Button
-                  title="Save"
+                  title={strings('save')}
                   isLoading={isSaving}
                   style={applyStyles({width: '48%'})}
                   onPress={() => {
@@ -182,20 +188,20 @@ function PaymentContainer(props: ModalWrapperFields) {
                     'pt-24 flex-row items-center justify-between',
                   )}>
                   <Button
-                    title="Remove"
+                    title={strings('remove')}
                     isLoading={isDeleting}
                     style={applyStyles({width: '48%'})}
                     onPress={() => {
                       Alert.alert(
-                        'Warning',
-                        'Are you sure you want to remove the payment option?',
+                        strings('warning'),
+                        strings('payment.payment_container.remove_message'),
                         [
                           {
-                            text: 'No',
+                            text: strings('no'),
                             onPress: () => {},
                           },
                           {
-                            text: 'Yes',
+                            text: strings('yes'),
                             onPress: () => {
                               handleRemoveItem(item);
                               closeModal();
@@ -277,7 +283,7 @@ function PaymentContainer(props: ModalWrapperFields) {
   return (
     <Page
       header={{
-        title: 'Payment Settings',
+        title: strings('payment.payment_container.payment_settings'),
         iconLeft: {},
         style: applyStyles('py-8'),
       }}
@@ -306,7 +312,7 @@ function PaymentContainer(props: ModalWrapperFields) {
               renderButtons={(handleSubmit, values) => (
                 <View style={applyStyles('pt-24', {paddingBottom: 300})}>
                   <Button
-                    title="Save"
+                    title={strings('save')}
                     isLoading={isSaving}
                     onPress={handleSubmit}
                     disabled={!values?.slug}
@@ -364,7 +370,7 @@ function PaymentContainer(props: ModalWrapperFields) {
 
             <View style={applyStyles('p-16')}>
               <Button
-                title="Add New Payment"
+                title={strings('payment.payment_container.add_new_payment')}
                 onPress={handleOpenAddItemModal}
               />
             </View>

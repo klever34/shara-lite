@@ -35,12 +35,16 @@ export const EditPaymetPreviewLabelModal = ({
         getAnalyticsService()
           .logEvent('paymentPreviewLabelEdited', {})
           .then(() => {});
-        showSuccessToast('Payment Label updated');
+        showSuccessToast(
+          strings(
+            'payment.edit_payment_preview_label_modal.payment_label_updated',
+          ),
+        );
         onUpdateBusiness(getAuthService().getBusinessInfo());
         onClose();
       } catch (error) {
         setIsSaving(false);
-        Alert.alert('Error', error.message);
+        Alert.alert(strings('payment.error'), error.message);
       }
     },
     [onClose, business.id, onUpdateBusiness, showSuccessToast],
@@ -50,10 +54,17 @@ export const EditPaymetPreviewLabelModal = ({
     validationSchema: yup.object().shape({
       label: yup
         .string()
-        .max(150, 'Payment label cannot be more than 150 characters long'),
+        .max(
+          150,
+          strings(
+            'payment.edit_payment_preview_label_modal.validation_message',
+          ),
+        ),
     }),
     initialValues: {
-      label: business.payment_label || 'You can pay me via',
+      label:
+        business.payment_label ||
+        strings('payment.edit_payment_preview_label_modal.you_can_pay_me_via'),
     },
   });
 
@@ -76,13 +87,13 @@ export const EditPaymetPreviewLabelModal = ({
       />
       <View style={applyStyles('py-24 flex-row items-center justify-between')}>
         <Button
-          title="Cancel"
+          title={strings('cancel')}
           onPress={onClose}
           variantColor="transparent"
           style={applyStyles({width: '48%'})}
         />
         <Button
-          title="Save"
+          title={strings('save')}
           isLoading={isSaving}
           onPress={handleSubmit}
           style={applyStyles({width: '48%'})}

@@ -276,6 +276,8 @@ const en: Strings = {
   no: 'No',
   all: 'All',
   no_result_found: 'No result found',
+  remove: 'Remove',
+  tel: 'Tel',
   select_from_phonebook: 'Select from Phonebook',
   filter: {one: 'Filter', other: 'Filters'},
   filter_options: {
@@ -321,20 +323,38 @@ const en: Strings = {
       title: 'Payment preview label',
       description:
         'The payment preview label will be. You can change it to a text that your customers will understand',
+      payment_label_updated: 'Payment Label updated',
+      validation_message:
+        'Payment label cannot be more than 150 characters long',
+      you_can_pay_me_via: 'You can pay me via',
     },
     payment_container: {
+      payment_added: 'PAYMENT OPTION ADDED',
+      warning_message: 'Please fill all the fields in the form',
+      payment_edited: 'PAYMENT OPTION EDITED',
       add_payment_info: 'add Payment info',
       edit_payment_info: 'edit Payment info',
+      remove_message: 'Are you sure you want to remove the payment option?',
+      payment_settings: 'Payment Settings',
       no_payment_option: {
         description:
           'Add your preferred methods of collecting payment so your customers can know how to pay you',
       },
       copy_payment_link: 'COPY LINK',
       preview_payment_page: 'Preview Payment Page',
+      add_new_payment: 'Add New Payment',
     },
-    payment_preview_item: {
-      copied: 'copied',
-      copy: 'copy',
+    payment_form: {
+      label: 'Select a payment method',
+    },
+    copied: 'copied',
+    copy: 'copy',
+    payment_preview_modal: {
+      heading: 'Your Payment Page Preview',
+      footer: {
+        title: 'Powered by Shara Inc © 2020',
+        website_url: 'www.shara.co',
+      },
     },
   },
   more: {
