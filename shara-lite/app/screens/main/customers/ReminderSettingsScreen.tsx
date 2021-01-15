@@ -42,7 +42,7 @@ export const ReminderSettingsScreen = withModal(
       updatePaymentReminder,
     } = usePaymentReminder();
     const [reminders, setReminders] = useState<IPaymentReminder[]>(
-      getPaymentReminders(),
+      getPaymentReminders({customer}),
     );
 
     const {showSuccessToast} = useContext(ToastContext);
@@ -77,7 +77,7 @@ export const ReminderSettingsScreen = withModal(
         },
       });
       showSuccessToast(strings('payment_reminder.reminder_added'));
-      setReminders(getPaymentReminders());
+      setReminders(getPaymentReminders({customer}));
     }, [
       dueDate,
       customer,
@@ -90,9 +90,9 @@ export const ReminderSettingsScreen = withModal(
       async (reminder) => {
         await deletePaymentReminder({paymentReminder: reminder});
         showSuccessToast(strings('payment_reminder.reminder_removed'));
-        setReminders(getPaymentReminders());
+        setReminders(getPaymentReminders({customer}));
       },
-      [showSuccessToast, deletePaymentReminder, getPaymentReminders],
+      [customer, showSuccessToast, deletePaymentReminder, getPaymentReminders],
     );
 
     const handleRemoveReminder = useCallback(
@@ -116,7 +116,7 @@ export const ReminderSettingsScreen = withModal(
     );
 
     const handleGoBack = useCallback(() => {
-      if (!dueDate || !getPaymentReminders().length) {
+      if (!dueDate || !getPaymentReminders({customer}).length) {
         const close = openModal('bottom-half', {
           renderContent: () => (
             <View style={applyStyles('p-16')}>
@@ -151,7 +151,7 @@ export const ReminderSettingsScreen = withModal(
       } else {
         navigation.goBack();
       }
-    }, [dueDate, navigation, openModal, getPaymentReminders]);
+    }, [customer, dueDate, navigation, openModal, getPaymentReminders]);
 
     return (
       <SafeAreaView style={applyStyles('flex-1 bg-gray-20')}>
