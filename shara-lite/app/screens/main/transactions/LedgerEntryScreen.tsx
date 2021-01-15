@@ -65,7 +65,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     customer_name: customer?.name ?? '',
     from_who:
       businessInfo.name || user?.firstname
-        ? strings('receipt_share_from_who', {
+        ? strings('receipts.receipt_share_from_who', {
             business_name: businessInfo.name ?? user?.firstname,
           })
         : '',

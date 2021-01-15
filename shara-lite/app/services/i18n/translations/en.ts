@@ -194,11 +194,11 @@ const en: Strings = {
       date_range: 'Date Range',
     },
     receipt_share_title: 'Share Receipt',
-    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase from{{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`.replace(
+    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase {{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`.replace(
       /\\n/g,
       '\n',
     ),
-    receipt_share_from_who: ' {{business_name}}',
+    receipt_share_from_who: ' from {{business_name}}',
     receipt_share_credit_message:
       ' and you owe {{credit_amount}}{{due_date_message}}{{payment_link_message}}',
     receipt_share_due_date_message: ' which is due on {{due_date}}',
