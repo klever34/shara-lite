@@ -581,7 +581,7 @@ const TransactionDetails = withModal(
                     {customer?.balance && customer?.balance > 0
                       ? strings('transaction.balance_statement', {
                           customer_name: customer?.name,
-                          amount: amountWithCurrency(customer.balance),
+                          balance: amountWithCurrency(customer.balance),
                         })
                       : strings('transaction.not_owing', {
                           customer_name: customer?.name,

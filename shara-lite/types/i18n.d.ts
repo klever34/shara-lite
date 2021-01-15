@@ -79,7 +79,7 @@ interface Strings {
   result: PluralizedString;
   clear_filter: string;
   from: string;
-  To: string;
+  to: string;
   success: string;
   start_date: string;
   end_date: string;
