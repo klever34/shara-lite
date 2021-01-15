@@ -344,7 +344,8 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               style={applyStyles(
                 'text-400 text-gray-100 text-xs text-uppercase',
               )}>
-              {format(transaction.transaction_date, 'dd MMM, yyyy')}
+              {format(transaction.transaction_date, 'dd MMM, yyyy')},{' '}
+              {format(transaction.transaction_date, 'hh:mm a')}
             </Text>
           )}
           <View style={applyStyles('flex-row items-center flex-wrap pt-4')}>
