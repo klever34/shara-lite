@@ -269,7 +269,7 @@ const TransactionDetails = withModal(
     const handleShareStatement = useCallback(async () => {
       const closeModal = openModal('loading', {text: 'Generating report...'});
       try {
-        let base64Pdf = await exportCustomerReportToPDF({
+        let {pdfBase64String} = await exportCustomerReportToPDF({
           customer,
           totalAmount,
           collectedAmount,
@@ -278,14 +278,14 @@ const TransactionDetails = withModal(
           filterRange: getReportFilterRange(),
           data: filteredReceipts.sorted('transaction_date', false),
         });
-        base64Pdf = 'data:application/pdf;base64,' + base64Pdf;
+        pdfBase64String = 'data:application/pdf;base64,' + pdfBase64String;
         const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
         if (hasWhatsapp && whatsAppNumber) {
           closeModal();
           await Share.shareSingle({
             //@ts-ignore
             whatsAppNumber,
-            url: base64Pdf,
+            url: pdfBase64String,
             social: Share.Social.WHATSAPP,
             title: strings('customer_statement.title'),
             filename: strings('customer_statement.filename', {
@@ -298,7 +298,7 @@ const TransactionDetails = withModal(
         } else {
           closeModal();
           await Share.open({
-            url: base64Pdf,
+            url: pdfBase64String,
             title: strings('customer_statement.title'),
             filename: strings('customer_statement.filename', {
               customer_name: customer ? customer.name : '',

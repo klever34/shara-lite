@@ -93,6 +93,8 @@ target 'SharaRN' do
 
   pod 'react-native-html-to-pdf', :path => '../node_modules/react-native-html-to-pdf-lite'
 
+  pod 'RNFileViewer', :path => '../node_modules/react-native-file-viewer'
+
   target 'SharaRNTests' do
     inherit! :complete
     # Pods for testing

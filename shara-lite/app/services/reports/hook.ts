@@ -156,10 +156,11 @@ export const useReports = () => {
     async (options: ReportToHTMLInterface) => {
       const html = generateUserReportHTML(options);
       const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
-      await exportHTMLToPDF({
+      const {pdfFilePath} = await exportHTMLToPDF({
         html,
         fileName: `Shara/Reports/Shara Report - ${date}.pdf`,
       });
+      return pdfFilePath;
     },
     [],
   );
@@ -169,7 +170,7 @@ export const useReports = () => {
       const {customer} = options;
       const html = generateCustomerReportHTML(options);
       const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
-      const pdfBase64String = await exportHTMLToPDF({
+      const {pdfBase64String} = await exportHTMLToPDF({
         html,
         fileName: `Shara/Customer Ledger/${
           customer?.name ?? 'Customer'

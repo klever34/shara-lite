@@ -16,6 +16,7 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {Alert, FlatList, SafeAreaView, Text, View} from 'react-native';
+import FileViewer from 'react-native-file-viewer';
 import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
@@ -90,7 +91,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
   const handleDownloadReport = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Generating report...'});
     try {
-      await exportUserReportToPDF({
+      const pdfFilePath = await exportUserReportToPDF({
         totalAmount,
         collectedAmount,
         outstandingAmount,
@@ -99,6 +100,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         data: filteredReceipts.sorted('transaction_date', false),
       });
       closeModal();
+      await FileViewer.open(pdfFilePath, {showOpenWithDialog: true});
       getAnalyticsService()
         .logEvent('userDownloadedReport', {})
         .then(() => {})

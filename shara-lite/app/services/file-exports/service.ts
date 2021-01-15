@@ -85,20 +85,20 @@ export const exportHTMLToPDF = async (data: {
   const options = {
     html,
     fileName: 'test',
-    directory: 'Downloads',
   };
   const file = await RNHTMLtoPDF.convert(options);
-  const base64Data = await RNFetchBlob.fs.readFile(
-    `file://${file.filePath}`,
+  const pdfFilePath = file.filePath;
+  const pdfBase64String = await RNFetchBlob.fs.readFile(
+    `file://${pdfFilePath}`,
     'base64',
   );
 
   await saveToFile({
     path,
-    data: base64Data,
     encoding: 'base64',
+    data: pdfBase64String,
     mime: 'application/pdf',
   });
 
-  return base64Data;
+  return {pdfBase64String, pdfFilePath};
 };
