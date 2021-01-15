@@ -258,6 +258,7 @@ const TransactionDetails = withModal(
       try {
         setIsSharingStatment(true);
         let base64Pdf = await exportCustomerReportToPDF({
+          customer,
           totalAmount,
           collectedAmount,
           outstandingAmount,
