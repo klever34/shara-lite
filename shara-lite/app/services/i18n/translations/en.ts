@@ -194,7 +194,7 @@ const en: Strings = {
       date_range: 'Date Range',
     },
     receipt_share_title: 'Share Receipt',
-    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase {{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`.replace(
+    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`.replace(
       /\\n/g,
       '\n',
     ),
