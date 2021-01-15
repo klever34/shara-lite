@@ -19,6 +19,9 @@ import React, {useCallback, useContext, useState} from 'react';
 import {Alert, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {MainStackParamList} from '..';
 import {ReminderForm} from './ReminderForm';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type ReminderSettingsScreenProps = {
   route: RouteProp<MainStackParamList, 'ReminderSettings'>;
@@ -39,7 +42,7 @@ export const ReminderSettingsScreen = withModal(
       updatePaymentReminder,
     } = usePaymentReminder();
     const [reminders, setReminders] = useState<IPaymentReminder[]>(
-      getPaymentReminders(),
+      getPaymentReminders({customer}),
     );
 
     const {showSuccessToast} = useContext(ToastContext);
@@ -73,8 +76,9 @@ export const ReminderSettingsScreen = withModal(
           customer: customer,
         },
       });
-      showSuccessToast('REMINDER ADDED');
-      setReminders(getPaymentReminders());
+      showSuccessToast(strings('payment_reminder.reminder_added'));
+      console.log(getPaymentReminders({customer}));
+      setReminders(getPaymentReminders({customer}));
     }, [
       dueDate,
       customer,
@@ -86,24 +90,24 @@ export const ReminderSettingsScreen = withModal(
     const handleDeleteReminder = useCallback(
       async (reminder) => {
         await deletePaymentReminder({paymentReminder: reminder});
-        showSuccessToast('REMINDER REMOVED');
-        setReminders(getPaymentReminders());
+        showSuccessToast(strings('payment_reminder.reminder_removed'));
+        setReminders(getPaymentReminders({customer}));
       },
-      [showSuccessToast, deletePaymentReminder, getPaymentReminders],
+      [customer, showSuccessToast, deletePaymentReminder, getPaymentReminders],
     );
 
     const handleRemoveReminder = useCallback(
       (reminder) => {
         Alert.alert(
-          'Warning',
-          'Are you sure you want to remove the payment reminder?',
+          strings('warning'),
+          strings('payment_reminder.confirm_delete'),
           [
             {
-              text: 'No',
+              text: strings('no'),
               onPress: () => {},
             },
             {
-              text: 'Yes',
+              text: strings('yes'),
               onPress: () => handleDeleteReminder(reminder),
             },
           ],
@@ -113,7 +117,7 @@ export const ReminderSettingsScreen = withModal(
     );
 
     const handleGoBack = useCallback(() => {
-      if (!dueDate || !getPaymentReminders().length) {
+      if (!dueDate || !getPaymentReminders({customer}).length) {
         const close = openModal('bottom-half', {
           renderContent: () => (
             <View style={applyStyles('p-16')}>
@@ -121,15 +125,14 @@ export const ReminderSettingsScreen = withModal(
                 style={applyStyles(
                   'text-center text-700 text-gray-300 text-base',
                 )}>
-                Are you sure you want to exit the page without setting a
-                reminder?
+                {strings('payment_reminder.confirm_exit')}
               </Text>
               <View
                 style={applyStyles(
                   'pt-24 flex-row items-center justify-between',
                 )}>
                 <Button
-                  title="Yes, Proceed"
+                  title={strings('yes_proceed')}
                   onPress={() => {
                     close();
                     navigation.goBack();
@@ -138,7 +141,7 @@ export const ReminderSettingsScreen = withModal(
                   style={applyStyles({width: '48%'})}
                 />
                 <Button
-                  title="Set Reminder"
+                  title={strings('payment_reminder.set_reminder')}
                   onPress={() => close()}
                   style={applyStyles({width: '48%'})}
                 />
@@ -149,7 +152,7 @@ export const ReminderSettingsScreen = withModal(
       } else {
         navigation.goBack();
       }
-    }, [dueDate, navigation, openModal, getPaymentReminders]);
+    }, [customer, dueDate, navigation, openModal, getPaymentReminders]);
 
     return (
       <SafeAreaView style={applyStyles('flex-1 bg-gray-20')}>
@@ -162,7 +165,7 @@ export const ReminderSettingsScreen = withModal(
               style={applyStyles(
                 'pb-8 px-16 text-uppercase text-700 text-gray-300',
               )}>
-              Collection settings
+              {strings('payment_reminder.collection_settings')}
             </Text>
             <DatePicker
               //@ts-ignore
@@ -186,11 +189,13 @@ export const ReminderSettingsScreen = withModal(
                         style={applyStyles(
                           'pb-2 text-400 text-gray-300 text-lg',
                         )}>
-                        Set Collection Date
+                        {strings('payment_reminder.set_collection_date.title')}
                       </Text>
                       <Text
                         style={applyStyles('text-xs text-gray-200 text-400')}>
-                        Select the day for customer to pay back
+                        {strings(
+                          'payment_reminder.set_collection_date.description',
+                        )}
                       </Text>
                     </View>
 
@@ -212,7 +217,7 @@ export const ReminderSettingsScreen = withModal(
                 style={applyStyles(
                   'pb-8 px-16 text-uppercase text-700 text-gray-300',
                 )}>
-                Reminder settings
+                {strings('payment_reminder.reminder_settings')}
               </Text>
               <Touchable onPress={handleAddReminder}>
                 <View
@@ -228,11 +233,10 @@ export const ReminderSettingsScreen = withModal(
                   <View style={applyStyles('flex-1')}>
                     <Text
                       style={applyStyles('pb-2 text-400 text-red-200 text-lg')}>
-                      Add Reminder
+                      {strings('payment_reminder.add_reminder.title')}
                     </Text>
                     <Text style={applyStyles('text-xs text-gray-200 text-400')}>
-                      Tap here to create a new reminder. You can create as many
-                      as you want.
+                      {strings('payment_reminder.add_reminder.description')}
                     </Text>
                   </View>
                   <Icon
@@ -252,15 +256,14 @@ export const ReminderSettingsScreen = withModal(
                 })}>
                 <Text
                   style={applyStyles('pb-2 text-400 text-gray-300 text-lg')}>
-                  Default Reminder
+                  {strings('payment_reminder.default_reminder.title')}
                 </Text>
                 <Text
                   style={applyStyles('pb-12 text-xs text-gray-200 text-400')}>
-                  An automatic reminder will be sent to your customer on the
-                  collection date
+                  {strings('payment_reminder.default_reminder.description')}
                 </Text>
                 <Text style={applyStyles('text-gray-300 text-700')}>
-                  On the day of collection
+                  {strings('payment_reminder.on_the_day_of_collection')}
                 </Text>
               </View>
               {!!reminders.length &&

@@ -12,6 +12,9 @@ import {format} from 'date-fns';
 import LottieView from 'lottie-react-native';
 import React, {useCallback, useState} from 'react';
 import {Image, Text, View} from 'react-native';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type TransactionReviewProps = {
   heading?: string;
@@ -46,18 +49,17 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     transaction.customer &&
     (transaction.credit_amount || dueDate);
 
-  const shareReceiptMessage = `Hi ${
-    transaction.customer?.name ?? ''
-  }, thank you for your recent purchase from ${
-    businessInfo.name
-  }. You paid ${amountWithCurrency(
-    transaction.amount_paid,
-  )}.\n\nPowered by Shara for free.\nwww.shara.co`;
+  const shareReceiptMessage = strings('receipts.receipt_share_message', {
+    customer_name: transaction.customer?.name,
+    from_who: businessInfo.name,
+    amount: amountWithCurrency(transaction.amount_paid),
+    credit_message: '',
+  });
 
   const receiptShareProps: ShareHookProps = {
     image: receiptImage,
-    title: 'Share Receipt',
-    subject: 'Share Receipt',
+    title: strings('receipts.receipt_share_title'),
+    subject: strings('receipts.receipt_share_title'),
     message: shareReceiptMessage,
     recipient: transaction?.customer?.mobile,
   };
@@ -164,7 +166,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
                 style={applyStyles(
                   'px-4 text-sm text-uppercase text-gray-300 text-700 text-center',
                 )}>
-                Share:
+                {strings('share')}:
               </Text>
               <View style={applyStyles('px-4')}>
                 <Touchable onPress={onWhatsappShare}>
@@ -224,7 +226,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
                       style={applyStyles(
                         'pl-xs text-xs text-400 text-uppercase text-gray-200',
                       )}>
-                      other
+                      {strings('other')}
                     </Text>
                   </View>
                 </Touchable>
@@ -236,7 +238,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
       {dueDate && !transaction.is_collection && (
         <View style={applyStyles('flex-row center')}>
           <Text style={applyStyles('text-gray-100 text-uppercase')}>
-            Collect on{' '}
+            {strings('transaction.collect_on')}{' '}
           </Text>
           <Text style={applyStyles('text-red-200 text-700')}>
             {format(dueDate, 'dd MMM, yyyy')}
@@ -261,13 +263,17 @@ export const TransactionReview = (props: TransactionReviewProps) => {
                 onPress={toggleShow}
                 variantColor="transparent"
                 style={applyStyles({width: '100%'})}
-                title={dueDate ? 'Change Collection Date' : 'Collection Date'}
+                title={
+                  dueDate
+                    ? strings('transaction.change_collection_date')
+                    : strings('transaction.collection_date')
+                }
               />
             )}
           </DatePicker>
         )}
         <Button
-          title="Done"
+          title={strings('done')}
           onPress={onDone}
           style={applyStyles({width: '48%'})}
         />

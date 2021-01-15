@@ -61,6 +61,7 @@ buck-out/
 
 # CocoaPods
 /ios/Pods/
+/ios/GoogleService-info.plist
 /android/google-play-store-service-account.json
 /android/firebase-testlab-secret.json
 /android/app/google-services.json

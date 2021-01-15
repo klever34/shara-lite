@@ -8,6 +8,9 @@ import React, {useCallback, useEffect, useRef} from 'react';
 import {Image, ScrollView, Text, View, ViewStyle} from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type Props = {
   note?: string;
@@ -122,7 +125,7 @@ export const ReceiptImage = (props: Props) => {
             })}>
             <View style={applyStyles('pb-sm flex-row items-center')}>
               <Text style={applyStyles('print-text-400 text-black text-lg')}>
-                Receipt No:
+                {strings('receipts.receipt_no')}:
               </Text>
               <Text
                 style={applyStyles('pl-sm print-text-400 text-black text-lg')}>
@@ -143,7 +146,7 @@ export const ReceiptImage = (props: Props) => {
             {!!customer?.name && (
               <View style={applyStyles('pb-16 flex-row items-center')}>
                 <Text style={applyStyles('print-text-400 text-black text-lg')}>
-                  Receipt For:
+                  {strings('receipts.receipt_for')}:
                 </Text>
                 <Text
                   style={applyStyles(
@@ -157,7 +160,7 @@ export const ReceiptImage = (props: Props) => {
               <View>
                 <Text
                   style={applyStyles('pb-4 print-text-400 text-black text-lg')}>
-                  Note: {note}
+                  {strings('note', {count: 1})}: {note}
                 </Text>
               </View>
             )}
@@ -173,18 +176,18 @@ export const ReceiptImage = (props: Props) => {
               style={applyStyles(
                 'print-text-400 pb-8 text-2xl text-uppercase',
               )}>
-              Total: {amountWithCurrency(totalAmount)}
+              {strings('total')}: {amountWithCurrency(totalAmount)}
             </Text>
             <Text
               style={applyStyles(
                 'print-text-400 pb-8 text-2xl text-uppercase',
               )}>
-              Paid: {amountWithCurrency(amountPaid)}
+              {strings('paid')}: {amountWithCurrency(amountPaid)}
             </Text>
             {!!creditAmount && (
               <Text
                 style={applyStyles('print-text-400 text-2xl text-uppercase')}>
-                Balance: {amountWithCurrency(creditAmount)}
+                {strings('balance')}: {amountWithCurrency(creditAmount)}
               </Text>
             )}
           </View>
@@ -197,7 +200,7 @@ export const ReceiptImage = (props: Props) => {
             })}>
             <Text
               style={applyStyles('print-text-400 pb-8 text-sm text-uppercase')}>
-              create receipts for free with shara
+              {strings('create_receipts_with_shara')}
             </Text>
             <Text style={applyStyles('print-text-400 text-sm')}>
               www.shara.co

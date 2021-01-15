@@ -10,6 +10,8 @@ import React, {useCallback, useState} from 'react';
 import {Image, ScrollView, Text, View} from 'react-native';
 import {EditPaymetPreviewLabelModal} from './EditPaymentPreviewLabelModal';
 import {PaymentPreviewItem} from './PaymentPreviewItem';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 type Props = {
   onClose: () => void;
@@ -50,7 +52,7 @@ export const PaymentPreviewModal = withModal(
     return (
       <>
         <Header
-          title="Your Payment Page Preview"
+          title={strings('payment.payment_preview_modal.heading')}
           iconLeft={{iconName: 'x', onPress: onClose}}
         />
         <View style={applyStyles('flex-1 bg-gray-10 px-16 h-screen')}>
@@ -100,7 +102,7 @@ export const PaymentPreviewModal = withModal(
                             color: colors['gray-300'],
                           },
                         )}>
-                        Tel: {getMobileNumber()}
+                        {strings('tel')}: {getMobileNumber()}
                       </Text>
                     )}
                   </View>
@@ -135,10 +137,10 @@ export const PaymentPreviewModal = withModal(
         </View>
         <View style={applyStyles('items-center py-32 bg-gray-10')}>
           <Text style={applyStyles('text-center text-gray-100 text-sm')}>
-            Powered by Shara Inc © 2020
+            {strings('payment.payment_preview_modal.footer.title')}
           </Text>
           <Text style={applyStyles('text-center text-gray-100 text-sm')}>
-            www.shara.co
+            {strings('payment.payment_preview_modal.footer.website_url')}
           </Text>
         </View>
       </>

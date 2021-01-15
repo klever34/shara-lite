@@ -13,6 +13,8 @@ import React, {
 } from 'react';
 import {TextInput, View} from 'react-native';
 import {PaymentProvider} from 'types/app';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 type PaymentFormProps = {
   initialValues?: any;
@@ -88,7 +90,7 @@ export const PaymentForm = ({
           {!hidePicker && (
             <Picker
               mode="dropdown"
-              prompt="Select a payment method"
+              prompt={strings('payment.payment_form.label')}
               selectedValue={values.slug}
               onValueChange={(itemValue) => {
                 setFieldValue('slug', itemValue);
@@ -103,7 +105,10 @@ export const PaymentForm = ({
                 setSelectedPaymentProvider(selectedProvider);
               }}
               style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-              <Picker.Item label="Select a payment method" value="" />
+              <Picker.Item
+                label={strings('payment.payment_form.label')}
+                value=""
+              />
               {paymentProviders.map((provider) => (
                 <Picker.Item
                   key={provider.slug}

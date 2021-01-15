@@ -1,14 +1,18 @@
 import {AuthView, Button} from '@/components';
 import {ToastContext} from '@/components/Toast';
-import {getFCMToken} from '@/helpers/utils';
-import {getAnalyticsService, getApiService, getI18nService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getI18nService,
+  getNotificationService,
+} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useInitRealm} from '@/services/realm';
 import {applyStyles, colors} from '@/styles';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {useErrorHandler} from 'react-error-boundary';
 import {Alert, Platform, Text, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
@@ -23,7 +27,6 @@ export const OTPVerification = () => {
   const {params} = useRoute<RouteProp<AuthStackParamList, 'OTPVerification'>>();
 
   const {initRealm} = useInitRealm();
-  const handleError = useErrorHandler();
   const navigation = useAppNavigation();
   const [hash, setHash] = useState('');
 
@@ -57,7 +60,7 @@ export const OTPVerification = () => {
         const apiService = getApiService();
         setLoading(true);
         try {
-          const fcmToken = await getFCMToken();
+          const fcmToken = await getNotificationService().getFCMToken();
           await apiService.logIn(payload);
           fcmToken &&
             (await apiService.fcmToken({
@@ -84,7 +87,7 @@ export const OTPVerification = () => {
         }
       }
     },
-    [handleError, initRealm, navigation, params.mobile],
+    [initRealm, navigation, params.mobile],
   );
 
   useEffect(() => {
@@ -116,7 +119,7 @@ export const OTPVerification = () => {
   const getHash = () =>
     RNOtpVerify.getHash()
       .then((text) => setHash(text[0]))
-      .catch(console.log);
+      .catch(handleError);
 
   useEffect(() => {
     getHash();

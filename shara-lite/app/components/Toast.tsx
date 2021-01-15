@@ -33,7 +33,7 @@ export class Toast extends Component<ToastProps, ToastState> {
   private readonly animateOpacity: Animated.Value;
   private isShownToast: boolean;
   private message: string;
-  private timerID: number = -1;
+  private timerID: any = -1;
 
   constructor(props: ToastProps) {
     super(props);

@@ -13,6 +13,10 @@ import {
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 
+interface getPaymentRemindersInterface {
+  customer: ICustomer;
+}
+
 interface savePaymentReminderInterface {
   paymentReminder: IPaymentReminder;
 }
@@ -27,7 +31,9 @@ interface deletePaymentReminderInterface {
 }
 
 interface usePaymentReminderInterface {
-  getPaymentReminders: () => IPaymentReminder[];
+  getPaymentReminders: (
+    params: getPaymentRemindersInterface,
+  ) => IPaymentReminder[];
   savePaymentReminder: (
     data: savePaymentReminderInterface,
   ) => Promise<IPaymentReminder>;
@@ -42,11 +48,16 @@ interface usePaymentReminderInterface {
 export const usePaymentReminder = (): usePaymentReminderInterface => {
   const realm = useRealm();
 
-  const getPaymentReminders = (): IPaymentReminder[] => {
+  const getPaymentReminders = ({
+    customer,
+  }: getPaymentRemindersInterface): IPaymentReminder[] => {
     return (realm
       .objects<IPaymentReminder>(modelName)
       .sorted('created_at', false)
-      .filtered('is_deleted != true') as unknown) as IPaymentReminder[];
+      .filtered(
+        'is_deleted != true AND customer = $0',
+        customer,
+      ) as unknown) as IPaymentReminder[];
   };
 
   const savePaymentReminder = async ({
@@ -80,7 +91,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
         when: updatedPaymentReminder.when,
         unit: updatedPaymentReminder.unit,
         due_date: updatedPaymentReminder.due_date?.toISOString() ?? '',
-        customer: String(updatedPaymentReminder.customer._id ?? ''),
+        customer: String(updatedPaymentReminder?.customer?._id ?? ''),
       })
       .then(() => {});
 
@@ -114,7 +125,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
         when: updatedPaymentReminder.when,
         unit: updatedPaymentReminder.unit,
         due_date: updatedPaymentReminder.due_date?.toISOString() ?? '',
-        customer: String(updatedPaymentReminder.customer._id ?? ''),
+        customer: String(updatedPaymentReminder?.customer?._id ?? ''),
       })
       .then(() => {});
   };
@@ -130,7 +141,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
         when: paymentReminder.when,
         unit: paymentReminder.unit,
         due_date: paymentReminder.due_date?.toISOString() ?? '',
-        customer: String(paymentReminder.customer._id ?? ''),
+        customer: String(paymentReminder?.customer?._id ?? ''),
       })
       .then(() => {});
   };

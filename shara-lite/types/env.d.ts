@@ -1,7 +1,10 @@
 declare module 'react-native-config' {
   export const app_name: string;
+
   export const PUBNUB_SUB_KEY: string;
+
   export const PUBNUB_PUB_KEY: string;
+
   export const PUBNUB_USER_CRYPT_KEY: string;
 
   export const ATLAS_REALM_APP_ID: string;
@@ -18,6 +21,8 @@ declare module 'react-native-config' {
 
   export const WEB_BASE_URL: string;
 
+  export const FCM_NOTIFICATION_TOPIC: string;
+
   export const ENVIRONMENT:
     | 'delivery'
     | 'test'
@@ -25,6 +30,7 @@ declare module 'react-native-config' {
     | 'discovery'
     | 'production'
     | 'local';
+
   export const API_BASE_URL: string;
 
   export const GOOGLE_API_KEY: string;

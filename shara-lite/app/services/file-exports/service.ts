@@ -1,6 +1,7 @@
 import XLSX from 'xlsx';
 import {PermissionsAndroid} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
+import RNHTMLtoPDF from 'react-native-html-to-pdf-lite';
 
 const dirs = RNFetchBlob.fs.dirs;
 
@@ -73,4 +74,32 @@ export const saveToFile = async ({
   });
 
   return true;
+};
+
+export const exportHTMLToPDF = async (data: {
+  html: string;
+  fileName: string;
+  previewFileName?: string;
+}) => {
+  const {html, fileName, previewFileName} = data;
+  const path = `${dirs.DownloadDir}/${fileName}`;
+  const options = {
+    html,
+    fileName: previewFileName || 'test',
+  };
+  const file = await RNHTMLtoPDF.convert(options);
+  const pdfFilePath = file.filePath;
+  const pdfBase64String = await RNFetchBlob.fs.readFile(
+    `file://${pdfFilePath}`,
+    'base64',
+  );
+
+  await saveToFile({
+    path,
+    encoding: 'base64',
+    data: pdfBase64String,
+    mime: 'application/pdf',
+  });
+
+  return {pdfBase64String, pdfFilePath};
 };

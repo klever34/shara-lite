@@ -1,5 +1,10 @@
 import {FormBuilder, FormFields, PhoneNumber} from '@/components';
-import {getAnalyticsService, getApiService, getAuthService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useContext, useMemo} from 'react';
@@ -9,6 +14,8 @@ import parsePhoneNumber from 'libphonenumber-js';
 import {UserProfileFormPayload} from '@/services/api';
 import {ToastContext} from '@/components/Toast';
 import {handleError} from '@/services/error-boundary';
+
+const i18nService = getI18nService();
 
 export const UserProfileSettings = () => {
   const authService = getAuthService();
@@ -32,7 +39,7 @@ export const UserProfileSettings = () => {
         type: 'text',
         props: {
           value: firstname,
-          label: 'First Name',
+          label: i18nService.strings('profile_settings.fields.firstName.label'),
           containerStyle: applyStyles({width: '48%', marginRight: '2%'}),
         },
       },
@@ -40,7 +47,7 @@ export const UserProfileSettings = () => {
         type: 'text',
         props: {
           value: lastname,
-          label: 'Last Name',
+          label: i18nService.strings('profile_settings.fields.lastName.label'),
           containerStyle: applyStyles({width: '48%', marginLeft: '2%'}),
         },
       },
@@ -48,7 +55,7 @@ export const UserProfileSettings = () => {
         type: 'mobile',
         props: {
           value: {number: nationalNumber, callingCode: country_code},
-          label: 'What’s your phone number?',
+          label: i18nService.strings('profile_settings.fields.mobile.label'),
           editable: false,
           focusable: false,
         },
@@ -57,7 +64,7 @@ export const UserProfileSettings = () => {
         type: 'text',
         props: {
           value: email,
-          label: "What's your email? (Optional)",
+          label: i18nService.strings('profile_settings.fields.email.label'),
           keyboardType: 'email-address',
           rightIcon: 'mail',
         },
@@ -69,7 +76,7 @@ export const UserProfileSettings = () => {
   return (
     <Page
       header={{
-        title: 'Profile Settings',
+        title: i18nService.strings('profile_settings.title'),
         iconLeft: {},
         style: applyStyles('py-8'),
       }}
@@ -77,7 +84,10 @@ export const UserProfileSettings = () => {
       <FormBuilder
         forceUseFormButton
         fields={formFields}
-        actionBtns={[undefined, {title: 'Save'}]}
+        actionBtns={[
+          undefined,
+          {title: i18nService.strings('profile_settings.save_button')},
+        ]}
         onSubmit={async (values) => {
           const phoneNumber = values.mobile as PhoneNumber;
           const formValues = {
@@ -87,7 +97,9 @@ export const UserProfileSettings = () => {
           };
           try {
             await apiService.userProfileUpdate(formValues);
-            showSuccessToast('User profile updated successfully');
+            showSuccessToast(
+              i18nService.strings('profile_settings.success_text'),
+            );
             getAnalyticsService()
               .logEvent('userProfileUpdated', {})
               .then(() => {})

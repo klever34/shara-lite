@@ -16,6 +16,9 @@ import {FlatList, SafeAreaView, Text, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import {useReceiptList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type Props = ModalWrapperFields;
 
@@ -103,11 +106,15 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     if (filter === 'date-range' && filterStartDate && filterEndDate) {
       return (
         <Text>
-          <Text style={applyStyles('text-gray-300 text-400')}>From</Text>{' '}
+          <Text style={applyStyles('text-gray-300 text-400')}>
+            {strings('from')}
+          </Text>{' '}
           <Text style={applyStyles('text-red-200 text-400')}>
             {format(filterStartDate, 'dd MMM, yyyy')}
           </Text>{' '}
-          <Text style={applyStyles('text-gray-300 text-400')}>to</Text>{' '}
+          <Text style={applyStyles('text-gray-300 text-400')}>
+            {strings('to')}
+          </Text>{' '}
           <Text style={applyStyles('text-red-200 text-400')}>
             {format(filterEndDate, 'dd MMM, yyyy')}
           </Text>
@@ -138,7 +145,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         <SearchFilter
           value={searchTerm}
           onSearch={handleReceiptSearch}
-          placeholderText="Search records here"
+          placeholderText="Search customers here"
           containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
         />
@@ -151,7 +158,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 borderColor: colors['gray-20'],
               })}>
               <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
-                Filters
+                {strings('filter', {count: 2})}
               </Text>
               <Icon
                 size={16}
@@ -174,7 +181,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           )}>
           <View style={applyStyles('flex-row items-center flex-1')}>
             <Text style={applyStyles('text-gray-50 text-700 text-uppercase')}>
-              Filter:{' '}
+              {strings('filter', {count: 1})}:{' '}
             </Text>
             <View style={applyStyles('flex-1')}>{getFilterLabelText()}</View>
           </View>
@@ -189,7 +196,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 style={applyStyles(
                   'text-xs text-gray-200 text-700 text-uppercase pr-8',
                 )}>
-                Clear
+                {strings('clear')}
               </Text>
               <Icon
                 name="x"
@@ -233,7 +240,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   style={applyStyles(
                     'pb-4 text-xxs text-uppercase text-400 text-gray-200',
                   )}>
-                  amount collected
+                  {strings('transaction.amount_collected')}
                 </Text>
                 <Text style={applyStyles('text-700 text-black text-base')}>
                   {amountWithCurrency(collectedAmount)}
@@ -257,7 +264,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   style={applyStyles(
                     'pb-4 text-xxs text-uppercase text-400 text-gray-200',
                   )}>
-                  amount outstanding
+                  {strings('transaction.amount_outstanding')}
                 </Text>
                 <Text style={applyStyles('text-700 text-black text-base')}>
                   {amountWithCurrency(outstandingAmount)}
@@ -275,7 +282,8 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             )}>
             <Text
               style={applyStyles('text-black text-700 text-uppercase flex-1')}>
-              Total amount: {amountWithCurrency(totalAmount)}
+              {strings('transaction.total_amount')}:{' '}
+              {amountWithCurrency(totalAmount)}
             </Text>
             <Touchable onPress={handleGoToReportScreen}>
               <View
@@ -291,7 +299,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   style={applyStyles(
                     'text-xxs text-gray-200 text-700 text-uppercase pr-8',
                   )}>
-                  View report
+                  {strings('transaction.view_report')}
                 </Text>
                 <Icon
                   size={16}
@@ -308,10 +316,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
           <Text style={applyStyles('text-base text-gray-300')}>
             {searchTerm
-              ? `${filteredReceipts.length} ${
-                  filteredReceipts.length > 1 ? 'Results' : 'Result'
-                }`
-              : 'Activities'}
+              ? strings('result', {
+                  count: filteredReceipts.length,
+                })
+              : strings('activities')}
           </Text>
         </View>
       )}
@@ -330,17 +338,19 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               {!!searchTerm && (
                 <Text
                   style={applyStyles('text-black text-sm pb-4 text-center')}>
-                  No results found
+                  {strings('result', {
+                    count: 0,
+                  })}
                 </Text>
               )}
               {!!filter && (
                 <Text
                   style={applyStyles('text-black text-sm pb-4 text-center')}>
-                  No activities were recorded for the chosen duration
+                  {strings('transaction.no_activities_recorded_for_duration')}
                 </Text>
               )}
               <Text style={applyStyles('text-black text-sm text-center')}>
-                Start adding records by tapping here
+                {strings('transaction.start_adding_records')}
               </Text>
             </View>
             <View style={applyStyles('center p-16 w-full')}>

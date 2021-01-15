@@ -12,6 +12,9 @@ import {useInfo} from '@/helpers/hooks';
 import {getAuthService} from '@/services';
 import {EntryButton, EntryContext} from '@/components/EntryView';
 import Touchable from '@/components/Touchable';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
@@ -90,7 +93,7 @@ export const HomeScreen = () => {
           component={TransactionsScreen}
           options={{
             tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Activities</TabBarLabel>
+              <TabBarLabel {...labelProps}>{strings('activities')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
               <Icon type="feathericons" name="home" size={20} color={color} />
@@ -111,7 +114,9 @@ export const HomeScreen = () => {
           component={CustomersScreen}
           options={{
             tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>Customers</TabBarLabel>
+              <TabBarLabel {...labelProps}>
+                {strings('customer', {count: 2})}
+              </TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
               <Icon type="feathericons" name="user" size={20} color={color} />

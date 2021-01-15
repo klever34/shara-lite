@@ -13,10 +13,12 @@ import {
   getAuthService,
   getNavigationService,
   getRemoteConfigService,
-} from '../services';
+} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import {useInitRealm} from '@/services/realm';
 import {version as currentVersion} from '../../package.json';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 const remoteConfigService = getRemoteConfigService();
 let minimumVersion = remoteConfigService.getValue('minimumVersion').asString();
@@ -55,56 +57,52 @@ const SplashScreen = () => {
     return false;
   }, []);
 
-  const handleRedirect = useCallback(
-    async () => {
-      const authService = getAuthService();
-      await authService.initialize();
+  const handleRedirect = useCallback(async () => {
+    const authService = getAuthService();
+    await authService.initialize();
 
-      if (authService.isLoggedIn()) {
-        try {
-          initRealm();
-        } catch (e) {
-          Alert.alert(
-            'Oops! Something went wrong.',
-            'Try clearing app data from application settings',
-            [
-              {
-                text: 'OK',
-                onPress: () => {
-                  if (process.env.NODE_ENV === 'production') {
-                    if (Platform.OS === 'android') {
-                      BackHandler.exitApp();
-                    }
+    if (authService.isLoggedIn()) {
+      try {
+        initRealm();
+      } catch (e) {
+        Alert.alert(
+          strings('alert.something_went_wrong'),
+          strings('alert.clear_app_data'),
+          [
+            {
+              text: strings('alert.ok'),
+              onPress: () => {
+                if (process.env.NODE_ENV === 'production') {
+                  if (Platform.OS === 'android') {
+                    BackHandler.exitApp();
                   }
-                },
+                }
               },
-            ],
-          );
-        }
+            },
+          ],
+        );
       }
+    }
 
-      setTimeout(() => {
-        if (shouldUpdateApp) {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'UpdateShara'}],
-          });
-        } else if (authService.isLoggedIn()) {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Main'}],
-          });
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Auth'}],
-          });
-        }
-      }, 750);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [navigation],
-  );
+    setTimeout(() => {
+      if (shouldUpdateApp) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'UpdateShara'}],
+        });
+      } else if (authService.isLoggedIn()) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Auth'}],
+        });
+      }
+    }, 750);
+  }, [initRealm, navigation, shouldUpdateApp]);
 
   useEffect(() => {
     handleRedirect();
@@ -116,9 +114,7 @@ const SplashScreen = () => {
         source={require('../assets/images/shara-lite_logo.png')}
         style={styles.image}
       />
-      <Text style={styles.text}>
-        Keep track of who owes you and get paid faster
-      </Text>
+      <Text style={styles.text}>{strings('shara_tagline')}</Text>
     </View>
   );
 };

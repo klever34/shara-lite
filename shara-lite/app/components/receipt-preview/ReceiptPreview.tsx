@@ -7,17 +7,17 @@ import {
   ToastAndroid,
   View,
 } from 'react-native';
-import {BluetoothModal, PreviewActionButton} from '@/components';
+import {PreviewActionButton} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
-import {amountWithCurrency, numberWithCommas} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import {
   getAnalyticsService,
   getAuthService,
-  getStorageService,
+  // getStorageService,
 } from '@/services';
 import {getCustomers, saveCustomer} from '@/services/customer';
 import {useRealm} from '@/services/realm';
@@ -29,45 +29,50 @@ import {
 import {ShareHookProps, useShare} from '@/services/share';
 import {colors} from '@/styles';
 import {format} from 'date-fns';
-import {
-  BluetoothEscposPrinter,
-  BluetoothManager, //@ts-ignore
-} from 'react-native-bluetooth-escpos-printer';
-import {CancelReceiptModal} from './CancelReceiptModal';
+// import {
+//   BluetoothEscposPrinter,
+//   BluetoothManager, //@ts-ignore
+// } from 'react-native-bluetooth-escpos-printer';
+import {CancelReceiptModal, StickyFooter, AddCustomerModal} from '@/components';
 import {applyStyles} from '@/styles';
-import {StickyFooter} from '../StickyFooter';
 import {Button} from '../Button';
-import {AddCustomerModal} from '../AddCustomerModal';
 import {ScrollView} from 'react-native-gesture-handler';
+// import {getI18nService} from '@/services';
+
+// const strings = getI18nService().strings;
 
 type Props = {
   receipt?: IReceipt;
   onClose?: () => void;
 };
 
+// const storageService = getStorageService();
 export const ReceiptPreview = ({receipt, onClose}: Props) => {
   const realm = useRealm();
   const customers = getCustomers({realm});
-  const user = getAuthService().getUser();
-  const storageService = getStorageService();
+  // const user = getAuthService().getUser();
   const analyticsService = getAnalyticsService();
-  const currencyCode = getAuthService().getUserCurrencyCode();
+  // const currencyCode = getAuthService().getUserCurrencyCode();
 
   const [receiptImage, setReceiptImage] = useState('');
-  const [printer, setPrinter] = useState<{address: string}>(
-    {} as {address: string},
-  );
+  // const [
+  // printer,
+  // setPrinter,
+  // ] = useState<{address: string}>({} as {address: string});
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     receipt?.customer,
   );
-  const [isPrintingModalOpen, setIsPrintingModalOpen] = useState(false);
+  // const [
+  // isPrintingModalOpen,
+  // setIsPrintingModalOpen,
+  // ] = useState(false);
   const [isAddCustomerModalOpen, setIsAddCustomerModalOpen] = useState(false);
   const [isCancelReceiptModalOpen, setIsCancelReceiptModalOpen] = useState(
     false,
   );
 
   const creditDueDate = receipt?.dueDate;
-  const receiptDate = receipt?.created_at ?? new Date();
+  // const receiptDate = receipt?.created_at ?? new Date();
   const businessInfo = getAuthService().getBusinessInfo();
   const allPayments = receipt ? getAllPayments({receipt}) : [];
   const totalAmountPaid = allPayments.reduce(
@@ -178,13 +183,13 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
     [customers, realm, receipt],
   );
 
-  const handleOpenPrinterModal = useCallback(() => {
-    setIsPrintingModalOpen(true);
-  }, []);
+  // const handleOpenPrinterModal = useCallback(() => {
+  //   setIsPrintingModalOpen(true);
+  // }, []);
 
-  const handleClosePrinterModal = useCallback(() => {
-    setIsPrintingModalOpen(false);
-  }, []);
+  // const handleClosePrinterModal = useCallback(() => {
+  //   setIsPrintingModalOpen(false);
+  // }, []);
 
   const handleOpenAddCustomerModal = useCallback(() => {
     setIsAddCustomerModalOpen(true);
@@ -194,179 +199,179 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
     setIsAddCustomerModalOpen(false);
   }, []);
 
-  const handlePrint = useCallback(
-    async (address?: string, useSavedPrinter?: boolean) => {
-      const productListColumnWidth = [21, 21];
-      try {
-        const savedPrinterAddress = printer ? printer.address : '';
-        const printerAddressToUse = useSavedPrinter
-          ? savedPrinterAddress
-          : address;
-        const customerText = `Receipt No: ${receipt?._id
-          ?.toString()
-          .substring(0, 6)}`;
-        await BluetoothManager.connect(printerAddressToUse);
-        const receiptStyles = {
-          header: {
-            widthtimes: 1,
-            heigthtimes: 1,
-            fonttype: 1,
-          },
-          subheader: {
-            widthtimes: 1,
-            heigthtimes: 1,
-            fonttype: 1,
-          },
-          product: {
-            widthtimes: 0,
-            heigthtimes: 0,
-            fonttype: 1,
-          },
-        };
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.CENTER,
-        );
-        businessInfo.name &&
-          (await BluetoothEscposPrinter.printText(
-            `${businessInfo.name}\n`,
-            receiptStyles.header,
-          ));
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.CENTER,
-        );
-        businessInfo.name &&
-          (await BluetoothEscposPrinter.printText(
-            `Tel: ${businessInfo.mobile || user?.mobile}\n`,
-            {},
-          ));
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.CENTER,
-        );
-        businessInfo.address &&
-          (await BluetoothEscposPrinter.printText(
-            `${businessInfo.address}\n`,
-            {},
-          ));
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
-        await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
-        await BluetoothEscposPrinter.printText(
-          `${format(receiptDate, 'dd/MM/yyyy')}\n`,
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
-        for (const item of receipt?.items ?? []) {
-          const p = item.price;
-          const q = item.quantity;
-          const total = p * q;
-          await BluetoothEscposPrinter.printColumn(
-            productListColumnWidth,
-            [
-              BluetoothEscposPrinter.ALIGN.LEFT,
-              BluetoothEscposPrinter.ALIGN.RIGHT,
-            ],
-            [
-              `${q} x ${item.product.name}`,
-              ` ${currencyCode}${numberWithCommas(total)}`,
-            ],
-            receiptStyles.product,
-          );
-        }
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.CENTER,
-        );
-        await BluetoothEscposPrinter.printText(
-          `Total: ${currencyCode} ${numberWithCommas(receipt?.total_amount)}\n`,
-          {},
-        );
-        await BluetoothEscposPrinter.printText(
-          `Paid: ${currencyCode} ${numberWithCommas(totalAmountPaid)}\n`,
-          {},
-        );
-        creditAmountLeft &&
-          (await BluetoothEscposPrinter.printText(
-            `Balance: ${currencyCode} ${numberWithCommas(creditAmountLeft)}\n`,
-            {},
-          ));
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.CENTER,
-        );
-        await BluetoothEscposPrinter.printText(
-          'CREATE RECEIPTS FOR FREE WITH SHARA\n www.shara.co\n',
-          receiptStyles.product,
-        );
-        await BluetoothEscposPrinter.printText(
-          '--------------------------------\n',
-          {},
-        );
-        await BluetoothEscposPrinter.printerAlign(
-          BluetoothEscposPrinter.ALIGN.LEFT,
-        );
-        await BluetoothEscposPrinter.printText('\n\r', {});
-        getAnalyticsService()
-          .logEvent('print', {
-            item_id: '',
-            content_type: 'receipt',
-          })
-          .then(() => {});
-        handleClosePrinterModal();
-      } catch (err) {
-        ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
-        handleOpenPrinterModal();
-      }
-    },
-    [
-      receiptDate,
-      printer,
-      businessInfo.name,
-      businessInfo.address,
-      businessInfo.mobile,
-      user,
-      currencyCode,
-      receipt,
-      totalAmountPaid,
-      creditAmountLeft,
-      handleClosePrinterModal,
-      handleOpenPrinterModal,
-    ],
-  );
+  // const handlePrint = useCallback(
+  //   async (address?: string, useSavedPrinter?: boolean) => {
+  //     const productListColumnWidth = [21, 21];
+  //     try {
+  //       const savedPrinterAddress = printer ? printer.address : '';
+  //       const printerAddressToUse = useSavedPrinter
+  //         ? savedPrinterAddress
+  //         : address;
+  //       const customerText = `Receipt No: ${receipt?._id
+  //         ?.toString()
+  //         .substring(0, 6)}`;
+  //       await BluetoothManager.connect(printerAddressToUse);
+  //       const receiptStyles = {
+  //         header: {
+  //           widthtimes: 1,
+  //           heigthtimes: 1,
+  //           fonttype: 1,
+  //         },
+  //         subheader: {
+  //           widthtimes: 1,
+  //           heigthtimes: 1,
+  //           fonttype: 1,
+  //         },
+  //         product: {
+  //           widthtimes: 0,
+  //           heigthtimes: 0,
+  //           fonttype: 1,
+  //         },
+  //       };
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.LEFT,
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         '--------------------------------\n',
+  //         {},
+  //       );
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.CENTER,
+  //       );
+  //       businessInfo.name &&
+  //         (await BluetoothEscposPrinter.printText(
+  //           `${businessInfo.name}\n`,
+  //           receiptStyles.header,
+  //         ));
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.CENTER,
+  //       );
+  //       businessInfo.name &&
+  //         (await BluetoothEscposPrinter.printText(
+  //           `Tel: ${businessInfo.mobile || user?.mobile}\n`,
+  //           {},
+  //         ));
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.CENTER,
+  //       );
+  //       businessInfo.address &&
+  //         (await BluetoothEscposPrinter.printText(
+  //           `${businessInfo.address}\n`,
+  //           {},
+  //         ));
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.LEFT,
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         '--------------------------------\n',
+  //         {},
+  //       );
+  //       await BluetoothEscposPrinter.printText(`${customerText}\n`, {});
+  //       await BluetoothEscposPrinter.printText(
+  //         `${format(receiptDate, 'dd/MM/yyyy')}\n`,
+  //         {},
+  //       );
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.LEFT,
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         '--------------------------------\n',
+  //         {},
+  //       );
+  //       for (const item of receipt?.items ?? []) {
+  //         const p = item.price;
+  //         const q = item.quantity;
+  //         const total = p * q;
+  //         await BluetoothEscposPrinter.printColumn(
+  //           productListColumnWidth,
+  //           [
+  //             BluetoothEscposPrinter.ALIGN.LEFT,
+  //             BluetoothEscposPrinter.ALIGN.RIGHT,
+  //           ],
+  //           [
+  //             `${q} x ${item.product.name}`,
+  //             ` ${currencyCode}${numberWithCommas(total)}`,
+  //           ],
+  //           receiptStyles.product,
+  //         );
+  //       }
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.LEFT,
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         '--------------------------------\n',
+  //         {},
+  //       );
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.CENTER,
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         `Total: ${currencyCode} ${numberWithCommas(receipt?.total_amount)}\n`,
+  //         {},
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         `Paid: ${currencyCode} ${numberWithCommas(totalAmountPaid)}\n`,
+  //         {},
+  //       );
+  //       creditAmountLeft &&
+  //         (await BluetoothEscposPrinter.printText(
+  //           `Balance: ${currencyCode} ${numberWithCommas(creditAmountLeft)}\n`,
+  //           {},
+  //         ));
+  //       await BluetoothEscposPrinter.printText(
+  //         '--------------------------------\n',
+  //         {},
+  //       );
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.CENTER,
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         'CREATE RECEIPTS FOR FREE WITH SHARA\n www.shara.co\n',
+  //         receiptStyles.product,
+  //       );
+  //       await BluetoothEscposPrinter.printText(
+  //         '--------------------------------\n',
+  //         {},
+  //       );
+  //       await BluetoothEscposPrinter.printerAlign(
+  //         BluetoothEscposPrinter.ALIGN.LEFT,
+  //       );
+  //       await BluetoothEscposPrinter.printText('\n\r', {});
+  //       getAnalyticsService()
+  //         .logEvent('print', {
+  //           item_id: '',
+  //           content_type: 'receipt',
+  //         })
+  //         .then(() => {});
+  //       handleClosePrinterModal();
+  //     } catch (err) {
+  //       ToastAndroid.show(err.toString(), ToastAndroid.SHORT);
+  //       handleOpenPrinterModal();
+  //     }
+  //   },
+  //   [
+  //     receiptDate,
+  //     printer,
+  //     businessInfo.name,
+  //     businessInfo.address,
+  //     businessInfo.mobile,
+  //     user,
+  //     currencyCode,
+  //     receipt,
+  //     totalAmountPaid,
+  //     creditAmountLeft,
+  //     handleClosePrinterModal,
+  //     handleOpenPrinterModal,
+  //   ],
+  // );
 
-  const handlePrintReceipt = useCallback(() => {
-    if (printer) {
-      handlePrint(undefined, true);
-    } else {
-      handleOpenPrinterModal();
-    }
-  }, [handleOpenPrinterModal, handlePrint, printer]);
+  // const handlePrintReceipt = useCallback(() => {
+  //   if (printer) {
+  //     handlePrint(undefined, true);
+  //   } else {
+  //     handleOpenPrinterModal();
+  //   }
+  // }, [handleOpenPrinterModal, handlePrint, printer]);
 
   const handleCancelReceipt = useCallback(
     (note) => {
@@ -391,19 +396,18 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
       onPress: () => setIsCancelReceiptModalOpen(true),
     },
     {label: 'Edit', icon: 'edit', onPress: handleEditReceipt},
-    {label: 'Print', icon: 'printer', onPress: handlePrintReceipt},
+    // {label: 'Print', icon: 'printer', onPress: handlePrintReceipt},
   ];
 
-  useEffect(() => {
-    const fetchPrinter = async () => {
-      const savedPrinter = (await storageService.getItem('printer')) as {
-        address: string;
-      };
-      setPrinter(savedPrinter);
-    };
-    fetchPrinter();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isPrintingModalOpen]);
+  // useEffect(() => {
+  //   const fetchPrinter = async () => {
+  //     const savedPrinter = (await storageService.getItem('printer')) as {
+  //       address: string;
+  //     };
+  //     setPrinter(savedPrinter);
+  //   };
+  //   fetchPrinter();
+  // }, []);
 
   useEffect(() => {
     setCustomer(receipt?.customer);
@@ -586,11 +590,11 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
         onAddCustomer={handleSetCustomer}
         onClose={handleCloseAddCustomerModal}
       />
-      <BluetoothModal
+      {/* <BluetoothModal
         visible={isPrintingModalOpen}
         onPrintReceipt={handlePrint}
         onClose={handleClosePrinterModal}
-      />
+      /> */}
       <CancelReceiptModal
         isVisible={isCancelReceiptModalOpen}
         onCancelReceipt={handleCancelReceipt}

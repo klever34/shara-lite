@@ -18,6 +18,9 @@ import {useFormik} from 'formik';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text, View} from 'react-native';
 import {MainStackParamList} from '..';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type EditCustomerScreenProps = {
   route: RouteProp<MainStackParamList, 'EditCustomer'>;
@@ -43,7 +46,7 @@ export const EditCustomerScreen = withModal(
           setLoading(true);
           await updateCustomer({customer, updates});
           setLoading(false);
-          showSuccessToast('CUSTOMER EDITED');
+          showSuccessToast(strings('customers.customer_edited'));
           getAnalyticsService()
             .logEvent('customerEdited', {})
             .then(() => {})
@@ -64,7 +67,7 @@ export const EditCustomerScreen = withModal(
           await deleteCustomer({customer});
           deleteCustomerTransactions({customer}).then(() => {});
           setIsDeleting(false);
-          showSuccessToast('CUSTOMER DELETED');
+          showSuccessToast(strings('customers.customer_deleted'));
           getAnalyticsService()
             .logEvent('customerDeleted', {})
             .then(() => {})
@@ -93,16 +96,16 @@ export const EditCustomerScreen = withModal(
               style={applyStyles(
                 'text-center text-700 text-gray-300 text-base',
               )}>
-              Are you sure you want to delete{' '}
-              <Text style={applyStyles('text-700')}>{customer.name}</Text> as a
-              customer?
+              {strings('customers.confirm_delete', {
+                customer_name: customer.name,
+              })}
             </Text>
             <View
               style={applyStyles(
                 'pt-24 flex-row items-center justify-between',
               )}>
               <Button
-                title="Yes, Delete"
+                title={strings('yes_delete')}
                 isLoading={isDeleting}
                 onPress={() => {
                   handleDeleteCustomer(close);
@@ -111,7 +114,7 @@ export const EditCustomerScreen = withModal(
                 style={applyStyles({width: '48%'})}
               />
               <Button
-                title="Cancel"
+                title={strings('cancel')}
                 onPress={() => close()}
                 style={applyStyles({width: '48%'})}
               />
@@ -198,7 +201,7 @@ export const EditCustomerScreen = withModal(
       <Page
         header={{
           iconLeft: {},
-          title: 'Customer Profile',
+          title: strings('customers.customer_profile'),
           style: applyStyles('py-8'),
         }}
         style={applyStyles('bg-white')}>
@@ -226,15 +229,17 @@ export const EditCustomerScreen = withModal(
           </Touchable>
         </View>
         <AppInput
-          label="Name"
+          label={strings('fields.name.label')}
           value={values.name}
           onChangeText={handleChange('name')}
           containerStyle={applyStyles('mb-24')}
         />
         <PhoneNumberField
           rightIcon={undefined}
-          label="Phone number (Optional)"
-          placeholder="Enter customer number"
+          label={`${strings('customers.fields.phone.label')} (${strings(
+            'optional',
+          )})`}
+          placeholder={strings('customers.fields.phone.placeholder')}
           containerStyle={applyStyles('mb-24')}
           onChangeText={(data) => onChangeMobile(data)}
           value={{
@@ -244,22 +249,22 @@ export const EditCustomerScreen = withModal(
         />
         <AppInput
           multiline
-          label="Notes"
+          label={strings('customers.fields.notes.label')}
           value={values.notes}
           onChangeText={handleChange('notes')}
           containerStyle={applyStyles('mb-24')}
-          placeholder="Additional information about the customer"
+          placeholder={strings('customers.fields.notes.placeholder')}
         />
         <View
           style={applyStyles('pt-24 flex-row items-center justify-between')}>
           <Button
-            title="Delete Customer"
+            title={strings('customers.delete_customer')}
             variantColor="transparent"
             style={applyStyles({width: '48%'})}
             onPress={handleOpenDeleteConfirmation}
           />
           <Button
-            title="Save"
+            title={strings('save')}
             isLoading={loading}
             onPress={handleSubmit}
             style={applyStyles({width: '48%'})}

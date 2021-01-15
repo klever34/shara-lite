@@ -1,4 +1,4 @@
-import {Button} from '@/components';
+import {Button} from '@/components/Button';
 import EmptyState from '@/components/EmptyState';
 import {getI18nService} from '@/services';
 import {applyStyles} from '@/styles';
