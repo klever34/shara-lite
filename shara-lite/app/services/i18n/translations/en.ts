@@ -466,7 +466,7 @@ const en: Strings = {
   },
   feedback: {
     title: 'Feedback',
-    toast_text: 'Thank for your Feedback, we will get back to you shortly',
+    toast_text: 'Thank you for your Feedback',
     fields: {
       code: {
         label: 'Feedback',
