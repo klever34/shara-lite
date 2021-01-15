@@ -116,7 +116,7 @@ const userReportTableHTML = ({data}: {data: IReceipt[]}) => `
 `;
 
 const customerReportTableHTML = ({data}: {data: IReceipt[]}) => `
-  <div style="height: 30px;padding: 8px;display: flex;background: #F5F5F5;align-items: center;margin-bottom: 8px;">
+  <div style="height: 30px;display: flex;background: #F5F5F5;align-items: center;margin-bottom: 8px;">
     <p style="margin:0;width: 15%;padding: 12px;font-weight: 700;font-size:12px;">Date</p>
     <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Note</p>
     <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Total Amount</p>
@@ -131,16 +131,16 @@ const customerReportTableHTML = ({data}: {data: IReceipt[]}) => `
           item.transaction_date ?? new Date(),
           'dd MMM',
         )}</p>
-        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;width: 250px;font-size:12px;">${
+        <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-size:12px;">${
           item.note ?? ''
         }</p>
-        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;font-size:12px;">
+        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-size:12px;">
           ${!item.is_collection ? amountWithCurrency(item.total_amount) : ''}
         </p>
-        <p style="margin:0;width: 20%;padding: 12px 0;text-align: center;border-left: 1px solid #ECECEC;border-right: 1px solid #ECECEC;font-size:12px;">
+        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;border-left: 1px solid #ECECEC;border-right: 1px solid #ECECEC;font-size:12px;">
           ${item.amount_paid ? amountWithCurrency(item.amount_paid) : ''}
         </p>
-        <p style="margin:0;width: 20%;padding: 12px 0;text-align: right;font-size:12px;">
+        <p style="margin:0;width: 20%;padding: 12px 0;text-align: center;font-size:12px;">
           ${item.credit_amount ? amountWithCurrency(item.credit_amount) : ''}
         </p>
       </div>

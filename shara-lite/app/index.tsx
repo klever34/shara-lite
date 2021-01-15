@@ -23,6 +23,7 @@ import ErrorFallback from './components/ErrorFallback';
 import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import SplashScreen from './screens/SplashScreen';
+import {useCustomer} from './services/customer/hook';
 import RealmProvider from './services/realm/provider';
 
 if (Platform.OS === 'android') {
@@ -41,6 +42,7 @@ export type RootStackParamList = {
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
+  const {getCustomer} = useCustomer();
   useEffect(() => {
     getAnalyticsService().initialize().catch(handleError);
   }, []);
@@ -85,14 +87,15 @@ const App = () => {
         remoteMessage?.data?.payload &&
         JSON.parse(remoteMessage?.data?.payload);
       if (payload && payload.customer) {
+        const customer = getCustomer({customerId: payload.customer._id});
         navigate('CustomerDetails', {
-          customer: payload.customer,
+          customer,
         });
       } else {
         navigate('Home');
       }
     });
-  }, []);
+  }, [getCustomer]);
   const getActiveRouteName = useCallback((state: NavigationState): string => {
     const route = state.routes[state.index];
 
