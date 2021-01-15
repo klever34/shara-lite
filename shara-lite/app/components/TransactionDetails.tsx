@@ -16,6 +16,7 @@ import {
   getAnalyticsService,
   getAuthService,
   getContactService,
+  getI18nService,
 } from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
@@ -47,10 +48,8 @@ import {
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
 import Share from 'react-native-share';
-import RNFetchBlob from 'rn-fetch-blob';
 import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -72,7 +71,7 @@ const TransactionDetails = withModal(
     const user = getAuthService().getUser();
     const analyticsService = getAnalyticsService();
     const {getPaymentReminders} = usePaymentReminder();
-    const {exportCustomerReportsToExcel} = useReports();
+    const {exportCustomerReportToPDF} = useReports();
     const {addCustomerToTransaction} = useTransaction();
     const businessInfo = getAuthService().getBusinessInfo();
     const {
@@ -82,11 +81,13 @@ const TransactionDetails = withModal(
       filterStartDate,
       filteredReceipts,
       handleStatusFilter,
+      collectedAmount,
+      totalAmount,
+      outstandingAmount,
     } = useReceiptList({receipts: transactions});
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
-    const [isSharingStatement, setIsSharingStatment] = useState(false);
     const {due_date: dueDate} = customer;
 
     const {setCurrentCustomer} = useContext(EntryContext);
@@ -98,7 +99,7 @@ const TransactionDetails = withModal(
     const getNextReminderDateText = useCallback(() => {
       const dates: Date[] = [];
       if (dueDate) {
-        getPaymentReminders().forEach((item) => {
+        getPaymentReminders({customer}).forEach((item) => {
           switch (item.unit) {
             case ReminderUnit.DAYS:
               if (item.when === ReminderWhen.AFTER) {
@@ -135,7 +136,7 @@ const TransactionDetails = withModal(
           addSuffix: true,
         });
       }
-    }, [dueDate, getPaymentReminders]);
+    }, [dueDate, getPaymentReminders, customer]);
 
     const whatsAppNumber = customer.mobile
       ? getCustomerWhatsappNumber(customer.mobile, user?.country_code)
@@ -252,65 +253,80 @@ const TransactionDetails = withModal(
       });
     }, [filter, filterOptions, openModal, handleStatusFilter]);
 
+    const getReportFilterRange = useCallback(() => {
+      if (filter === 'all') {
+        return '';
+      }
+      if (filter === 'single-day') {
+        return format(filterStartDate, 'dd MMM, yyyy');
+      }
+      return `${format(filterStartDate, 'dd MMM, yyyy')} - ${format(
+        filterEndDate,
+        'dd MMM, yyyy',
+      )}`;
+    }, [filterStartDate, filterEndDate, filter]);
+
     const handleShareStatement = useCallback(async () => {
+      const closeModal = openModal('loading', {text: 'Generating report...'});
       try {
-        setIsSharingStatment(true);
-        const path = await exportCustomerReportsToExcel({
-          receipts: filteredReceipts.sorted('transaction_date', false),
+        let {pdfBase64String} = await exportCustomerReportToPDF({
+          customer,
+          totalAmount,
+          collectedAmount,
+          outstandingAmount,
+          businessName: businessInfo.name,
+          filterRange: getReportFilterRange(),
+          data: filteredReceipts.sorted('transaction_date', false),
         });
-        RNFetchBlob.fs
-          .readFile(path, 'base64')
-          .then(async (base64Data) => {
-            base64Data =
-              'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' +
-              base64Data;
-            const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
-            if (hasWhatsapp && whatsAppNumber) {
-              setIsSharingStatment(false);
-              await Share.shareSingle({
-                //@ts-ignore
-                whatsAppNumber,
-                url: base64Data,
-                social: Share.Social.WHATSAPP,
-                title: strings('customer_statement.title'),
-                filename: strings('customer_statement.filename', {
-                  customer_name: customer ? customer.name : '',
-                }),
-                message: strings('customer_statement.message', {
-                  business_name: businessInfo.name,
-                }),
-              });
-            } else {
-              setIsSharingStatment(false);
-              await Share.open({
-                url: base64Data,
-                title: strings('customer_statement.title'),
-                filename: strings('customer_statement.filename', {
-                  customer_name: customer ? customer.name : '',
-                }),
-                message: strings('customer_statement.message', {
-                  business_name: businessInfo.name,
-                }),
-              });
-            }
-          })
-          .catch((error) => {
-            setIsSharingStatment(false);
-            handleError(error);
+        pdfBase64String = 'data:application/pdf;base64,' + pdfBase64String;
+        const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
+        if (hasWhatsapp && whatsAppNumber) {
+          closeModal();
+          await Share.shareSingle({
+            //@ts-ignore
+            whatsAppNumber,
+            url: pdfBase64String,
+            social: Share.Social.WHATSAPP,
+            title: strings('customer_statement.title'),
+            filename: strings('customer_statement.filename', {
+              customer_name: customer ? customer.name : '',
+            }),
+            message: strings('customer_statement.message', {
+              business_name: businessInfo.name,
+            }),
           });
+        } else {
+          closeModal();
+          await Share.open({
+            url: pdfBase64String,
+            title: strings('customer_statement.title'),
+            filename: strings('customer_statement.filename', {
+              customer_name: customer ? customer.name : '',
+            }),
+            message: strings('customer_statement.message', {
+              business_name: businessInfo.name,
+            }),
+          });
+        }
         getAnalyticsService()
           .logEvent('userSharedReport', {})
           .then(() => {})
           .catch(handleError);
       } catch (error) {
+        closeModal();
         Alert.alert('Error', error.message);
       }
     }, [
+      openModal,
       customer,
       whatsAppNumber,
       filteredReceipts,
       businessInfo.name,
-      exportCustomerReportsToExcel,
+      collectedAmount,
+      totalAmount,
+      outstandingAmount,
+      getReportFilterRange,
+      exportCustomerReportToPDF,
     ]);
 
     const handleClear = useCallback(() => {
@@ -456,7 +472,7 @@ const TransactionDetails = withModal(
                             : strings('transaction.set_collection_date')}
                         </Text>
                       </View>
-                      {!!dueDate && !!getPaymentReminders().length ? (
+                      {!!dueDate && !!getPaymentReminders({customer}).length ? (
                         <Text
                           style={applyStyles(
                             'pl-4 text-gray-100 text-uppercase text-700 text-xs',
@@ -569,10 +585,7 @@ const TransactionDetails = withModal(
                 style={applyStyles(
                   'py-8 px-16 flex-row items-center justify-between',
                 )}>
-                <Touchable
-                  onPress={
-                    isSharingStatement ? undefined : handleShareStatement
-                  }>
+                <Touchable onPress={handleShareStatement}>
                   <View
                     style={applyStyles(
                       'py-4 px-8 flex-row items-center bg-gray-20',
@@ -592,9 +605,7 @@ const TransactionDetails = withModal(
                       style={applyStyles(
                         'text-gray-200 text-700 text-xxs pl-8 text-uppercase',
                       )}>
-                      {isSharingStatement
-                        ? `${strings('transaction.generating_statement')}...`
-                        : strings('transaction.share_statement')}
+                      {strings('transaction.share_statement')}
                     </Text>
                   </View>
                 </Touchable>

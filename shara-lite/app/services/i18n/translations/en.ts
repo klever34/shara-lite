@@ -159,7 +159,7 @@ const en: Strings = {
       '{{customer_name}} has a positive balance of {{balance}}',
     not_owing: '{{customer_name}} is not owing',
     generating_statement: 'Generating Statement',
-    share_statement: 'Generating Statement',
+    share_statement: 'Generate Statement',
     start_here: 'Start adding records by tapping here',
     add_first: 'Add first transaction for {{customer_name}}',
     no_credit_or_amount_warning:

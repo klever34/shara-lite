@@ -7,6 +7,10 @@ declare module 'react-native-check-app-install';
 
 declare module 'react-native-extra-dimensions-android';
 
+declare module 'react-native-html-to-pdf-lite';
+
+declare module 'react-native-file-viewer';
+
 declare module '*.svg' {
   import React from 'react';
   import {SvgProps} from 'react-native-svg';

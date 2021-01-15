@@ -55,7 +55,8 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
       .objects<IPaymentReminder>(modelName)
       .sorted('created_at', false)
       .filtered(
-        `is_deleted != true AND customer = ${customer._id}`,
+        'is_deleted != true AND customer = $0',
+        customer._id,
       ) as unknown) as IPaymentReminder[];
   };
 

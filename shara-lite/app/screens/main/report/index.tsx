@@ -8,25 +8,26 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService, getI18nService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useReports} from '@/services/reports';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useContext, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {Alert, FlatList, SafeAreaView, Text, View} from 'react-native';
+import FileViewer from 'react-native-file-viewer';
 import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
 
-const i18Service = getI18nService();
-
 type Props = ModalWrapperFields;
+
+const i18Service = getI18nService();
 
 export const ReportScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
-  const {exportReportsToExcel} = useReports();
+  const {exportUserReportToPDF} = useReports();
   const {showSuccessToast} = useContext(ToastContext);
   const {
     filter,
@@ -41,8 +42,6 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     handleStatusFilter,
     handleReceiptSearch,
   } = useReceiptList();
-
-  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -76,23 +75,51 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     });
   }, [handleStatusFilter]);
 
+  const getReportFilterRange = useCallback(() => {
+    if (filter === 'all') {
+      return '';
+    }
+    if (filter === 'single-day') {
+      return format(filterStartDate, 'dd MMM, yyyy');
+    }
+    return `${format(filterStartDate, 'dd MMM, yyyy')} - ${format(
+      filterEndDate,
+      'dd MMM, yyyy',
+    )}`;
+  }, [filterStartDate, filterEndDate, filter]);
+
   const handleDownloadReport = useCallback(async () => {
+    const closeModal = openModal('loading', {text: 'Generating report...'});
     try {
-      setIsDownloadingReport(true);
-      await exportReportsToExcel({
-        receipts: filteredReceipts.sorted('transaction_date', false),
+      const pdfFilePath = await exportUserReportToPDF({
+        totalAmount,
+        collectedAmount,
+        outstandingAmount,
+        filterRange: getReportFilterRange(),
+        businessName: getAuthService().getBusinessInfo().name,
+        data: filteredReceipts.sorted('transaction_date', false),
       });
-      setIsDownloadingReport(false);
+      closeModal();
+      await FileViewer.open(pdfFilePath, {showOpenWithDialog: true});
       getAnalyticsService()
         .logEvent('userDownloadedReport', {})
         .then(() => {})
         .catch(handleError);
       showSuccessToast('REPORT DOWNLOADED');
     } catch (error) {
-      setIsDownloadingReport(false);
+      closeModal();
       Alert.alert('Error', error.message);
     }
-  }, [filteredReceipts, showSuccessToast, exportReportsToExcel]);
+  }, [
+    openModal,
+    filteredReceipts,
+    showSuccessToast,
+    exportUserReportToPDF,
+    totalAmount,
+    collectedAmount,
+    outstandingAmount,
+    getReportFilterRange,
+  ]);
 
   const getFilterLabelText = useCallback(() => {
     const activeOption = filterOptions?.find((item) => item.value === filter);
@@ -264,7 +291,6 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         </EmptyState>
       )}
       <FAButton
-        isLoading={isDownloadingReport}
         style={applyStyles(
           'w-auto rounded-16 py-16 px-20 flex-row items-center',
         )}

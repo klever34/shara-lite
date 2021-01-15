@@ -1,4 +1,4 @@
-import {navigate, navigationRef} from '@/components/RootNavigation';
+import {navigationRef} from '@/components/RootNavigation';
 import {ToastProvider} from '@/components/Toast';
 import UpdateSharaScreen from '@/screens/UpdateShara';
 import {
@@ -16,7 +16,6 @@ import Sentry from '@sentry/react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {withErrorBoundary} from 'react-error-boundary';
 import {Platform, ActivityIndicator} from 'react-native';
-import Config from 'react-native-config';
 import 'react-native-gesture-handler';
 import {MenuProvider} from 'react-native-popup-menu';
 import ErrorFallback from './components/ErrorFallback';
@@ -24,6 +23,7 @@ import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import SplashScreen from './screens/SplashScreen';
 import RealmProvider from './services/realm/provider';
+import Config from 'react-native-config';
 import {colors} from './styles';
 
 if (Platform.OS === 'android') {
@@ -72,32 +72,18 @@ const App = () => {
   }, []);
   // Effect to subscribe to FCM Topic
   useEffect(() => {
+    const environment = process.env.NODE_ENV;
     getNotificationService()
-      .subscribeToTopic(Config.FCM_NOTIFICATION_TOPIC)
+      .subscribeToTopic(`${Config.FCM_NOTIFICATION_TOPIC}_${environment}`)
       .then()
       .catch(handleError);
 
     return () => {
       getNotificationService()
-        .unsubscribeFromTopic(Config.FCM_NOTIFICATION_TOPIC)
+        .unsubscribeFromTopic(`${Config.FCM_NOTIFICATION_TOPIC}_${environment}`)
         .then()
         .catch(handleError);
     };
-  }, []);
-  // Effect to when FCM notification is clicked
-  useEffect(() => {
-    getNotificationService().onNotificationOpenedApp((remoteMessage) => {
-      const payload =
-        remoteMessage?.data?.payload &&
-        JSON.parse(remoteMessage?.data?.payload);
-      if (payload && payload.customer) {
-        navigate('CustomerDetails', {
-          customer: payload.customer,
-        });
-      } else {
-        navigate('Home');
-      }
-    });
   }, []);
   const getActiveRouteName = useCallback((state: NavigationState): string => {
     const route = state.routes[state.index];

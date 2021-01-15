@@ -303,7 +303,7 @@
 				AFAC2FF7CEF143BBB6B71411 /* Octicons.ttf */,
 				0C4A3031661A4FC2ADF2F2C5 /* SimpleLineIcons.ttf */,
 				A3C6B74B43F945ECBD06F79B /* Zocial.ttf */,
-				731D200EF38544E89AA13B0B /*  CocogoosePro-UltraLight.otf */,
+				731D200EF38544E89AA13B0B /* CocogoosePro-UltraLight.otf */,
 				6CDD9D4A516C4C78B03ECE63 /* CocogoosePro-Light.otf */,
 				09C85EE051964882AB75D9B1 /* CocogoosePro-Regular.otf */,
 				AFAF62CA6FB24F819719A084 /* CocogoosePro-SemiLight.otf */,
