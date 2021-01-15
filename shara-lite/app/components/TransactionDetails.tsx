@@ -16,6 +16,7 @@ import {
   getAnalyticsService,
   getAuthService,
   getContactService,
+  getI18nService,
 } from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
@@ -47,10 +48,8 @@ import {
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
 import Share from 'react-native-share';
-import RNFetchBlob from 'rn-fetch-blob';
 import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -72,7 +71,7 @@ const TransactionDetails = withModal(
     const user = getAuthService().getUser();
     const analyticsService = getAnalyticsService();
     const {getPaymentReminders} = usePaymentReminder();
-    const {exportCustomerReportsToExcel} = useReports();
+    const {exportCustomerReportToPDF} = useReports();
     const {addCustomerToTransaction} = useTransaction();
     const businessInfo = getAuthService().getBusinessInfo();
     const {
@@ -82,6 +81,9 @@ const TransactionDetails = withModal(
       filterStartDate,
       filteredReceipts,
       handleStatusFilter,
+      collectedAmount,
+      totalAmount,
+      outstandingAmount,
     } = useReceiptList({receipts: transactions});
 
     const [receiptImage, setReceiptImage] = useState('');
@@ -255,54 +257,49 @@ const TransactionDetails = withModal(
     const handleShareStatement = useCallback(async () => {
       try {
         setIsSharingStatment(true);
-        const path = await exportCustomerReportsToExcel({
-          receipts: filteredReceipts.sorted('transaction_date', false),
+        let base64Pdf = await exportCustomerReportToPDF({
+          totalAmount,
+          collectedAmount,
+          outstandingAmount,
+          businessName: businessInfo.name,
+          data: filteredReceipts.sorted('transaction_date', false),
         });
-        RNFetchBlob.fs
-          .readFile(path, 'base64')
-          .then(async (base64Data) => {
-            base64Data =
-              'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' +
-              base64Data;
-            const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
-            if (hasWhatsapp && whatsAppNumber) {
-              setIsSharingStatment(false);
-              await Share.shareSingle({
-                //@ts-ignore
-                whatsAppNumber,
-                url: base64Data,
-                social: Share.Social.WHATSAPP,
-                title: strings('customer_statement.title'),
-                filename: strings('customer_statement.filename', {
-                  customer_name: customer ? customer.name : '',
-                }),
-                message: strings('customer_statement.message', {
-                  business_name: businessInfo.name,
-                }),
-              });
-            } else {
-              setIsSharingStatment(false);
-              await Share.open({
-                url: base64Data,
-                title: strings('customer_statement.title'),
-                filename: strings('customer_statement.filename', {
-                  customer_name: customer ? customer.name : '',
-                }),
-                message: strings('customer_statement.message', {
-                  business_name: businessInfo.name,
-                }),
-              });
-            }
-          })
-          .catch((error) => {
-            setIsSharingStatment(false);
-            handleError(error);
+        base64Pdf = 'data:application/pdf;base64,' + base64Pdf;
+        const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
+        if (hasWhatsapp && whatsAppNumber) {
+          setIsSharingStatment(false);
+          await Share.shareSingle({
+            //@ts-ignore
+            whatsAppNumber,
+            url: base64Pdf,
+            social: Share.Social.WHATSAPP,
+            title: strings('customer_statement.title'),
+            filename: strings('customer_statement.filename', {
+              customer_name: customer ? customer.name : '',
+            }),
+            message: strings('customer_statement.message', {
+              business_name: businessInfo.name,
+            }),
           });
+        } else {
+          setIsSharingStatment(false);
+          await Share.open({
+            url: base64Pdf,
+            title: strings('customer_statement.title'),
+            filename: strings('customer_statement.filename', {
+              customer_name: customer ? customer.name : '',
+            }),
+            message: strings('customer_statement.message', {
+              business_name: businessInfo.name,
+            }),
+          });
+        }
         getAnalyticsService()
           .logEvent('userSharedReport', {})
           .then(() => {})
           .catch(handleError);
       } catch (error) {
+        setIsSharingStatment(false);
         Alert.alert('Error', error.message);
       }
     }, [
@@ -310,7 +307,10 @@ const TransactionDetails = withModal(
       whatsAppNumber,
       filteredReceipts,
       businessInfo.name,
-      exportCustomerReportsToExcel,
+      collectedAmount,
+      totalAmount,
+      outstandingAmount,
+      exportCustomerReportToPDF,
     ]);
 
     const handleClear = useCallback(() => {

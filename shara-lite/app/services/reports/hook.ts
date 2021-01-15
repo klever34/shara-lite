@@ -25,7 +25,7 @@ interface ReportToHTMLInterface {
 
 const i18Service = getI18nService();
 
-const ITEMS_PER_PAGE = 30;
+const ITEMS_PER_PAGE = 16;
 const NO_OF_ITEMS_ON_PAGE_ONE = 10;
 
 export const getNumberOfPages = ({noOfItems}: {noOfItems: number}) => {
@@ -44,7 +44,7 @@ const reportPageHeaderHTML = ({businessName}: {businessName: string}) => `
 `;
 
 const reportPageFooterHTML = () => `
-  <div style="width: calc(100% - 24px);bottom: 0;position:absolute;display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #DD0404;">
+  <div style="width: calc(100% - 24px);display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #DD0404;">
     <h1 style="font-size: 24px;color: white; text-transform: uppercase">Shara</h1>
     <p style="color: white;">Start using Shara Today, Download from the Playstore</p>
   </div>
@@ -94,32 +94,66 @@ const reportSummaryHTML = ({
 `;
 
 const userReportTableHTML = ({data}: {data: IReceipt[]}) => `
-  <div style="height: 30px;padding: 8px;display: flex;background: #F5F5F5;align-items: center;margin-bottom: 8px;">
-    <p style="width: 15%;padding-right: 8px;font-weight: 700;">Date</p>
-    <p style="width: 25%;padding-right: 8px;font-weight: 700;">Name</p>
-    <p style="width: 20%;padding-right: 8px;font-weight: 700;">Note</p>
-    <p style="width: 20%;padding-right: 8px;text-align: center;font-weight: 700;">Total Amount</p>
-    <p style="width: 20%;text-align: center;font-weight: 700;">Amount Paid</p>
+  <div style="height: 30px;display: flex;background: #F5F5F5;align-items: center;margin-bottom: 8px;">
+    <p style="margin:0;width: 15%;padding: 12px;font-weight: 700;font-size:12px;">Date</p>
+    <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Name</p>
+    <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Note</p>
+    <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;font-weight: 700;font-size:12px;">Total Amount</p>
+    <p style="margin:0;width: 20%;text-align: center;font-weight: 700;font-size:12px;padding: 12px 0;">Amount Paid</p>
   </div>
   ${data
     .map(
       (item) => `
       <div style="display: flex;border: 1px solid #ECECEC;align-items: center;">
-        <p style="margin:0;width: 15%;padding: 12px;">${format(
+        <p style="margin:0;width: 15%;padding: 12px;font-size:12px;">${format(
           item.transaction_date ?? new Date(),
           'dd MMM',
         )}</p>
-        <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;">${
+        <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-size:12px;">${
           item?.customer?.name ?? ''
         }</p>
-        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;">${
+        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-size:12px;">${
           item.note ?? ''
         }</p>
-        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;border-left: 1px solid #ECECEC;border-right: 1px solid #ECECEC;">
+        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;border-left: 1px solid #ECECEC;border-right: 1px solid #ECECEC;font-size:12px;">
           ${!item.is_collection ? amountWithCurrency(item.total_amount) : ''}
         </p>
-        <p style="margin:0;width: 20%;padding: 12px 0;text-align: center;">
+        <p style="margin:0;width: 20%;padding: 12px 0;text-align: center;font-size:12px;">
           ${item.amount_paid ? amountWithCurrency(item.amount_paid) : ''}
+        </p>
+      </div>
+    `,
+    )
+    .join('')}
+`;
+
+const customerReportTableHTML = ({data}: {data: IReceipt[]}) => `
+  <div style="height: 30px;padding: 8px;display: flex;background: #F5F5F5;align-items: center;margin-bottom: 8px;">
+    <p style="margin:0;width: 15%;padding: 12px;font-weight: 700;font-size:12px;">Date</p>
+    <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Note</p>
+    <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Total Amount</p>
+    <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;font-weight: 700;font-size:12px;">Amount Paid</p>
+    <p style="margin:0;width: 20%;text-align: center;font-weight: 700;font-size:12px;padding: 12px 0;">Balance</p>
+  </div>
+  ${data
+    .map(
+      (item) => `
+      <div style="display: flex;border: 1px solid #ECECEC;align-items: center;">
+        <p style="margin:0;width: 15%;padding: 12px;font-size:12px;">${format(
+          item.transaction_date ?? new Date(),
+          'dd MMM',
+        )}</p>
+        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;width: 250px;font-size:12px;">${
+          item.note ?? ''
+        }</p>
+        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;font-size:12px;">
+          ${!item.is_collection ? amountWithCurrency(item.total_amount) : ''}
+        </p>
+        <p style="margin:0;width: 20%;padding: 12px 0;text-align: center;border-left: 1px solid #ECECEC;border-right: 1px solid #ECECEC;font-size:12px;">
+          ${item.amount_paid ? amountWithCurrency(item.amount_paid) : ''}
+        </p>
+        <p style="margin:0;width: 20%;padding: 12px 0;text-align: right;font-size:12px;">
+          ${item.credit_amount ? amountWithCurrency(item.credit_amount) : ''}
         </p>
       </div>
     `,
@@ -150,7 +184,7 @@ const generateUserReportHTML = (options: ReportToHTMLInterface) => {
   for (let i = 0; i < noOfPages; i++) {
     if (i === 0) {
       htmlString.push(`
-        <html style="padding: 0;margin: 0;box-sizing: border-box;">
+        <html style="padding: 0;margin: 0;box-sizing: border-box;min-height: 100%;">
           <body style="padding: 0;margin: 0;box-sizing: border-box;position: absolute;width: 100%;height: 100%;">
             ${reportPageHeaderHTML({businessName})}
             <div style="padding: 12px 32px;height: calc(100% - 124px);background-color: white;">
@@ -168,12 +202,78 @@ const generateUserReportHTML = (options: ReportToHTMLInterface) => {
         </html>
       `);
     } else {
+      const pageTwoStart = NO_OF_ITEMS_ON_PAGE_ONE + i;
+      let start =
+        i === 1 ? pageTwoStart : ITEMS_PER_PAGE * (i - 1) + pageTwoStart;
+      const data = itemsOtherPages.slice(start, start + ITEMS_PER_PAGE);
       htmlString.push(`
-        <html style="padding: 0;margin: 0;box-sizing: border-box;">
+        <html style="padding: 0;margin: 0;box-sizing: border-box;min-height: 100%;">
           <body style="padding: 0;margin: 0;box-sizing: border-box;position: absolute;width: 100%;height: 100%;">
             ${reportPageHeaderHTML({businessName})}
             <div style="padding: 12px 32px;height: calc(100% - 124px);background-color: white;">
-              ${userReportTableHTML({data: itemsOtherPages})}
+              ${userReportTableHTML({data})}
+            </div>
+            ${reportPageFooterHTML()}
+          </body>
+        </html>
+      `);
+    }
+  }
+
+  return htmlString.join('');
+};
+
+const generateCustomerReportHTML = (options: ReportToHTMLInterface) => {
+  let htmlString = [] as string[];
+  const {
+    data,
+    filterRange,
+    businessName,
+    collectedAmount,
+    outstandingAmount,
+    totalAmount,
+  } = options;
+
+  const totalEntries = data.length;
+  const noOfPages = getNumberOfPages({noOfItems: totalEntries});
+  const itemsOnPageOne = data.filter(
+    (_, index) => index < NO_OF_ITEMS_ON_PAGE_ONE,
+  );
+  const itemsOtherPages = data.filter(
+    (_, index) => index > NO_OF_ITEMS_ON_PAGE_ONE,
+  );
+
+  for (let i = 0; i < noOfPages; i++) {
+    if (i === 0) {
+      htmlString.push(`
+        <html style="padding: 0;margin: 0;box-sizing: border-box;min-height: 100%;">
+          <body style="padding: 0;margin: 0;box-sizing: border-box;position: absolute;width: 100%;height: 100%;">
+            ${reportPageHeaderHTML({businessName})}
+            <div style="padding: 12px 32px;height: calc(100% - 124px);background-color: white;">
+              ${reportHeaderHTML({filterRange})}
+              ${reportSummaryHTML({
+                totalEntries,
+                collectedAmount,
+                outstandingAmount,
+                totalAmount,
+              })}
+              ${customerReportTableHTML({data: itemsOnPageOne})}
+            </div>
+            ${reportPageFooterHTML()}
+          </body>
+        </html>
+      `);
+    } else {
+      const pageTwoStart = NO_OF_ITEMS_ON_PAGE_ONE + i;
+      let start =
+        i === 1 ? pageTwoStart : ITEMS_PER_PAGE * (i - 1) + pageTwoStart;
+      const data = itemsOtherPages.slice(start, start + ITEMS_PER_PAGE);
+      htmlString.push(`
+        <html style="padding: 0;margin: 0;box-sizing: border-box;min-height: 100%;">
+          <body style="padding: 0;margin: 0;box-sizing: border-box;position: absolute;width: 100%;height: 100%;">
+            ${reportPageHeaderHTML({businessName})}
+            <div style="padding: 12px 32px;height: calc(100% - 124px);background-color: white;">
+              ${customerReportTableHTML({data})}
             </div>
             ${reportPageFooterHTML()}
           </body>
@@ -328,9 +428,23 @@ export const useReports = () => {
     [],
   );
 
+  const exportCustomerReportToPDF = useCallback(
+    async (options: ReportToHTMLInterface) => {
+      const html = generateCustomerReportHTML(options);
+      const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
+      const pdfBase64String = await exportHTMLToPDF({
+        html,
+        fileName: `Shara/Reports/Shara Reports - ${date}.pdf`,
+      });
+      return pdfBase64String;
+    },
+    [],
+  );
+
   return {
     exportReportsToExcel,
     exportUserReportToPDF,
+    exportCustomerReportToPDF,
     exportCustomerReportsToExcel,
   };
 };

@@ -99,4 +99,6 @@ export const exportHTMLToPDF = async (data: {
     encoding: 'base64',
     mime: 'application/pdf',
   });
+
+  return base64Data;
 };
