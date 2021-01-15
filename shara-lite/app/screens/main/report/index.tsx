@@ -14,7 +14,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {useReports} from '@/services/reports';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useContext, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {Alert, FlatList, SafeAreaView, Text, View} from 'react-native';
 import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
@@ -41,8 +41,6 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     handleStatusFilter,
     handleReceiptSearch,
   } = useReceiptList();
-
-  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -78,7 +76,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
 
   const handleDownloadReport = useCallback(async () => {
     try {
-      setIsDownloadingReport(true);
+      const closeModal = openModal('loading', {text: 'Generating report...'});
       await exportUserReportToPDF({
         totalAmount,
         collectedAmount,
@@ -86,17 +84,17 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         businessName: getAuthService().getBusinessInfo().name,
         data: filteredReceipts.sorted('transaction_date', false),
       });
-      setIsDownloadingReport(false);
+      closeModal();
       getAnalyticsService()
         .logEvent('userDownloadedReport', {})
         .then(() => {})
         .catch(handleError);
       showSuccessToast('REPORT DOWNLOADED');
     } catch (error) {
-      setIsDownloadingReport(false);
       Alert.alert('Error', error.message);
     }
   }, [
+    openModal,
     filteredReceipts,
     showSuccessToast,
     exportUserReportToPDF,
@@ -275,7 +273,6 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         </EmptyState>
       )}
       <FAButton
-        isLoading={isDownloadingReport}
         style={applyStyles(
           'w-auto rounded-16 py-16 px-20 flex-row items-center',
         )}

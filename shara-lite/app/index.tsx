@@ -1,4 +1,4 @@
-import {navigate, navigationRef} from '@/components/RootNavigation';
+import {navigationRef} from '@/components/RootNavigation';
 import {ToastProvider} from '@/components/Toast';
 import UpdateSharaScreen from '@/screens/UpdateShara';
 import {
@@ -16,15 +16,14 @@ import Sentry from '@sentry/react-native';
 import React, {useCallback, useEffect} from 'react';
 import {withErrorBoundary} from 'react-error-boundary';
 import {Platform} from 'react-native';
-import Config from 'react-native-config';
 import 'react-native-gesture-handler';
 import {MenuProvider} from 'react-native-popup-menu';
 import ErrorFallback from './components/ErrorFallback';
 import AuthScreens from './screens/auth';
 import MainScreens from './screens/main';
 import SplashScreen from './screens/SplashScreen';
-import {useCustomer} from './services/customer/hook';
 import RealmProvider from './services/realm/provider';
+import Config from 'react-native-config';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -42,7 +41,6 @@ export type RootStackParamList = {
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
-  const {getCustomer} = useCustomer();
   useEffect(() => {
     getAnalyticsService().initialize().catch(handleError);
   }, []);
@@ -68,34 +66,19 @@ const App = () => {
   }, []);
   // Effect to subscribe to FCM Topic
   useEffect(() => {
+    const environment = process.env.NODE_ENV;
     getNotificationService()
-      .subscribeToTopic(Config.FCM_NOTIFICATION_TOPIC)
+      .subscribeToTopic(`${Config.FCM_NOTIFICATION_TOPIC}_${environment}`)
       .then()
       .catch(handleError);
 
     return () => {
       getNotificationService()
-        .unsubscribeFromTopic(Config.FCM_NOTIFICATION_TOPIC)
+        .unsubscribeFromTopic(`${Config.FCM_NOTIFICATION_TOPIC}_${environment}`)
         .then()
         .catch(handleError);
     };
   }, []);
-  // Effect to when FCM notification is clicked
-  useEffect(() => {
-    getNotificationService().onNotificationOpenedApp((remoteMessage) => {
-      const payload =
-        remoteMessage?.data?.payload &&
-        JSON.parse(remoteMessage?.data?.payload);
-      if (payload && payload.customer) {
-        const customer = getCustomer({customerId: payload.customer._id});
-        navigate('CustomerDetails', {
-          customer,
-        });
-      } else {
-        navigate('Home');
-      }
-    });
-  }, [getCustomer]);
   const getActiveRouteName = useCallback((state: NavigationState): string => {
     const route = state.routes[state.index];
 

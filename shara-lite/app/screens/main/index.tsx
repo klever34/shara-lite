@@ -1,41 +1,43 @@
 import EmptyState from '@/components/EmptyState';
+import {EntryView} from '@/components/EntryView';
+import {TransactionDetailsProps} from '@/components/TransactionDetails';
+import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
 import CustomerDetailsScreen from '@/screens/main/customers/CustomerDetailsScreen';
+import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
+import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import {HomeScreen} from '@/screens/main/HomeScreen';
+import {MoreScreen} from '@/screens/main/more';
 import {
   BusinessSettings,
   UserProfileSettings,
 } from '@/screens/main/more/settings';
+import {PaymentsScreen} from '@/screens/main/payments';
+import {getI18nService, getNotificationService} from '@/services';
 import {useCreditReminder} from '@/services/credit-reminder';
-import {useRepeatBackToExit} from '@/services/navigation';
+import {useCustomer} from '@/services/customer/hook';
+import {useAppNavigation, useRepeatBackToExit} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
-import React, {useContext} from 'react';
+import {ObjectId} from 'bson';
+import React, {useContext, useEffect} from 'react';
 import {ActivityIndicator, View} from 'react-native';
-import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
-import {TransactionDetailsProps} from '@/components/TransactionDetails';
+import {EditCustomerScreen} from './customers/EditCustomerScreen';
+import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
 } from './entry/SelectCustomerScreen';
-import ReferralScreen from './more/referral';
-import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
-import {MoreScreen} from '@/screens/main/more';
-import {PaymentsScreen} from '@/screens/main/payments';
-import {EntryView} from '@/components/EntryView';
-import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
-import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
-import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
-import {ICustomer} from '@/models';
-import {EditTransactionScreen} from './transactions/EditTransactionScreen';
-import {ReportScreen} from './report';
-import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
-import {EditCustomerScreen} from './customers/EditCustomerScreen';
-import {getI18nService} from '@/services';
 import FeedbackScreen from './more/feedback';
+import ReferralScreen from './more/referral';
+import {ReportScreen} from './report';
+import {EditTransactionScreen} from './transactions/EditTransactionScreen';
+import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
+import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
+import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
 
 const strings = getI18nService().strings;
 
@@ -77,9 +79,31 @@ const MainScreens = () => {
   useRepeatBackToExit();
   const realm = useRealm();
   const {isSyncCompleted} = useContext(RealmContext);
+  const {getCustomer} = useCustomer();
+  const navigation = useAppNavigation();
 
   useSyncLoader();
   useCreditReminder();
+
+  // Effect to when FCM notification is clicked
+  useEffect(() => {
+    getNotificationService().onNotificationOpenedApp((remoteMessage) => {
+      const payload =
+        remoteMessage?.data?.payload &&
+        JSON.parse(remoteMessage?.data?.payload);
+
+      if (realm && payload && payload.customer) {
+        const customerId = new ObjectId(payload.customer._id);
+        const customer = getCustomer({customerId});
+
+        navigation.navigate('CustomerDetails', {
+          customer,
+        });
+      } else {
+        navigation.navigate('Home');
+      }
+    });
+  }, [realm, navigation, getCustomer]);
 
   if (!realm) {
     return (
