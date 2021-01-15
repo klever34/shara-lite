@@ -74,6 +74,19 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     });
   }, [handleStatusFilter]);
 
+  const getReportFilterRange = useCallback(() => {
+    if (filter === 'all') {
+      return '';
+    }
+    if (filter === 'single-day') {
+      return format(filterStartDate, 'dd MMM, yyyy');
+    }
+    return `${format(filterStartDate, 'dd MMM, yyyy')} - ${format(
+      filterEndDate,
+      'dd MMM, yyyy',
+    )}`;
+  }, [filterStartDate, filterEndDate, filter]);
+
   const handleDownloadReport = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Generating report...'});
     try {
@@ -81,6 +94,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         totalAmount,
         collectedAmount,
         outstandingAmount,
+        filterRange: getReportFilterRange(),
         businessName: getAuthService().getBusinessInfo().name,
         data: filteredReceipts.sorted('transaction_date', false),
       });
@@ -102,6 +116,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     totalAmount,
     collectedAmount,
     outstandingAmount,
+    getReportFilterRange,
   ]);
 
   const getFilterLabelText = useCallback(() => {

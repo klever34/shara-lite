@@ -253,6 +253,19 @@ const TransactionDetails = withModal(
       });
     }, [filter, filterOptions, openModal, handleStatusFilter]);
 
+    const getReportFilterRange = useCallback(() => {
+      if (filter === 'all') {
+        return '';
+      }
+      if (filter === 'single-day') {
+        return format(filterStartDate, 'dd MMM, yyyy');
+      }
+      return `${format(filterStartDate, 'dd MMM, yyyy')} - ${format(
+        filterEndDate,
+        'dd MMM, yyyy',
+      )}`;
+    }, [filterStartDate, filterEndDate, filter]);
+
     const handleShareStatement = useCallback(async () => {
       const closeModal = openModal('loading', {text: 'Generating report...'});
       try {
@@ -262,6 +275,7 @@ const TransactionDetails = withModal(
           collectedAmount,
           outstandingAmount,
           businessName: businessInfo.name,
+          filterRange: getReportFilterRange(),
           data: filteredReceipts.sorted('transaction_date', false),
         });
         base64Pdf = 'data:application/pdf;base64,' + base64Pdf;
@@ -311,6 +325,7 @@ const TransactionDetails = withModal(
       collectedAmount,
       totalAmount,
       outstandingAmount,
+      getReportFilterRange,
       exportCustomerReportToPDF,
     ]);
 
