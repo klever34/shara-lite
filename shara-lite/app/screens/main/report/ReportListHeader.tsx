@@ -1,4 +1,5 @@
 import {amountWithCurrency} from '@/helpers/utils';
+import {getI18nService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {Text, View, ViewStyle} from 'react-native';
@@ -9,6 +10,8 @@ type Props = {
   totalEntries: number;
   style?: ViewStyle;
 };
+
+const i18Service = getI18nService();
 
 export const ReportListHeader = ({
   style,
@@ -28,10 +31,11 @@ export const ReportListHeader = ({
           style={applyStyles(
             'pb-4 text-xs text-400 text-gray-200 text-uppercase',
           )}>
-          Transactions
+          {i18Service.strings('report.report_list_header.transactions_text')}
         </Text>
         <Text style={applyStyles('text-xs text-400 text-gray-200')}>
-          {totalEntries} Entries
+          {totalEntries}{' '}
+          {i18Service.strings('report.report_list_header.total_entries_text')}
         </Text>
       </View>
       <View
@@ -43,7 +47,7 @@ export const ReportListHeader = ({
           style={applyStyles(
             'pb-4 text-xs text-400 text-gray-200 text-uppercase',
           )}>
-          Total Cost
+          {i18Service.strings('report.report_list_header.total_cost_text')}
         </Text>
         <Text style={applyStyles('text-xs text-700 text-gray-300')}>
           {amountWithCurrency(totalAmount)}
@@ -57,7 +61,7 @@ export const ReportListHeader = ({
           style={applyStyles(
             'pb-4 text-xs text-400 text-gray-200 text-uppercase',
           )}>
-          Amount Paid
+          {i18Service.strings('report.report_list_header.amount_paid_text')}
         </Text>
         <Text style={applyStyles('text-xs text-700 text-green-200')}>
           {amountWithCurrency(amountPaid)}

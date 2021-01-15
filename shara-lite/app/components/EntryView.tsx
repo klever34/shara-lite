@@ -24,6 +24,9 @@ import {Icon} from './Icon';
 import * as Animatable from 'react-native-animatable';
 import {useAppNavigation} from '@/services/navigation';
 import {ICustomer} from '@/models';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type EntryContextProps = {
   wrapper?: View | null;
@@ -131,7 +134,7 @@ export const EntryView = ({children}: EntryViewProps) => {
                     style={applyStyles(
                       'mx-8 text-700 font-bold text-xs text-white',
                     )}>
-                    Record Sale
+                    {strings('entry.sale')}
                   </Text>
                 </Animatable.View>
               </Touchable>
@@ -162,7 +165,7 @@ export const EntryView = ({children}: EntryViewProps) => {
                     style={applyStyles(
                       'mx-8 text-700 font-bold text-xs text-white',
                     )}>
-                    Record Collection
+                    {strings('entry.collection')}
                   </Text>
                 </Animatable.View>
               </Touchable>

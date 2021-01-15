@@ -8,7 +8,7 @@ import getFirebaseAnalytics from '@react-native-firebase/analytics';
 import getFirebaseCrashlytics from '@react-native-firebase/crashlytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 import * as Sentry from '@sentry/react-native';
-import {ReminderWhen, ReminderUnit} from '@/models/PaymentReminder';
+import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
 
 export type SharaAppEventsProperties = {
   // Chat
@@ -129,10 +129,12 @@ export type SharaAppEventsProperties = {
     due_date: string;
     customer: string;
   };
+  feedbackSaved: {};
 };
 
 export interface IAnalyticsService {
   initialize(): Promise<void>;
+
   setUser(user: User): Promise<void>;
 
   logEvent<K extends keyof SharaAppEventsProperties>(
@@ -146,6 +148,7 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   private firebaseAnalytics = getFirebaseAnalytics();
   private firebaseCrashlytics = getFirebaseCrashlytics();
+
   async initialize(): Promise<void> {
     try {
       if (
@@ -215,6 +218,7 @@ export class AnalyticsService implements IAnalyticsService {
       throw e;
     }
   }
+
   async logEvent<K extends keyof SharaAppEventsProperties>(
     eventName: K,
     eventData: SharaAppEventsProperties[K],

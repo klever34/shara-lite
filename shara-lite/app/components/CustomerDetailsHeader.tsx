@@ -8,6 +8,9 @@ import {Text, View, ViewStyle} from 'react-native';
 import {Icon} from './Icon';
 import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 export type CustomerDetailsHeaderProps = {
   style?: ViewStyle;
@@ -73,7 +76,7 @@ const CustomerDetailsHeader = ({
                 style={applyStyles(
                   'text-700 text-uppercase text-xxs text-gray-200',
                 )}>
-                Balance
+                {strings('balance')}
               </Text>
             </View>
             <Text style={applyStyles('pb-4 text-700 text-black text-base')}>
@@ -134,7 +137,7 @@ const CustomerDetailsHeader = ({
                         textDecorationLine: 'underline',
                       },
                     )}>
-                    Add Customer details
+                    {strings('customers.add_customer_details')}
                   </Text>
                 </View>
               </View>

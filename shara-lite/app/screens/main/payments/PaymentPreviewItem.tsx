@@ -5,6 +5,8 @@ import {applyStyles, colors} from '@/styles';
 import Clipboard from '@react-native-community/clipboard';
 import React, {useState} from 'react';
 import {Text, TouchableOpacity, View} from 'react-native';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
   const [hasCopied, setHasCopied] = useState(false);
@@ -59,7 +61,7 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
                 style={applyStyles(
                   'text-uppercase text-400 text-gray-300 text-xs text-white',
                 )}>
-                Copied
+                {strings('payment.copied')}
               </Text>
             </View>
           ) : (
@@ -68,7 +70,7 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
                 style={applyStyles(
                   'text-uppercase text-400 text-gray-300 text-xs',
                 )}>
-                Copy
+                {strings('payment.copy')}
               </Text>
             </View>
           )}

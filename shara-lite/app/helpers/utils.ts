@@ -1,20 +1,19 @@
-import 'react-native-get-random-values';
-import {v4 as uuidV4} from 'uuid';
-import promiseRetry from 'promise-retry';
-import addDays from 'date-fns/addDays';
-import CryptoJS from 'crypto-js';
-import * as React from 'react';
-import Config from 'react-native-config';
 import {getAuthService} from '@/services';
+import {handleError} from '@/services/error-boundary';
+import CryptoJS from 'crypto-js';
+import addDays from 'date-fns/addDays';
+import promiseRetry from 'promise-retry';
+import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
+import {Alert, ToastAndroid} from 'react-native';
+import Config from 'react-native-config';
+import 'react-native-get-random-values';
 import ImagePicker, {
   ImagePickerOptions,
   ImagePickerResponse,
 } from 'react-native-image-picker';
-import {Alert, ToastAndroid} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
-import {handleError} from '@/services/error-boundary';
-import messaging from '@react-native-firebase/messaging';
+import {v4 as uuidV4} from 'uuid';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -187,22 +186,6 @@ export const convertUriToBase64 = async (uri: string) => {
   try {
     const data = await RNFetchBlob.fs.readFile(uri, 'base64');
     return data;
-  } catch (error) {
-    handleError(error);
-  }
-};
-
-export const getFCMToken = async () => {
-  try {
-    const authorized = await messaging().hasPermission();
-    const fcmToken = await messaging().getToken();
-
-    if (authorized) {
-      return fcmToken;
-    }
-
-    await messaging().requestPermission();
-    return fcmToken;
   } catch (error) {
     handleError(error);
   }

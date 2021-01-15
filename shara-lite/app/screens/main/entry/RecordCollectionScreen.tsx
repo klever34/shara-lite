@@ -4,9 +4,9 @@ import {CustomerListItem} from '@/components/CustomerListItem';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import {TitleContainer} from '@/components/TitleContainer';
-import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {MainStackParamList} from '@/screens/main';
+import {getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -14,8 +14,10 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {useFormik} from 'formik';
-import React, {useCallback, useContext, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {Text, TextInput, View} from 'react-native';
+
+const strings = getI18nService().strings;
 
 type RecordCollectionScreenProps = {
   route: RouteProp<MainStackParamList, 'RecordCollection'>;
@@ -25,7 +27,6 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
   const {customer, goBack} = route.params;
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
-  const {showSuccessToast} = useContext(ToastContext);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -41,7 +42,6 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           total_amount: payload.amount_paid,
         });
         setIsLoading(false);
-        showSuccessToast('COLLECTION RECORDED');
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
@@ -51,7 +51,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
         handleError(error);
       }
     },
-    [goBack, navigation, customer, saveTransaction, showSuccessToast],
+    [goBack, navigation, customer, saveTransaction],
   );
 
   const {handleSubmit, values, handleChange, setFieldValue} = useFormik({
@@ -69,8 +69,8 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
     <CalculatorView>
       <Page header={{iconLeft: {}, title: ' '}}>
         <TitleContainer
-          title="Record Collection"
-          description="Quickly record a transaction or obligation"
+          title={strings('collection.header.title')}
+          description={strings('collection.header.description')}
           containerStyle={applyStyles('mb-8')}
         />
         <CustomerListItem
@@ -79,7 +79,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
         />
         <CalculatorInput
           placeholder="0.00"
-          label="Enter Amount"
+          label={strings('collection.fields.amount.label')}
           value={values.amount_paid}
           containerStyle={applyStyles('mb-16')}
           onChangeText={(text) => {
@@ -98,10 +98,12 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
         {!!values.amount_paid && (
           <AppInput
             multiline
-            label="Note (Optional)"
+            label={`${strings('collection.fields.note.label')} (${strings(
+              'optional',
+            )})`}
             containerStyle={applyStyles('mb-24')}
             onChangeText={handleChange('note')}
-            placeholder="Write a brief note about this transaction"
+            placeholder={strings('collection.fields.note.placeholder')}
             ref={noteFieldRef}
           />
         )}
@@ -125,7 +127,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
                       style={applyStyles(
                         'text-sm text-500 text-gray-50 pb-8 flex-1',
                       )}>
-                      Date
+                      {strings('date')}
                     </Text>
                     <Touchable onPress={toggleShow}>
                       <View
@@ -157,7 +159,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             </DatePicker>
           )}
           <Button
-            title="Save"
+            title={strings('save')}
             isLoading={isLoading}
             onPress={handleSubmit}
             style={applyStyles({width: '48%'})}

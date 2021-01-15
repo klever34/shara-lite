@@ -8,23 +8,26 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useReports} from '@/services/reports';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useContext, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {Alert, FlatList, SafeAreaView, Text, View} from 'react-native';
+import FileViewer from 'react-native-file-viewer';
 import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
 
 type Props = ModalWrapperFields;
 
+const i18Service = getI18nService();
+
 export const ReportScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
-  const {exportReportsToExcel} = useReports();
+  const {exportUserReportToPDF} = useReports();
   const {showSuccessToast} = useContext(ToastContext);
   const {
     filter,
@@ -39,8 +42,6 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     handleStatusFilter,
     handleReceiptSearch,
   } = useReceiptList();
-
-  const [isDownloadingReport, setIsDownloadingReport] = useState(false);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -74,23 +75,58 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     });
   }, [handleStatusFilter]);
 
+  const getReportFilterRange = useCallback(() => {
+    if (filter === 'all') {
+      return `${format(
+        filteredReceipts[filteredReceipts.length - 1]?.transaction_date ??
+          new Date(),
+        'dd MMM, yyyy',
+      )} - ${format(
+        filteredReceipts[0]?.transaction_date ?? new Date(),
+        'dd MMM, yyyy',
+      )}`;
+    }
+    if (filter === 'single-day') {
+      return format(filterStartDate, 'dd MMM, yyyy');
+    }
+    return `${format(filterStartDate, 'dd MMM, yyyy')} - ${format(
+      filterEndDate,
+      'dd MMM, yyyy',
+    )}`;
+  }, [filterStartDate, filterEndDate, filter, filteredReceipts]);
+
   const handleDownloadReport = useCallback(async () => {
+    const closeModal = openModal('loading', {text: 'Generating report...'});
     try {
-      setIsDownloadingReport(true);
-      await exportReportsToExcel({
-        receipts: filteredReceipts.sorted('transaction_date', false),
+      const pdfFilePath = await exportUserReportToPDF({
+        totalAmount,
+        collectedAmount,
+        outstandingAmount,
+        filterRange: getReportFilterRange(),
+        businessName: getAuthService().getBusinessInfo().name,
+        data: filteredReceipts.sorted('transaction_date', false),
       });
-      setIsDownloadingReport(false);
+      closeModal();
+      await FileViewer.open(pdfFilePath, {showOpenWithDialog: true});
       getAnalyticsService()
         .logEvent('userDownloadedReport', {})
         .then(() => {})
         .catch(handleError);
       showSuccessToast('REPORT DOWNLOADED');
     } catch (error) {
-      setIsDownloadingReport(false);
+      closeModal();
       Alert.alert('Error', error.message);
     }
-  }, [filteredReceipts, showSuccessToast, exportReportsToExcel]);
+  }, [
+    openModal,
+    filteredReceipts,
+    showSuccessToast,
+    exportUserReportToPDF,
+    totalAmount,
+    collectedAmount,
+    outstandingAmount,
+    getReportFilterRange,
+  ]);
 
   const getFilterLabelText = useCallback(() => {
     const activeOption = filterOptions?.find((item) => item.value === filter);
@@ -124,7 +160,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         })}>
         <HeaderBackButton iconName="arrow-left" />
         <Text style={applyStyles('text-400 text-black text-lg')}>
-          View Report
+          {i18Service.strings('report.title')}
         </Text>
       </View>
       <View
@@ -135,7 +171,9 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         <SearchFilter
           value={searchTerm}
           onSearch={handleReceiptSearch}
-          placeholderText="Search customers here"
+          placeholderText={i18Service.strings(
+            'report.search_input_placeholder',
+          )}
           containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
         />
@@ -148,7 +186,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
                 borderColor: colors['gray-20'],
               })}>
               <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
-                Filters
+                {i18Service.strings('report.filter_button_text')}
               </Text>
               <Icon
                 size={16}
@@ -171,7 +209,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
           )}>
           <View style={applyStyles('flex-row items-center flex-1')}>
             <Text style={applyStyles('text-gray-50 text-700 text-uppercase')}>
-              Filter:{' '}
+              {i18Service.strings('report.active_filter_label_text')}:{' '}
             </Text>
             <View style={applyStyles('flex-1')}>{getFilterLabelText()}</View>
           </View>
@@ -186,7 +224,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
                 style={applyStyles(
                   'text-xs text-gray-200 text-700 text-uppercase pr-8',
                 )}>
-                Clear
+                {i18Service.strings('report.clear_filter_button_text')}
               </Text>
               <Icon
                 name="x"
@@ -207,7 +245,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
           },
         )}>
         <Text style={applyStyles('text-black text-700 text-uppercase')}>
-          Net Balance
+          {i18Service.strings('report.net_balance_text')}
         </Text>
         <Text
           style={applyStyles(
@@ -225,7 +263,9 @@ export const ReportScreen = withModal(({openModal}: Props) => {
             <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
               <Text style={applyStyles('text-base text-gray-300')}>
                 {`${filteredReceipts.length} ${
-                  filteredReceipts.length > 1 ? 'Results' : 'Result'
+                  filteredReceipts.length > 1
+                    ? i18Service.strings('report.results.other')
+                    : i18Service.strings('report.results.one')
                 }`}
               </Text>
             </View>
@@ -251,20 +291,19 @@ export const ReportScreen = withModal(({openModal}: Props) => {
           <View style={applyStyles('center')}>
             <Text style={applyStyles('text-black text-xl pb-4')}>
               {searchTerm || filter
-                ? 'No results found'
-                : 'You have no records yet.'}
+                ? i18Service.strings('report.empty_state_text.no_results_found')
+                : i18Service.strings('report.empty_state_text.no_records_yet')}
             </Text>
           </View>
         </EmptyState>
       )}
       <FAButton
-        isLoading={isDownloadingReport}
         style={applyStyles(
           'w-auto rounded-16 py-16 px-20 flex-row items-center',
         )}
         onPress={handleDownloadReport}>
         <Text style={applyStyles('text-700 text-uppercase text-sm text-white')}>
-          Download Report
+          {i18Service.strings('report.download_report_button_text')}
         </Text>
       </FAButton>
     </SafeAreaView>

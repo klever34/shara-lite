@@ -1,10 +1,15 @@
-import {useCallback} from 'react';
-import {exportToExcel} from '@/services/file-exports';
-import {format} from 'date-fns';
 import {numberWithCommas} from '@/helpers/utils';
-import {getAuthService} from '@/services';
-import {useReceipt} from '@/services/receipt';
 import {IReceipt} from '@/models/Receipt';
+import {getAuthService, getI18nService} from '@/services';
+import {exportHTMLToPDF, exportToExcel} from '@/services/file-exports';
+import {useReceipt} from '@/services/receipt';
+import {format} from 'date-fns';
+import {useCallback} from 'react';
+import {
+  generateCustomerReportHTML,
+  generateUserReportHTML,
+  ReportToHTMLInterface,
+} from './pdf-utils';
 
 interface getReceiptsDataInterface {
   receipts?: Realm.Results<IReceipt & Realm.Object>;
@@ -13,6 +18,8 @@ interface getReceiptsDataInterface {
 interface exportReportsToExcelInterface {
   receipts?: Realm.Results<IReceipt & Realm.Object>;
 }
+
+const i18Service = getI18nService();
 
 export const useReports = () => {
   const {getReceipts} = useReceipt();
@@ -23,11 +30,15 @@ export const useReports = () => {
       const currentReceipts = receipts || getReceipts();
       const data = [
         [
-          'Date',
-          'Name',
-          'Note',
-          `Total Amount (${currencyCode})`,
-          `Amount Paid (${currencyCode})`,
+          i18Service.strings('report.excel_report_headings.date'),
+          i18Service.strings('report.excel_report_headings.name'),
+          i18Service.strings('report.excel_report_headings.note'),
+          `${i18Service.strings(
+            'report.excel_report_headings.total_amount',
+          )} (${currencyCode})`,
+          `${i18Service.strings(
+            'report.excel_report_headings.amount_paid',
+          )} (${currencyCode})`,
         ],
       ];
 
@@ -69,11 +80,17 @@ export const useReports = () => {
       const currentReceipts = receipts || getReceipts();
       const data = [
         [
-          'Date',
-          'Note',
-          `Total Amount (${currencyCode})`,
-          `Amount Paid (${currencyCode})`,
-          `Balance (${currencyCode})`,
+          i18Service.strings('report.excel_report_headings.date'),
+          i18Service.strings('report.excel_report_headings.note'),
+          `${i18Service.strings(
+            'report.excel_report_headings.total_amount',
+          )} (${currencyCode})`,
+          `${i18Service.strings(
+            'report.excel_report_headings.amount_paid',
+          )} (${currencyCode})`,
+          `${i18Service.strings(
+            'report.excel_report_headings.balance',
+          )} (${currencyCode})`,
         ],
       ];
 
@@ -110,7 +127,9 @@ export const useReports = () => {
         data,
         columns,
         filename: `Shara/Reports/Shara Reports - ${date}`,
-        notificationTitle: 'Report exported successfully',
+        notificationTitle: i18Service.strings(
+          'report.downloaded_report_notification_title',
+        ),
       });
     },
     [getReceiptsData],
@@ -125,14 +144,49 @@ export const useReports = () => {
         data,
         columns,
         filename: `Shara/Reports/Shara Reports - ${date}`,
-        notificationTitle: 'Report exported successfully',
+        notificationTitle: i18Service.strings(
+          'report.downloaded_report_notification_title',
+        ),
       });
     },
     [getCustomerReceiptsData],
   );
 
+  const exportUserReportToPDF = useCallback(
+    async (options: ReportToHTMLInterface) => {
+      const html = generateUserReportHTML(options);
+      const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
+      const {pdfFilePath} = await exportHTMLToPDF({
+        html,
+        fileName: `Shara/Reports/Shara Report - ${date}.pdf`,
+        previewFileName: `${options.businessName}-Account Statement-${options.filterRange}`,
+      });
+      return pdfFilePath;
+    },
+    [],
+  );
+
+  const exportCustomerReportToPDF = useCallback(
+    async (options: ReportToHTMLInterface) => {
+      const {customer} = options;
+      const html = generateCustomerReportHTML(options);
+      const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
+      const {pdfBase64String} = await exportHTMLToPDF({
+        html,
+        fileName: `Shara/Customer Ledger/${
+          customer?.name ?? 'Customer'
+        } Ledger - ${date}.pdf`,
+        previewFileName: `${customer?.name}-Account Statement-${options.filterRange}`,
+      });
+      return pdfBase64String;
+    },
+    [],
+  );
+
   return {
     exportReportsToExcel,
+    exportUserReportToPDF,
+    exportCustomerReportToPDF,
     exportCustomerReportsToExcel,
   };
 };

@@ -3,6 +3,10 @@ import PushNotification, {
   PushNotificationScheduleObject,
 } from 'react-native-push-notification';
 import {PushNotificationToken} from 'types/app';
+import messaging, {
+  FirebaseMessagingTypes,
+} from '@react-native-firebase/messaging';
+import {handleError} from '../error-boundary';
 
 export type Notification = any;
 
@@ -15,6 +19,22 @@ export interface INotificationService {
   cancelAllLocalNotifications(): void;
   localNotification(options: PushNotificationObject): void;
   scheduleNotification(options: PushNotificationScheduleObject): void;
+  getFCMToken(): Promise<string | undefined>;
+  subscribeToTopic(topic: string): Promise<void>;
+  unsubscribeFromTopic(topic: string): Promise<void>;
+  getInitialNotification(): Promise<FirebaseMessagingTypes.RemoteMessage | null>;
+  onMessage(
+    listener: (message: FirebaseMessagingTypes.RemoteMessage) => any,
+  ): void;
+  requestUserPermission(): Promise<
+    FirebaseMessagingTypes.AuthorizationStatus | undefined
+  >;
+  onNotificationOpenedApp(
+    listener: (message: FirebaseMessagingTypes.RemoteMessage) => any,
+  ): void;
+  setBackgroundMessageHandler(
+    listener: (message: FirebaseMessagingTypes.RemoteMessage) => Promise<any>,
+  ): void;
 }
 
 export class NotificationService implements INotificationService {
@@ -56,5 +76,60 @@ export class NotificationService implements INotificationService {
 
   cancelAllLocalNotifications(): void {
     PushNotification.cancelAllLocalNotifications();
+  }
+
+  onMessage(listener: (message: FirebaseMessagingTypes.RemoteMessage) => any) {
+    return messaging().onMessage(listener);
+  }
+
+  setBackgroundMessageHandler(
+    listener: (message: FirebaseMessagingTypes.RemoteMessage) => Promise<any>,
+  ) {
+    return messaging().setBackgroundMessageHandler(listener);
+  }
+
+  subscribeToTopic(topic: string) {
+    return messaging().subscribeToTopic(topic);
+  }
+
+  unsubscribeFromTopic(topic: string) {
+    return messaging().unsubscribeFromTopic(topic);
+  }
+
+  onNotificationOpenedApp(
+    listener: (message: FirebaseMessagingTypes.RemoteMessage) => any,
+  ) {
+    return messaging().onNotificationOpenedApp(listener);
+  }
+
+  async getInitialNotification() {
+    return messaging().getInitialNotification();
+  }
+
+  async requestUserPermission() {
+    const authStatus = await messaging().requestPermission();
+    const enabled =
+      authStatus === messaging.AuthorizationStatus.AUTHORIZED ||
+      authStatus === messaging.AuthorizationStatus.PROVISIONAL;
+
+    if (enabled) {
+      return authStatus;
+    }
+  }
+
+  async getFCMToken() {
+    try {
+      const authorized = await messaging().hasPermission();
+      const fcmToken = await messaging().getToken();
+
+      if (authorized) {
+        return fcmToken;
+      }
+
+      await messaging().requestPermission();
+      return fcmToken;
+    } catch (error) {
+      handleError(error);
+    }
   }
 }
