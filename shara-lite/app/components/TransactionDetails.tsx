@@ -90,8 +90,6 @@ const TransactionDetails = withModal(
     const [customer, setCustomer] = useState(customerProp);
     const {due_date: dueDate} = customer;
 
-    console.log(customer._id);
-
     const {setCurrentCustomer} = useContext(EntryContext);
 
     useEffect(() => {
