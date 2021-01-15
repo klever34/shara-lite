@@ -4,14 +4,8 @@ import {ContactService, IContactService} from './contact';
 import {AuthService, IAuthService} from './auth';
 import {IRealmService, RealmService} from './realm';
 import {ApiService, IApiService} from './api';
-import {IPubNubService, PubNubService} from './pubnub';
 import {INavigationService, NavigationService} from './navigation';
 import {AnalyticsService, IAnalyticsService} from './analytics';
-import {IMessageService, MessageService} from '@/services/MessageService';
-import {
-  ConversationService,
-  IConversationService,
-} from '@/services/ConversationService';
 import {INotificationService, NotificationService} from './notification';
 import {IGeolocationService, GeolocationService} from './geolocation';
 import {AddressService, IAddressService} from '@/services/address/service';
@@ -31,30 +25,17 @@ const createDIContainer = (): IDIContainer => {
     Notification: object(NotificationService),
     Navigation: object(NavigationService),
     Analytics: object(AnalyticsService),
-    PubNub: object(PubNubService),
     Realm: object(RealmService),
     Storage: object(StorageService),
     Geolocation: object(GeolocationService),
     IPGeolocation: object(IPGeolocationService),
-    Auth: object(AuthService).construct(
-      get('Storage'),
-      get('PubNub'),
-      get('Analytics'),
-    ),
+    Auth: object(AuthService).construct(get('Storage'), get('Analytics')),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
       get('Realm'),
       get('Api'),
       get('Auth'),
       get('IPGeolocation'),
-    ),
-    Message: object(MessageService).construct(get('Realm'), get('PubNub')),
-    Conversation: object(ConversationService).construct(
-      get('Realm'),
-      get('PubNub'),
-      get('Auth'),
-      get('Api'),
-      get('Contact'),
     ),
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
@@ -74,8 +55,6 @@ export const getNavigationService = () =>
 export const getAnalyticsService = () =>
   container.get<IAnalyticsService>('Analytics');
 
-export const getPubNubService = () => container.get<IPubNubService>('PubNub');
-
 export const getRealmService = () => container.get<IRealmService>('Realm');
 
 export const getStorageService = () =>
@@ -87,12 +66,6 @@ export const getApiService = () => container.get<IApiService>('Api');
 
 export const getContactService = () =>
   container.get<IContactService>('Contact');
-
-export const getMessageService = () =>
-  container.get<IMessageService>('Message');
-
-export const getConversationService = () =>
-  container.get<IConversationService>('Conversation');
 
 export const getGeolocationService = () =>
   container.get<IGeolocationService>('Geolocation');

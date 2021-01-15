@@ -1,5 +1,4 @@
 import {IStorageService} from '../storage';
-import {IPubNubService} from '../pubnub';
 //@ts-ignore
 import {getCurrency} from 'country-currency-map';
 import {Business, User} from 'types/app';
@@ -39,7 +38,6 @@ export class AuthService implements IAuthService {
 
   constructor(
     private storageService: IStorageService,
-    private pubNubService: IPubNubService,
     private analyticsService: IAnalyticsService,
   ) {}
 
@@ -99,7 +97,6 @@ export class AuthService implements IAuthService {
         this.realmCredentials = null;
         await this.storageService.clear();
         await this.storageService.setItem('hide-welcome-screen', true);
-        this.pubNubService.getInstance()?.unsubscribeAll();
       }
     } catch (e) {
       throw e;
