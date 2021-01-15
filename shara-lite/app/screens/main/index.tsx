@@ -92,7 +92,7 @@ const MainScreens = () => {
         remoteMessage?.data?.payload &&
         JSON.parse(remoteMessage?.data?.payload);
 
-      if (realm && payload && payload.customer) {
+      if (realm && isSyncCompleted && payload && payload.customer) {
         const customerId = new ObjectId(payload.customer._id);
         const customer = getCustomer({customerId});
 
@@ -103,7 +103,7 @@ const MainScreens = () => {
         navigation.navigate('Home');
       }
     });
-  }, [realm, navigation, getCustomer]);
+  }, [realm, isSyncCompleted, navigation, getCustomer]);
 
   if (!realm) {
     return (
