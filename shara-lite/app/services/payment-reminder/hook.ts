@@ -13,6 +13,10 @@ import {
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 
+interface getPaymentRemindersInterface {
+  customer: ICustomer;
+}
+
 interface savePaymentReminderInterface {
   paymentReminder: IPaymentReminder;
 }
@@ -27,7 +31,9 @@ interface deletePaymentReminderInterface {
 }
 
 interface usePaymentReminderInterface {
-  getPaymentReminders: () => IPaymentReminder[];
+  getPaymentReminders: (
+    params: getPaymentRemindersInterface,
+  ) => IPaymentReminder[];
   savePaymentReminder: (
     data: savePaymentReminderInterface,
   ) => Promise<IPaymentReminder>;
@@ -42,11 +48,15 @@ interface usePaymentReminderInterface {
 export const usePaymentReminder = (): usePaymentReminderInterface => {
   const realm = useRealm();
 
-  const getPaymentReminders = (): IPaymentReminder[] => {
+  const getPaymentReminders = ({
+    customer,
+  }: getPaymentRemindersInterface): IPaymentReminder[] => {
     return (realm
       .objects<IPaymentReminder>(modelName)
       .sorted('created_at', false)
-      .filtered('is_deleted != true') as unknown) as IPaymentReminder[];
+      .filtered(
+        `is_deleted != true AND customer = ${customer._id}`,
+      ) as unknown) as IPaymentReminder[];
   };
 
   const savePaymentReminder = async ({
