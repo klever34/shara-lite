@@ -115,39 +115,57 @@ const userReportTableHTML = ({data}: {data: IReceipt[]}) => `
     .join('')}
 `;
 
-const customerReportTableHTML = ({data}: {data: IReceipt[]}) => `
-  <div style="height: 30px;display: flex;background: #F5F5F5;align-items: center;margin-bottom: 8px;">
-    <p style="margin:0;width: 15%;padding: 12px;font-weight: 700;font-size:12px;">Date</p>
-    <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Note</p>
-    <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Total Amount</p>
-    <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;font-weight: 700;font-size:12px;">Amount Paid</p>
-    <p style="margin:0;width: 20%;text-align: center;font-weight: 700;font-size:12px;padding: 12px 0;">Balance</p>
-  </div>
-  ${data
-    .map(
-      (item) => `
-      <div style="display: flex;border: 1px solid #ECECEC;align-items: center;">
-        <p style="margin:0;width: 15%;padding: 12px;font-size:12px;">${format(
-          item.transaction_date ?? new Date(),
-          'dd MMM',
-        )}</p>
-        <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-size:12px;">${
-          item.note ?? ''
-        }</p>
-        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-size:12px;">
-          ${!item.is_collection ? amountWithCurrency(item.total_amount) : ''}
-        </p>
-        <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;border-left: 1px solid #ECECEC;border-right: 1px solid #ECECEC;font-size:12px;">
-          ${item.amount_paid ? amountWithCurrency(item.amount_paid) : ''}
-        </p>
-        <p style="margin:0;width: 20%;padding: 12px 0;text-align: center;font-size:12px;">
-          ${item.credit_amount ? amountWithCurrency(item.credit_amount) : ''}
-        </p>
-      </div>
-    `,
-    )
-    .join('')}
-`;
+const customerReportTableHTML = ({data}: {data: IReceipt[]}) => {
+  let totalBalance = 0;
+
+  return `
+    <div style="height: 30px;display: flex;background: #F5F5F5;align-items: center;margin-bottom: 8px;">
+      <p style="margin:0;width: 15%;padding: 12px;font-weight: 700;font-size:12px;">Date</p>
+      <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Note</p>
+      <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Total Amount</p>
+      <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;font-weight: 700;font-size:12px;">Amount Paid</p>
+      <p style="margin:0;width: 20%;text-align: center;font-weight: 700;font-size:12px;padding: 12px 0;">Balance</p>
+    </div>
+    ${data
+      .map((item) => {
+        const collectedAmount = item.credit_amount === 0 ? item.amount_paid : 0;
+        totalBalance = totalBalance + collectedAmount - item.credit_amount;
+        console.log(item.credit_amount, collectedAmount);
+
+        return `
+              <div style="display: flex;border: 1px solid #ECECEC;align-items: center;">
+                <p style="margin:0;width: 15%;padding: 12px;font-size:12px;">${format(
+                  item.transaction_date ?? new Date(),
+                  'dd MMM',
+                )}</p>
+                <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-size:12px;">${
+                  item.note ?? ''
+                }</p>
+                <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-size:12px;">
+                  ${
+                    !item.is_collection
+                      ? amountWithCurrency(item.total_amount)
+                      : ''
+                  }
+                </p>
+                <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;border-left: 1px solid #ECECEC;border-right: 1px solid #ECECEC;font-size:12px;">
+                  ${
+                    item.amount_paid ? amountWithCurrency(item.amount_paid) : ''
+                  }
+                </p>
+                <p style="margin:0;width: 20%;padding: 12px 0;text-align: center;font-size:12px;${
+                  totalBalance > 0 ? 'color: #25A36E;' : 'color: #DD0404;'
+                }">
+                  ${totalBalance < 0 ? '-' : ''}${amountWithCurrency(
+          totalBalance,
+        )}
+                </p>
+              </div>
+          `;
+      })
+      .join('')}
+  `;
+};
 
 export const generateUserReportHTML = (options: ReportToHTMLInterface) => {
   let htmlString = [] as string[];

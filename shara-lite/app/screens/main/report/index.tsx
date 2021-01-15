@@ -75,8 +75,8 @@ export const ReportScreen = withModal(({openModal}: Props) => {
   }, [handleStatusFilter]);
 
   const handleDownloadReport = useCallback(async () => {
+    const closeModal = openModal('loading', {text: 'Generating report...'});
     try {
-      const closeModal = openModal('loading', {text: 'Generating report...'});
       await exportUserReportToPDF({
         totalAmount,
         collectedAmount,
@@ -91,6 +91,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         .catch(handleError);
       showSuccessToast('REPORT DOWNLOADED');
     } catch (error) {
+      closeModal();
       Alert.alert('Error', error.message);
     }
   }, [

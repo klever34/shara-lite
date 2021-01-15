@@ -88,7 +88,6 @@ const TransactionDetails = withModal(
 
     const [receiptImage, setReceiptImage] = useState('');
     const [customer, setCustomer] = useState(customerProp);
-    const [isSharingStatement, setIsSharingStatment] = useState(false);
     const {due_date: dueDate} = customer;
 
     const {setCurrentCustomer} = useContext(EntryContext);
@@ -255,8 +254,8 @@ const TransactionDetails = withModal(
     }, [filter, filterOptions, openModal, handleStatusFilter]);
 
     const handleShareStatement = useCallback(async () => {
+      const closeModal = openModal('loading', {text: 'Generating report...'});
       try {
-        setIsSharingStatment(true);
         let base64Pdf = await exportCustomerReportToPDF({
           customer,
           totalAmount,
@@ -268,7 +267,7 @@ const TransactionDetails = withModal(
         base64Pdf = 'data:application/pdf;base64,' + base64Pdf;
         const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
         if (hasWhatsapp && whatsAppNumber) {
-          setIsSharingStatment(false);
+          closeModal();
           await Share.shareSingle({
             //@ts-ignore
             whatsAppNumber,
@@ -283,7 +282,7 @@ const TransactionDetails = withModal(
             }),
           });
         } else {
-          setIsSharingStatment(false);
+          closeModal();
           await Share.open({
             url: base64Pdf,
             title: strings('customer_statement.title'),
@@ -300,10 +299,11 @@ const TransactionDetails = withModal(
           .then(() => {})
           .catch(handleError);
       } catch (error) {
-        setIsSharingStatment(false);
+        closeModal();
         Alert.alert('Error', error.message);
       }
     }, [
+      openModal,
       customer,
       whatsAppNumber,
       filteredReceipts,
@@ -570,10 +570,7 @@ const TransactionDetails = withModal(
                 style={applyStyles(
                   'py-8 px-16 flex-row items-center justify-between',
                 )}>
-                <Touchable
-                  onPress={
-                    isSharingStatement ? undefined : handleShareStatement
-                  }>
+                <Touchable onPress={handleShareStatement}>
                   <View
                     style={applyStyles(
                       'py-4 px-8 flex-row items-center bg-gray-20',
@@ -593,9 +590,7 @@ const TransactionDetails = withModal(
                       style={applyStyles(
                         'text-gray-200 text-700 text-xxs pl-8 text-uppercase',
                       )}>
-                      {isSharingStatement
-                        ? `${strings('transaction.generating_statement')}...`
-                        : strings('transaction.share_statement')}
+                      {strings('transaction.share_statement')}
                     </Text>
                   </View>
                 </Touchable>
