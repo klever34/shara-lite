@@ -255,7 +255,14 @@ const TransactionDetails = withModal(
 
     const getReportFilterRange = useCallback(() => {
       if (filter === 'all') {
-        return '';
+        return `${format(
+          filteredReceipts[filteredReceipts.length - 1]?.transaction_date ??
+            new Date(),
+          'dd MMM, yyyy',
+        )} - ${format(
+          filteredReceipts[0]?.transaction_date ?? new Date(),
+          'dd MMM, yyyy',
+        )}`;
       }
       if (filter === 'single-day') {
         return format(filterStartDate, 'dd MMM, yyyy');
@@ -264,12 +271,12 @@ const TransactionDetails = withModal(
         filterEndDate,
         'dd MMM, yyyy',
       )}`;
-    }, [filterStartDate, filterEndDate, filter]);
+    }, [filterStartDate, filterEndDate, filter, filteredReceipts]);
 
     const handleShareStatement = useCallback(async () => {
       const closeModal = openModal('loading', {text: 'Generating report...'});
       try {
-        let {pdfBase64String} = await exportCustomerReportToPDF({
+        let pdfBase64String = await exportCustomerReportToPDF({
           customer,
           totalAmount,
           collectedAmount,
@@ -314,6 +321,7 @@ const TransactionDetails = withModal(
           .catch(handleError);
       } catch (error) {
         closeModal();
+        handleError(error);
         Alert.alert('Error', error.message);
       }
     }, [

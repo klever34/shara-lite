@@ -56,7 +56,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
       .sorted('created_at', false)
       .filtered(
         'is_deleted != true AND customer = $0',
-        customer._id,
+        customer,
       ) as unknown) as IPaymentReminder[];
   };
 
@@ -91,7 +91,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
         when: updatedPaymentReminder.when,
         unit: updatedPaymentReminder.unit,
         due_date: updatedPaymentReminder.due_date?.toISOString() ?? '',
-        customer: String(updatedPaymentReminder.customer._id ?? ''),
+        customer: String(updatedPaymentReminder?.customer?._id ?? ''),
       })
       .then(() => {});
 
@@ -125,7 +125,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
         when: updatedPaymentReminder.when,
         unit: updatedPaymentReminder.unit,
         due_date: updatedPaymentReminder.due_date?.toISOString() ?? '',
-        customer: String(updatedPaymentReminder.customer._id ?? ''),
+        customer: String(updatedPaymentReminder?.customer?._id ?? ''),
       })
       .then(() => {});
   };
@@ -141,7 +141,7 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
         when: paymentReminder.when,
         unit: paymentReminder.unit,
         due_date: paymentReminder.due_date?.toISOString() ?? '',
-        customer: String(paymentReminder.customer._id ?? ''),
+        customer: String(paymentReminder?.customer?._id ?? ''),
       })
       .then(() => {});
   };

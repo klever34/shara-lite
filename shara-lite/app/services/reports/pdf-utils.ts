@@ -38,9 +38,17 @@ const reportPageFooterHTML = () => `
   </div>
 `;
 
-const reportHeaderHTML = ({filterRange}: {filterRange?: string}) => `
+const reportHeaderHTML = ({
+  customer,
+  filterRange,
+}: {
+  filterRange?: string;
+  customer?: ICustomer;
+}) => `
   <div style="display:flex;align-items: center;justify-content: center;flex-direction: column;padding-bottom: 54px;">
-    <h2 style="margin:0;padding-bottom: 4px;font-weight: 700;">Account Statement</h2>
+    <h2 style="margin:0;padding-bottom: 4px;font-weight: 700;">${
+      customer ? `${customer.name} Statement` : 'Account Statement'
+    }</h2>
     ${filterRange ? `<p style="margin:0;">(${filterRange})</p>` : ''}
   </div>
 `;
@@ -130,7 +138,6 @@ const customerReportTableHTML = ({data}: {data: IReceipt[]}) => {
       .map((item) => {
         const collectedAmount = item.credit_amount === 0 ? item.amount_paid : 0;
         totalBalance = totalBalance + collectedAmount - item.credit_amount;
-        console.log(item.credit_amount, collectedAmount);
 
         return `
               <div style="display: flex;border: 1px solid #ECECEC;align-items: center;">
@@ -233,6 +240,7 @@ export const generateCustomerReportHTML = (options: ReportToHTMLInterface) => {
   let htmlString = [] as string[];
   const {
     data,
+    customer,
     filterRange,
     businessName,
     collectedAmount,
@@ -256,7 +264,7 @@ export const generateCustomerReportHTML = (options: ReportToHTMLInterface) => {
           <body style="padding: 0;margin: 0;box-sizing: border-box;position: absolute;width: 100%;height: 100%;">
             ${reportPageHeaderHTML({businessName})}
             <div style="padding: 12px 32px;height: calc(100% - 124px);background-color: white;">
-              ${reportHeaderHTML({filterRange})}
+              ${reportHeaderHTML({filterRange, customer})}
               ${reportSummaryHTML({
                 totalEntries,
                 collectedAmount,

@@ -145,7 +145,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         <SearchFilter
           value={searchTerm}
           onSearch={handleReceiptSearch}
-          placeholderText="Search records here"
+          placeholderText="Search customers here"
           containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
         />

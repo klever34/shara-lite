@@ -252,6 +252,7 @@ interface Strings {
     add_as_new_customer: string;
     add_customer: string;
     add_customer_details: string;
+    add_new_customer_text: string;
   };
   payment: {
     edit_payment_preview_label_modal: {

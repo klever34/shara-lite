@@ -125,7 +125,7 @@ export const SelectCustomerListScreen = withModal(
               style={applyStyles(
                 'pb-16 text-base text-gray-300 text-center text-uppercase text-700',
               )}>
-              Add New Customer
+              {strings('add_new_customer_text')}
             </Text>
             <CustomerForm
               onCancel={closeModal}

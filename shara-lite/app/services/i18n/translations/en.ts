@@ -154,7 +154,7 @@ const en: Strings = {
     collect_on: 'Collect on',
     on_$date: 'on {{date}}',
     no_reminder_set: 'No Reminder Set',
-    send_reminder: 'Send reminder',
+    send_reminder: 'Share',
     balance_statement:
       '{{customer_name}} has a positive balance of {{balance}}',
     not_owing: '{{customer_name}} is not owing',
@@ -314,9 +314,10 @@ const en: Strings = {
       title: 'Select Customer',
       description: 'Which customer is this transaction for?',
     },
-    add_as_new_customer: 'Add {{customer.name}} as new customer',
+    add_as_new_customer: 'Add {{customer_name}} as new customer',
     add_customer: 'Add Customer',
     add_customer_details: 'Add Customer details',
+    add_new_customer_text: 'Add New Customer',
   },
   payment: {
     edit_payment_preview_label_modal: {

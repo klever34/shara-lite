@@ -4,9 +4,9 @@ import {CustomerListItem} from '@/components/CustomerListItem';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import {TitleContainer} from '@/components/TitleContainer';
-import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {MainStackParamList} from '@/screens/main';
+import {getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -14,9 +14,8 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {useFormik} from 'formik';
-import React, {useCallback, useContext, useRef, useState} from 'react';
+import React, {useCallback, useRef, useState} from 'react';
 import {Text, TextInput, View} from 'react-native';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -28,7 +27,6 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
   const {customer, goBack} = route.params;
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
-  const {showSuccessToast} = useContext(ToastContext);
 
   const [isLoading, setIsLoading] = useState(false);
 
@@ -44,7 +42,6 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
           total_amount: payload.amount_paid,
         });
         setIsLoading(false);
-        showSuccessToast(strings('collection.collection_recorded'));
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
@@ -54,7 +51,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
         handleError(error);
       }
     },
-    [goBack, navigation, customer, saveTransaction, showSuccessToast],
+    [goBack, navigation, customer, saveTransaction],
   );
 
   const {handleSubmit, values, handleChange, setFieldValue} = useFormik({

@@ -77,6 +77,7 @@ export const ReminderSettingsScreen = withModal(
         },
       });
       showSuccessToast(strings('payment_reminder.reminder_added'));
+      console.log(getPaymentReminders({customer}));
       setReminders(getPaymentReminders({customer}));
     }, [
       dueDate,

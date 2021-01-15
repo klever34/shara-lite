@@ -77,7 +77,14 @@ export const ReportScreen = withModal(({openModal}: Props) => {
 
   const getReportFilterRange = useCallback(() => {
     if (filter === 'all') {
-      return '';
+      return `${format(
+        filteredReceipts[filteredReceipts.length - 1]?.transaction_date ??
+          new Date(),
+        'dd MMM, yyyy',
+      )} - ${format(
+        filteredReceipts[0]?.transaction_date ?? new Date(),
+        'dd MMM, yyyy',
+      )}`;
     }
     if (filter === 'single-day') {
       return format(filterStartDate, 'dd MMM, yyyy');
@@ -86,7 +93,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
       filterEndDate,
       'dd MMM, yyyy',
     )}`;
-  }, [filterStartDate, filterEndDate, filter]);
+  }, [filterStartDate, filterEndDate, filter, filteredReceipts]);
 
   const handleDownloadReport = useCallback(async () => {
     const closeModal = openModal('loading', {text: 'Generating report...'});

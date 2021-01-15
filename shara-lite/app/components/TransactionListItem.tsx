@@ -49,8 +49,7 @@ const TransactionListItem = ({
               style={applyStyles(
                 'pb-2 text-xxs text-700 text-gray-100 text-uppercase',
               )}>
-              {format(transaction_date, 'dd MMM yyyy')} -{' '}
-              {format(transaction_date, 'hh:mm a')}
+              {format(transaction_date, 'dd MMM yyyy')}
             </Text>
           )}
           {!!note && (

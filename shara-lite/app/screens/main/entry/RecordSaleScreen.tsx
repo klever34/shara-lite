@@ -1,18 +1,17 @@
+import {CalculatorView} from '@/components/CalculatorView';
+import {CustomerListItem} from '@/components/CustomerListItem';
 import {Page} from '@/components/Page';
 import {RecordSaleForm} from '@/components/RecordSaleForm';
 import {TitleContainer} from '@/components/TitleContainer';
-import {ToastContext} from '@/components/Toast';
+import {getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
-import React, {useCallback, useContext} from 'react';
+import React, {useCallback} from 'react';
 import {MainStackParamList} from '..';
 import {SelectCustomerListItem} from './SelectCustomerScreen';
-import {CalculatorView} from '@/components/CalculatorView';
-import {CustomerListItem} from '@/components/CustomerListItem';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -24,7 +23,6 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
   const {goBack, customer} = route.params;
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
-  const {showSuccessToast} = useContext(ToastContext);
 
   const handleSaveRecordSale = useCallback(
     async (payload) => {
@@ -33,7 +31,6 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
           ...payload,
           is_collection: false,
         });
-        showSuccessToast(strings('sale.sale_recorded'));
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
@@ -42,7 +39,7 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
         handleError(error);
       }
     },
-    [goBack, navigation, saveTransaction, showSuccessToast],
+    [goBack, navigation, saveTransaction],
   );
 
   const handleSave = useCallback(

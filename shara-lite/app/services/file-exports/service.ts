@@ -79,12 +79,13 @@ export const saveToFile = async ({
 export const exportHTMLToPDF = async (data: {
   html: string;
   fileName: string;
+  previewFileName?: string;
 }) => {
-  const {html, fileName} = data;
+  const {html, fileName, previewFileName} = data;
   const path = `${dirs.DownloadDir}/${fileName}`;
   const options = {
     html,
-    fileName: 'test',
+    fileName: previewFileName || 'test',
   };
   const file = await RNHTMLtoPDF.convert(options);
   const pdfFilePath = file.filePath;

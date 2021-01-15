@@ -159,6 +159,7 @@ export const useReports = () => {
       const {pdfFilePath} = await exportHTMLToPDF({
         html,
         fileName: `Shara/Reports/Shara Report - ${date}.pdf`,
+        previewFileName: `${options.businessName}-Account Statement-${options.filterRange}`,
       });
       return pdfFilePath;
     },
@@ -175,6 +176,7 @@ export const useReports = () => {
         fileName: `Shara/Customer Ledger/${
           customer?.name ?? 'Customer'
         } Ledger - ${date}.pdf`,
+        previewFileName: `${customer?.name}-Account Statement-${options.filterRange}`,
       });
       return pdfBase64String;
     },
