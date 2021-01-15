@@ -90,6 +90,8 @@ const TransactionDetails = withModal(
     const [customer, setCustomer] = useState(customerProp);
     const {due_date: dueDate} = customer;
 
+    console.log(customer._id);
+
     const {setCurrentCustomer} = useContext(EntryContext);
 
     useEffect(() => {
@@ -99,7 +101,7 @@ const TransactionDetails = withModal(
     const getNextReminderDateText = useCallback(() => {
       const dates: Date[] = [];
       if (dueDate) {
-        getPaymentReminders().forEach((item) => {
+        getPaymentReminders({customer}).forEach((item) => {
           switch (item.unit) {
             case ReminderUnit.DAYS:
               if (item.when === ReminderWhen.AFTER) {
@@ -136,7 +138,7 @@ const TransactionDetails = withModal(
           addSuffix: true,
         });
       }
-    }, [dueDate, getPaymentReminders]);
+    }, [dueDate, getPaymentReminders, customer]);
 
     const whatsAppNumber = customer.mobile
       ? getCustomerWhatsappNumber(customer.mobile, user?.country_code)
@@ -472,7 +474,7 @@ const TransactionDetails = withModal(
                             : strings('transaction.set_collection_date')}
                         </Text>
                       </View>
-                      {!!dueDate && !!getPaymentReminders().length ? (
+                      {!!dueDate && !!getPaymentReminders({customer}).length ? (
                         <Text
                           style={applyStyles(
                             'pl-4 text-gray-100 text-uppercase text-700 text-xs',

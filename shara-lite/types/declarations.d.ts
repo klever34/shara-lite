@@ -1,7 +1,7 @@
 // @ts-ignore
 declare module 'country-currency-map';
-// @ts-ignore
-declare module 'react-native-bluetooth-escpos-printer';
+// // @ts-ignore
+// declare module 'react-native-bluetooth-escpos-printer';
 //@ts-ignore
 declare module 'react-native-check-app-install';
 
