@@ -13,7 +13,7 @@ import {
   getAuthService,
   getNavigationService,
   getRemoteConfigService,
-} from '../services';
+} from '@/services';
 import {useNavigation} from '@react-navigation/native';
 import {useInitRealm} from '@/services/realm';
 import {version as currentVersion} from '../../package.json';
@@ -55,56 +55,52 @@ const SplashScreen = () => {
     return false;
   }, []);
 
-  const handleRedirect = useCallback(
-    async () => {
-      const authService = getAuthService();
-      await authService.initialize();
+  const handleRedirect = useCallback(async () => {
+    const authService = getAuthService();
+    await authService.initialize();
 
-      if (authService.isLoggedIn()) {
-        try {
-          initRealm();
-        } catch (e) {
-          Alert.alert(
-            'Oops! Something went wrong.',
-            'Try clearing app data from application settings',
-            [
-              {
-                text: 'OK',
-                onPress: () => {
-                  if (process.env.NODE_ENV === 'production') {
-                    if (Platform.OS === 'android') {
-                      BackHandler.exitApp();
-                    }
+    if (authService.isLoggedIn()) {
+      try {
+        initRealm();
+      } catch (e) {
+        Alert.alert(
+          'Oops! Something went wrong.',
+          'Try clearing app data from application settings',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                if (process.env.NODE_ENV === 'production') {
+                  if (Platform.OS === 'android') {
+                    BackHandler.exitApp();
                   }
-                },
+                }
               },
-            ],
-          );
-        }
+            },
+          ],
+        );
       }
+    }
 
-      setTimeout(() => {
-        if (shouldUpdateApp) {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'UpdateShara'}],
-          });
-        } else if (authService.isLoggedIn()) {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Main'}],
-          });
-        } else {
-          navigation.reset({
-            index: 0,
-            routes: [{name: 'Auth'}],
-          });
-        }
-      }, 750);
-    },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [navigation],
-  );
+    setTimeout(() => {
+      if (shouldUpdateApp) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'UpdateShara'}],
+        });
+      } else if (authService.isLoggedIn()) {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Main'}],
+        });
+      } else {
+        navigation.reset({
+          index: 0,
+          routes: [{name: 'Auth'}],
+        });
+      }
+    }, 750);
+  }, [initRealm, navigation, shouldUpdateApp]);
 
   useEffect(() => {
     handleRedirect();
