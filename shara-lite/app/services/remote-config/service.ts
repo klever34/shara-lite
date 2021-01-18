@@ -29,7 +29,7 @@ const remoteConfigDefaults: RemoteConfig = {
 //         const value = object[name];
 //         if (typeof value === 'string') {
 //           file += `${key},`;
-//           file += `${value}\n`;
+//           file += `"${value}"\n`;
 //         } else if (typeof value === 'object') {
 //           file += generate(value, key);
 //         }

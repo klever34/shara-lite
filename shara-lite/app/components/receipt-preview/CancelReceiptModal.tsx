@@ -1,23 +1,26 @@
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React from 'react';
+import React, {useMemo} from 'react';
 import {Text, View} from 'react-native';
 import Modal from 'react-native-modal';
 import * as yup from 'yup';
 import {AppInput} from '../AppInput';
 import {Button} from '../Button';
-
+// Todo: Translate
 type Props = {
   isVisible: boolean;
   closeModal(): void;
   onCancelReceipt(note: string): void;
 };
 
-const validationSchema = yup.object().shape({
-  note: yup.string().required('Please add a note'),
-});
-
 export const CancelReceiptModal = (props: Props) => {
+  const validationSchema = useMemo(
+    () =>
+      yup.object().shape({
+        note: yup.string().required('Please add a note'),
+      }),
+    [],
+  );
   const {isVisible, closeModal, onCancelReceipt} = props;
   const {
     values,

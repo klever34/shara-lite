@@ -139,13 +139,14 @@ interface Strings {
     confirm_delete: string;
     collection_date: string;
     change_collection_date: string;
-    collect_on: string;
-    you_collected: string;
-    collected_from_who: string;
+    collect_on_date: string;
+    is_collection_message: string;
+    is_collection_with_customer_message: string;
     customer_balance_statement: string;
-    you_were_paid: string;
-    paid_you: string;
-    is_outstanding: string;
+    customer_owes_statement: string;
+    you_were_paid_statement: string;
+    customer_paid_statement: string;
+    customer_paid_with_outstanding_statement: string;
     amount_collected: string;
     amount_outstanding: string;
     total_amount: string;
@@ -235,8 +236,13 @@ interface Strings {
   remove: string;
   tel: string;
   select_from_phonebook: string;
+  scan: string;
+  scanning: string;
+  add: string;
+  close: string;
+  enable: string;
+  unknown: string;
   customers: {
-    no_customer_selected: string;
     start_adding: string;
     customer_count: PluralizedString;
     customer_edited: string;
@@ -262,7 +268,6 @@ interface Strings {
       validation_message: string;
       you_can_pay_me_via: string;
     };
-    edit_payment_preview_label_modal: Card;
     payment_container: {
       payment_added: string;
       warning_message: string;
@@ -384,9 +389,19 @@ interface Strings {
       total_amount: string;
       amount_paid: string;
       balance: string;
-    },
+    };
     downloaded_report_notification_title: string;
-  }
+  };
+  bluetooth_printer: {
+    setup: {
+      title: string;
+      description: string;
+    };
+    select_printer: string;
+    no_nearby_bluetooth: string;
+    device_not_supported: string;
+    search_for_devices: string;
+  };
 }
 
 interface PluralizedString {

@@ -6,7 +6,7 @@ import {colors} from '../styles';
 import {Formik} from 'formik';
 import {applyStyles} from '@/styles';
 import {CalculatorInput} from '@/components/CalculatorView';
-
+//Todo: Work on translation
 type Payload = {
   amount: number | undefined;
   method: string;

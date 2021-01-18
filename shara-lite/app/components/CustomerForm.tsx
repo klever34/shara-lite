@@ -4,7 +4,7 @@ import {handleError} from '@/services/error-boundary';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback, useState, useMemo} from 'react';
 import {Text, View} from 'react-native';
 import * as yup from 'yup';
 import {AppInput} from './AppInput';
@@ -12,6 +12,7 @@ import {Button} from './Button';
 import {PhoneNumber, PhoneNumberField} from './PhoneNumberField';
 import {RadioButton} from './RadioButton';
 
+//Todo: Translation
 type CustomerFormProps = {
   isLoading?: boolean;
   onCancel?: () => void;
@@ -20,10 +21,6 @@ type CustomerFormProps = {
   onSubmit: (values: Partial<ICustomer>, callback?: () => void) => void;
 };
 
-const validationSchema = yup.object().shape({
-  name: yup.string().required('Customer name is required'),
-});
-
 export const CustomerForm = ({
   onSubmit,
   onCancel,
@@ -31,6 +28,13 @@ export const CustomerForm = ({
   initialValues,
   showEmailField = false,
 }: CustomerFormProps) => {
+  const validationSchema = useMemo(
+    () =>
+      yup.object().shape({
+        name: yup.string().required('Customer name is required'),
+      }),
+    [],
+  );
   const {callingCode} = useIPGeolocation();
   const [saveToPhoneBook, setSaveToPhoneBook] = useState(true);
   const {

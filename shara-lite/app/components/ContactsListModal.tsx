@@ -29,6 +29,9 @@ import Icon from './Icon';
 import PlaceholderImage from './PlaceholderImage';
 import Touchable from './Touchable';
 import {ToastContext} from '@/components/Toast';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type Props<T> = {
   entity?: string;
@@ -387,7 +390,7 @@ export function ContactsListModal<T>({
               style={applyStyles('heading-700', 'text-center', {
                 color: colors['gray-300'],
               })}>
-              No results found
+              {strings('result', {count: 0})}
             </Text>
           </View>
         }
@@ -405,7 +408,7 @@ export function ContactsListModal<T>({
                 style={applyStyles('text-400', 'text-uppercase', {
                   color: colors.primary,
                 })}>
-                Close
+                {strings('close')}
               </Text>
             </Button>
           </View>

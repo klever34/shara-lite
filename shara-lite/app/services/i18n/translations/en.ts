@@ -97,15 +97,12 @@ const en: Strings = {
   activities: 'Activities',
   payment_reminder: {
     title: 'Payment Reminder',
-    message: String.raw`Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.{{pay_at}} \n\nPowered by Shara for free.\nwww.shara.co`.replace(
-      /\\n/g,
-      '\n',
-    ),
+    message: String.raw`Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.{{pay_at}} \n\nPowered by Shara for free.\nwww.shara.co`,
     thank_you_for_doing_business:
       'Thank you for doing business with {{business_name}}. ',
     you_owe: 'You owe {{balance}}',
     due_on: ' which is due on {{due_date}}',
-    pay_at: String.raw`\n\nTo pay click\n{{link}}`.replace(/\\n/g, '\n'),
+    pay_at: String.raw`\n\nTo pay click\n{{link}}`,
     reminder_count: {
       one: 'Reminder 1',
       other: 'Reminder {{count}}',
@@ -154,7 +151,7 @@ const en: Strings = {
     set_collection_date: 'set collection date',
     collection_date: 'Collection Date',
     change_collection_date: 'Change Collection Date',
-    collect_on: 'Collect on',
+    collect_on_date: 'Collect on **{{date}}**',
     on_$date: 'on {{date}}',
     no_reminder_set: 'No Reminder Set',
     send_reminder: 'Share',
@@ -170,13 +167,17 @@ const en: Strings = {
     edit_transaction: 'Edit Transaction',
     transaction_deleted: 'TRANSACTION DELETED',
     confirm_delete: 'Are you sure you want to delete this transaction?',
-    you_collected: 'You Collected',
-    collected_from_who: ' from {{customer_name}}. ',
+    is_collection_message: 'You Collected **{{total_amount}}**.',
+    is_collection_with_customer_message:
+      'You Collected **{{total_amount}}** *from {{customer_name}}*.',
     customer_balance_statement:
       'He/She has a {{polarity}} balance of {{balance}}',
-    you_were_paid: 'You were paid',
-    paid_you: 'paid you',
-    is_outstanding: 'is outstanding',
+    customer_owes_statement: '*{{customer_name}}* owes **{{credit_amount}}**',
+    you_were_paid_statement:
+      'You were paid **{{amount_paid}}** (No customer selected)',
+    customer_paid_statement: '*{{customer_name}}* paid you **{{amount_paid}}**',
+    customer_paid_with_outstanding_statement:
+      '*{{customer_name}}* paid you **{{amount_paid}}** and **{{credit_amount}}** is outstanding',
     amount_collected: 'amount collected',
     amount_outstanding: 'amount outstanding',
     total_amount: 'Total amount',
@@ -194,18 +195,12 @@ const en: Strings = {
       date_range: 'Date Range',
     },
     receipt_share_title: 'Share Receipt',
-    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`.replace(
-      /\\n/g,
-      '\n',
-    ),
+    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`,
     receipt_share_from_who: ' from {{business_name}}',
     receipt_share_credit_message:
       ' and you owe {{credit_amount}}{{due_date_message}}{{payment_link_message}}',
     receipt_share_due_date_message: ' which is due on {{due_date}}',
-    receipt_share_payment_link_message: String.raw`\n\nTo pay click\n{{payment_link}}`.replace(
-      /\\n/g,
-      '\n',
-    ),
+    receipt_share_payment_link_message: String.raw`\n\nTo pay click\n{{payment_link}}`,
     receipt_for: 'Receipt for',
     receipt_no: 'Receipt No',
   },
@@ -254,6 +249,8 @@ const en: Strings = {
   outstanding: 'Outstanding',
   clear: 'Clear',
   cancel: 'Cancel',
+  scan: 'Scan',
+  scanning: 'Scanning',
   done: 'Done',
   owe: {one: 'owe', other: 'owes'},
   result: {
@@ -265,6 +262,10 @@ const en: Strings = {
   note: {one: 'Note', other: 'Notes'},
   delete: 'Delete',
   edit: 'Edit',
+  add: 'Add',
+  close: 'Close',
+  enable: 'Enable',
+  unknown: 'UNKNOWN',
   share: 'Share',
   balance: 'Balance',
   paid: 'Paid',
@@ -296,7 +297,6 @@ const en: Strings = {
   },
   customer: {one: 'Customer', other: 'Customers'},
   customers: {
-    no_customer_selected: 'No customer selected',
     start_adding: 'Start adding customers by creating a record here',
     customer_count: {
       zero: 'You have no customers yet.',
@@ -509,6 +509,16 @@ const en: Strings = {
       balance: 'Balance',
     },
     downloaded_report_notification_title: 'Report exported successfully',
+  },
+  bluetooth_printer: {
+    setup: {
+      title: 'bluetooth settings',
+      description: 'Enable the bluetooth on you device to start printing.',
+    },
+    select_printer: 'Select printer',
+    no_nearby_bluetooth: 'No nearby Bluetooth devices were found',
+    device_not_supported: 'Device does not support bluetooth!',
+    search_for_devices: 'Search for devices',
   },
 };
 

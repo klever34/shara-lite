@@ -15,7 +15,7 @@ import {createStackNavigator} from '@react-navigation/stack';
 import Sentry from '@sentry/react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {withErrorBoundary} from 'react-error-boundary';
-import {Platform, ActivityIndicator} from 'react-native';
+import {Platform, ActivityIndicator, SafeAreaView} from 'react-native';
 import 'react-native-gesture-handler';
 import {MenuProvider} from 'react-native-popup-menu';
 import ErrorFallback from './components/ErrorFallback';
@@ -24,7 +24,7 @@ import MainScreens from './screens/main';
 import SplashScreen from './screens/SplashScreen';
 import RealmProvider from './services/realm/provider';
 import Config from 'react-native-config';
-import {colors} from './styles';
+import {applyStyles, colors} from './styles';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -96,7 +96,11 @@ const App = () => {
   }, []);
 
   if (!remoteConfigLoaded) {
-    return <ActivityIndicator color={colors.primary} size="large" />;
+    return (
+      <SafeAreaView style={applyStyles('flex-1 center')}>
+        <ActivityIndicator color={colors.primary} size="large" />
+      </SafeAreaView>
+    );
   }
 
   return (

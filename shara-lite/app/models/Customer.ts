@@ -19,8 +19,11 @@ export interface ICustomer extends BaseModelInterface {
   image?: string;
   due_date?: Date;
   receipts?: Realm.Results<IReceipt & Realm.Object>;
+  activeReceipts?: Realm.Results<IReceipt & Realm.Object>;
+  collections?: Realm.Results<IReceipt & Realm.Object>;
   payments?: IPayment[];
   credits?: Realm.Results<ICredit & Realm.Object>;
+  activeCredits?: Realm.Results<ICredit & Realm.Object>;
   paymentReminders?: Realm.Results<IPaymentReminder & Realm.Object>;
   addresses?: IAddress[];
 
@@ -118,6 +121,22 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
         .sum('amount_paid') || 0;
 
     return totalCollectedAmount - totalCreditAmount;
+  }
+
+  public get activeReceipts() {
+    return this.receipts?.filtered(
+      'is_deleted != true AND is_cancelled != true',
+    );
+  }
+
+  public get activeCredits() {
+    return this.credits?.filtered('is_deleted != true');
+  }
+
+  public get collections() {
+    return this.receipts?.filtered(
+      'is_deleted != true AND is_cancelled != true AND is_collection = true',
+    );
   }
 
   public get overdueCreditAmount() {
