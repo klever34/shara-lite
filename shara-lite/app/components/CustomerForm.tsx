@@ -11,7 +11,7 @@ import {AppInput} from './AppInput';
 import {Button} from './Button';
 import {PhoneNumber, PhoneNumberField} from './PhoneNumberField';
 import {RadioButton} from './RadioButton';
-
+//Todo: Work on translation
 type CustomerFormProps = {
   isLoading?: boolean;
   onCancel?: () => void;

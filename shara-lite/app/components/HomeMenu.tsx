@@ -6,7 +6,7 @@ import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {Text, View} from 'react-native';
 import {BottomHalfContentProps} from 'types/modal';
-
+//Todo: Work on translation
 type HomeMenuProps = BottomHalfContentProps & {};
 
 export const HomeMenu = ({closeModal}: HomeMenuProps) => {

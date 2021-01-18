@@ -26,6 +26,9 @@ import {
 } from 'react-native';
 import Icon from './Icon';
 import Touchable from './Touchable';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 export type AutoCompleteProps<T extends any = any> = {
   items: T[];
@@ -191,7 +194,7 @@ export const AutoComplete = forwardRef<TextInput, AutoCompleteProps>(
                   }>
                   <View style={applyStyles('p-lg flex-row bg-gray-10')}>
                     <Text style={applyStyles('text-700 text-gray-300')}>
-                      + Add
+                      + {strings('add')}
                     </Text>
                     <Text style={applyStyles('pl-xs text-700 text-primary')}>
                       {query}

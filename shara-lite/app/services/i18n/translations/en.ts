@@ -154,7 +154,7 @@ const en: Strings = {
     set_collection_date: 'set collection date',
     collection_date: 'Collection Date',
     change_collection_date: 'Change Collection Date',
-    collect_on: 'Collect on',
+    collect_on_date: 'Collect on **{{date}}**',
     on_$date: 'on {{date}}',
     no_reminder_set: 'No Reminder Set',
     send_reminder: 'Share',
@@ -170,13 +170,17 @@ const en: Strings = {
     edit_transaction: 'Edit Transaction',
     transaction_deleted: 'TRANSACTION DELETED',
     confirm_delete: 'Are you sure you want to delete this transaction?',
-    you_collected: 'You Collected',
-    collected_from_who: ' from {{customer_name}}. ',
+    is_collection_message: 'You Collected **{{total_amount}}**.',
+    is_collection_with_customer_message:
+      'You Collected **{{total_amount}}** *from {{customer_name}}*.',
     customer_balance_statement:
       'He/She has a {{polarity}} balance of {{balance}}',
-    you_were_paid: 'You were paid',
-    paid_you: 'paid you',
-    is_outstanding: 'is outstanding',
+    customer_owes_statement: '*{{customer_name}}* owes **{{credit_amount}}**',
+    you_were_paid_statement:
+      'You were paid **{{amount_paid}}** (No customer selected)',
+    customer_paid_statement: '*{{customer_name}}* paid you **{{amount_paid}}**',
+    customer_paid_with_outstanding_statement:
+      '*{{customer_name}}* paid you **{{amount_paid}}** and **{{credit_amount}}** is outstanding',
     amount_collected: 'amount collected',
     amount_outstanding: 'amount outstanding',
     total_amount: 'Total amount',
@@ -254,6 +258,8 @@ const en: Strings = {
   outstanding: 'Outstanding',
   clear: 'Clear',
   cancel: 'Cancel',
+  scan: 'Scan',
+  scanning: 'Scanning',
   done: 'Done',
   owe: {one: 'owe', other: 'owes'},
   result: {
@@ -265,6 +271,10 @@ const en: Strings = {
   note: {one: 'Note', other: 'Notes'},
   delete: 'Delete',
   edit: 'Edit',
+  add: 'Add',
+  close: 'Close',
+  enable: 'Enable',
+  unknown: 'UNKNOWN',
   share: 'Share',
   balance: 'Balance',
   paid: 'Paid',
@@ -296,7 +306,6 @@ const en: Strings = {
   },
   customer: {one: 'Customer', other: 'Customers'},
   customers: {
-    no_customer_selected: 'No customer selected',
     start_adding: 'Start adding customers by creating a record here',
     customer_count: {
       zero: 'You have no customers yet.',
@@ -509,6 +518,16 @@ const en: Strings = {
       balance: 'Balance',
     },
     downloaded_report_notification_title: 'Report exported successfully',
+  },
+  bluetooth_printer: {
+    setup: {
+      title: 'bluetooth settings',
+      description: 'Enable the bluetooth on you device to start printing.',
+    },
+    select_printer: 'Select printer',
+    no_nearby_bluetooth: 'No nearby Bluetooth devices were found',
+    device_not_supported: 'Device does not support bluetooth!',
+    search_for_devices: 'Search for devices',
   },
 };
 
