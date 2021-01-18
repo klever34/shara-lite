@@ -1,7 +1,7 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useEffect} from 'react';
+import React, {useEffect, useMemo} from 'react';
 import {Image, Text, View} from 'react-native';
 import * as yup from 'yup';
 import {Button} from '../Button';
@@ -10,7 +10,7 @@ import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 import {applyStyles} from '@/styles';
 import {ImagePickerResult, useImageInput} from '@/helpers/utils';
-
+// Todo: Translate
 export type BusinessFormPayload = {
   name: string;
   address?: string;
@@ -27,11 +27,6 @@ type BusinessFormProps = {
   onSubmit(payload: BusinessFormPayload): void;
 };
 
-const validationSchema = yup.object().shape({
-  name: yup.string().required('Business name is required'),
-  address: yup.string().required('Business address is required'),
-});
-
 export const BusinessForm = ({
   page,
   onSkip,
@@ -39,6 +34,14 @@ export const BusinessForm = ({
   isLoading,
   initalValues,
 }: BusinessFormProps) => {
+  const validationSchema = useMemo(
+    () =>
+      yup.object().shape({
+        name: yup.string().required('Business name is required'),
+        address: yup.string().required('Business address is required'),
+      }),
+    [],
+  );
   const {callingCode} = useIPGeolocation();
   const {
     errors,

@@ -15,12 +15,15 @@ import {
 // @ts-ignore
 import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
 import Modal from 'react-native-modal';
-import {colors} from '../styles';
+import {colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';
 import Touchable from './Touchable';
 import {getAnalyticsService, getStorageService} from '../services';
 import {applyStyles} from '@/styles';
+import {getI18nService} from '@/services';
+
+const strings = getI18nService().strings;
 
 type BluetoothDevice = {address: string; name?: string};
 type BluetoothModalProps = {
@@ -213,7 +216,7 @@ export const BluetoothModal = ({
               borderBottomColor: colors['gray-20'],
             })}>
             <Text style={applyStyles('text-400', {fontSize: 16})}>
-              {device.name || 'UNKNOWN'}
+              {device.name || strings('unknown')}
             </Text>
             <Text
               style={applyStyles('text-400', {
@@ -240,7 +243,7 @@ export const BluetoothModal = ({
             style={applyStyles(
               'pb-xl text-700 text-center text-uppercase text-sm text-gray-300',
             )}>
-            bluetooth settings
+            {strings('bluetooth_printer.setup.title')}
           </Text>
           <Icon
             size={24}
@@ -253,13 +256,13 @@ export const BluetoothModal = ({
             style={applyStyles(
               'pb-xl text-400 text-center text-base text-gray-300',
             )}>
-            Enable the bluetooth on you device to start printing.
+            {strings('bluetooth_printer.setup.description')}
           </Text>
         </View>
         <View style={applyStyles('flex-row items-center justify-between')}>
           <View style={applyStyles('mr-8', {width: '48%'})}>
             <Button
-              title="Cancel"
+              title={strings('cancel')}
               onPress={onClose}
               variantColor="white"
               style={applyStyles('w-full')}
@@ -267,7 +270,7 @@ export const BluetoothModal = ({
           </View>
           <View style={applyStyles({width: '48%'})}>
             <Button
-              title="Enable"
+              title={strings('enable')}
               variantColor="red"
               style={applyStyles('w-full')}
               onPress={handleEnableBluetooth}
@@ -290,7 +293,7 @@ export const BluetoothModal = ({
             style={applyStyles('text-500 text-center text-uppercase', {
               fontSize: 12,
             })}>
-            Select printer
+            {strings('bluetooth_printer.select_printer')}
           </Text>
         </View>
         <SectionList
@@ -312,11 +315,11 @@ export const BluetoothModal = ({
                   fontSize: 16,
                   color: colors['gray-200'],
                 })}>
-                No nearby Bluetooth devices were found
+                {strings('bluetooth_printer.no_nearby_bluetooth')}
               </Text>
               <Button
                 variantColor="clear"
-                title="Search for devices"
+                title={strings('search_for_devices')}
                 onPress={handleBluetoothScan}
               />
             </View>
@@ -328,7 +331,7 @@ export const BluetoothModal = ({
           )}>
           <View style={applyStyles('mr-8', {width: '48%'})}>
             <Button
-              title="Cancel"
+              title={strings('cancel')}
               onPress={onClose}
               variantColor="white"
               style={applyStyles('w-full')}
@@ -336,7 +339,7 @@ export const BluetoothModal = ({
           </View>
           <View style={applyStyles({width: '48%'})}>
             <Button
-              title="Scan"
+              title={strings('scan')}
               style={applyStyles('w-full')}
               onPress={handleBluetoothScan}
             />
@@ -395,7 +398,7 @@ export const BluetoothModal = ({
                 BluetoothManager.EVENT_BLUETOOTH_NOT_SUPPORT,
                 () => {
                   ToastAndroid.show(
-                    'Device does not support bluetooth!',
+                    strings('bluetooth_printer.device_not_supported'),
                     ToastAndroid.LONG,
                   );
                 },
@@ -408,7 +411,7 @@ export const BluetoothModal = ({
         }
       },
       (err: any) => {
-        Alert.alert('Error', err);
+        Alert.alert(strings('alert.error'), err);
       },
     );
     return () => {
@@ -446,7 +449,7 @@ export const BluetoothModal = ({
               style={applyStyles('mb-md')}
             />
             <Text style={applyStyles('text-center text-500', {fontSize: 18})}>
-              Scanning...
+              {strings('scanning')}...
             </Text>
           </View>
         ) : (

@@ -5,6 +5,7 @@ import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
 import React, {useCallback} from 'react';
 import {Text, View, ViewStyle} from 'react-native';
+import Markdown from 'react-native-markdown-display';
 import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
@@ -13,6 +14,14 @@ export type TransactionListItemProps = {
   style?: ViewStyle;
   receipt?: IReceipt;
   onPress?: () => void;
+};
+
+const markdownStyle = {
+  body: applyStyles('text-gray-300 text-400 text-base'),
+  em: applyStyles('text-500', {
+    fontWeight: '500',
+    fontStyle: 'normal',
+  }),
 };
 
 export const TransactionListItem = ({
@@ -36,24 +45,25 @@ export const TransactionListItem = ({
     if (is_collection) {
       return (
         <View>
-          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            {strings('transaction.you_collected')}{' '}
-            <Text style={applyStyles('text-700')}>
-              {amountWithCurrency(total_amount)}
-            </Text>
-            <Text style={applyStyles('text-500')}>
-              {customer &&
-                strings('transaction.collected_from_who', {
-                  customer_name: customer.name,
-                })}
-            </Text>
-            {customer?.balance
-              ? strings('transaction.customer_balance_statement', {
-                  polarity: customer.balance > 0 ? 'positive' : 'negative',
-                  balance: amountWithCurrency(customer.balance),
-                })
-              : ''}
-          </Text>
+          <Markdown style={markdownStyle}>
+            {`${
+              customer
+                ? strings('transaction.is_collection_with_customer_message', {
+                    total_amount: amountWithCurrency(total_amount),
+                    customer_name: customer.name,
+                  })
+                : strings('transaction.is_collection_message', {
+                    total_amount: amountWithCurrency(total_amount),
+                  })
+            } ${
+              customer?.balance
+                ? strings('transaction.customer_balance_statement', {
+                    polarity: customer.balance > 0 ? 'positive' : 'negative',
+                    balance: amountWithCurrency(customer.balance),
+                  })
+                : ''
+            }`}
+          </Markdown>
         </View>
       );
     }
@@ -62,21 +72,20 @@ export const TransactionListItem = ({
         return (
           <View>
             {customer ? (
-              <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-                <Text style={applyStyles('text-500')}>{customer.name}</Text>{' '}
-                {strings('owe', {count: 2})}{' '}
-                <Text style={applyStyles('text-700')}>
-                  {amountWithCurrency(credit_amount)}
-                </Text>
-              </Text>
+              <Markdown style={markdownStyle}>{`${strings(
+                'transaction.customer_owes_statement',
+                {
+                  customer_name: customer.name,
+                  credit_amount: amountWithCurrency(credit_amount),
+                },
+              )}`}</Markdown>
             ) : (
-              <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-                {strings('transaction.you_were_paid')}{' '}
-                <Text style={applyStyles('text-700')}>
-                  {amountWithCurrency(amount_paid)}
-                </Text>{' '}
-                ({strings('customers.no_customer_selected')})
-              </Text>
+              <Markdown style={markdownStyle}>{`${strings(
+                'transaction.you_were_paid_statement',
+                {
+                  amount_paid: amountWithCurrency(credit_amount),
+                },
+              )}`}</Markdown>
             )}
           </View>
         );
@@ -84,20 +93,14 @@ export const TransactionListItem = ({
       if (credit_amount) {
         return (
           <View>
-            <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-              <Text style={applyStyles('text-500')}>
-                {customer && `${customer.name}`}
-              </Text>{' '}
-              {strings('transaction.paid_you')}{' '}
-              <Text style={applyStyles('text-700')}>
-                {amountWithCurrency(amount_paid)}
-              </Text>{' '}
-              {strings('and')}{' '}
-              <Text style={applyStyles('text-700')}>
-                {amountWithCurrency(credit_amount)}
-              </Text>{' '}
-              {strings('transaction.is_outstanding')}
-            </Text>
+            <Markdown style={markdownStyle}>{`${strings(
+              'transaction.customer_paid_with_outstanding_statement',
+              {
+                customer_name: customer?.name ?? '',
+                amount_paid: amountWithCurrency(amount_paid),
+                credit_amount: amountWithCurrency(credit_amount),
+              },
+            )}`}</Markdown>
           </View>
         );
       }
@@ -105,21 +108,20 @@ export const TransactionListItem = ({
     return (
       <View>
         {customer ? (
-          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            <Text style={applyStyles('text-500')}>{customer.name}</Text>{' '}
-            {strings('transaction.paid_you')}{' '}
-            <Text style={applyStyles('text-700')}>
-              {amountWithCurrency(amount_paid)}
-            </Text>
-          </Text>
+          <Markdown style={markdownStyle}>{`${strings(
+            'transaction.customer_paid_statement',
+            {
+              customer_name: customer.name,
+              amount_paid: amountWithCurrency(amount_paid),
+            },
+          )}`}</Markdown>
         ) : (
-          <Text style={applyStyles('text-gray-300 text-400 text-base')}>
-            {strings('transaction.you_were_paid')}{' '}
-            <Text style={applyStyles('text-700')}>
-              {amountWithCurrency(amount_paid)}
-            </Text>{' '}
-            ({strings('customers.no_customer_selected')})
-          </Text>
+          <Markdown style={markdownStyle}>{`${strings(
+            'transaction.you_were_paid_statement',
+            {
+              amount_paid: amountWithCurrency(credit_amount),
+            },
+          )}`}</Markdown>
         )}
       </View>
     );
