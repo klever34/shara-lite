@@ -63,7 +63,7 @@ export const HomeScreen = () => {
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             <Image
-              resizeMode="contain"
+              resizeMode={business.profile_image?.url ? undefined : 'contain'}
               source={headerImageSource}
               style={applyStyles('w-full rounded-12', {
                 width: 24,
