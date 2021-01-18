@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.6.4-shara-lite-bugfix.transaction-summary+build.6241",
+  "version": "0.6.4-shara-lite-bugfix.transaction-summary+build.6245",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
