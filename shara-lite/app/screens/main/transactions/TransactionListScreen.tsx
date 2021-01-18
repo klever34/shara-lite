@@ -104,35 +104,15 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   const getFilterLabelText = useCallback(() => {
     const activeOption = filterOptions?.find((item) => item.value === filter);
     if (filter === 'date-range' && filterStartDate && filterEndDate) {
-      return (
-        <Text>
-          <Text style={applyStyles('text-gray-300 text-400')}>
-            {strings('from')}
-          </Text>{' '}
-          <Text style={applyStyles('text-red-200 text-400')}>
-            {format(filterStartDate, 'dd MMM, yyyy')}
-          </Text>{' '}
-          <Text style={applyStyles('text-gray-300 text-400')}>
-            {strings('to')}
-          </Text>{' '}
-          <Text style={applyStyles('text-red-200 text-400')}>
-            {format(filterEndDate, 'dd MMM, yyyy')}
-          </Text>
-        </Text>
-      );
+      return `${strings('from')} ${format(
+        filterStartDate,
+        'dd MMM, yyyy',
+      )} ${strings('to')} ${format(filterEndDate, 'dd MMM, yyyy')}`;
     }
     if (filter === 'single-day') {
-      return (
-        <Text style={applyStyles('text-red-200 text-400')}>
-          {format(filterStartDate, 'dd MMM, yyyy')}
-        </Text>
-      );
+      return format(filterStartDate, 'dd MMM, yyyy');
     }
-    return (
-      <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
-        {activeOption?.text}
-      </Text>
-    );
+    return activeOption?.text;
   }, [filter, filterEndDate, filterOptions, filterStartDate]);
 
   return (
@@ -183,7 +163,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             <Text style={applyStyles('text-gray-50 text-700 text-uppercase')}>
               {strings('filter', {count: 1})}:{' '}
             </Text>
-            <View style={applyStyles('flex-1')}>{getFilterLabelText()}</View>
+            <View style={applyStyles('flex-1')}>
+              <Text style={applyStyles('text-red-200 text-400')}>
+                {getFilterLabelText()}
+              </Text>
+            </View>
           </View>
           <Touchable onPress={handleClear}>
             <View
@@ -313,7 +297,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         </>
       )}
       {!!filteredReceipts && !!filteredReceipts.length && (
-        <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
+        <View
+          style={applyStyles(
+            'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
+          )}>
           <Text style={applyStyles('text-base text-gray-300')}>
             {searchTerm
               ? strings('result', {
@@ -321,6 +308,22 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 })
               : strings('activities')}
           </Text>
+          <Touchable onPress={handleOpenFilterModal}>
+            <View style={applyStyles('py-4 px-8 flex-row items-center')}>
+              <Text
+                style={applyStyles(
+                  'text-xs text-gray-300 text-700 text-uppercase pr-8',
+                )}>
+                {getFilterLabelText()}
+              </Text>
+              <Icon
+                size={16}
+                type="feathericons"
+                name="chevron-down"
+                color={colors['gray-50']}
+              />
+            </View>
+          </Touchable>
         </View>
       )}
       <FlatList
