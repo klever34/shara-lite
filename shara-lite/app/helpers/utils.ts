@@ -18,7 +18,11 @@ import {v4 as uuidV4} from 'uuid';
 export const generateUniqueId = () => uuidV4();
 
 export const numberWithCommas = (x: number | undefined) =>
-  x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
+  x
+    ? Number.isInteger(x)
+      ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      : x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    : '0';
 
 export const retryPromise = (
   promiseFn: () => Promise<any>,
