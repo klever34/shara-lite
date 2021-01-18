@@ -32,6 +32,11 @@ export const HomeScreen = () => {
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
   const {setCurrentCustomer} = useContext(EntryContext);
+  const headerImageSource = business.profile_image?.url
+    ? {
+        uri: business.profile_image?.url,
+      }
+    : require('@/assets/images/shara_logo_white.png');
 
   useEffect(() => {
     setCurrentCustomer?.(null);
@@ -58,9 +63,8 @@ export const HomeScreen = () => {
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             <Image
-              source={{
-                uri: business.profile_image?.url,
-              }}
+              resizeMode="contain"
+              source={headerImageSource}
               style={applyStyles('w-full rounded-12', {
                 width: 24,
                 height: 24,
@@ -71,7 +75,7 @@ export const HomeScreen = () => {
                 style={applyStyles(
                   'text-uppercase text-sm text-700 text-white',
                 )}>
-                {business.name}
+                {business.name || strings('home_screen_setup_business_text')}
               </Text>
             </View>
           </View>

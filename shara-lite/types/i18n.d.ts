@@ -68,6 +68,7 @@ interface Strings {
     ok: string;
     sync: Card;
   };
+  home_screen_setup_business_text: string;
   shara_tagline: string;
   onboarding_copy_1: Card;
   onboarding_copy_2: Card;

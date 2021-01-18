@@ -95,6 +95,7 @@ const en: Strings = {
       'Securely record your business data in a private, secure and backed up',
   },
   activities: 'Activities',
+  home_screen_setup_business_text: 'Setup your business',
   payment_reminder: {
     title: 'Payment Reminder',
     message: String.raw`Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.{{pay_at}} \n\nPowered by Shara for free.\nwww.shara.co`,
