@@ -128,10 +128,7 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
   }
 
   public get debtLevel() {
-    if (this.overdueCreditAmount) {
-      return DEBT_LEVEL.OVERDUE;
-    }
-    if (this.remainingCreditAmount) {
+    if (this.balance < 0) {
       return DEBT_LEVEL.IN_DEBT;
     }
     return DEBT_LEVEL.NO_DEBT;
