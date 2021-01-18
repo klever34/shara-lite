@@ -1,10 +1,11 @@
+import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
+import {useCallback, useEffect, useMemo, useState} from 'react';
+import uniqBy from 'lodash/uniqBy';
+import {getI18nService} from '@/services';
 import {FilterOption} from '@/components/TransactionFilterModal';
 import {IReceipt} from '@/models/Receipt';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
-import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
-import {useCallback, useEffect, useMemo, useState} from 'react';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -186,9 +187,9 @@ export const useReceiptList = ({
             return total;
           }
 
-          const payments = receipt.credits[0].payments;
-
-          return total + (payments ? payments.sum('amount_paid') || 0 : 0);
+          const payments =
+            receipt.credits[0].total_amount - receipt.credits[0].amount_left;
+          return total + payments;
         },
         0,
       ),
@@ -201,16 +202,33 @@ export const useReceiptList = ({
   );
 
   const outstandingAmount = useMemo(() => {
-    const totalCreditAmount = filteredReceipts.sum('credit_amount') || 0;
-    const totalCollectedAmount =
-      filteredReceipts
-        .filtered('is_collection != true AND credit_amount = 0')
-        .sum('amount_paid') || 0;
+    const allCustomers = filteredReceipts
+      .map((receipt) => receipt.customer)
+      .filter((customer) => customer);
+    const uniqueCustomers = uniqBy(allCustomers, (customer) =>
+      customer?._id?.toString(),
+    );
 
-    const balance =
-      totalCreditAmount - totalCollectedAmount + sharaProCreditPayments;
-    return balance < 0 ? 0 : balance;
-  }, [sharaProCreditPayments, filteredReceipts]);
+    // @ts-ignore
+    const totalBalance = uniqueCustomers.reduce((total: number, customer) => {
+      const customerCollectedAmount =
+        customer?.collections?.sum('amount_paid') || 0;
+      const creditAmount = customer?.activeReceipts?.sum('credit_amount') || 0;
+
+      const sharaProCredits = customer?.activeCredits;
+      const sharaProCreditsAmountLeft =
+        sharaProCredits?.sum('amount_left') || 0;
+      const sharaProCreditsTotal = sharaProCredits?.sum('total_amount') || 0;
+      const sharaProPayments = sharaProCreditsTotal - sharaProCreditsAmountLeft;
+
+      const balance =
+        creditAmount - (customerCollectedAmount + sharaProPayments);
+      const overdueBalance = balance < 0 ? 0 : balance;
+      return total + overdueBalance;
+    }, 0);
+
+    return totalBalance;
+  }, [filteredReceipts]);
 
   const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
     collectedAmount,

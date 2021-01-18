@@ -8,7 +8,7 @@ import {Image, ScrollView, Text, View} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {SecureEmblem} from './SecureEmblem';
-
+//Todo: Work on translation
 function PaymentReminderImage({
   date,
   amount,

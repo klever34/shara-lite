@@ -45,7 +45,7 @@ export class I18nService implements II18nService {
   }
 
   strings(name: string, params: {[key: string]: any} = {}): string {
-    return I18n.t(name, params);
+    return I18n.t(name, params).replace(/\\n/g, '\n');
   }
 
   getCurrentLocale() {

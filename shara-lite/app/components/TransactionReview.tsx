@@ -4,7 +4,7 @@ import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService, getAuthService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
@@ -12,7 +12,7 @@ import {format} from 'date-fns';
 import LottieView from 'lottie-react-native';
 import React, {useCallback, useState} from 'react';
 import {Image, Text, View} from 'react-native';
-import {getI18nService} from '@/services';
+import Markdown from 'react-native-markdown-display';
 
 const strings = getI18nService().strings;
 
@@ -156,7 +156,10 @@ export const TransactionReview = (props: TransactionReviewProps) => {
           <Image
             resizeMode="center"
             source={{uri: `data:image/png;base64,${receiptImage}`}}
-            style={applyStyles({height: '100%', width: '100%'})}
+            style={applyStyles({
+              height: '100%',
+              width: '100%',
+            })}
           />
         </View>
         {!!showShareButtons && (
@@ -237,12 +240,15 @@ export const TransactionReview = (props: TransactionReviewProps) => {
       </View>
       {dueDate && !transaction.is_collection && (
         <View style={applyStyles('flex-row center')}>
-          <Text style={applyStyles('text-gray-100 text-uppercase')}>
-            {strings('transaction.collect_on')}{' '}
-          </Text>
-          <Text style={applyStyles('text-red-200 text-700')}>
-            {format(dueDate, 'dd MMM, yyyy')}
-          </Text>
+          <Markdown
+            style={{
+              body: applyStyles('text-gray-100 text-uppercase'),
+              strong: applyStyles('text-red-200 text-700'),
+            }}>
+            {strings('transaction.collect_on_date', {
+              date: format(dueDate, 'dd MMM, yyyy'),
+            })}
+          </Markdown>
         </View>
       )}
       <View
@@ -278,7 +284,11 @@ export const TransactionReview = (props: TransactionReviewProps) => {
           style={applyStyles({width: '48%'})}
         />
       </View>
-      <View style={applyStyles({opacity: 0, height: 0})}>
+      <View
+        style={applyStyles({
+          opacity: 0,
+          height: 0,
+        })}>
         <ReceiptImage
           note={transaction?.note}
           customer={transaction?.customer}

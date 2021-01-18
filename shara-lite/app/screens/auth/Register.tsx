@@ -17,7 +17,7 @@ import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useRef, useState, useEffect, useCallback} from 'react';
+import React, {useRef, useState, useEffect, useCallback, useMemo} from 'react';
 import {
   Alert,
   StyleSheet,
@@ -39,28 +39,31 @@ type Fields = {
   confirmPassword?: string;
 };
 
-const validationSchema = yup.object().shape({
-  mobile: yup
-    .string()
-    .min(5, 'Number should be minimum of 5 digits')
-    .required(i18nService.strings('alert.required.number')),
-  password: yup
-    .string()
-    .oneOf(
-      [yup.ref('confirmPassword'), undefined],
-      i18nService.strings('alert.password_match'),
-    )
-    .required(i18nService.strings('alert.required.password')),
-  confirmPassword: yup
-    .string()
-    .oneOf(
-      [yup.ref('password'), undefined],
-      i18nService.strings('alert.password_match'),
-    )
-    .required(i18nService.strings('alert.required.password')),
-});
-
 export const Register = () => {
+  const validationSchema = useMemo(
+    () =>
+      yup.object().shape({
+        mobile: yup
+          .string()
+          .min(5, 'Number should be minimum of 5 digits')
+          .required(i18nService.strings('alert.required.number')),
+        password: yup
+          .string()
+          .oneOf(
+            [yup.ref('confirmPassword'), undefined],
+            i18nService.strings('alert.password_match'),
+          )
+          .required(i18nService.strings('alert.required.password')),
+        confirmPassword: yup
+          .string()
+          .oneOf(
+            [yup.ref('password'), undefined],
+            i18nService.strings('alert.password_match'),
+          )
+          .required(i18nService.strings('alert.required.password')),
+      }),
+    [],
+  );
   const storageService = getStorageService();
   const navigation = useAppNavigation();
   const {callingCode} = useIPGeolocation();
