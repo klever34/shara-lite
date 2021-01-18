@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useMemo} from 'react';
+import React, {useCallback, useEffect, useMemo, useRef} from 'react';
 import {
   Alert,
   BackHandler,
@@ -32,7 +32,8 @@ if (minimumVersion) {
 
 const SplashScreen = () => {
   const navigation = useNavigation();
-  const {initRealm} = useInitRealm();
+  const {initRealm: _initRealm} = useInitRealm();
+  const initRealm = useRef(_initRealm).current;
 
   useEffect(() => {
     const navigationService = getNavigationService();
