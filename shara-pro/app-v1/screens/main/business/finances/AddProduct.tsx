@@ -8,7 +8,7 @@ import {useRealm} from 'app-v1/services/realm';
 import {colors} from 'app-v1/styles';
 import {useNavigation} from '@react-navigation/native';
 import {Formik, FormikHelpers} from 'formik';
-import React, {useCallback, useLayoutEffect, useState} from 'react';
+import React, {useCallback, useLayoutEffect, useState, useMemo} from 'react';
 import {ScrollView, Text, ToastAndroid, View} from 'react-native';
 import * as yup from 'yup';
 import {
@@ -17,15 +17,18 @@ import {
   FloatingLabelInput,
 } from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
-
+// Todo: Translate
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
-const formValidation = yup.object().shape({
-  name: yup.string().required('Product name is required'),
-  price: yup.string().required('Product price is required'),
-});
-
 export const AddProduct = () => {
+  const formValidation = useMemo(
+    () =>
+      yup.object().shape({
+        name: yup.string().required('Product name is required'),
+        price: yup.string().required('Product price is required'),
+      }),
+    [],
+  );
   const realm = useRealm();
   const navigation = useNavigation();
   const [isLoading, setIsLoading] = useState(false);
