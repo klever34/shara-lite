@@ -9,7 +9,7 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles, colors} from '@/styles';
+import {applyStyles, colors, dimensions} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, Text, View} from 'react-native';
@@ -356,7 +356,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 {strings('transaction.start_adding_records')}
               </Text>
             </View>
-            <View style={applyStyles('center p-16 w-full')}>
+            <View
+              style={applyStyles('center p-16 bottom', {
+                height: dimensions.fullHeight - 300,
+              })}>
               <Animatable.View
                 duration={200}
                 animation={{
