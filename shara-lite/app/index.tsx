@@ -53,11 +53,8 @@ const App = () => {
   useEffect(() => {
     getRemoteConfigService()
       .initialize()
-      .then(() => {
-        return getI18nService().initialize();
-      })
-      .catch(handleError)
       .finally(() => {
+        getI18nService().initialize();
         setRemoteConfigLoaded(true);
       });
   }, []);
