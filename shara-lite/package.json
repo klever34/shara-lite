@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.6.5-shara-lite",
+  "version": "0.6.6-shara-lite-discovery",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
