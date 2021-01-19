@@ -12,6 +12,7 @@ import schema11 from './1608550098360-add-is-collection-x-transaction-date-to-re
 import schema12 from './1608634902886-add-payment-reminder';
 import schema13 from './1610020714362-add-notes-image-to-customer';
 import schema14 from './1610377039908-add-feedback-model';
+import schema15 from './1611048927106-add-last-seen-model';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -28,6 +29,7 @@ const schemas: any[] = [
   {schemaVersion: 12, ...schema12},
   {schemaVersion: 13, ...schema13},
   {schemaVersion: 14, ...schema14},
+  {schemaVersion: 15, ...schema15},
 ];
 
 export default schemas;

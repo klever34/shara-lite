@@ -5,14 +5,14 @@ import {TransactionsScreen} from '@/screens/main/transactions';
 import {applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect} from 'react';
-import {SafeAreaView, View, Text, Image} from 'react-native';
+import {Image, SafeAreaView, Text, View} from 'react-native';
 import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
-import {getAuthService} from '@/services';
+import {getAuthService, getI18nService} from '@/services';
 import {EntryButton, EntryContext} from '@/components/EntryView';
 import Touchable from '@/components/Touchable';
-import {getI18nService} from '@/services';
+import {useLastSeen} from '@/services/last-seen';
 
 const strings = getI18nService().strings;
 
@@ -32,6 +32,7 @@ export const HomeScreen = () => {
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
   const {setCurrentCustomer} = useContext(EntryContext);
+  const {updateLastSeen} = useLastSeen();
 
   useEffect(() => {
     setCurrentCustomer?.(null);
@@ -39,6 +40,7 @@ export const HomeScreen = () => {
 
   navigation.addListener('focus', () => {
     setCurrentCustomer?.(null);
+    updateLastSeen();
   });
 
   return (
