@@ -72,6 +72,10 @@ export const CustomerListItem = ({
       <View
         style={applyStyles(
           'flex-row items-center border-b-1 border-gray-20',
+          {
+            borderBottomWidth: 1.2,
+            borderBottomColor: colors['gray-20'],
+          },
           containerStyle,
         )}>
         <PlaceholderImage

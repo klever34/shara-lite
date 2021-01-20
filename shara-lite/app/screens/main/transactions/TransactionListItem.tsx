@@ -141,7 +141,7 @@ export const TransactionListItem = ({
           'px-16 py-8 flex-row items-center justify-between',
           {
             borderBottomWidth: 1.2,
-            borderBottomColor: colors['gray-10'],
+            borderBottomColor: colors['gray-20'],
           },
           style,
         )}>
