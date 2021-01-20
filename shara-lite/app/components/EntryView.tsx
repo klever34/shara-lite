@@ -6,25 +6,18 @@ import React, {
   useCallback,
   useRef,
   useState,
-  useLayoutEffect,
   useContext,
 } from 'react';
-import {
-  findNodeHandle,
-  SafeAreaView,
-  Text,
-  View,
-  ViewProps,
-} from 'react-native';
+import {Text, View, ViewProps} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 import Keypad from '@/assets/images/keypad.svg';
-import Touchable from './Touchable';
-import {Icon} from './Icon';
-import * as Animatable from 'react-native-animatable';
 import {useAppNavigation} from '@/services/navigation';
 import {ICustomer} from '@/models';
 import {getI18nService} from '@/services';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {Icon} from '@/components/Icon';
+import {Touchable} from './Touchable';
 
 const strings = getI18nService().strings;
 
@@ -42,151 +35,132 @@ type EntryViewProps = {
   children: ReactNode;
 };
 
-export const EntryView = ({children}: EntryViewProps) => {
-  const [show, setShow] = useState(false);
-  const hideEntryDialog = useCallback(() => {
-    setShow(false);
-  }, []);
-  const showEntryDialog = useCallback(() => {
-    setShow(true);
-    return hideEntryDialog;
-  }, [hideEntryDialog]);
-  const [entryButtonPosition, setEntryButtonPosition] = useState({x: 0, y: 0});
-  const navigation = useAppNavigation();
-  const wrapperRef = useRef<View | null>(null);
-  const wrapper = wrapperRef.current;
-  const [currentCustomer, setCurrentCustomer] = useState<ICustomer | null>(
-    null,
-  );
+export const EntryView = withModal(
+  ({
+    children,
+    openModal,
+    closeModal: hideEntryDialog,
+  }: EntryViewProps & ModalWrapperFields) => {
+    const navigation = useAppNavigation();
+    const [currentCustomer, setCurrentCustomer] = useState<ICustomer | null>(
+      null,
+    );
 
-  const onRecordSale = useCallback(() => {
-    navigation.navigate('RecordSale', {
-      goBack: () => navigation.navigate('Home'),
-      customer: currentCustomer,
-    });
-  }, [currentCustomer, navigation]);
-
-  const onRecordCollection = useCallback(() => {
-    const onSelectCustomer = (customer: ICustomer) => {
-      navigation.navigate('RecordCollection', {
-        customer,
+    const onRecordSale = useCallback(() => {
+      navigation.navigate('RecordSale', {
         goBack: () => navigation.navigate('Home'),
+        customer: currentCustomer,
       });
-    };
-    if (currentCustomer) {
-      onSelectCustomer(currentCustomer);
-    } else {
-      navigation.navigate('SelectCustomerList', {
-        withCustomer: true,
-        onSelectCustomer,
-        isCollection: true,
-      });
-    }
-  }, [currentCustomer, navigation]);
+    }, [currentCustomer, navigation]);
 
-  return (
-    <EntryContext.Provider
-      value={{
-        showEntryDialog,
-        hideEntryDialog,
-        setEntryButtonPosition,
-        wrapper,
-        setCurrentCustomer,
-      }}>
-      <SafeAreaView style={applyStyles('flex-1')} ref={wrapperRef}>
-        {show && (
-          <View
-            style={applyStyles('w-screen h-screen absolute', {
-              zIndex: 10,
-            })}>
-            <Touchable onPress={hideEntryDialog}>
-              <View
-                style={applyStyles('w-full h-full absolute', {
-                  backgroundColor: 'rgba(0, 0, 0, 0.7)',
-                  zIndex: 0,
-                })}
-              />
-            </Touchable>
-            <View
-              style={applyStyles('absolute items-center w-full', {
-                zIndex: 10,
-                top: entryButtonPosition.y - 108,
-              })}>
-              <Touchable
-                onPress={() => {
-                  onRecordSale();
-                  hideEntryDialog();
-                }}>
-                <Animatable.View
-                  animation="fadeInUp"
-                  duration={300}
-                  delay={10}
-                  style={applyStyles(
-                    'flex-row p-8 bg-red-200 center rounded-24',
-                  )}>
-                  <Icon
-                    type="feathericons"
-                    name="arrow-up"
-                    color={colors.white}
-                    size={20}
-                  />
-                  <Text
-                    style={applyStyles(
-                      'mx-8 text-700 font-bold text-xs text-white',
-                    )}>
-                    {strings('entry.sale')}
-                  </Text>
-                </Animatable.View>
-              </Touchable>
+    const onRecordCollection = useCallback(() => {
+      const onSelectCustomer = (customer: ICustomer) => {
+        navigation.navigate('RecordCollection', {
+          customer,
+          goBack: () => navigation.navigate('Home'),
+        });
+      };
+      if (currentCustomer) {
+        onSelectCustomer(currentCustomer);
+      } else {
+        navigation.navigate('SelectCustomerList', {
+          withCustomer: true,
+          onSelectCustomer,
+          isCollection: true,
+        });
+      }
+    }, [currentCustomer, navigation]);
+
+    const showEntryDialog = useCallback(() => {
+      const entryOptions = [
+        {
+          title: strings('sale.button.title'),
+          description: strings('sale.button.description'),
+          icon: 'dollar-sign',
+          onPress: onRecordSale,
+          color: {
+            primary: colors.blue,
+            pastel: colors['blue-10'],
+          },
+        },
+        {
+          title: strings('collection.button.title'),
+          description: strings('collection.button.description'),
+          icon: 'arrow-down',
+          onPress: onRecordCollection,
+          color: {
+            primary: colors['green-200'],
+            pastel: colors['green-10'],
+          },
+        },
+      ];
+      return openModal('bottom-half', {
+        renderContent: () => {
+          return (
+            <View style={applyStyles('mb-32')}>
+              {entryOptions.map(
+                ({icon, title, description, onPress, color}, index, array) => {
+                  return (
+                    <Touchable
+                      onPress={() => {
+                        onPress();
+                        hideEntryDialog();
+                      }}>
+                      <View
+                        key={title}
+                        style={applyStyles('flex-row mx-16 pt-16 items-start')}>
+                        <View
+                          style={applyStyles(
+                            'rounded-24 bg-gray-20 p-4 mr-12',
+                            {
+                              backgroundColor: color.pastel,
+                            },
+                          )}>
+                          <Icon
+                            type="feathericons"
+                            name={icon}
+                            size={20}
+                            color={color.primary}
+                          />
+                        </View>
+                        <View
+                          style={applyStyles(
+                            'pb-16 flex-1',
+                            index !== array.length - 1 &&
+                              'border-b-1 border-gray-20',
+                          )}>
+                          <Text
+                            style={applyStyles('text-700 text-base', {
+                              color: color.primary,
+                            })}>
+                            {title}
+                          </Text>
+                          <Text style={applyStyles('text-400 text-sm')}>
+                            {description}
+                          </Text>
+                        </View>
+                      </View>
+                    </Touchable>
+                  );
+                },
+              )}
             </View>
-            <View
-              style={applyStyles('absolute items-center w-full', {
-                zIndex: 10,
-                top: entryButtonPosition.y - 48,
-              })}>
-              <Touchable
-                onPress={() => {
-                  onRecordCollection();
-                  hideEntryDialog();
-                }}>
-                <Animatable.View
-                  animation="fadeInUp"
-                  duration={300}
-                  style={applyStyles(
-                    'flex-row p-8 bg-green-200 center rounded-24',
-                  )}>
-                  <Icon
-                    type="feathericons"
-                    name="arrow-down"
-                    color={colors.white}
-                    size={20}
-                  />
-                  <Text
-                    style={applyStyles(
-                      'mx-8 text-700 font-bold text-xs text-white',
-                    )}>
-                    {strings('entry.collection')}
-                  </Text>
-                </Animatable.View>
-              </Touchable>
-            </View>
-            <EntryButton
-              ghost
-              container={{
-                style: applyStyles('absolute', {
-                  zIndex: 10,
-                  top: entryButtonPosition.y,
-                  left: entryButtonPosition.x,
-                }),
-              }}
-            />
-          </View>
-        )}
+          );
+        },
+      });
+    }, [hideEntryDialog, onRecordCollection, onRecordSale, openModal]);
+
+    return (
+      <EntryContext.Provider
+        value={{
+          showEntryDialog,
+          setCurrentCustomer,
+        }}>
         {children}
-      </SafeAreaView>
-    </EntryContext.Provider>
-  );
-};
+      </EntryContext.Provider>
+    );
+  },
+);
 
 type EntryButtonProps = {
   container?: ViewProps;
@@ -195,24 +169,8 @@ type EntryButtonProps = {
 
 export const EntryButton = ({container, ghost}: EntryButtonProps) => {
   const containerRef = useRef<View | null>(null);
-  const {wrapper, setEntryButtonPosition, showEntryDialog} = useContext(
-    EntryContext,
-  );
-  useLayoutEffect(() => {
-    if (!ghost) {
-      setTimeout(() => {
-        if (containerRef.current && wrapper) {
-          containerRef.current.measureLayout(
-            findNodeHandle(wrapper) as number,
-            (x, y) => {
-              setEntryButtonPosition?.({x, y});
-            },
-            () => {},
-          );
-        }
-      }, 0);
-    }
-  }, [ghost, setEntryButtonPosition, wrapper]);
+  const {showEntryDialog} = useContext(EntryContext);
+
   return (
     <View
       style={applyStyles('relative', {

@@ -24,11 +24,13 @@ export const TouchableActionItem = (props: Props) => {
   const {icon, onPress, style, leftSection, rightSection} = props;
   return (
     <Touchable onPress={onPress}>
-      <View style={applyStyles('flex-row py-10 px-10', style)}>
+      <View style={applyStyles('flex-row p-12', style)}>
         {icon && (
           <View style={applyStyles('center')}>
             <View
-              style={applyStyles('center mr-4 w-32 h-32 rounded-16 bg-red-10')}>
+              style={applyStyles(
+                'center mr-12 w-32 h-32 rounded-16 bg-red-10',
+              )}>
               <Icon
                 size={16}
                 name={icon}
@@ -38,7 +40,7 @@ export const TouchableActionItem = (props: Props) => {
             </View>
           </View>
         )}
-        <View style={applyStyles('flex-1 pl-4')}>
+        <View style={applyStyles('flex-1 pr-8')}>
           <View style={applyStyles('flex-row items-center justify-between')}>
             {!!leftSection?.title && (
               <Text

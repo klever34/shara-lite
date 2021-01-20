@@ -227,7 +227,7 @@ export const MoreOptionsScreen = withModal(
                     source={{
                       uri: business.profile_image?.url,
                     }}
-                    style={applyStyles('w-full rounded-12', {
+                    style={applyStyles('w-full rounded-24', {
                       width: 24,
                       height: 24,
                     })}
@@ -251,7 +251,10 @@ export const MoreOptionsScreen = withModal(
                     key={`${index}`}
                     style={applyStyles(
                       'border-t-1 border-gray-20',
-                      index === moreOptions.length - 1 && 'border-b-1',
+                      {borderTopWidth: 1, borderColor: colors['gray-20']},
+                      index === moreOptions.length - 1 && {
+                        borderBottomWidth: 1,
+                      },
                     )}
                   />
                 );

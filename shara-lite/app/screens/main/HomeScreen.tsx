@@ -5,14 +5,14 @@ import {TransactionsScreen} from '@/screens/main/transactions';
 import {applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect} from 'react';
-import {SafeAreaView, View, Text, Image} from 'react-native';
+import {Image, SafeAreaView, Text, View} from 'react-native';
 import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
-import {getAuthService} from '@/services';
+import {getAuthService, getI18nService} from '@/services';
 import {EntryButton, EntryContext} from '@/components/EntryView';
 import Touchable from '@/components/Touchable';
-import {getI18nService} from '@/services';
+import {useLastSeen} from '@/services/last-seen';
 
 const strings = getI18nService().strings;
 
@@ -37,6 +37,7 @@ export const HomeScreen = () => {
         uri: business.profile_image?.url,
       }
     : require('@/assets/images/shara_logo_white.png');
+  const {updateLastSeen} = useLastSeen();
 
   useEffect(() => {
     setCurrentCustomer?.(null);
@@ -44,6 +45,7 @@ export const HomeScreen = () => {
 
   navigation.addListener('focus', () => {
     setCurrentCustomer?.(null);
+    updateLastSeen();
   });
 
   return (
@@ -65,7 +67,7 @@ export const HomeScreen = () => {
             <Image
               resizeMode={business.profile_image?.url ? undefined : 'contain'}
               source={headerImageSource}
-              style={applyStyles('w-full rounded-12', {
+              style={applyStyles('w-full rounded-24', {
                 width: 24,
                 height: 24,
               })}

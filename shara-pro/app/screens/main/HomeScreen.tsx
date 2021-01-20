@@ -8,6 +8,8 @@ import {applyStyles, colors} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React from 'react';
 import {SafeAreaView} from 'react-native';
+import {useLastSeen} from '@/services/last-seen';
+import {useAppNavigation} from '@/services/navigation';
 
 export type MainNavParamList = {
   Receipts: undefined;
@@ -19,6 +21,13 @@ export type MainNavParamList = {
 const MainNav = createBottomTabNavigator<MainNavParamList>();
 
 export const HomeScreen = () => {
+  const navigation = useAppNavigation();
+  const {updateLastSeen} = useLastSeen();
+
+  navigation.addListener('focus', () => {
+    updateLastSeen();
+  });
+
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <MainNav.Navigator

@@ -178,6 +178,7 @@ interface Strings {
   };
   collection: {
     collection_recorded: string;
+    button: Card;
     header: Card;
     fields: {
       amount: {
@@ -191,6 +192,7 @@ interface Strings {
   };
   sale: {
     sale_recorded: string;
+    button: Card;
     header: Card;
     fields: {
       amount: {

@@ -125,7 +125,6 @@ function PaymentContainer(props: ModalWrapperFields) {
         <KeyboardAwareScrollView
           nestedScrollEnabled
           persistentScrollbar={true}
-          style={applyStyles('py-24')}
           keyboardShouldPersistTaps="always">
           <Text
             style={applyStyles(
@@ -172,7 +171,6 @@ function PaymentContainer(props: ModalWrapperFields) {
           <KeyboardAwareScrollView
             nestedScrollEnabled
             persistentScrollbar={true}
-            style={applyStyles('py-20')}
             keyboardShouldPersistTaps="always">
             <Text
               style={applyStyles(
