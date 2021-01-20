@@ -83,7 +83,7 @@ export const TransactionListItem = ({
               <Markdown style={markdownStyle}>{`${strings(
                 'transaction.you_were_paid_statement',
                 {
-                  amount_paid: amountWithCurrency(credit_amount),
+                  amount_paid: amountWithCurrency(amount_paid),
                 },
               )}`}</Markdown>
             )}
@@ -119,7 +119,7 @@ export const TransactionListItem = ({
           <Markdown style={markdownStyle}>{`${strings(
             'transaction.you_were_paid_statement',
             {
-              amount_paid: amountWithCurrency(credit_amount),
+              amount_paid: amountWithCurrency(amount_paid),
             },
           )}`}</Markdown>
         )}

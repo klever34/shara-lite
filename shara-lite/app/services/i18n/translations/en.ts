@@ -96,8 +96,13 @@ const en: Strings = {
   },
   activities: 'Activities',
   home_screen_setup_business_text: 'Setup your business',
+  reminder_text: {
+    one: 'Reminder',
+    other: 'Reminders',
+    zero: 'Set Reminders',
+  },
   payment_reminder: {
-    title: 'Payment Reminder',
+    title: 'Settings',
     message: String.raw`Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.{{pay_at}} \n\nPowered by Shara for free.\nwww.shara.co`,
     thank_you_for_doing_business:
       'Thank you for doing business with {{business_name}}. ',
@@ -105,9 +110,12 @@ const en: Strings = {
     due_on: ' which is due on {{due_date}}',
     pay_at: String.raw`\n\nTo pay click\n{{link}}`,
     reminder_count: {
-      one: 'Reminder 1',
-      other: 'Reminder {{count}}',
+      one: 'A reminder will be sent 1 day before collection date',
+      other: 'A reminder will be sent {{count}} day before collection date',
     },
+    no_reminder_set_text:
+      'A reminder will be sent to the customer on the collection date. Tap to create a reminder',
+    coming_soon_recurring_reminders: 'Coming Soon: Recurring reminders',
     reminder_description:
       'A reminder will be sent to your customer on this day',
     reminder_unit: {
@@ -128,7 +136,7 @@ const en: Strings = {
     collection_settings: 'Collection settings',
     set_collection_date: {
       title: 'Set Collection Date',
-      description: 'Select the day for customer to pay back',
+      description: 'When is the client going to pay?',
     },
     reminder_settings: 'Reminder settings',
     add_reminder: {
@@ -143,6 +151,9 @@ const en: Strings = {
     },
     on_the_day_of_collection: 'On the day of collection',
   },
+  recurrence_title: 'Recurrence',
+  recurrence_description: 'How often is this paid?',
+  reminder_message_title: 'Reminder Message',
   customer_statement: {
     title: 'Share Customer Statement',
     filename: '{{customer_name}} Ledger Statement',
@@ -253,6 +264,7 @@ const en: Strings = {
   scan: 'Scan',
   scanning: 'Scanning',
   done: 'Done',
+  dismiss: 'Dismiss',
   owe: {one: 'owe', other: 'owes'},
   result: {
     zero: 'No results found',
@@ -520,6 +532,17 @@ const en: Strings = {
     no_nearby_bluetooth: 'No nearby Bluetooth devices were found',
     device_not_supported: 'Device does not support bluetooth!',
     search_for_devices: 'Search for devices',
+  },
+  reminder_popup: {
+    title: 'choose your reminders',
+    collection_day: {
+      one: '1 day before',
+      other: '{{count}} days before',
+    },
+    collect_on_text: 'Collect on {{due_date}}',
+    no_collection_date_text:
+      'You need to set a collection date before you set reminders',
+    set_collection_date_button_text: 'Set Collection Date',
   },
 };
 

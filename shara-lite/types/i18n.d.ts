@@ -76,6 +76,7 @@ interface Strings {
   activities: string;
   customer: PluralizedString;
   done: string;
+  dismiss: string;
   owe: PluralizedString;
   result: PluralizedString;
   clear_filter: string;
@@ -92,11 +93,10 @@ interface Strings {
     you_owe: string;
     due_on: string;
     pay_at: string;
-    reminder_count: {
-      one: string;
-      other: string;
-    };
+    no_reminder_set_text: string;
+    reminder_count: PluralizedString;
     reminder_description: string;
+    coming_soon_recurring_reminders: string;
     reminder_unit: {
       days: string;
       weeks: string;
@@ -118,6 +118,10 @@ interface Strings {
     default_reminder: Card;
     on_the_day_of_collection: String;
   };
+  recurrence_title: string;
+  recurrence_description: string;
+  reminder_message_title: string;
+  reminder_text: PluralizedString;
   customer_statement: {
     title: string;
     filename: string;
@@ -403,6 +407,13 @@ interface Strings {
     device_not_supported: string;
     search_for_devices: string;
   };
+  reminder_popup: {
+    title: string;
+    collect_on_text: string;
+    collection_day: PluralizedString;
+    no_collection_date_text: string;
+    set_collection_date_button_text: string;
+  }
 }
 
 interface PluralizedString {
