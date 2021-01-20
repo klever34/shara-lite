@@ -96,6 +96,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
         const exisitingReminder = findReminder(value);
         if (exisitingReminder) {
           handleDeleteReminder(exisitingReminder);
+          return;
         }
         handleAddReminder(value);
       }
@@ -192,7 +193,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
                 <Text
                   style={applyStyles(
                     'text-400 text-base',
-                    findReminder(value) ? 'text-red-200' : '',
+                    findReminder(value) ? 'text-red-200' : 'text-black',
                   )}>
                   {label}
                 </Text>
