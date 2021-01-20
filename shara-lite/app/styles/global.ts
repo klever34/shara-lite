@@ -26,6 +26,9 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
   'justify-around': {
     justifyContent: 'space-around',
   },
+  'items-start': {
+    alignItems: 'flex-start',
+  },
   'items-center': {
     alignItems: 'center',
   },

@@ -207,6 +207,10 @@ const en: Strings = {
   },
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
+    button: {
+      title: 'Record Collection',
+      description: 'Record collecting a payment',
+    },
     header: {
       title: 'Record Collection',
       description: 'Quickly record a transaction or obligation',
@@ -223,6 +227,11 @@ const en: Strings = {
   },
   sale: {
     sale_recorded: 'SALE RECORDED',
+    button: {
+      title: 'Record Sale',
+      description:
+        'Create a sale record - what you were paid and what will be paid later',
+    },
     header: {
       title: 'Record Sale',
       description: 'Quickly record a collection or outstanding',
