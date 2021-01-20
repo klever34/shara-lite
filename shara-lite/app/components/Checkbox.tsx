@@ -1,5 +1,5 @@
 import {applyStyles, colors} from '@/styles';
-import React, {ReactNode, useCallback} from 'react';
+import React, {ReactNode, useCallback, useMemo} from 'react';
 import {View, ViewStyle} from 'react-native';
 import {Icon} from './Icon';
 import Touchable from './Touchable';
@@ -28,15 +28,32 @@ export const Checkbox = (props: CheckboxProps) => {
     disabled = false,
     checkedColor = 'bg-red-200',
   } = props;
-  const borderStyles = isChecked
-    ? {borderWidth: 2, borderColor: colors['red-200']}
-    : {borderWidth: 2, borderColor: colors['gray-50']};
+
+  const borderStyles = useMemo(() => {
+    if (disabled) {
+      return {borderWidth: 2, borderColor: colors['gray-100']};
+    }
+    if (isChecked) {
+      return {borderWidth: 2, borderColor: colors['gray-50']};
+    }
+    return {borderWidth: 2, borderColor: colors['gray-50']};
+  }, [disabled, isChecked]);
 
   const onPress = useCallback(() => {
     if (onChange) {
       onChange(value);
     }
   }, [onChange, value]);
+
+  const bgColor = useMemo(() => {
+    if (disabled) {
+      return 'bg-gray-100';
+    }
+    if (isChecked) {
+      return checkedColor;
+    }
+    return '';
+  }, [disabled, isChecked, checkedColor]);
 
   return (
     <Touchable onPress={disabled ? undefined : onPress}>
@@ -45,7 +62,7 @@ export const Checkbox = (props: CheckboxProps) => {
         <View
           style={applyStyles(
             'center w-24 h-24 rounded-2',
-            isChecked ? checkedColor : '',
+            bgColor,
             borderStyles,
             style,
           )}>

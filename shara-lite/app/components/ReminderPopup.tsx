@@ -163,6 +163,29 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
       </View>
       {customer.due_date ? (
         <View style={applyStyles('px-16')}>
+          <Checkbox
+            value=""
+            isChecked={false}
+            onChange={console.log}
+            containerStyle={applyStyles('justify-between mb-16')}
+            leftLabel={
+              <Text style={applyStyles('text-400 text-base')}>
+                None (No reminder will be sent)
+              </Text>
+            }
+          />
+          <Checkbox
+            value=""
+            disabled={true}
+            isChecked={true}
+            onChange={console.log}
+            containerStyle={applyStyles('justify-between mb-16')}
+            leftLabel={
+              <Text style={applyStyles('text-400 text-base text-gray-100')}>
+                Collection Day (Default)
+              </Text>
+            }
+          />
           {options.map(({value, label}, index) => (
             <Checkbox
               value={value}
