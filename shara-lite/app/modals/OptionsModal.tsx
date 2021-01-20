@@ -1,7 +1,8 @@
 import React from 'react';
 import Modal from 'react-native-modal';
 import {ModalOptionsList, BaseModalProps} from 'types/modal';
-import {View, StyleSheet, Text} from 'react-native';
+import {Text} from '@/components';
+import {View, StyleSheet} from 'react-native';
 import Touchable from '../components/Touchable';
 import {applyStyles} from '@/styles';
 

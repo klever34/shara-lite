@@ -14,7 +14,8 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useMemo, useState} from 'react';
-import {SafeAreaView, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {SafeAreaView, View} from 'react-native';
 import Config from 'react-native-config';
 import {MainStackParamList} from '..';
 

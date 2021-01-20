@@ -15,7 +15,8 @@ import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {useFormik} from 'formik';
 import React, {useCallback, useRef, useState} from 'react';
-import {Text, TextInput, View} from 'react-native';
+import {Text} from '@/components';
+import {TextInput, View} from 'react-native';
 
 const strings = getI18nService().strings;
 

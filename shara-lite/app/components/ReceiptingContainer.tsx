@@ -5,7 +5,8 @@ import {IReceipt} from '@/models/Receipt';
 import {getAllPayments} from '@/services/ReceiptService';
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode, useCallback} from 'react';
-import {SafeAreaView, Text, TextStyle, View} from 'react-native';
+import {Text} from '@/components';
+import {SafeAreaView, TextStyle, View} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
 
 type ReceiptingContainerProps = {

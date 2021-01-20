@@ -6,7 +6,8 @@ import {ICustomer} from '@/models';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict, isBefore, isToday} from 'date-fns';
 import React, {ReactNode, useCallback} from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 
 type CustomerListItemProps = {
   customer: ICustomer;

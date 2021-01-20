@@ -1,7 +1,8 @@
 import {applyStyles, colors} from '@/styles';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import React, {useCallback, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {Button} from './Button';
 import {DatePicker} from './DatePicker';
 import {Icon} from './Icon';

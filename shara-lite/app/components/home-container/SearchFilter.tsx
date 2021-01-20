@@ -48,10 +48,9 @@ export const SearchFilter = ({
         <TextInput
           value={value}
           style={applyStyles(
-            'px-40 text-400 bg-white',
+            'px-40 text-400 text-lg bg-white ml-12',
             {
               height: 40,
-              fontSize: 16,
             },
             inputStyle,
           )}

@@ -1,6 +1,7 @@
-import {applyStyles, colors} from '@/styles';
+import {applySpacing, applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 import {TextProps} from 'react-native-ui-lib';
 import {Icon} from './Icon';
 import Touchable from './Touchable';
@@ -24,7 +25,7 @@ export const TouchableActionItem = (props: Props) => {
   const {icon, onPress, style, leftSection, rightSection} = props;
   return (
     <Touchable onPress={onPress}>
-      <View style={applyStyles('flex-row p-12', style)}>
+      <View style={applyStyles('flex-row py-12 px-24 items-center', style)}>
         {icon && (
           <View style={applyStyles('center')}>
             <View
@@ -45,7 +46,7 @@ export const TouchableActionItem = (props: Props) => {
             {!!leftSection?.title && (
               <Text
                 numberOfLines={leftSection.titleNumberOfLines}
-                style={applyStyles('text-400 text-base text-gray-300')}>
+                style={applyStyles('text-400 text-lg text-gray-300')}>
                 {leftSection.title}
               </Text>
             )}
@@ -75,7 +76,7 @@ export const TouchableActionItem = (props: Props) => {
           </View>
         </View>
         <Icon
-          size={20}
+          size={applySpacing(20)}
           type="feathericons"
           name="chevron-right"
           color={colors['gray-50']}

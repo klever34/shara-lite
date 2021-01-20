@@ -49,6 +49,7 @@ const sizes = [
   12,
   14,
   16,
+  18,
   20,
   24,
   28,
@@ -82,4 +83,15 @@ export const spacing: {[key: string]: number} = {
   xl: normalize(24),
 };
 
-export const navBarHeight = 80;
+export const applySpacing = (size: number | string): number => {
+  if (!isNaN(Number(size))) {
+    size = Number(size);
+    if (size < 4) {
+      return size;
+    }
+    return spacing[size] ?? size;
+  }
+  return spacing[size] ?? 0;
+};
+
+export const navBarHeight = normalize(80);

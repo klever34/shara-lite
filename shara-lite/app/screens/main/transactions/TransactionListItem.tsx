@@ -3,8 +3,9 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
+import {Text} from '@/components';
 import React, {useCallback} from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {View, ViewStyle} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import {getI18nService} from '@/services';
 

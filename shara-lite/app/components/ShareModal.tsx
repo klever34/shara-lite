@@ -1,7 +1,8 @@
 import BottomHalfModal from '@/modals/BottomHalfModal';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback} from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {Icon} from './Icon';
 import Touchable from './Touchable';
 

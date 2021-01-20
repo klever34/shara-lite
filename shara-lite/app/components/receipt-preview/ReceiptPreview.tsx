@@ -3,10 +3,10 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  Text,
   ToastAndroid,
   View,
 } from 'react-native';
+import {Text} from '@/components';
 import {PreviewActionButton} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';

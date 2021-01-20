@@ -1,4 +1,4 @@
-import {dimensions, spacing, colors} from './variables';
+import {dimensions, spacing, colors, applySpacing} from './variables';
 import {StyleSheet} from 'react-native';
 import {appendPrefix} from './utils';
 
@@ -97,40 +97,40 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
     textTransform: 'capitalize',
   },
   'text-4xl': {
-    fontSize: 36,
-    lineHeight: 44,
+    fontSize: applySpacing(36),
+    lineHeight: applySpacing(44),
   },
   'text-3xl': {
-    fontSize: 32,
-    lineHeight: 40,
+    fontSize: applySpacing(32),
+    lineHeight: applySpacing(40),
   },
   'text-2xl': {
-    fontSize: 24,
-    lineHeight: 32,
+    fontSize: applySpacing(24),
+    lineHeight: applySpacing(32),
   },
   'text-xl': {
-    fontSize: 20,
-    lineHeight: 24,
+    fontSize: applySpacing(20),
+    lineHeight: applySpacing(24),
   },
   'text-lg': {
-    fontSize: 18,
-    lineHeight: 24,
+    fontSize: applySpacing(18),
+    lineHeight: applySpacing(24),
   },
   'text-base': {
-    fontSize: 16,
-    lineHeight: 20,
+    fontSize: applySpacing(16),
+    lineHeight: applySpacing(20),
   },
   'text-sm': {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: applySpacing(14),
+    lineHeight: applySpacing(20),
   },
   'text-xs': {
-    fontSize: 12,
-    lineHeight: 16,
+    fontSize: applySpacing(12),
+    lineHeight: applySpacing(16),
   },
   'text-xxs': {
-    fontSize: 10,
-    lineHeight: 16,
+    fontSize: applySpacing(10),
+    lineHeight: applySpacing(16),
   },
   'font-normal': {
     fontWeight: 'normal',
@@ -193,47 +193,47 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
     return {
       ...acc,
       // padding
-      [`p-${curr}`]: {padding: spacing[curr]},
-      [`py-${curr}`]: {paddingVertical: spacing[curr]},
-      [`px-${curr}`]: {paddingHorizontal: spacing[curr]},
-      [`pt-${curr}`]: {paddingTop: spacing[curr]},
-      [`pb-${curr}`]: {paddingBottom: spacing[curr]},
-      [`pl-${curr}`]: {paddingLeft: spacing[curr]},
-      [`pr-${curr}`]: {paddingRight: spacing[curr]},
+      [`p-${curr}`]: {padding: applySpacing(curr)},
+      [`py-${curr}`]: {paddingVertical: applySpacing(curr)},
+      [`px-${curr}`]: {paddingHorizontal: applySpacing(curr)},
+      [`pt-${curr}`]: {paddingTop: applySpacing(curr)},
+      [`pb-${curr}`]: {paddingBottom: applySpacing(curr)},
+      [`pl-${curr}`]: {paddingLeft: applySpacing(curr)},
+      [`pr-${curr}`]: {paddingRight: applySpacing(curr)},
 
       // margin
-      [`m-${curr}`]: {margin: spacing[curr]},
-      [`my-${curr}`]: {marginVertical: spacing[curr]},
-      [`mx-${curr}`]: {marginHorizontal: spacing[curr]},
-      [`mt-${curr}`]: {marginTop: spacing[curr]},
-      [`mb-${curr}`]: {marginBottom: spacing[curr]},
-      [`ml-${curr}`]: {marginLeft: spacing[curr]},
-      [`mr-${curr}`]: {marginRight: spacing[curr]},
+      [`m-${curr}`]: {margin: applySpacing(curr)},
+      [`my-${curr}`]: {marginVertical: applySpacing(curr)},
+      [`mx-${curr}`]: {marginHorizontal: applySpacing(curr)},
+      [`mt-${curr}`]: {marginTop: applySpacing(curr)},
+      [`mb-${curr}`]: {marginBottom: applySpacing(curr)},
+      [`ml-${curr}`]: {marginLeft: applySpacing(curr)},
+      [`mr-${curr}`]: {marginRight: applySpacing(curr)},
 
       // height
-      [`h-${curr}`]: {height: spacing[curr]},
+      [`h-${curr}`]: {height: applySpacing(curr)},
 
       // width
-      [`w-${curr}`]: {width: spacing[curr]},
+      [`w-${curr}`]: {width: applySpacing(curr)},
 
       // border
-      [`rounded-${curr}`]: {borderRadius: spacing[curr]},
-      [`border-${curr}`]: {borderWidth: spacing[curr]},
-      [`border-t-${curr}`]: {borderTopWidth: spacing[curr]},
-      [`border-b-${curr}`]: {borderBottomWidth: spacing[curr]},
+      [`rounded-${curr}`]: {borderRadius: applySpacing(curr)},
+      [`border-${curr}`]: {borderWidth: applySpacing(curr)},
+      [`border-t-${curr}`]: {borderTopWidth: applySpacing(curr)},
+      [`border-b-${curr}`]: {borderBottomWidth: applySpacing(curr)},
 
       // line-height
-      [`leading-${curr}`]: {lineHeight: spacing[curr]},
+      [`leading-${curr}`]: {lineHeight: applySpacing(curr)},
 
       // positions
-      [`top-${curr}`]: {top: spacing[curr]},
-      [`-top-${curr}`]: {top: spacing[curr] * -1},
-      [`right-${curr}`]: {right: spacing[curr]},
-      [`-right-${curr}`]: {right: spacing[curr] * -1},
-      [`bottom-${curr}`]: {bottom: spacing[curr]},
-      [`-bottom-${curr}`]: {bottom: spacing[curr] * -1},
-      [`left-${curr}`]: {left: spacing[curr]},
-      [`-left-${curr}`]: {left: spacing[curr] * -1},
+      [`top-${curr}`]: {top: applySpacing(curr)},
+      [`-top-${curr}`]: {top: applySpacing(curr) * -1},
+      [`right-${curr}`]: {right: applySpacing(curr)},
+      [`-right-${curr}`]: {right: applySpacing(curr) * -1},
+      [`bottom-${curr}`]: {bottom: applySpacing(curr)},
+      [`-bottom-${curr}`]: {bottom: applySpacing(curr) * -1},
+      [`left-${curr}`]: {left: applySpacing(curr)},
+      [`-left-${curr}`]: {left: applySpacing(curr) * -1},
     };
   }, {}),
   ...Object.keys(colors).reduce((acc, curr) => {

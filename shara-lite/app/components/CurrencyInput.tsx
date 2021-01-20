@@ -1,7 +1,8 @@
 import {applyStyles} from '@/styles';
 import {isFinite} from 'lodash';
 import React, {forwardRef, useCallback, useEffect, useState} from 'react';
-import {Text, TextInput, TextStyle} from 'react-native';
+import {Text} from '@/components';
+import {TextInput, TextStyle} from 'react-native';
 import {getAuthService} from '../services';
 import {AppInput, AppInputProps} from './AppInput';
 

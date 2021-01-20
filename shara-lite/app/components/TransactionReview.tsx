@@ -11,7 +11,8 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import LottieView from 'lottie-react-native';
 import React, {useCallback, useState} from 'react';
-import {Image, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Image, View} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
 const strings = getI18nService().strings;

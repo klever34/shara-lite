@@ -4,7 +4,8 @@ import {getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {BottomHalfContentProps} from 'types/modal';
 //Todo: Work on translation
 type HomeMenuProps = BottomHalfContentProps & {};

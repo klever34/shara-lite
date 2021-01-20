@@ -1,6 +1,7 @@
 import {applyStyles} from '@/styles';
 import React from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 //Todo: Work on translation
 const TransactionListHeader = ({style}: {style?: ViewStyle}) => {
   return (

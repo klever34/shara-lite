@@ -7,10 +7,11 @@ import {getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useState} from 'react';
-import {Image, ScrollView, Text, View} from 'react-native';
+import {Image, ScrollView, View} from 'react-native';
 import {EditPaymetPreviewLabelModal} from './EditPaymentPreviewLabelModal';
 import {PaymentPreviewItem} from './PaymentPreviewItem';
 import {getI18nService} from '@/services';
+import {Text} from '@/components';
 const strings = getI18nService().strings;
 
 type Props = {

@@ -9,7 +9,8 @@ import {applyStyles, colors} from '@/styles';
 import {Picker} from '@react-native-community/picker';
 import {useFormik} from 'formik';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;

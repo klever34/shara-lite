@@ -1,10 +1,10 @@
 import {applyStyles, colors} from '@/styles';
 import {upperCase} from 'lodash';
 import React, {useCallback} from 'react';
+import {Text} from '@/components';
 import {
   ImageProps,
   StyleProp,
-  Text,
   TextStyle,
   View,
   ViewStyle,

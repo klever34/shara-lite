@@ -1,6 +1,7 @@
 import {Picker} from '@react-native-community/picker';
 import React, {useCallback} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {StyleSheet, View} from 'react-native';
 import {Button} from './Button';
 import {colors} from '../styles';
 import {Formik} from 'formik';

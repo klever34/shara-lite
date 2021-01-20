@@ -1,4 +1,4 @@
-import {applyStyles, colors} from '@/styles';
+import {applyStyles, colors, applySpacing} from '@/styles';
 import React, {useState, forwardRef} from 'react';
 import {TextInput, TouchableOpacity} from 'react-native';
 import Icon from '../components/Icon';
@@ -35,11 +35,11 @@ export const PasswordField = forwardRef<TextInput, AppInputProps>(
         rightIcon={
           <TouchableOpacity
             style={applyStyles({
-              height: 45,
+              height: applySpacing(45),
             })}
             onPress={toggleSecure}>
             <Icon
-              size={24}
+              size={applySpacing(24)}
               type="octicons"
               color="#a8a8a8"
               name={secure ? 'eye' : 'eye-closed'}
