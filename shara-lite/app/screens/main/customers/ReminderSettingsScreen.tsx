@@ -81,7 +81,7 @@ export const ReminderSettingsScreen = withModal(
               color={colors['red-200']}
               style={applyStyles('mb-40')}
             />
-            <Text style={applyStyles('mb-40 text-center')}>
+            <Text style={applyStyles('mb-40 text-center text-700')}>
               {strings('payment_reminder.coming_soon_recurring_reminders')}
             </Text>
             <Button
@@ -98,7 +98,7 @@ export const ReminderSettingsScreen = withModal(
     const handleOpenReminderMessageModal = useCallback(() => {
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
-          <View style={applyStyles('bg-white center py-16')}>
+          <View style={applyStyles('bg-white center py-16 px-32')}>
             <Icon
               size={24}
               name="bell"
@@ -106,7 +106,7 @@ export const ReminderSettingsScreen = withModal(
               color={colors['red-200']}
               style={applyStyles('mb-40')}
             />
-            <Text style={applyStyles('mb-40 text-center')}>
+            <Text style={applyStyles('mb-40 text-center text-700')}>
               {paymentReminderMessage}
             </Text>
             <Button
@@ -119,18 +119,6 @@ export const ReminderSettingsScreen = withModal(
         ),
       });
     }, [openModal, paymentReminderMessage]);
-
-    const handleOpenReminderPopup = useCallback(() => {
-      const closeModal = openModal('bottom-half', {
-        renderContent: () => (
-          <ReminderPopup
-            onClose={closeModal}
-            customer={customer}
-            onDone={setReminders}
-          />
-        ),
-      });
-    }, [openModal, customer]);
 
     const handleDueDateChange = useCallback(
       async (date?: Date) => {
@@ -150,6 +138,20 @@ export const ReminderSettingsScreen = withModal(
       },
       [customer, updateDueDate],
     );
+
+    const handleOpenReminderPopup = useCallback(() => {
+      const closeModal = openModal('bottom-half', {
+        renderContent: () => (
+          <ReminderPopup
+            dueDate={dueDate}
+            customer={customer}
+            onClose={closeModal}
+            onDone={setReminders}
+            handleDueDateChange={handleDueDateChange}
+          />
+        ),
+      });
+    }, [openModal, customer, dueDate, handleDueDateChange]);
 
     const handleGoBack = useCallback(() => {
       if (!dueDate || !getPaymentReminders({customer}).length) {
@@ -207,7 +209,9 @@ export const ReminderSettingsScreen = withModal(
           },
           rightSection: {
             title: reminders.length
-              ? `${reminders.length} ${strings('reminder_text.other')}`
+              ? reminders.length > 1
+                ? `${reminders.length} ${strings('reminder_text.other')}`
+                : `${reminders.length} ${strings('reminder_text.one')}`
               : '',
           },
           onPress: handleOpenReminderPopup,

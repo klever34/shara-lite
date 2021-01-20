@@ -34,7 +34,7 @@ export const Checkbox = (props: CheckboxProps) => {
       return {borderWidth: 2, borderColor: colors['gray-100']};
     }
     if (isChecked) {
-      return {borderWidth: 2, borderColor: colors['gray-50']};
+      return {borderWidth: 2, borderColor: colors['red-200']};
     }
     return {borderWidth: 2, borderColor: colors['gray-50']};
   }, [disabled, isChecked]);
@@ -61,14 +61,14 @@ export const Checkbox = (props: CheckboxProps) => {
         {leftLabel}
         <View
           style={applyStyles(
-            'center w-24 h-24 rounded-2',
+            'center w-24 h-24 rounded-4',
             bgColor,
             borderStyles,
             style,
           )}>
           {isChecked && (
             <Icon
-              size={20}
+              size={18}
               name="check"
               type="feathericons"
               color={colors.white}

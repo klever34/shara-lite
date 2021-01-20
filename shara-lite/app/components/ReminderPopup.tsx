@@ -6,7 +6,6 @@ import {
 } from '@/models/PaymentReminder';
 import {getI18nService} from '@/services';
 import {usePaymentReminder} from '@/services/payment-reminder';
-import {useTransaction} from '@/services/transaction';
 import {applyStyles} from '@/styles';
 import {format} from 'date-fns';
 import React, {useCallback, useContext, useState} from 'react';
@@ -19,15 +18,22 @@ import {ToastContext} from './Toast';
 interface ReminderPopupProps {
   onClose(): void;
   customer: ICustomer;
+  dueDate?: Date;
   onDone(reminders: IPaymentReminder[]): void;
+  handleDueDateChange?(Date?: Date): Promise<void>;
 }
 
 const strings = getI18nService().strings;
 
 export const ReminderPopup = (props: ReminderPopupProps) => {
-  const {customer, onClose, onDone} = props;
+  const {
+    customer,
+    onClose,
+    onDone,
+    dueDate: dueDateProp,
+    handleDueDateChange,
+  } = props;
 
-  const {updateDueDate} = useTransaction();
   const {
     getPaymentReminders,
     savePaymentReminder,
@@ -35,7 +41,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
   } = usePaymentReminder();
   const {showSuccessToast} = useContext(ToastContext);
 
-  const [dueDate, setDueDate] = useState<Date | undefined>(customer?.due_date);
+  const [dueDate, setDueDate] = useState<Date | undefined>(dueDateProp);
   const [reminders, setReminders] = useState<IPaymentReminder[]>(
     getPaymentReminders({customer}),
   );
@@ -97,23 +103,12 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
     [findReminder, handleAddReminder, handleDeleteReminder],
   );
 
-  const handleDueDateChange = useCallback(
-    async (date?: Date) => {
-      if (date) {
-        setDueDate(date);
-        if (customer) {
-          try {
-            await updateDueDate({
-              customer,
-              due_date: date,
-            });
-          } catch (e) {
-            console.log(e);
-          }
-        }
-      }
+  const handleDateChange = useCallback(
+    (date?: Date) => {
+      setDueDate(date);
+      handleDueDateChange && handleDueDateChange(date);
     },
-    [customer, updateDueDate],
+    [handleDueDateChange],
   );
 
   const options = [
@@ -161,7 +156,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
           </Text>
         )}
       </View>
-      {customer.due_date ? (
+      {dueDate ? (
         <View style={applyStyles('px-16')}>
           <Checkbox
             value=""
@@ -194,7 +189,13 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
               isChecked={!!findReminder(value)}
               containerStyle={applyStyles('justify-between mb-16')}
               leftLabel={
-                <Text style={applyStyles('text-400 text-base')}>{label}</Text>
+                <Text
+                  style={applyStyles(
+                    'text-400 text-base',
+                    findReminder(value) ? 'text-red-200' : '',
+                  )}>
+                  {label}
+                </Text>
               }
             />
           ))}
@@ -218,7 +219,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
           onPress={onClose}
           title={strings('cancel')}
         />
-        {customer.due_date ? (
+        {dueDate ? (
           <Button
             title={strings('done')}
             onPress={handleDone}
@@ -234,7 +235,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
             })}
             minimumDate={new Date()}
             value={dueDate ?? new Date()}
-            onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
+            onChange={(e: Event, date?: Date) => handleDateChange(date)}>
             {(toggleShow) => (
               <Button
                 onPress={toggleShow}
