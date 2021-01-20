@@ -104,7 +104,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
                     localInputRef?.current?.focus();
                   }}>
                   <Icon
-                    size={applySpacing(24)}
+                    size={24}
                     name={leftIcon}
                     type="feathericons"
                     color={colors['gray-50']}
@@ -149,7 +149,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
                     localInputRef?.current?.focus();
                   }}>
                   <Icon
-                    size={applySpacing(24)}
+                    size={24}
                     name={rightIcon}
                     type="feathericons"
                     color={colors['gray-50']}

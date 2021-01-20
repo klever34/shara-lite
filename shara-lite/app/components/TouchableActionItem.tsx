@@ -1,4 +1,4 @@
-import {applySpacing, applyStyles, colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import React from 'react';
 import {Text} from '@/components';
 import {View, ViewStyle} from 'react-native';
@@ -76,7 +76,7 @@ export const TouchableActionItem = (props: Props) => {
           </View>
         </View>
         <Icon
-          size={applySpacing(20)}
+          size={20}
           type="feathericons"
           name="chevron-right"
           color={colors['gray-50']}

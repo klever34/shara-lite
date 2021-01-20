@@ -27,7 +27,7 @@ export const HeaderBackButton = ({
           <Icon
             type="feathericons"
             color={colors['gray-300']}
-            size={applySpacing(24)}
+            size={24}
             name={iconName ?? 'arrow-left'}
           />
         </View>

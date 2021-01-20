@@ -103,12 +103,7 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>{strings('activities')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon
-                type="feathericons"
-                name="home"
-                size={applySpacing(24)}
-                color={color}
-              />
+              <Icon type="feathericons" name="home" size={24} color={color} />
             ),
           }}
         />
@@ -131,12 +126,7 @@ export const HomeScreen = () => {
               </TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon
-                type="feathericons"
-                name="user"
-                size={applySpacing(24)}
-                color={color}
-              />
+              <Icon type="feathericons" name="user" size={24} color={color} />
             ),
           }}
         />
