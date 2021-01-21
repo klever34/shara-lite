@@ -1,9 +1,13 @@
-import {IPayment} from './Payment';
-import {IReceipt} from './Receipt';
-import {ICredit} from './Credit';
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IAddress} from '@/models/Address';
-import {IPaymentReminder} from '@/models/PaymentReminder';
+import {IPayment} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Payment';
+import {IReceipt} from '@/services/realm/migrations/1603716195553-add-receipt-note-field/models/Receipt';
+import {ICredit} from '@/services/realm/migrations/1598342143007-add-optional-is-deleted-fields/models/Credit';
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IAddress} from '@/services/realm/migrations/1599826529206-customer-address/models/Address';
+import {IPaymentReminder} from '@/services/realm/migrations/1608634902886-add-payment-reminder/models/PaymentReminder';
 
 export enum DEBT_LEVEL {
   NO_DEBT = 0,

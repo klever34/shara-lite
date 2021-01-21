@@ -19,6 +19,7 @@ import {ReceivedInventory} from '@/models/ReceivedInventory';
 import {PaymentReminder} from '@/models/PaymentReminder';
 import {Feedback} from '@/models/Feedback';
 import {LastSeen} from '@/models/LastSeen';
+import {Activity} from '@/models/Activity';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
@@ -43,6 +44,7 @@ export const schema = [
   Supplier,
   Feedback,
   LastSeen,
+  Activity,
 ];
 
 export const createLocalRealm = async () => {
