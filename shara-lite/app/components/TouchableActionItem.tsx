@@ -1,8 +1,9 @@
+import {Text} from '@/components';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Text} from '@/components';
 import {View, ViewStyle} from 'react-native';
 import {TextProps} from 'react-native-ui-lib';
+import {CircleWithIcon} from './CircleWithIcon';
 import {Icon} from './Icon';
 import Touchable from './Touchable';
 
@@ -25,22 +26,8 @@ export const TouchableActionItem = (props: Props) => {
   const {icon, onPress, style, leftSection, rightSection} = props;
   return (
     <Touchable onPress={onPress}>
-      <View style={applyStyles('flex-row py-12 px-24 items-center', style)}>
-        {icon && (
-          <View style={applyStyles('center')}>
-            <View
-              style={applyStyles(
-                'center mr-12 w-32 h-32 rounded-16 bg-red-10',
-              )}>
-              <Icon
-                size={16}
-                name={icon}
-                type="feathericons"
-                color={colors['red-200']}
-              />
-            </View>
-          </View>
-        )}
+      <View style={applyStyles('flex-row p-12', style)}>
+        {icon && <CircleWithIcon icon={icon} style={applyStyles('mr-12')} />}
         <View style={applyStyles('flex-1 pr-8')}>
           <View style={applyStyles('flex-row items-center justify-between')}>
             {!!leftSection?.title && (

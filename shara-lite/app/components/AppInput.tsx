@@ -13,7 +13,7 @@ import {Icon} from './Icon';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import Touchable from './Touchable';
-import mergeRefs from '../helpers/utils';
+import {mergeRefs} from '../helpers/utils';
 
 export type AppInputProps = {
   label?: string;
