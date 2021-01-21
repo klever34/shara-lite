@@ -1,17 +1,18 @@
 import {AppInput, Button, DatePicker, toNumber} from '@/components';
-import {Icon} from '@/components/Icon';
-import Touchable from '@/components/Touchable';
+import {CalculatorInput} from '@/components/CalculatorView';
 import {amountWithCurrency} from '@/helpers/utils';
+import {ICustomer} from '@/models';
 import {IReceipt} from '@/models/Receipt';
-import {applyStyles, colors} from '@/styles';
-import {format} from 'date-fns';
+import {getI18nService} from '@/services';
+import {applyStyles, dimensions} from '@/styles';
+import {format, isToday} from 'date-fns';
 import {useFormik} from 'formik';
 import {omit} from 'lodash';
 import React, {useRef} from 'react';
 import {Text, TextInput, View} from 'react-native';
-import {CalculatorInput} from '@/components/CalculatorView';
-import {ICustomer} from '@/models';
-import {getI18nService} from '@/services';
+import {CircleWithIcon} from './CircleWithIcon';
+import {EditableInput} from './EditableInput';
+import {TouchableActionItem} from './TouchableActionItem';
 
 const strings = getI18nService().strings;
 
@@ -25,10 +26,18 @@ type RecordSaleFormProps = {
     transaction_date?: Date;
   }) => void;
   customer?: ICustomer;
+  onOpenPhotoComingSoonModal?(): void;
+  onOpenRecurrenceComingSoonModal?(): void;
 };
 
 export const RecordSaleForm = (props: RecordSaleFormProps) => {
-  const {onSubmit, transaction, customer} = props;
+  const {
+    onSubmit,
+    customer,
+    transaction,
+    onOpenPhotoComingSoonModal,
+    onOpenRecurrenceComingSoonModal,
+  } = props;
   const initialValues = transaction
     ? omit(transaction)
     : {
@@ -121,59 +130,67 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           placeholder={strings('sale.fields.note.placeholder')}
         />
       )}
-      <View
-        style={applyStyles(
-          `pb-80 flex-row items-center ${
-            values.amount_paid || values.credit_amount
-              ? 'justify-between'
-              : 'justify-end'
-          }`,
-        )}>
-        {!!(values.amount_paid || values.credit_amount) && (
-          <View style={applyStyles({width: '48%'})}>
-            <Text style={applyStyles('pb-4 text-700 text-gray-50')}>
-              {strings('date')}
-            </Text>
-            <DatePicker
-              //@ts-ignore
-              maximumDate={new Date()}
-              value={values.transaction_date ?? new Date()}
-              onChange={(e: Event, date?: Date) =>
-                !!date && setFieldValue('transaction_date', date)
-              }>
-              {(toggleShow) => (
-                <Touchable onPress={toggleShow}>
-                  <View
-                    style={applyStyles('px-8 py-16 flex-row items-center', {
-                      borderWidth: 2,
-                      borderRadius: 8,
-                      borderColor: colors['gray-20'],
-                    })}>
-                    <Icon
-                      size={16}
-                      name="calendar"
-                      type="feathericons"
-                      color={colors['gray-50']}
-                    />
-                    <Text
-                      style={applyStyles(
-                        'pl-sm text-xs text-uppercase text-700 text-gray-300',
-                      )}>
-                      {!!values.transaction_date &&
-                        format(values.transaction_date, 'MMM dd, yyyy')}
-                    </Text>
-                  </View>
-                </Touchable>
-              )}
-            </DatePicker>
-          </View>
-        )}
-        <Button
-          onPress={handleSubmit}
-          title={customer ? strings('save') : strings('next')}
-          style={applyStyles('mt-20', {width: '48%'})}
+      <View style={applyStyles('pb-12')}>
+        <View style={applyStyles('py-12 flex-row items-center')}>
+          <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
+          <EditableInput
+            multiline
+            onChangeText={handleChange('note')}
+            label={strings('collection.fields.note.placeholder')}
+            labelStyle={applyStyles('text-400 text-base text-gray-300')}
+            placeholder={strings('collection.fields.note.placeholder')}
+            style={applyStyles('h-45', {
+              width: dimensions.fullWidth - 68,
+            })}
+          />
+        </View>
+        <DatePicker
+          //@ts-ignore
+          minimumDate={new Date()}
+          value={values.transaction_date ?? new Date()}
+          onChange={(e: Event, date?: Date) =>
+            !!date && setFieldValue('transaction_date', date)
+          }>
+          {(toggleShow) => (
+            <TouchableActionItem
+              icon="calendar"
+              onPress={toggleShow}
+              style={applyStyles('py-12 px-0')}
+              leftSection={{
+                title: isToday(values.transaction_date ?? new Date())
+                  ? strings('collection.today_text')
+                  : format(
+                      values.transaction_date ?? new Date(),
+                      'MMM dd, yyyy',
+                    ),
+                caption: strings('collection.transaction_date_text'),
+              }}
+            />
+          )}
+        </DatePicker>
+        <TouchableActionItem
+          icon="image"
+          style={applyStyles('py-12 px-0 items-center')}
+          leftSection={{
+            title: strings('collection.select_a_photo_text'),
+          }}
+          onPress={onOpenPhotoComingSoonModal}
+        />
+        <TouchableActionItem
+          icon="refresh-cw"
+          style={applyStyles('py-12 px-0 items-center')}
+          leftSection={{
+            title: strings('recurrence_title'),
+            caption: strings('recurrence_description'),
+          }}
+          onPress={onOpenRecurrenceComingSoonModal}
         />
       </View>
+      <Button
+        onPress={handleSubmit}
+        title={customer ? strings('save') : strings('next')}
+        style={applyStyles('mt-20')}
+      />
     </View>
   );
 };

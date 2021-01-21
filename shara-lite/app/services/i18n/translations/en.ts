@@ -239,7 +239,7 @@ const en: Strings = {
     write_a_note_text: 'Write a note',
     select_a_photo_text: 'Select a photo',
     transaction_date_text: 'What date did this happen?',
-    coming_soon_select_a_photo_: 'Coming Soon: Select a Photo',
+    coming_soon_select_a_photo: 'Coming Soon: Select a Photo',
   },
   sale: {
     sale_recorded: 'SALE RECORDED',

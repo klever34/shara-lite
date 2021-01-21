@@ -71,7 +71,7 @@ const RecordCollectionScreen = withModal(
               style={applyStyles('mb-40')}
             />
             <Text style={applyStyles('mb-40 text-center text-700')}>
-              {strings('collection.coming_soon_select_a_photo_')}
+              {strings('collection.coming_soon_select_a_photo')}
             </Text>
             <Button
               onPress={closeModal}
