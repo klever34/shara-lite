@@ -1,3 +1,4 @@
+import {Text} from '@/components';
 import {ICustomer} from '@/models';
 import {
   IPaymentReminder,
@@ -5,10 +6,11 @@ import {
   ReminderWhen,
 } from '@/models/PaymentReminder';
 import {getI18nService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {usePaymentReminder} from '@/services/payment-reminder';
 import {applyStyles} from '@/styles';
+import BluebirdPromise from 'bluebird';
 import {format} from 'date-fns';
-import {Text} from '@/components';
 import React, {useCallback, useContext, useState} from 'react';
 import {View} from 'react-native';
 import {Button} from './Button';
@@ -39,6 +41,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
     getPaymentReminders,
     savePaymentReminder,
     deletePaymentReminder,
+    disableCustomerReminders,
   } = usePaymentReminder();
   const {showSuccessToast} = useContext(ToastContext);
 
@@ -46,6 +49,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
   const [reminders, setReminders] = useState<IPaymentReminder[]>(
     getPaymentReminders({customer}),
   );
+  const [noReminders, setNoReminders] = useState(customer.disable_reminders);
 
   const handleDone = useCallback(() => {
     onDone(reminders);
@@ -61,35 +65,60 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
 
   const handleAddReminder = useCallback(
     async (amount: number) => {
-      await savePaymentReminder({
-        paymentReminder: {
-          amount,
-          unit: ReminderUnit.DAYS,
-          when: ReminderWhen.BEFORE,
-          due_date: dueDate,
-          customer: customer,
-        },
-      });
-      showSuccessToast(strings('payment_reminder.reminder_added'));
-      setReminders(getPaymentReminders({customer}));
+      try {
+        if (noReminders) {
+          setNoReminders(false);
+          await disableCustomerReminders({customer, disable_reminders: false});
+        }
+        await savePaymentReminder({
+          paymentReminder: {
+            amount,
+            unit: ReminderUnit.DAYS,
+            when: ReminderWhen.BEFORE,
+            due_date: dueDate,
+            customer: customer,
+          },
+        });
+        showSuccessToast(strings('payment_reminder.reminder_added'));
+        setReminders(getPaymentReminders({customer}));
+      } catch (error) {
+        handleError(error);
+      }
     },
     [
       dueDate,
       customer,
+      noReminders,
       showSuccessToast,
       getPaymentReminders,
       savePaymentReminder,
+      disableCustomerReminders,
     ],
   );
 
   const handleDeleteReminder = useCallback(
     async (reminder) => {
-      await deletePaymentReminder({paymentReminder: reminder});
-      showSuccessToast(strings('payment_reminder.reminder_removed'));
-      setReminders(getPaymentReminders({customer}));
+      try {
+        await deletePaymentReminder({paymentReminder: reminder});
+        showSuccessToast(strings('payment_reminder.reminder_removed'));
+        setReminders(getPaymentReminders({customer}));
+      } catch (error) {
+        handleError(error);
+      }
     },
     [customer, showSuccessToast, deletePaymentReminder, getPaymentReminders],
   );
+
+  const handleDeleteReminders = useCallback(async () => {
+    try {
+      await BluebirdPromise.each(reminders || [], async (reminder) => {
+        await deletePaymentReminder({paymentReminder: reminder});
+      });
+      setReminders(getPaymentReminders({customer}));
+    } catch (error) {
+      handleError(error);
+    }
+  }, [customer, reminders, deletePaymentReminder, getPaymentReminders]);
 
   const handleCheckReminder = useCallback(
     (value?: number) => {
@@ -104,6 +133,29 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
     },
     [findReminder, handleAddReminder, handleDeleteReminder],
   );
+
+  const handleDisableReminders = useCallback(async () => {
+    try {
+      if (!noReminders) {
+        setNoReminders(true);
+        await disableCustomerReminders({customer, disable_reminders: true});
+        await handleDeleteReminders();
+        showSuccessToast(strings('payment_reminder.no_reminder.added'));
+      } else {
+        setNoReminders(false);
+        await disableCustomerReminders({customer, disable_reminders: false});
+        showSuccessToast(strings('payment_reminder.no_reminder.removed'));
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  }, [
+    customer,
+    noReminders,
+    showSuccessToast,
+    handleDeleteReminders,
+    disableCustomerReminders,
+  ]);
 
   const handleDateChange = useCallback(
     (date?: Date) => {
@@ -161,24 +213,32 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
       {dueDate ? (
         <View style={applyStyles('px-16')}>
           <Checkbox
-            value=""
-            isChecked={false}
-            onChange={console.log}
+            value={noReminders}
+            isChecked={noReminders}
+            onChange={handleDisableReminders}
             containerStyle={applyStyles('justify-between mb-16')}
             leftLabel={
-              <Text style={applyStyles('text-400 text-base')}>
+              <Text
+                style={applyStyles(
+                  'text-400 text-base',
+                  noReminders ? 'text-red-200' : 'text-black',
+                )}>
                 None (No reminder will be sent)
               </Text>
             }
           />
           <Checkbox
             value=""
-            disabled={true}
-            isChecked={true}
+            disabled={!noReminders}
             onChange={console.log}
+            isChecked={!noReminders}
             containerStyle={applyStyles('justify-between mb-16')}
             leftLabel={
-              <Text style={applyStyles('text-400 text-base text-gray-100')}>
+              <Text
+                style={applyStyles(
+                  'text-400 text-base',
+                  !noReminders ? ' text-gray-100' : 'text-black',
+                )}>
                 Collection Day (Default)
               </Text>
             }

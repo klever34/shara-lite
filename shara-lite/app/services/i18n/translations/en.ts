@@ -150,6 +150,10 @@ const en: Strings = {
         'An automatic reminder will be sent to your customer on the collection date',
     },
     on_the_day_of_collection: 'On the day of collection',
+    no_reminder: {
+      added: 'No reminder will be sent',
+      removed: 'Reminders will be sent',
+    },
   },
   recurrence_title: 'Recurrence',
   recurrence_description: 'How often is this paid?',
@@ -562,6 +566,7 @@ const en: Strings = {
       'You need to set a collection date before you set reminders',
     set_collection_date_button_text: 'Set Collection Date',
   },
+  default_text: 'Default',
 };
 
 export default en;

@@ -86,6 +86,7 @@ interface Strings {
   start_date: string;
   end_date: string;
   and: string;
+  default_text: string;
   payment_reminder: {
     title: string;
     message: string;
@@ -107,6 +108,7 @@ interface Strings {
       after: string;
     };
     reminder_added: string;
+    no_reminder: {added: string, removed: string};
     reminder_removed: string;
     confirm_delete: string;
     confirm_exit: string;

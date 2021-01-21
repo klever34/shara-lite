@@ -218,9 +218,11 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
 
   useEffect(() => {
     if (customer) {
+      setDueDate(customer.due_date);
       setReminders(getPaymentReminders({customer}));
     }
-  }, [customer, getPaymentReminders]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [customer]);
 
   return (
     <View>
@@ -407,7 +409,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
           onPress={handleOpenRecurrenceComingSoonModal}
         />
       </View>
-      {!customer && (
+      {!customer && !!values.credit_amount && (
         <Text style={applyStyles('text-sm text-400 text-red-100 text-center')}>
           Select a customer to complete this transaction
         </Text>
