@@ -10,7 +10,7 @@ import React, {
 } from 'react';
 import {Text} from '@/components';
 import {View, ViewProps} from 'react-native';
-import {applySpacing, applyStyles, colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 import Keypad from '@/assets/images/keypad.svg';
 import {useAppNavigation} from '@/services/navigation';
@@ -121,7 +121,7 @@ export const EntryView = withModal(
                           <Icon
                             type="feathericons"
                             name={icon}
-                            size={applySpacing(24)}
+                            size={24}
                             color={color.primary}
                           />
                         </View>

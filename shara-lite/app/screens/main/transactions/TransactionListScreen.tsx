@@ -9,7 +9,7 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
-import {applySpacing, applyStyles, colors, dimensions} from '@/styles';
+import {applyStyles, colors, dimensions} from '@/styles';
 import {format} from 'date-fns';
 import {Text} from '@/components';
 import React, {useCallback, useLayoutEffect} from 'react';
@@ -215,7 +215,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   'w-24 h-24 mr-8 rounded-32 center bg-green-200',
                 )}>
                 <Icon
-                  size={applySpacing(18)}
+                  size={18}
                   name="arrow-down"
                   type="feathericons"
                   color={colors.white}
@@ -239,7 +239,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   'w-24 h-24 mr-8 rounded-32 center bg-red-100',
                 )}>
                 <Icon
-                  size={applySpacing(18)}
+                  size={18}
                   name="arrow-up"
                   type="feathericons"
                   color={colors.white}

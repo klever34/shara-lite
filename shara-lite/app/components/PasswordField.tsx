@@ -39,7 +39,7 @@ export const PasswordField = forwardRef<TextInput, AppInputProps>(
             })}
             onPress={toggleSecure}>
             <Icon
-              size={applySpacing(24)}
+              size={24}
               type="octicons"
               color="#a8a8a8"
               name={secure ? 'eye' : 'eye-closed'}

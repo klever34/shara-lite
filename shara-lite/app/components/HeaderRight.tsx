@@ -7,7 +7,7 @@ import {
   MenuOptions,
   MenuTrigger,
 } from 'react-native-popup-menu';
-import {applySpacing, applyStyles, colors} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 
 export type HeaderRightOption = {icon: Partial<IconProps>; onPress: () => void};
@@ -44,7 +44,7 @@ export const HeaderRight = ({
                   <Icon
                     type="feathericons"
                     color={colors['gray-300']}
-                    size={applySpacing(24)}
+                    size={24}
                     {...icon}
                   />
                 </View>
@@ -63,7 +63,7 @@ export const HeaderRight = ({
               type="material-icons"
               color={colors['gray-300']}
               name="more-vert"
-              size={applySpacing(28)}
+              size={28}
               borderRadius={12}
             />
           </MenuTrigger>
