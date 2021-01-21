@@ -102,6 +102,7 @@ export const EntryView = withModal(
                 ({icon, title, description, onPress, color}, index, array) => {
                   return (
                     <Touchable
+                      key={index.toString()}
                       onPress={() => {
                         onPress();
                         hideEntryDialog();

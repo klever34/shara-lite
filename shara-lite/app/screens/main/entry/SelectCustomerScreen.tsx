@@ -190,9 +190,10 @@ export const SelectCustomerListScreen = withModal(
               item && handleSetCustomer(item);
             }}>
             <View
-              style={applyStyles(
-                'flex-row items-center border-b-1 border-gray-20 px-16 py-12',
-              )}>
+              style={applyStyles('flex-row items-center px-16 py-12', {
+                borderBottomWidth: 1,
+                borderBottomColor: colors['gray-20'],
+              })}>
               <PlaceholderImage
                 text={item?.name ?? ''}
                 image={item?.image ? {uri: item?.image} : undefined}

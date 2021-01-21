@@ -189,6 +189,11 @@ interface Strings {
         placeholder: string;
       };
     };
+    today_text: string;
+    write_a_note_text: string;
+    select_a_photo_text: string;
+    transaction_date_text: string;
+    coming_soon_select_a_photo_: string;
   };
   sale: {
     sale_recorded: string;
