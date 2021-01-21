@@ -1,4 +1,4 @@
-import {Button, DatePicker, toNumber} from '@/components';
+import {Button, DatePicker, Text, toNumber} from '@/components';
 import {CalculatorInput, CalculatorView} from '@/components/CalculatorView';
 import {CircleWithIcon} from '@/components/CircleWithIcon';
 import {CustomerListItem} from '@/components/CustomerListItem';
@@ -6,7 +6,6 @@ import {EditableInput} from '@/components/EditableInput';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import {TitleContainer} from '@/components/TitleContainer';
-import Touchable from '@/components/Touchable';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {MainStackParamList} from '@/screens/main';
@@ -19,7 +18,6 @@ import {RouteProp} from '@react-navigation/native';
 import {format, isToday} from 'date-fns';
 import {useFormik} from 'formik';
 import React, {useCallback, useRef, useState} from 'react';
-import {Text} from '@/components';
 import {TextInput, View} from 'react-native';
 
 const strings = getI18nService().strings;
@@ -132,7 +130,7 @@ const RecordCollectionScreen = withModal(
               multiline
               onChangeText={handleChange('note')}
               label={strings('collection.fields.note.placeholder')}
-              labelStyle={applyStyles('text-400 text-base text-gray-300')}
+              labelStyle={applyStyles('text-400 text-lg text-gray-300')}
               placeholder={strings('collection.fields.note.placeholder')}
               style={applyStyles('h-45', {
                 width: dimensions.fullWidth - 68,
@@ -169,61 +167,6 @@ const RecordCollectionScreen = withModal(
             }}
             onPress={handleOpenPhotoComingSoonModal}
           />
-          <View
-            style={applyStyles(
-              `flex-row items-end ${
-                values.amount_paid ? 'justify-between' : 'justify-end'
-              }`,
-            )}>
-            {!!values.amount_paid && (
-              <DatePicker
-                value={new Date(values.transaction_date)}
-                containerStyle={applyStyles({width: '48%'})}
-                onChange={(e: Event, date?: Date) =>
-                  !!date && setFieldValue('transaction_date', date)
-                }>
-                {(toggleShow) => {
-                  return (
-                    <>
-                      <Text
-                        style={applyStyles(
-                          'text-sm text-500 text-gray-50 pb-8 flex-1',
-                        )}>
-                        {strings('date')}
-                      </Text>
-                      <Touchable onPress={toggleShow}>
-                        <View
-                          style={applyStyles(
-                            'px-8 py-16 flex-row items-center',
-                            {
-                              borderWidth: 2,
-                              borderRadius: 8,
-                              borderColor: colors['gray-20'],
-                            },
-                          )}>
-                          <Icon
-                            size={16}
-                            name="calendar"
-                            type="feathericons"
-                            color={colors['gray-50']}
-                          />
-                          <Text
-                            style={applyStyles(
-                              'pl-sm text-xs text-uppercase text-700 text-gray-300',
-                            )}>
-                            {format(
-                              new Date(values.transaction_date),
-                              'MMM dd, yyyy',
-                            )}
-                          </Text>
-                        </View>
-                      </Touchable>
-                    </>
-                  );
-                }}
-              </DatePicker>
-            )}
-          </View>
           <Button
             isLoading={isLoading}
             onPress={handleSubmit}
