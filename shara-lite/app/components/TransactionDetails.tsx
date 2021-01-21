@@ -37,20 +37,14 @@ import {
   subWeeks,
 } from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {
-  Alert,
-  Dimensions,
-  FlatList,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import {Text} from '@/components';
+import {Alert, Dimensions, FlatList, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
 import Share from 'react-native-share';
 import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
-
+// TODO: Translate
 const strings = getI18nService().strings;
 
 export type TransactionDetailsProps = {
@@ -483,7 +477,7 @@ const TransactionDetails = withModal(
                       {!!dueDate && !!getPaymentReminders({customer}).length ? (
                         <Text
                           style={applyStyles(
-                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                            'pl-8 text-gray-100 text-uppercase text-700 text-xs',
                           )}>
                           Next reminder{' '}
                           <Text style={applyStyles('text-red-200')}>
@@ -493,7 +487,7 @@ const TransactionDetails = withModal(
                       ) : (
                         <Text
                           style={applyStyles(
-                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                            'pl-8 text-gray-100 text-uppercase text-700 text-xs',
                           )}>
                           {strings('transaction.no_reminder_set')}
                         </Text>

@@ -1,6 +1,7 @@
-import {applyStyles, colors} from '@/styles';
+import {Text} from '@/components';
+import {applySpacing, applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {View, ViewStyle} from 'react-native';
 import {TextProps} from 'react-native-ui-lib';
 import {CircleWithIcon} from './CircleWithIcon';
 import {Icon} from './Icon';
@@ -32,7 +33,7 @@ export const TouchableActionItem = (props: Props) => {
             {!!leftSection?.title && (
               <Text
                 numberOfLines={leftSection.titleNumberOfLines}
-                style={applyStyles('text-400 text-base text-gray-300')}>
+                style={applyStyles('text-400 text-lg text-gray-300')}>
                 {leftSection.title}
               </Text>
             )}
@@ -62,7 +63,7 @@ export const TouchableActionItem = (props: Props) => {
           </View>
         </View>
         <Icon
-          size={20}
+          size={applySpacing(20)}
           type="feathericons"
           name="chevron-right"
           color={colors['gray-50']}

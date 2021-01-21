@@ -2,10 +2,11 @@ import {Icon} from '@/components/Icon';
 import {TabBarLabel} from '@/components/TabBarLabel';
 import {CustomersScreen} from '@/screens/main/customers';
 import {TransactionsScreen} from '@/screens/main/transactions';
-import {applyStyles, colors, navBarHeight} from '@/styles';
+import {applySpacing, applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect} from 'react';
-import {Image, SafeAreaView, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Image, SafeAreaView, View} from 'react-native';
 import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
@@ -68,14 +69,14 @@ export const HomeScreen = () => {
               resizeMode={business.profile_image?.url ? undefined : 'contain'}
               source={headerImageSource}
               style={applyStyles('w-full rounded-24', {
-                width: 24,
-                height: 24,
+                width: applySpacing(24),
+                height: applySpacing(24),
               })}
             />
             <View style={applyStyles('pl-12')}>
               <Text
                 style={applyStyles(
-                  'text-uppercase text-sm text-700 text-white',
+                  'text-uppercase text-base text-700 text-white',
                 )}>
                 {business.name || strings('home_screen_setup_business_text')}
               </Text>
@@ -102,7 +103,12 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>{strings('activities')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="home" size={20} color={color} />
+              <Icon
+                type="feathericons"
+                name="home"
+                size={applySpacing(24)}
+                color={color}
+              />
             ),
           }}
         />
@@ -125,7 +131,12 @@ export const HomeScreen = () => {
               </TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="user" size={20} color={color} />
+              <Icon
+                type="feathericons"
+                name="user"
+                size={applySpacing(24)}
+                color={color}
+              />
             ),
           }}
         />

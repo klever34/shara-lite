@@ -19,9 +19,9 @@ import {
   Keyboard,
   ListRenderItemInfo,
   SafeAreaView,
-  Text,
   View,
 } from 'react-native';
+import {Text} from '@/components';
 import {useCustomerList} from '../customers/CustomerListScreen';
 import {getI18nService} from '@/services';
 

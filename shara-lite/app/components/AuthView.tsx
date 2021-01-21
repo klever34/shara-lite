@@ -1,7 +1,8 @@
 import {HeaderTitleProps} from '@/components/Header';
+import {Text} from '@/components';
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode} from 'react';
-import {KeyboardAvoidingView, Text, View, ViewStyle} from 'react-native';
+import {KeyboardAvoidingView, View, ViewStyle} from 'react-native';
 import {HeaderBackButton} from './HeaderBackButton';
 import {SecureEmblem} from './SecureEmblem';
 

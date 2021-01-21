@@ -1,7 +1,8 @@
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useMemo} from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import Modal from 'react-native-modal';
 import * as yup from 'yup';
 import {AppInput} from '../AppInput';

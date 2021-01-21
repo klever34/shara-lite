@@ -9,14 +9,16 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles, colors, dimensions} from '@/styles';
+import {applySpacing, applyStyles, colors, dimensions} from '@/styles';
 import {format} from 'date-fns';
+import {Text} from '@/components';
 import React, {useCallback, useLayoutEffect} from 'react';
-import {FlatList, SafeAreaView, Text, View} from 'react-native';
+import {FlatList, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import {useReceiptList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
 import {getI18nService} from '@/services';
+// TODO: Translate
 
 const strings = getI18nService().strings;
 
@@ -210,10 +212,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               })}>
               <View
                 style={applyStyles(
-                  'w-24 h-24 mr-8 rounded-16 center bg-green-200',
+                  'w-24 h-24 mr-8 rounded-32 center bg-green-200',
                 )}>
                 <Icon
-                  size={24}
+                  size={applySpacing(18)}
                   name="arrow-down"
                   type="feathericons"
                   color={colors.white}
@@ -222,11 +224,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-xxs text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
                   )}>
                   {strings('transaction.amount_collected')}
                 </Text>
-                <Text style={applyStyles('text-700 text-black text-base')}>
+                <Text style={applyStyles('text-700 text-black text-lg')}>
                   {amountWithCurrency(collectedAmount)}
                 </Text>
               </View>
@@ -234,10 +236,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             <View style={applyStyles('py-16 flex-row center', {width: '48%'})}>
               <View
                 style={applyStyles(
-                  'w-24 h-24 mr-8 rounded-16 center bg-red-100',
+                  'w-24 h-24 mr-8 rounded-32 center bg-red-100',
                 )}>
                 <Icon
-                  size={24}
+                  size={applySpacing(18)}
                   name="arrow-up"
                   type="feathericons"
                   color={colors.white}
@@ -246,11 +248,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-xxs text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
                   )}>
                   {strings('transaction.amount_outstanding')}
                 </Text>
-                <Text style={applyStyles('text-700 text-black text-base')}>
+                <Text style={applyStyles('text-700 text-black text-lg')}>
                   {amountWithCurrency(outstandingAmount)}
                 </Text>
               </View>
@@ -265,7 +267,9 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               },
             )}>
             <Text
-              style={applyStyles('text-black text-700 text-uppercase flex-1')}>
+              style={applyStyles(
+                'text-black text-700 text-uppercase flex-1 text-sm',
+              )}>
               {strings('transaction.total_amount')}:{' '}
               {amountWithCurrency(totalAmount)}
             </Text>
@@ -281,7 +285,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 )}>
                 <Text
                   style={applyStyles(
-                    'text-xxs text-gray-200 text-700 text-uppercase pr-8',
+                    'text-xs text-gray-200 text-700 text-uppercase pr-8',
                   )}>
                   {strings('transaction.view_report')}
                 </Text>
@@ -312,7 +316,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             <View style={applyStyles('py-4 px-8 flex-row items-center')}>
               <Text
                 style={applyStyles(
-                  'text-xs text-gray-300 text-700 text-uppercase pr-8',
+                  'text-base text-gray-300 text-700 text-uppercase pr-8',
                 )}>
                 {getFilterLabelText()}
               </Text>

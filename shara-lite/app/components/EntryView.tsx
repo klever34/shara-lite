@@ -8,8 +8,9 @@ import React, {
   useState,
   useContext,
 } from 'react';
-import {Text, View, ViewProps} from 'react-native';
-import {applyStyles, colors} from '@/styles';
+import {Text} from '@/components';
+import {View, ViewProps} from 'react-native';
+import {applySpacing, applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 import Keypad from '@/assets/images/keypad.svg';
 import {useAppNavigation} from '@/services/navigation';
@@ -112,7 +113,7 @@ export const EntryView = withModal(
                         style={applyStyles('flex-row mx-16 pt-16 items-start')}>
                         <View
                           style={applyStyles(
-                            'rounded-24 bg-gray-20 p-4 mr-12',
+                            'rounded-24 bg-gray-20 mr-12 w-32 h-32 center',
                             {
                               backgroundColor: color.pastel,
                             },
@@ -120,7 +121,7 @@ export const EntryView = withModal(
                           <Icon
                             type="feathericons"
                             name={icon}
-                            size={20}
+                            size={applySpacing(24)}
                             color={color.primary}
                           />
                         </View>
@@ -128,10 +129,10 @@ export const EntryView = withModal(
                           style={applyStyles(
                             'pb-16 flex-1',
                             index !== array.length - 1 &&
-                              'border-b-1 border-gray-20',
+                              'border-b-4 border-gray-20',
                           )}>
                           <Text
-                            style={applyStyles('text-700 text-base', {
+                            style={applyStyles('text-700 text-lg', {
                               color: color.primary,
                             })}>
                             {title}

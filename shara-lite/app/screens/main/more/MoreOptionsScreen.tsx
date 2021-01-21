@@ -5,7 +5,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, Image, SafeAreaView, ScrollView, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Alert, Image, SafeAreaView, ScrollView, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {Icon} from '@/components/Icon';
 import {applyStyles, colors, dimensions} from '@/styles';
@@ -196,7 +197,7 @@ export const MoreOptionsScreen = withModal(
               'bg-white',
             )}>
             <TitleContainer
-              containerStyle={applyStyles('p-16')}
+              containerStyle={applyStyles('px-24 mt-16')}
               title={i18nService.strings('more.header.title')}
               description={i18nService.strings('more.header.description')}
             />
@@ -219,10 +220,7 @@ export const MoreOptionsScreen = withModal(
             )}
             {!!business.name && (
               <>
-                <View
-                  style={applyStyles(
-                    'flex-row items-center ml-16 py-18 mb-32',
-                  )}>
+                <View style={applyStyles('flex-row items-center ml-24 py-32')}>
                   <Image
                     source={{
                       uri: business.profile_image?.url,
@@ -235,7 +233,7 @@ export const MoreOptionsScreen = withModal(
                   <View style={applyStyles('pl-12')}>
                     <Text
                       style={applyStyles(
-                        'text-uppercase text-sm text-700 text-black',
+                        'text-uppercase text-lg text-700 text-black',
                       )}>
                       {business.name}
                     </Text>

@@ -34,3 +34,4 @@ export * from './StickyFooter';
 export * from './RadioButton';
 export * from './AddCustomerModal';
 export * from './AccordionItem';
+export * from './Text';

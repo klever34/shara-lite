@@ -12,12 +12,12 @@ import React, {
   Ref,
   ReactElement,
 } from 'react';
+import {Text} from '@/components';
 import {
   FlatList,
   Keyboard,
   NativeSyntheticEvent,
   StyleSheet,
-  Text,
   TextInput,
   TextInputProps,
   TextInputSubmitEditingEventData,

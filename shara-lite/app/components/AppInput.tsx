@@ -1,11 +1,11 @@
-import {applyStyles, colors} from '@/styles';
+import {applySpacing, applyStyles, colors} from '@/styles';
 import React, {ReactElement, ReactNode, useState, forwardRef} from 'react';
+import {Text} from '@/components';
 import {
   TextInput,
   View,
   TextInputProps,
   ViewStyle,
-  Text,
   NativeSyntheticEvent,
   TextInputFocusEventData,
 } from 'react-native';
@@ -81,7 +81,9 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
         <View style={applyStyles('flex-row')}>
           {!!label && (
             <Text
-              style={applyStyles('text-sm text-500 text-gray-50 pb-8 flex-1')}>
+              style={applyStyles(
+                'text-base text-500 text-gray-50 pb-8 flex-1',
+              )}>
               {label}
             </Text>
           )}
@@ -92,8 +94,8 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
             <View
               style={applyStyles('flex-row center', {
                 position: 'absolute',
-                left: 12,
-                top: 16,
+                left: applySpacing(12),
+                top: applySpacing(16),
                 zIndex: 10,
               })}>
               {typeof leftIcon === 'string' ? (
@@ -102,7 +104,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
                     localInputRef?.current?.focus();
                   }}>
                   <Icon
-                    size={24}
+                    size={applySpacing(24)}
                     name={leftIcon}
                     type="feathericons"
                     color={colors['gray-50']}
@@ -118,10 +120,9 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
             onFocus={handleFocus}
             onBlur={handleBlur}
             style={applyStyles(
-              'text-500 bg-white',
+              'text-500 text-lg bg-white',
               {
-                height: 56,
-                fontSize: 16,
+                height: applySpacing(56),
                 borderWidth: 2,
                 borderRadius: 8,
                 borderColor: colors['gray-20'],
@@ -137,8 +138,8 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
           {rightIcon && (
             <View
               style={applyStyles('flex-row center', {
-                top: 16,
-                right: 12,
+                top: applySpacing(18),
+                right: applySpacing(16),
                 zIndex: 10,
                 position: 'absolute',
               })}>
@@ -148,7 +149,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
                     localInputRef?.current?.focus();
                   }}>
                   <Icon
-                    size={24}
+                    size={applySpacing(24)}
                     name={rightIcon}
                     type="feathericons"
                     color={colors['gray-50']}

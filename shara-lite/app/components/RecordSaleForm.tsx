@@ -9,10 +9,11 @@ import {format, isToday} from 'date-fns';
 import {useFormik} from 'formik';
 import {omit} from 'lodash';
 import React, {useRef} from 'react';
-import {Text, TextInput, View} from 'react-native';
+import {TextInput, View} from 'react-native';
 import {CircleWithIcon} from './CircleWithIcon';
 import {EditableInput} from './EditableInput';
 import {TouchableActionItem} from './TouchableActionItem';
+import {Text} from '@/components';
 
 const strings = getI18nService().strings;
 

@@ -1,6 +1,7 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Image, ImageSourcePropType, Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {Image, ImageSourcePropType, View, ViewStyle} from 'react-native';
 import {
   Menu,
   MenuOption,

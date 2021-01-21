@@ -15,13 +15,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import {Text} from '@/components';
+import {FlatList, ListRenderItemInfo, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Touchable from '@/components/Touchable';
 import {
