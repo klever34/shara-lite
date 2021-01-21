@@ -29,9 +29,9 @@ export const ReminderSettingsScreen = withModal(
   ({route, openModal}: ReminderSettingsScreenProps) => {
     const {customer} = route.params;
     const navigation = useAppNavigation();
+    const user = getAuthService().getUser();
     const {updateDueDate} = useTransaction();
     const {getPaymentReminders} = usePaymentReminder();
-    const user = getAuthService().getUser();
     const businessInfo = getAuthService().getBusinessInfo();
 
     const [dueDate, setDueDate] = useState<Date | undefined>(

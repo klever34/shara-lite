@@ -261,8 +261,12 @@ const en: Strings = {
       },
       note: {
         label: 'Note',
-        placeholder: 'Write a brief note about this transaction',
+        placeholder: 'Write a note',
       },
+    },
+    select_customer: {
+      title: 'Select Customer',
+      description: 'Which customer is this transaction for?',
     },
   },
   entry: {

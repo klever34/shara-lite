@@ -211,6 +211,10 @@ interface Strings {
         placeholder: string;
       };
     };
+    select_customer: {
+      title: string;
+      description: string;
+    }
   };
   filter: PluralizedString;
   filter_options: {

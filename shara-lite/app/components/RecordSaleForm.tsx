@@ -1,19 +1,26 @@
-import {AppInput, Button, DatePicker, toNumber} from '@/components';
+import {Button, DatePicker, Text, toNumber} from '@/components';
 import {CalculatorInput} from '@/components/CalculatorView';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
+import {IPaymentReminder} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
-import {getI18nService} from '@/services';
-import {applyStyles, dimensions} from '@/styles';
+import {getAuthService, getI18nService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
+import {usePaymentReminder} from '@/services/payment-reminder';
+import {useTransaction} from '@/services/transaction';
+import {applyStyles, colors, dimensions} from '@/styles';
 import {format, isToday} from 'date-fns';
 import {useFormik} from 'formik';
 import {omit} from 'lodash';
-import React, {useRef} from 'react';
+import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {TextInput, View} from 'react-native';
+import Config from 'react-native-config';
 import {CircleWithIcon} from './CircleWithIcon';
 import {EditableInput} from './EditableInput';
+import {Icon} from './Icon';
+import {ReminderPopup} from './ReminderPopup';
 import {TouchableActionItem} from './TouchableActionItem';
-import {Text} from '@/components';
 
 const strings = getI18nService().strings;
 
@@ -27,18 +34,16 @@ type RecordSaleFormProps = {
     transaction_date?: Date;
   }) => void;
   customer?: ICustomer;
-  onOpenPhotoComingSoonModal?(): void;
-  onOpenRecurrenceComingSoonModal?(): void;
-};
+} & ModalWrapperFields;
 
-export const RecordSaleForm = (props: RecordSaleFormProps) => {
-  const {
-    onSubmit,
-    customer,
-    transaction,
-    onOpenPhotoComingSoonModal,
-    onOpenRecurrenceComingSoonModal,
-  } = props;
+export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
+  const {onSubmit, customer, transaction, openModal} = props;
+  const navigation = useAppNavigation();
+  const {updateDueDate} = useTransaction();
+  const user = getAuthService().getUser();
+  const {getPaymentReminders} = usePaymentReminder();
+  const businessInfo = getAuthService().getBusinessInfo();
+
   const initialValues = transaction
     ? omit(transaction)
     : {
@@ -61,6 +66,162 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
   });
   const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
+  const [dueDate, setDueDate] = useState<Date | undefined>(customer?.due_date);
+  const [reminders, setReminders] = useState<IPaymentReminder[]>(
+    customer ? getPaymentReminders({customer}) : [],
+  );
+
+  const paymentLink =
+    businessInfo.slug &&
+    `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+      customer?._id ? `?customer=${String(customer?._id)}` : ''
+    }`;
+
+  const paymentReminderMessage = strings('payment_reminder.message', {
+    customer_name: customer?.name ?? '',
+    extra_salutation:
+      businessInfo?.name || user?.firstname
+        ? strings('payment_reminder.thank_you_for_doing_business', {
+            business_name: businessInfo.name ?? user?.firstname ?? '',
+          })
+        : '',
+    you_owe:
+      customer?.balance && customer.balance < 0
+        ? strings('payment_reminder.you_owe', {
+            balance: amountWithCurrency(customer.balance),
+          })
+        : '',
+    due_on: dueDate
+      ? strings('payment_reminder.due_on', {
+          due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+        })
+      : '',
+    pay_at: paymentLink
+      ? strings('payment_reminder.pay_at', {link: paymentLink})
+      : '',
+  });
+
+  const handleOpenSelectCustomer = useCallback(() => {
+    navigation.navigate('SelectCustomerList', {
+      onSelectCustomer: (customer?: ICustomer) =>
+        navigation.navigate('RecordSale', {customer}),
+    });
+  }, [navigation]);
+
+  const handleOpenPhotoComingSoonModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <View style={applyStyles('bg-white center py-16')}>
+          <Icon
+            size={24}
+            name="bell"
+            type="feathericons"
+            color={colors['red-200']}
+            style={applyStyles('mb-40')}
+          />
+          <Text style={applyStyles('mb-40 text-center text-700')}>
+            {strings('collection.coming_soon_select_a_photo')}
+          </Text>
+          <Button
+            onPress={closeModal}
+            title={strings('dismiss')}
+            variantColor="transparent"
+            style={applyStyles({width: 140})}
+          />
+        </View>
+      ),
+    });
+  }, [openModal]);
+
+  const handleOpenRecurrenceComingSoonModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <View style={applyStyles('bg-white center py-16')}>
+          <Icon
+            size={24}
+            name="bell"
+            type="feathericons"
+            color={colors['red-200']}
+            style={applyStyles('mb-40')}
+          />
+          <Text style={applyStyles('mb-40 text-center text-700')}>
+            {strings('payment_reminder.coming_soon_recurring_reminders')}
+          </Text>
+          <Button
+            onPress={closeModal}
+            title={strings('dismiss')}
+            variantColor="transparent"
+            style={applyStyles({width: 140})}
+          />
+        </View>
+      ),
+    });
+  }, [openModal]);
+
+  const handleDueDateChange = useCallback(
+    async (date?: Date) => {
+      if (date) {
+        setDueDate(date);
+        if (customer) {
+          try {
+            await updateDueDate({
+              customer,
+              due_date: date,
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        }
+      }
+    },
+    [customer, updateDueDate],
+  );
+
+  const handleOpenReminderPopup = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <ReminderPopup
+          dueDate={dueDate}
+          onClose={closeModal}
+          onDone={setReminders}
+          handleDueDateChange={handleDueDateChange}
+          customer={customer ? customer : ({} as ICustomer)}
+        />
+      ),
+    });
+  }, [openModal, customer, dueDate, handleDueDateChange]);
+
+  const handleOpenReminderMessageModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <View style={applyStyles('bg-white center py-16 px-32')}>
+          <Icon
+            size={24}
+            name="bell"
+            type="feathericons"
+            color={colors['red-200']}
+            style={applyStyles('mb-40')}
+          />
+          <Text style={applyStyles('mb-40 text-center text-700')}>
+            {paymentReminderMessage}
+          </Text>
+          <Button
+            onPress={closeModal}
+            title={strings('dismiss')}
+            variantColor="transparent"
+            style={applyStyles({width: 140})}
+          />
+        </View>
+      ),
+    });
+  }, [openModal, paymentReminderMessage]);
+
+  useEffect(() => {
+    if (customer) {
+      setReminders(getPaymentReminders({customer}));
+    }
+  }, [customer, getPaymentReminders]);
+
   return (
     <View>
       <View style={applyStyles('pb-16 flex-row items-center justify-between')}>
@@ -118,33 +279,30 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
           )}
         </Text>
       )}
-      {!!(values.amount_paid || values.credit_amount) && (
-        <AppInput
-          multiline
-          ref={noteFieldRef}
-          value={values.note}
-          label={`${strings('sale.fields.note.label')} (${strings(
-            'optional',
-          )})`}
-          onChangeText={handleChange('note')}
-          containerStyle={applyStyles('pb-16')}
-          placeholder={strings('sale.fields.note.placeholder')}
-        />
-      )}
       <View style={applyStyles('pb-12')}>
         <View style={applyStyles('py-12 flex-row items-center')}>
           <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
           <EditableInput
             multiline
             onChangeText={handleChange('note')}
-            label={strings('collection.fields.note.placeholder')}
-            labelStyle={applyStyles('text-400 text-base text-gray-300')}
-            placeholder={strings('collection.fields.note.placeholder')}
+            label={strings('sale.fields.note.placeholder')}
+            labelStyle={applyStyles('text-400 text-lg text-gray-300')}
+            placeholder={strings('sale.fields.note.placeholder')}
             style={applyStyles('h-45', {
               width: dimensions.fullWidth - 68,
             })}
           />
         </View>
+        <TouchableActionItem
+          icon="user"
+          style={applyStyles('py-12 px-0 items-center')}
+          leftSection={{
+            title: customer
+              ? customer.name
+              : strings('sale.select_customer.title'),
+          }}
+          onPress={handleOpenSelectCustomer}
+        />
         <DatePicker
           //@ts-ignore
           minimumDate={new Date()}
@@ -169,13 +327,75 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
             />
           )}
         </DatePicker>
+        {customer && !!values.credit_amount && (
+          <>
+            <DatePicker
+              //@ts-ignore
+              minimumDate={new Date()}
+              value={dueDate ?? new Date()}
+              onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
+              {(toggleShow) => (
+                <TouchableActionItem
+                  icon="calendar"
+                  onPress={toggleShow}
+                  style={applyStyles('py-12 px-0')}
+                  rightSection={{
+                    title: dueDate ? format(dueDate, 'MMM dd, yyyy') : '',
+                  }}
+                  leftSection={{
+                    title: strings(
+                      'payment_reminder.set_collection_date.title',
+                    ),
+                    caption: strings(
+                      'payment_reminder.set_collection_date.description',
+                    ),
+                  }}
+                />
+              )}
+            </DatePicker>
+            <TouchableActionItem
+              icon="bell"
+              style={applyStyles('py-12 px-0 items-center')}
+              leftSection={{
+                title: reminders.length
+                  ? strings('reminder_text.one')
+                  : strings('reminder_text.zero'),
+                caption: reminders.length
+                  ? reminders[0].amount > 1
+                    ? strings('payment_reminder.reminder_count.other', {
+                        count: reminders[0].amount,
+                      })
+                    : strings('payment_reminder.reminder_count.one')
+                  : strings('payment_reminder.no_reminder_set_text'),
+              }}
+              rightSection={{
+                title: reminders.length
+                  ? reminders.length > 1
+                    ? `${reminders.length} ${strings('reminder_text.other')}`
+                    : `${reminders.length} ${strings('reminder_text.one')}`
+                  : '',
+              }}
+              onPress={handleOpenReminderPopup}
+            />
+            <TouchableActionItem
+              icon="mail"
+              style={applyStyles('py-12 px-0')}
+              leftSection={{
+                title: strings('reminder_message_title'),
+                caption: paymentReminderMessage,
+                captionNumberOfLines: 1,
+              }}
+              onPress={handleOpenReminderMessageModal}
+            />
+          </>
+        )}
         <TouchableActionItem
           icon="image"
           style={applyStyles('py-12 px-0 items-center')}
           leftSection={{
             title: strings('collection.select_a_photo_text'),
           }}
-          onPress={onOpenPhotoComingSoonModal}
+          onPress={handleOpenPhotoComingSoonModal}
         />
         <TouchableActionItem
           icon="refresh-cw"
@@ -184,14 +404,20 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
             title: strings('recurrence_title'),
             caption: strings('recurrence_description'),
           }}
-          onPress={onOpenRecurrenceComingSoonModal}
+          onPress={handleOpenRecurrenceComingSoonModal}
         />
       </View>
+      {!customer && (
+        <Text style={applyStyles('text-sm text-400 text-red-100 text-center')}>
+          Select a customer to complete this transaction
+        </Text>
+      )}
       <Button
         onPress={handleSubmit}
-        title={customer ? strings('save') : strings('next')}
         style={applyStyles('mt-20')}
+        disabled={!!values.credit_amount && !customer}
+        title={customer ? strings('save') : strings('next')}
       />
     </View>
   );
-};
+});
