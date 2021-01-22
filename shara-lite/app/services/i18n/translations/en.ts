@@ -220,7 +220,7 @@ const en: Strings = {
     },
   },
   recurrence_title: 'Recurrence',
-  recurrence_description: 'How often is this paid?',
+  recurrence_description: 'Does this payment repeat?',
   reminder_message_title: 'Reminder Message',
   customer_statement: {
     title: 'Share Customer Statement',
@@ -292,7 +292,7 @@ const en: Strings = {
     collection_recorded: 'COLLECTION RECORDED',
     button: {
       title: 'Record Collection',
-      description: 'Record collecting a payment',
+      description: 'Record a payment received towards a debt or an advance',
     },
     header: {
       title: 'Record Collection',

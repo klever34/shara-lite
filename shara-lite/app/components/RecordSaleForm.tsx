@@ -86,12 +86,11 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
               businessInfo.name.trim() ?? user?.firstname.trim() ?? '',
           })
         : '',
-    you_owe:
-      customer?.balance && customer.balance < 0
-        ? strings('payment_reminder.you_owe', {
-            balance: amountWithCurrency(customer.balance),
-          })
-        : '',
+    you_owe: values.credit_amount
+      ? strings('payment_reminder.you_owe', {
+          balance: amountWithCurrency(values.credit_amount),
+        })
+      : '',
     due_on: dueDate
       ? strings('payment_reminder.due_on', {
           due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
@@ -326,13 +325,13 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
               onPress={toggleShow}
               style={applyStyles('py-12 px-0')}
               leftSection={{
-                title: isToday(values.transaction_date ?? new Date())
+                caption: isToday(values.transaction_date ?? new Date())
                   ? strings('collection.today_text')
                   : format(
                       values.transaction_date ?? new Date(),
                       'MMM dd, yyyy',
                     ),
-                caption: strings('collection.transaction_date_text'),
+                title: strings('collection.transaction_date_text'),
               }}
             />
           )}

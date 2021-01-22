@@ -6,7 +6,7 @@ import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles, colors} from '@/styles';
+import {applyStyles, colors, dimensions} from '@/styles';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -366,7 +366,10 @@ export const CustomerListScreen = withModal(
                 {strings('customers.start_adding')}
               </Text>
             </View>
-            <View style={applyStyles('center p-16 w-full')}>
+            <View
+              style={applyStyles('center p-16 bottom', {
+                height: dimensions.fullHeight - 100,
+              })}>
               <Animatable.View
                 duration={200}
                 animation={{
