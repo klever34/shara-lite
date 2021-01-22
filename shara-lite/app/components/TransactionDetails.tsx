@@ -142,30 +142,30 @@ const TransactionDetails = withModal(
         customer._id ? `?customer=${String(customer._id)}` : ''
       }`;
 
-    const paymentReminderMessage = strings('payment_reminder.message', {
-      customer_name: customer?.name ?? '',
-      extra_salutation:
-        businessInfo?.name || user?.firstname
-          ? strings('payment_reminder.thank_you_for_doing_business', {
-              business_name:
-                businessInfo.name.trim() ?? user?.firstname.trim() ?? '',
-            })
-          : '',
-      you_owe:
-        customer.balance && customer.balance < 0
-          ? strings('payment_reminder.you_owe', {
-              balance: amountWithCurrency(customer.balance),
-            })
-          : '',
-      due_on: dueDate
-        ? strings('payment_reminder.due_on', {
-            due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+    const paymentReminderMessage = `${strings('salutation', {
+      name: customer?.name ?? '',
+    })} ${
+      businessInfo?.name || user?.firstname
+        ? strings('payment_reminder.thank_you_for_doing_business', {
+            business_name: businessInfo?.name || user?.firstname,
           })
-        : '',
-      pay_at: paymentLink
-        ? strings('payment_reminder.pay_at', {link: paymentLink})
-        : '',
-    });
+        : ''
+    } ${
+      customer.balance && customer.balance < 0
+        ? dueDate
+          ? strings('you_owe_message_with_due_date', {
+              credit_amount: amountWithCurrency(customer.balance),
+              due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+            })
+          : strings('you_owe_message', {
+              credit_amount: amountWithCurrency(customer.balance),
+            })
+        : ''
+    }\n\n${
+      paymentLink
+        ? strings('payment_link_message', {payment_link: paymentLink})
+        : ''
+    }\n\n${strings('powered_by_shara')}`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,

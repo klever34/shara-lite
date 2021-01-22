@@ -77,29 +77,30 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
       customer?._id ? `?customer=${String(customer?._id)}` : ''
     }`;
 
-  const paymentReminderMessage = strings('payment_reminder.message', {
-    customer_name: customer?.name ?? '',
-    extra_salutation:
-      businessInfo?.name || user?.firstname
-        ? strings('payment_reminder.thank_you_for_doing_business', {
-            business_name:
-              businessInfo.name.trim() ?? user?.firstname.trim() ?? '',
+  const paymentReminderMessage = `${strings('salutation', {
+    name: customer?.name ?? '',
+  })} ${
+    businessInfo?.name || user?.firstname
+      ? strings('payment_reminder.thank_you_for_doing_business', {
+          business_name: businessInfo?.name || user?.firstname,
+        })
+      : ''
+  } ${
+    values.credit_amount
+      ? dueDate
+        ? strings('you_owe_message_with_due_date', {
+            credit_amount: amountWithCurrency(values.credit_amount),
+            due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
           })
-        : '',
-    you_owe: values.credit_amount
-      ? strings('payment_reminder.you_owe', {
-          balance: amountWithCurrency(values.credit_amount),
-        })
-      : '',
-    due_on: dueDate
-      ? strings('payment_reminder.due_on', {
-          due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
-        })
-      : '',
-    pay_at: paymentLink
-      ? strings('payment_reminder.pay_at', {link: paymentLink})
-      : '',
-  });
+        : strings('you_owe_message', {
+            credit_amount: amountWithCurrency(values.credit_amount),
+          })
+      : ''
+  }\n\n${
+    paymentLink
+      ? strings('payment_link_message', {payment_link: paymentLink})
+      : ''
+  }\n\n${strings('powered_by_shara')}`;
 
   const handleOpenSelectCustomer = useCallback(() => {
     navigation.navigate('SelectCustomerList', {

@@ -71,20 +71,20 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
       : strings('receipts.recent_purchase_message', {
           customer_name: transaction.customer?.name,
         })
-  } ${strings('receipts.receipt_you_paid_message', {
+  } ${strings('you_paid_message', {
     amount: amountWithCurrency(transaction.amount_paid),
   })} ${
     dueDate
-      ? strings('receipts.receipt_you_owe_message_with_due_date', {
+      ? strings('you_owe_message_with_due_date', {
           credit_amount: amountWithCurrency(credit_amount),
           due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
         })
-      : strings('receipts.receipt_you_owe_message', {
+      : strings('you_owe_message', {
           credit_amount: amountWithCurrency(credit_amount),
         })
   } ${
     paymentLink
-      ? strings('receipts.receipt_share_payment_link_message', {
+      ? strings('payment_link_message', {
           payment_link: paymentLink,
         })
       : ''

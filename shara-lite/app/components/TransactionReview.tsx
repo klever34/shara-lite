@@ -56,7 +56,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
       customer_name: transaction.customer?.name,
       business_name: businessInfo.name,
     },
-  )} ${strings('receipts.receipt_you_paid_message', {
+  )} ${strings('you_paid_message', {
     amount: amountWithCurrency(transaction.amount_paid),
   })}\n\n${strings('powered_by_shara')}`;
 

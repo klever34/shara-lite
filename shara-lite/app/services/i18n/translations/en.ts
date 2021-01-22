@@ -167,14 +167,10 @@ const en: Strings = {
   },
   payment_reminder: {
     title: 'Settings',
-    message: String.raw`Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.{{pay_at}} \n\nPowered by Shara for free.\nwww.shara.co`,
     thank_you_for_doing_business:
-      'Thank you for doing business with {{business_name}}. ',
-    you_owe: 'You owe {{balance}}',
-    due_on: ' which is due on {{due_date}}',
-    pay_at: String.raw`\n\nTo pay click\n{{link}}`,
+      'Thank you for doing business with {{business_name}}.',
     reminder_count: {
-      one: 'A reminder will be sent 1 day before collection date',
+      one: 'A reminder will be sent a day before collection date',
       other: 'A reminder will be sent {{count}} day before collection date',
     },
     no_reminder_set_text:
@@ -279,14 +275,15 @@ const en: Strings = {
       'Hi {{customer_name}}, thank you for your recent purchase.',
     recent_purchase_message_from_business:
       'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.',
-    receipt_you_paid_message: 'You paid {{amount}}.',
-    receipt_you_owe_message: 'You owe {{credit_amount}}.',
-    receipt_you_owe_message_with_due_date:
-      'You owe {{credit_amount}} which is due on {{due_date}}.',
-    receipt_share_payment_link_message: String.raw`To pay click\n{{payment_link}}.`,
     receipt_for: 'Receipt for',
     receipt_no: 'Receipt No',
   },
+  salutation: 'Hello {{name}}!',
+  you_paid_message: 'You paid {{amount}}.',
+  you_owe_message: 'You owe {{credit_amount}}.',
+  you_owe_message_with_due_date:
+    'You owe {{credit_amount}} which is due on {{due_date}}.',
+  payment_link_message: String.raw`To pay click\n{{payment_link}}.`,
   powered_by_shara: String.raw`Powered by Shara for free.\nwww.shara.co`,
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
