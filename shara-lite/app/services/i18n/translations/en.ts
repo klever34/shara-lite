@@ -78,6 +78,70 @@ const en: Strings = {
       description:
         'We are syncing your data across the Shara app. This might take a few seconds.',
     },
+    api: {
+      fallbackError: 'Oops! Something unexpected happened.',
+      auth: {
+        otp: {
+          welcomeBack:
+            "Welcome back to Shara. We've sent an OTP to your mobile number",
+          welcome: "Welcome to Shara. We've sent an OTP to your mobile number",
+          selectCountry: 'Please select a country',
+          fallbackError: 'Oops! An error occurred while signing up user',
+        },
+        login: {
+          otpExpired: 'OTP has expired',
+          success: 'Login Successful',
+          fallbackError: 'Invalid mobile or OTP',
+        },
+      },
+      business: {
+        notFound: 'Business not found',
+        create: {
+          success: 'Business created successfully',
+        },
+        details: {
+          success: 'Business found successfully',
+        },
+        customerDetails: {
+          notFound: 'Customer not found',
+          success: 'Customer found successfully',
+        },
+        update: {
+          uniqueSlug: 'This slug has been taken already',
+          success: 'Business updated successfully',
+        },
+      },
+      fcm: {
+        addToken: {
+          missingFields: 'FCM token and platform are required',
+          success: 'Token updated successfully',
+        },
+      },
+      passwordReset: {
+        notFound: 'Account not found',
+        create: {
+          success: 'Please use the OTP sent to your mobile number',
+        },
+        reset: {
+          invalid: 'OTP has expired or is invalid',
+          success: 'Password reset successful',
+        },
+        update: {
+          uniqueSlug: 'This slug has been taken already',
+          success: 'Business updated successfully',
+        },
+      },
+      paymentProvider: {
+        list: {
+          success: 'Payment providers retrieved successfully',
+        },
+      },
+      user: {
+        update: {
+          success: 'User updated successfully',
+        },
+      },
+    },
   },
   shara_tagline: 'Keep track of who owes you and get paid faster',
   onboarding_copy_1: {
