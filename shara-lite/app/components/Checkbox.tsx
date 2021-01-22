@@ -40,10 +40,10 @@ export const Checkbox = (props: CheckboxProps) => {
   }, [disabled, isChecked]);
 
   const onPress = useCallback(() => {
-    if (onChange) {
+    if (onChange && !disabled) {
       onChange(value);
     }
-  }, [onChange, value]);
+  }, [onChange, value, disabled]);
 
   const bgColor = useMemo(() => {
     if (disabled && isChecked) {

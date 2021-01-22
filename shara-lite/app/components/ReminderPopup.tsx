@@ -157,6 +157,15 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
     disableCustomerReminders,
   ]);
 
+  const handleEnableReminders = useCallback(async () => {
+    try {
+      setNoReminders(false);
+      await disableCustomerReminders({customer, disable_reminders: false});
+    } catch (error) {
+      handleError(error);
+    }
+  }, [customer, disableCustomerReminders]);
+
   const handleDateChange = useCallback(
     (date?: Date) => {
       setDueDate(date);
@@ -230,8 +239,8 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
           <Checkbox
             value=""
             disabled={!noReminders}
-            onChange={console.log}
             isChecked={!noReminders}
+            onChange={handleEnableReminders}
             containerStyle={applyStyles('justify-between mb-16')}
             leftLabel={
               <Text
