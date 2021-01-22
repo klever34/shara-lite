@@ -6,9 +6,9 @@ import {IAddress} from '@/models/Address';
 import {IPaymentReminder} from '@/models/PaymentReminder';
 
 export enum DEBT_LEVEL {
-  NO_DEBT = 0,
-  IN_DEBT = 1,
-  OVERDUE = 2,
+  NO_BALANCE = 0,
+  NO_DEBT = 1,
+  IN_DEBT = 2,
 }
 
 export interface ICustomer extends BaseModelInterface {
@@ -152,7 +152,10 @@ export class Customer extends BaseModel implements Partial<ICustomer> {
     if (this.balance < 0) {
       return DEBT_LEVEL.IN_DEBT;
     }
-    return DEBT_LEVEL.NO_DEBT;
+    if (this.balance > 0) {
+      return DEBT_LEVEL.NO_DEBT;
+    }
+    return DEBT_LEVEL.NO_BALANCE;
   }
 
   public get dueDate() {
