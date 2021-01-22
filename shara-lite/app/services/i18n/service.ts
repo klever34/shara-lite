@@ -45,6 +45,13 @@ export class I18nService implements II18nService {
   }
 
   strings(name: string, params: {[key: string]: any} = {}): string {
+    params = Object.keys(params).reduce((acc, key) => {
+      return {
+        ...acc,
+        [key]:
+          typeof params[key] === 'string' ? params[key].trim() : params[key],
+      };
+    }, {});
     return I18n.t(name, params).replace(/\\n/g, '\n');
   }
 
