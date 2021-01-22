@@ -286,6 +286,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
           <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
           <EditableInput
             multiline
+            value={values.note}
             onChangeText={handleChange('note')}
             label={strings('sale.fields.note.placeholder')}
             labelStyle={applyStyles('text-400 text-lg text-gray-300')}
