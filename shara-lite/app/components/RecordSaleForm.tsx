@@ -5,7 +5,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IPaymentReminder} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
-import {getAuthService, getI18nService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentReminder} from '@/services/payment-reminder';
 import {useTransaction} from '@/services/transaction';
@@ -82,7 +82,8 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
     extra_salutation:
       businessInfo?.name || user?.firstname
         ? strings('payment_reminder.thank_you_for_doing_business', {
-            business_name: businessInfo.name ?? user?.firstname ?? '',
+            business_name:
+              businessInfo.name.trim() ?? user?.firstname.trim() ?? '',
           })
         : '',
     you_owe:
@@ -109,6 +110,9 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
   }, [navigation]);
 
   const handleOpenPhotoComingSoonModal = useCallback(() => {
+    getAnalyticsService().logEvent('comingSoonPrompted', {
+      feature: 'record_sale_select_photo',
+    });
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         <View style={applyStyles('bg-white center py-16')}>
@@ -134,6 +138,9 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
   }, [openModal]);
 
   const handleOpenRecurrenceComingSoonModal = useCallback(() => {
+    getAnalyticsService().logEvent('comingSoonPrompted', {
+      feature: 'record_sale_recurring_reminders',
+    });
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         <View style={applyStyles('bg-white center py-16')}>
@@ -286,6 +293,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
           <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
           <EditableInput
             multiline
+            value={values.note}
             onChangeText={handleChange('note')}
             label={strings('sale.fields.note.placeholder')}
             labelStyle={applyStyles('text-400 text-lg text-gray-300')}

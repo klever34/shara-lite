@@ -18,7 +18,6 @@ export const EditableInput = forwardRef<TextInput, EditableInputProps>(
 
     const handleInputFocus = useCallback(() => {
       setFocused(true);
-      console.log(inputRef.current);
       inputRef?.current?.focus();
     }, []);
 
@@ -37,8 +36,8 @@ export const EditableInput = forwardRef<TextInput, EditableInputProps>(
           </Touchable>
         ) : (
           <AppInput
-            ref={mergeRefs([inputRef, ref])}
             onBlur={handleInputBlur}
+            ref={mergeRefs([inputRef, ref])}
             {...rest}
           />
         )}

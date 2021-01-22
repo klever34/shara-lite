@@ -9,7 +9,7 @@ import {TitleContainer} from '@/components/TitleContainer';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {MainStackParamList} from '@/screens/main';
-import {getI18nService} from '@/services';
+import {getAnalyticsService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -59,6 +59,9 @@ const RecordCollectionScreen = withModal(
     );
 
     const handleOpenPhotoComingSoonModal = useCallback(() => {
+      getAnalyticsService().logEvent('comingSoonPrompted', {
+        feature: 'record_collection_select_photo',
+      });
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
           <View style={applyStyles('bg-white center py-16')}>
@@ -128,6 +131,8 @@ const RecordCollectionScreen = withModal(
             <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
             <EditableInput
               multiline
+              ref={noteFieldRef}
+              value={values.note}
               onChangeText={handleChange('note')}
               label={strings('collection.fields.note.placeholder')}
               labelStyle={applyStyles('text-400 text-lg text-gray-300')}
