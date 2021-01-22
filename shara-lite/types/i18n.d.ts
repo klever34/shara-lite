@@ -212,8 +212,8 @@ interface Strings {
     collect_on_date: string;
     is_collection_message: string;
     is_collection_with_customer_message: string;
-    customer_balance_statement: string;
     customer_owes_statement: string;
+    customer_has_advance_statement: string;
     you_were_paid_statement: string;
     customer_paid_statement: string;
     customer_paid_with_outstanding_statement: string;

@@ -250,9 +250,9 @@ const en: Strings = {
     is_collection_message: 'You Collected **{{total_amount}}**.',
     is_collection_with_customer_message:
       'You Collected **{{total_amount}}** *from {{customer_name}}*.',
-    customer_balance_statement:
-      'They have a {{polarity}} balance of {{balance}}',
     customer_owes_statement: '*{{customer_name}}* owes **{{credit_amount}}**',
+    customer_has_advance_statement:
+      '*{{customer_name}}* has an advance of **{{balance}}**',
     you_were_paid_statement:
       'You were paid **{{amount_paid}}** (No customer selected)',
     customer_paid_statement: '*{{customer_name}}* paid you **{{amount_paid}}**',
