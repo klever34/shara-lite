@@ -26,6 +26,7 @@ export const useReceiptList = ({
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<string | undefined>(initialFilter);
+  const [appliedFilter, setAppliedFilter] = useState('');
   const [allReceipts, setAllReceipts] = useState(receipts);
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
@@ -83,6 +84,7 @@ export const useReceiptList = ({
       switch (filter) {
         case 'all':
           userReceipts = userReceipts;
+          setAppliedFilter('');
           break;
         case 'single-day':
           userReceipts = userReceipts.filtered(
@@ -90,6 +92,7 @@ export const useReceiptList = ({
             filterStartDate,
             filterEndDate,
           );
+          setAppliedFilter('transaction_date >= $0 && transaction_date <= $1');
           break;
         case '1-week':
           userReceipts = userReceipts.filtered(
@@ -97,6 +100,7 @@ export const useReceiptList = ({
             filterStartDate,
             filterEndDate,
           );
+          setAppliedFilter('transaction_date >= $0 && transaction_date < $1');
           break;
         case '1-month':
           userReceipts = userReceipts.filtered(
@@ -104,6 +108,7 @@ export const useReceiptList = ({
             filterStartDate,
             filterEndDate,
           );
+          setAppliedFilter('transaction_date >= $0 && transaction_date < $1');
           break;
         case 'date-range':
           userReceipts = userReceipts.filtered(
@@ -111,6 +116,7 @@ export const useReceiptList = ({
             filterStartDate,
             filterEndDate,
           );
+          setAppliedFilter('transaction_date >= $0 && transaction_date < $1');
           break;
         default:
           userReceipts = userReceipts;
@@ -209,13 +215,24 @@ export const useReceiptList = ({
       customer?._id?.toString(),
     );
 
+    const transactionFilter = appliedFilter || 'is_deleted != true';
+
     // @ts-ignore
     const totalBalance = uniqueCustomers.reduce((total: number, customer) => {
       const customerCollectedAmount =
-        customer?.collections?.sum('amount_paid') || 0;
-      const creditAmount = customer?.activeReceipts?.sum('credit_amount') || 0;
+        customer?.collections
+          ?.filtered(transactionFilter, filterStartDate, filterEndDate)
+          .sum('amount_paid') || 0;
+      const creditAmount =
+        customer?.activeReceipts
+          ?.filtered(transactionFilter, filterStartDate, filterEndDate)
+          .sum('credit_amount') || 0;
 
-      const sharaProCredits = customer?.activeCredits;
+      const sharaProCredits = customer?.activeCredits?.filtered(
+        transactionFilter.replace(/transaction_date/g, 'created_at'),
+        filterStartDate,
+        filterEndDate,
+      );
       const sharaProCreditsAmountLeft =
         sharaProCredits?.sum('amount_left') || 0;
       const sharaProCreditsTotal = sharaProCredits?.sum('total_amount') || 0;
@@ -228,7 +245,7 @@ export const useReceiptList = ({
     }, 0);
 
     return totalBalance;
-  }, [filteredReceipts]);
+  }, [filteredReceipts, appliedFilter, filterStartDate, filterEndDate]);
 
   const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
     collectedAmount,
