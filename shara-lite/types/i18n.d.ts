@@ -233,14 +233,16 @@ interface Strings {
       date_range: string;
     };
     receipt_share_title: string;
-    receipt_share_message: string;
-    receipt_share_from_who: string;
-    receipt_share_credit_message: string;
-    receipt_share_due_date_message: string;
+    recent_purchase_message: 'Hi {{customer_name}}, thank you for your recent purchase.';
+    recent_purchase_message_from_business: 'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.';
+    receipt_you_paid_message: 'You paid {{amount}}.';
+    receipt_you_owe_message: 'You owe {{credit_amount}}.';
+    receipt_you_owe_message_with_due_date: 'You owe {{credit_amount}} which is due on {{due_date}}.';
     receipt_share_payment_link_message: string;
     receipt_for: string;
     receipt_no: string;
   };
+  powered_by_shara: string;
   collection: {
     collection_recorded: string;
     button: Card;

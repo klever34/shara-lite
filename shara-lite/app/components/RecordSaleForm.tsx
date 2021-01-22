@@ -315,7 +315,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
         />
         <DatePicker
           //@ts-ignore
-          minimumDate={new Date()}
+          maximumDate={new Date()}
           value={values.transaction_date ?? new Date()}
           onChange={(e: Event, date?: Date) =>
             !!date && setFieldValue('transaction_date', date)

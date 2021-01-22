@@ -145,7 +145,7 @@ const RecordCollectionScreen = withModal(
 
           <DatePicker
             //@ts-ignore
-            minimumDate={new Date()}
+            maximumDate={new Date()}
             value={new Date(values.transaction_date)}
             onChange={(e: Event, date?: Date) =>
               !!date && setFieldValue('transaction_date', date)

@@ -62,31 +62,33 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   const paymentLink =
     businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
 
-  const shareReceiptMessage = strings('receipts.receipt_share_message', {
-    customer_name: customer?.name ?? '',
-    from_who:
-      businessInfo.name || user?.firstname
-        ? strings('receipts.receipt_share_from_who', {
-            business_name: businessInfo.name ?? user?.firstname,
-          })
-        : '',
-    amount: amountWithCurrency(amount_paid),
-    credit_message: credit_amount
-      ? strings('receipts.receipt_share_credit_message', {
-          credit_amount: amountWithCurrency(credit_amount),
-          due_date_message: dueDate
-            ? strings('receipts.receipt_share_due_date_message', {
-                due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
-              })
-            : '',
-          payment_link_message: paymentLink
-            ? strings('receipts.receipt_share_payment_link_message', {
-                payment_link: paymentLink,
-              })
-            : '',
+  const shareReceiptMessage = `${
+    businessInfo.name || user?.firstname
+      ? strings('receipts.recent_purchase_message_from_business', {
+          customer_name: transaction.customer?.name,
+          business_name: businessInfo.name || user?.firstname,
         })
-      : '.',
-  });
+      : strings('receipts.recent_purchase_message', {
+          customer_name: transaction.customer?.name,
+        })
+  } ${strings('receipts.receipt_you_paid_message', {
+    amount: amountWithCurrency(transaction.amount_paid),
+  })} ${
+    dueDate
+      ? strings('receipts.receipt_you_owe_message_with_due_date', {
+          credit_amount: amountWithCurrency(credit_amount),
+          due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+        })
+      : strings('receipts.receipt_you_owe_message', {
+          credit_amount: amountWithCurrency(credit_amount),
+        })
+  } ${
+    paymentLink
+      ? strings('receipts.receipt_share_payment_link_message', {
+          payment_link: paymentLink,
+        })
+      : ''
+  }\n\n${strings('powered_by_shara')}`;
 
   const shareProps: ShareHookProps = {
     image: receiptImage,

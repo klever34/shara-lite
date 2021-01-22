@@ -251,7 +251,7 @@ const en: Strings = {
     is_collection_with_customer_message:
       'You Collected **{{total_amount}}** *from {{customer_name}}*.',
     customer_balance_statement:
-      'He/She has a {{polarity}} balance of {{balance}}',
+      'They have a {{polarity}} balance of {{balance}}',
     customer_owes_statement: '*{{customer_name}}* owes **{{credit_amount}}**',
     you_were_paid_statement:
       'You were paid **{{amount_paid}}** (No customer selected)',
@@ -275,15 +275,19 @@ const en: Strings = {
       date_range: 'Date Range',
     },
     receipt_share_title: 'Share Receipt',
-    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`,
-    receipt_share_from_who: ' from {{business_name}}',
-    receipt_share_credit_message:
-      ' and you owe {{credit_amount}}{{due_date_message}}{{payment_link_message}}',
-    receipt_share_due_date_message: ' which is due on {{due_date}}',
-    receipt_share_payment_link_message: String.raw`\n\nTo pay click\n{{payment_link}}`,
+    recent_purchase_message:
+      'Hi {{customer_name}}, thank you for your recent purchase.',
+    recent_purchase_message_from_business:
+      'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.',
+    receipt_you_paid_message: 'You paid {{amount}}.',
+    receipt_you_owe_message: 'You owe {{credit_amount}}.',
+    receipt_you_owe_message_with_due_date:
+      'You owe {{credit_amount}} which is due on {{due_date}}.',
+    receipt_share_payment_link_message: String.raw`To pay click\n{{payment_link}}.`,
     receipt_for: 'Receipt for',
     receipt_no: 'Receipt No',
   },
+  powered_by_shara: String.raw`Powered by Shara for free.\nwww.shara.co`,
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
     button: {
@@ -625,7 +629,7 @@ const en: Strings = {
     search_for_devices: 'Search for devices',
   },
   reminder_popup: {
-    title: 'choose your reminders',
+    title: 'Which days do you want your reminders to be sent',
     collection_day: {
       one: '1 day before',
       other: '{{count}} days before',
