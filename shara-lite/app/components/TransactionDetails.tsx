@@ -216,11 +216,15 @@ const TransactionDetails = withModal(
       if (filter === 'date-range' && filterStartDate && filterEndDate) {
         return (
           <Text>
-            <Text style={applyStyles('text-gray-300 text-400')}>From</Text>{' '}
+            <Text style={applyStyles('text-gray-300 text-400')}>
+              {strings('from')}
+            </Text>{' '}
             <Text style={applyStyles('text-red-200 text-400')}>
               {format(filterStartDate, 'dd MMM, yyyy')}
             </Text>{' '}
-            <Text style={applyStyles('text-gray-300 text-400')}>to</Text>{' '}
+            <Text style={applyStyles('text-gray-300 text-400')}>
+              {strings('to')}
+            </Text>{' '}
             <Text style={applyStyles('text-red-200 text-400')}>
               {format(filterEndDate, 'dd MMM, yyyy')}
             </Text>
@@ -433,7 +437,7 @@ const TransactionDetails = withModal(
                         style={applyStyles(
                           'text-uppercase text-gray-100 text-700 text-xs',
                         )}>
-                        {customer?.name} has an outstanding of{' '}
+                        {customer?.name} {strings('outstanding_text')}{' '}
                         <Text style={applyStyles('text-red-200')}>
                           {amountWithCurrency(customer.balance)}
                         </Text>
@@ -517,7 +521,7 @@ const TransactionDetails = withModal(
                             style={applyStyles(
                               'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
-                            whatsapp
+                            {strings('whatsapp')}
                           </Text>
                         </View>
                       </Touchable>
@@ -538,7 +542,7 @@ const TransactionDetails = withModal(
                             style={applyStyles(
                               'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
-                            sms
+                            {strings('sms')}
                           </Text>
                         </View>
                       </Touchable>

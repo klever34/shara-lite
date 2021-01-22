@@ -8,6 +8,8 @@ import {Formik} from 'formik';
 import {applyStyles} from '@/styles';
 import {CalculatorInput} from '@/components/CalculatorView';
 //Todo: Work on translation
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 type Payload = {
   amount: number | undefined;
   method: string;
@@ -47,7 +49,7 @@ export const CreditPaymentForm = (props: Props) => {
             </View>
             <View style={styles.pickerContainer}>
               <Text style={applyStyles('text-400', styles.pickerLabel)}>
-                Payment method
+                {strings('payment_method')}
               </Text>
               <Picker
                 mode="dropdown"
