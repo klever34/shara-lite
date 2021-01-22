@@ -12,6 +12,8 @@ import {AppInput} from './AppInput';
 import {Button} from './Button';
 import {PhoneNumber, PhoneNumberField} from './PhoneNumberField';
 import {RadioButton} from './RadioButton';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 
 //Todo: Translation
 type CustomerFormProps = {
@@ -124,12 +126,12 @@ export const CustomerForm = ({
         onChange={handleSaveToPhoneBookChange}
         containerStyle={applyStyles('mb-24 center')}>
         <Text style={applyStyles('text-400 text-gray-300')}>
-          Save to Phonebook
+          {strings('save_to_phonebook')}
         </Text>
       </RadioButton>
       <View style={applyStyles('flex-row items-center justify-between')}>
         <Button
-          title="Cancel"
+          title={strings('cancel')}
           variantColor="clear"
           onPress={onCancel}
           style={applyStyles({
@@ -137,7 +139,7 @@ export const CustomerForm = ({
           })}
         />
         <Button
-          title="Save"
+          title={strings('Save')}
           variantColor="red"
           isLoading={isLoading}
           onPress={handleSubmit}

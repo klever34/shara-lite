@@ -213,6 +213,8 @@ export const ReminderSettingsScreen = withModal(
               ? reminders.length > 1
                 ? `${reminders.length} ${strings('reminder_text.other')}`
                 : `${reminders.length} ${strings('reminder_text.one')}`
+              : !customer.disable_reminders
+              ? strings('default_text')
               : '',
           },
           onPress: handleOpenReminderPopup,
@@ -240,6 +242,7 @@ export const ReminderSettingsScreen = withModal(
       paymentReminderMessage,
       handleOpenReminderPopup,
       handleOpenComingSoonModal,
+      customer.disable_reminders,
       handleOpenReminderMessageModal,
     ]);
 
