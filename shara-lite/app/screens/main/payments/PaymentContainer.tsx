@@ -220,7 +220,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                     variantColor="transparent"
                   />
                   <Button
-                    title="Save"
+                    title={strings('save')}
                     isLoading={isSaving}
                     style={applyStyles({width: '48%'})}
                     onPress={() => {

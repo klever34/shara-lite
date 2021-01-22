@@ -52,7 +52,8 @@ export const ReminderSettingsScreen = withModal(
       extra_salutation:
         businessInfo?.name || user?.firstname
           ? strings('payment_reminder.thank_you_for_doing_business', {
-              business_name: businessInfo.name ?? user?.firstname ?? '',
+              business_name:
+                businessInfo.name.trim() ?? user?.firstname.trim() ?? '',
             })
           : '',
       you_owe:

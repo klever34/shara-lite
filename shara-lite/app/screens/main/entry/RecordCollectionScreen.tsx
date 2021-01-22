@@ -131,6 +131,8 @@ const RecordCollectionScreen = withModal(
             <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
             <EditableInput
               multiline
+              ref={noteFieldRef}
+              value={values.note}
               onChangeText={handleChange('note')}
               label={strings('collection.fields.note.placeholder')}
               labelStyle={applyStyles('text-400 text-lg text-gray-300')}

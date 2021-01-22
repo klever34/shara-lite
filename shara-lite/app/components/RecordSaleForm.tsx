@@ -82,7 +82,8 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
     extra_salutation:
       businessInfo?.name || user?.firstname
         ? strings('payment_reminder.thank_you_for_doing_business', {
-            business_name: businessInfo.name ?? user?.firstname ?? '',
+            business_name:
+              businessInfo.name.trim() ?? user?.firstname.trim() ?? '',
           })
         : '',
     you_owe:
@@ -292,6 +293,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
           <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
           <EditableInput
             multiline
+            value={values.note}
             onChangeText={handleChange('note')}
             label={strings('sale.fields.note.placeholder')}
             labelStyle={applyStyles('text-400 text-lg text-gray-300')}
