@@ -6,7 +6,7 @@ import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IPaymentReminder} from '@/models/PaymentReminder';
-import {getAuthService, getI18nService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentReminder} from '@/services/payment-reminder';
 import {useTransaction} from '@/services/transaction';
@@ -73,6 +73,9 @@ export const ReminderSettingsScreen = withModal(
     });
 
     const handleOpenComingSoonModal = useCallback(() => {
+      getAnalyticsService().logEvent('comingSoonPrompted', {
+        feature: 'reminder_settings_recurring_reminders',
+      });
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
           <View style={applyStyles('bg-white center py-16')}>
