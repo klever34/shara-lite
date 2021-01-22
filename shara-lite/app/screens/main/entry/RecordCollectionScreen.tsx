@@ -9,7 +9,7 @@ import {TitleContainer} from '@/components/TitleContainer';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {MainStackParamList} from '@/screens/main';
-import {getI18nService} from '@/services';
+import {getAnalyticsService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -59,6 +59,9 @@ const RecordCollectionScreen = withModal(
     );
 
     const handleOpenPhotoComingSoonModal = useCallback(() => {
+      getAnalyticsService().logEvent('comingSoonPrompted', {
+        feature: 'record_collection_select_photo',
+      });
       const closeModal = openModal('bottom-half', {
         renderContent: () => (
           <View style={applyStyles('bg-white center py-16')}>

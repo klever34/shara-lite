@@ -5,7 +5,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IPaymentReminder} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
-import {getAuthService, getI18nService} from '@/services';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentReminder} from '@/services/payment-reminder';
 import {useTransaction} from '@/services/transaction';
@@ -109,6 +109,9 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
   }, [navigation]);
 
   const handleOpenPhotoComingSoonModal = useCallback(() => {
+    getAnalyticsService().logEvent('comingSoonPrompted', {
+      feature: 'record_sale_select_photo',
+    });
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         <View style={applyStyles('bg-white center py-16')}>
@@ -134,6 +137,9 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
   }, [openModal]);
 
   const handleOpenRecurrenceComingSoonModal = useCallback(() => {
+    getAnalyticsService().logEvent('comingSoonPrompted', {
+      feature: 'record_sale_recurring_reminders',
+    });
     const closeModal = openModal('bottom-half', {
       renderContent: () => (
         <View style={applyStyles('bg-white center py-16')}>

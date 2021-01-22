@@ -130,6 +130,7 @@ export type SharaAppEventsProperties = {
     customer: string;
   };
   feedbackSaved: {};
+  comingSoonPrompted: {feature: string};
 };
 
 export interface IAnalyticsService {

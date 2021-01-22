@@ -386,6 +386,9 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
   );
 
   const handleEditReceipt = useCallback(() => {
+    getAnalyticsService().logEvent('comingSoonPrompted', {
+      feature: 'edit_receipt',
+    });
     Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, []);
 
