@@ -67,6 +67,69 @@ interface Strings {
     clear_app_data: string;
     ok: string;
     sync: Card;
+    api: {
+      fallbackError: string;
+      auth: {
+        otp: {
+          welcomeBack: string;
+          welcome: string;
+          selectCountry: string;
+          fallbackError: string;
+        };
+        login: {
+          otpExpired: string;
+          success: string;
+          fallbackError: string;
+        };
+      };
+      business: {
+        notFound: string;
+        create: {
+          success: string;
+        };
+        details: {
+          success: string;
+        };
+        customerDetails: {
+          notFound: string;
+          success: string;
+        };
+        update: {
+          uniqueSlug: string;
+          success: string;
+        };
+      };
+      fcm: {
+        addToken: {
+          missingFields: string;
+          success: string;
+        };
+      };
+      passwordReset: {
+        notFound: string;
+        create: {
+          success: string;
+        };
+        reset: {
+          invalid: string;
+          success: string;
+        };
+        update: {
+          uniqueSlug: string;
+          success: string;
+        };
+      };
+      paymentProvider: {
+        list: {
+          success: string;
+        };
+      };
+      user: {
+        update: {
+          success: string;
+        };
+      };
+    };
   };
   home_screen_setup_business_text: string;
   shara_tagline: string;
@@ -108,7 +171,7 @@ interface Strings {
       after: string;
     };
     reminder_added: string;
-    no_reminder: {added: string, removed: string};
+    no_reminder: {added: string; removed: string};
     reminder_removed: string;
     confirm_delete: string;
     confirm_exit: string;

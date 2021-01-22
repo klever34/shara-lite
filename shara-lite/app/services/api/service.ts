@@ -15,6 +15,7 @@ import {
   User,
 } from 'types/app';
 import {BaseModelInterface} from '@/models/baseSchema';
+import {getI18nService} from '@/services';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -248,17 +249,29 @@ export class ApiService implements IApiService {
   private handleFetchErrors = async <T extends any>(
     response: Response,
   ): Promise<T | void> => {
+    const i18nService = getI18nService();
+    const parseMessage = (jsonResponse: any) =>
+      jsonResponse.messageCode
+        ? i18nService.strings(jsonResponse.messageCode)
+        : jsonResponse.message;
+
     if (!response.ok) {
       const jsonResponse = await response.json();
       if (jsonResponse.message.includes('E_INVALID_JWT_TOKEN')) {
         this.authService.logOut();
       }
-      return Promise.reject(new Error(jsonResponse.message));
+      return Promise.reject(new Error(parseMessage(jsonResponse)));
     }
     if (response.status === 204) {
       return;
     }
-    return (await response.json()) as Promise<T>;
+
+    const jsonResponse = await response.json();
+    const updatedResponse = {
+      ...jsonResponse,
+      message: parseMessage(jsonResponse),
+    };
+    return updatedResponse as Promise<T>;
   };
 
   private handleNetworkErrors = (e: Error): Error => {
