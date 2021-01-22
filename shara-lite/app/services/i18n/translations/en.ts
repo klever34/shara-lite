@@ -220,7 +220,7 @@ const en: Strings = {
     },
   },
   recurrence_title: 'Recurrence',
-  recurrence_description: 'How often is this paid?',
+  recurrence_description: 'Does this payment repeat?',
   reminder_message_title: 'Reminder Message',
   customer_statement: {
     title: 'Share Customer Statement',
@@ -251,7 +251,7 @@ const en: Strings = {
     is_collection_with_customer_message:
       'You Collected **{{total_amount}}** *from {{customer_name}}*.',
     customer_balance_statement:
-      'He/She has a {{polarity}} balance of {{balance}}',
+      'they have a {{polarity}} balance of {{balance}}',
     customer_owes_statement: '*{{customer_name}}* owes **{{credit_amount}}**',
     you_were_paid_statement:
       'You were paid **{{amount_paid}}** (No customer selected)',
@@ -625,7 +625,7 @@ const en: Strings = {
     search_for_devices: 'Search for devices',
   },
   reminder_popup: {
-    title: 'choose your reminders',
+    title: 'Which days do you want your reminders to be sent',
     collection_day: {
       one: '1 day before',
       other: '{{count}} days before',

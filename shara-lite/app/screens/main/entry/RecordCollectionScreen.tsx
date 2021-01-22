@@ -145,7 +145,7 @@ const RecordCollectionScreen = withModal(
 
           <DatePicker
             //@ts-ignore
-            minimumDate={new Date()}
+            maximumDate={new Date()}
             value={new Date(values.transaction_date)}
             onChange={(e: Event, date?: Date) =>
               !!date && setFieldValue('transaction_date', date)
@@ -156,10 +156,10 @@ const RecordCollectionScreen = withModal(
                 onPress={toggleShow}
                 style={applyStyles('py-12 px-0')}
                 leftSection={{
-                  title: isToday(values.transaction_date)
+                  caption: isToday(values.transaction_date)
                     ? strings('collection.today_text')
                     : format(values.transaction_date, 'MMM dd, yyyy'),
-                  caption: strings('collection.transaction_date_text'),
+                  title: strings('collection.transaction_date_text'),
                 }}
               />
             )}

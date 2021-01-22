@@ -315,7 +315,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
         />
         <DatePicker
           //@ts-ignore
-          minimumDate={new Date()}
+          maximumDate={new Date()}
           value={values.transaction_date ?? new Date()}
           onChange={(e: Event, date?: Date) =>
             !!date && setFieldValue('transaction_date', date)
@@ -326,13 +326,13 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
               onPress={toggleShow}
               style={applyStyles('py-12 px-0')}
               leftSection={{
-                title: isToday(values.transaction_date ?? new Date())
+                caption: isToday(values.transaction_date ?? new Date())
                   ? strings('collection.today_text')
                   : format(
                       values.transaction_date ?? new Date(),
                       'MMM dd, yyyy',
                     ),
-                caption: strings('collection.transaction_date_text'),
+                title: strings('collection.transaction_date_text'),
               }}
             />
           )}
