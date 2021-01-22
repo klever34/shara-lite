@@ -197,7 +197,7 @@ export const MoreOptionsScreen = withModal(
               'bg-white',
             )}>
             <TitleContainer
-              containerStyle={applyStyles('px-24 mt-16')}
+              containerStyle={applyStyles('px-16 mt-16')}
               title={i18nService.strings('more.header.title')}
               description={i18nService.strings('more.header.description')}
             />
@@ -220,7 +220,7 @@ export const MoreOptionsScreen = withModal(
             )}
             {!!business.name && (
               <>
-                <View style={applyStyles('flex-row items-center ml-24 py-32')}>
+                <View style={applyStyles('flex-row items-center ml-16 py-32')}>
                   <Image
                     source={{
                       uri: business.profile_image?.url,
@@ -248,7 +248,7 @@ export const MoreOptionsScreen = withModal(
                     {...option}
                     key={`${index}`}
                     style={applyStyles(
-                      'border-t-1 border-gray-20',
+                      'border-t-1 border-gray-20 px-16',
                       {borderTopWidth: 1, borderColor: colors['gray-20']},
                       index === moreOptions.length - 1 && {
                         borderBottomWidth: 1,
@@ -270,11 +270,11 @@ export const MoreOptionsScreen = withModal(
                 <SecureEmblem />
               </View>
             </View>
-            <View style={applyStyles('flex-1')}>
+            <View style={applyStyles('flex-1 mx-32')}>
               <Touchable onPress={handleLogoutConfirm}>
                 <View
                   style={applyStyles(
-                    'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',
+                    'flex-row border-1 border-gray-20 center p-16 rounded-md',
                   )}>
                   <Icon
                     size={20}

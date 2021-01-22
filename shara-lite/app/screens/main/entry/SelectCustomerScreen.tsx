@@ -389,7 +389,7 @@ export const SelectCustomerListScreen = withModal(
                   'px-16 py-8 bg-white flex-row items-center w-full justify-end absolute bottom-0 right-0',
                 )}>
                 <Button
-                  title="Save (No Customer)"
+                  title="Save"
                   style={applyStyles({width: 200})}
                   onPress={() => onSelectCustomer()}
                 />
