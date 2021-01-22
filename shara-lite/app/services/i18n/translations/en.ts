@@ -288,7 +288,7 @@ const en: Strings = {
     collection_recorded: 'COLLECTION RECORDED',
     button: {
       title: 'Record Collection',
-      description: 'Record collecting a payment',
+      description: 'Record a payment received towards a debt or an advance',
     },
     header: {
       title: 'Record Collection',

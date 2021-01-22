@@ -86,12 +86,11 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
               businessInfo.name.trim() ?? user?.firstname.trim() ?? '',
           })
         : '',
-    you_owe:
-      customer?.balance && customer.balance < 0
-        ? strings('payment_reminder.you_owe', {
-            balance: amountWithCurrency(customer.balance),
-          })
-        : '',
+    you_owe: values.credit_amount
+      ? strings('payment_reminder.you_owe', {
+          balance: amountWithCurrency(values.credit_amount),
+        })
+      : '',
     due_on: dueDate
       ? strings('payment_reminder.due_on', {
           due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
