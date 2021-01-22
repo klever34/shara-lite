@@ -214,7 +214,7 @@ interface Strings {
     select_customer: {
       title: string;
       description: string;
-    }
+    };
   };
   filter: PluralizedString;
   filter_options: {
@@ -258,6 +258,11 @@ interface Strings {
   close: string;
   enable: string;
   unknown: string;
+  whatsapp: string;
+  sms: string;
+  confirm: string;
+  address: string;
+  price: string;
   customers: {
     start_adding: string;
     customer_count: PluralizedString;
@@ -424,7 +429,26 @@ interface Strings {
     collection_day: PluralizedString;
     no_collection_date_text: string;
     set_collection_date_button_text: string;
-  }
+  };
+  payment_method: string;
+  save_to_phonebook: string;
+  user_profile: string;
+  my_customers: string;
+  reports: string;
+  menu: string;
+  user_id: string;
+  payment_reminder_for: string;
+  payment_due: string;
+  payment_due_text: string;
+  outstanding_text: string;
+  record: string;
+  cancel_confirmation_text: string;
+  cancellation_text: string;
+  cancellation_placeholder: string;
+  upload_business_logo: string;
+  business_name: string;
+  skip_setup: string;
+  product_details: string;
 }
 
 interface PluralizedString {

@@ -9,6 +9,8 @@ import {Image, ScrollView, View} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {SecureEmblem} from './SecureEmblem';
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 //Todo: Work on translation
 function PaymentReminderImage({
   date,
@@ -59,7 +61,7 @@ function PaymentReminderImage({
               style={applyStyles(
                 'pb-8 pt-32 text-center text-400 text-gray-300 text-uppercase',
               )}>
-              Payment reminder for
+              {strings('payment_reminder_for')}
             </Text>
             <Text
               style={applyStyles(
@@ -73,8 +75,10 @@ function PaymentReminderImage({
                   borderRadius: 8,
                 })}>
                 <Text style={applyStyles('text-center text-white text-400')}>
-                  Payment Due{' '}
-                  <Text style={applyStyles('text-white text-700')}>Today</Text>
+                  {strings('payment_due')}{' '}
+                  <Text style={applyStyles('text-white text-700')}>
+                    {strings('collection.today_text')}
+                  </Text>
                 </Text>
               </View>
             ) : (
@@ -82,7 +86,8 @@ function PaymentReminderImage({
                 style={applyStyles(
                   'pb-40 text-center text-400 text-xs text-gray-100 text-uppercase',
                 )}>
-                This payment is due on {date && format(date, 'dd MMM yyyy')}
+                {strings('payment_due_text')}{' '}
+                {date && format(date, 'dd MMM yyyy')}
               </Text>
             )}
             <View style={applyStyles('center pb-32')}>
