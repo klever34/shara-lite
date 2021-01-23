@@ -37,20 +37,14 @@ import {
   subWeeks,
 } from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {
-  Alert,
-  Dimensions,
-  FlatList,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import {Text} from '@/components';
+import {Alert, Dimensions, FlatList, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
 import Share from 'react-native-share';
 import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
-
+// TODO: Translate
 const strings = getI18nService().strings;
 
 export type TransactionDetailsProps = {
@@ -148,29 +142,30 @@ const TransactionDetails = withModal(
         customer._id ? `?customer=${String(customer._id)}` : ''
       }`;
 
-    const paymentReminderMessage = strings('payment_reminder.message', {
-      customer_name: customer?.name ?? '',
-      extra_salutation:
-        businessInfo?.name || user?.firstname
-          ? strings('payment_reminder.thank_you_for_doing_business', {
-              business_name: businessInfo.name ?? user?.firstname ?? '',
-            })
-          : '',
-      you_owe:
-        customer.balance && customer.balance < 0
-          ? strings('payment_reminder.you_owe', {
-              balance: amountWithCurrency(customer.balance),
-            })
-          : '',
-      due_on: dueDate
-        ? strings('payment_reminder.due_on', {
-            due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+    const paymentReminderMessage = `${strings('salutation', {
+      name: customer?.name ?? '',
+    })} ${
+      businessInfo?.name || user?.firstname
+        ? strings('payment_reminder.thank_you_for_doing_business', {
+            business_name: businessInfo?.name || user?.firstname,
           })
-        : '',
-      pay_at: paymentLink
-        ? strings('payment_reminder.pay_at', {link: paymentLink})
-        : '',
-    });
+        : ''
+    } ${
+      customer.balance && customer.balance < 0
+        ? dueDate
+          ? strings('you_owe_message_with_due_date', {
+              credit_amount: amountWithCurrency(customer.balance),
+              due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+            })
+          : strings('you_owe_message', {
+              credit_amount: amountWithCurrency(customer.balance),
+            })
+        : ''
+    }\n\n${
+      paymentLink
+        ? strings('payment_link_message', {payment_link: paymentLink})
+        : ''
+    }\n\n${strings('powered_by_shara')}`;
 
     const shareProps: ShareHookProps = {
       image: receiptImage,
@@ -222,11 +217,15 @@ const TransactionDetails = withModal(
       if (filter === 'date-range' && filterStartDate && filterEndDate) {
         return (
           <Text>
-            <Text style={applyStyles('text-gray-300 text-400')}>From</Text>{' '}
+            <Text style={applyStyles('text-gray-300 text-400')}>
+              {strings('from')}
+            </Text>{' '}
             <Text style={applyStyles('text-red-200 text-400')}>
               {format(filterStartDate, 'dd MMM, yyyy')}
             </Text>{' '}
-            <Text style={applyStyles('text-gray-300 text-400')}>to</Text>{' '}
+            <Text style={applyStyles('text-gray-300 text-400')}>
+              {strings('to')}
+            </Text>{' '}
             <Text style={applyStyles('text-red-200 text-400')}>
               {format(filterEndDate, 'dd MMM, yyyy')}
             </Text>
@@ -439,7 +438,7 @@ const TransactionDetails = withModal(
                         style={applyStyles(
                           'text-uppercase text-gray-100 text-700 text-xs',
                         )}>
-                        {customer?.name} has an outstanding of{' '}
+                        {customer?.name} {strings('outstanding_text')}{' '}
                         <Text style={applyStyles('text-red-200')}>
                           {amountWithCurrency(customer.balance)}
                         </Text>
@@ -483,7 +482,7 @@ const TransactionDetails = withModal(
                       {!!dueDate && !!getPaymentReminders({customer}).length ? (
                         <Text
                           style={applyStyles(
-                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                            'pl-8 text-gray-100 text-uppercase text-700 text-xs',
                           )}>
                           Next reminder{' '}
                           <Text style={applyStyles('text-red-200')}>
@@ -493,7 +492,7 @@ const TransactionDetails = withModal(
                       ) : (
                         <Text
                           style={applyStyles(
-                            'pl-4 text-gray-100 text-uppercase text-700 text-xs',
+                            'pl-8 text-gray-100 text-uppercase text-700 text-xs',
                           )}>
                           {strings('transaction.no_reminder_set')}
                         </Text>
@@ -523,7 +522,7 @@ const TransactionDetails = withModal(
                             style={applyStyles(
                               'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
-                            whatsapp
+                            {strings('whatsapp')}
                           </Text>
                         </View>
                       </Touchable>
@@ -544,7 +543,7 @@ const TransactionDetails = withModal(
                             style={applyStyles(
                               'pl-xs text-xs text-400 text-uppercase text-gray-200',
                             )}>
-                            sms
+                            {strings('sms')}
                           </Text>
                         </View>
                       </Touchable>

@@ -3,7 +3,8 @@ import {IReceipt} from '@/models/Receipt';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 
 export const ReportListItem = ({
   style,

@@ -3,10 +3,10 @@ import {
   ActivityIndicator,
   Alert,
   Image,
-  Text,
   ToastAndroid,
   View,
 } from 'react-native';
+import {Text} from '@/components';
 import {PreviewActionButton} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
@@ -386,6 +386,9 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
   );
 
   const handleEditReceipt = useCallback(() => {
+    getAnalyticsService().logEvent('comingSoonPrompted', {
+      feature: 'edit_receipt',
+    });
     Alert.alert('Coming Soon', 'This feature is coming in the next update');
   }, []);
 

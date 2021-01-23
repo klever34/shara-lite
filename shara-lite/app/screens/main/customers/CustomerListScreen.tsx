@@ -6,7 +6,7 @@ import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles, colors} from '@/styles';
+import {applyStyles, colors, dimensions} from '@/styles';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -15,13 +15,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {
-  FlatList,
-  ListRenderItemInfo,
-  SafeAreaView,
-  Text,
-  View,
-} from 'react-native';
+import {Text} from '@/components';
+import {FlatList, ListRenderItemInfo, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Touchable from '@/components/Touchable';
 import {
@@ -371,7 +366,10 @@ export const CustomerListScreen = withModal(
                 {strings('customers.start_adding')}
               </Text>
             </View>
-            <View style={applyStyles('center p-16 w-full')}>
+            <View
+              style={applyStyles('center p-16 bottom', {
+                height: dimensions.fullHeight - 100,
+              })}>
               <Animatable.View
                 duration={200}
                 animation={{

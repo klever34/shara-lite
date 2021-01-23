@@ -1,11 +1,6 @@
 import React, {ReactNode, useCallback} from 'react';
-import {
-  FlatList,
-  FlatListProps,
-  ListRenderItemInfo,
-  Text,
-  View,
-} from 'react-native';
+import {FlatList, FlatListProps, ListRenderItemInfo, View} from 'react-native';
+import {Text} from '@/components';
 import {useRealm} from '@/services/realm';
 import {IContact} from '@/models';
 import Touchable from './Touchable';

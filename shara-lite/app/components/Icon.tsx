@@ -1,4 +1,5 @@
 import React, {memo} from 'react';
+import {applySpacing} from '@/styles';
 
 export type IconProps = {
   type:
@@ -12,6 +13,7 @@ export type IconProps = {
 
 //TODO: Potential reduce bundle size by removing unused font set from app
 export const Icon = ({type, ...props}: IconProps) => {
+  props.size = applySpacing(props.size) || undefined;
   if (type === 'ionicons') {
     const {default: Ionicons} = require('react-native-vector-icons/Ionicons');
     return <Ionicons {...props} />;

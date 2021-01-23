@@ -1,6 +1,7 @@
 import React from 'react';
 import {applyStyles} from '@/styles';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 
 type TitleProps = {
   title: string;
@@ -15,8 +16,10 @@ export const TitleContainer = ({
 }: TitleProps) => {
   return (
     <View style={applyStyles('', containerStyle)}>
-      <Text style={applyStyles('text-xl text-400 text-gray-300')}>{title}</Text>
-      <Text style={applyStyles('text-sm text-gray-200 mt-4')}>
+      <Text style={applyStyles('text-2xl text-400 text-gray-300 mb-4')}>
+        {title}
+      </Text>
+      <Text style={applyStyles('text-base text-gray-200 mt-4')}>
         {description}
       </Text>
     </View>

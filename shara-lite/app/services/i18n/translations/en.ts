@@ -78,6 +78,70 @@ const en: Strings = {
       description:
         'We are syncing your data across the Shara app. This might take a few seconds.',
     },
+    api: {
+      fallbackError: 'Oops! Something unexpected happened.',
+      auth: {
+        otp: {
+          welcomeBack:
+            "Welcome back to Shara. We've sent an OTP to your mobile number",
+          welcome: "Welcome to Shara. We've sent an OTP to your mobile number",
+          selectCountry: 'Please select a country',
+          fallbackError: 'Oops! An error occurred while signing up user',
+        },
+        login: {
+          otpExpired: 'OTP has expired',
+          success: 'Login Successful',
+          fallbackError: 'Invalid mobile or OTP',
+        },
+      },
+      business: {
+        notFound: 'Business not found',
+        create: {
+          success: 'Business created successfully',
+        },
+        details: {
+          success: 'Business found successfully',
+        },
+        customerDetails: {
+          notFound: 'Customer not found',
+          success: 'Customer found successfully',
+        },
+        update: {
+          uniqueSlug: 'This slug has been taken already',
+          success: 'Business updated successfully',
+        },
+      },
+      fcm: {
+        addToken: {
+          missingFields: 'FCM token and platform are required',
+          success: 'Token updated successfully',
+        },
+      },
+      passwordReset: {
+        notFound: 'Account not found',
+        create: {
+          success: 'Please use the OTP sent to your mobile number',
+        },
+        reset: {
+          invalid: 'OTP has expired or is invalid',
+          success: 'Password reset successful',
+        },
+        update: {
+          uniqueSlug: 'This slug has been taken already',
+          success: 'Business updated successfully',
+        },
+      },
+      paymentProvider: {
+        list: {
+          success: 'Payment providers retrieved successfully',
+        },
+      },
+      user: {
+        update: {
+          success: 'User updated successfully',
+        },
+      },
+    },
   },
   shara_tagline: 'Keep track of who owes you and get paid faster',
   onboarding_copy_1: {
@@ -95,18 +159,23 @@ const en: Strings = {
       'Securely record your business data in a private, secure and backed up',
   },
   activities: 'Activities',
+  home_screen_setup_business_text: 'Setup your business',
+  reminder_text: {
+    one: 'Reminder',
+    other: 'Reminders',
+    zero: 'Set Reminders',
+  },
   payment_reminder: {
-    title: 'Payment Reminder',
-    message: String.raw`Hello {{customer_name}}! {{extra_salutation}}{{you_owe}}{{due_on}}.{{pay_at}} \n\nPowered by Shara for free.\nwww.shara.co`,
+    title: 'Settings',
     thank_you_for_doing_business:
-      'Thank you for doing business with {{business_name}}. ',
-    you_owe: 'You owe {{balance}}',
-    due_on: ' which is due on {{due_date}}',
-    pay_at: String.raw`\n\nTo pay click\n{{link}}`,
+      'Thank you for doing business with {{business_name}}.',
     reminder_count: {
-      one: 'Reminder 1',
-      other: 'Reminder {{count}}',
+      one: 'A reminder will be sent a day before collection date',
+      other: 'A reminder will be sent {{count}} day before collection date',
     },
+    no_reminder_set_text:
+      'A reminder will be sent to the customer on the collection date. Tap to create a reminder',
+    coming_soon_recurring_reminders: 'Coming Soon: Recurring reminders',
     reminder_description:
       'A reminder will be sent to your customer on this day',
     reminder_unit: {
@@ -127,7 +196,7 @@ const en: Strings = {
     collection_settings: 'Collection settings',
     set_collection_date: {
       title: 'Set Collection Date',
-      description: 'Select the day for customer to pay back',
+      description: 'When is the client going to pay?',
     },
     reminder_settings: 'Reminder settings',
     add_reminder: {
@@ -141,7 +210,14 @@ const en: Strings = {
         'An automatic reminder will be sent to your customer on the collection date',
     },
     on_the_day_of_collection: 'On the day of collection',
+    no_reminder: {
+      added: 'No reminder will be sent',
+      removed: 'Reminders will be sent',
+    },
   },
+  recurrence_title: 'Recurrence',
+  recurrence_description: 'Does this payment repeat?',
+  reminder_message_title: 'Reminder Message',
   customer_statement: {
     title: 'Share Customer Statement',
     filename: '{{customer_name}} Ledger Statement',
@@ -170,9 +246,9 @@ const en: Strings = {
     is_collection_message: 'You Collected **{{total_amount}}**.',
     is_collection_with_customer_message:
       'You Collected **{{total_amount}}** *from {{customer_name}}*.',
-    customer_balance_statement:
-      'He/She has a {{polarity}} balance of {{balance}}',
     customer_owes_statement: '*{{customer_name}}* owes **{{credit_amount}}**',
+    customer_has_advance_statement:
+      '*{{customer_name}}* has an advance of **{{balance}}**',
     you_were_paid_statement:
       'You were paid **{{amount_paid}}** (No customer selected)',
     customer_paid_statement: '*{{customer_name}}* paid you **{{amount_paid}}**',
@@ -195,17 +271,26 @@ const en: Strings = {
       date_range: 'Date Range',
     },
     receipt_share_title: 'Share Receipt',
-    receipt_share_message: String.raw`Hi {{customer_name}}, thank you for your recent purchase{{from_who}}. You paid {{amount}}{{credit_message}} \n\nPowered by Shara for free.\nwww.shara.co`,
-    receipt_share_from_who: ' from {{business_name}}',
-    receipt_share_credit_message:
-      ' and you owe {{credit_amount}}{{due_date_message}}{{payment_link_message}}',
-    receipt_share_due_date_message: ' which is due on {{due_date}}',
-    receipt_share_payment_link_message: String.raw`\n\nTo pay click\n{{payment_link}}`,
+    recent_purchase_message:
+      'Hi {{customer_name}}, thank you for your recent purchase.',
+    recent_purchase_message_from_business:
+      'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.',
     receipt_for: 'Receipt for',
     receipt_no: 'Receipt No',
   },
+  salutation: 'Hello {{name}}!',
+  you_paid_message: 'You paid {{amount}}.',
+  you_owe_message: 'You owe {{credit_amount}}.',
+  you_owe_message_with_due_date:
+    'You owe {{credit_amount}} which is due on {{due_date}}.',
+  payment_link_message: String.raw`To pay click\n{{payment_link}}.`,
+  powered_by_shara: String.raw`Powered by Shara for free.\nwww.shara.co`,
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
+    button: {
+      title: 'Record Collection',
+      description: 'Record a payment received towards a debt or an advance',
+    },
     header: {
       title: 'Record Collection',
       description: 'Quickly record a transaction or obligation',
@@ -216,12 +301,22 @@ const en: Strings = {
       },
       note: {
         label: 'Note',
-        placeholder: 'Write a brief note about this transaction',
+        placeholder: 'Write a note',
       },
     },
+    today_text: 'Today',
+    write_a_note_text: 'Write a note',
+    select_a_photo_text: 'Select a photo',
+    transaction_date_text: 'What date did this happen?',
+    coming_soon_select_a_photo: 'Coming Soon: Select a Photo',
   },
   sale: {
     sale_recorded: 'SALE RECORDED',
+    button: {
+      title: 'Record Sale',
+      description:
+        'Create a sale record - what you were paid and what will be paid later',
+    },
     header: {
       title: 'Record Sale',
       description: 'Quickly record a collection or outstanding',
@@ -235,8 +330,12 @@ const en: Strings = {
       },
       note: {
         label: 'Note',
-        placeholder: 'Write a brief note about this transaction',
+        placeholder: 'Write a note',
       },
+    },
+    select_customer: {
+      title: 'Select Customer',
+      description: 'Which customer is this transaction for?',
     },
   },
   entry: {
@@ -252,6 +351,7 @@ const en: Strings = {
   scan: 'Scan',
   scanning: 'Scanning',
   done: 'Done',
+  dismiss: 'Dismiss',
   owe: {one: 'owe', other: 'owes'},
   result: {
     zero: 'No results found',
@@ -289,6 +389,11 @@ const en: Strings = {
   remove: 'Remove',
   tel: 'Tel',
   select_from_phonebook: 'Select from Phonebook',
+  whatsapp: 'whatsapp',
+  sms: 'sms',
+  confirm: 'Confirm',
+  address: 'Address',
+  price: 'Price',
   filter: {one: 'Filter', other: 'Filters'},
   filter_options: {
     owing: 'Owing',
@@ -520,6 +625,37 @@ const en: Strings = {
     device_not_supported: 'Device does not support bluetooth!',
     search_for_devices: 'Search for devices',
   },
+  reminder_popup: {
+    title: 'Which days do you want your reminders to be sent',
+    collection_day: {
+      one: '1 day before',
+      other: '{{count}} days before',
+    },
+    collect_on_text: 'Collect on {{due_date}}',
+    no_collection_date_text:
+      'You need to set a collection date before you set reminders',
+    set_collection_date_button_text: 'Set Collection Date',
+  },
+  default_text: 'Default',
+  payment_method: 'Payment method',
+  save_to_phonebook: 'Save to Phonebook',
+  user_profile: 'User Profile',
+  my_customers: 'My Customers',
+  reports: 'Reports',
+  menu: 'Menu',
+  user_id: 'User ID',
+  payment_reminder_for: 'Payment reminder for',
+  payment_due: 'Payment Due',
+  payment_due_text: 'This payment is due on',
+  outstanding_text: 'has an outstanding of',
+  record: 'Record',
+  cancel_confirmation_text: 'Confirm cancellation',
+  cancellation_text: 'Why are you cancelling?',
+  cancellation_placeholder: 'Enter cancellation reason here',
+  upload_business_logo: 'Upload Business logo',
+  business_name: 'Business Name',
+  skip_setup: 'Skip setup',
+  product_details: 'Product Details',
 };
 
 export default en;

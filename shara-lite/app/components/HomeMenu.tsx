@@ -4,9 +4,12 @@ import {getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {BottomHalfContentProps} from 'types/modal';
 //Todo: Work on translation
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 type HomeMenuProps = BottomHalfContentProps & {};
 
 export const HomeMenu = ({closeModal}: HomeMenuProps) => {
@@ -14,7 +17,7 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
   const navigation = useAppNavigation();
   const homeMenuOptions = [
     {
-      title: 'Business Settings',
+      title: strings('more.list.business_settings'),
       icon: 'sliders',
       onPress: () => {
         closeModal?.();
@@ -22,7 +25,7 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
       },
     },
     {
-      title: 'User Profile',
+      title: strings('user_profile'),
       icon: 'user',
       onPress: () => {
         closeModal?.();
@@ -30,7 +33,7 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
       },
     },
     {
-      title: 'My Customers',
+      title: strings('my_customers'),
       icon: 'users',
       onPress: () => {
         closeModal?.();
@@ -38,7 +41,7 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
       },
     },
     {
-      title: 'Reports',
+      title: strings('reports'),
       icon: 'eye',
       onPress: () => {
         closeModal?.();
@@ -51,7 +54,7 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
     <View style={applyStyles('pt-8 pb-8')}>
       <View style={applyStyles('px-16')}>
         <Text style={applyStyles('text-700 text-uppercase leading-16 mb-8')}>
-          Menu
+          {strings('menu')}
         </Text>
         {user && (
           <View style={applyStyles('mb-md')}>
@@ -59,13 +62,13 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
               style={applyStyles('text-400 text-sm leading-16', {
                 color: colors['gray-200'],
               })}>
-              User ID: {user.id}
+              {strings('user_id')}: {user.id}
             </Text>
             <Text
               style={applyStyles('text-400 text-sm leading-16', {
                 color: colors['gray-200'],
               })}>
-              Phone Number: {user.mobile}
+              {strings('customers.fields.phone.label')}: {user.mobile}
             </Text>
           </View>
         )}

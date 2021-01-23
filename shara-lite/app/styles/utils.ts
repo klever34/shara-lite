@@ -13,7 +13,7 @@ export const applyStyles = (
       } else if (classNames.length === 1) {
         return {...acc, ...globalStyles[classNames[0]]};
       }
-      return applyStyles(...classNames);
+      return {...acc, ...applyStyles(...classNames)};
     }
     return {...acc, ...curr};
   }, {});

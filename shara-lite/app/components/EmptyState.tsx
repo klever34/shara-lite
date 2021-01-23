@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  Image,
-  Text,
-  View,
-  ImageProps,
-  ImageStyle,
-  TextStyle,
-} from 'react-native';
+import {Text} from '@/components';
+import {Image, View, ImageProps, ImageStyle, TextStyle} from 'react-native';
 import {applyStyles} from '../styles';
 
 export type EmptyStateProps = {

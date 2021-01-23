@@ -13,12 +13,13 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, Platform, Text, TouchableOpacity, View} from 'react-native';
+import {Text} from '@/components';
+import {Alert, Platform, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
 
-const i18nService = getI18nService();
+const strings = getI18nService().strings;
 
 export const OTPVerification = () => {
   const [otp, setOtp] = useState('');
@@ -46,10 +47,10 @@ export const OTPVerification = () => {
         country_code: countryCode,
       };
       await apiService.otp(payload);
-      showSuccessToast(i18nService.strings('otp.resent'));
+      showSuccessToast(strings('otp.otp_resent'));
     } catch (error) {
       setLoading(false);
-      Alert.alert(i18nService.strings('alert.error'), error.message);
+      Alert.alert(strings('alert.error'), error.message);
     }
   }, [hash, showSuccessToast, params]);
 
@@ -83,7 +84,7 @@ export const OTPVerification = () => {
           });
         } catch (error) {
           setLoading(false);
-          Alert.alert(i18nService.strings('alert.error'), error.message);
+          Alert.alert(strings('alert.error'), error.message);
         }
       }
     },
@@ -102,12 +103,12 @@ export const OTPVerification = () => {
               }
             }
           } catch (error) {
-            Alert.alert(i18nService.strings('alert.error'), error.message);
+            Alert.alert(strings('alert.error'), error.message);
           }
         });
       })
       .catch((error) => {
-        Alert.alert(i18nService.strings('alert.error'), error.message);
+        Alert.alert(strings('alert.error'), error.message);
       });
 
     // remove listener on unmount
@@ -128,7 +129,7 @@ export const OTPVerification = () => {
   return (
     <AuthView
       showBackButton={true}
-      heading={i18nService.strings('otp.heading')}
+      heading={strings('otp.heading')}
       description={params.message}>
       <View style={applyStyles('items-center')}>
         <OTPInputView
@@ -158,7 +159,7 @@ export const OTPVerification = () => {
             style={applyStyles('flex-row center')}
             onPress={handleResendSubmit}>
             <Text style={applyStyles('text-gray-100 text-base')}>
-              {i18nService.strings('otp.resend_text')}{' '}
+              {strings('otp.resend_text')}{' '}
             </Text>
             <Text
               style={applyStyles({
@@ -168,13 +169,13 @@ export const OTPVerification = () => {
                 textDecorationLine: 'underline',
                 textDecorationColor: colors.black,
               })}>
-              {i18nService.strings('otp.resend_button')}
+              {strings('otp.resend_button')}
             </Text>
           </TouchableOpacity>
         </View>
         <Button
           variantColor="red"
-          title={i18nService.strings('otp.otp_button')}
+          title={strings('otp.otp_button')}
           isLoading={loading}
           style={applyStyles('w-full')}
           onPress={() => handleSubmit(otp)}

@@ -1,7 +1,8 @@
 import {applyStyles} from '@/styles';
 import {isFinite} from 'lodash';
 import React, {forwardRef, useCallback, useEffect, useState} from 'react';
-import {Text, TextInput, TextStyle} from 'react-native';
+import {Text} from '@/components';
+import {TextInput, TextStyle} from 'react-native';
 import {getAuthService} from '../services';
 import {AppInput, AppInputProps} from './AppInput';
 
@@ -74,7 +75,7 @@ export const CurrencyInput = forwardRef<TextInput, CurrencyInputProps>(
         leftIcon={
           <Text
             style={applyStyles('text-700 text-gray-300', {
-              top: 1,
+              top: 4,
               fontSize: 16,
               ...iconStyle,
             })}>

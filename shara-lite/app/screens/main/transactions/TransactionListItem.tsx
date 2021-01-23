@@ -3,8 +3,9 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
+import {Text} from '@/components';
 import React, {useCallback} from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {View, ViewStyle} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 import {getI18nService} from '@/services';
 
@@ -57,10 +58,15 @@ export const TransactionListItem = ({
                   })
             } ${
               customer?.balance
-                ? strings('transaction.customer_balance_statement', {
-                    polarity: customer.balance > 0 ? 'positive' : 'negative',
-                    balance: amountWithCurrency(customer.balance),
-                  })
+                ? customer.balance > 0
+                  ? strings('transaction.customer_has_advance_statement', {
+                      customer_name: customer.name,
+                      balance: amountWithCurrency(customer.balance),
+                    })
+                  : strings('transaction.customer_owes_statement', {
+                      customer_name: customer.name,
+                      credit_amount: amountWithCurrency(customer.balance),
+                    })
                 : ''
             }`}
           </Markdown>
@@ -141,7 +147,7 @@ export const TransactionListItem = ({
           'px-16 py-8 flex-row items-center justify-between',
           {
             borderBottomWidth: 1.2,
-            borderBottomColor: colors['gray-10'],
+            borderBottomColor: colors['gray-20'],
           },
           style,
         )}>

@@ -18,7 +18,11 @@ import {v4 as uuidV4} from 'uuid';
 export const generateUniqueId = () => uuidV4();
 
 export const numberWithCommas = (x: number | undefined) =>
-  x ? x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',') : '0';
+  x
+    ? Number.isInteger(x)
+      ? x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+      : x.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    : '0';
 
 export const retryPromise = (
   promiseFn: () => Promise<any>,
@@ -168,7 +172,7 @@ export const showToast = (payload: ToastPayload) => {
 /**
  * https://github.com/gregberge/react-merge-refs
  */
-export default function mergeRefs<T = any>(
+export function mergeRefs<T = any>(
   refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>,
 ): React.RefCallback<T> {
   return (value) => {

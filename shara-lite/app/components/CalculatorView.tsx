@@ -11,14 +11,8 @@ import React, {
 import {applyStyles} from '@/styles';
 import Big from 'big.js';
 import {Keyboard} from 'react-native-ui-lib';
-import {
-  View,
-  ScrollView,
-  Text,
-  ViewStyle,
-  TextStyle,
-  TextInput,
-} from 'react-native';
+import {Text} from '@/components';
+import {View, ScrollView, ViewStyle, TextStyle, TextInput} from 'react-native';
 import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
 import Touchable from '@/components/Touchable';
 import Icon from './Icon';

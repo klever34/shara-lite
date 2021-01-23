@@ -1,5 +1,6 @@
 import React, {ReactNode} from 'react';
-import {View, ViewStyle, Text} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 import Touchable from '@/components/Touchable';
 import {Icon} from '@/components/Icon';
 import {applyStyles} from '@/styles';

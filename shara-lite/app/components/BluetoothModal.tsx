@@ -6,12 +6,12 @@ import {
   NativeEventEmitter,
   Platform,
   SectionList,
-  Text,
   ToastAndroid,
   View,
   ScrollView,
   ListRenderItemInfo,
 } from 'react-native';
+import {Text} from '@/components';
 // @ts-ignore
 import {BluetoothManager} from 'react-native-bluetooth-escpos-printer';
 import Modal from 'react-native-modal';

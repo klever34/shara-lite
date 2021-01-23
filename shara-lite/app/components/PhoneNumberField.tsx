@@ -1,5 +1,5 @@
 import {useIPGeolocation} from '@/services/ip-geolocation/provider';
-import {applyStyles, colors} from '@/styles';
+import {applySpacing, applyStyles, colors} from '@/styles';
 import React, {
   forwardRef,
   ReactNode,
@@ -117,7 +117,7 @@ export const PhoneNumberField = forwardRef<TextInput, PhoneNumberFieldProps>(
           keyboardType="phone-pad"
           placeholder="Phone Number"
           value={phoneNumber.number}
-          style={applyStyles({paddingLeft: 104}, style)}
+          style={applyStyles({paddingLeft: applySpacing(104)}, style)}
           placeholderTextColor={colors['gray-50']}
           onChangeText={(text) => onInputChangeText(text)}
           leftIcon={
@@ -136,6 +136,9 @@ export const PhoneNumberField = forwardRef<TextInput, PhoneNumberFieldProps>(
                 countryCode={country}
                 preferredCountries={['NG', 'KE', 'ZA', 'ZW']}
                 containerButtonStyle={applyStyles('w-full text-500')}
+                theme={{
+                  fontSize: applySpacing(18),
+                }}
               />
             </View>
           }

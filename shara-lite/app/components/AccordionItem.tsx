@@ -1,10 +1,10 @@
 import {applyStyles, colors} from '@/styles';
 import React, {ReactNode, useRef, useState} from 'react';
+import {Text} from '@/components';
 import {
   Animated,
   Easing,
   StyleSheet,
-  Text,
   TextStyle,
   TouchableWithoutFeedback,
   View,
