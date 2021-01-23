@@ -13,13 +13,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import {Text} from '@/components';
 import {
   ActivityIndicator,
   ListRenderItemInfo,
   SectionList,
   SectionListProps,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';

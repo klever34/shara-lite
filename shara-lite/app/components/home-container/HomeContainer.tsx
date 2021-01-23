@@ -11,11 +11,11 @@ import {
   SectionListData,
   SectionListProps,
   SectionListRenderItem,
-  Text,
   View,
   ViewStyle,
   VirtualizedListProps,
 } from 'react-native';
+import {Text} from '@/components';
 import {Button} from '../Button';
 import EmptyState, {EmptyStateProps} from '../EmptyState';
 import {HeaderRightMenuOption, SearchFilter} from '@/components';

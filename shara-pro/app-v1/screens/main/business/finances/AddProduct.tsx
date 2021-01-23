@@ -18,6 +18,8 @@ import {
 } from '../../../../components';
 import HeaderRight from '../../../../components/HeaderRight';
 // Todo: Translate
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 type Payload = Pick<IProduct, 'name' | 'sku' | 'price'>;
 
 export const AddProduct = () => {
@@ -75,7 +77,7 @@ export const AddProduct = () => {
           fontSize: 18,
           color: colors.primary,
         })}>
-        Product Details
+        {strings('product_details')}
       </Text>
       <Formik
         onSubmit={onSubmit}
@@ -109,7 +111,7 @@ export const AddProduct = () => {
             <View>
               <View style={applyStyles('flex-row', 'items-center')}>
                 <CurrencyInput
-                  label="Price"
+                  label={strings('price')}
                   keyboardType="number-pad"
                   errorMessage={errors.price}
                   isInvalid={touched.price && !!errors.price}
@@ -119,7 +121,7 @@ export const AddProduct = () => {
               </View>
             </View>
             <Button
-              title="Save"
+              title={strings('save')}
               isLoading={isLoading}
               onPress={handleSubmit}
               style={applyStyles({marginVertical: 48})}

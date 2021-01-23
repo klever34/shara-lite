@@ -1,6 +1,7 @@
 import React, {useEffect, useRef, useState} from 'react';
 import {applyStyles, colors} from '@/styles';
-import {Image, Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {Image, View, ViewStyle} from 'react-native';
 import {ImagePickerResult, useImageInput} from '@/helpers/utils';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -49,7 +50,7 @@ export const ImageInput = ({
   return (
     <View style={applyStyles(' w-full', containerStyle)}>
       {!!label && (
-        <Text style={applyStyles('text-xs text-500 text-gray-100 pb-8')}>
+        <Text style={applyStyles('text-base text-500 text-gray-50 pb-8')}>
           {label}
         </Text>
       )}

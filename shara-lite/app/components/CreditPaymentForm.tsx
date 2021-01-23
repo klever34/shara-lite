@@ -1,12 +1,15 @@
 import {Picker} from '@react-native-community/picker';
 import React, {useCallback} from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {StyleSheet, View} from 'react-native';
 import {Button} from './Button';
 import {colors} from '../styles';
 import {Formik} from 'formik';
 import {applyStyles} from '@/styles';
 import {CalculatorInput} from '@/components/CalculatorView';
 //Todo: Work on translation
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 type Payload = {
   amount: number | undefined;
   method: string;
@@ -46,7 +49,7 @@ export const CreditPaymentForm = (props: Props) => {
             </View>
             <View style={styles.pickerContainer}>
               <Text style={applyStyles('text-400', styles.pickerLabel)}>
-                Payment method
+                {strings('payment_method')}
               </Text>
               <Picker
                 mode="dropdown"

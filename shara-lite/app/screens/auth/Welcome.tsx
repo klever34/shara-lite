@@ -6,7 +6,8 @@ import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useRef, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import Swiper from 'react-native-swiper';
 
 const strings = getI18nService().strings;

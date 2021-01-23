@@ -9,14 +9,16 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles, colors} from '@/styles';
+import {applyStyles, colors, dimensions} from '@/styles';
 import {format} from 'date-fns';
+import {Text} from '@/components';
 import React, {useCallback, useLayoutEffect} from 'react';
-import {FlatList, SafeAreaView, Text, View} from 'react-native';
+import {FlatList, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import {useReceiptList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
 import {getI18nService} from '@/services';
+// TODO: Translate
 
 const strings = getI18nService().strings;
 
@@ -104,35 +106,15 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   const getFilterLabelText = useCallback(() => {
     const activeOption = filterOptions?.find((item) => item.value === filter);
     if (filter === 'date-range' && filterStartDate && filterEndDate) {
-      return (
-        <Text>
-          <Text style={applyStyles('text-gray-300 text-400')}>
-            {strings('from')}
-          </Text>{' '}
-          <Text style={applyStyles('text-red-200 text-400')}>
-            {format(filterStartDate, 'dd MMM, yyyy')}
-          </Text>{' '}
-          <Text style={applyStyles('text-gray-300 text-400')}>
-            {strings('to')}
-          </Text>{' '}
-          <Text style={applyStyles('text-red-200 text-400')}>
-            {format(filterEndDate, 'dd MMM, yyyy')}
-          </Text>
-        </Text>
-      );
+      return `${strings('from')} ${format(
+        filterStartDate,
+        'dd MMM, yyyy',
+      )} ${strings('to')} ${format(filterEndDate, 'dd MMM, yyyy')}`;
     }
     if (filter === 'single-day') {
-      return (
-        <Text style={applyStyles('text-red-200 text-400')}>
-          {format(filterStartDate, 'dd MMM, yyyy')}
-        </Text>
-      );
+      return format(filterStartDate, 'dd MMM, yyyy');
     }
-    return (
-      <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
-        {activeOption?.text}
-      </Text>
-    );
+    return activeOption?.text;
   }, [filter, filterEndDate, filterOptions, filterStartDate]);
 
   return (
@@ -183,7 +165,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             <Text style={applyStyles('text-gray-50 text-700 text-uppercase')}>
               {strings('filter', {count: 1})}:{' '}
             </Text>
-            <View style={applyStyles('flex-1')}>{getFilterLabelText()}</View>
+            <View style={applyStyles('flex-1')}>
+              <Text style={applyStyles('text-red-200 text-400')}>
+                {getFilterLabelText()}
+              </Text>
+            </View>
           </View>
           <Touchable onPress={handleClear}>
             <View
@@ -226,10 +212,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               })}>
               <View
                 style={applyStyles(
-                  'w-24 h-24 mr-8 rounded-16 center bg-green-200',
+                  'w-24 h-24 mr-8 rounded-32 center bg-green-200',
                 )}>
                 <Icon
-                  size={24}
+                  size={18}
                   name="arrow-down"
                   type="feathericons"
                   color={colors.white}
@@ -238,11 +224,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-xxs text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
                   )}>
                   {strings('transaction.amount_collected')}
                 </Text>
-                <Text style={applyStyles('text-700 text-black text-base')}>
+                <Text style={applyStyles('text-700 text-black text-lg')}>
                   {amountWithCurrency(collectedAmount)}
                 </Text>
               </View>
@@ -250,10 +236,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             <View style={applyStyles('py-16 flex-row center', {width: '48%'})}>
               <View
                 style={applyStyles(
-                  'w-24 h-24 mr-8 rounded-16 center bg-red-100',
+                  'w-24 h-24 mr-8 rounded-32 center bg-red-100',
                 )}>
                 <Icon
-                  size={24}
+                  size={18}
                   name="arrow-up"
                   type="feathericons"
                   color={colors.white}
@@ -262,11 +248,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <View>
                 <Text
                   style={applyStyles(
-                    'pb-4 text-xxs text-uppercase text-400 text-gray-200',
+                    'pb-4 text-xs text-uppercase text-400 text-gray-200',
                   )}>
                   {strings('transaction.amount_outstanding')}
                 </Text>
-                <Text style={applyStyles('text-700 text-black text-base')}>
+                <Text style={applyStyles('text-700 text-black text-lg')}>
                   {amountWithCurrency(outstandingAmount)}
                 </Text>
               </View>
@@ -281,7 +267,9 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               },
             )}>
             <Text
-              style={applyStyles('text-black text-700 text-uppercase flex-1')}>
+              style={applyStyles(
+                'text-black text-700 text-uppercase flex-1 text-sm',
+              )}>
               {strings('transaction.total_amount')}:{' '}
               {amountWithCurrency(totalAmount)}
             </Text>
@@ -297,7 +285,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 )}>
                 <Text
                   style={applyStyles(
-                    'text-xxs text-gray-200 text-700 text-uppercase pr-8',
+                    'text-xs text-gray-200 text-700 text-uppercase pr-8',
                   )}>
                   {strings('transaction.view_report')}
                 </Text>
@@ -313,7 +301,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         </>
       )}
       {!!filteredReceipts && !!filteredReceipts.length && (
-        <View style={applyStyles('px-16 py-12 flex-row bg-gray-10')}>
+        <View
+          style={applyStyles(
+            'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
+          )}>
           <Text style={applyStyles('text-base text-gray-300')}>
             {searchTerm
               ? strings('result', {
@@ -321,6 +312,22 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 })
               : strings('activities')}
           </Text>
+          <Touchable onPress={handleOpenFilterModal}>
+            <View style={applyStyles('py-4 px-8 flex-row items-center')}>
+              <Text
+                style={applyStyles(
+                  'text-base text-gray-300 text-700 text-uppercase pr-8',
+                )}>
+                {getFilterLabelText()}
+              </Text>
+              <Icon
+                size={16}
+                type="feathericons"
+                name="chevron-down"
+                color={colors['gray-50']}
+              />
+            </View>
+          </Touchable>
         </View>
       )}
       <FlatList
@@ -353,7 +360,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 {strings('transaction.start_adding_records')}
               </Text>
             </View>
-            <View style={applyStyles('center p-16 w-full')}>
+            <View
+              style={applyStyles('center p-16 bottom', {
+                height: dimensions.fullHeight - 300,
+              })}>
               <Animatable.View
                 duration={200}
                 animation={{

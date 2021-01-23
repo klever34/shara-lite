@@ -1,4 +1,5 @@
 import React from 'react';
+import {Text} from '@/components';
 import {
   Animated,
   NativeSyntheticEvent,
@@ -7,7 +8,6 @@ import {
   TextInputFocusEventData,
   TextInputProps,
   View,
-  Text,
 } from 'react-native';
 import {applyStyles, colors} from '../styles';
 

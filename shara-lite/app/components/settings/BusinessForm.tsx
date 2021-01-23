@@ -2,7 +2,8 @@ import {useIPGeolocation} from '@/services/ip-geolocation/provider';
 import {colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useEffect, useMemo} from 'react';
-import {Image, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Image, View} from 'react-native';
 import * as yup from 'yup';
 import {Button} from '../Button';
 import {FloatingLabelInput, PhoneNumber, PhoneNumberField} from '@/components';
@@ -11,6 +12,8 @@ import Touchable from '../Touchable';
 import {applyStyles} from '@/styles';
 import {ImagePickerResult, useImageInput} from '@/helpers/utils';
 // Todo: Translate
+import {getI18nService} from '@/services';
+const strings = getI18nService().strings;
 export type BusinessFormPayload = {
   name: string;
   address?: string;
@@ -134,8 +137,8 @@ export const BusinessForm = ({
                   color: colors.primary,
                 })}>
                 {values?.profileImageFile?.uri
-                  ? 'Edit'
-                  : 'Upload Business logo'}
+                  ? strings('edit')
+                  : strings('upload_business_logo')}
               </Text>
             </View>
           </View>
@@ -143,7 +146,7 @@ export const BusinessForm = ({
       )}
       <View style={applyStyles({paddingBottom: 18})}>
         <FloatingLabelInput
-          label="Business Name"
+          label={strings('business_name')}
           value={values.name}
           errorMessage={errors.name}
           inputStyle={applyStyles({
@@ -156,7 +159,7 @@ export const BusinessForm = ({
       </View>
       <View style={applyStyles({paddingBottom: 18})}>
         <FloatingLabelInput
-          label="Address"
+          label={strings('address')}
           value={values.address}
           inputStyle={applyStyles({
             fontSize: 18,
@@ -196,7 +199,7 @@ export const BusinessForm = ({
               })}>
               <Text
                 style={applyStyles('text-400', {color: colors['gray-100']})}>
-                Skip setup
+                {strings('skip_setup')}
               </Text>
             </View>
           </Touchable>

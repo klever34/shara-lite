@@ -1,10 +1,10 @@
 import {applyStyles, colors} from '@/styles';
 import {upperCase} from 'lodash';
 import React, {useCallback} from 'react';
+import {Text} from '@/components';
 import {
   ImageProps,
   StyleProp,
-  Text,
   TextStyle,
   View,
   ViewStyle,
@@ -73,7 +73,7 @@ const PlaceholderImage = ({
   return (
     <View
       style={applyStyles(
-        applyStyles('center w-40 h-40 rounded-20', {
+        applyStyles('center w-40 h-40 rounded-40', {
           backgroundColor: '#4D86E3',
         }),
         style,

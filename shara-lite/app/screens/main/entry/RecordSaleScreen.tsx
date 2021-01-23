@@ -55,17 +55,9 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
           handleError,
         );
       };
-      if (customer) {
-        onSelectCustomer(customer);
-      } else {
-        navigation.navigate('SelectCustomerList', {
-          transaction: payload,
-          withCustomer: !!payload.credit_amount,
-          onSelectCustomer,
-        });
-      }
+      onSelectCustomer(customer);
     },
-    [customer, navigation, handleSaveRecordSale],
+    [customer, handleSaveRecordSale],
   );
 
   return (

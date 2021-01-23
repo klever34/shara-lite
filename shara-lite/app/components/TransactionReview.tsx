@@ -11,7 +11,8 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import LottieView from 'lottie-react-native';
 import React, {useCallback, useState} from 'react';
-import {Image, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Image, View} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
 const strings = getI18nService().strings;
@@ -49,12 +50,15 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     transaction.customer &&
     (transaction.credit_amount || dueDate);
 
-  const shareReceiptMessage = strings('receipts.receipt_share_message', {
-    customer_name: transaction.customer?.name,
-    from_who: businessInfo.name,
+  const shareReceiptMessage = `${strings(
+    'receipts.recent_purchase_message_from_business',
+    {
+      customer_name: transaction.customer?.name,
+      business_name: businessInfo.name,
+    },
+  )} ${strings('you_paid_message', {
     amount: amountWithCurrency(transaction.amount_paid),
-    credit_message: '',
-  });
+  })}\n\n${strings('powered_by_shara')}`;
 
   const receiptShareProps: ShareHookProps = {
     image: receiptImage,

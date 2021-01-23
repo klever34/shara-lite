@@ -1,5 +1,6 @@
 import React from 'react';
-import {StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import {colors} from '../styles';
 import Touchable from './Touchable';
 import {applyStyles} from '@/styles';

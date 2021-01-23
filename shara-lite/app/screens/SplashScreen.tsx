@@ -1,11 +1,11 @@
 import React, {useCallback, useEffect, useMemo, useRef} from 'react';
+import {Text} from '@/components';
 import {
   Alert,
   BackHandler,
   Image,
   Platform,
   StyleSheet,
-  Text,
   View,
 } from 'react-native';
 import {colors, dimensions} from '../styles';

@@ -18,10 +18,10 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useRef, useState, useEffect, useCallback, useMemo} from 'react';
+import {Text} from '@/components';
 import {
   Alert,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
   View,

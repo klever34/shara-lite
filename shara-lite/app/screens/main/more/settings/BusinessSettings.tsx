@@ -42,7 +42,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
     country_code,
     profile_image,
   } = businessInfo;
-  callingCode = country_code ?? callingCode;
+  callingCode = country_code || callingCode;
   const {showSuccessToast} = useContext(ToastContext);
 
   const dummyTransaction: IReceipt = {
@@ -76,16 +76,16 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
     });
   }, [openModal, dummyTransaction]);
 
-  const getMobieNumber = useCallback(() => {
-    const code = country_code ?? callingCode;
-    if (mobile) {
-      if (mobile?.startsWith(code)) {
-        return mobile.replace(code, '');
+  const getMobileNumber = useCallback(() => {
+    const mobileNumber = mobile || user?.mobile;
+    if (mobileNumber) {
+      if (mobileNumber?.startsWith(callingCode)) {
+        return mobileNumber.replace(callingCode, '');
       }
-      return mobile;
+      return mobileNumber;
     }
-    return user?.mobile ?? '';
-  }, [user, country_code, mobile, callingCode]);
+    return '';
+  }, [user, mobile, callingCode]);
 
   const handleOpenSaveModal = useCallback(() => {
     const closeModal = openModal('full', {
@@ -125,7 +125,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
         type: 'mobile',
         props: {
           value: {
-            number: getMobieNumber(),
+            number: getMobileNumber(),
             callingCode: callingCode,
           },
           label: i18Service.strings('business_settings.fields.mobile.label'),
@@ -151,7 +151,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       },
     };
     return fields;
-  }, [address, callingCode, name, profile_image, getMobieNumber]);
+  }, [address, callingCode, name, profile_image, getMobileNumber]);
 
   const handleSubmit = useCallback(
     async (formValues) => {

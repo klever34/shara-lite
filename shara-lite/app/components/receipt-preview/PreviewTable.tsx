@@ -3,7 +3,8 @@ import {IProduct} from '@/models/Product';
 import {IReceiptItem} from '@/models/ReceiptItem';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {StyleSheet, Text, TextStyle, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {StyleSheet, TextStyle, View, ViewStyle} from 'react-native';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 

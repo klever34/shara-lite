@@ -1,6 +1,7 @@
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback} from 'react';
-import {StyleSheet, Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {StyleSheet, View, ViewStyle} from 'react-native';
 import {useFilterButtonGroup} from './FilterButtonGroup';
 import Touchable from './Touchable';
 

@@ -5,7 +5,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Alert, Image, SafeAreaView, ScrollView, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Alert, Image, SafeAreaView, ScrollView, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {Icon} from '@/components/Icon';
 import {applyStyles, colors, dimensions} from '@/styles';
@@ -23,6 +24,7 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
 import {TitleContainer} from '@/components/TitleContainer';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
+import {TouchableActionItem} from '@/components/TouchableActionItem';
 
 const i18nService = getI18nService();
 
@@ -59,32 +61,48 @@ export const MoreOptionsScreen = withModal(
     const moreOptions = useMemo(() => {
       return [
         {
-          title: i18nService.strings('more.list.profile_settings.title'),
-          text: i18nService.strings('more.list.profile_settings.description'),
+          leftSection: {
+            title: i18nService.strings('more.list.profile_settings.title'),
+            caption: i18nService.strings(
+              'more.list.profile_settings.description',
+            ),
+          },
           onPress: () => {
             navigation.navigate('UserProfileSettings');
           },
         },
         {
-          title: i18nService.strings('more.list.business_settings.title'),
-          text: i18nService.strings('more.list.business_settings.description'),
+          leftSection: {
+            title: i18nService.strings('more.list.business_settings.title'),
+            caption: i18nService.strings(
+              'more.list.business_settings.description',
+            ),
+          },
           onPress: onEditBusinessSettings,
         },
         {
-          title: i18nService.strings('more.list.payment_settings.title'),
-          text: i18nService.strings('more.list.payment_settings.description'),
+          leftSection: {
+            title: i18nService.strings('more.list.payment_settings.title'),
+            caption: i18nService.strings(
+              'more.list.payment_settings.description',
+            ),
+          },
           onPress: PaymentSettings,
         },
         {
-          title: i18nService.strings('more.list.referral.title'),
-          text: i18nService.strings('more.list.referral.description'),
+          leftSection: {
+            title: i18nService.strings('more.list.referral.title'),
+            caption: i18nService.strings('more.list.referral.description'),
+          },
           onPress: () => {
             navigation.navigate('Referral');
           },
         },
         {
-          title: i18nService.strings('more.list.feedback.title'),
-          text: i18nService.strings('more.list.feedback.description'),
+          leftSection: {
+            title: i18nService.strings('more.list.feedback.title'),
+            caption: i18nService.strings('more.list.feedback.description'),
+          },
           onPress: () => {
             navigation.navigate('Feedback');
           },
@@ -179,7 +197,7 @@ export const MoreOptionsScreen = withModal(
               'bg-white',
             )}>
             <TitleContainer
-              containerStyle={applyStyles('p-16')}
+              containerStyle={applyStyles('px-16 mt-16')}
               title={i18nService.strings('more.header.title')}
               description={i18nService.strings('more.header.description')}
             />
@@ -202,15 +220,12 @@ export const MoreOptionsScreen = withModal(
             )}
             {!!business.name && (
               <>
-                <View
-                  style={applyStyles(
-                    'flex-row items-center ml-16 py-18 mb-32',
-                  )}>
+                <View style={applyStyles('flex-row items-center ml-16 py-32')}>
                   <Image
                     source={{
                       uri: business.profile_image?.url,
                     }}
-                    style={applyStyles('w-full rounded-12', {
+                    style={applyStyles('w-full rounded-24', {
                       width: 24,
                       height: 24,
                     })}
@@ -218,7 +233,7 @@ export const MoreOptionsScreen = withModal(
                   <View style={applyStyles('pl-12')}>
                     <Text
                       style={applyStyles(
-                        'text-uppercase text-sm text-700 text-black',
+                        'text-uppercase text-lg text-700 text-black',
                       )}>
                       {business.name}
                     </Text>
@@ -227,32 +242,19 @@ export const MoreOptionsScreen = withModal(
               </>
             )}
             <View style={applyStyles('mb-24')}>
-              {moreOptions.map(({title, text, onPress}, index) => {
+              {moreOptions.map((option, index) => {
                 return (
-                  <Touchable onPress={onPress} key={`${title}-${index}`}>
-                    <View
-                      style={applyStyles(
-                        'flex-row items-center py-10 px-10 border-t-1 border-gray-20',
-                        index === moreOptions.length - 1 && 'border-b-1',
-                      )}>
-                      <View style={applyStyles('flex-1 pl-sm')}>
-                        <Text
-                          style={applyStyles('text-400 text-sm text-gray-300')}>
-                          {title}
-                        </Text>
-                        <Text
-                          style={applyStyles('text-400 text-xs text-gray-200')}>
-                          {text}
-                        </Text>
-                      </View>
-                      <Icon
-                        size={20}
-                        type="feathericons"
-                        name="chevron-right"
-                        color={colors['gray-50']}
-                      />
-                    </View>
-                  </Touchable>
+                  <TouchableActionItem
+                    {...option}
+                    key={`${index}`}
+                    style={applyStyles(
+                      'border-t-1 border-gray-20 px-16',
+                      {borderTopWidth: 1, borderColor: colors['gray-20']},
+                      index === moreOptions.length - 1 && {
+                        borderBottomWidth: 1,
+                      },
+                    )}
+                  />
                 );
               })}
             </View>
@@ -268,11 +270,11 @@ export const MoreOptionsScreen = withModal(
                 <SecureEmblem />
               </View>
             </View>
-            <View style={applyStyles('flex-1')}>
+            <View style={applyStyles('flex-1 mx-32')}>
               <Touchable onPress={handleLogoutConfirm}>
                 <View
                   style={applyStyles(
-                    'flex-row border-1 border-gray-20 center p-16 mx-16 rounded-md',
+                    'flex-row border-1 border-gray-20 center p-16 rounded-md',
                   )}>
                   <Icon
                     size={20}

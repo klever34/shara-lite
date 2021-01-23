@@ -41,12 +41,14 @@ export const PaymentForm = ({
 
   const [fieldRefNames, fieldRefs] = useMemo(() => {
     const nextFieldRefs: FormFieldRefs = {};
-    const nextFieldRefNames = selectedPaymentProvider?.fields;
+    const nextFieldRefNames =
+      selectedPaymentProvider?.fields ??
+      (initialValues?.fieldsData as PaymentProvider['fields']);
     nextFieldRefNames?.forEach(({key}) => {
       nextFieldRefs[key] = createRef<TextInput>();
     });
     return [nextFieldRefNames, nextFieldRefs];
-  }, [selectedPaymentProvider]);
+  }, [initialValues, selectedPaymentProvider]);
 
   const getReturnKeyType = useCallback(
     (name: string) => {
@@ -86,7 +88,7 @@ export const PaymentForm = ({
         initialValues ? initialValues : {slug: '', name: '', fieldsData: []}
       }>
       {({values, setFieldValue, handleSubmit}) => (
-        <View style={applyStyles('px-14')}>
+        <View style={applyStyles('px-14 py-20')}>
           {!hidePicker && (
             <Picker
               mode="dropdown"

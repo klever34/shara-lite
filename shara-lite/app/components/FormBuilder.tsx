@@ -220,8 +220,8 @@ export const FormBuilder = <FieldName extends keyof any>({
               key={`${arr}-${index}`}
               style={applyStyles(
                 'flex-1',
-                index !== 0 && 'ml-4',
-                index !== arr.length - 1 && 'mr-4',
+                index !== 0 && 'ml-8',
+                index !== arr.length - 1 && 'mr-8',
               )}>
               {actionBtn && (
                 <Button

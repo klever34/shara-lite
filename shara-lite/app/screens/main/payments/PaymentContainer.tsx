@@ -15,7 +15,8 @@ import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
 import {omit} from 'lodash';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, FlatList, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Alert, FlatList, View} from 'react-native';
 import {PaymentProvider} from 'types/app';
 import {PaymentForm} from './PaymentForm';
 import {PaymentPreviewModal} from './PaymentPreviewModal';
@@ -125,7 +126,6 @@ function PaymentContainer(props: ModalWrapperFields) {
         <KeyboardAwareScrollView
           nestedScrollEnabled
           persistentScrollbar={true}
-          style={applyStyles('py-24')}
           keyboardShouldPersistTaps="always">
           <Text
             style={applyStyles(
@@ -172,7 +172,6 @@ function PaymentContainer(props: ModalWrapperFields) {
           <KeyboardAwareScrollView
             nestedScrollEnabled
             persistentScrollbar={true}
-            style={applyStyles('py-20')}
             keyboardShouldPersistTaps="always">
             <Text
               style={applyStyles(
@@ -221,7 +220,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                     variantColor="transparent"
                   />
                   <Button
-                    title="Save"
+                    title={strings('save')}
                     isLoading={isSaving}
                     style={applyStyles({width: '48%'})}
                     onPress={() => {

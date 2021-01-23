@@ -12,6 +12,7 @@ import {
 } from '@/models/PaymentReminder';
 import {ICustomer} from '@/models';
 import {getAnalyticsService} from '@/services';
+import {useCustomer} from '@/services/customer/hook';
 
 interface getPaymentRemindersInterface {
   customer: ICustomer;
@@ -30,6 +31,11 @@ interface deletePaymentReminderInterface {
   paymentReminder: IPaymentReminder;
 }
 
+interface disableCustomerRemindersInterface {
+  customer: ICustomer;
+  disable_reminders: boolean;
+}
+
 interface usePaymentReminderInterface {
   getPaymentReminders: (
     params: getPaymentRemindersInterface,
@@ -43,10 +49,14 @@ interface usePaymentReminderInterface {
   deletePaymentReminder: (
     data: deletePaymentReminderInterface,
   ) => Promise<void>;
+  disableCustomerReminders: (
+    data: disableCustomerRemindersInterface,
+  ) => Promise<void>;
 }
 
 export const usePaymentReminder = (): usePaymentReminderInterface => {
   const realm = useRealm();
+  const {updateCustomer} = useCustomer();
 
   const getPaymentReminders = ({
     customer,
@@ -146,6 +156,18 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
       .then(() => {});
   };
 
+  const disableCustomerReminders = async ({
+    customer,
+    disable_reminders,
+  }: disableCustomerRemindersInterface) => {
+    await updateCustomer({
+      customer,
+      updates: {
+        disable_reminders,
+      },
+    });
+  };
+
   const calculateDueDate = ({
     paymentReminder,
     customer,
@@ -168,5 +190,6 @@ export const usePaymentReminder = (): usePaymentReminderInterface => {
     savePaymentReminder,
     updatePaymentReminder,
     deletePaymentReminder,
+    disableCustomerReminders,
   };
 };

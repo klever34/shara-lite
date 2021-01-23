@@ -13,6 +13,8 @@ import schema12 from './1608634902886-add-payment-reminder';
 import schema13 from './1610020714362-add-notes-image-to-customer';
 import schema14 from './1610377039908-add-feedback-model';
 import schema15 from './1611048927106-add-last-seen-model';
+import schema16 from './1611236083669-add-activity-x-disable-customer-reminders';
+import schema17 from './1611256639370-re-add-disable-customer-reminders';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -30,6 +32,8 @@ const schemas: any[] = [
   {schemaVersion: 13, ...schema13},
   {schemaVersion: 14, ...schema14},
   {schemaVersion: 15, ...schema15},
+  {schemaVersion: 16, ...schema16},
+  {schemaVersion: 17, ...schema17},
 ];
 
 export default schemas;

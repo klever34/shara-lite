@@ -16,7 +16,8 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {useFormik} from 'formik';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {MainStackParamList} from '..';
 import {getI18nService} from '@/services';
 
