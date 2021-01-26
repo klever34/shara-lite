@@ -56,7 +56,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
       (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
         setBgStyle({
           borderWidth: 2,
-          borderColor: colors['red-50'],
+          borderColor: colors['green-100'],
         });
         onFocus && onFocus(e);
       },

@@ -61,7 +61,7 @@ export const Welcome = () => {
               marginLeft: 3,
               marginRight: 3,
               borderRadius: 4,
-              backgroundColor: colors['red-100'],
+              backgroundColor: colors['gray-200'],
             })}
           />
         }>
@@ -121,10 +121,9 @@ export const Welcome = () => {
         <View style={applyStyles('flex-row justify-between items-center')}>
           {count === 2 ? (
             <Button
-              title={strings('get_started')}
-              variantColor="red"
               onPress={handleSkip}
               style={applyStyles('w-full')}
+              title={strings('get_started')}
             />
           ) : (
             <>
@@ -136,7 +135,6 @@ export const Welcome = () => {
               />
               <Button
                 title={strings('next')}
-                variantColor="red"
                 onPress={handleNext}
                 style={applyStyles({width: '48%'})}
               />

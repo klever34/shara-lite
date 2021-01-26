@@ -28,7 +28,7 @@ export const Button = ({
   isLoading,
   disabled,
   children,
-  variantColor = 'red',
+  variantColor = 'blue',
 }: ButtonProps) => {
   const variantColorStyles: variantColorStylesOptions = {
     white: {

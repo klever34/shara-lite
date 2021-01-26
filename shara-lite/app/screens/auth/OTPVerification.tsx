@@ -174,10 +174,9 @@ export const OTPVerification = () => {
           </TouchableOpacity>
         </View>
         <Button
-          variantColor="red"
-          title={strings('otp.otp_button')}
           isLoading={loading}
           style={applyStyles('w-full')}
+          title={strings('otp.otp_button')}
           onPress={() => handleSubmit(otp)}
         />
       </View>
