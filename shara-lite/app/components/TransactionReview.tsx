@@ -227,7 +227,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
                       size={16}
                       type="feathericons"
                       name="more-vertical"
-                      color={colors['red-100']}
+                      color={colors['green-100']}
                     />
                     <Text
                       style={applyStyles(

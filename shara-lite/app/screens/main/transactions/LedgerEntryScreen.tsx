@@ -247,12 +247,12 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
               <View style={applyStyles('flex-row items-center')}>
                 <Text
                   style={applyStyles(
-                    'text-400 text-red-200 text-uppercase text-base pr-4',
+                    'text-400 text-green-100 text-uppercase text-base pr-4',
                   )}>
                   {strings('customers.add_customer')}
                 </Text>
                 <View
-                  style={applyStyles('center bg-red-50', {
+                  style={applyStyles('center bg-green-50', {
                     width: 30,
                     height: 30,
                     borderRadius: 15,
@@ -261,7 +261,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                     size={16}
                     name="plus"
                     type="feathericons"
-                    color={colors['red-200']}
+                    color={colors['green-100']}
                   />
                 </View>
               </View>
@@ -410,7 +410,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                     size={16}
                     type="feathericons"
                     name="more-vertical"
-                    color={colors['red-100']}
+                    color={colors['green-100']}
                   />
                   <Text
                     style={applyStyles(

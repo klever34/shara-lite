@@ -50,7 +50,7 @@ const PlaceholderImage = ({
         <ActivityIndicator
           size="small"
           animating={isLoading}
-          color={colors['red-200']}
+          color={colors['green-100']}
         />
       );
     }

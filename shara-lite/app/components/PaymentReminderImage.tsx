@@ -55,7 +55,7 @@ function PaymentReminderImage({
           <View style={applyStyles('absolute top-20 right-6')}>
             <SecureEmblem style={applyStyles({width: 48, height: 48})} />
           </View>
-          <View style={applyStyles('bg-red-200', {height: 10})} />
+          <View style={applyStyles('bg-green-100', {height: 10})} />
           <View style={applyStyles('center')}>
             <Text
               style={applyStyles(

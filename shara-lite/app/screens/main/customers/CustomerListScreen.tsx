@@ -223,7 +223,7 @@ export const CustomerListScreen = withModal(
     const getFilterLabelText = useCallback(() => {
       const activeOption = filterOptions?.find((item) => item.value === filter);
       return (
-        <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
+        <Text style={applyStyles('text-green-100 text-400 text-capitalize')}>
           {activeOption?.text}
         </Text>
       );

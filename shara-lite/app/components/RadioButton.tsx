@@ -24,7 +24,7 @@ export const RadioButton = (props: RadioButtonProps) => {
     disabled = false,
   } = props;
   const borderStyles = isChecked
-    ? {borderWidth: 2, borderColor: colors['red-200']}
+    ? {borderWidth: 2, borderColor: colors['green-100']}
     : {borderWidth: 2, borderColor: colors['gray-50']};
 
   const onPress = useCallback(() => {
@@ -44,7 +44,7 @@ export const RadioButton = (props: RadioButtonProps) => {
             {isChecked && (
               <View
                 style={applyStyles(
-                  'w-16 h-16 bg-red-200 rounded-6',
+                  'w-16 h-16 bg-green-100 rounded-6',
                   checkedStyle,
                 )}
               />

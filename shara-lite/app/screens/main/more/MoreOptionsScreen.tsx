@@ -212,7 +212,7 @@ export const MoreOptionsScreen = withModal(
                   })}>
                   <Text
                     style={applyStyles('text-500 text-center', {
-                      color: colors['red-200'],
+                      color: colors['green-100'],
                     })}>
                     {i18nService.strings('more.business_settings_edit_button')}
                   </Text>

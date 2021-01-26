@@ -135,18 +135,18 @@ export const ReportScreen = withModal(({openModal}: Props) => {
       return (
         <Text>
           <Text style={applyStyles('text-gray-300 text-400')}>From</Text>{' '}
-          <Text style={applyStyles('text-red-200 text-400')}>
+          <Text style={applyStyles('text-green-100 text-400')}>
             {format(filterStartDate, 'dd MMM, yyyy')}
           </Text>{' '}
           <Text style={applyStyles('text-gray-300 text-400')}>to</Text>{' '}
-          <Text style={applyStyles('text-red-200 text-400')}>
+          <Text style={applyStyles('text-green-100 text-400')}>
             {format(filterEndDate, 'dd MMM, yyyy')}
           </Text>
         </Text>
       );
     }
     return (
-      <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
+      <Text style={applyStyles('text-green-100 text-400 text-capitalize')}>
         {activeOption?.text}
       </Text>
     );
