@@ -251,7 +251,7 @@ export const SelectCustomerListScreen = withModal(
                     size={18}
                     name="plus"
                     type="feathericons"
-                    color={colors['green-100']}
+                    color={colors['green-200']}
                   />
                 </View>
                 <Text

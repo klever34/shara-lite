@@ -15,7 +15,7 @@ const UpdateSharaScreen = () => {
   return (
     <SafeAreaView style={applyStyles('flex-1 px-16')}>
       <EmptyState
-        source={require('../assets/images/shara-lite_logo.png')}
+        source={require('../assets/images/shara_logo.png')}
         imageStyle={applyStyles({
           width: '80%',
           height: '25%',
