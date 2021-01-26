@@ -245,13 +245,13 @@ export const SelectCustomerListScreen = withModal(
               <View style={applyStyles('flex-row items-center')}>
                 <View
                   style={applyStyles(
-                    'w-36 h-36 rounded-36 center bg-green-10',
+                    'w-36 h-36 rounded-36 center bg-green-50',
                   )}>
                   <Icon
                     size={18}
                     name="plus"
                     type="feathericons"
-                    color={colors['green-200']}
+                    color={colors['green-100']}
                   />
                 </View>
                 <Text
