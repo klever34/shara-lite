@@ -89,7 +89,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
           <View style={applyStyles('px-16')}>
             <View style={applyStyles('pt-16 pb-32')}>
               <Text style={applyStyles('text-gray-300 text-400 text-xl')}>
-                {strings('edit_transaction')}
+                {strings('transaction.edit_transaction')}
               </Text>
             </View>
             <View>

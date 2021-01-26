@@ -283,7 +283,7 @@ export const SelectCustomerListScreen = withModal(
             )}>
             <View style={applyStyles('flex-row items-center')}>
               <View
-                style={applyStyles('w-36 h-36 rounded-36 center bg-green-10')}>
+                style={applyStyles('w-36 h-36 rounded-24 center bg-green-50')}>
                 <Icon
                   size={18}
                   name="users"

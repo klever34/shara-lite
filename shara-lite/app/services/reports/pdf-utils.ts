@@ -25,14 +25,14 @@ export const getNumberOfPages = ({noOfItems}: {noOfItems: number}) => {
 };
 
 const reportPageHeaderHTML = ({businessName}: {businessName: string}) => `
-  <div style="display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #DD0404;">
+  <div style="display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #0EC99C;">
     <h1 style="font-size: 24px;color: white; text-transform: uppercase">${businessName}</h1>
     <h1 style="font-size: 24px;color: white; text-transform: uppercase">Shara</h1>
   </div>
 `;
 
 const reportPageFooterHTML = () => `
-  <div style="width: calc(100% - 24px);display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #DD0404;">
+  <div style="width: calc(100% - 24px);display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #0EC99C;">
     <h1 style="font-size: 24px;color: white; text-transform: uppercase">Shara</h1>
     <p style="color: white;">Start using Shara Today, Download from the Playstore</p>
   </div>

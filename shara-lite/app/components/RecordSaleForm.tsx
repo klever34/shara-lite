@@ -261,8 +261,8 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             label={strings('sale.fields.credit.label')}
             returnKeyType="next"
             value={values.credit_amount}
-            style={applyStyles('text-red-100')}
-            iconStyle={applyStyles('text-red-100')}
+            style={applyStyles('text-green-200')}
+            iconStyle={applyStyles('text-green-200')}
             onChangeText={(text) => {
               const value = toNumber(text);
               setFieldValue('credit_amount', value);

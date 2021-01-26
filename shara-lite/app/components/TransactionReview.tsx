@@ -37,6 +37,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
   } = props;
 
   const analyticsService = getAnalyticsService();
+  const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
   const {updateDueDate} = useTransaction();
 
@@ -53,8 +54,8 @@ export const TransactionReview = (props: TransactionReviewProps) => {
   const shareReceiptMessage = `${strings(
     'receipts.recent_purchase_message_from_business',
     {
-      customer_name: transaction.customer?.name,
-      business_name: businessInfo.name,
+      customer_name: transaction.customer?.name ?? '',
+      business_name: businessInfo.name || user?.firstname,
     },
   )} ${strings('you_paid_message', {
     amount: amountWithCurrency(transaction.amount_paid),

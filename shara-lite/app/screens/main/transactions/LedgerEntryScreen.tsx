@@ -65,11 +65,11 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   const shareReceiptMessage = `${
     businessInfo.name || user?.firstname
       ? strings('receipts.recent_purchase_message_from_business', {
-          customer_name: transaction.customer?.name,
+          customer_name: transaction.customer?.name ?? '',
           business_name: businessInfo.name || user?.firstname,
         })
       : strings('receipts.recent_purchase_message', {
-          customer_name: transaction.customer?.name,
+          customer_name: transaction.customer?.name ?? '',
         })
   } ${strings('you_paid_message', {
     amount: amountWithCurrency(transaction.amount_paid),
