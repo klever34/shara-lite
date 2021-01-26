@@ -73,9 +73,7 @@ const PlaceholderImage = ({
   return (
     <View
       style={applyStyles(
-        applyStyles('center w-40 h-40 rounded-40', {
-          backgroundColor: '#4D86E3',
-        }),
+        applyStyles('center w-40 h-40 rounded-40 bg-blue'),
         style,
       )}>
       {renderContent()}
