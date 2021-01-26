@@ -6,7 +6,8 @@ import React, {
   useState,
 } from 'react';
 import {Text} from '@/components';
-import {Alert, Image, SafeAreaView, ScrollView, View} from 'react-native';
+import {Alert, SafeAreaView, ScrollView, View} from 'react-native';
+import {Image} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {Icon} from '@/components/Icon';
 import {applyStyles, colors, dimensions} from '@/styles';
@@ -223,7 +224,7 @@ export const MoreOptionsScreen = withModal(
                 <View style={applyStyles('flex-row items-center ml-16 py-32')}>
                   <Image
                     source={{
-                      uri: business.profile_image?.url,
+                      uri: business.profile_image?.url + 'foo',
                     }}
                     style={applyStyles('w-full rounded-24', {
                       width: 24,

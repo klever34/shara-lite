@@ -331,7 +331,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         </View>
       )}
       <FlatList
-        data={filteredReceipts}
+        data={[]}
         initialNumToRender={10}
         style={applyStyles('bg-white')}
         renderItem={renderTransactionItem}
@@ -377,7 +377,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   size={80}
                   name="arrow-down"
                   type="feathericons"
-                  color={colors.primary}
+                  color={colors.secondary}
                 />
               </Animatable.View>
             </View>

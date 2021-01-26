@@ -14,12 +14,9 @@ export const dimensions = {
 };
 
 export const colors: {[key: string]: string} = {
-  'red-10': '#FFE7E7',
-  'red-30': '#FFE2E2',
-  'red-50': '#F4B1B1',
-  'red-100': '#E85656',
-  'red-200': '#DD0404',
-  primary: '#dd0404',
+  // Brand Colors
+  whatsapp: '#1BA058',
+  // Neutral Colors
   white: '#FFF',
   'gray-10': '#F5F5F5',
   'gray-20': '#EBE6E6',
@@ -28,14 +25,24 @@ export const colors: {[key: string]: string} = {
   'gray-200': '#5E5959',
   'gray-300': '#363636',
   'gray-900': '#1A202C',
-  green: '#20C720',
-  'green-10': '#D8F0EA',
+  black: '#222222',
+  // Neutral Colors
+  'red-10': '#FFE7E7',
+  'red-30': '#FFE2E2',
+  'red-50': '#F4B1B1',
+  'red-100': '#E85656',
+  'red-200': '#DD0404',
+  // Greens
+  'green-50': '#D8F0EA',
   'green-100': '#0EC99C',
   'green-200': '#25A36E',
-  black: '#222222',
-  whatsapp: '#1BA058',
-  blue: '#386EC4',
+  green: '#20C720',
+  // Blues
   'blue-10': '#D8E6FB',
+  'blue-100': '#386EC4',
+  // App Colors
+  secondary: '#386EC4',
+  primary: '#0EC99C',
 };
 
 const sizes = [

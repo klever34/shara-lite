@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   blueButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors['blue-100'],
   },
   greenButton: {
     backgroundColor: colors['green-200'],
