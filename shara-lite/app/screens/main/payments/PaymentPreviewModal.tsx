@@ -61,7 +61,7 @@ export const PaymentPreviewModal = withModal(
             <Image
               resizeMode="contain"
               style={applyStyles('w-80 h-80')}
-              source={require('@/assets/images/shara_logo_red.png')}
+              source={require('@/assets/images/shara_logo.png')}
             />
             <SecureEmblem style={applyStyles({width: 48, height: 48})} />
           </View>

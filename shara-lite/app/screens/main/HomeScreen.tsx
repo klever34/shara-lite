@@ -52,7 +52,7 @@ export const HomeScreen = () => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header
-        style={applyStyles('bg-red-200')}
+        style={applyStyles('bg-primary')}
         headerRight={{
           options: [
             {
@@ -88,7 +88,7 @@ export const HomeScreen = () => {
         initialRouteName="TransactionsTab"
         tabBarOptions={{
           labelStyle: {fontFamily: 'Rubik-Regular'},
-          activeTintColor: colors['red-200'],
+          activeTintColor: colors.primary,
           inactiveTintColor: colors['gray-50'],
           style: applyStyles({height: navBarHeight}),
           tabStyle: applyStyles('py-20'),

@@ -335,7 +335,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                 <View style={applyStyles('flex-row px-32 mb-24')}>
                   <Text
                     style={applyStyles('text-400 leading-16 flex-1', {
-                      color: colors['red-200'],
+                      color: colors['green-100'],
                       textDecorationLine: 'underline',
                     })}>
                     {paymentLink}

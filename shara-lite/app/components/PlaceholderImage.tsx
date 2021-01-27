@@ -50,7 +50,7 @@ const PlaceholderImage = ({
         <ActivityIndicator
           size="small"
           animating={isLoading}
-          color={colors['red-200']}
+          color={colors['green-100']}
         />
       );
     }
@@ -73,9 +73,7 @@ const PlaceholderImage = ({
   return (
     <View
       style={applyStyles(
-        applyStyles('center w-40 h-40 rounded-40', {
-          backgroundColor: '#4D86E3',
-        }),
+        applyStyles('center w-40 h-40 rounded-40 bg-blue-100'),
         style,
       )}>
       {renderContent()}

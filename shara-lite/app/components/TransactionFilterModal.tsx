@@ -218,9 +218,8 @@ export const TransactionFilterModal = ({
                     onChange={() => handleStatusFilter(value)}>
                     <Text
                       style={applyStyles(
-                        `text-400 text-base ${
-                          isActive ? 'text-red-200' : 'text-black'
-                        }`,
+                        'text-base text-black',
+                        isActive ? 'text-700' : 'text-400',
                       )}>
                       {text}
                     </Text>

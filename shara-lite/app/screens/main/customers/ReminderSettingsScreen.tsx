@@ -83,7 +83,7 @@ export const ReminderSettingsScreen = withModal(
               size={24}
               name="bell"
               type="feathericons"
-              color={colors['red-200']}
+              color={colors['green-100']}
               style={applyStyles('mb-40')}
             />
             <Text style={applyStyles('mb-40 text-center text-700')}>
@@ -108,7 +108,7 @@ export const ReminderSettingsScreen = withModal(
               size={24}
               name="bell"
               type="feathericons"
-              color={colors['red-200']}
+              color={colors['green-100']}
               style={applyStyles('mb-40')}
             />
             <Text style={applyStyles('mb-40 text-center text-700')}>

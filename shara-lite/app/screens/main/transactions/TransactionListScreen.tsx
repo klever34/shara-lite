@@ -166,7 +166,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               {strings('filter', {count: 1})}:{' '}
             </Text>
             <View style={applyStyles('flex-1')}>
-              <Text style={applyStyles('text-red-200 text-400')}>
+              <Text style={applyStyles('text-green-100 text-400')}>
                 {getFilterLabelText()}
               </Text>
             </View>
@@ -377,7 +377,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   size={80}
                   name="arrow-down"
                   type="feathericons"
-                  color={colors.primary}
+                  color={colors.secondary}
                 />
               </Animatable.View>
             </View>

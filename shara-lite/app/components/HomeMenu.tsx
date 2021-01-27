@@ -80,7 +80,7 @@ export const HomeMenu = ({closeModal}: HomeMenuProps) => {
               <View style={applyStyles('flex-row items-center py-16 px-16')}>
                 <Icon
                   type="feathericons"
-                  color={colors['red-100']}
+                  color={colors['green-100']}
                   name={icon}
                   size={24}
                   style={applyStyles('mr-8')}
