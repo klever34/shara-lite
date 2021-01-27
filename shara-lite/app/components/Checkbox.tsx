@@ -26,7 +26,7 @@ export const Checkbox = (props: CheckboxProps) => {
     rightLabel,
     containerStyle,
     disabled = false,
-    checkedColor = 'bg-red-200',
+    checkedColor = 'bg-green-100',
   } = props;
 
   const borderStyles = useMemo(() => {
@@ -34,7 +34,7 @@ export const Checkbox = (props: CheckboxProps) => {
       return {borderWidth: 2, borderColor: colors['gray-100']};
     }
     if (isChecked) {
-      return {borderWidth: 2, borderColor: colors['red-200']};
+      return {borderWidth: 2, borderColor: colors['green-100']};
     }
     return {borderWidth: 2, borderColor: colors['gray-50']};
   }, [disabled, isChecked]);

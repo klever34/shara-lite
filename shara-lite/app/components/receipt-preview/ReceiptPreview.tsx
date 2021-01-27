@@ -418,7 +418,7 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
 
   return (
     <View style={applyStyles('flex-1 bg-white')}>
-      <Text style={applyStyles('py-24 text-700 text-red-200 text-center')}>
+      <Text style={applyStyles('py-24 text-700 text-green-100 text-center')}>
         Your receipt was created succesfully
       </Text>
       {!receiptImage ? (
@@ -473,7 +473,7 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
             <View style={applyStyles('py-16 px-8 center w-full')}>
               <Text
                 style={applyStyles(
-                  'text-700 text-red-200 text-uppercase text-base text-center',
+                  'text-700 text-green-100 text-uppercase text-base text-center',
                   {
                     textDecorationLine: 'underline',
                   },

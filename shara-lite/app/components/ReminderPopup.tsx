@@ -229,8 +229,8 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
             leftLabel={
               <Text
                 style={applyStyles(
-                  'text-400 text-base',
-                  noReminders ? 'text-red-200' : 'text-black',
+                  'text-base text-black',
+                  noReminders ? 'text-700' : 'text-400',
                 )}>
                 None (No reminder will be sent)
               </Text>
@@ -262,8 +262,8 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
               leftLabel={
                 <Text
                   style={applyStyles(
-                    'text-400 text-base',
-                    findReminder(value) ? 'text-red-200' : 'text-black',
+                    'text-base text-black',
+                    findReminder(value) ? 'text-700' : 'text-400',
                   )}>
                   {label}
                 </Text>

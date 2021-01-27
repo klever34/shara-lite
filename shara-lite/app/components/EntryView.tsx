@@ -80,7 +80,7 @@ export const EntryView = withModal(
           icon: 'dollar-sign',
           onPress: onRecordSale,
           color: {
-            primary: colors.blue,
+            primary: colors['blue-100'],
             pastel: colors['blue-10'],
           },
         },
@@ -91,7 +91,7 @@ export const EntryView = withModal(
           onPress: onRecordCollection,
           color: {
             primary: colors['green-200'],
-            pastel: colors['green-10'],
+            pastel: colors['green-50'],
           },
         },
       ];
@@ -187,7 +187,7 @@ export const EntryButton = ({container, ghost}: EntryButtonProps) => {
           return (
             <View
               style={applyStyles(
-                'w-60 h-60 my-12 rounded-32 center bg-primary relative',
+                'w-60 h-60 my-12 rounded-32 center bg-secondary relative',
               )}>
               <Keypad width={24} height={24} />
             </View>

@@ -12,10 +12,10 @@ export interface CircleWithIconProps {
 export const CircleWithIcon = ({
   icon,
   style,
-  iconColor = colors['red-200'],
+  iconColor = colors['green-100'],
 }: CircleWithIconProps) => {
   return (
-    <View style={applyStyles('center w-32 h-32 rounded-16 bg-red-10', style)}>
+    <View style={applyStyles('center w-32 h-32 rounded-16 bg-green-50', style)}>
       <Icon size={16} name={icon} type="feathericons" color={iconColor} />
     </View>
   );

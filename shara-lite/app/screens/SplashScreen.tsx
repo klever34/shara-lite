@@ -8,7 +8,7 @@ import {
   StyleSheet,
   View,
 } from 'react-native';
-import {colors, dimensions} from '../styles';
+import {colors, dimensions, applySpacing} from '../styles';
 import {
   getAuthService,
   getNavigationService,
@@ -112,7 +112,7 @@ const SplashScreen = () => {
   return (
     <View style={styles.container}>
       <Image
-        source={require('../assets/images/shara-lite_logo.png')}
+        source={require('../assets/images/shara_logo.png')}
         style={styles.image}
       />
       <Text style={styles.text}>{strings('shara_tagline')}</Text>
@@ -131,17 +131,17 @@ const styles = StyleSheet.create({
   },
   image: {
     width: '80%',
-    height: '25%',
-    marginBottom: 24,
+    height: '10%',
+    marginBottom: applySpacing(24),
     resizeMode: 'contain',
   },
   text: {
     color: colors.black,
-    fontSize: 22,
+    fontSize: applySpacing(22),
     fontFamily: 'Roboto-Bold',
-    maxWidth: 300,
+    maxWidth: applySpacing(300),
     textAlign: 'center',
-    lineHeight: 32,
+    lineHeight: applySpacing(32),
   },
 });
 

@@ -89,7 +89,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
           <View style={applyStyles('px-16')}>
             <View style={applyStyles('pt-16 pb-32')}>
               <Text style={applyStyles('text-gray-300 text-400 text-xl')}>
-                {strings('edit_transaction')}
+                {strings('transaction.edit_transaction')}
               </Text>
             </View>
             <View>
@@ -124,8 +124,8 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
                     label={strings('sale.fields.credit.label')}
                     returnKeyType="next"
                     value={values.credit_amount}
-                    style={applyStyles('text-red-100')}
-                    iconStyle={applyStyles('text-red-100')}
+                    style={applyStyles('text-green-100')}
+                    iconStyle={applyStyles('text-green-100')}
                     onChangeText={(text) => {
                       const value = toNumber(text);
                       setFieldValue('credit_amount', value);

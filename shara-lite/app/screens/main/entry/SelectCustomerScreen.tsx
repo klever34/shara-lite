@@ -244,12 +244,14 @@ export const SelectCustomerListScreen = withModal(
               )}>
               <View style={applyStyles('flex-row items-center')}>
                 <View
-                  style={applyStyles('w-36 h-36 rounded-36 center bg-red-50')}>
+                  style={applyStyles(
+                    'w-36 h-36 rounded-36 center bg-green-50',
+                  )}>
                   <Icon
                     size={18}
                     name="plus"
                     type="feathericons"
-                    color={colors['red-100']}
+                    color={colors['green-200']}
                   />
                 </View>
                 <Text
@@ -264,7 +266,7 @@ export const SelectCustomerListScreen = withModal(
                   size={24}
                   name="plus"
                   type="feathericons"
-                  color={colors['red-100']}
+                  color={colors['green-100']}
                 />
               </View>
             </View>
@@ -281,12 +283,12 @@ export const SelectCustomerListScreen = withModal(
             )}>
             <View style={applyStyles('flex-row items-center')}>
               <View
-                style={applyStyles('w-36 h-36 rounded-36 center bg-red-50')}>
+                style={applyStyles('w-36 h-36 rounded-24 center bg-green-50')}>
                 <Icon
                   size={18}
                   name="users"
                   type="feathericons"
-                  color={colors['red-100']}
+                  color={colors['green-200']}
                 />
               </View>
               <Text style={applyStyles('pl-8 text-base')}>
@@ -298,7 +300,7 @@ export const SelectCustomerListScreen = withModal(
                 size={24}
                 name="chevron-right"
                 type="feathericons"
-                color={colors['red-100']}
+                color={colors['green-100']}
               />
             </View>
           </View>
@@ -307,12 +309,12 @@ export const SelectCustomerListScreen = withModal(
         {customer && (
           <View
             style={applyStyles(
-              'flex-row items-center border-b-1 border-gray-20 px-16 py-12 bg-red-200',
+              'flex-row items-center border-b-1 border-gray-20 px-16 py-12 bg-green-200',
             )}>
             <PlaceholderImage
               text={customer?.name ?? ''}
               style={applyStyles('bg-white')}
-              textStyle={applyStyles('text-red-200')}
+              textStyle={applyStyles('text-green-200')}
               image={customer.image ? {uri: customer?.image} : undefined}
             />
             <View style={applyStyles('flex-1 ml-8')}>

@@ -1,12 +1,18 @@
-import {SearchFilter} from '@/components';
-import EmptyState from '@/components/EmptyState';
+import {SearchFilter, Text} from '@/components';
 import {CustomerListItem} from '@/components/CustomerListItem';
+import EmptyState from '@/components/EmptyState';
 import Icon from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {
+  FilterOption,
+  TransactionFilterModal,
+} from '@/components/TransactionFilterModal';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {ICustomer} from '@/models';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getI18nService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles, colors, dimensions} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -15,16 +21,8 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Text} from '@/components';
 import {FlatList, ListRenderItemInfo, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import Touchable from '@/components/Touchable';
-import {
-  FilterOption,
-  TransactionFilterModal,
-} from '@/components/TransactionFilterModal';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -223,7 +221,7 @@ export const CustomerListScreen = withModal(
     const getFilterLabelText = useCallback(() => {
       const activeOption = filterOptions?.find((item) => item.value === filter);
       return (
-        <Text style={applyStyles('text-red-200 text-400 text-capitalize')}>
+        <Text style={applyStyles('text-green-100 text-400 text-capitalize')}>
           {activeOption?.text}
         </Text>
       );
@@ -366,10 +364,7 @@ export const CustomerListScreen = withModal(
                 {strings('customers.start_adding')}
               </Text>
             </View>
-            <View
-              style={applyStyles('center p-16 bottom', {
-                height: dimensions.fullHeight - 100,
-              })}>
+            <View style={applyStyles('center p-16 bottom')}>
               <Animatable.View
                 duration={200}
                 animation={{

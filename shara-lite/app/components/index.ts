@@ -17,6 +17,7 @@ export * from './Header';
 export * from './HeaderRight';
 export * from './AuthView';
 export * from './settings';
+export * from './Image';
 export * from './FilterButton';
 export * from './FilterButtonGroup';
 export * from './DatePicker';

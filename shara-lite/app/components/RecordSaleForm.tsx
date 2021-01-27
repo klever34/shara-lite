@@ -120,7 +120,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             size={24}
             name="bell"
             type="feathericons"
-            color={colors['red-200']}
+            color={colors['green-100']}
             style={applyStyles('mb-40')}
           />
           <Text style={applyStyles('mb-40 text-center text-700')}>
@@ -148,7 +148,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             size={24}
             name="bell"
             type="feathericons"
-            color={colors['red-200']}
+            color={colors['green-100']}
             style={applyStyles('mb-40')}
           />
           <Text style={applyStyles('mb-40 text-center text-700')}>
@@ -206,7 +206,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             size={24}
             name="bell"
             type="feathericons"
-            color={colors['red-200']}
+            color={colors['green-100']}
             style={applyStyles('mb-40')}
           />
           <Text style={applyStyles('mb-40 text-center text-700')}>
@@ -261,8 +261,8 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             label={strings('sale.fields.credit.label')}
             returnKeyType="next"
             value={values.credit_amount}
-            style={applyStyles('text-red-100')}
-            iconStyle={applyStyles('text-red-100')}
+            style={applyStyles('text-green-200')}
+            iconStyle={applyStyles('text-green-200')}
             onChangeText={(text) => {
               const value = toNumber(text);
               setFieldValue('credit_amount', value);
