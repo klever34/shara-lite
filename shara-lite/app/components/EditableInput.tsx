@@ -36,6 +36,7 @@ export const EditableInput = forwardRef<TextInput, EditableInputProps>(
           </Touchable>
         ) : (
           <AppInput
+            autoFocus
             onBlur={handleInputBlur}
             ref={mergeRefs([inputRef, ref])}
             {...rest}
