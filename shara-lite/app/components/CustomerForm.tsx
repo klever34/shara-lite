@@ -139,7 +139,7 @@ export const CustomerForm = ({
           })}
         />
         <Button
-          title={strings('Save')}
+          title={strings('save')}
           variantColor="red"
           isLoading={isLoading}
           onPress={handleSubmit}

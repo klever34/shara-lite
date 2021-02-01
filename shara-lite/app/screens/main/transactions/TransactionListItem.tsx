@@ -1,13 +1,13 @@
+import {Text} from '@/components';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {getI18nService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
-import {Text} from '@/components';
 import React, {useCallback} from 'react';
 import {View, ViewStyle} from 'react-native';
 import Markdown from 'react-native-markdown-display';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -155,7 +155,7 @@ export const TransactionListItem = ({
           <View style={applyStyles('pl-4')}>
             <View>{renderTransactionText()}</View>
             {!!note && (
-              <Text style={applyStyles('text-gray-100 text-xxs pt-4')}>
+              <Text style={applyStyles('text-gray-100 text-base pt-4')}>
                 {note}
               </Text>
             )}
