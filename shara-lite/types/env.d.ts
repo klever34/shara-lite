@@ -1,4 +1,6 @@
 declare module 'react-native-config' {
+  export const facebook_app_id: string;
+
   export const app_name: string;
 
   export const PUBNUB_SUB_KEY: string;
