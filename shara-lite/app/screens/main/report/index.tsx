@@ -18,7 +18,7 @@ import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {Text} from '@/components';
 import {Alert, FlatList, SafeAreaView, View} from 'react-native';
 import FileViewer from 'react-native-file-viewer';
-import {useReceiptList} from '../transactions/hook';
+import {useTransactionList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
 
@@ -42,7 +42,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     filteredReceipts,
     handleStatusFilter,
     handleReceiptSearch,
-  } = useReceiptList();
+  } = useTransactionList();
 
   useLayoutEffect(() => {
     navigation.setOptions({

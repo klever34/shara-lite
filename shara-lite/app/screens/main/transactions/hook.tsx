@@ -1,5 +1,12 @@
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import uniqBy from 'lodash/uniqBy';
 import {getI18nService} from '@/services';
 import {FilterOption} from '@/components/TransactionFilterModal';
@@ -8,6 +15,25 @@ import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 
 const strings = getI18nService().strings;
+
+interface TransactionListContextValue {
+  filter?: string;
+  searchTerm: string;
+  totalAmount: number;
+  filterEndDate: Date;
+  filterStartDate: Date;
+  collectedAmount: number;
+  outstandingAmount: number;
+  filterOptions?: FilterOption[];
+  owedReceipts: (IReceipt & Realm.Object)[];
+  handleReceiptSearch: (text: string) => void;
+  filteredReceipts: Realm.Results<IReceipt & Realm.Object>;
+  handleStatusFilter: (payload: {
+    status?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }) => void;
+}
 
 export type UseReceiptListProps = {
   receipts?: IReceipt[];
@@ -72,7 +98,7 @@ export const useReceiptList = ({
       [],
     );
 
-  const handleReceiptSearch = useCallback((text) => {
+  const handleReceiptSearch = useCallback((text: string) => {
     setSearchTerm(text);
   }, []);
 
@@ -288,5 +314,26 @@ export const useReceiptList = ({
       handleStatusFilter,
       handleReceiptSearch,
     ],
+  );
+};
+
+const TransactionListContext = createContext<TransactionListContextValue>(
+  {} as TransactionListContextValue,
+);
+
+export const useTransactionList = (): TransactionListContextValue => {
+  return useContext(TransactionListContext);
+};
+
+export const TransactionListProvider = ({
+  children,
+}: {
+  children: React.ReactNode;
+}) => {
+  const data = useReceiptList();
+  return (
+    <TransactionListContext.Provider value={data}>
+      {children}
+    </TransactionListContext.Provider>
   );
 };

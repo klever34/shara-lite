@@ -15,7 +15,7 @@ import {Text} from '@/components';
 import React, {useCallback, useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
-import {useReceiptList} from './hook';
+import {useTransactionList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
 import {getI18nService} from '@/services';
 // TODO: Translate
@@ -38,7 +38,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     outstandingAmount,
     handleStatusFilter,
     handleReceiptSearch,
-  } = useReceiptList();
+  } = useTransactionList();
 
   useLayoutEffect(() => {
     navigation.setOptions({
