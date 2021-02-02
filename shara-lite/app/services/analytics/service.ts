@@ -171,37 +171,6 @@ export class AnalyticsService implements IAnalyticsService {
         RNUxcam.optIntoSchematicRecordings();
         RNUxcam.setAutomaticScreenNameTagging(false);
         RNUxcam.startWithKey(Config.UXCAM_KEY);
-
-        this.storageService
-          .getItem('@shara/fetch_install_referrer')
-          .then((fetch_install_referrer) => {
-            if (fetch_install_referrer === null) {
-              PlayInstallReferrer.getInstallReferrerInfo(
-                (
-                  installReferrerInfo: {
-                    installReferrer: string;
-                    referrerClickTimestampSeconds: string;
-                    installBeginTimestampSeconds: string;
-                    referrerClickTimestampServerSeconds: string;
-                    installBeginTimestampServerSeconds: string;
-                    installVersion: string;
-                    googlePlayInstant: string;
-                  },
-                  error: {responseCode: string; message: string},
-                ) => {
-                  if (!error) {
-                    this.installReferrer = parseQueryString(
-                      installReferrerInfo.installReferrer,
-                    ) as {[key: string]: string};
-                    this.storageService.setItem(
-                      '@shara/fetch_install_referrer',
-                      true,
-                    );
-                  }
-                },
-              );
-            }
-          });
       }
     } catch (e) {
       throw e;
@@ -209,6 +178,41 @@ export class AnalyticsService implements IAnalyticsService {
   }
 
   async setUser(user: User): Promise<void> {
+    try {
+      this.installReferrer = await this.storageService.getItem(
+        '@shara/install_referrer',
+      );
+      if (this.installReferrer === null) {
+        await new Promise((resolve, reject) => {
+          PlayInstallReferrer.getInstallReferrerInfo(
+            (
+              installReferrerInfo: {
+                installReferrer: string;
+                referrerClickTimestampSeconds: string;
+                installBeginTimestampSeconds: string;
+                referrerClickTimestampServerSeconds: string;
+                installBeginTimestampServerSeconds: string;
+                installVersion: string;
+                googlePlayInstant: string;
+              },
+              error: {responseCode: string; message: string},
+            ) => {
+              if (!error) {
+                this.installReferrer = parseQueryString(
+                  installReferrerInfo.installReferrer,
+                ) as {[key: string]: string};
+                this.storageService
+                  .setItem('@shara/install_referrer', this.installReferrer)
+                  .then(resolve)
+                  .catch(reject);
+              } else {
+                reject(error);
+              }
+            },
+          );
+        });
+      }
+    } catch (e) {}
     try {
       const userFields: (keyof User)[] = [
         'firstname',
