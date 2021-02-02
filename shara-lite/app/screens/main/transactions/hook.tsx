@@ -88,35 +88,35 @@ export const useReceiptList = ({
           break;
         case 'single-day':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date <= $1',
+            'created_at >= $0 && created_at <= $1',
             filterStartDate,
             filterEndDate,
           );
-          setAppliedFilter('transaction_date >= $0 && transaction_date <= $1');
+          setAppliedFilter('created_at >= $0 && created_at <= $1');
           break;
         case '1-week':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date < $1',
+            'created_at >= $0 && created_at < $1',
             filterStartDate,
             filterEndDate,
           );
-          setAppliedFilter('transaction_date >= $0 && transaction_date < $1');
+          setAppliedFilter('created_at >= $0 && created_at < $1');
           break;
         case '1-month':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date < $1',
+            'created_at >= $0 && created_at < $1',
             filterStartDate,
             filterEndDate,
           );
-          setAppliedFilter('transaction_date >= $0 && transaction_date < $1');
+          setAppliedFilter('created_at >= $0 && created_at < $1');
           break;
         case 'date-range':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date < $1',
+            'created_at >= $0 && created_at < $1',
             filterStartDate,
             filterEndDate,
           );
-          setAppliedFilter('transaction_date >= $0 && transaction_date < $1');
+          setAppliedFilter('created_at >= $0 && created_at < $1');
           break;
         default:
           userReceipts = userReceipts;
@@ -129,7 +129,7 @@ export const useReceiptList = ({
       );
     }
     return (userReceipts.sorted(
-      'transaction_date',
+      'created_at',
       true,
     ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
@@ -145,28 +145,28 @@ export const useReceiptList = ({
           break;
         case 'single-day':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date <= $1',
+            'created_at >= $0 && created_at <= $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case '1-week':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date < $1',
+            'created_at >= $0 && created_at < $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case '1-month':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date < $1',
+            'created_at >= $0 && created_at < $1',
             filterStartDate,
             filterEndDate,
           );
           break;
         case 'date-range':
           userReceipts = userReceipts.filtered(
-            'transaction_date >= $0 && transaction_date < $1',
+            'created_at >= $0 && created_at < $1',
             filterStartDate,
             filterEndDate,
           );
@@ -179,7 +179,7 @@ export const useReceiptList = ({
     if (searchTerm) {
       userReceipts = userReceipts
         .filtered(`customer.name CONTAINS[c] "${searchTerm}"`)
-        .sorted('transaction_date', true);
+        .sorted('created_at', true);
     }
     return userReceipts.filter((item) => !item.isPaid);
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);

@@ -78,12 +78,11 @@ export const ReportScreen = withModal(({openModal}: Props) => {
 
   const getReportFilterRange = useCallback(() => {
     if (filter === 'all') {
-      return `${format(
-        filteredReceipts[filteredReceipts.length - 1]?.transaction_date ??
-          new Date(),
-        'dd MMM, yyyy',
-      )} - ${format(
-        filteredReceipts[0]?.transaction_date ?? new Date(),
+      const startDate =
+        filteredReceipts[filteredReceipts.length - 1]?.created_at ?? new Date();
+      const endDate = filteredReceipts[0]?.created_at ?? new Date();
+      return `${format(startDate, 'dd MMM, yyyy')} - ${format(
+        endDate,
         'dd MMM, yyyy',
       )}`;
     }
@@ -105,7 +104,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         outstandingAmount,
         filterRange: getReportFilterRange(),
         businessName: getAuthService().getBusinessInfo().name,
-        data: filteredReceipts.sorted('transaction_date', false),
+        data: filteredReceipts.sorted('created_at', false),
       });
       closeModal();
       await FileViewer.open(pdfFilePath, {showOpenWithDialog: true});

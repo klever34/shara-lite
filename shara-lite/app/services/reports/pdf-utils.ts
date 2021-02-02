@@ -102,7 +102,7 @@ const userReportTableHTML = ({data}: {data: IReceipt[]}) => `
       (item) => `
       <div style="display: flex;border: 1px solid #ECECEC;align-items: center;">
         <p style="margin:0;width: 15%;padding: 12px;font-size:12px;">${format(
-          item.transaction_date ?? new Date(),
+          item.created_at ?? new Date(),
           'dd MMM yyyy',
         )}</p>
         <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-size:12px;">${
@@ -142,7 +142,7 @@ const customerReportTableHTML = ({data}: {data: IReceipt[]}) => {
         return `
               <div style="display: flex;border: 1px solid #ECECEC;align-items: center;">
                 <p style="margin:0;width: 15%;padding: 12px;font-size:12px;">${format(
-                  item.transaction_date ?? new Date(),
+                  item.created_at ?? new Date(),
                   'dd MMM yyyy',
                 )}</p>
                 <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-size:12px;">${

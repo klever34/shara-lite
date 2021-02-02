@@ -378,7 +378,7 @@ export const CustomerListScreen = withModal(
                   size={80}
                   name="arrow-down"
                   type="feathericons"
-                  color={colors.primary}
+                  color={colors.secondary}
                 />
               </Animatable.View>
             </View>
