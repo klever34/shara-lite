@@ -120,6 +120,7 @@
     "@types/pubnub": "^4.28.1",
     "@types/query-string": "^6.3.0",
     "@types/react-native": "^0.63.30",
+    "@types/react-native-fbsdk": "^3.0.0",
     "@types/react-native-push-notification": "^5.0.5",
     "@types/react-native-share": "^3.3.0",
     "@types/react-native-vector-icons": "^6.4.5",

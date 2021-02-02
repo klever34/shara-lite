@@ -9,6 +9,7 @@ import getFirebaseCrashlytics from '@react-native-firebase/crashlytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 import * as Sentry from '@sentry/react-native';
 import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
+import {AppEventsLogger} from 'react-native-fbsdk';
 
 export type SharaAppEventsProperties = {
   // Chat
@@ -236,6 +237,7 @@ export class AnalyticsService implements IAnalyticsService {
       await this.firebaseAnalytics.logEvent(eventName, eventData);
       await segmentAnalytics.track(eventName, nextEventData);
       RNUxcam.logEvent(eventName, nextEventData);
+      AppEventsLogger.logEvent(eventName, nextEventData ?? {});
     } catch (e) {
       throw e;
     }
