@@ -1,4 +1,4 @@
-import {Button, DatePicker} from '@/components';
+import {Button, DatePicker, Text} from '@/components';
 import {Icon} from '@/components/Icon';
 import {Page} from '@/components/Page';
 import {ReminderPopup} from '@/components/ReminderPopup';
@@ -14,9 +14,9 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {format} from 'date-fns';
 import React, {useCallback, useMemo, useState} from 'react';
-import {Text} from '@/components';
 import {SafeAreaView, View} from 'react-native';
 import Config from 'react-native-config';
+import Markdown from 'react-native-markdown-display';
 import {MainStackParamList} from '..';
 
 const strings = getI18nService().strings;
@@ -47,30 +47,38 @@ export const ReminderSettingsScreen = withModal(
         customer._id ? `?customer=${String(customer._id)}` : ''
       }`;
 
-    const paymentReminderMessage = `${strings('salutation', {
-      name: customer?.name ?? '',
-    })} ${
-      businessInfo?.name || user?.firstname
-        ? strings('payment_reminder.thank_you_for_doing_business', {
-            business_name: businessInfo?.name || user?.firstname,
-          })
-        : ''
-    } ${
-      customer.balance && customer.balance < 0
-        ? dueDate
-          ? strings('you_owe_message_with_due_date', {
-              credit_amount: amountWithCurrency(customer.balance),
-              due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
-            })
-          : strings('you_owe_message', {
-              credit_amount: amountWithCurrency(customer.balance),
-            })
-        : ''
-    }\n\n${
-      paymentLink
-        ? strings('payment_link_message', {payment_link: paymentLink})
-        : ''
-    }\n\n${strings('powered_by_shara')}`;
+    const getPaymentReminderMessage = useCallback(
+      (toShare: boolean = true) => {
+        let link = paymentLink
+          ? strings('payment_link_message', {payment_link: paymentLink})
+          : '';
+        if (!toShare) {
+          link = paymentLink ? `[${link}](${paymentLink})` : '';
+        }
+
+        return `${strings('salutation', {
+          name: customer?.name ?? '',
+        })} ${
+          businessInfo?.name || user?.firstname
+            ? strings('payment_reminder.thank_you_for_doing_business', {
+                business_name: businessInfo?.name || user?.firstname,
+              })
+            : ''
+        } ${
+          customer.balance && customer.balance < 0
+            ? dueDate
+              ? strings('you_owe_message_with_due_date', {
+                  credit_amount: amountWithCurrency(customer.balance),
+                  due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+                })
+              : strings('you_owe_message', {
+                  credit_amount: amountWithCurrency(customer.balance),
+                })
+            : ''
+        }\n\n${link}\n\n${strings('powered_by_shara')}`;
+      },
+      [user, dueDate, customer, businessInfo, paymentLink],
+    );
 
     const handleOpenComingSoonModal = useCallback(() => {
       getAnalyticsService().logEvent('comingSoonPrompted', {
@@ -111,9 +119,14 @@ export const ReminderSettingsScreen = withModal(
               color={colors['green-100']}
               style={applyStyles('mb-40')}
             />
-            <Text style={applyStyles('mb-40 text-center text-700')}>
-              {paymentReminderMessage}
-            </Text>
+            <Markdown
+              style={{
+                body: applyStyles('mb-40 center'),
+                textgroup: applyStyles('text-700 text-center'),
+                link: applyStyles('text-secondary'),
+              }}>
+              {getPaymentReminderMessage(false)}
+            </Markdown>
             <Button
               onPress={closeModal}
               title={strings('dismiss')}
@@ -123,7 +136,7 @@ export const ReminderSettingsScreen = withModal(
           </View>
         ),
       });
-    }, [openModal, paymentReminderMessage]);
+    }, [openModal, getPaymentReminderMessage]);
 
     const handleDueDateChange = useCallback(
       async (date?: Date) => {
@@ -227,7 +240,7 @@ export const ReminderSettingsScreen = withModal(
           icon: 'mail',
           leftSection: {
             title: strings('reminder_message_title'),
-            caption: paymentReminderMessage,
+            caption: getPaymentReminderMessage(),
             captionNumberOfLines: 1,
           },
           onPress: handleOpenReminderMessageModal,
@@ -243,8 +256,8 @@ export const ReminderSettingsScreen = withModal(
       ];
     }, [
       reminders,
-      paymentReminderMessage,
       handleOpenReminderPopup,
+      getPaymentReminderMessage,
       handleOpenComingSoonModal,
       customer.disable_reminders,
       handleOpenReminderMessageModal,
