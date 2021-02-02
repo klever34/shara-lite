@@ -10,6 +10,9 @@ import {utils as firebaseUtils} from '@react-native-firebase/app';
 import * as Sentry from '@sentry/react-native';
 import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
 import {AppEventsLogger} from 'react-native-fbsdk';
+import {PlayInstallReferrer} from 'react-native-play-install-referrer';
+import {parse as parseQueryString} from 'query-string';
+import {IStorageService} from '@/services/storage';
 
 export type SharaAppEventsProperties = {
   // Chat
@@ -150,6 +153,9 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   private firebaseAnalytics = getFirebaseAnalytics();
   private firebaseCrashlytics = getFirebaseCrashlytics();
+  private installReferrer: {[key: string]: string} | null = null;
+
+  constructor(private storageService: IStorageService) {}
 
   async initialize(): Promise<void> {
     try {
@@ -165,6 +171,37 @@ export class AnalyticsService implements IAnalyticsService {
         RNUxcam.optIntoSchematicRecordings();
         RNUxcam.setAutomaticScreenNameTagging(false);
         RNUxcam.startWithKey(Config.UXCAM_KEY);
+
+        this.storageService
+          .getItem('@shara/fetch_install_referrer')
+          .then((fetch_install_referrer) => {
+            if (fetch_install_referrer === null) {
+              PlayInstallReferrer.getInstallReferrerInfo(
+                (
+                  installReferrerInfo: {
+                    installReferrer: string;
+                    referrerClickTimestampSeconds: string;
+                    installBeginTimestampSeconds: string;
+                    referrerClickTimestampServerSeconds: string;
+                    installBeginTimestampServerSeconds: string;
+                    installVersion: string;
+                    googlePlayInstant: string;
+                  },
+                  error: {responseCode: string; message: string},
+                ) => {
+                  if (!error) {
+                    this.installReferrer = parseQueryString(
+                      installReferrerInfo.installReferrer,
+                    ) as {[key: string]: string};
+                    this.storageService.setItem(
+                      '@shara/fetch_install_referrer',
+                      true,
+                    );
+                  }
+                },
+              );
+            }
+          });
       }
     } catch (e) {
       throw e;
@@ -191,6 +228,11 @@ export class AnalyticsService implements IAnalyticsService {
         },
         {},
       );
+      if (this.installReferrer) {
+        Object.keys(this.installReferrer).forEach((utmKey) => {
+          userData[utmKey] = this.installReferrer?.[utmKey] ?? '';
+        });
+      }
       userData.environment = Config.ENVIRONMENT;
       userData.businessName = user.businesses?.[0]?.name ?? '';
       userData.referralCode = user.referrer_code ?? '';
