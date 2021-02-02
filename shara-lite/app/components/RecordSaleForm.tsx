@@ -16,6 +16,7 @@ import {omit} from 'lodash';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
 import {TextInput, View} from 'react-native';
 import Config from 'react-native-config';
+import Markdown from 'react-native-markdown-display';
 import {CircleWithIcon} from './CircleWithIcon';
 import {EditableInput} from './EditableInput';
 import {Icon} from './Icon';
@@ -77,30 +78,38 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
       customer?._id ? `?customer=${String(customer?._id)}` : ''
     }`;
 
-  const paymentReminderMessage = `${strings('salutation', {
-    name: customer?.name ?? '',
-  })} ${
-    businessInfo?.name || user?.firstname
-      ? strings('payment_reminder.thank_you_for_doing_business', {
-          business_name: businessInfo?.name || user?.firstname,
-        })
-      : ''
-  } ${
-    values.credit_amount
-      ? dueDate
-        ? strings('you_owe_message_with_due_date', {
-            credit_amount: amountWithCurrency(values.credit_amount),
-            due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
-          })
-        : strings('you_owe_message', {
-            credit_amount: amountWithCurrency(values.credit_amount),
-          })
-      : ''
-  }\n\n${
-    paymentLink
-      ? strings('payment_link_message', {payment_link: paymentLink})
-      : ''
-  }\n\n${strings('powered_by_shara')}`;
+  const getPaymentReminderMessage = useCallback(
+    (clickable: boolean = false) => {
+      let link = paymentLink
+        ? strings('payment_link_message', {payment_link: paymentLink})
+        : '';
+      if (clickable) {
+        link = paymentLink ? `[${link}](${paymentLink})` : '';
+      }
+
+      return `${strings('salutation', {
+        name: customer?.name ?? '',
+      })} ${
+        businessInfo?.name || user?.firstname
+          ? strings('payment_reminder.thank_you_for_doing_business', {
+              business_name: businessInfo?.name || user?.firstname,
+            })
+          : ''
+      } ${
+        values.credit_amount
+          ? dueDate
+            ? strings('you_owe_message_with_due_date', {
+                credit_amount: amountWithCurrency(values.credit_amount),
+                due_date: format(new Date(dueDate), 'MMM dd, yyyy'),
+              })
+            : strings('you_owe_message', {
+                credit_amount: amountWithCurrency(values.credit_amount),
+              })
+          : ''
+      }\n\n${link}\n\n${strings('powered_by_shara')}`;
+    },
+    [user, values, dueDate, customer, businessInfo, paymentLink],
+  );
 
   const handleOpenSelectCustomer = useCallback(() => {
     navigation.navigate('SelectCustomerList', {
@@ -209,9 +218,14 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             color={colors['green-100']}
             style={applyStyles('mb-40')}
           />
-          <Text style={applyStyles('mb-40 text-center text-700')}>
-            {paymentReminderMessage}
-          </Text>
+          <Markdown
+            style={{
+              body: applyStyles('mb-40 center'),
+              textgroup: applyStyles('text-700 text-center'),
+              link: applyStyles('text-secondary'),
+            }}>
+            {getPaymentReminderMessage(true)}
+          </Markdown>
           <Button
             onPress={closeModal}
             title={strings('dismiss')}
@@ -221,7 +235,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
         </View>
       ),
     });
-  }, [openModal, paymentReminderMessage]);
+  }, [openModal, getPaymentReminderMessage]);
 
   useEffect(() => {
     if (customer) {
@@ -393,7 +407,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
               style={applyStyles('py-12 px-0')}
               leftSection={{
                 title: strings('reminder_message_title'),
-                caption: paymentReminderMessage,
+                caption: getPaymentReminderMessage(),
                 captionNumberOfLines: 1,
               }}
               onPress={handleOpenReminderMessageModal}

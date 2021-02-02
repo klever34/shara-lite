@@ -48,11 +48,11 @@ export const ReminderSettingsScreen = withModal(
       }`;
 
     const getPaymentReminderMessage = useCallback(
-      (toShare: boolean = true) => {
+      (clickable: boolean = false) => {
         let link = paymentLink
           ? strings('payment_link_message', {payment_link: paymentLink})
           : '';
-        if (!toShare) {
+        if (clickable) {
           link = paymentLink ? `[${link}](${paymentLink})` : '';
         }
 
@@ -125,7 +125,7 @@ export const ReminderSettingsScreen = withModal(
                 textgroup: applyStyles('text-700 text-center'),
                 link: applyStyles('text-secondary'),
               }}>
-              {getPaymentReminderMessage(false)}
+              {getPaymentReminderMessage(true)}
             </Markdown>
             <Button
               onPress={closeModal}
