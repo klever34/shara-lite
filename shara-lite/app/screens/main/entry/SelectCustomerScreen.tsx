@@ -109,6 +109,7 @@ export const SelectCustomerListScreen = withModal(
           customer: createCustomerPayload,
           source: 'phonebook',
         });
+        console.log(newCustomer);
         handleSetCustomer(newCustomer);
       } catch (error) {
         handleError(error);

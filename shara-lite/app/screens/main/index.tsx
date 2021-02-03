@@ -97,8 +97,6 @@ const MainScreens = () => {
       if (realm && isSyncCompleted && payload) {
         if (payload.type === 'activity') {
           const activity = payload.activity;
-          console.log('saved');
-          console.log(activity);
           await saveActivity({activity});
         }
       }

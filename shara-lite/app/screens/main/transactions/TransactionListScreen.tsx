@@ -1,10 +1,11 @@
-import {SearchFilter, Text} from '@/components';
+import {Button, SearchFilter, Text} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
+import {IActivity} from '@/models/Activity';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getI18nService} from '@/services';
 import {useActivity} from '@/services/activity';
@@ -12,8 +13,10 @@ import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useLayoutEffect} from 'react';
+import {omit, orderBy} from 'lodash';
+import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
+import {ActivityListItem} from './ActivityListItem';
 import {useTransactionList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
 // TODO: Translate
@@ -22,11 +25,12 @@ const strings = getI18nService().strings;
 
 type Props = ModalWrapperFields;
 
+type IActivityData = IReceipt & IActivity;
+type ActivityData = IActivityData & {date?: Date; is_reminder: boolean};
+
 export const TransactionListScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
   const {getActivities} = useActivity();
-  const activities = getActivities();
-  console.log(activities.length, 'activites');
   const {
     filter,
     searchTerm,
@@ -40,6 +44,30 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     handleStatusFilter,
     handleReceiptSearch,
   } = useTransactionList();
+  const activities = getActivities();
+
+  const getActivitiesData = useCallback(() => {
+    const data = [...filteredReceipts, ...activities].map((item) => {
+      const t = omit(item) as IActivityData;
+      return {
+        ...t,
+        is_reminder: !!t.type,
+      };
+    });
+    return orderBy(data, 'created_at', 'desc');
+  }, [activities, filteredReceipts]);
+
+  const [activitiesData, setActivitiesData] = useState(getActivitiesData());
+
+  useEffect(() => {
+    setActivitiesData(getActivitiesData());
+  }, [filter, searchTerm, filteredReceipts, getActivitiesData]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      setActivitiesData(getActivitiesData());
+    });
+  }, [getActivitiesData, navigation]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -65,16 +93,62 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     [navigation],
   );
 
-  const renderTransactionItem = useCallback(
-    ({item: transaction}: {item: IReceipt}) => {
-      return (
+  const handleReminderItemSelect = useCallback(
+    (reminder: IActivity) => {
+      const {message, note} = reminder;
+      const closeModal = openModal('bottom-half', {
+        renderContent: () => (
+          <View style={applyStyles('bg-white center py-16 px-32')}>
+            <Icon
+              size={24}
+              name="bell"
+              type="feathericons"
+              color={colors['green-100']}
+              style={applyStyles('mb-40')}
+            />
+            <View style={applyStyles('mb-40 center', {width: 250})}>
+              <Text style={applyStyles('text-700 text-center')}>{message}</Text>
+              {!!note && (
+                <Text style={applyStyles('text-gray-100 pt-4')}>{note}</Text>
+              )}
+            </View>
+            <Button
+              onPress={closeModal}
+              title={strings('dismiss')}
+              variantColor="transparent"
+              style={applyStyles({width: 140})}
+            />
+          </View>
+        ),
+      });
+    },
+    [openModal],
+  );
+
+  const renderActivityItem = useCallback(
+    ({item: activity}: {item: ActivityData}) => {
+      const {is_reminder, type, data, message, ...transaction} = activity;
+      const reminder = {
+        type,
+        data,
+        message,
+        note: activity.note,
+        created_at: activity.created_at,
+      };
+
+      return !is_reminder ? (
         <TransactionListItem
           receipt={transaction}
           onPress={() => handleReceiptItemSelect(transaction)}
         />
+      ) : (
+        <ActivityListItem
+          reminder={reminder}
+          onPress={() => handleReminderItemSelect(reminder)}
+        />
       );
     },
-    [handleReceiptItemSelect],
+    [handleReceiptItemSelect, handleReminderItemSelect],
   );
 
   const handleOpenFilterModal = useCallback(() => {
@@ -332,10 +406,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         </View>
       )}
       <FlatList
-        data={filteredReceipts}
+        data={activitiesData}
         initialNumToRender={10}
         style={applyStyles('bg-white')}
-        renderItem={renderTransactionItem}
+        renderItem={renderActivityItem}
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         ListEmptyComponent={
           <EmptyState
