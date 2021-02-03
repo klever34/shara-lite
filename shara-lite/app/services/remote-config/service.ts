@@ -1,10 +1,10 @@
 import remoteConfig, {
   FirebaseRemoteConfigTypes,
 } from '@react-native-firebase/remote-config';
-import translations from '@/services/i18n/translations';
+import defaultTranslations from '@/services/i18n/translations';
 
 export const remoteConfigDefaults: RemoteConfig = {
-  translations,
+  translations: defaultTranslations,
   countries: {
     NGN: {
       default: 'en',
