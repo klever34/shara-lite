@@ -8,7 +8,6 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {IActivity} from '@/models/Activity';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getI18nService} from '@/services';
-import {useActivity} from '@/services/activity';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
@@ -30,7 +29,6 @@ type ActivityData = IActivityData & {date?: Date; is_reminder: boolean};
 
 export const TransactionListScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
-  const {getActivities} = useActivity();
   const {
     filter,
     searchTerm,
@@ -41,33 +39,30 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     filterStartDate,
     filteredReceipts,
     outstandingAmount,
+    filteredActivities,
     handleStatusFilter,
     handleReceiptSearch,
   } = useTransactionList();
-  const activities = getActivities();
 
   const getActivitiesData = useCallback(() => {
-    const data = [...filteredReceipts, ...activities].map((item) => {
-      const t = omit(item) as IActivityData;
+    const data = [...filteredReceipts, ...filteredActivities].map((item) => {
+      const t = omit(item) as IActivity;
       return {
         ...t,
         is_reminder: !!t.type,
       };
     });
     return orderBy(data, 'created_at', 'desc');
-  }, [activities, filteredReceipts]);
+  }, [filteredActivities, filteredReceipts]);
 
-  const [activitiesData, setActivitiesData] = useState(getActivitiesData());
+  const [activitiesData, setActivitiesData] = useState<any>(
+    getActivitiesData(),
+  );
 
   useEffect(() => {
     setActivitiesData(getActivitiesData());
-  }, [filter, searchTerm, filteredReceipts, getActivitiesData]);
-
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      setActivitiesData(getActivitiesData());
-    });
-  }, [getActivitiesData, navigation]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filter, searchTerm, filteredReceipts]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

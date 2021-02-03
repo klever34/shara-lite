@@ -8,7 +8,7 @@ import {Text, View, ViewStyle} from 'react-native';
 
 export type ActivityListItemProps = {
   style?: ViewStyle;
-  reminder?: IActivity;
+  reminder: IActivity;
   onPress?: () => void;
 };
 
@@ -17,8 +17,7 @@ export const ActivityListItem = ({
   reminder,
   onPress,
 }: ActivityListItemProps) => {
-  const {note, message, created_at} = reminder ?? {};
-  // console.log({note, message});
+  const {note, message, created_at} = reminder;
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
       <View

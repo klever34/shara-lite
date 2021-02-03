@@ -1,4 +1,12 @@
+import {FilterOption} from '@/components/TransactionFilterModal';
+import {IActivity} from '@/models/Activity';
+import {IReceipt} from '@/models/Receipt';
+import {getI18nService} from '@/services';
+import {useActivity} from '@/services/activity';
+import {useAppNavigation} from '@/services/navigation';
+import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
+import uniqBy from 'lodash/uniqBy';
 import React, {
   createContext,
   useCallback,
@@ -7,12 +15,6 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import uniqBy from 'lodash/uniqBy';
-import {getI18nService} from '@/services';
-import {FilterOption} from '@/components/TransactionFilterModal';
-import {IReceipt} from '@/models/Receipt';
-import {useAppNavigation} from '@/services/navigation';
-import {useTransaction} from '@/services/transaction';
 
 const strings = getI18nService().strings;
 
@@ -27,6 +29,7 @@ interface TransactionListContextValue {
   filterOptions?: FilterOption[];
   owedReceipts: (IReceipt & Realm.Object)[];
   handleReceiptSearch: (text: string) => void;
+  filteredActivities: Realm.Results<IActivity>;
   filteredReceipts: Realm.Results<IReceipt & Realm.Object>;
   handleStatusFilter: (payload: {
     status?: string;
@@ -47,13 +50,16 @@ export const useReceiptList = ({
   initialFilter = 'all',
 }: UseReceiptListProps = {}) => {
   const navigation = useAppNavigation();
+  const {getActivities} = useActivity();
   const {getTransactions} = useTransaction();
   receipts = receipts ?? getTransactions();
+  let activities = getActivities();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState<string | undefined>(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState('');
   const [allReceipts, setAllReceipts] = useState(receipts);
+  const [allActivities, setAllActivities] = useState(activities);
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
   );
@@ -210,6 +216,59 @@ export const useReceiptList = ({
     return userReceipts.filter((item) => !item.isPaid);
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
+  const filteredActivities = useMemo(() => {
+    let userActivities = allActivities;
+    if (filter) {
+      switch (filter) {
+        case 'all':
+          userActivities = userActivities;
+          setAppliedFilter('');
+          break;
+        case 'single-day':
+          userActivities = userActivities.filtered(
+            'created_at >= $0 && created_at <= $1',
+            filterStartDate,
+            filterEndDate,
+          );
+          setAppliedFilter('created_at >= $0 && created_at <= $1');
+          break;
+        case '1-week':
+          userActivities = userActivities.filtered(
+            'created_at >= $0 && created_at < $1',
+            filterStartDate,
+            filterEndDate,
+          );
+          setAppliedFilter('created_at >= $0 && created_at < $1');
+          break;
+        case '1-month':
+          userActivities = userActivities.filtered(
+            'created_at >= $0 && created_at < $1',
+            filterStartDate,
+            filterEndDate,
+          );
+          setAppliedFilter('created_at >= $0 && created_at < $1');
+          break;
+        case 'date-range':
+          userActivities = userActivities.filtered(
+            'created_at >= $0 && created_at < $1',
+            filterStartDate,
+            filterEndDate,
+          );
+          setAppliedFilter('created_at >= $0 && created_at < $1');
+          break;
+        default:
+          userActivities = userActivities;
+          break;
+      }
+    }
+    if (searchTerm) {
+      userActivities = userActivities.filtered(
+        `message CONTAINS[c] "${searchTerm}"`,
+      );
+    }
+    return userActivities.sorted('created_at', true);
+  }, [searchTerm, allActivities, filter, filterEndDate, filterStartDate]);
+
   const sharaProCreditPayments = useMemo(
     () =>
       filteredReceipts.reduce(
@@ -281,9 +340,11 @@ export const useReceiptList = ({
   useEffect(() => {
     return navigation.addListener('focus', () => {
       const myReceipts = receipts ?? getTransactions();
+      const myActivities = getActivities();
       setAllReceipts(myReceipts);
+      setAllActivities(myActivities);
     });
-  }, [receipts, getTransactions, navigation]);
+  }, [receipts, getTransactions, navigation, getActivities]);
 
   return useMemo(
     () => ({
@@ -297,6 +358,7 @@ export const useReceiptList = ({
       filterStartDate,
       filteredReceipts,
       outstandingAmount,
+      filteredActivities,
       handleStatusFilter,
       handleReceiptSearch,
     }),
@@ -311,6 +373,7 @@ export const useReceiptList = ({
       collectedAmount,
       filteredReceipts,
       outstandingAmount,
+      filteredActivities,
       handleStatusFilter,
       handleReceiptSearch,
     ],
