@@ -9,11 +9,11 @@ export const remoteConfigDefaults: RemoteConfig = {
     NGN: {
       default: 'en',
       options: [
-        {code: 'ha', name: 'Hausa'},
+        {code: 'en', name: 'English'},
+        {code: 'en-NG', name: 'English (Nigeria)'},
         {code: 'yo', name: 'Yoruba'},
         {code: 'ig', name: 'Igbo'},
-        {code: 'en-NG', name: 'English (Nigeria)'},
-        {code: 'en', name: 'English'},
+        {code: 'ha', name: 'Hausa'},
       ],
     },
   },
@@ -76,20 +76,20 @@ export class RemoteConfigService implements IRemoteConfigService {
   }
 
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
-    // return {
-    //   asString(): string {
-    //     return JSON.stringify(remoteConfigDefaults[key]);
-    //   },
-    //   getSource(): 'remote' | 'default' | 'static' {
-    //     return 'default';
-    //   },
-    //   asNumber(): number {
-    //     return 0;
-    //   },
-    //   asBoolean(): boolean {
-    //     return false;
-    //   },
-    // };
-    return remoteConfig().getValue(key);
+    return {
+      asString(): string {
+        return JSON.stringify(remoteConfigDefaults[key]);
+      },
+      getSource(): 'remote' | 'default' | 'static' {
+        return 'default';
+      },
+      asNumber(): number {
+        return 0;
+      },
+      asBoolean(): boolean {
+        return false;
+      },
+    };
+    // return remoteConfig().getValue(key);
   }
 }

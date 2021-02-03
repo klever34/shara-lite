@@ -8,7 +8,7 @@ import {NavigationContainer} from '@react-navigation/native';
 import {NavigationState} from '@react-navigation/routers';
 import {createStackNavigator} from '@react-navigation/stack';
 import Sentry from '@sentry/react-native';
-import React, {useCallback, useEffect} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {withErrorBoundary} from 'react-error-boundary';
 import {Platform} from 'react-native';
 import 'react-native-gesture-handler';
@@ -19,6 +19,7 @@ import MainScreens from './screens/main';
 import SplashScreen from './screens/SplashScreen';
 import RealmProvider from './services/realm/provider';
 import Config from 'react-native-config';
+import {AppContext} from './contexts/app';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -36,6 +37,13 @@ export type RootStackParamList = {
 const RootStack = createStackNavigator<RootStackParamList>();
 
 const App = () => {
+  const [reloadFlag, setReloadFlag] = useState(false);
+  const reloadApp = useCallback(() => {
+    setReloadFlag((flag) => !flag);
+    setImmediate(() => {
+      setReloadFlag((flag) => !flag);
+    });
+  }, []);
   useEffect(() => {
     getAnalyticsService().initialize().catch(handleError);
   }, []);
@@ -67,50 +75,55 @@ const App = () => {
 
     return route.name;
   }, []);
+  if (reloadFlag) {
+    return null;
+  }
 
   return (
-    <ToastProvider>
-      <RealmProvider>
-        <IPGeolocationProvider>
-          <NavigationContainer
-            ref={navigationRef}
-            onStateChange={(state) => {
-              if (!state) {
-                return;
-              }
-              const analyticsService = getAnalyticsService();
-              analyticsService
-                .tagScreenName(getActiveRouteName(state))
-                .catch(handleError);
-            }}>
-            <MenuProvider>
-              <RootStack.Navigator initialRouteName="Splash">
-                <RootStack.Screen
-                  name="Splash"
-                  component={SplashScreen}
-                  options={{headerShown: false}}
-                />
-                <RootStack.Screen
-                  name="UpdateShara"
-                  component={UpdateSharaScreen}
-                  options={{headerShown: false}}
-                />
-                <RootStack.Screen
-                  name="Auth"
-                  component={AuthScreens}
-                  options={{headerShown: false}}
-                />
-                <RootStack.Screen
-                  name="Main"
-                  component={MainScreens}
-                  options={{headerShown: false}}
-                />
-              </RootStack.Navigator>
-            </MenuProvider>
-          </NavigationContainer>
-        </IPGeolocationProvider>
-      </RealmProvider>
-    </ToastProvider>
+    <AppContext.Provider value={{reloadApp}}>
+      <ToastProvider>
+        <RealmProvider>
+          <IPGeolocationProvider>
+            <NavigationContainer
+              ref={navigationRef}
+              onStateChange={(state) => {
+                if (!state) {
+                  return;
+                }
+                const analyticsService = getAnalyticsService();
+                analyticsService
+                  .tagScreenName(getActiveRouteName(state))
+                  .catch(handleError);
+              }}>
+              <MenuProvider>
+                <RootStack.Navigator initialRouteName="Splash">
+                  <RootStack.Screen
+                    name="Splash"
+                    component={SplashScreen}
+                    options={{headerShown: false}}
+                  />
+                  <RootStack.Screen
+                    name="UpdateShara"
+                    component={UpdateSharaScreen}
+                    options={{headerShown: false}}
+                  />
+                  <RootStack.Screen
+                    name="Auth"
+                    component={AuthScreens}
+                    options={{headerShown: false}}
+                  />
+                  <RootStack.Screen
+                    name="Main"
+                    component={MainScreens}
+                    options={{headerShown: false}}
+                  />
+                </RootStack.Navigator>
+              </MenuProvider>
+            </NavigationContainer>
+          </IPGeolocationProvider>
+        </RealmProvider>
+      </ToastProvider>
+    </AppContext.Provider>
   );
 };
 

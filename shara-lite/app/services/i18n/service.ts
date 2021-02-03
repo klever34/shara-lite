@@ -3,9 +3,10 @@ import I18n from 'i18n-js';
 import {IRemoteConfigService} from '@/services/remote-config';
 import {IAuthService} from '@/services/auth';
 import defaultTranslations from './translations';
+import {IStorageService} from '@/services/storage';
 
 export interface II18nService {
-  initialize(): void;
+  initialize(): Promise<void>;
   getCurrentLocale(): string;
   setCurrentLocale(code: string): void;
   getLocales(): CountryLocale;
@@ -21,18 +22,16 @@ export class I18nService implements II18nService {
   constructor(
     private remoteConfigService: IRemoteConfigService,
     private authService: IAuthService,
+    private storageService: IStorageService,
   ) {
     I18n.fallbacks = true;
     I18n.translations = defaultTranslations;
-    I18n.defaultLocale = this.locales.default;
-    I18n.locale = this.locales.default;
-    I18nManager.allowRTL(this.isRTL());
+    this.setCurrentLocale(undefined, false);
   }
-
-  initialize() {
+  async initialize(): Promise<void> {
     const user = this.authService.getUser();
     if (!user) {
-      return;
+      return Promise.resolve();
     }
     const translations: string = this.remoteConfigService
       .getValue('translations')
@@ -42,11 +41,21 @@ export class I18nService implements II18nService {
       .asString();
     try {
       I18n.translations = JSON.parse(translations);
-      this.locales = JSON.parse(countries)[user.currency_code];
-      I18n.defaultLocale = this.locales.default;
-      I18n.locale = this.locales.default;
-      I18nManager.allowRTL(this.isRTL());
+      this.locales = JSON.parse(countries)[user.currency_code] ?? this.locales;
+      const savedCurrentLocale = await this.storageService.getItem<string>(
+        '@shara/i18n/current_locale',
+      );
+      if (
+        this.locales.options.findIndex(
+          ({code}) => savedCurrentLocale === code,
+        ) !== -1
+      ) {
+        this.setCurrentLocale(savedCurrentLocale ?? undefined);
+      } else {
+        this.setCurrentLocale();
+      }
     } catch (e) {}
+    return Promise.resolve();
   }
 
   strings(name: string, params: {[key: string]: any} = {}): string {
@@ -64,8 +73,13 @@ export class I18nService implements II18nService {
     return I18n.currentLocale();
   }
 
-  setCurrentLocale(code = this.locales.default) {
+  setCurrentLocale(code = this.locales.default, persist = true) {
+    I18n.defaultLocale = this.locales.default;
     I18n.locale = code;
+    I18nManager.allowRTL(this.isRTL());
+    if (persist) {
+      this.storageService.setItem('@shara/i18n/current_locale', code);
+    }
   }
 
   getLocales() {

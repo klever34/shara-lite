@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -26,6 +27,7 @@ import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
 import {TitleContainer} from '@/components/TitleContainer';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
+import {AppContext} from '@/contexts/app';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -59,6 +61,7 @@ export const MoreOptionsScreen = withModal(
     const PaymentSettings = useCallback(() => {
       navigation.navigate('PaymentSettings');
     }, [navigation]);
+    const {reloadApp} = useContext(AppContext);
 
     const languages = i18nService.getLocales().options;
     const onLanguageSettings = useCallback(() => {
@@ -67,13 +70,14 @@ export const MoreOptionsScreen = withModal(
           text: name,
           onPress: () => {
             i18nService.setCurrentLocale(code);
+            reloadApp();
           },
         };
       });
       openModal('options', {
         options,
       });
-    }, [languages, openModal]);
+    }, [languages, openModal, reloadApp]);
 
     const moreOptions = useMemo(() => {
       return [

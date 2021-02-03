@@ -39,7 +39,11 @@ const createDIContainer = (): IDIContainer => {
     ),
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
-    I18n: object(I18nService).construct(get('RemoteConfig'), get('Auth')),
+    I18n: object(I18nService).construct(
+      get('RemoteConfig'),
+      get('Auth'),
+      get('Storage'),
+    ),
   });
   return container;
 };
