@@ -1,4 +1,4 @@
-import {SearchFilter} from '@/components';
+import {SearchFilter, Text} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -6,18 +6,15 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
-import {getAnalyticsService} from '@/services';
+import {getAnalyticsService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
-import {applyStyles, colors, dimensions} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import {Text} from '@/components';
 import React, {useCallback, useLayoutEffect} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
-import * as Animatable from 'react-native-animatable';
 import {useTransactionList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
-import {getI18nService} from '@/services';
 // TODO: Translate
 
 const strings = getI18nService().strings;
@@ -338,7 +335,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         ListEmptyComponent={
           <EmptyState
-            style={applyStyles('bg-white pt-20')}
+            style={applyStyles('bg-white pt-80')}
             source={require('@/assets/images/emblem.png')}
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
             <View style={applyStyles('center px-8')}>
@@ -350,36 +347,18 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                   })}
                 </Text>
               )}
-              {!!filter && (
+              {!!filter && filter !== 'all' && (
                 <Text
                   style={applyStyles('text-black text-sm pb-4 text-center')}>
                   {strings('transaction.no_activities_recorded_for_duration')}
                 </Text>
               )}
-              <Text style={applyStyles('text-black text-sm text-center')}>
+              <Text
+                style={applyStyles('text-black text-sm text-center', {
+                  width: 180,
+                })}>
                 {strings('transaction.start_adding_records')}
               </Text>
-            </View>
-            <View
-              style={applyStyles('center p-16 bottom', {
-                height: dimensions.fullHeight - 300,
-              })}>
-              <Animatable.View
-                duration={200}
-                animation={{
-                  from: {translateY: -10},
-                  to: {translateY: 0},
-                }}
-                direction="alternate"
-                useNativeDriver={true}
-                iterationCount="infinite">
-                <Icon
-                  size={80}
-                  name="arrow-down"
-                  type="feathericons"
-                  color={colors.secondary}
-                />
-              </Animatable.View>
             </View>
           </EmptyState>
         }
