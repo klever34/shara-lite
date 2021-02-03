@@ -65,7 +65,6 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
         total_amount: (amount_paid ?? 0) + (credit_amount ?? 0),
       }),
   });
-  const noteFieldRef = useRef<TextInput | null>(null);
   const creditAmountFieldRef = useRef<TextInput | null>(null);
   const [dueDate, setDueDate] = useState<Date | undefined>(customer?.due_date);
   const [reminders, setReminders] = useState<IPaymentReminder[]>(
@@ -280,13 +279,6 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             onChangeText={(text) => {
               const value = toNumber(text);
               setFieldValue('credit_amount', value);
-            }}
-            onEquals={() => {
-              setImmediate(() => {
-                if (noteFieldRef.current) {
-                  noteFieldRef.current.focus();
-                }
-              });
             }}
           />
         </View>
