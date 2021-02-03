@@ -43,12 +43,6 @@ const App = () => {
     getNotificationService().initialize();
   }, []);
 
-  // Effect to run when app is in foreground and notification comes in
-  useEffect(() => {
-    return getNotificationService().onMessage(async (remoteMessage) => {
-      console.log(remoteMessage);
-    });
-  }, []);
   // Effect to subscribe to FCM Topic
   useEffect(() => {
     const environment = process.env.NODE_ENV;
