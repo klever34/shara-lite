@@ -5,19 +5,8 @@ import defaultTranslations from '@/services/i18n/translations';
 
 export const remoteConfigDefaults: RemoteConfig = {
   translations: defaultTranslations,
-  countries: {
-    NGN: {
-      default: 'en',
-      options: [
-        {code: 'en', name: 'English'},
-        {code: 'en-NG', name: 'English (Nigeria)'},
-        {code: 'yo', name: 'Yoruba'},
-        {code: 'ig', name: 'Igbo'},
-        {code: 'ha', name: 'Hausa'},
-      ],
-    },
-  },
-  minimumVersion: '0.1.0-local',
+  countries: {},
+  minimumVersion: '0.0.0',
 };
 
 // console.log(
@@ -76,20 +65,20 @@ export class RemoteConfigService implements IRemoteConfigService {
   }
 
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
-    return {
-      asString(): string {
-        return JSON.stringify(remoteConfigDefaults[key]);
-      },
-      getSource(): 'remote' | 'default' | 'static' {
-        return 'default';
-      },
-      asNumber(): number {
-        return 0;
-      },
-      asBoolean(): boolean {
-        return false;
-      },
-    };
-    // return remoteConfig().getValue(key);
+    // return {
+    //   asString(): string {
+    //     return JSON.stringify(remoteConfigDefaults[key]);
+    //   },
+    //   getSource(): 'remote' | 'default' | 'static' {
+    //     return 'default';
+    //   },
+    //   asNumber(): number {
+    //     return 0;
+    //   },
+    //   asBoolean(): boolean {
+    //     return false;
+    //   },
+    // };
+    return remoteConfig().getValue(key);
   }
 }

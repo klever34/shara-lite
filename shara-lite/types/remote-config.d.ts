@@ -5,7 +5,7 @@ interface RemoteConfig {
 }
 
 interface Countries {
-  NGN: CountryLocale;
+  [key: string]: CountryLocale;
 }
 
 interface CountryLocale {
