@@ -10,5 +10,5 @@ interface Countries {
 
 interface CountryLocale {
   default: string;
-  options?: string[];
+  options: {code: string; name: string}[];
 }

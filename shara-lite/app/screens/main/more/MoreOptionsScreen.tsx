@@ -59,6 +59,21 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('PaymentSettings');
     }, [navigation]);
 
+    const onLanguageSettings = useCallback(() => {
+      const languages = i18nService.getLocales().options;
+      const options = languages.map(({name, code}) => {
+        return {
+          text: name,
+          onPress: () => {
+            i18nService.setCurrentLocale(code);
+          },
+        };
+      });
+      openModal('options', {
+        options,
+      });
+    }, [openModal]);
+
     const moreOptions = useMemo(() => {
       return [
         {
@@ -92,6 +107,13 @@ export const MoreOptionsScreen = withModal(
         },
         {
           leftSection: {
+            title: i18nService.strings('more.list.language.title'),
+            caption: i18nService.strings('more.list.language.description'),
+          },
+          onPress: onLanguageSettings,
+        },
+        {
+          leftSection: {
             title: i18nService.strings('more.list.referral.title'),
             caption: i18nService.strings('more.list.referral.description'),
           },
@@ -109,7 +131,12 @@ export const MoreOptionsScreen = withModal(
           },
         },
       ];
-    }, [navigation, onEditBusinessSettings, PaymentSettings]);
+    }, [
+      onEditBusinessSettings,
+      PaymentSettings,
+      onLanguageSettings,
+      navigation,
+    ]);
 
     const {logoutFromRealm} = useRealmLogout();
     const handleError = useErrorHandler();

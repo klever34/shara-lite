@@ -1,4 +1,4 @@
-import ReactNative from 'react-native';
+import {I18nManager} from 'react-native';
 import I18n from 'i18n-js';
 import {IRemoteConfigService} from '@/services/remote-config';
 import {IAuthService} from '@/services/auth';
@@ -7,41 +7,46 @@ import defaultTranslations from './translations';
 export interface II18nService {
   initialize(): void;
   getCurrentLocale(): string;
+  setCurrentLocale(code: string): void;
+  getLocales(): CountryLocale;
   isRTL(): boolean;
   strings(name: string, params?: {[key: string]: any}): string;
 }
 
 export class I18nService implements II18nService {
+  private locales: CountryLocale = {
+    default: 'en',
+    options: [{code: 'en', name: 'English'}],
+  };
   constructor(
     private remoteConfigService: IRemoteConfigService,
     private authService: IAuthService,
-  ) {}
+  ) {
+    I18n.fallbacks = true;
+    I18n.translations = defaultTranslations;
+    I18n.defaultLocale = this.locales.default;
+    I18n.locale = this.locales.default;
+    I18nManager.allowRTL(this.isRTL());
+  }
 
   initialize() {
-    I18n.fallbacks = true;
     const user = this.authService.getUser();
-
+    if (!user) {
+      return;
+    }
     const translations: string = this.remoteConfigService
       .getValue('translations')
       .asString();
-
     const countries: string = this.remoteConfigService
       .getValue('countries')
       .asString();
-
-    I18n.defaultLocale = 'en';
     try {
       I18n.translations = JSON.parse(translations);
-      const locales: CountryLocale = JSON.parse(countries)[
-        user?.country_code ?? ''
-      ];
-      I18n.locale = locales.default;
-    } catch (e) {
-      I18n.translations = defaultTranslations;
-      I18n.locale = 'en';
-    }
-
-    ReactNative.I18nManager.allowRTL(this.isRTL());
+      this.locales = JSON.parse(countries)[user.currency_code];
+      I18n.defaultLocale = this.locales.default;
+      I18n.locale = this.locales.default;
+      I18nManager.allowRTL(this.isRTL());
+    } catch (e) {}
   }
 
   strings(name: string, params: {[key: string]: any} = {}): string {
@@ -57,6 +62,14 @@ export class I18nService implements II18nService {
 
   getCurrentLocale() {
     return I18n.currentLocale();
+  }
+
+  setCurrentLocale(code = this.locales.default) {
+    I18n.locale = code;
+  }
+
+  getLocales() {
+    return this.locales;
   }
 
   // Is it a RTL language?

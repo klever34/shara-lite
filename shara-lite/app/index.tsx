@@ -1,21 +1,16 @@
 import {navigationRef} from '@/components/RootNavigation';
 import {ToastProvider} from '@/components/Toast';
 import UpdateSharaScreen from '@/screens/UpdateShara';
-import {
-  getAnalyticsService,
-  getI18nService,
-  getNotificationService,
-  getRemoteConfigService,
-} from '@/services';
+import {getAnalyticsService, getNotificationService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 import {NavigationContainer} from '@react-navigation/native';
 import {NavigationState} from '@react-navigation/routers';
 import {createStackNavigator} from '@react-navigation/stack';
 import Sentry from '@sentry/react-native';
-import React, {useCallback, useEffect, useState} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {withErrorBoundary} from 'react-error-boundary';
-import {Platform, ActivityIndicator, SafeAreaView} from 'react-native';
+import {Platform} from 'react-native';
 import 'react-native-gesture-handler';
 import {MenuProvider} from 'react-native-popup-menu';
 import ErrorFallback from './components/ErrorFallback';
@@ -24,7 +19,6 @@ import MainScreens from './screens/main';
 import SplashScreen from './screens/SplashScreen';
 import RealmProvider from './services/realm/provider';
 import Config from 'react-native-config';
-import {applyStyles, colors} from './styles';
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -49,23 +43,11 @@ const App = () => {
     getNotificationService().initialize();
   }, []);
 
-  const [remoteConfigLoaded, setRemoteConfigLoaded] = useState(false);
-  useEffect(() => {
-    getRemoteConfigService()
-      .initialize()
-      .finally(() => {
-        getI18nService().initialize();
-        setRemoteConfigLoaded(true);
-      });
-  }, []);
   // Effect to run when app is in foreground and notification comes in
   useEffect(() => {
-    const unsubscribe = getNotificationService().onMessage(
-      async (remoteMessage) => {
-        console.log(remoteMessage);
-      },
-    );
-    return unsubscribe;
+    return getNotificationService().onMessage(async (remoteMessage) => {
+      console.log(remoteMessage);
+    });
   }, []);
   // Effect to subscribe to FCM Topic
   useEffect(() => {
@@ -91,14 +73,6 @@ const App = () => {
 
     return route.name;
   }, []);
-
-  if (!remoteConfigLoaded) {
-    return (
-      <SafeAreaView style={applyStyles('flex-1 center')}>
-        <ActivityIndicator color={colors.primary} size="large" />
-      </SafeAreaView>
-    );
-  }
 
   return (
     <ToastProvider>

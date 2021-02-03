@@ -387,6 +387,7 @@ interface Strings {
       profile_settings: Card;
       business_settings: Card;
       payment_settings: Card;
+      language: Card;
       referral: Card;
       feedback: Card;
     };
