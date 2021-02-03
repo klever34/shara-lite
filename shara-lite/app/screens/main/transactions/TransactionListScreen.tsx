@@ -7,6 +7,7 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getI18nService} from '@/services';
+import {useActivity} from '@/services/activity';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
@@ -23,6 +24,9 @@ type Props = ModalWrapperFields;
 
 export const TransactionListScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
+  const {getActivities} = useActivity();
+  const activities = getActivities();
+  console.log(activities.length, 'activites');
   const {
     filter,
     searchTerm,

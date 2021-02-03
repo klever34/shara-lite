@@ -14,6 +14,7 @@ import {
 } from '@/screens/main/more/settings';
 import {PaymentsScreen} from '@/screens/main/payments';
 import {getI18nService, getNotificationService} from '@/services';
+import {useActivity} from '@/services/activity';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation, useRepeatBackToExit} from '@/services/navigation';
@@ -23,7 +24,7 @@ import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
 import {createStackNavigator} from '@react-navigation/stack';
 import {ObjectId} from 'bson';
-import React, {useContext, useEffect} from 'react';
+import React, {useCallback, useContext, useEffect} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
@@ -82,9 +83,28 @@ const MainScreens = () => {
   const {isSyncCompleted} = useContext(RealmContext);
   const {getCustomer} = useCustomer();
   const navigation = useAppNavigation();
+  const {saveActivity} = useActivity();
 
   useSyncLoader();
   useCreditReminder();
+
+  const handleSaveReminderNotification = useCallback(
+    async (remoteMessage) => {
+      const payload =
+        remoteMessage?.data?.payload &&
+        JSON.parse(remoteMessage?.data?.payload);
+
+      if (realm && isSyncCompleted && payload) {
+        if (payload.type === 'activity') {
+          const activity = payload.activity;
+          console.log('saved');
+          console.log(activity);
+          await saveActivity({activity});
+        }
+      }
+    },
+    [realm, saveActivity, isSyncCompleted],
+  );
 
   // Effect to when FCM notification is clicked
   useEffect(() => {
@@ -105,6 +125,22 @@ const MainScreens = () => {
       }
     });
   }, [realm, isSyncCompleted, navigation, getCustomer]);
+
+  // Effect to run when app is in background and notification comes in
+  useEffect(() => {
+    const unsubscribe = getNotificationService().setBackgroundMessageHandler(
+      handleSaveReminderNotification,
+    );
+    return unsubscribe;
+  }, [handleSaveReminderNotification]);
+
+  // Effect to run when app is in foreground and notification comes in
+  useEffect(() => {
+    const unsubscribe = getNotificationService().onMessage(
+      handleSaveReminderNotification,
+    );
+    return unsubscribe;
+  }, [handleSaveReminderNotification]);
 
   if (!realm) {
     return (
@@ -163,7 +199,9 @@ const MainScreens = () => {
             name="SelectCustomerList"
             component={SelectCustomerListScreen}
             options={{headerShown: false}}
-            initialParams={{onSelectCustomer: () => {}}}
+            initialParams={{
+              onSelectCustomer: () => {},
+            }}
           />
 
           <MainStack.Screen

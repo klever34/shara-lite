@@ -58,15 +58,6 @@ const App = () => {
         setRemoteConfigLoaded(true);
       });
   }, []);
-  // Effect to run when app is in foreground and notification comes in
-  useEffect(() => {
-    const unsubscribe = getNotificationService().onMessage(
-      async (remoteMessage) => {
-        console.log(remoteMessage);
-      },
-    );
-    return unsubscribe;
-  }, []);
   // Effect to subscribe to FCM Topic
   useEffect(() => {
     const environment = process.env.NODE_ENV;
