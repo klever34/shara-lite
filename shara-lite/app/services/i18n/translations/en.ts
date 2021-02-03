@@ -492,6 +492,10 @@ const en: Strings = {
         title: 'Payment Settings',
         description: 'View and edit your payment information',
       },
+      language: {
+        title: 'Language',
+        description: 'Select your language',
+      },
       referral: {
         title: 'Referral',
         description: 'Enter referral code',
