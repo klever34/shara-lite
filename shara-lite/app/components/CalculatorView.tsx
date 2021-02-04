@@ -7,6 +7,7 @@ import React, {
   useMemo,
   useRef,
   forwardRef,
+  createRef,
 } from 'react';
 import {applyStyles} from '@/styles';
 import Big from 'big.js';
@@ -470,6 +471,7 @@ export const CalculatorInput = forwardRef<TextInput, CalculatorInputProps>(
   ) => {
     const {
       showKbComponent,
+      resetKbComponent,
       addEventListener,
       handleReset,
       addEqualsListener,
@@ -477,7 +479,7 @@ export const CalculatorInput = forwardRef<TextInput, CalculatorInputProps>(
     const [value, setValue] = useState<number | undefined>(initialValue);
     const onChangeText = useRef(prevOnChangeText).current;
     const onEquals = useRef(prevOnEquals).current;
-
+    ref = ref ?? createRef();
     const handleFocus = useCallback(() => {
       handleReset?.(String(value ?? '0'));
       showKbComponent?.();
@@ -490,7 +492,16 @@ export const CalculatorInput = forwardRef<TextInput, CalculatorInputProps>(
         });
       }
       if (addEqualsListener) {
-        addEqualsListener(onEquals);
+        if (onEquals) {
+          addEqualsListener(onEquals);
+        } else {
+          addEqualsListener(() => {
+            resetKbComponent?.();
+            if (ref && 'current' in ref) {
+              ref.current?.blur();
+            }
+          });
+        }
       }
     }, [
       addEqualsListener,
@@ -498,6 +509,8 @@ export const CalculatorInput = forwardRef<TextInput, CalculatorInputProps>(
       handleReset,
       onChangeText,
       onEquals,
+      ref,
+      resetKbComponent,
       showKbComponent,
       value,
     ]);

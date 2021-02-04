@@ -9,6 +9,10 @@ import getFirebaseCrashlytics from '@react-native-firebase/crashlytics';
 import {utils as firebaseUtils} from '@react-native-firebase/app';
 import * as Sentry from '@sentry/react-native';
 import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
+import {AppEventsLogger} from 'react-native-fbsdk';
+import {PlayInstallReferrer} from 'react-native-play-install-referrer';
+import {parse as parseQueryString} from 'query-string';
+import {IStorageService} from '@/services/storage';
 
 export type SharaAppEventsProperties = {
   // Chat
@@ -149,6 +153,9 @@ export interface IAnalyticsService {
 export class AnalyticsService implements IAnalyticsService {
   private firebaseAnalytics = getFirebaseAnalytics();
   private firebaseCrashlytics = getFirebaseCrashlytics();
+  private installReferrer: {[key: string]: string} | null = null;
+
+  constructor(private storageService: IStorageService) {}
 
   async initialize(): Promise<void> {
     try {
@@ -172,6 +179,41 @@ export class AnalyticsService implements IAnalyticsService {
 
   async setUser(user: User): Promise<void> {
     try {
+      this.installReferrer = await this.storageService.getItem(
+        '@shara/install_referrer',
+      );
+      if (this.installReferrer === null) {
+        await new Promise((resolve, reject) => {
+          PlayInstallReferrer.getInstallReferrerInfo(
+            (
+              installReferrerInfo: {
+                installReferrer: string;
+                referrerClickTimestampSeconds: string;
+                installBeginTimestampSeconds: string;
+                referrerClickTimestampServerSeconds: string;
+                installBeginTimestampServerSeconds: string;
+                installVersion: string;
+                googlePlayInstant: string;
+              },
+              error: {responseCode: string; message: string},
+            ) => {
+              if (!error) {
+                this.installReferrer = parseQueryString(
+                  installReferrerInfo.installReferrer,
+                ) as {[key: string]: string};
+                this.storageService
+                  .setItem('@shara/install_referrer', this.installReferrer)
+                  .then(resolve)
+                  .catch(reject);
+              } else {
+                reject(error);
+              }
+            },
+          );
+        });
+      }
+    } catch (e) {}
+    try {
       const userFields: (keyof User)[] = [
         'firstname',
         'lastname',
@@ -190,6 +232,11 @@ export class AnalyticsService implements IAnalyticsService {
         },
         {},
       );
+      if (this.installReferrer) {
+        Object.keys(this.installReferrer).forEach((utmKey) => {
+          userData[utmKey] = this.installReferrer?.[utmKey] ?? '';
+        });
+      }
       userData.environment = Config.ENVIRONMENT;
       userData.businessName = user.businesses?.[0]?.name ?? '';
       userData.referralCode = user.referrer_code ?? '';
@@ -236,6 +283,7 @@ export class AnalyticsService implements IAnalyticsService {
       await this.firebaseAnalytics.logEvent(eventName, eventData);
       await segmentAnalytics.track(eventName, nextEventData);
       RNUxcam.logEvent(eventName, nextEventData);
+      AppEventsLogger.logEvent(eventName, nextEventData ?? {});
     } catch (e) {
       throw e;
     }

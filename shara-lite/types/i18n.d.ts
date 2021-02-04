@@ -229,8 +229,8 @@ interface Strings {
       date_range: string;
     };
     receipt_share_title: string;
-    recent_purchase_message: 'Hi {{customer_name}}, thank you for your recent purchase.';
-    recent_purchase_message_from_business: 'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.';
+    recent_purchase_message: string;
+    recent_purchase_message_from_business: string;
     receipt_for: string;
     receipt_no: string;
   };
@@ -387,6 +387,7 @@ interface Strings {
       profile_settings: Card;
       business_settings: Card;
       payment_settings: Card;
+      language: Card;
       referral: Card;
       feedback: Card;
     };

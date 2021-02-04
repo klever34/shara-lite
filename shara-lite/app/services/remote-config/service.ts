@@ -1,17 +1,12 @@
 import remoteConfig, {
   FirebaseRemoteConfigTypes,
 } from '@react-native-firebase/remote-config';
-import translations from '@/services/i18n/translations';
+import defaultTranslations from '@/services/i18n/translations';
 
-const remoteConfigDefaults: RemoteConfig = {
-  translations,
-  countries: {
-    NGN: {
-      default: 'en',
-      options: ['hausa', 'yoruba', 'igbo'],
-    },
-  },
-  minimumVersion: '0.1.0-local',
+export const remoteConfigDefaults: RemoteConfig = {
+  translations: defaultTranslations,
+  countries: {},
+  minimumVersion: '0.0.0',
 };
 
 // console.log(

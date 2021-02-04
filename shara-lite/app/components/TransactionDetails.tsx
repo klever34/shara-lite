@@ -282,7 +282,7 @@ const TransactionDetails = withModal(
           outstandingAmount,
           businessName: businessInfo.name,
           filterRange: getReportFilterRange(),
-          data: filteredReceipts.sorted('transaction_date', false),
+          data: filteredReceipts.sorted('created_at', false),
         });
         pdfBase64String = 'data:application/pdf;base64,' + pdfBase64String;
         const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');

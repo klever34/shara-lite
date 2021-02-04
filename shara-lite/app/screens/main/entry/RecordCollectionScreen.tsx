@@ -137,7 +137,8 @@ const RecordCollectionScreen = withModal(
               label={strings('collection.fields.note.placeholder')}
               labelStyle={applyStyles('text-400 text-lg text-gray-300')}
               placeholder={strings('collection.fields.note.placeholder')}
-              style={applyStyles('h-45', {
+              style={applyStyles({height: 45})}
+              contentStyle={applyStyles({
                 width: dimensions.fullWidth - 68,
               })}
             />

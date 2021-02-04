@@ -24,11 +24,11 @@ const createDIContainer = (): IDIContainer => {
   container.addDefinitions({
     Notification: object(NotificationService),
     Navigation: object(NavigationService),
-    Analytics: object(AnalyticsService),
     Realm: object(RealmService),
     Storage: object(StorageService),
     Geolocation: object(GeolocationService),
     IPGeolocation: object(IPGeolocationService),
+    Analytics: object(AnalyticsService).construct(get('Storage')),
     Auth: object(AuthService).construct(get('Storage'), get('Analytics')),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
@@ -39,7 +39,11 @@ const createDIContainer = (): IDIContainer => {
     ),
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
-    I18n: object(I18nService).construct(get('RemoteConfig'), get('Auth')),
+    I18n: object(I18nService).construct(
+      get('RemoteConfig'),
+      get('Auth'),
+      get('Storage'),
+    ),
   });
   return container;
 };

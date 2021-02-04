@@ -1,5 +1,6 @@
 import {UpdateMode} from 'realm';
 import perf from '@react-native-firebase/perf';
+import {ObjectId} from 'bson';
 import {useRealm} from '@/services/realm';
 import {getBaseModelValues} from '@/helpers/models';
 import {IActivity, modelName} from '@/models/Activity';
@@ -26,6 +27,7 @@ export const useActivity = (): useActivityInterface => {
     const updatedActivity: IActivity = {
       ...getBaseModelValues(),
       ...activity,
+      _id: new ObjectId(activity._id),
     };
 
     const trace = await perf().startTrace('saveActivity');

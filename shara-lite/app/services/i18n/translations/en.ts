@@ -260,7 +260,8 @@ const en: Strings = {
     view_report: 'View report',
     no_activities_recorded_for_duration:
       'No activities were recorded for the chosen duration',
-    start_adding_records: 'Start adding records by tapping here',
+    start_adding_records:
+      "Start adding records by tapping the '+' button below",
     transaction_success: '{{transaction_type}} has been recorded Succesfully',
   },
   receipts: {
@@ -402,7 +403,8 @@ const en: Strings = {
   },
   customer: {one: 'Customer', other: 'Customers'},
   customers: {
-    start_adding: 'Start adding customers by creating a record here',
+    start_adding:
+      "Start adding customers by creating a record with the '+' button below",
     customer_count: {
       zero: 'You have no customers yet.',
       one: '1 Customer',
@@ -489,6 +491,10 @@ const en: Strings = {
       payment_settings: {
         title: 'Payment Settings',
         description: 'View and edit your payment information',
+      },
+      language: {
+        title: 'Language',
+        description: 'Select your language',
       },
       referral: {
         title: 'Referral',
