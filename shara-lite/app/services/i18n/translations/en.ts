@@ -261,7 +261,7 @@ const en: Strings = {
     no_activities_recorded_for_duration:
       'No activities were recorded for the chosen duration',
     start_adding_records:
-      "Start adding records by tapping the '+' button below",
+      "Start adding records by tapping the + button below",
     transaction_success: '{{transaction_type}} has been recorded Succesfully',
   },
   receipts: {

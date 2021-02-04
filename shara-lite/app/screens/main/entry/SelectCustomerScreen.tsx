@@ -367,52 +367,37 @@ export const SelectCustomerListScreen = withModal(
             </View>
           }
         />
-        {!withCustomer ? (
-          customer ? (
-            <View
-              style={applyStyles(
-                'px-16 py-8 bg-white flex-row items-center justify-between',
-              )}>
-              <Button
-                title="Skip"
-                variantColor="transparent"
-                onPress={() => onSelectCustomer()}
-                style={applyStyles({width: '48%'})}
-              />
-              <Button
-                title="Save"
-                style={applyStyles({width: '48%'})}
-                onPress={() => onSelectCustomer(customer)}
-              />
-            </View>
-          ) : (
-            !searchTerm && (
+        {!withCustomer
+          ? customer && (
               <View
                 style={applyStyles(
-                  'px-16 py-8 bg-white flex-row items-center w-full justify-end absolute bottom-0 right-0',
+                  'px-16 py-8 bg-white flex-row items-center justify-between',
                 )}>
                 <Button
-                  title="Save"
-                  style={applyStyles({width: 200})}
+                  title="Cancel"
+                  variantColor="transparent"
                   onPress={() => onSelectCustomer()}
+                  style={applyStyles({width: '48%'})}
+                />
+                <Button
+                  title="Save"
+                  style={applyStyles({width: '48%'})}
+                  onPress={() => onSelectCustomer(customer)}
                 />
               </View>
             )
-          )
-        ) : (
-          customer && (
-            <View
-              style={applyStyles(
-                'px-16 py-8 bg-white flex-row items-center justify-end',
-              )}>
-              <Button
-                style={applyStyles({width: '48%'})}
-                title={isCollection ? 'Next' : 'Save'}
-                onPress={() => onSelectCustomer(customer)}
-              />
-            </View>
-          )
-        )}
+          : customer && (
+              <View
+                style={applyStyles(
+                  'px-16 py-8 bg-white flex-row items-center justify-end',
+                )}>
+                <Button
+                  style={applyStyles({width: '48%'})}
+                  title={isCollection ? 'Next' : 'Save'}
+                  onPress={() => onSelectCustomer(customer)}
+                />
+              </View>
+            )}
       </SafeAreaView>
     );
   },
