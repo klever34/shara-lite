@@ -1,4 +1,4 @@
-import {AuthView, Button} from '@/components';
+import {AuthView, Button, Text} from '@/components';
 import {ToastContext} from '@/components/Toast';
 import {
   getAnalyticsService,
@@ -13,7 +13,6 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Text} from '@/components';
 import {Alert, Platform, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
@@ -62,7 +61,9 @@ export const OTPVerification = () => {
         setLoading(true);
         try {
           const fcmToken = await getNotificationService().getFCMToken();
-          await apiService.logIn(payload);
+          const {
+            data: {is_new},
+          } = await apiService.logIn(payload);
           fcmToken &&
             (await apiService.fcmToken({
               token: fcmToken,
@@ -72,7 +73,7 @@ export const OTPVerification = () => {
                 windows: 'windows',
               }),
             }));
-          await initRealm({initSync: true});
+          await initRealm({initSync: !is_new});
 
           getAnalyticsService()
             .logEvent('login', {method: 'mobile'})

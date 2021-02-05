@@ -22,7 +22,6 @@ import React, {
   useState,
 } from 'react';
 import {FlatList, ListRenderItemInfo, SafeAreaView, View} from 'react-native';
-import * as Animatable from 'react-native-animatable';
 
 const strings = getI18nService().strings;
 
@@ -263,7 +262,7 @@ export const CustomerListScreen = withModal(
             value={searchTerm}
             onSearch={handleCustomerSearch}
             containerStyle={applyStyles('flex-1')}
-            placeholderText="Search customers here"
+            placeholderText={strings('search_input_placeholder')}
             onClearInput={() => handleCustomerSearch('')}
           />
           {!searchTerm && (
@@ -360,27 +359,12 @@ export const CustomerListScreen = withModal(
                   ? strings('no_result_found')
                   : strings('customers.customer_count', {count: 0})}
               </Text>
-              <Text style={applyStyles('text-black text-sm text-center')}>
+              <Text
+                style={applyStyles('text-black text-sm text-center', {
+                  width: 200,
+                })}>
                 {strings('customers.start_adding')}
               </Text>
-            </View>
-            <View style={applyStyles('center p-16 bottom')}>
-              <Animatable.View
-                duration={200}
-                animation={{
-                  from: {translateY: -10},
-                  to: {translateY: 0},
-                }}
-                direction="alternate"
-                useNativeDriver={true}
-                iterationCount="infinite">
-                <Icon
-                  size={80}
-                  name="arrow-down"
-                  type="feathericons"
-                  color={colors.primary}
-                />
-              </Animatable.View>
             </View>
           </EmptyState>
         )}

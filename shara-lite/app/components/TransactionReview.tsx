@@ -274,6 +274,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
                 onPress={toggleShow}
                 variantColor="transparent"
                 style={applyStyles({width: '100%'})}
+                textStyle={applyStyles('text-sm')}
                 title={
                   dueDate
                     ? strings('transaction.change_collection_date')

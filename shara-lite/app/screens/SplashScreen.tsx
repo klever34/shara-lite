@@ -29,6 +29,7 @@ if (minimumVersion) {
     minimumVersion = '';
   }
 }
+const authService = getAuthService();
 
 const SplashScreen = () => {
   const navigation = useNavigation();
@@ -58,10 +59,19 @@ const SplashScreen = () => {
     return false;
   }, []);
 
-  const handleRedirect = useCallback(async () => {
-    const authService = getAuthService();
-    await authService.initialize();
+  const initializeServices = useCallback(async () => {
+    try {
+      await authService.initialize();
+    } catch (e) {}
+    try {
+      await getRemoteConfigService().initialize();
+    } finally {
+      getI18nService().initialize();
+    }
+  }, []);
 
+  const handleRedirect = useCallback(async () => {
+    await initializeServices();
     if (authService.isLoggedIn()) {
       try {
         initRealm();
@@ -103,7 +113,7 @@ const SplashScreen = () => {
         });
       }
     }, 750);
-  }, [initRealm, navigation, shouldUpdateApp]);
+  }, [initRealm, initializeServices, navigation, shouldUpdateApp]);
 
   useEffect(() => {
     handleRedirect();

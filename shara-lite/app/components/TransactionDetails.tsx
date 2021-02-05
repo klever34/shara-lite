@@ -1,3 +1,4 @@
+import {Text} from '@/components';
 import CustomerDetailsHeader, {
   CustomerDetailsHeaderProps,
 } from '@/components/CustomerDetailsHeader';
@@ -7,7 +8,7 @@ import Touchable from '@/components/Touchable';
 import TransactionListHeader from '@/components/TransactionListHeader';
 import TransactionListItem from '@/components/TransactionListItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency, getCustomerWhatsappNumber} from '@/helpers/utils';
+import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
@@ -37,10 +38,10 @@ import {
   subWeeks,
 } from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Text} from '@/components';
 import {Alert, Dimensions, FlatList, SafeAreaView, View} from 'react-native';
 import * as Animatable from 'react-native-animatable';
 import Config from 'react-native-config';
+import FileViewer from 'react-native-file-viewer';
 import Share from 'react-native-share';
 import {EntryButton, EntryContext} from './EntryView';
 import {TransactionFilterModal} from './TransactionFilterModal';
@@ -131,10 +132,6 @@ const TransactionDetails = withModal(
         });
       }
     }, [dueDate, getPaymentReminders, customer]);
-
-    const whatsAppNumber = customer.mobile
-      ? getCustomerWhatsappNumber(customer.mobile, user?.country_code)
-      : '';
 
     const paymentLink =
       businessInfo.slug &&
@@ -272,37 +269,17 @@ const TransactionDetails = withModal(
       )}`;
     }, [filterStartDate, filterEndDate, filter, filteredReceipts]);
 
-    const handleShareStatement = useCallback(async () => {
-      const closeModal = openModal('loading', {text: 'Generating report...'});
+    const handlePreviewStatement = useCallback(async (pdfFilePath) => {
       try {
-        let pdfBase64String = await exportCustomerReportToPDF({
-          customer,
-          totalAmount,
-          collectedAmount,
-          outstandingAmount,
-          businessName: businessInfo.name,
-          filterRange: getReportFilterRange(),
-          data: filteredReceipts.sorted('transaction_date', false),
-        });
-        pdfBase64String = 'data:application/pdf;base64,' + pdfBase64String;
-        const hasWhatsapp = await Share.isPackageInstalled('com.whatsapp');
-        if (hasWhatsapp && whatsAppNumber) {
-          closeModal();
-          await Share.shareSingle({
-            //@ts-ignore
-            whatsAppNumber,
-            url: pdfBase64String,
-            social: Share.Social.WHATSAPP,
-            title: strings('customer_statement.title'),
-            filename: strings('customer_statement.filename', {
-              customer_name: customer ? customer.name : '',
-            }),
-            message: strings('customer_statement.message', {
-              business_name: businessInfo.name,
-            }),
-          });
-        } else {
-          closeModal();
+        await FileViewer.open(pdfFilePath, {showOpenWithDialog: true});
+      } catch (error) {
+        handleError(error);
+      }
+    }, []);
+
+    const handleShareStatement = useCallback(
+      async (pdfBase64String) => {
+        try {
           await Share.open({
             url: pdfBase64String,
             title: strings('customer_statement.title'),
@@ -313,26 +290,65 @@ const TransactionDetails = withModal(
               business_name: businessInfo.name,
             }),
           });
+          getAnalyticsService()
+            .logEvent('userSharedReport', {})
+            .then(() => {})
+            .catch(handleError);
+        } catch (error) {
+          handleError(error);
         }
-        getAnalyticsService()
-          .logEvent('userSharedReport', {})
-          .then(() => {})
-          .catch(handleError);
+      },
+      [customer, businessInfo.name],
+    );
+
+    const handleOpenOptionsModal = useCallback(
+      ({pdfFilePath, pdfBase64String}) => {
+        openModal('options', {
+          options: [
+            {
+              text: strings('transaction.share_customer_ledger_text'),
+              onPress: () => handleShareStatement(pdfBase64String),
+            },
+            {
+              text: strings('transaction.view_customer_ledger_text'),
+              onPress: () => handlePreviewStatement(pdfFilePath),
+            },
+          ],
+        });
+      },
+      [openModal, handleShareStatement, handlePreviewStatement],
+    );
+
+    const handleGenerateStatement = useCallback(async () => {
+      const closeModal = openModal('loading', {text: 'Generating report...'});
+      try {
+        let {pdfFilePath, pdfBase64String} = await exportCustomerReportToPDF({
+          customer,
+          totalAmount,
+          collectedAmount,
+          outstandingAmount,
+          businessName: businessInfo.name,
+          filterRange: getReportFilterRange(),
+          data: filteredReceipts.sorted('created_at', false),
+        });
+        pdfBase64String = 'data:application/pdf;base64,' + pdfBase64String;
+        closeModal();
+        handleOpenOptionsModal({pdfFilePath, pdfBase64String});
       } catch (error) {
         closeModal();
         handleError(error);
         Alert.alert('Error', error.message);
       }
     }, [
-      openModal,
       customer,
-      whatsAppNumber,
+      openModal,
+      totalAmount,
+      collectedAmount,
       filteredReceipts,
       businessInfo.name,
-      collectedAmount,
-      totalAmount,
       outstandingAmount,
       getReportFilterRange,
+      handleOpenOptionsModal,
       exportCustomerReportToPDF,
     ]);
 
@@ -592,7 +608,7 @@ const TransactionDetails = withModal(
                 style={applyStyles(
                   'py-8 px-16 flex-row items-center justify-between',
                 )}>
-                <Touchable onPress={handleShareStatement}>
+                <Touchable onPress={handleGenerateStatement}>
                   <View
                     style={applyStyles(
                       'py-4 px-8 flex-row items-center bg-gray-20',

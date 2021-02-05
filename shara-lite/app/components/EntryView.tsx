@@ -12,7 +12,6 @@ import {Text} from '@/components';
 import {View, ViewProps} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
-import Keypad from '@/assets/images/keypad.svg';
 import {useAppNavigation} from '@/services/navigation';
 import {ICustomer} from '@/models';
 import {getI18nService} from '@/services';
@@ -189,7 +188,12 @@ export const EntryButton = ({container, ghost}: EntryButtonProps) => {
               style={applyStyles(
                 'w-60 h-60 my-12 rounded-32 center bg-secondary relative',
               )}>
-              <Keypad width={24} height={24} />
+              <Icon
+                size={40}
+                name="plus"
+                type="feathericons"
+                color={colors.white}
+              />
             </View>
           );
         }}

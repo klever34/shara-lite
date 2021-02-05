@@ -95,16 +95,18 @@ export const CustomerForm = ({
       <AppInput
         rightIcon="user"
         value={values.name}
-        label="Customer name"
         errorMessage={errors.name}
         onChangeText={handleChange('name')}
         containerStyle={applyStyles('mb-24')}
         isInvalid={touched.name && !!errors.name}
+        label={strings('customers.manual_customer_modal.fields.name.label')}
       />
       <PhoneNumberField
         rightIcon="phone"
-        placeholder="Enter customer number"
-        label="Customer Phone number (Optional)"
+        placeholder={strings(
+          'customers.manual_customer_modal.fields.phone.placeholder',
+        )}
+        label={strings('customers.manual_customer_modal.fields.phone.label')}
         containerStyle={applyStyles('mb-24')}
         onChangeText={(data) => onChangeMobile(data)}
         value={{
@@ -116,9 +118,9 @@ export const CustomerForm = ({
         <AppInput
           rightIcon="mail"
           value={values.email}
-          label="Customer Email (Optional)"
           onChangeText={handleChange('email')}
           containerStyle={applyStyles('mb-24')}
+          label={strings('customers.manual_customer_modal.fields.email.label')}
         />
       )}
       <RadioButton
@@ -139,7 +141,7 @@ export const CustomerForm = ({
           })}
         />
         <Button
-          title={strings('Save')}
+          title={strings('save')}
           variantColor="red"
           isLoading={isLoading}
           onPress={handleSubmit}

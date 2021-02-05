@@ -40,15 +40,26 @@ export const PaymentPreviewItem = ({item}: {item: IPaymentOption}) => {
         },
       )}>
       <View style={applyStyles('py-8 flex-1')}>
-        <Text style={applyStyles('pb-4 text-gray-200 text-uppercase text-xs')}>
+        <Text
+          style={applyStyles(
+            'pb-4 text-gray-200 text-uppercase text-base mb-3',
+          )}>
           {item.name}
         </Text>
         {item?.fieldsData?.map((i) => (
-          <Text
-            key={i.key}
-            style={applyStyles('text-gray-300 text-400 text-lg')}>
-            {i.value}
-          </Text>
+          <>
+            <Text
+              key={i.key}
+              style={applyStyles('text-gray-200 text-400 text-sm')}>
+              <Text
+                style={applyStyles(
+                  'text-sm text-500 text-gray-200 pb-8 flex-1',
+                )}>
+                {i.label}:
+              </Text>{' '}
+              {i.value}
+            </Text>
+          </>
         ))}
       </View>
       <View>

@@ -60,7 +60,10 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   const [customer, setCustomer] = useState(customerProp);
 
   const paymentLink =
-    businessInfo.slug && `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}`;
+    businessInfo.slug &&
+    `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+      customer?._id ? `?customer=${String(customer?._id)}` : ''
+    }`;
 
   const shareReceiptMessage = `${
     businessInfo.name || user?.firstname
@@ -395,7 +398,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                     style={applyStyles(
                       'pl-xs text-xs text-400 text-uppercase text-gray-200',
                     )}>
-                    sms
+                    {strings('sms')}
                   </Text>
                 </View>
               </Touchable>
