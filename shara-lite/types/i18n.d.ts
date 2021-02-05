@@ -510,6 +510,7 @@ export interface Strings {
   business_name: string;
   skip_setup: string;
   product_details: string;
+  search_input_placeholder: string;
 }
 
 interface PluralizedString {

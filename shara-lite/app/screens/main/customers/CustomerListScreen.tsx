@@ -262,7 +262,7 @@ export const CustomerListScreen = withModal(
             value={searchTerm}
             onSearch={handleCustomerSearch}
             containerStyle={applyStyles('flex-1')}
-            placeholderText="Search customers here"
+            placeholderText={strings('search_input_placeholder')}
             onClearInput={() => handleCustomerSearch('')}
           />
           {!searchTerm && (

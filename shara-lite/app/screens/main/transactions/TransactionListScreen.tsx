@@ -203,7 +203,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         <SearchFilter
           value={searchTerm}
           onSearch={handleReceiptSearch}
-          placeholderText="Search customers here"
+          placeholderText={strings('search_input_placeholder')}
           containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
         />

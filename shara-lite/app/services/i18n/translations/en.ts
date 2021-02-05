@@ -262,7 +262,8 @@ const en: Strings = {
     view_report: 'View report',
     no_activities_recorded_for_duration:
       'No activities were recorded for the chosen duration',
-    start_adding_records: 'Start adding records by tapping the + button below',
+    start_adding_records:
+      "Start adding records by tapping the '+' button below",
     transaction_success: '{{transaction_type}} has been recorded Succesfully',
   },
   receipts: {
@@ -354,14 +355,20 @@ const en: Strings = {
   scanning: 'Scanning',
   done: 'Done',
   dismiss: 'Dismiss',
-  owe: {one: 'owe', other: 'owes'},
+  owe: {
+    one: 'owe',
+    other: 'owes',
+  },
   result: {
     zero: 'No results found',
     one: '1 Result',
     other: '{{count}} Results',
   },
   clear_filter: 'Clear filter',
-  note: {one: 'Note', other: 'Notes'},
+  note: {
+    one: 'Note',
+    other: 'Notes',
+  },
   delete: 'Delete',
   edit: 'Edit',
   add: 'Add',
@@ -396,13 +403,19 @@ const en: Strings = {
   confirm: 'Confirm',
   address: 'Address',
   price: 'Price',
-  filter: {one: 'Filter', other: 'Filters'},
+  filter: {
+    one: 'Filter',
+    other: 'Filters',
+  },
   filter_options: {
     owing: 'Owing',
     not_owing: 'Not Owing',
     surplus: 'Surplus',
   },
-  customer: {one: 'Customer', other: 'Customers'},
+  customer: {
+    one: 'Customer',
+    other: 'Customers',
+  },
   customers: {
     start_adding:
       "Start adding customers by creating a record with the '+' button below",
@@ -470,7 +483,7 @@ const en: Strings = {
     payment_preview_modal: {
       heading: 'Your Payment Page Preview',
       footer: {
-        title: 'Powered by Shara Inc © 2020',
+        title: 'Powered by Shara Inc © 2021',
         website_url: 'www.shara.co',
       },
     },
@@ -493,10 +506,6 @@ const en: Strings = {
         title: 'Payment Settings',
         description: 'View and edit your payment information',
       },
-      language: {
-        title: 'Language',
-        description: 'Select your language',
-      },
       referral: {
         title: 'Referral',
         description: 'Enter referral code',
@@ -504,6 +513,10 @@ const en: Strings = {
       feedback: {
         title: 'Give Feedback',
         description: 'Provide any feedback here?',
+      },
+      language: {
+        title: 'Language',
+        description: 'Select your language',
       },
     },
     logout: {
@@ -663,6 +676,7 @@ const en: Strings = {
   business_name: 'Business Name',
   skip_setup: 'Skip setup',
   product_details: 'Product Details',
+  search_input_placeholder: 'Search customers here',
 };
 
 export default en;

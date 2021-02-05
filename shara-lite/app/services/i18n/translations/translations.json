@@ -642,7 +642,8 @@
     "upload_business_logo": "Upload Business logo",
     "business_name": "Business Name",
     "skip_setup": "Skip setup",
-    "product_details": "Product Details"
+    "product_details": "Product Details",
+    "search_input_placeholder": "Search customers here"
   },
   "en-NG": {
     "update_shara": {
@@ -1287,7 +1288,8 @@
     "upload_business_logo": "Upload Business logo",
     "business_name": "Business Name",
     "skip_setup": "Skip setup",
-    "product_details": "Product Details"
+    "product_details": "Product Details",
+    "search_input_placeholder": "Search customers here"
   },
   "sw": {
     "update_shara": {
@@ -1932,7 +1934,8 @@
     "upload_business_logo": "Pakia nembo ya biashara",
     "business_name": "Jina la biashara",
     "skip_setup": "Ruka mpangilio",
-    "product_details": "chombo kinakaaje"
+    "product_details": "chombo kinakaaje",
+    "search_input_placeholder": "Tafuta wateja hapa"
   },
   "ha": {
     "update_shara": {
@@ -2577,7 +2580,8 @@
     "upload_business_logo": "",
     "business_name": "",
     "skip_setup": "",
-    "product_details": ""
+    "product_details": "",
+    "search_input_placeholder": ""
   },
   "yo": {
     "update_shara": {
@@ -3222,7 +3226,8 @@
     "upload_business_logo": "",
     "business_name": "",
     "skip_setup": "",
-    "product_details": ""
+    "product_details": "",
+    "search_input_placeholder": ""
   },
   "fr": {
     "update_shara": {
@@ -3867,6 +3872,7 @@
     "upload_business_logo": "",
     "business_name": "",
     "skip_setup": "",
-    "product_details": ""
+    "product_details": "",
+    "search_input_placeholder": ""
   }
 }
