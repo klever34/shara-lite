@@ -1,3 +1,5 @@
+import {Strings} from 'types/i18n';
+
 const en: Strings = {
   update_shara: {
     title: 'Update Shara',

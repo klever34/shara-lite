@@ -1,8 +1,4 @@
-interface Translations {
-  en: Strings;
-}
-
-interface Strings {
+export interface Strings {
   update_shara: {
     title: string;
     description: string;

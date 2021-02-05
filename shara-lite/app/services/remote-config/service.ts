@@ -9,37 +9,6 @@ export const remoteConfigDefaults: RemoteConfig = {
   minimumVersion: '0.0.0',
 };
 
-// console.log(
-//   (() => {
-//     return JSON.stringify(translations);
-//   })(),
-// );
-//
-// console.log(
-//   (() => {
-//     const generate = (object: {[key: string]: any}, prefix = '') => {
-//       let file = '';
-//       Object.keys(object).forEach((name) => {
-//         const key = `${prefix}${prefix ? '.' : ''}${name}`;
-//         const value = object[name];
-//         if (typeof value === 'string') {
-//           file += `${key},`;
-//           file += `"${value}"\n`;
-//         } else if (typeof value === 'object') {
-//           file += generate(value, key);
-//         }
-//       });
-//       return file;
-//     };
-//     let file = 'Key,';
-//     Object.keys(translations).forEach((langCode) => {
-//       file += langCode;
-//     });
-//     file += '\n';
-//     return file + generate(translations.en);
-//   })(),
-// );
-
 export interface IRemoteConfigService {
   initialize(): Promise<void>;
   getValue(key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue;

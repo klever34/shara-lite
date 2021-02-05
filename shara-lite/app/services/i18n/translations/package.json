@@ -1,0 +1,21 @@
+{
+  "name": "translations",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node script.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "clipboardy": "^2.3.0",
+    "csv-parser": "^3.0.0",
+    "csv-writer": "^1.6.0",
+    "lodash": "^4.17.20"
+  },
+  "devDependencies": {
+    "ts-node": "^9.1.1"
+  }
+}
