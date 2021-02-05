@@ -9,7 +9,7 @@ import React, {
   forwardRef,
   createRef,
 } from 'react';
-import {applyStyles} from '@/styles';
+import {applyStyles, colors} from '@/styles';
 import Big from 'big.js';
 import {Keyboard} from 'react-native-ui-lib';
 import {Text} from '@/components';
@@ -405,11 +405,15 @@ const CalculatorKeyboard = () => {
               textStyle={applyStyles('text-2xl')}
             />
             <CalculatorButton
-              label="="
               onPress={handleEquals}
-              style={applyStyles('bg-blue-100', {flex: 2.22})}
-              textStyle={applyStyles('text-white text-2xl')}
-            />
+              style={applyStyles('bg-blue-100', {flex: 2.22})}>
+              <Icon
+                type="feathericons"
+                name="check"
+                size={24}
+                color={colors.white}
+              />
+            </CalculatorButton>
           </View>
         </View>
       </View>
