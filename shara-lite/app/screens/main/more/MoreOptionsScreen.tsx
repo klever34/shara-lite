@@ -253,15 +253,17 @@ export const MoreOptionsScreen = withModal(
             {!!business.name && (
               <>
                 <View style={applyStyles('flex-row items-center ml-16 py-32')}>
-                  <Image
-                    source={{
-                      uri: business.profile_image?.url + 'foo',
-                    }}
-                    style={applyStyles('w-full rounded-24', {
-                      width: 24,
-                      height: 24,
-                    })}
-                  />
+                  {!!business.profile_image && (
+                    <Image
+                      source={{
+                        uri: business.profile_image.url,
+                      }}
+                      style={applyStyles('w-full rounded-24', {
+                        width: 24,
+                        height: 24,
+                      })}
+                    />
+                  )}
                   <View style={applyStyles('pl-12')}>
                     <Text
                       style={applyStyles(
