@@ -29,7 +29,7 @@ export const useCreditReminder = () => {
     if (realm && overdueCredits.length) {
       notificationService.localNotification({
         id: 0,
-        title: 'Overdue Credit',
+        title: 'Outstanding Payments',
         message:
           overdueCredits.length > 1
             ? `You have ${overdueCredits.length} customers who owe you`
