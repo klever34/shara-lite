@@ -6,12 +6,13 @@ import {
   ReminderWhen,
 } from '@/models/PaymentReminder';
 import {getI18nService} from '@/services';
+import {useCustomer} from '@/services/customer/hook';
 import {handleError} from '@/services/error-boundary';
 import {usePaymentReminder} from '@/services/payment-reminder';
 import {applyStyles} from '@/styles';
 import BluebirdPromise from 'bluebird';
 import {format} from 'date-fns';
-import React, {useCallback, useContext, useState} from 'react';
+import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {View} from 'react-native';
 import {Button} from './Button';
 import {Checkbox} from './Checkbox';
@@ -30,12 +31,23 @@ const strings = getI18nService().strings;
 
 export const ReminderPopup = (props: ReminderPopupProps) => {
   const {
-    customer,
     onClose,
     onDone,
-    dueDate: dueDateProp,
     handleDueDateChange,
+    dueDate: dueDateProp,
+    customer: customerProp,
   } = props;
+
+  const {getCustomer} = useCustomer();
+
+  const [customer, setCustomer] = useState(customerProp);
+
+  useEffect(() => {
+    if (customerProp._id) {
+      setCustomer(getCustomer({customerId: customerProp._id}));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const {
     getPaymentReminders,
@@ -232,7 +244,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
                   'text-base text-black',
                   noReminders ? 'text-700' : 'text-400',
                 )}>
-                None (No reminder will be sent)
+                {strings('reminder_popup.no_collection_day')}
               </Text>
             }
           />
@@ -248,7 +260,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
                   'text-400 text-base',
                   !noReminders ? ' text-gray-100' : 'text-black',
                 )}>
-                Collection Day (Default)
+                {strings('reminder_popup.default_collection_day')}
               </Text>
             }
           />

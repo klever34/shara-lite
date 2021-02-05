@@ -14,7 +14,6 @@ export const Image = (props: RNImageProps) => {
         setError(false);
       }}
       onError={() => {
-        console.log('bar');
         setError(true);
       }}
     />

@@ -1,8 +1,4 @@
-interface Translations {
-  en: Strings;
-}
-
-interface Strings {
+export interface Strings {
   update_shara: {
     title: string;
     description: string;
@@ -220,6 +216,8 @@ interface Strings {
     no_activities_recorded_for_duration: string;
     start_adding_records: string;
     transaction_success: string;
+    share_customer_ledger_text: string;
+    view_customer_ledger_text: string;
   };
   receipts: {
     filter_options: {
@@ -229,8 +227,8 @@ interface Strings {
       date_range: string;
     };
     receipt_share_title: string;
-    recent_purchase_message: 'Hi {{customer_name}}, thank you for your recent purchase.';
-    recent_purchase_message_from_business: 'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.';
+    recent_purchase_message: string;
+    recent_purchase_message_from_business: string;
     receipt_for: string;
     receipt_no: string;
   };
@@ -279,6 +277,7 @@ interface Strings {
       title: string;
       description: string;
     };
+    no_customer_text: string;
   };
   filter: PluralizedString;
   filter_options: {
@@ -291,6 +290,7 @@ interface Strings {
     collection: string;
   };
   other: string;
+  sms: string;
   clear: string;
   cancel: string;
   save: string;
@@ -344,6 +344,14 @@ interface Strings {
     add_customer: string;
     add_customer_details: string;
     add_new_customer_text: string;
+    search_input_placeholder: string;
+    manual_customer_modal: {
+      fields: {
+        name: FormField;
+        phone: FormField;
+        email: FormField;
+      }
+    }
   };
   payment: {
     edit_payment_preview_label_modal: {
@@ -387,6 +395,7 @@ interface Strings {
       profile_settings: Card;
       business_settings: Card;
       payment_settings: Card;
+      language: Card;
       referral: Card;
       feedback: Card;
     };
@@ -492,6 +501,8 @@ interface Strings {
     collect_on_text: string;
     collection_day: PluralizedString;
     no_collection_date_text: string;
+    default_collection_day: string;
+    no_collection_day: string;
     set_collection_date_button_text: string;
   };
   payment_method: string;
@@ -513,6 +524,8 @@ interface Strings {
   business_name: string;
   skip_setup: string;
   product_details: string;
+  search_input_placeholder: string;
+  country: string;
 }
 
 interface PluralizedString {

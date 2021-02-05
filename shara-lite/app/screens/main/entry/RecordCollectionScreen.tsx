@@ -119,13 +119,6 @@ const RecordCollectionScreen = withModal(
               setFieldValue('amount_paid', value);
             }}
             autoFocus
-            onEquals={() => {
-              setImmediate(() => {
-                if (noteFieldRef.current) {
-                  noteFieldRef.current.focus();
-                }
-              });
-            }}
           />
           <View style={applyStyles('py-12 flex-row items-center')}>
             <CircleWithIcon icon="edit-2" style={applyStyles('mr-12')} />
@@ -137,7 +130,8 @@ const RecordCollectionScreen = withModal(
               label={strings('collection.fields.note.placeholder')}
               labelStyle={applyStyles('text-400 text-lg text-gray-300')}
               placeholder={strings('collection.fields.note.placeholder')}
-              style={applyStyles('h-45', {
+              style={applyStyles({height: 45})}
+              contentStyle={applyStyles({
                 width: dimensions.fullWidth - 68,
               })}
             />

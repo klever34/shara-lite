@@ -19,7 +19,7 @@ export const ReportListItem = ({
     amount_paid,
     total_amount,
     is_collection,
-    transaction_date,
+    created_at,
   } = transaction;
   return (
     <View
@@ -43,13 +43,13 @@ export const ReportListItem = ({
             {customer?.name}
           </Text>
         )}
-        {!!transaction_date && (
+        {!!created_at && (
           <Text
             style={applyStyles(
               'pb-2 text-xs text-400 text-gray-100 text-uppercase',
             )}>
-            {format(transaction_date, 'dd MMM, yyyy')} -{' '}
-            {format(transaction_date, 'hh:mm a')}
+            {format(created_at, 'dd MMM, yyyy')} -{' '}
+            {format(created_at, 'hh:mm a')}
           </Text>
         )}
         {!!note && (

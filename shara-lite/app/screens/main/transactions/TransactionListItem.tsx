@@ -1,13 +1,13 @@
+import {Text} from '@/components';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
+import {getI18nService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
-import {Text} from '@/components';
 import React, {useCallback} from 'react';
 import {View, ViewStyle} from 'react-native';
 import Markdown from 'react-native-markdown-display';
-import {getI18nService} from '@/services';
 
 const strings = getI18nService().strings;
 
@@ -33,13 +33,11 @@ export const TransactionListItem = ({
   const {
     note,
     customer,
-    isInflow,
-    isOutflow,
     amount_paid,
     total_amount,
     credit_amount,
     is_collection,
-    transaction_date,
+    created_at,
   } = receipt ?? {};
 
   const renderTransactionText = useCallback(() => {
@@ -73,43 +71,41 @@ export const TransactionListItem = ({
         </View>
       );
     }
-    if (isOutflow) {
-      if (credit_amount && amount_paid === 0) {
-        return (
-          <View>
-            {customer ? (
-              <Markdown style={markdownStyle}>{`${strings(
-                'transaction.customer_owes_statement',
-                {
-                  customer_name: customer.name,
-                  credit_amount: amountWithCurrency(credit_amount),
-                },
-              )}`}</Markdown>
-            ) : (
-              <Markdown style={markdownStyle}>{`${strings(
-                'transaction.you_were_paid_statement',
-                {
-                  amount_paid: amountWithCurrency(amount_paid),
-                },
-              )}`}</Markdown>
-            )}
-          </View>
-        );
-      }
-      if (credit_amount) {
-        return (
-          <View>
+    if (credit_amount && amount_paid === 0) {
+      return (
+        <View>
+          {customer ? (
             <Markdown style={markdownStyle}>{`${strings(
-              'transaction.customer_paid_with_outstanding_statement',
+              'transaction.customer_owes_statement',
               {
-                customer_name: customer?.name ?? '',
-                amount_paid: amountWithCurrency(amount_paid),
+                customer_name: customer.name,
                 credit_amount: amountWithCurrency(credit_amount),
               },
             )}`}</Markdown>
-          </View>
-        );
-      }
+          ) : (
+            <Markdown style={markdownStyle}>{`${strings(
+              'transaction.you_were_paid_statement',
+              {
+                amount_paid: amountWithCurrency(amount_paid),
+              },
+            )}`}</Markdown>
+          )}
+        </View>
+      );
+    }
+    if (credit_amount) {
+      return (
+        <View>
+          <Markdown style={markdownStyle}>{`${strings(
+            'transaction.customer_paid_with_outstanding_statement',
+            {
+              customer_name: customer?.name ?? '',
+              amount_paid: amountWithCurrency(amount_paid),
+              credit_amount: amountWithCurrency(credit_amount),
+            },
+          )}`}</Markdown>
+        </View>
+      );
     }
     return (
       <View>
@@ -131,14 +127,7 @@ export const TransactionListItem = ({
         )}
       </View>
     );
-  }, [
-    credit_amount,
-    amount_paid,
-    customer,
-    isOutflow,
-    is_collection,
-    total_amount,
-  ]);
+  }, [credit_amount, amount_paid, customer, is_collection, total_amount]);
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
@@ -155,7 +144,7 @@ export const TransactionListItem = ({
           <View style={applyStyles('pl-4')}>
             <View>{renderTransactionText()}</View>
             {!!note && (
-              <Text style={applyStyles('text-gray-100 text-xxs pt-4')}>
+              <Text style={applyStyles('text-gray-100 text-base pt-4')}>
                 {note}
               </Text>
             )}
@@ -170,18 +159,20 @@ export const TransactionListItem = ({
             <Text
               style={applyStyles(
                 `pb-4 text-700 text-xs ${
-                  isInflow ? 'text-green-200' : 'text-red-200'
+                  !credit_amount ? 'text-green-200' : 'text-red-200'
                 }`,
               )}>
-              {amountWithCurrency(isInflow ? total_amount : credit_amount)}
+              {amountWithCurrency(
+                !credit_amount ? total_amount : credit_amount,
+              )}
             </Text>
           </View>
           <Text
             style={applyStyles(
               'text-400 text-uppercase text-xxs text-gray-100',
             )}>
-            {transaction_date &&
-              formatDistanceToNowStrict(transaction_date, {
+            {created_at &&
+              formatDistanceToNowStrict(created_at, {
                 addSuffix: true,
               })}
           </Text>
