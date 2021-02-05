@@ -7,7 +7,7 @@ import {
   Platform,
   SectionList,
   Text,
-  ToastAndroid,
+  // ToastAndroid,
   View,
   ScrollView,
   ListRenderItemInfo,
@@ -22,6 +22,8 @@ import Touchable from './Touchable';
 import {getAnalyticsService, getStorageService} from '../services';
 import {applyStyles} from '@/styles';
 import {getI18nService} from '@/services';
+import Toast from 'react-native-simple-toast';
+
 
 const strings = getI18nService().strings;
 
@@ -397,9 +399,9 @@ export const BluetoothModal = ({
               DeviceEventEmitter.addListener(
                 BluetoothManager.EVENT_BLUETOOTH_NOT_SUPPORT,
                 () => {
-                  ToastAndroid.show(
+                  Toast.show(
                     strings('bluetooth_printer.device_not_supported'),
-                    ToastAndroid.LONG,
+                    Toast.LONG,
                   );
                 },
               ),

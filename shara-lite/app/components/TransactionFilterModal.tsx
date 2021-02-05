@@ -235,17 +235,17 @@ export const TransactionFilterModal = ({
   return (
     <View style={applyStyles('p-16 pt-0')}>
       {renderContent()}
-      <View style={applyStyles('pt-24 flex-row items-center justify-between')}>
+      <View style={[applyStyles('pt-24 flex-row items-center justify-between'), {width: '100%'}]}>
         <Button
           title={strings('clear_filter')}
           onPress={handleClear}
           variantColor="transparent"
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: '100%'})}
         />
         <Button
           title={strings('done')}
           onPress={handleDone}
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: '100%'})}
         />
       </View>
     </View>

@@ -22,6 +22,8 @@ export const MoreScreen = () => {
           fontFamily: 'CocogoosePro-SemiLight',
         },
         headerTintColor: colors['gray-300'],
+        headerBackTitleVisible: false
+
       }}>
       <MoreStack.Screen name="MoreOptions" component={MoreOptionsScreen} />
     </MoreStack.Navigator>

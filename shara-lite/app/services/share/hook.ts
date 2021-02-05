@@ -1,6 +1,6 @@
 import {getCustomerWhatsappNumber} from '@/helpers/utils';
 import {useCallback} from 'react';
-import {Alert} from 'react-native';
+import {Alert, Platform} from 'react-native';
 import Share from 'react-native-share';
 //@ts-ignore
 import {AppInstalledChecker} from 'react-native-check-app-install';
@@ -25,6 +25,8 @@ export const useShare = ({
   const userCountryCode = user?.country_code;
 
   const handleSmsShare = useCallback(async () => {
+    console.log('here');
+
     const shareOptions = {
       // @ts-ignore
       social: Share.Social.SMS,
@@ -96,12 +98,22 @@ export const useShare = ({
       }
     } else {
       try {
-        isWhatsappInstalled = await AppInstalledChecker.checkPackageName(
-          'com.whatsapp',
-        );
-        isWhatsappBusinessInstalled = await AppInstalledChecker.checkPackageName(
-          'com.whatsapp.w4b',
-        );
+        if(Platform.OS == 'android'){
+          isWhatsappInstalled = await AppInstalledChecker.checkPackageName(
+            'com.whatsapp',
+          );
+          isWhatsappBusinessInstalled = await AppInstalledChecker.checkPackageName(
+            'com.whatsapp.w4b',
+          );
+        }
+        else {
+          isWhatsappInstalled = await AppInstalledChecker.checkURLScheme(
+            'whatsapp',
+          );
+          isWhatsappBusinessInstalled = await AppInstalledChecker.checkURLScheme(
+            'whatsapp',
+          );
+        }
       } catch (e) {
         console.log(e);
       }

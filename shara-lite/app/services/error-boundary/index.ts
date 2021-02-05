@@ -1,8 +1,9 @@
-import {ToastAndroid} from 'react-native';
+// import {ToastAndroid} from 'react-native';
+import Toast from 'react-native-simple-toast';
 
 export const handleError = (error: Error) => {
   if (error.message) {
-    ToastAndroid.show(error.message, ToastAndroid.SHORT);
+    Toast.show(error.message, Toast.SHORT);
   }
   console.log('Error: ', error);
   if (error.stack) {

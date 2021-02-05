@@ -426,13 +426,13 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
           title={strings('delete')}
           variantColor="transparent"
           onPress={handleOpenConfirmModal}
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: '100%'})}
         />
         <Button
           title={strings('edit')}
           variantColor="clear"
           onPress={handleEditTransaction}
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: '100%'})}
         />
       </View>
       <View style={applyStyles({opacity: 0, height: 0})}>

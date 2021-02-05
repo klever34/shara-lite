@@ -22,6 +22,7 @@ export const CustomersScreen = () => {
           fontFamily: 'CocogoosePro-SemiLight',
         },
         headerTintColor: colors['gray-300'],
+        headerBackTitleVisible: false,
       }}>
       <CustomersStack.Screen
         name="CustomerList"

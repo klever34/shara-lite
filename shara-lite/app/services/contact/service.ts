@@ -1,4 +1,4 @@
-import {Alert, PermissionsAndroid} from 'react-native';
+import {Alert, PermissionsAndroid, Platform} from 'react-native';
 import RNContacts from 'react-native-contacts';
 import flatten from 'lodash/flatten';
 import {IApiService} from '../api';
@@ -13,6 +13,7 @@ import {uniqBy} from 'lodash';
 import * as LibPhoneNumber from 'libphonenumber-js';
 import {IIPGeolocationService} from '@/services/ip-geolocation';
 import * as RNSelectContact from 'react-native-select-contact';
+import {check, PERMISSIONS, RESULTS, request} from 'react-native-permissions';
 
 export type PhoneContact = Omit<RNContacts.Contact, 'phoneNumbers'> & {
   phoneNumber: RNContacts.PhoneNumber;
@@ -57,85 +58,103 @@ export class ContactService implements IContactService {
   private writePermissionGranted: boolean = false;
 
   private async checkReadPermission() {
-    this.permissionGranted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-    );
-    if (!this.permissionGranted) {
-      return new Promise((resolve) => {
-        Alert.alert(
-          'Access to your contacts',
-          'Shara would like to view your contacts.',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => {
-                this.permissionGranted = false;
-                resolve(this.permissionGranted);
+    if (Platform.OS === 'android') {
+      this.permissionGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+      );
+      if (!this.permissionGranted) {
+        return new Promise((resolve) => {
+          Alert.alert(
+            'Access to your contacts',
+            'Shara would like to view your contacts.',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => {
+                  this.permissionGranted = false;
+                  resolve(this.permissionGranted);
+                },
               },
-            },
-            {
-              text: 'OK',
-              onPress: () => {
-                PermissionsAndroid.request(
-                  PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
-                )
-                  .then((status) => {
-                    this.permissionGranted = status === 'granted';
-                    resolve(this.permissionGranted);
-                  })
-                  .catch(() => {
-                    this.permissionGranted = false;
-                    resolve(this.permissionGranted);
-                  });
+              {
+                text: 'OK',
+                onPress: () => {
+                  PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.READ_CONTACTS,
+                  )
+                    .then((status) => {
+                      this.permissionGranted = status === 'granted';
+                      resolve(this.permissionGranted);
+                    })
+                    .catch(() => {
+                      this.permissionGranted = false;
+                      resolve(this.permissionGranted);
+                    });
+                },
               },
-            },
-          ],
-          {cancelable: false},
-        );
-      });
+            ],
+            {cancelable: false},
+          );
+        });
+      }
+      return this.permissionGranted;
+    } else {
+      let checkPermission = await request(PERMISSIONS.IOS.CONTACTS)
+      if(checkPermission === 'granted') {
+        this.permissionGranted = true;
+      }
+
+        return this.permissionGranted;
     }
-    return this.permissionGranted;
   }
 
   private async checkWritePermission() {
-    this.permissionGranted = await PermissionsAndroid.check(
-      PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
-    );
-    if (!this.writePermissionGranted) {
-      return new Promise((resolve) => {
-        Alert.alert(
-          'Write to your contacts',
-          'Shara would like to write to your contacts.',
-          [
-            {
-              text: 'Cancel',
-              onPress: () => {
-                this.writePermissionGranted = false;
-                resolve(this.writePermissionGranted);
+    if (Platform.OS === 'android') {
+      this.permissionGranted = await PermissionsAndroid.check(
+        PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
+      );
+      if (!this.writePermissionGranted) {
+        return new Promise((resolve) => {
+          Alert.alert(
+            'Write to your contacts',
+            'Shara would like to write to your contacts.',
+            [
+              {
+                text: 'Cancel',
+                onPress: () => {
+                  this.writePermissionGranted = false;
+                  resolve(this.writePermissionGranted);
+                },
               },
-            },
-            {
-              text: 'OK',
-              onPress: () => {
-                PermissionsAndroid.request(
-                  PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
-                )
-                  .then((status) => {
-                    this.writePermissionGranted = status === 'granted';
-                    resolve(this.writePermissionGranted);
-                  })
-                  .catch(() => {
-                    this.writePermissionGranted = false;
-                    resolve(this.writePermissionGranted);
-                  });
+              {
+                text: 'OK',
+                onPress: () => {
+                  PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_CONTACTS,
+                  )
+                    .then((status) => {
+                      this.writePermissionGranted = status === 'granted';
+                      resolve(this.writePermissionGranted);
+                    })
+                    .catch(() => {
+                      this.writePermissionGranted = false;
+                      resolve(this.writePermissionGranted);
+                    });
+                },
               },
-            },
-          ],
-          {cancelable: false},
-        );
-      });
+            ],
+            {cancelable: false},
+          );
+        });
+      }
+      return this.permissionGranted;
+    } else {
+      let checkPermission = await request(PERMISSIONS.IOS.CONTACTS)
+      if(checkPermission === 'granted') {
+        this.permissionGranted = true;
+      }
+
+        return this.permissionGranted;
     }
-    return this.permissionGranted;
   }
 
   private removeAllNonDigits(number: string) {
@@ -349,6 +368,9 @@ export class ContactService implements IContactService {
   }
 
   public async selectContactPhone(): Promise<RNSelectContact.ContactPhoneSelection | null> {
+    let test = await this.checkReadPermission();
+    console.log(test);
+    
     if (await this.checkReadPermission()) {
       return RNSelectContact.selectContactPhone();
     } else {

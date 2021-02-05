@@ -67,7 +67,9 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     receiptShareProps,
   );
 
-  const onSmsShare = useCallback(() => {
+  const onSmsShare = useCallback(() => {    
+    console.log('here');
+
     analyticsService
       .logEvent('share', {
         method: 'sms',
@@ -262,7 +264,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
             //@ts-ignore
             minimumDate={new Date()}
             value={dueDate ?? new Date()}
-            containerStyle={applyStyles({width: '48%'})}
+            containerStyle={applyStyles({width: '100%'})}
             onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
             {(toggleShow) => (
               <Button
@@ -281,7 +283,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
         <Button
           title={strings('done')}
           onPress={onDone}
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: '100%'})}
         />
       </View>
       <View

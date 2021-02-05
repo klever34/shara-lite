@@ -90,40 +90,40 @@ export const OTPVerification = () => {
     [initRealm, navigation, params.mobile],
   );
 
-  useEffect(() => {
-    RNOtpVerify.getOtp()
-      .then(() => {
-        RNOtpVerify.addListener((message) => {
-          try {
-            if (message) {
-              const code = /(\d{6})/g.exec(message);
-              if (code) {
-                setOtp(code[1]);
-              }
-            }
-          } catch (error) {
-            Alert.alert(strings('alert.error'), error.message);
-          }
-        });
-      })
-      .catch((error) => {
-        Alert.alert(strings('alert.error'), error.message);
-      });
+  // useEffect(() => {
+  //   RNOtpVerify.getOtp()
+  //     .then(() => {
+  //       RNOtpVerify.addListener((message) => {
+  //         try {
+  //           if (message) {
+  //             const code = /(\d{6})/g.exec(message);
+  //             if (code) {
+  //               setOtp(code[1]);
+  //             }
+  //           }
+  //         } catch (error) {
+  //           Alert.alert(strings('alert.error'), error.message);
+  //         }
+  //       });
+  //     })
+  //     .catch((error) => {
+  //       Alert.alert(strings('alert.error'), error.message);
+  //     });
 
-    // remove listener on unmount
-    return () => {
-      RNOtpVerify.removeListener();
-    };
-  }, []);
+  //   // remove listener on unmount
+  //   return () => {
+  //     RNOtpVerify.removeListener();
+  //   };
+  // }, []);
 
-  const getHash = () =>
-    RNOtpVerify.getHash()
-      .then((text) => setHash(text[0]))
-      .catch(handleError);
+  // const getHash = () =>
+  //   RNOtpVerify.getHash()
+  //     .then((text) => setHash(text[0]))
+  //     .catch(handleError);
 
-  useEffect(() => {
-    getHash();
-  }, []);
+  // useEffect(() => {
+  //   getHash();
+  // }, []);
 
   return (
     <AuthView

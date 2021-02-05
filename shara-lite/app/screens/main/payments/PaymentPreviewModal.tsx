@@ -50,7 +50,7 @@ export const PaymentPreviewModal = withModal(
     }, [business, openModal, handleUpdateBusiness]);
 
     return (
-      <>
+      <View style={{marginTop: 30, flex: 1}}>
         <Header
           title={strings('payment.payment_preview_modal.heading')}
           iconLeft={{iconName: 'x', onPress: onClose}}
@@ -143,7 +143,7 @@ export const PaymentPreviewModal = withModal(
             {strings('payment.payment_preview_modal.footer.website_url')}
           </Text>
         </View>
-      </>
+      </View>
     );
   },
 );

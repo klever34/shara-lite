@@ -8,7 +8,7 @@ import {applyStyles} from '@/styles';
 import {useFormik} from 'formik';
 import React, {useEffect, useMemo, useState} from 'react';
 import {Alert, View} from 'react-native';
-import {getAndroidId} from 'react-native-device-info';
+import {getUniqueId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import * as yup from 'yup';
 
@@ -58,7 +58,7 @@ export const Login = () => {
     const apiService = getApiService();
     setLoading(true);
     try {
-      const device_id = await getAndroidId();
+      const device_id = getUniqueId();
       const payload = {
         hash,
         device_id,
@@ -82,11 +82,11 @@ export const Login = () => {
     }
   };
 
-  useEffect(() => {
-    RNOtpVerify.getHash()
-      .then((text) => setHash(text[0]))
-      .catch(handleError);
-  }, []);
+  // useEffect(() => {
+  //   RNOtpVerify.getHash()
+  //     .then((text) => setHash(text[0]))
+  //     .catch(handleError);
+  // }, []);
 
   return (
     <AuthView

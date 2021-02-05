@@ -222,7 +222,7 @@ export const AddCustomerModal = (props: Props) => {
             variantColor="clear"
             onPress={handleClose}
             style={applyStyles({
-              width: '48%',
+              width: '120%',
             })}
           />
           <Button
@@ -230,7 +230,7 @@ export const AddCustomerModal = (props: Props) => {
             variantColor="red"
             onPress={handleSave}
             style={applyStyles({
-              width: '48%',
+              width: '120%',
             })}
           />
         </View>

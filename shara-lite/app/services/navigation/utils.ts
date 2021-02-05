@@ -6,7 +6,8 @@ import {
 import {useCallback, useEffect, useMemo, useState} from 'react';
 import {NavigationProp} from '@react-navigation/core/lib/typescript/src/types';
 import {ParamListBase} from '@react-navigation/routers';
-import {BackHandler, ToastAndroid} from 'react-native';
+import {BackHandler} from 'react-native';
+import Toast from 'react-native-simple-toast';
 
 export const getRouteName = (navState: any): any => {
   if (!navState) {
@@ -38,7 +39,7 @@ export const useRepeatBackToExit = () => {
   const spring = useCallback(() => {
     const duration = 1500;
     setBackClickCount(1);
-    ToastAndroid.show('Press BACK again to exit', duration);
+    Toast.show('Press BACK again to exit', duration);
     setTimeout(() => {
       setBackClickCount(0);
     }, duration);

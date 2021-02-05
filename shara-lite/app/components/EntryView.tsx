@@ -181,6 +181,7 @@ export const EntryButton = ({container, ghost}: EntryButtonProps) => {
       {...container}
       ref={containerRef}>
       <HeaderBackButton
+        labelVisible={false}
         backImage={() => {
           return (
             <View

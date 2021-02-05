@@ -170,6 +170,7 @@ export const MoreOptionsScreen = withModal(
           <HeaderBackButton
             iconName="arrow-left"
             onPress={() => navigation.navigate('Home')}
+            labelVisible={false}
           />
         </View>
         <ScrollView>

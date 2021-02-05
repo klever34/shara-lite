@@ -23,6 +23,7 @@ export const PaymentsScreen = () => {
           fontFamily: 'CocogoosePro-SemiLight',
         },
         headerTintColor: colors['gray-300'],
+        headerBackTitleVisible: false
       }}>
       <ProductsStack.Screen name="ProductList" component={PaymentListScreen} />
     </ProductsStack.Navigator>

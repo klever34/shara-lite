@@ -162,7 +162,7 @@ const RecordCollectionScreen = ({route}: RecordCollectionScreenProps) => {
             title={strings('save')}
             isLoading={isLoading}
             onPress={handleSubmit}
-            style={applyStyles({width: '48%'})}
+            style={applyStyles({width: '100%'})}
           />
         </View>
       </Page>

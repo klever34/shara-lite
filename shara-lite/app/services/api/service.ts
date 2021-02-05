@@ -198,6 +198,8 @@ export class ApiService implements IApiService {
         await trace.stop();
         return (await this.handleFetchErrors<T>(response)) as T;
       } catch (e) {
+        console.log(e);
+        
         throw this.handleNetworkErrors(e);
       }
     },

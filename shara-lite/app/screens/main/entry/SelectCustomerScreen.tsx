@@ -386,12 +386,12 @@ export const SelectCustomerListScreen = withModal(
                 title="Skip"
                 variantColor="transparent"
                 onPress={() => onSelectCustomer()}
-                style={applyStyles({width: '48%'})}
+                style={applyStyles({width: '120%'})}
               />
               <Button
                 title="Save"
                 isLoading={isLoading}
-                style={applyStyles({width: '48%'})}
+                style={applyStyles({width: '120%'})}
                 onPress={() => handleRecordSale(customer)}
               />
             </View>
@@ -418,7 +418,7 @@ export const SelectCustomerListScreen = withModal(
               )}>
               <Button
                 isLoading={isLoading}
-                style={applyStyles({width: '48%'})}
+                style={applyStyles({width: '120%'})}
                 title={isCollection ? 'Next' : 'Save'}
                 onPress={
                   isCollection

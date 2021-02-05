@@ -1,7 +1,8 @@
 import XLSX from 'xlsx';
-import {PermissionsAndroid} from 'react-native';
+import {PermissionsAndroid, Platform} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
-import RNHTMLtoPDF from 'react-native-html-to-pdf-lite';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
+import {check, PERMISSIONS, request, RESULTS} from 'react-native-permissions';
 
 const dirs = RNFetchBlob.fs.dirs;
 
@@ -55,13 +56,22 @@ export const saveToFile = async ({
   notificationTitle?: string;
   notificationDescription?: string;
 }): Promise<Boolean> => {
-  const granted = await PermissionsAndroid.request(
-    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-  );
+  if (Platform.OS === 'android') {
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+    );
 
-  if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-    return false;
+    if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
+      return false;
+    }
+  } else {
+    let checkPermission = await request(PERMISSIONS.IOS.CONTACTS);
+
+    if (checkPermission === 'granted') {
+      return false;
+    }
   }
+
   // @ts-ignore
   await RNFetchBlob.fs.writeFile(path, data, encoding || 'utf8');
   await RNFetchBlob.fs.scanFile([{path, mime}]);

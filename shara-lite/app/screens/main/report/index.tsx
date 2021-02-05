@@ -158,7 +158,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
           borderBottomWidth: 1.5,
           borderBottomColor: colors['gray-20'],
         })}>
-        <HeaderBackButton iconName="arrow-left" />
+        <HeaderBackButton iconName="arrow-left" labelVisible={false} />
         <Text style={applyStyles('text-400 text-black text-lg')}>
           {i18Service.strings('report.title')}
         </Text>

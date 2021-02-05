@@ -86,8 +86,8 @@ export const HomeScreen = () => {
           activeTintColor: colors['red-200'],
           inactiveTintColor: colors['gray-50'],
           style: applyStyles({height: navBarHeight}),
-          tabStyle: applyStyles('py-20'),
-          iconStyle: applyStyles('py-4'),
+          // tabStyle: applyStyles('py-20'),
+          // iconStyle: applyStyles('py-4'),
           keyboardHidesTabBar: true,
         }}>
         <MainNav.Screen
@@ -98,7 +98,7 @@ export const HomeScreen = () => {
               <TabBarLabel {...labelProps}>{strings('activities')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="home" size={20} color={color} />
+              <Icon type="feathericons" name="home" size={32} color={color} />
             ),
           }}
         />
@@ -121,7 +121,7 @@ export const HomeScreen = () => {
               </TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="user" size={20} color={color} />
+              <Icon type="feathericons" name="user" size={32} color={color} />
             ),
           }}
         />

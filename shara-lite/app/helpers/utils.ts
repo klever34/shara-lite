@@ -5,7 +5,7 @@ import addDays from 'date-fns/addDays';
 import promiseRetry from 'promise-retry';
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
-import {Alert, ToastAndroid} from 'react-native';
+import {Alert} from 'react-native';
 import Config from 'react-native-config';
 import 'react-native-get-random-values';
 import ImagePicker, {
@@ -14,6 +14,7 @@ import ImagePicker, {
 } from 'react-native-image-picker';
 import RNFetchBlob from 'rn-fetch-blob';
 import {v4 as uuidV4} from 'uuid';
+import Toast from 'react-native-simple-toast';
 
 export const generateUniqueId = () => uuidV4();
 
@@ -148,20 +149,20 @@ type ToastPayload = {
 export const showToast = (payload: ToastPayload) => {
   const {message, duration = 'short', gravity = 'top'} = payload;
   const durationType = {
-    long: ToastAndroid.LONG,
-    short: ToastAndroid.SHORT,
+    long: Toast.LONG,
+    short: Toast.SHORT,
   } as {[key: string]: number};
-  const gravityType = {
-    top: ToastAndroid.TOP,
-    center: ToastAndroid.CENTER,
-    bottom: ToastAndroid.BOTTOM,
-  } as {[key: string]: number};
-  ToastAndroid.showWithGravityAndOffset(
+  // const gravityType = {
+  //   top: Toast.TOP,
+  //   center: Toast.CENTER,
+  //   bottom: Toast.BOTTOM,
+  // } as {[key: string]: number};
+  Toast.showWithGravity(
     message,
     durationType[duration],
-    gravityType[gravity],
-    0,
-    52,
+    Toast.TOP,
+    // 0,
+    // 52,
   );
 };
 

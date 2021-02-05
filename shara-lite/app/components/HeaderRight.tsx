@@ -38,6 +38,7 @@ export const HeaderRight = ({
           <HeaderBackButton
             key={icon.name}
             onPress={onPress}
+            labelVisible={false}
             backImage={() => {
               return (
                 <View style={applyStyles('center w-30 h-30 rounded-24')}>

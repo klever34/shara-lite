@@ -139,6 +139,7 @@ const MainScreens = () => {
             fontFamily: 'Roboto-Regular',
           },
           headerTintColor: colors['gray-300'],
+          headerBackTitleVisible: false
         }}>
         {/* Home */}
         <MainStack.Screen

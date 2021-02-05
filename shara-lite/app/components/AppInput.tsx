@@ -75,9 +75,10 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
     );
 
     return (
-      <KeyboardAwareScrollView
-        style={applyStyles(containerStyle)}
-        getTextInputRefs={() => [inputRef]}>
+      // <KeyboardAwareScrollView
+      //   style={applyStyles(containerStyle)}
+      //   getTextInputRefs={() => [inputRef]}>
+      <View style={applyStyles(containerStyle)}>
         <View style={applyStyles('flex-row')}>
           {!!label && (
             <Text
@@ -165,7 +166,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
             {errorMessage}
           </Text>
         )}
-      </KeyboardAwareScrollView>
+      </View>
     );
   },
 );

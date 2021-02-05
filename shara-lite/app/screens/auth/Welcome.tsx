@@ -123,23 +123,26 @@ export const Welcome = () => {
               title={strings('get_started')}
               variantColor="red"
               onPress={handleSkip}
-              style={applyStyles('w-full')}
+              style={applyStyles('w-full', {
+                alignSelf: 'flex-end',
+                flexDirection: 'row'
+              })}
             />
           ) : (
-            <>
+            <View style={applyStyles('flex-row justify-between items-center w-full')}>
               <Button
                 title={strings('skip')}
                 onPress={handleSkip}
                 variantColor="transparent"
-                style={applyStyles({width: '48%'})}
+                style={applyStyles({width: '300%'})}
               />
               <Button
                 title={strings('next')}
                 variantColor="red"
                 onPress={handleNext}
-                style={applyStyles({width: '48%'})}
+                style={applyStyles({width: '105%', marginRight: 100})}
               />
-            </>
+            </View>
           )}
         </View>
       </View>

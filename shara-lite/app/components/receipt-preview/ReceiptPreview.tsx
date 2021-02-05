@@ -4,7 +4,7 @@ import {
   Alert,
   Image,
   Text,
-  ToastAndroid,
+  // ToastAndroid,
   View,
 } from 'react-native';
 import {PreviewActionButton} from '@/components';
@@ -38,7 +38,7 @@ import {applyStyles} from '@/styles';
 import {Button} from '../Button';
 import {ScrollView} from 'react-native-gesture-handler';
 // import {getI18nService} from '@/services';
-
+import Toast from 'react-native-simple-toast';
 // const strings = getI18nService().strings;
 
 type Props = {
@@ -379,7 +379,7 @@ export const ReceiptPreview = ({receipt, onClose}: Props) => {
         receipt && cancelReceipt({realm, receipt, cancellation_reason: note});
         setIsCancelReceiptModalOpen(false);
         onClose && onClose();
-        ToastAndroid.show('Receipt cancelled', ToastAndroid.SHORT);
+        Toast.show('Receipt cancelled', Toast.SHORT);
       }, 300);
     },
     [realm, receipt, onClose],

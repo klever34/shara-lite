@@ -171,7 +171,7 @@ export const RecordSaleForm = (props: RecordSaleFormProps) => {
         <Button
           onPress={handleSubmit}
           title={customer ? strings('save') : strings('next')}
-          style={applyStyles('mt-20', {width: '48%'})}
+          style={applyStyles('mt-20', {width: '100%'})}
         />
       </View>
     </View>
