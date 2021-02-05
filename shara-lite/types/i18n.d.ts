@@ -1,8 +1,4 @@
-interface Translations {
-  en: Strings;
-}
-
-interface Strings {
+export interface Strings {
   update_shara: {
     title: string;
     description: string;
@@ -222,7 +218,6 @@ interface Strings {
     transaction_success: string;
     share_customer_ledger_text: string;
     view_customer_ledger_text: string;
-    search_input_placeholder: string;
   };
   receipts: {
     filter_options: {
@@ -518,6 +513,8 @@ interface Strings {
   business_name: string;
   skip_setup: string;
   product_details: string;
+  search_input_placeholder: string;
+  country: string;
 }
 
 interface PluralizedString {
