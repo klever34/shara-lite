@@ -109,7 +109,6 @@ export const SelectCustomerListScreen = withModal(
           customer: createCustomerPayload,
           source: 'phonebook',
         });
-        console.log(newCustomer);
         handleSetCustomer(newCustomer);
       } catch (error) {
         handleError(error);
@@ -228,8 +227,8 @@ export const SelectCustomerListScreen = withModal(
             value={searchTerm}
             onSearch={handleSearch}
             onClearInput={handleClearSearch}
-            placeholderText="Type customer name"
             inputStyle={applyStyles('bg-gray-10', {borderRadius: 8})}
+            placeholderText={strings('customers.search_input_placeholder')}
           />
         </View>
 
