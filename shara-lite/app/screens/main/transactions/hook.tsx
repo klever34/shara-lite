@@ -344,7 +344,7 @@ export const useReceiptList = ({
       setAllReceipts(myReceipts);
       setAllActivities(myActivities);
     });
-  }, [receipts, getTransactions, navigation, getActivities]);
+  }, [receipts, navigation, getActivities, getTransactions]);
 
   return useMemo(
     () => ({

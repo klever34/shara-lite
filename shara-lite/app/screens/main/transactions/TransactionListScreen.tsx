@@ -64,6 +64,12 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, searchTerm, filteredReceipts]);
 
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      handleReceiptSearch('');
+    });
+  }, [navigation, handleReceiptSearch]);
+
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => null,
@@ -370,7 +376,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           </View>
         </>
       )}
-      {!!filteredReceipts && !!filteredReceipts.length && (
+      {!!activitiesData && !!activitiesData.length && (
         <View
           style={applyStyles(
             'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
@@ -378,7 +384,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           <Text style={applyStyles('text-base text-gray-300')}>
             {searchTerm
               ? strings('result', {
-                  count: filteredReceipts.length,
+                  count: activitiesData.length,
                 })
               : strings('activities')}
           </Text>
@@ -408,7 +414,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         ListEmptyComponent={
           <EmptyState
-            style={applyStyles('bg-white pt-80')}
+            style={applyStyles('bg-white', {paddingTop: 200})}
             source={require('@/assets/images/emblem.png')}
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
             <View style={applyStyles('center px-8')}>
