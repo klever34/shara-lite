@@ -216,6 +216,8 @@ export interface Strings {
     no_activities_recorded_for_duration: string;
     start_adding_records: string;
     transaction_success: string;
+    share_customer_ledger_text: string;
+    view_customer_ledger_text: string;
   };
   receipts: {
     filter_options: {
@@ -275,6 +277,7 @@ export interface Strings {
       title: string;
       description: string;
     };
+    no_customer_text: string;
   };
   filter: PluralizedString;
   filter_options: {
@@ -287,6 +290,7 @@ export interface Strings {
     collection: string;
   };
   other: string;
+  sms: string;
   clear: string;
   cancel: string;
   save: string;
@@ -340,6 +344,14 @@ export interface Strings {
     add_customer: string;
     add_customer_details: string;
     add_new_customer_text: string;
+    search_input_placeholder: string;
+    manual_customer_modal: {
+      fields: {
+        name: FormField;
+        phone: FormField;
+        email: FormField;
+      }
+    }
   };
   payment: {
     edit_payment_preview_label_modal: {
@@ -489,6 +501,8 @@ export interface Strings {
     collect_on_text: string;
     collection_day: PluralizedString;
     no_collection_date_text: string;
+    default_collection_day: string;
+    no_collection_day: string;
     set_collection_date_button_text: string;
   };
   payment_method: string;
@@ -511,6 +525,7 @@ export interface Strings {
   skip_setup: string;
   product_details: string;
   search_input_placeholder: string;
+  country: string;
 }
 
 interface PluralizedString {

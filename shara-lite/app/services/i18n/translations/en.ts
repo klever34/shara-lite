@@ -265,6 +265,8 @@ const en: Strings = {
     start_adding_records:
       "Start adding records by tapping the '+' button below",
     transaction_success: '{{transaction_type}} has been recorded Succesfully',
+    share_customer_ledger_text: 'Share customer ledger',
+    view_customer_ledger_text: 'View customer ledger',
   },
   receipts: {
     filter_options: {
@@ -340,6 +342,7 @@ const en: Strings = {
       title: 'Select Customer',
       description: 'Which customer is this transaction for?',
     },
+    no_customer_text: 'Select a customer to complete this transaction',
   },
   entry: {
     sale: 'Record Sale',
@@ -448,6 +451,21 @@ const en: Strings = {
     add_customer: 'Add Customer',
     add_customer_details: 'Add Customer details',
     add_new_customer_text: 'Add New Customer',
+    search_input_placeholder: 'Type customer name',
+    manual_customer_modal: {
+      fields: {
+        name: {
+          label: 'Customer name',
+        },
+        email: {
+          label: 'Customer email (Optional)',
+        },
+        phone: {
+          label: 'Customer phone number (Optional)',
+          placeholder: 'Enter customer number',
+        },
+      }
+    }
   },
   payment: {
     edit_payment_preview_label_modal: {
@@ -655,6 +673,8 @@ const en: Strings = {
     no_collection_date_text:
       'You need to set a collection date before you set reminders',
     set_collection_date_button_text: 'Set Collection Date',
+    default_collection_day: 'Collection Day (Default)',
+    no_collection_day: 'None (No reminder will be sent)',
   },
   default_text: 'Default',
   payment_method: 'Payment method',
@@ -677,6 +697,7 @@ const en: Strings = {
   skip_setup: 'Skip setup',
   product_details: 'Product Details',
   search_input_placeholder: 'Search customers here',
+  country: 'Country',
 };
 
 export default en;

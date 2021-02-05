@@ -244,7 +244,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
                   'text-base text-black',
                   noReminders ? 'text-700' : 'text-400',
                 )}>
-                None (No reminder will be sent)
+                {strings('reminder_popup.no_collection_day')}
               </Text>
             }
           />
@@ -260,7 +260,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
                   'text-400 text-base',
                   !noReminders ? ' text-gray-100' : 'text-black',
                 )}>
-                Collection Day (Default)
+                {strings('reminder_popup.default_collection_day')}
               </Text>
             }
           />

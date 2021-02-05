@@ -426,7 +426,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
       </View>
       {!customer && !!values.credit_amount && (
         <Text style={applyStyles('text-sm text-400 text-red-100 text-center')}>
-          Select a customer to complete this transaction
+          {strings('sale.no_customer_text')}
         </Text>
       )}
       <Button
