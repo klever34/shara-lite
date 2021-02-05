@@ -220,6 +220,9 @@ interface Strings {
     no_activities_recorded_for_duration: string;
     start_adding_records: string;
     transaction_success: string;
+    share_customer_ledger_text: string;
+    view_customer_ledger_text: string;
+    search_input_placeholder: string;
   };
   receipts: {
     filter_options: {
@@ -291,6 +294,7 @@ interface Strings {
     collection: string;
   };
   other: string;
+  sms: string;
   clear: string;
   cancel: string;
   save: string;

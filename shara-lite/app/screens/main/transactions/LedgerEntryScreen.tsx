@@ -398,7 +398,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
                     style={applyStyles(
                       'pl-xs text-xs text-400 text-uppercase text-gray-200',
                     )}>
-                    sms
+                    {strings('sms')}
                   </Text>
                 </View>
               </Touchable>

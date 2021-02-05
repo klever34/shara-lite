@@ -262,6 +262,9 @@ const en: Strings = {
       'No activities were recorded for the chosen duration',
     start_adding_records: 'Start adding records by tapping the + button below',
     transaction_success: '{{transaction_type}} has been recorded Succesfully',
+    share_customer_ledger_text: 'Share customer ledger',
+    view_customer_ledger_text: 'View customer ledger',
+    search_input_placeholder: 'Search customers here',
   },
   receipts: {
     filter_options: {
