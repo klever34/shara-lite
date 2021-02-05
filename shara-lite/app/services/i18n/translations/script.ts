@@ -39,11 +39,12 @@ const compiled: {[key: string]: any} = {};
 fs.createReadStream('translations.csv')
   .pipe(csvParser())
   .on('data', ({key, ...translations}) => {
-    Object.keys(translations).forEach((lang) => {
-      if (!(lang in compiled)) {
-        compiled[lang] = {};
+    Object.keys(translations).forEach((language) => {
+      const [languageCode] = language.split(' ');
+      if (!(languageCode in compiled)) {
+        compiled[languageCode] = {};
       }
-      _.set(compiled[lang], key, translations[lang]);
+      _.set(compiled[languageCode], key, translations[language]);
     });
   })
   .on('end', () => {

@@ -21,7 +21,8 @@ export class RemoteConfigService implements IRemoteConfigService {
         minimumVersion: remoteConfigDefaults.minimumVersion,
         translations: JSON.stringify(remoteConfigDefaults.translations),
       })
-      .then(() => remoteConfig().fetchAndActivate())
+      .then(() => remoteConfig().fetch(10))
+      .then(() => remoteConfig().activate())
       .then((fetchedRemotely) => {
         if (fetchedRemotely) {
           console.log('Configs were retrieved from the backend and activated.');

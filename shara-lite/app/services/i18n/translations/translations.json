@@ -1314,7 +1314,7 @@
     },
     "otp": {
       "heading": "OTP",
-      "subheading": "Majibu kutoka kwa API",
+      "subheading": "{{Majibu kutoka kwa API}}",
       "otp_resent": "OTP imerudishwa",
       "otp_button": "Anza",
       "resend_text": "Hukupokea nambari hiyo",
@@ -1454,11 +1454,11 @@
       "title": "Mipangalio",
       "thank_you_for_doing_business": "Asante kwa kufanya biashara na {{business_name}}",
       "reminder_count": {
-        "one": "Ukumbusho utatumwa siku ya (kuhesabu)siku kabla ya tarehe ya kukusanya",
-        "other": "Ukumbusho utatumwa kwa mteja kwenye tarehe ya ukusanyaji ili kuunda ukumbusho"
+        "one": "Ukumbusho utatumwa siku moja kala ya tarehe ya kukusanya",
+        "other": "Ukumbusho utatumwa {{count}} kabla ya tarehe ya kukusanya"
       },
       "no_reminder_set_text": "Ukumbusho utatumwa kwa mteja wako siku hii",
-      "coming_soon_recurring_reminders": "Inakuja hivi karibuni. Makumbusho ya mara kwa mara",
+      "coming_soon_recurring_reminders": "Ijayo. Makumbusho ya mara kwa mara",
       "reminder_description": "Ukumbusho utatumwa kwa mteja wako siku hii",
       "reminder_unit": {
         "days": "Siku",
@@ -1498,35 +1498,35 @@
     "recurrence_description": "Malipo haya yanarudia",
     "reminder_message_title": "Ujumbe wa ukumbusho",
     "customer_statement": {
-      "title": "Shiriki taarifa na mteja",
-      "filename": "Taarifa ya kitabu cha {{customer_name}}",
-      "message": "Pata hati yako ya kitabu kutoka kwa {{business_name}}"
+      "title": "Shiriki taarifa ya mteja",
+      "filename": "{{customer name}} taarifa ya kitabu",
+      "message": "Pata taarifa yako ya kitabu kutoka {{business_name}}"
     },
     "transaction": {
       "set_collection_date": "Weka tarehe ya ukusanyaji",
       "collection_date": "Tarehe ya ukusanyaji",
       "change_collection_date": "Badilisha",
       "collect_on_date": "Ukusanyaji **{{date}}**",
-      "on_$date": "on {{date}}",
+      "on_$date": "kwenye {{date}}",
       "no_reminder_set": "Hakuna ukumbusho uliowekwa",
       "send_reminder": "Gawa",
-      "balance_statement": "{{customer_name}} lina usawa mzuri",
-      "not_owing": "{{customer_name}} halina deni",
+      "balance_statement": "{{customer_name}} ana usawa mzuri wa {{balance}}",
+      "not_owing": "{{customer_name}} hana deni",
       "generating_statement": "Taarifa inayozalisha",
       "share_statement": "Taarifa inayozalisha",
       "start_here": "Anza kuongeza rekodi kwa kugonga hapa",
-      "add_first": "Ongeza shughuli ya kwanza kwa {{customer_name}}",
+      "add_first": "Ongeza manunuzi ya kwanza ya {{customer_name}}",
       "no_credit_or_amount_warning": "Tafadhali ingiza kiasi kilichokusanywa ama kilichobaki",
       "edit_transaction": "Hariri shughuli",
       "transaction_deleted": "Tafsiri imefutwa",
       "confirm_delete": "Una hakika unataka kufuta shughuli hii",
       "is_collection_message": "Ulikusanya **{{total_amount}}**",
-      "is_collection_with_customer_message": "Ilikusanya jumla ya jumla kutoka kwa {{customer_name}}",
-      "customer_owes_statement": "*{{customer_name}}* linadaiwa **{{credit_amount}}**",
-      "customer_has_advance_statement": "*{{customer_name}}* lina mapema ya (usawa)",
+      "is_collection_with_customer_message": "Ulikusanya **{{total_amount}}** kutoka *kwa {{customer_name}}*",
+      "customer_owes_statement": "*{{customer_name}}* deni **{{credit_amount}}**",
+      "customer_has_advance_statement": "*{{customer_name}}* lina mapema ya **{{balance}}**",
       "you_were_paid_statement": "Ulilipwa **{{amount_paid}}** hakuna (mteja aliyechaguliwa) ",
-      "customer_paid_statement": "*{{customer_name}}* lilikulipa **{{amount_paid}}**",
-      "customer_paid_with_outstanding_statement": "*{{customer_name}}* lilikulipa **{{amount_paid}}** na kiwango cha mkopo ni bora",
+      "customer_paid_statement": "*{{customer_name}}* alinilipa **{{amount_paid}}**",
+      "customer_paid_with_outstanding_statement": "*{{customer_name}}* alinilipa **{{amount_paid}}** na **{{credit_amount}}** ni bora",
       "amount_collected": "Kiasi kilichokusanywa",
       "amount_outstanding": "Kiasi bora",
       "total_amount": "Jumla",
@@ -1544,16 +1544,16 @@
       },
       "receipt_share_title": "Risiti ya kushiriki",
       "recent_purchase_message": "Habari {{customer_name}} Asante kwa aslimia ya hivi karibuni",
-      "recent_purchase_message_from_business": "Habari{{customer_name}}asante kwa asilimia ya hivi karibuni {{business_name}}",
+      "recent_purchase_message_from_business": "Habari {{customer_name}} asante kwa ununuzi wako wa hivi karibuni kutoka {{business_name}}",
       "receipt_for": "Risiti ya",
       "receipt_no": "Risiti na"
     },
-    "salutation": "Habari {{name}}",
+    "salutation": "Hujambo {{name}}!",
     "you_paid_message": "Umelipa {{amount}}.",
-    "you_owe_message": "Unadaiwa {{credit_amount}}.",
-    "you_owe_message_with_due_date": "Unadaiwa {{credit_amount}} ambacho kinastahili kutolea kwa tarehe iliyowekwa",
-    "payment_link_message": " kulipa bonyeza kwenye kiunga cha malipo",
-    "powered_by_shara": "Inaendeleshwa na Shara bure katika.\\nwww.shara.co",
+    "you_owe_message": "Una deni la {{credit_amount}}.",
+    "you_owe_message_with_due_date": "Unadaiwa {{credit amount}} ambayo inapaswa kutolewa kwa {{due_date}}",
+    "payment_link_message": "Kulipa bonyeza\\n{{payment_link}}",
+    "powered_by_shara": "Inaendeswa na Shara bure.\\nwww.shara.co",
     "collection": {
       "collection_recorded": "Ukusanyaji uliorekodiwa",
       "button": {
@@ -1627,7 +1627,7 @@
     "result": {
       "zero": "Hakuna matokeo yaliyopatikana",
       "one": "Tokeo 1",
-      "other": "{{count}} matokeo"
+      "other": "{{count}} Matokeo"
     },
     "clear_filter": "Chujio wazi",
     "note": {
@@ -1686,7 +1686,7 @@
       "customer_count": {
         "zero": "Bado hauna wateja",
         "one": "Mteja",
-        "other": "{{count}} wateja"
+        "other": "{{count}} wanunuzi"
       },
       "customer_edited": "KUHARIRIWA",
       "customer_deleted": "Mteja AMEFUTWA",
@@ -1704,10 +1704,10 @@
         }
       },
       "select_customer": {
-        "title": "",
+        "title": "Chagua Mteja",
         "description": "Shughuli hii ni ya mteja gani"
       },
-      "add_as_new_customer": "Ongeza {{customer_name}} kama mteja mpya",
+      "add_as_new_customer": "ongeza {{customer_name}} kama mteja mpya",
       "add_customer": "Ongeza mteja",
       "add_customer_details": "Ongeza maelezo kuhusu mteja",
       "add_new_customer_text": "Ongeza mteja mpya"
@@ -1721,9 +1721,9 @@
         "you_can_pay_me_via": "Unaweza kunilipa kupitia"
       },
       "payment_container": {
-        "payment_added": "CHAGUO LA MALIPO LINAHITAJIKA",
+        "payment_added": "NJIA YA MALIPO IMEONGEZEWA",
         "warning_message": "Tafadhali jaza sehemu zote katika fomu",
-        "payment_edited": "CHAGUO LA MALIPO LINAHITAJIKA",
+        "payment_edited": "CHAGUO LA MALIPO LIMEBADILISHWA",
         "add_payment_info": "Ongeza maelezo ya malipo",
         "edit_payment_info": "Hariri maelezo ya malipo",
         "remove_message": "Unahakika unataka kuondoa chaguo la malipo",
@@ -1838,7 +1838,7 @@
     },
     "referral": {
       "title": "Rufaa",
-      "toast_text": "Nambari ys rufaa imewasilishwa",
+      "toast_text": "Nambari ya rufaa imewasilishwa",
       "fields": {
         "code": {
           "label": "Nambari ya rufaa",
@@ -1849,22 +1849,22 @@
     },
     "feedback": {
       "title": "Maoni",
-      "toast_text": "Ingiza maoni hapa",
+      "toast_text": "Asante kwa maoni yako",
       "fields": {
         "code": {
-          "label": "Wasilisha",
-          "placeholder": "TENGENEZA RISITI ZA BURE NA SHARA"
+          "label": "Maoni ",
+          "placeholder": "Ingiza maoni hapa"
         }
       },
-      "submit_button": "Ripoti ya maoni"
+      "submit_button": "Wasilisha"
     },
-    "create_receipts_with_shara": "Vichungi",
+    "create_receipts_with_shara": "Tengeneza ripoti za bure na Shara",
     "report": {
-      "title": "Tafuta wateja hapa",
-      "filter_button_text": "Chuja",
-      "search_input_placeholder": "Wazi",
-      "active_filter_label_text": "Usawa wavu",
-      "clear_filter_button_text": "Ripoti ya kupakua",
+      "title": "Tazama ripoti",
+      "filter_button_text": "Vichungi",
+      "search_input_placeholder": "Tafuta wateja hapa",
+      "active_filter_label_text": "Chuja",
+      "clear_filter_button_text": "Safisha",
       "net_balance_text": "Matokeo",
       "download_report_toast_text": "Ripoti ya kupakua",
       "results": {
@@ -1909,7 +1909,7 @@
         "one": "Siku 1 kabla",
         "other": "{{count}} siku kabla"
       },
-      "collect_on_text": "Kusanya tarehe ya mwisho",
+      "collect_on_text": "Kusanya {{due_date}}",
       "no_collection_date_text": "Unahitaji kuweka tarehe ya kukusanya kabla ya kuweka vikumbusho ",
       "set_collection_date_button_text": "Weka tarehe ya kukusanya"
     },
