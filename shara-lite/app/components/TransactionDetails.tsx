@@ -306,11 +306,11 @@ const TransactionDetails = withModal(
         openModal('options', {
           options: [
             {
-              text: 'Share customer ledget',
+              text: 'Share customer ledger',
               onPress: () => handleShareStatement(pdfBase64String),
             },
             {
-              text: 'Preview customer ledget',
+              text: 'View customer ledger',
               onPress: () => handlePreviewStatement(pdfFilePath),
             },
           ],
