@@ -96,7 +96,18 @@ export const applySpacing = (size: number | string): number => {
     if (size < 4) {
       return size;
     }
-    return spacing[size] ?? size;
+    return spacing[size] ?? normalize(size);
+  }
+  return spacing[size] ?? 0;
+};
+
+export const applyFontSize = (size: number | string): number => {
+  if (!isNaN(Number(size))) {
+    size = Number(size);
+    if (size <= 10) {
+      return size;
+    }
+    return spacing[size] ?? normalize(size);
   }
   return spacing[size] ?? 0;
 };

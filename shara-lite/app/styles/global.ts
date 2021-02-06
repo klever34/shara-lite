@@ -1,4 +1,10 @@
-import {dimensions, spacing, colors, applySpacing} from './variables';
+import {
+  dimensions,
+  spacing,
+  colors,
+  applySpacing,
+  applyFontSize,
+} from './variables';
 import {StyleSheet} from 'react-native';
 import {appendPrefix} from './utils';
 
@@ -97,40 +103,40 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
     textTransform: 'capitalize',
   },
   'text-4xl': {
-    fontSize: applySpacing(36),
-    lineHeight: applySpacing(44),
+    fontSize: applyFontSize(36),
+    lineHeight: applyFontSize(44),
   },
   'text-3xl': {
-    fontSize: applySpacing(32),
-    lineHeight: applySpacing(40),
+    fontSize: applyFontSize(32),
+    lineHeight: applyFontSize(40),
   },
   'text-2xl': {
-    fontSize: applySpacing(24),
-    lineHeight: applySpacing(32),
+    fontSize: applyFontSize(24),
+    lineHeight: applyFontSize(32),
   },
   'text-xl': {
-    fontSize: applySpacing(20),
-    lineHeight: applySpacing(24),
+    fontSize: applyFontSize(20),
+    lineHeight: applyFontSize(24),
   },
   'text-lg': {
-    fontSize: applySpacing(18),
-    lineHeight: applySpacing(24),
+    fontSize: applyFontSize(18),
+    lineHeight: applyFontSize(24),
   },
   'text-base': {
-    fontSize: applySpacing(16),
-    lineHeight: applySpacing(20),
+    fontSize: applyFontSize(16),
+    lineHeight: applyFontSize(20),
   },
   'text-sm': {
-    fontSize: applySpacing(14),
-    lineHeight: applySpacing(20),
+    fontSize: applyFontSize(14),
+    lineHeight: applyFontSize(20),
   },
   'text-xs': {
-    fontSize: applySpacing(12),
-    lineHeight: applySpacing(16),
+    fontSize: applyFontSize(12),
+    lineHeight: applyFontSize(16),
   },
   'text-xxs': {
-    fontSize: applySpacing(10),
-    lineHeight: applySpacing(16),
+    fontSize: applyFontSize(10),
+    lineHeight: applyFontSize(16),
   },
   'font-normal': {
     fontWeight: 'normal',

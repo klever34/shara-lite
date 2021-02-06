@@ -14,7 +14,7 @@ import CountryPicker, {
 } from 'react-native-country-picker-modal';
 import {FlagButtonProps} from 'react-native-country-picker-modal/lib/FlagButton';
 import {AppInput, AppInputProps} from './AppInput';
-import {getContactService} from '@/services';
+import {getContactService, getI18nService} from '@/services';
 
 export type PhoneNumber = {
   callingCode: string;
@@ -32,6 +32,8 @@ export type PhoneNumberFieldProps = {
   renderFlagButton?(props: FlagButtonProps): ReactNode;
   innerRef?: (node: PhoneNumberFieldRef) => void;
 } & Omit<AppInputProps, 'value' | 'onChangeText'>;
+
+const strings = getI18nService().strings;
 
 export const PhoneNumberField = forwardRef<TextInput, PhoneNumberFieldProps>(
   (props, ref) => {
@@ -131,7 +133,7 @@ export const PhoneNumberField = forwardRef<TextInput, PhoneNumberFieldProps>(
                 onSelect={onSelect}
                 withCallingCodeButton
                 // @ts-ignore
-                placeholder="Country"
+                placeholder={strings('country')}
                 renderFlagButton={renderFlagButton}
                 countryCode={country}
                 preferredCountries={['NG', 'KE', 'ZA', 'ZW']}

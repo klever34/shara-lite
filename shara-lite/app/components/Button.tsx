@@ -1,5 +1,11 @@
 import React, {useCallback, ReactNode, useEffect, useState} from 'react';
-import {ActivityIndicator, StyleSheet, View, ViewStyle} from 'react-native';
+import {
+  ActivityIndicator,
+  StyleSheet,
+  TextStyle,
+  View,
+  ViewStyle,
+} from 'react-native';
 import {Text} from '@/components';
 import {applySpacing, colors} from '@/styles';
 import Touchable from './Touchable';
@@ -16,6 +22,7 @@ interface variantColorHexColorOptions {
 export type ButtonProps = Omit<BaseButtonProps, 'onPress'> & {
   style?: ViewStyle;
   isLoading?: boolean;
+  textStyle?: TextStyle;
   children?: React.ReactNode;
   onPress?: () => Promise<void> | void;
   variantColor?: 'red' | 'blue' | 'white' | 'green' | 'clear' | 'transparent';
@@ -28,6 +35,7 @@ export const Button = ({
   isLoading,
   disabled,
   children,
+  textStyle,
   variantColor = 'blue',
 }: ButtonProps) => {
   const variantColorStyles: variantColorStylesOptions = {
@@ -90,7 +98,11 @@ export const Button = ({
     if (title) {
       return (
         <Text
-          style={{...styles.text, ...variantColorStyles[variantColor].text}}>
+          style={{
+            ...styles.text,
+            ...variantColorStyles[variantColor].text,
+            ...textStyle,
+          }}>
           {title}
         </Text>
       );
@@ -98,7 +110,7 @@ export const Button = ({
     if (children) {
       return children;
     }
-  }, [title, children, variantColor, variantColorStyles]);
+  }, [title, textStyle, children, variantColor, variantColorStyles]);
 
   return (
     <BaseButton
@@ -175,22 +187,24 @@ const styles = StyleSheet.create({
 type BaseButtonProps = {
   title?: string;
   style?: ViewStyle;
-  onPress?: () => void;
-  children?: ReactNode;
   disabled?: boolean;
+  children?: ReactNode;
+  onPress?: () => void;
+  textStyle?: TextStyle;
 };
 
 export const BaseButton = ({
-  title = '',
   onPress,
-  style = {},
   children,
   disabled,
+  style = {},
+  title = '',
+  textStyle: textStyleProps,
 }: BaseButtonProps) => {
   const disabledStyle = disabled ? baseButtonStyles.disabled : {};
   const textStyle = disabled
-    ? baseButtonStyles.disabledText
-    : baseButtonStyles.text;
+    ? [baseButtonStyles.disabledText, textStyleProps]
+    : [baseButtonStyles.text, textStyleProps];
 
   return (
     <Touchable onPress={onPress} disabled={disabled}>

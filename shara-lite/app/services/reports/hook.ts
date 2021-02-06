@@ -171,14 +171,14 @@ export const useReports = () => {
       const {customer} = options;
       const html = generateCustomerReportHTML(options);
       const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
-      const {pdfBase64String} = await exportHTMLToPDF({
+      const {pdfBase64String, pdfFilePath} = await exportHTMLToPDF({
         html,
         fileName: `Shara/Customer Ledger/${
           customer?.name ?? 'Customer'
         } Ledger - ${date}.pdf`,
         previewFileName: `${customer?.name}-Account Statement-${options.filterRange}`,
       });
-      return pdfBase64String;
+      return {pdfBase64String, pdfFilePath};
     },
     [],
   );

@@ -1,5 +1,6 @@
 import React, {
   useCallback,
+  useContext,
   useEffect,
   useLayoutEffect,
   useMemo,
@@ -26,8 +27,10 @@ import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
 import {TitleContainer} from '@/components/TitleContainer';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
+import {AppContext} from '@/contexts/app';
 
 const i18nService = getI18nService();
+const strings = getI18nService().strings;
 
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
@@ -58,15 +61,30 @@ export const MoreOptionsScreen = withModal(
     const PaymentSettings = useCallback(() => {
       navigation.navigate('PaymentSettings');
     }, [navigation]);
+    const {reloadApp} = useContext(AppContext);
+
+    const languages = i18nService.getLocales().options;
+    const onLanguageSettings = useCallback(() => {
+      const options = languages.map(({name, code}) => {
+        return {
+          text: name,
+          onPress: () => {
+            i18nService.setCurrentLocale(code);
+            reloadApp();
+          },
+        };
+      });
+      openModal('options', {
+        options,
+      });
+    }, [languages, openModal, reloadApp]);
 
     const moreOptions = useMemo(() => {
       return [
         {
           leftSection: {
-            title: i18nService.strings('more.list.profile_settings.title'),
-            caption: i18nService.strings(
-              'more.list.profile_settings.description',
-            ),
+            title: strings('more.list.profile_settings.title'),
+            caption: strings('more.list.profile_settings.description'),
           },
           onPress: () => {
             navigation.navigate('UserProfileSettings');
@@ -74,26 +92,33 @@ export const MoreOptionsScreen = withModal(
         },
         {
           leftSection: {
-            title: i18nService.strings('more.list.business_settings.title'),
-            caption: i18nService.strings(
-              'more.list.business_settings.description',
-            ),
+            title: strings('more.list.business_settings.title'),
+            caption: strings('more.list.business_settings.description'),
           },
           onPress: onEditBusinessSettings,
         },
         {
           leftSection: {
-            title: i18nService.strings('more.list.payment_settings.title'),
-            caption: i18nService.strings(
-              'more.list.payment_settings.description',
-            ),
+            title: strings('more.list.payment_settings.title'),
+            caption: strings('more.list.payment_settings.description'),
           },
           onPress: PaymentSettings,
         },
+        ...(languages.length > 1
+          ? [
+              {
+                leftSection: {
+                  title: strings('more.list.language.title'),
+                  caption: strings('more.list.language.description'),
+                },
+                onPress: onLanguageSettings,
+              },
+            ]
+          : []),
         {
           leftSection: {
-            title: i18nService.strings('more.list.referral.title'),
-            caption: i18nService.strings('more.list.referral.description'),
+            title: strings('more.list.referral.title'),
+            caption: strings('more.list.referral.description'),
           },
           onPress: () => {
             navigation.navigate('Referral');
@@ -101,15 +126,21 @@ export const MoreOptionsScreen = withModal(
         },
         {
           leftSection: {
-            title: i18nService.strings('more.list.feedback.title'),
-            caption: i18nService.strings('more.list.feedback.description'),
+            title: strings('more.list.feedback.title'),
+            caption: strings('more.list.feedback.description'),
           },
           onPress: () => {
             navigation.navigate('Feedback');
           },
         },
       ];
-    }, [navigation, onEditBusinessSettings, PaymentSettings]);
+    }, [
+      onEditBusinessSettings,
+      PaymentSettings,
+      languages.length,
+      onLanguageSettings,
+      navigation,
+    ]);
 
     const {logoutFromRealm} = useRealmLogout();
     const handleError = useErrorHandler();
@@ -145,22 +176,22 @@ export const MoreOptionsScreen = withModal(
 
     const handleLogoutConfirm = useCallback(async () => {
       const closeLoadingModal = openModal('loading', {
-        text: i18nService.strings('more.logout.logout_data_verification_text'),
+        text: strings('more.logout.logout_data_verification_text'),
       });
       const {isSynced} = await hasAllRecordsBeenSynced();
       closeLoadingModal();
 
       const message = isSynced
-        ? i18nService.strings('more.logout.logout_confirmation_text')
-        : i18nService.strings('more.logout.logout_unsaved_data_text');
+        ? strings('more.logout.logout_confirmation_text')
+        : strings('more.logout.logout_unsaved_data_text');
 
       Alert.alert('Warning', message, [
         {
-          text: i18nService.strings('more.no'),
+          text: strings('more.no'),
           onPress: () => {},
         },
         {
-          text: i18nService.strings('more.yes'),
+          text: strings('more.yes'),
           onPress: handleLogout,
         },
       ]);
@@ -200,8 +231,8 @@ export const MoreOptionsScreen = withModal(
             )}>
             <TitleContainer
               containerStyle={applyStyles('px-16 mt-16')}
-              title={i18nService.strings('more.header.title')}
-              description={i18nService.strings('more.header.description')}
+              title={strings('more.header.title')}
+              description={strings('more.header.description')}
             />
             {!business.name && (
               <Touchable onPress={onEditBusinessSettings}>
@@ -215,7 +246,7 @@ export const MoreOptionsScreen = withModal(
                     style={applyStyles('text-500 text-center', {
                       color: colors['green-100'],
                     })}>
-                    {i18nService.strings('more.business_settings_edit_button')}
+                    {strings('more.business_settings_edit_button')}
                   </Text>
                 </View>
               </Touchable>
@@ -223,15 +254,17 @@ export const MoreOptionsScreen = withModal(
             {!!business.name && (
               <>
                 <View style={applyStyles('flex-row items-center ml-16 py-32')}>
-                  <Image
-                    source={{
-                      uri: business.profile_image?.url + 'foo',
-                    }}
-                    style={applyStyles('w-full rounded-24', {
-                      width: 24,
-                      height: 24,
-                    })}
-                  />
+                  {!!business.profile_image && (
+                    <Image
+                      source={{
+                        uri: business.profile_image.url,
+                      }}
+                      style={applyStyles('w-full rounded-24', {
+                        width: 24,
+                        height: 24,
+                      })}
+                    />
+                  )}
                   <View style={applyStyles('pl-12')}>
                     <Text
                       style={applyStyles(
@@ -286,7 +319,7 @@ export const MoreOptionsScreen = withModal(
                     style={applyStyles('mr-24')}
                   />
                   <Text style={applyStyles('text-gray-100 text-sm font-bold')}>
-                    {i18nService.strings('more.logout_button')}
+                    {strings('more.logout_button')}
                   </Text>
                 </View>
               </Touchable>

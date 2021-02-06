@@ -18,7 +18,7 @@ import React, {useCallback, useContext, useLayoutEffect} from 'react';
 import {Text} from '@/components';
 import {Alert, FlatList, SafeAreaView, View} from 'react-native';
 import FileViewer from 'react-native-file-viewer';
-import {useReceiptList} from '../transactions/hook';
+import {useTransactionList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
 
@@ -42,7 +42,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     filteredReceipts,
     handleStatusFilter,
     handleReceiptSearch,
-  } = useReceiptList();
+  } = useTransactionList();
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -78,12 +78,11 @@ export const ReportScreen = withModal(({openModal}: Props) => {
 
   const getReportFilterRange = useCallback(() => {
     if (filter === 'all') {
-      return `${format(
-        filteredReceipts[filteredReceipts.length - 1]?.transaction_date ??
-          new Date(),
-        'dd MMM, yyyy',
-      )} - ${format(
-        filteredReceipts[0]?.transaction_date ?? new Date(),
+      const startDate =
+        filteredReceipts[filteredReceipts.length - 1]?.created_at ?? new Date();
+      const endDate = filteredReceipts[0]?.created_at ?? new Date();
+      return `${format(startDate, 'dd MMM, yyyy')} - ${format(
+        endDate,
         'dd MMM, yyyy',
       )}`;
     }
@@ -105,7 +104,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
         outstandingAmount,
         filterRange: getReportFilterRange(),
         businessName: getAuthService().getBusinessInfo().name,
-        data: filteredReceipts.sorted('transaction_date', false),
+        data: filteredReceipts.sorted('created_at', false),
       });
       closeModal();
       await FileViewer.open(pdfFilePath, {showOpenWithDialog: true});

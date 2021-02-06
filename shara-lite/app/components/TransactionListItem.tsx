@@ -25,7 +25,7 @@ const TransactionListItem = ({
     total_amount,
     credit_amount,
     is_collection,
-    transaction_date,
+    created_at,
   } = transaction;
 
   return (
@@ -45,12 +45,12 @@ const TransactionListItem = ({
             borderTopLeftRadius: 8,
             borderBottomLeftRadius: 8,
           })}>
-          {!!transaction_date && (
+          {!!created_at && (
             <Text
               style={applyStyles(
                 'pb-2 text-xxs text-700 text-gray-100 text-uppercase',
               )}>
-              {format(transaction_date, 'dd MMM yyyy')}
+              {format(created_at, 'dd MMM yyyy')}
             </Text>
           )}
           {!!note && (
