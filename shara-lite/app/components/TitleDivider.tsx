@@ -1,6 +1,7 @@
 import {colors} from '@/styles';
 import React from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 import {applyStyles} from '@/styles';
 
 export const TitleDivider = ({

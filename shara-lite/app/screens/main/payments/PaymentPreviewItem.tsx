@@ -2,9 +2,10 @@ import {IPaymentOption} from '@/models/PaymentOption';
 import {getAnalyticsService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {applyStyles, colors} from '@/styles';
+import {Text} from '@/components';
 import Clipboard from '@react-native-community/clipboard';
 import React, {useState} from 'react';
-import {Text, TouchableOpacity, View} from 'react-native';
+import {TouchableOpacity, View} from 'react-native';
 import {getI18nService} from '@/services';
 const strings = getI18nService().strings;
 

@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.6.7-shara-lite-feature.shara-lite-v2-enhancements+build.6326",
+  "version": "0.7.2",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -72,8 +72,10 @@
     "react-native-location": "^2.5.0",
     "react-native-markdown-display": "^7.0.0-alpha.2",
     "react-native-modal": "^11.5.6",
+    "react-native-normalize": "^1.0.1",
     "react-native-otp-verify": "^1.0.3",
     "react-native-permissions": "^3.0.0",
+    "react-native-play-install-referrer": "^1.1.6",
     "react-native-popup-menu": "^0.15.8",
     "react-native-push-notification": "^5.1.1",
     "react-native-randombytes": "^3.5.3",
@@ -122,6 +124,7 @@
     "@types/query-string": "^6.3.0",
     "@types/react-native": "^0.63.30",
     "@types/react-native-html-to-pdf": "^0.8.0",
+    "@types/react-native-fbsdk": "^3.0.0",
     "@types/react-native-push-notification": "^5.0.5",
     "@types/react-native-share": "^3.3.0",
     "@types/react-native-vector-icons": "^6.4.5",

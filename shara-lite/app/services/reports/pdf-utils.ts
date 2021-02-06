@@ -25,14 +25,14 @@ export const getNumberOfPages = ({noOfItems}: {noOfItems: number}) => {
 };
 
 const reportPageHeaderHTML = ({businessName}: {businessName: string}) => `
-  <div style="display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #DD0404;">
+  <div style="display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #0EC99C;">
     <h1 style="font-size: 24px;color: white; text-transform: uppercase">${businessName}</h1>
     <h1 style="font-size: 24px;color: white; text-transform: uppercase">Shara</h1>
   </div>
 `;
 
 const reportPageFooterHTML = () => `
-  <div style="width: calc(100% - 24px);display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #DD0404;">
+  <div style="width: calc(100% - 24px);display: flex;align-items: center;justify-content: space-between;height: 50px;padding: 0 12px; background-color: #0EC99C;">
     <h1 style="font-size: 24px;color: white; text-transform: uppercase">Shara</h1>
     <p style="color: white;">Start using Shara Today, Download from the Playstore</p>
   </div>
@@ -191,7 +191,7 @@ export const generateUserReportHTML = (options: ReportToHTMLInterface) => {
     (_, index) => index < NO_OF_ITEMS_ON_PAGE_ONE,
   );
   const itemsOtherPages = data.filter(
-    (_, index) => index > NO_OF_ITEMS_ON_PAGE_ONE,
+    (_, index) => index >= NO_OF_ITEMS_ON_PAGE_ONE,
   );
 
   for (let i = 0; i < noOfPages; i++) {
@@ -215,10 +215,9 @@ export const generateUserReportHTML = (options: ReportToHTMLInterface) => {
         </html>
       `);
     } else {
-      const pageTwoStart = NO_OF_ITEMS_ON_PAGE_ONE + i;
-      let start =
-        i === 1 ? pageTwoStart : ITEMS_PER_PAGE * (i - 1) + pageTwoStart;
-      const data = itemsOtherPages.slice(start, start + ITEMS_PER_PAGE);
+      const start = ITEMS_PER_PAGE * (i - 1);
+      const end = ITEMS_PER_PAGE * i;
+      const data = itemsOtherPages.slice(start, end);
       htmlString.push(`
         <html style="padding: 0;margin: 0;box-sizing: border-box;min-height: 100%;">
           <body style="padding: 0;margin: 0;box-sizing: border-box;position: absolute;width: 100%;height: 100%;">
@@ -254,7 +253,7 @@ export const generateCustomerReportHTML = (options: ReportToHTMLInterface) => {
     (_, index) => index < NO_OF_ITEMS_ON_PAGE_ONE,
   );
   const itemsOtherPages = data.filter(
-    (_, index) => index > NO_OF_ITEMS_ON_PAGE_ONE,
+    (_, index) => index >= NO_OF_ITEMS_ON_PAGE_ONE,
   );
 
   for (let i = 0; i < noOfPages; i++) {
@@ -278,10 +277,9 @@ export const generateCustomerReportHTML = (options: ReportToHTMLInterface) => {
         </html>
       `);
     } else {
-      const pageTwoStart = NO_OF_ITEMS_ON_PAGE_ONE + i;
-      let start =
-        i === 1 ? pageTwoStart : ITEMS_PER_PAGE * (i - 1) + pageTwoStart;
-      const data = itemsOtherPages.slice(start, start + ITEMS_PER_PAGE);
+      const start = ITEMS_PER_PAGE * (i - 1);
+      const end = ITEMS_PER_PAGE * i;
+      const data = itemsOtherPages.slice(start, end);
       htmlString.push(`
         <html style="padding: 0;margin: 0;box-sizing: border-box;min-height: 100%;">
           <body style="padding: 0;margin: 0;box-sizing: border-box;position: absolute;width: 100%;height: 100%;">

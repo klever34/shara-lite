@@ -1,5 +1,6 @@
 import {Dimensions, Platform} from 'react-native';
 import ExtraDimensions from 'react-native-extra-dimensions-android';
+import normalize from 'react-native-normalize';
 
 export const dimensions = {
   fullHeight: Platform.select({
@@ -13,12 +14,9 @@ export const dimensions = {
 };
 
 export const colors: {[key: string]: string} = {
-  'red-10': '#FFE7E7',
-  'red-30': '#FFE2E2',
-  'red-50': '#F4B1B1',
-  'red-100': '#E85656',
-  'red-200': '#DD0404',
-  primary: '#dd0404',
+  // Brand Colors
+  whatsapp: '#1BA058',
+  // Neutral Colors
   white: '#FFF',
   'gray-10': '#F5F5F5',
   'gray-20': '#EBE6E6',
@@ -27,14 +25,24 @@ export const colors: {[key: string]: string} = {
   'gray-200': '#5E5959',
   'gray-300': '#363636',
   'gray-900': '#1A202C',
-  green: '#20C720',
-  'green-10': '#D8F0EA',
+  black: '#222222',
+  // Neutral Colors
+  'red-10': '#FFE7E7',
+  'red-30': '#FFE2E2',
+  'red-50': '#F4B1B1',
+  'red-100': '#E85656',
+  'red-200': '#DD0404',
+  // Greens
+  'green-50': '#D8F0EA',
   'green-100': '#0EC99C',
   'green-200': '#25A36E',
-  black: '#222222',
-  whatsapp: '#1BA058',
-  blue: '#386EC4',
+  green: '#20C720',
+  // Blues
   'blue-10': '#D8E6FB',
+  'blue-100': '#386EC4',
+  // App Colors
+  secondary: '#386EC4',
+  primary: '#0EC99C',
 };
 
 const sizes = [
@@ -48,6 +56,7 @@ const sizes = [
   12,
   14,
   16,
+  18,
   20,
   24,
   28,
@@ -71,14 +80,25 @@ export const spacing: {[key: string]: number} = {
   ...sizes.reduce((acc, curr) => {
     return {
       ...acc,
-      [curr]: curr,
+      [curr]: normalize(curr),
     };
   }, {}),
-  xs: 4,
-  sm: 8,
-  md: 12,
-  lg: 16,
-  xl: 24,
+  xs: normalize(4),
+  sm: normalize(8),
+  md: normalize(12),
+  lg: normalize(16),
+  xl: normalize(24),
 };
 
-export const navBarHeight = 80;
+export const applySpacing = (size: number | string): number => {
+  if (!isNaN(Number(size))) {
+    size = Number(size);
+    if (size < 4) {
+      return size;
+    }
+    return spacing[size] ?? size;
+  }
+  return spacing[size] ?? 0;
+};
+
+export const navBarHeight = normalize(80);

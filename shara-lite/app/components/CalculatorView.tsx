@@ -11,14 +11,8 @@ import React, {
 import {applyStyles} from '@/styles';
 import Big from 'big.js';
 import {Keyboard} from 'react-native-ui-lib';
-import {
-  View,
-  ScrollView,
-  Text,
-  ViewStyle,
-  TextStyle,
-  TextInput,
-} from 'react-native';
+import {Text} from '@/components';
+import {View, ScrollView, ViewStyle, TextStyle, TextInput} from 'react-native';
 import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
 import Touchable from '@/components/Touchable';
 import Icon from './Icon';
@@ -390,7 +384,7 @@ const CalculatorKeyboard = () => {
             <CalculatorButton
               label="÷"
               onPress={enterValue?.('÷')}
-              textStyle={applyStyles('text-red-100 text-2xl')}
+              textStyle={applyStyles('text-2xl')}
             />
             <CalculatorButton label="9" onPress={enterValue?.('9')} />
             <CalculatorButton label="6" onPress={enterValue?.('6')} />
@@ -398,25 +392,21 @@ const CalculatorKeyboard = () => {
             <CalculatorButton label="." onPress={enterValue?.('.')} />
           </View>
           <View style={applyStyles('flex-1')}>
-            <CalculatorButton
-              label="x"
-              onPress={enterValue?.('x')}
-              textStyle={applyStyles('text-red-100')}
-            />
+            <CalculatorButton label="x" onPress={enterValue?.('x')} />
             <CalculatorButton
               label="-"
               onPress={enterValue?.('-')}
-              textStyle={applyStyles('text-red-100 text-2xl')}
+              textStyle={applyStyles('text-2xl')}
             />
             <CalculatorButton
               label="+"
               onPress={enterValue?.('+')}
-              textStyle={applyStyles('text-red-100 text-2xl')}
+              textStyle={applyStyles('text-2xl')}
             />
             <CalculatorButton
               label="="
               onPress={handleEquals}
-              style={applyStyles('bg-red-200', {flex: 2.22})}
+              style={applyStyles('bg-blue-100', {flex: 2.22})}
               textStyle={applyStyles('text-white text-2xl')}
             />
           </View>

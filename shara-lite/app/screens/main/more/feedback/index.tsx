@@ -44,7 +44,10 @@ export default function ReferralScreen() {
           value={feedback}
           multiline={true}
           onChangeText={handleChange}
-          style={applyStyles('mb-16')}
+          style={applyStyles('mb-16', {
+            height: 150,
+            textAlignVertical: 'top',
+          })}
           label={i18Service.strings('feedback.fields.code.label')}
           placeholder={i18Service.strings('feedback.fields.code.placeholder')}
         />

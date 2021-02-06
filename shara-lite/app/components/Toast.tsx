@@ -5,7 +5,8 @@ import React, {
   useCallback,
   useRef,
 } from 'react';
-import {View, Text, Animated, StyleSheet} from 'react-native';
+import {Text} from '@/components';
+import {View, Animated, StyleSheet} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 
 export type ToastProps = {

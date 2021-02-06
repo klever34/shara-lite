@@ -13,13 +13,13 @@ import React, {
   useMemo,
   useState,
 } from 'react';
+import {Text} from '@/components';
 import {
   ActivityIndicator,
   ListRenderItemInfo,
   SectionList,
   SectionListProps,
   StyleSheet,
-  Text,
   TextInput,
   View,
 } from 'react-native';
@@ -89,7 +89,7 @@ const ContactListItem = memo(
           <Touchable onPress={() => onContactSelect(customer)}>
             <View
               style={applyStyles(
-                'flex-row items-center bg-red-200 rounded-4 py-4 px-8',
+                'flex-row items-center bg-green-100 rounded-4 py-4 px-8',
               )}>
               <Icon
                 type="feathericons"

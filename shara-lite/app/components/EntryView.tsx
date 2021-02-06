@@ -8,7 +8,8 @@ import React, {
   useState,
   useContext,
 } from 'react';
-import {Text, View, ViewProps} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewProps} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton} from '@react-navigation/stack';
 import Keypad from '@/assets/images/keypad.svg';
@@ -79,7 +80,7 @@ export const EntryView = withModal(
           icon: 'dollar-sign',
           onPress: onRecordSale,
           color: {
-            primary: colors.blue,
+            primary: colors['blue-100'],
             pastel: colors['blue-10'],
           },
         },
@@ -90,7 +91,7 @@ export const EntryView = withModal(
           onPress: onRecordCollection,
           color: {
             primary: colors['green-200'],
-            pastel: colors['green-10'],
+            pastel: colors['green-50'],
           },
         },
       ];
@@ -102,6 +103,7 @@ export const EntryView = withModal(
                 ({icon, title, description, onPress, color}, index, array) => {
                   return (
                     <Touchable
+                      key={index.toString()}
                       onPress={() => {
                         onPress();
                         hideEntryDialog();
@@ -111,7 +113,7 @@ export const EntryView = withModal(
                         style={applyStyles('flex-row mx-16 pt-16 items-start')}>
                         <View
                           style={applyStyles(
-                            'rounded-24 bg-gray-20 p-4 mr-12',
+                            'rounded-24 bg-gray-20 mr-12 w-32 h-32 center',
                             {
                               backgroundColor: color.pastel,
                             },
@@ -119,7 +121,7 @@ export const EntryView = withModal(
                           <Icon
                             type="feathericons"
                             name={icon}
-                            size={20}
+                            size={24}
                             color={color.primary}
                           />
                         </View>
@@ -127,10 +129,10 @@ export const EntryView = withModal(
                           style={applyStyles(
                             'pb-16 flex-1',
                             index !== array.length - 1 &&
-                              'border-b-1 border-gray-20',
+                              'border-b-4 border-gray-20',
                           )}>
                           <Text
-                            style={applyStyles('text-700 text-base', {
+                            style={applyStyles('text-700 text-lg', {
                               color: color.primary,
                             })}>
                             {title}
@@ -186,7 +188,7 @@ export const EntryButton = ({container, ghost}: EntryButtonProps) => {
           return (
             <View
               style={applyStyles(
-                'w-60 h-60 my-12 rounded-32 center bg-primary relative',
+                'w-60 h-60 my-12 rounded-32 center bg-secondary relative',
               )}>
               <Keypad width={24} height={24} />
             </View>

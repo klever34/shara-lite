@@ -67,7 +67,71 @@ interface Strings {
     clear_app_data: string;
     ok: string;
     sync: Card;
+    api: {
+      fallbackError: string;
+      auth: {
+        otp: {
+          welcomeBack: string;
+          welcome: string;
+          selectCountry: string;
+          fallbackError: string;
+        };
+        login: {
+          otpExpired: string;
+          success: string;
+          fallbackError: string;
+        };
+      };
+      business: {
+        notFound: string;
+        create: {
+          success: string;
+        };
+        details: {
+          success: string;
+        };
+        customerDetails: {
+          notFound: string;
+          success: string;
+        };
+        update: {
+          uniqueSlug: string;
+          success: string;
+        };
+      };
+      fcm: {
+        addToken: {
+          missingFields: string;
+          success: string;
+        };
+      };
+      passwordReset: {
+        notFound: string;
+        create: {
+          success: string;
+        };
+        reset: {
+          invalid: string;
+          success: string;
+        };
+        update: {
+          uniqueSlug: string;
+          success: string;
+        };
+      };
+      paymentProvider: {
+        list: {
+          success: string;
+        };
+      };
+      user: {
+        update: {
+          success: string;
+        };
+      };
+    };
   };
+  home_screen_setup_business_text: string;
   shara_tagline: string;
   onboarding_copy_1: Card;
   onboarding_copy_2: Card;
@@ -75,6 +139,7 @@ interface Strings {
   activities: string;
   customer: PluralizedString;
   done: string;
+  dismiss: string;
   owe: PluralizedString;
   result: PluralizedString;
   clear_filter: string;
@@ -84,18 +149,14 @@ interface Strings {
   start_date: string;
   end_date: string;
   and: string;
+  default_text: string;
   payment_reminder: {
     title: string;
-    message: string;
     thank_you_for_doing_business: string;
-    you_owe: string;
-    due_on: string;
-    pay_at: string;
-    reminder_count: {
-      one: string;
-      other: string;
-    };
+    no_reminder_set_text: string;
+    reminder_count: PluralizedString;
     reminder_description: string;
+    coming_soon_recurring_reminders: string;
     reminder_unit: {
       days: string;
       weeks: string;
@@ -106,6 +167,7 @@ interface Strings {
       after: string;
     };
     reminder_added: string;
+    no_reminder: {added: string; removed: string};
     reminder_removed: string;
     confirm_delete: string;
     confirm_exit: string;
@@ -117,6 +179,10 @@ interface Strings {
     default_reminder: Card;
     on_the_day_of_collection: String;
   };
+  recurrence_title: string;
+  recurrence_description: string;
+  reminder_message_title: string;
+  reminder_text: PluralizedString;
   customer_statement: {
     title: string;
     filename: string;
@@ -142,8 +208,8 @@ interface Strings {
     collect_on_date: string;
     is_collection_message: string;
     is_collection_with_customer_message: string;
-    customer_balance_statement: string;
     customer_owes_statement: string;
+    customer_has_advance_statement: string;
     you_were_paid_statement: string;
     customer_paid_statement: string;
     customer_paid_with_outstanding_statement: string;
@@ -163,14 +229,17 @@ interface Strings {
       date_range: string;
     };
     receipt_share_title: string;
-    receipt_share_message: string;
-    receipt_share_from_who: string;
-    receipt_share_credit_message: string;
-    receipt_share_due_date_message: string;
-    receipt_share_payment_link_message: string;
+    recent_purchase_message: 'Hi {{customer_name}}, thank you for your recent purchase.';
+    recent_purchase_message_from_business: 'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.';
     receipt_for: string;
     receipt_no: string;
   };
+  salutation: string;
+  you_paid_message: string;
+  you_owe_message: string;
+  you_owe_message_with_due_date: string;
+  payment_link_message: string;
+  powered_by_shara: string;
   collection: {
     collection_recorded: string;
     button: Card;
@@ -184,6 +253,11 @@ interface Strings {
         placeholder: string;
       };
     };
+    today_text: string;
+    write_a_note_text: string;
+    select_a_photo_text: string;
+    transaction_date_text: string;
+    coming_soon_select_a_photo: string;
   };
   sale: {
     sale_recorded: string;
@@ -200,6 +274,10 @@ interface Strings {
         label: string;
         placeholder: string;
       };
+    };
+    select_customer: {
+      title: string;
+      description: string;
     };
   };
   filter: PluralizedString;
@@ -244,6 +322,11 @@ interface Strings {
   close: string;
   enable: string;
   unknown: string;
+  whatsapp: string;
+  sms: string;
+  confirm: string;
+  address: string;
+  price: string;
   customers: {
     start_adding: string;
     customer_count: PluralizedString;
@@ -404,6 +487,32 @@ interface Strings {
     device_not_supported: string;
     search_for_devices: string;
   };
+  reminder_popup: {
+    title: string;
+    collect_on_text: string;
+    collection_day: PluralizedString;
+    no_collection_date_text: string;
+    set_collection_date_button_text: string;
+  };
+  payment_method: string;
+  save_to_phonebook: string;
+  user_profile: string;
+  my_customers: string;
+  reports: string;
+  menu: string;
+  user_id: string;
+  payment_reminder_for: string;
+  payment_due: string;
+  payment_due_text: string;
+  outstanding_text: string;
+  record: string;
+  cancel_confirmation_text: string;
+  cancellation_text: string;
+  cancellation_placeholder: string;
+  upload_business_logo: string;
+  business_name: string;
+  skip_setup: string;
+  product_details: string;
 }
 
 interface PluralizedString {

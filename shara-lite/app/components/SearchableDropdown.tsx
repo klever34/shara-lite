@@ -8,11 +8,11 @@ import {
   FlatList,
   Keyboard,
   StyleSheet,
-  Text,
   TextInput,
   View,
   TextInputProps,
 } from 'react-native';
+import {Text} from '@/components';
 import {applyStyles, colors} from '@/styles';
 import {Button} from './Button';
 import Icon from './Icon';

@@ -1,6 +1,7 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {Icon} from '../Icon';
 import Touchable from '../Touchable';
 
@@ -20,7 +21,7 @@ export const PreviewActionButton = (props: Props) => {
             width: 40,
             height: 40,
             borderRadius: 4,
-            backgroundColor: colors['red-10'],
+            backgroundColor: colors['green-50'],
           })}>
           <Icon
             size={24}

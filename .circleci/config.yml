@@ -689,6 +689,62 @@ workflows:
             branches:
               only:
                 - master
+  shara-lite-production-workflow:
+    jobs:
+      - request-approval:
+          type: approval
+          filters:
+            branches:
+              only:
+                - master
+      - checkout_code:
+          app: shara-lite
+          context: shara-beta
+          appEnv: SHARA_LITE_ENV
+          merged: true
+          commit: true
+          versioning: false
+          requires:
+            - request-approval
+          filters:
+            branches:
+              only:
+                - master
+      - test:
+          app: shara-lite
+          requires:
+            - checkout_code
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: play
+          track: production
+          packageName: co.shara.lite
+          sentryProject: shara-lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
+      - fastlane:
+          app: shara-lite
+          context: shara-beta
+          lane: internal
+          packageName: co.shara.lite
+          sentryProject: shara-lite
+          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+          productFlavor: production
+          env: beta
+          requires:
+            - test
+          filters:
+            branches:
+              only:
+                - master
 jobs:
   checkout_code:
     docker:

@@ -1,6 +1,7 @@
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Modal, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Modal, View} from 'react-native';
 import Icon from './Icon';
 import Touchable from './Touchable';
 

@@ -7,7 +7,8 @@ import React, {
 } from 'react';
 import {RadioButton} from '@/components/RadioButton';
 import {applyStyles} from '@/styles';
-import {Text, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle} from 'react-native';
 
 export type RadioInputRef = {
   disabled: boolean;

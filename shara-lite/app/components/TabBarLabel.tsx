@@ -1,6 +1,6 @@
 import React, {ReactNode} from 'react';
-import {Text} from 'react-native';
-import {applyStyles} from '@/styles';
+import {Text} from '@/components';
+import {applySpacing, applyStyles} from '@/styles';
 
 type TabBarLabelProps = {
   focused: boolean;
@@ -14,7 +14,7 @@ export const TabBarLabel = ({children, focused}: TabBarLabelProps) => {
         focused ? 'text-gray-300 text-700' : 'text-gray-200',
         'uppercase',
         {
-          fontSize: 9,
+          fontSize: applySpacing(12),
         },
       )}>
       {children}

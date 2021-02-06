@@ -6,7 +6,8 @@ import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useRef, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import Swiper from 'react-native-swiper';
 
 const strings = getI18nService().strings;
@@ -60,7 +61,7 @@ export const Welcome = () => {
               marginLeft: 3,
               marginRight: 3,
               borderRadius: 4,
-              backgroundColor: colors['red-100'],
+              backgroundColor: colors['gray-200'],
             })}
           />
         }>
@@ -120,13 +121,9 @@ export const Welcome = () => {
         <View style={applyStyles('flex-row justify-between items-center')}>
           {count === 2 ? (
             <Button
-              title={strings('get_started')}
-              variantColor="red"
               onPress={handleSkip}
-              style={applyStyles('w-full', {
-                alignSelf: 'flex-end',
-                flexDirection: 'row'
-              })}
+              style={applyStyles('w-full')}
+              title={strings('get_started')}
             />
           ) : (
             <View style={applyStyles('flex-row justify-between items-center w-full')}>
@@ -138,7 +135,6 @@ export const Welcome = () => {
               />
               <Button
                 title={strings('next')}
-                variantColor="red"
                 onPress={handleNext}
                 style={applyStyles({width: '105%', marginRight: 100})}
               />

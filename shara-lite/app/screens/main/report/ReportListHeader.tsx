@@ -2,7 +2,8 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {getI18nService} from '@/services';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {Text, View, ViewStyle} from 'react-native';
+import {View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
 
 type Props = {
   totalAmount: number;

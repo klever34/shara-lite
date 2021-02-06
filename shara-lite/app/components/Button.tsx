@@ -1,12 +1,7 @@
 import React, {useCallback, ReactNode, useEffect, useState} from 'react';
-import {
-  ActivityIndicator,
-  StyleSheet,
-  Text,
-  View,
-  ViewStyle,
-} from 'react-native';
-import {colors} from '@/styles';
+import {ActivityIndicator, StyleSheet, View, ViewStyle} from 'react-native';
+import {Text} from '@/components';
+import {applySpacing, colors} from '@/styles';
 import Touchable from './Touchable';
 import {applyStyles} from '@/styles';
 
@@ -33,7 +28,7 @@ export const Button = ({
   isLoading,
   disabled,
   children,
-  variantColor = 'red',
+  variantColor = 'blue',
 }: ButtonProps) => {
   const variantColorStyles: variantColorStylesOptions = {
     white: {
@@ -128,10 +123,10 @@ export const Button = ({
 
 const styles = StyleSheet.create({
   button: {
-    height: 56,
-    borderRadius: 8,
+    height: applySpacing(56),
+    borderRadius: applySpacing(8),
     alignItems: 'center',
-    paddingHorizontal: 10,
+    paddingHorizontal: applySpacing(10),
     justifyContent: 'center',
   },
   whiteButton: {
@@ -141,7 +136,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.primary,
   },
   blueButton: {
-    backgroundColor: colors.blue,
+    backgroundColor: colors['blue-100'],
   },
   greenButton: {
     backgroundColor: colors['green-200'],
@@ -159,7 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   text: {
-    fontSize: 16,
+    fontSize: applySpacing(18),
     fontWeight: '700',
     textTransform: 'capitalize',
   },
@@ -223,21 +218,21 @@ export const baseButtonStyles = StyleSheet.create({
     elevation: 8,
   },
   text: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: applySpacing(14),
+    lineHeight: applySpacing(20),
     color: colors.white,
     textTransform: 'capitalize',
   },
   disabledText: {
-    fontSize: 14,
-    lineHeight: 20,
+    fontSize: applySpacing(14),
+    lineHeight: applySpacing(20),
     color: colors['gray-100'],
     textTransform: 'capitalize',
   },
   icon: {
     color: colors.white,
-    fontSize: 18,
-    lineHeight: 24,
+    fontSize: applySpacing(18),
+    lineHeight: applySpacing(24),
   },
   disabled: {
     borderColor: colors['gray-20'],

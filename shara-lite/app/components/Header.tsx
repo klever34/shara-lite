@@ -1,5 +1,6 @@
 import React, {ReactNode, useCallback} from 'react';
-import {Text, View, ViewStyle, TextStyle} from 'react-native';
+import {Text} from '@/components';
+import {View, ViewStyle, TextStyle} from 'react-native';
 import {applyStyles, colors} from '@/styles';
 import {HeaderBackButton, HeaderBackButtonProps} from './HeaderBackButton';
 import {HeaderRight, HeaderRightProps} from '@/components/HeaderRight';
@@ -52,7 +53,7 @@ export const Header = ({
         style,
       )}>
       {iconLeft && (
-        <View style={applyStyles('absolute h-full')}>
+        <View style={applyStyles('absolute center h-full')}>
           <HeaderBackButton {...iconLeft} />
         </View>
       )}

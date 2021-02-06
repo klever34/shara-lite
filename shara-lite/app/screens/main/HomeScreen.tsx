@@ -2,10 +2,11 @@ import {Icon} from '@/components/Icon';
 import {TabBarLabel} from '@/components/TabBarLabel';
 import {CustomersScreen} from '@/screens/main/customers';
 import {TransactionsScreen} from '@/screens/main/transactions';
-import {applyStyles, colors, navBarHeight} from '@/styles';
+import {applySpacing, applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect} from 'react';
-import {Image, SafeAreaView, Text, View} from 'react-native';
+import {Text} from '@/components';
+import {Image, SafeAreaView, View} from 'react-native';
 import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
@@ -32,6 +33,11 @@ export const HomeScreen = () => {
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
   const {setCurrentCustomer} = useContext(EntryContext);
+  const headerImageSource = business.profile_image?.url
+    ? {
+        uri: business.profile_image?.url,
+      }
+    : require('@/assets/images/shara_logo_white.png');
   const {updateLastSeen} = useLastSeen();
 
   useEffect(() => {
@@ -46,7 +52,7 @@ export const HomeScreen = () => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <Header
-        style={applyStyles('bg-red-200')}
+        style={applyStyles('bg-primary')}
         headerRight={{
           options: [
             {
@@ -60,20 +66,19 @@ export const HomeScreen = () => {
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             <Image
-              source={{
-                uri: business.profile_image?.url,
-              }}
-              style={applyStyles('w-full rounded-12', {
-                width: 24,
-                height: 24,
+              resizeMode={business.profile_image?.url ? undefined : 'contain'}
+              source={headerImageSource}
+              style={applyStyles('w-full rounded-24', {
+                width: applySpacing(24),
+                height: applySpacing(24),
               })}
             />
             <View style={applyStyles('pl-12')}>
               <Text
                 style={applyStyles(
-                  'text-uppercase text-sm text-700 text-white',
+                  'text-uppercase text-base text-700 text-white',
                 )}>
-                {business.name}
+                {business.name || strings('home_screen_setup_business_text')}
               </Text>
             </View>
           </View>
@@ -83,7 +88,7 @@ export const HomeScreen = () => {
         initialRouteName="TransactionsTab"
         tabBarOptions={{
           labelStyle: {fontFamily: 'Rubik-Regular'},
-          activeTintColor: colors['red-200'],
+          activeTintColor: colors.primary,
           inactiveTintColor: colors['gray-50'],
           style: applyStyles({height: navBarHeight}),
           // tabStyle: applyStyles('py-20'),

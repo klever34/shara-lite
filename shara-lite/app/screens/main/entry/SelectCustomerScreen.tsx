@@ -19,9 +19,9 @@ import {
   Keyboard,
   ListRenderItemInfo,
   SafeAreaView,
-  Text,
   View,
 } from 'react-native';
+import {Text} from '@/components';
 import {useCustomerList} from '../customers/CustomerListScreen';
 import {getI18nService} from '@/services';
 
@@ -49,8 +49,6 @@ export type SelectCustomerListScreenProps = {
 export const SelectCustomerListScreen = withModal(
   ({route, openModal}: SelectCustomerListScreenProps) => {
     const {withCustomer, onSelectCustomer, isCollection} = route.params;
-
-    const [isLoading, setIsLoading] = useState(false);
 
     const {
       searchTerm,
@@ -158,17 +156,6 @@ export const SelectCustomerListScreen = withModal(
       handleSetCustomer(undefined);
     }, [handleCustomerSearch, handleSetCustomer]);
 
-    const handleRecordSale = useCallback(
-      (customerData?: Partial<ICustomer>) => {
-        setIsLoading(true);
-        setTimeout(() => {
-          onSelectCustomer(customerData);
-          setIsLoading(false);
-        }, 2000);
-      },
-      [onSelectCustomer],
-    );
-
     const keyExtractor = useCallback((item, index) => {
       if (!item) {
         return '';
@@ -190,9 +177,10 @@ export const SelectCustomerListScreen = withModal(
               item && handleSetCustomer(item);
             }}>
             <View
-              style={applyStyles(
-                'flex-row items-center border-b-1 border-gray-20 px-16 py-12',
-              )}>
+              style={applyStyles('flex-row items-center px-16 py-12', {
+                borderBottomWidth: 1,
+                borderBottomColor: colors['gray-20'],
+              })}>
               <PlaceholderImage
                 text={item?.name ?? ''}
                 image={item?.image ? {uri: item?.image} : undefined}
@@ -256,12 +244,14 @@ export const SelectCustomerListScreen = withModal(
               )}>
               <View style={applyStyles('flex-row items-center')}>
                 <View
-                  style={applyStyles('w-36 h-36 rounded-36 center bg-red-50')}>
+                  style={applyStyles(
+                    'w-36 h-36 rounded-36 center bg-green-50',
+                  )}>
                   <Icon
                     size={18}
                     name="plus"
                     type="feathericons"
-                    color={colors['red-100']}
+                    color={colors['green-200']}
                   />
                 </View>
                 <Text
@@ -276,7 +266,7 @@ export const SelectCustomerListScreen = withModal(
                   size={24}
                   name="plus"
                   type="feathericons"
-                  color={colors['red-100']}
+                  color={colors['green-100']}
                 />
               </View>
             </View>
@@ -293,12 +283,12 @@ export const SelectCustomerListScreen = withModal(
             )}>
             <View style={applyStyles('flex-row items-center')}>
               <View
-                style={applyStyles('w-36 h-36 rounded-36 center bg-red-50')}>
+                style={applyStyles('w-36 h-36 rounded-24 center bg-green-50')}>
                 <Icon
                   size={18}
                   name="users"
                   type="feathericons"
-                  color={colors['red-100']}
+                  color={colors['green-200']}
                 />
               </View>
               <Text style={applyStyles('pl-8 text-base')}>
@@ -310,7 +300,7 @@ export const SelectCustomerListScreen = withModal(
                 size={24}
                 name="chevron-right"
                 type="feathericons"
-                color={colors['red-100']}
+                color={colors['green-100']}
               />
             </View>
           </View>
@@ -319,12 +309,12 @@ export const SelectCustomerListScreen = withModal(
         {customer && (
           <View
             style={applyStyles(
-              'flex-row items-center border-b-1 border-gray-20 px-16 py-12 bg-red-200',
+              'flex-row items-center border-b-1 border-gray-20 px-16 py-12 bg-green-200',
             )}>
             <PlaceholderImage
               text={customer?.name ?? ''}
               style={applyStyles('bg-white')}
-              textStyle={applyStyles('text-red-200')}
+              textStyle={applyStyles('text-green-200')}
               image={customer.image ? {uri: customer?.image} : undefined}
             />
             <View style={applyStyles('flex-1 ml-8')}>
@@ -390,9 +380,8 @@ export const SelectCustomerListScreen = withModal(
               />
               <Button
                 title="Save"
-                isLoading={isLoading}
-                style={applyStyles({width: '120%'})}
-                onPress={() => handleRecordSale(customer)}
+                style={applyStyles({width: '48%'})}
+                onPress={() => onSelectCustomer(customer)}
               />
             </View>
           ) : (
@@ -402,10 +391,9 @@ export const SelectCustomerListScreen = withModal(
                   'px-16 py-8 bg-white flex-row items-center w-full justify-end absolute bottom-0 right-0',
                 )}>
                 <Button
-                  isLoading={isLoading}
-                  title="Save (No Customer)"
+                  title="Save"
                   style={applyStyles({width: 200})}
-                  onPress={() => handleRecordSale()}
+                  onPress={() => onSelectCustomer()}
                 />
               </View>
             )
@@ -417,14 +405,9 @@ export const SelectCustomerListScreen = withModal(
                 'px-16 py-8 bg-white flex-row items-center justify-end',
               )}>
               <Button
-                isLoading={isLoading}
-                style={applyStyles({width: '120%'})}
+                style={applyStyles({width: '48%'})}
                 title={isCollection ? 'Next' : 'Save'}
-                onPress={
-                  isCollection
-                    ? () => onSelectCustomer(customer)
-                    : () => handleRecordSale(customer)
-                }
+                onPress={() => onSelectCustomer(customer)}
               />
             </View>
           )

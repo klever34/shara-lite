@@ -13,7 +13,8 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp, useRoute} from '@react-navigation/native';
 import OTPInputView from '@twotalltotems/react-native-otp-input';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
-import {Alert, Platform, Text, TouchableOpacity, View} from 'react-native';
+import {Text} from '@/components';
+import {Alert, Platform, TouchableOpacity, View} from 'react-native';
 import {getAndroidId} from 'react-native-device-info';
 import RNOtpVerify from 'react-native-otp-verify';
 import {AuthStackParamList} from '.';
@@ -173,10 +174,9 @@ export const OTPVerification = () => {
           </TouchableOpacity>
         </View>
         <Button
-          variantColor="red"
-          title={strings('otp.otp_button')}
           isLoading={loading}
           style={applyStyles('w-full')}
+          title={strings('otp.otp_button')}
           onPress={() => handleSubmit(otp)}
         />
       </View>

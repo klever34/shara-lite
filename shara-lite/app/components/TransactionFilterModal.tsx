@@ -1,7 +1,8 @@
 import {applyStyles, colors} from '@/styles';
 import {endOfDay, format, startOfDay} from 'date-fns';
 import React, {useCallback, useState} from 'react';
-import {Text, View} from 'react-native';
+import {Text} from '@/components';
+import {View} from 'react-native';
 import {Button} from './Button';
 import {DatePicker} from './DatePicker';
 import {Icon} from './Icon';
@@ -217,9 +218,8 @@ export const TransactionFilterModal = ({
                     onChange={() => handleStatusFilter(value)}>
                     <Text
                       style={applyStyles(
-                        `text-400 text-base ${
-                          isActive ? 'text-red-200' : 'text-black'
-                        }`,
+                        'text-base text-black',
+                        isActive ? 'text-700' : 'text-400',
                       )}>
                       {text}
                     </Text>
