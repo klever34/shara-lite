@@ -1,7 +1,7 @@
 import {Text} from '@/components';
 import {applyStyles, colors} from '@/styles';
 import React from 'react';
-import {View, ViewStyle} from 'react-native';
+import {TextStyle, View, ViewStyle} from 'react-native';
 import {TextProps} from 'react-native-ui-lib';
 import {CircleWithIcon} from './CircleWithIcon';
 import {Icon} from './Icon';
@@ -10,6 +10,8 @@ import Touchable from './Touchable';
 type Section = {
   title?: string;
   caption?: string;
+  titleStyle?: TextStyle;
+  captionStyle?: TextStyle;
   titleNumberOfLines?: TextProps['numberOfLines'];
   captionNumberOfLines?: TextProps['numberOfLines'];
 };
@@ -33,14 +35,20 @@ export const TouchableActionItem = (props: Props) => {
             {!!leftSection?.title && (
               <Text
                 numberOfLines={leftSection.titleNumberOfLines}
-                style={applyStyles('text-400 text-lg text-gray-300')}>
+                style={applyStyles(
+                  'text-400 text-lg text-gray-300',
+                  leftSection.titleStyle,
+                )}>
                 {leftSection.title}
               </Text>
             )}
             {!!rightSection?.title && (
               <Text
                 numberOfLines={rightSection.titleNumberOfLines}
-                style={applyStyles('text-400 text-xs text-gray-100')}>
+                style={applyStyles(
+                  'text-400 text-xs text-gray-100',
+                  rightSection.titleStyle,
+                )}>
                 {rightSection.title}
               </Text>
             )}
@@ -49,14 +57,20 @@ export const TouchableActionItem = (props: Props) => {
             {!!leftSection?.caption && (
               <Text
                 numberOfLines={leftSection.captionNumberOfLines}
-                style={applyStyles('text-400 text-sm text-gray-200')}>
+                style={applyStyles(
+                  'text-400 text-sm text-gray-200',
+                  leftSection.captionStyle,
+                )}>
                 {leftSection.caption}
               </Text>
             )}
             {!!rightSection?.caption && (
               <Text
                 numberOfLines={rightSection.captionNumberOfLines}
-                style={applyStyles('text-400 text-xs text-gray-100')}>
+                style={applyStyles(
+                  'text-400 text-xs text-gray-100',
+                  rightSection.captionStyle,
+                )}>
                 {rightSection.caption}
               </Text>
             )}

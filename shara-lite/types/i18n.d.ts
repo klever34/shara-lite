@@ -278,6 +278,7 @@ export interface Strings {
       description: string;
     };
     no_customer_text: string;
+    due_date_is_past: string;
   };
   filter: PluralizedString;
   filter_options: {
