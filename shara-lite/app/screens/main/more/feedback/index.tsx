@@ -51,18 +51,17 @@ export default function ReferralScreen() {
           value={feedback}
           multiline={true}
           onChangeText={handleChange}
-          style={applyStyles('mb-16', {
+          style={applyStyles({
             height: 150,
             textAlignVertical: 'top',
           })}
           label={i18Service.strings('feedback.fields.code.label')}
           placeholder={i18Service.strings('feedback.fields.code.placeholder')}
         />
-        <Text
-          style={applyStyles('absolute', {paddingTop: 140, paddingLeft: 212})}>
-          Characters Count: {feedback.length}
-        </Text>
       </View>
+      <Text style={applyStyles('py-8')}>
+        Characters Count: {feedback.length}
+      </Text>
       <Button
         onPress={handleSubmit}
         title={i18Service.strings('feedback.submit_button')}
