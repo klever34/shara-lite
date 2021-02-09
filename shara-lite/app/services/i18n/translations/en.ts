@@ -73,6 +73,7 @@ const en: Strings = {
       otp: 'OTP is required',
     },
     something_went_wrong: 'Oops! Something went wrong.',
+    feedback_validation: 'Minimum of 25 charaters allowed',
     clear_app_data: 'Try clearing app data from application settings',
     ok: 'OK',
     sync: {

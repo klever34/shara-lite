@@ -6,7 +6,7 @@ import {useFeedback} from '@/services/feedback';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useContext, useState} from 'react';
-import {Alert, View} from 'react-native';
+import {Alert, Text, View} from 'react-native';
 
 const i18Service = getI18nService();
 
@@ -23,11 +23,18 @@ export default function ReferralScreen() {
 
   const handleSubmit = useCallback(async () => {
     try {
+      if (feedback.length < 25) {
+        Alert.alert(
+          i18Service.strings('warning'),
+          i18Service.strings('alert.error'),
+        );
+        return;
+      }
       await saveFeedback({message: feedback});
       showSuccessToast(i18Service.strings('feedback.toast_text'));
       navigation.goBack();
     } catch (error) {
-      Alert.alert('Error', error.message);
+      Alert.alert(i18Service.strings('alert.error'), error.message);
     }
   }, [saveFeedback, navigation, showSuccessToast, feedback]);
 
@@ -51,6 +58,10 @@ export default function ReferralScreen() {
           label={i18Service.strings('feedback.fields.code.label')}
           placeholder={i18Service.strings('feedback.fields.code.placeholder')}
         />
+        <Text
+          style={applyStyles('absolute', {paddingTop: 140, paddingLeft: 212})}>
+          Characters Count: {feedback.length}
+        </Text>
       </View>
       <Button
         onPress={handleSubmit}
