@@ -36,6 +36,8 @@ const RecordCollectionScreen = withModal(
 
     const handleSaveCollection = useCallback(
       async (payload) => {
+        console.log(payload);
+        
         try {
           setIsLoading(true);
           const transaction = await saveTransaction({
@@ -115,7 +117,11 @@ const RecordCollectionScreen = withModal(
             value={values.amount_paid}
             containerStyle={applyStyles('mb-16')}
             onChangeText={(text) => {
+              console.log(text);
+              
               const value = toNumber(text);
+              console.log(value);
+              
               setFieldValue('amount_paid', value);
             }}
             autoFocus
