@@ -345,6 +345,7 @@ const en: Strings = {
       description: 'Which customer is this transaction for?',
     },
     no_customer_text: 'Select a customer to complete this transaction',
+    due_date_is_past: 'Select a new collection date for {{customer}}.',
   },
   entry: {
     sale: 'Record Sale',
