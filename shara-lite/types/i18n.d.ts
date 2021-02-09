@@ -60,6 +60,8 @@ export interface Strings {
       otp: string;
     };
     something_went_wrong: string;
+    feedback_validation: string;
+    feedback_is_empty: string;
     clear_app_data: string;
     ok: string;
     sync: Card;
@@ -278,6 +280,7 @@ export interface Strings {
       description: string;
     };
     no_customer_text: string;
+    due_date_is_past: string;
   };
   filter: PluralizedString;
   filter_options: {
@@ -350,8 +353,8 @@ export interface Strings {
         name: FormField;
         phone: FormField;
         email: FormField;
-      }
-    }
+      };
+    };
   };
   payment: {
     edit_payment_preview_label_modal: {

@@ -10,7 +10,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {usePaymentReminder} from '@/services/payment-reminder';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors, dimensions} from '@/styles';
-import {format, isToday} from 'date-fns';
+import {format, isBefore, isToday} from 'date-fns';
 import {useFormik} from 'formik';
 import {omit} from 'lodash';
 import React, {useCallback, useEffect, useRef, useState} from 'react';
@@ -358,6 +358,10 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
                   style={applyStyles('py-12 px-0')}
                   rightSection={{
                     title: dueDate ? format(dueDate, 'MMM dd, yyyy') : '',
+                    titleStyle:
+                      dueDate && isBefore(dueDate, new Date())
+                        ? applyStyles('text-red-200')
+                        : {},
                   }}
                   leftSection={{
                     title: strings(
@@ -429,10 +433,18 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
           {strings('sale.no_customer_text')}
         </Text>
       )}
+      {dueDate && isBefore(dueDate, new Date()) && (
+        <Text style={applyStyles('text-sm text-400 text-red-100 text-center')}>
+          {strings('sale.due_date_is_past', {customer: customer?.name})}
+        </Text>
+      )}
       <Button
         onPress={handleSubmit}
         style={applyStyles('mt-20')}
-        disabled={!!values.credit_amount && !customer}
+        disabled={
+          (!!values.credit_amount && !customer) ||
+          (dueDate && isBefore(dueDate, new Date()))
+        }
         title={customer ? strings('save') : strings('next')}
       />
     </View>

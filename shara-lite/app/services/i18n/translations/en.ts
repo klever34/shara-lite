@@ -73,6 +73,8 @@ const en: Strings = {
       otp: 'OTP is required',
     },
     something_went_wrong: 'Oops! Something went wrong.',
+    feedback_validation: 'Minimum of 25 charaters allowed',
+    feedback_is_empty: 'Message cannot be empty',
     clear_app_data: 'Try clearing app data from application settings',
     ok: 'OK',
     sync: {
@@ -343,6 +345,7 @@ const en: Strings = {
       description: 'Which customer is this transaction for?',
     },
     no_customer_text: 'Select a customer to complete this transaction',
+    due_date_is_past: 'Select a new collection date for {{customer}}.',
   },
   entry: {
     sale: 'Record Sale',
