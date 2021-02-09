@@ -61,6 +61,7 @@ export interface Strings {
     };
     something_went_wrong: string;
     feedback_validation: string;
+    feedback_is_empty: string;
     clear_app_data: string;
     ok: string;
     sync: Card;
