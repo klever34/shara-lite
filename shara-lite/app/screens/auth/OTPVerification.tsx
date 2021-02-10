@@ -29,6 +29,7 @@ export const OTPVerification = () => {
   const {initRealm} = useInitRealm();
   const navigation = useAppNavigation();
   const [hash, setHash] = useState('');
+  const [count, setCount] = useState(60);
 
   const handleOtpChange = React.useCallback((code) => {
     setOtp(code);
@@ -127,6 +128,18 @@ export const OTPVerification = () => {
     getHash();
   }, []);
 
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (count > 0) {
+        setCount(count - 1);
+      }
+    }, 1000);
+
+    return () => {
+      clearInterval(timer);
+    };
+  }, [count]);
+
   return (
     <AuthView
       showBackButton={true}
@@ -156,23 +169,38 @@ export const OTPVerification = () => {
           })}
         />
         <View style={applyStyles('mb-24')}>
-          <TouchableOpacity
-            style={applyStyles('flex-row center')}
-            onPress={handleResendSubmit}>
+          <View style={applyStyles('pb-8 flex-row center')}>
             <Text style={applyStyles('text-gray-100 text-base')}>
-              {strings('otp.resend_text')}{' '}
+              {strings('otp.resend_text')}
             </Text>
-            <Text
-              style={applyStyles({
-                fontSize: 16,
-                color: colors.black,
-                textDecorationStyle: 'solid',
-                textDecorationLine: 'underline',
-                textDecorationColor: colors.black,
-              })}>
-              {strings('otp.resend_button')}
-            </Text>
-          </TouchableOpacity>
+          </View>
+          <View style={applyStyles('flex-row center')}>
+            <TouchableOpacity
+              style={applyStyles('flex-row center')}
+              onPress={count > 0 ? undefined : handleResendSubmit}>
+              <Text
+                style={applyStyles(
+                  'text-base',
+                  {
+                    textDecorationStyle: 'solid',
+                    textDecorationColor: colors.secondary,
+                    textDecorationLine: count > 0 ? '' : 'underline',
+                  },
+                  count > 0 ? 'text-gray-100' : 'text-secondary',
+                )}>
+                {strings('otp.resend_button')}
+              </Text>
+            </TouchableOpacity>
+            {count > 0 && (
+              <Text style={applyStyles('text-gray-100')}>
+                {' '}
+                in{' '}
+                <Text style={applyStyles('text-700')}>{`0:${
+                  count < 10 ? '0' : ''
+                }${count}`}</Text>
+              </Text>
+            )}
+          </View>
         </View>
         <Button
           isLoading={loading}

@@ -702,6 +702,7 @@ const en: Strings = {
   product_details: 'Product Details',
   search_input_placeholder: 'Search customers here',
   country: 'Country',
+  in: 'in',
 };
 
 export default en;

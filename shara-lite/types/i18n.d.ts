@@ -530,6 +530,7 @@ export interface Strings {
   product_details: string;
   search_input_placeholder: string;
   country: string;
+  in: string;
 }
 
 interface PluralizedString {
