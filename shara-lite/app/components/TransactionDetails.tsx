@@ -301,22 +301,81 @@ const TransactionDetails = withModal(
       [customer, businessInfo.name],
     );
 
+    const handleShareStatementWhatsapp = useCallback(
+      async (pdfBase64String) => {
+        const isWhatsAppInstalled = await Share.isPackageInstalled(
+          'com.whatsapp',
+        );
+        //@ts-ignore
+        if (isWhatsAppInstalled?.isInstalled) {
+          try {
+            await Share.shareSingle({
+              url: pdfBase64String,
+              social: Share.Social.WHATSAPP,
+              title: strings('customer_statement.title'),
+              filename: strings('customer_statement.filename', {
+                customer_name: customer ? customer.name : '',
+              }),
+              message: strings('customer_statement.message', {
+                business_name: businessInfo.name,
+              }),
+            });
+            getAnalyticsService()
+              .logEvent('userSharedReport', {})
+              .then(() => {})
+              .catch(handleError);
+          } catch (error) {
+            handleError(error);
+          }
+        } else {
+          try {
+            await Share.open({
+              url: pdfBase64String,
+              title: strings('customer_statement.title'),
+              filename: strings('customer_statement.filename', {
+                customer_name: customer ? customer.name : '',
+              }),
+              message: strings('customer_statement.message', {
+                business_name: businessInfo.name,
+              }),
+            });
+            getAnalyticsService()
+              .logEvent('userSharedReport', {})
+              .then(() => {})
+              .catch(handleError);
+          } catch (error) {
+            handleError(error);
+          }
+        }
+      },
+      [customer, businessInfo.name],
+    );
+
     const handleOpenOptionsModal = useCallback(
       ({pdfFilePath, pdfBase64String}) => {
         openModal('options', {
           options: [
             {
-              text: strings('transaction.share_customer_ledger_text'),
-              onPress: () => handleShareStatement(pdfBase64String),
-            },
-            {
               text: strings('transaction.view_customer_ledger_text'),
               onPress: () => handlePreviewStatement(pdfFilePath),
+            },
+            {
+              text: strings('transaction.share_customer_ledger_whatsapp_text'),
+              onPress: () => handleShareStatementWhatsapp(pdfBase64String),
+            },
+            {
+              text: strings('transaction.share_customer_ledger_text'),
+              onPress: () => handleShareStatement(pdfBase64String),
             },
           ],
         });
       },
-      [openModal, handleShareStatement, handlePreviewStatement],
+      [
+        openModal,
+        handleShareStatement,
+        handlePreviewStatement,
+        handleShareStatementWhatsapp,
+      ],
     );
 
     const handleGenerateStatement = useCallback(async () => {

@@ -267,8 +267,9 @@ const en: Strings = {
     start_adding_records:
       "Start adding records by tapping the '+' button below",
     transaction_success: '{{transaction_type}} has been recorded Successfully',
-    share_customer_ledger_text: 'Share customer ledger',
-    view_customer_ledger_text: 'View customer ledger',
+    share_customer_ledger_text: 'Share ledger via other apps',
+    view_customer_ledger_text: 'View ledger',
+    share_customer_ledger_whatsapp_text: 'Share ledger via whatsapp',
   },
   receipts: {
     filter_options: {

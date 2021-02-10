@@ -220,6 +220,7 @@ export interface Strings {
     transaction_success: string;
     share_customer_ledger_text: string;
     view_customer_ledger_text: string;
+    share_customer_ledger_whatsapp_text: string;
   };
   receipts: {
     filter_options: {
