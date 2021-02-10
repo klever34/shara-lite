@@ -163,6 +163,9 @@ const en: Strings = {
       'Securely record your business data in a private, secure and backed up',
   },
   activities: 'Activities',
+  home: 'Home',
+  payments: 'Payments',
+  more_text: 'More',
   home_screen_setup_business_text: 'Setup your business',
   reminder_text: {
     one: 'Reminder',
@@ -422,6 +425,10 @@ const en: Strings = {
   customer: {
     one: 'Customer',
     other: 'Customers',
+  },
+  client: {
+    one: 'Client',
+    other: 'Clients',
   },
   customers: {
     start_adding:

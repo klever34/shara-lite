@@ -291,7 +291,6 @@ function PaymentContainer(props: ModalWrapperFields) {
     <Page
       header={{
         title: strings('payment.payment_container.payment_settings'),
-        iconLeft: {},
         style: applyStyles('py-8'),
       }}
       style={applyStyles('px-0')}>

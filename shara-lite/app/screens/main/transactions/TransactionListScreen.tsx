@@ -1,5 +1,6 @@
 import {Button, SearchFilter, Text} from '@/components';
 import EmptyState from '@/components/EmptyState';
+import {EntryButton} from '@/components/EntryView';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {TransactionFilterModal} from '@/components/TransactionFilterModal';
@@ -441,6 +442,13 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
             </View>
           </EmptyState>
         }
+      />
+      <EntryButton
+        style={applyStyles('absolute w-72 h-72 rounded-36', {
+          bottom: 0,
+          right: 16,
+          elevation: 4,
+        })}
       />
     </SafeAreaView>
   );

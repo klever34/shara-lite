@@ -135,6 +135,10 @@ export interface Strings {
   onboarding_copy_2: Card;
   onboarding_copy_3: Card;
   activities: string;
+  home: string;
+  payments: string;
+  more_text: string;
+  client: PluralizedString;
   customer: PluralizedString;
   done: string;
   dismiss: string;
