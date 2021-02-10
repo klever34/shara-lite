@@ -131,7 +131,7 @@ export const OTPVerification = () => {
     <AuthView
       showBackButton={true}
       heading={strings('otp.heading')}
-      description={params.message}>
+      description={strings('otp.subheading', {mobile: `+${params.mobile}`})}>
       <View style={applyStyles('items-center')}>
         <OTPInputView
           code={otp}
