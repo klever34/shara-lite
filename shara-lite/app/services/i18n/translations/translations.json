@@ -138,7 +138,9 @@
             "success": "User updated successfully"
           }
         }
-      }
+      },
+      "feedback_validation": "Minimum of 25 charaters allowed",
+      "feedback_is_empty": "Message cannot be empty"
     },
     "shara_tagline": "Keep track of who owes you and get paid faster",
     "onboarding_copy_1": {
@@ -245,7 +247,8 @@
       "start_adding_records": "Start adding records by tapping the '+' button below",
       "transaction_success": "{{transaction_type}} has been recorded Successfully",
       "share_customer_ledger_text": "Share customer ledger",
-      "view_customer_ledger_text": "View customer ledger"
+      "view_customer_ledger_text": "View customer ledger",
+      "share_customer_ledger_whatsapp_text": "Share ledger via whatsapp"
     },
     "receipts": {
       "filter_options": {
@@ -317,7 +320,8 @@
         "title": "Select Customer",
         "description": "Which customer is this transaction for?"
       },
-      "no_customer_text": "Select a customer to complete this transaction"
+      "no_customer_text": "Select a customer to complete this transaction",
+      "due_date_is_past": "Select a new collection date for {{customer}}."
     },
     "entry": {
       "sale": "Record Sale",
@@ -664,7 +668,15 @@
     "skip_setup": "Skip setup",
     "product_details": "Product Details",
     "search_input_placeholder": "Search customers here",
-    "country": "Country"
+    "country": "Country",
+    "home": "Home",
+    "payments": "Payments",
+    "more_text": "More",
+    "client": {
+      "one": "Client",
+      "other": "Clients"
+    },
+    "in": "in"
   },
   "sw": {
     "update_shara": {
@@ -805,7 +817,9 @@
             "success": "Mtumiaji amwsasishwa kwa mafanikio"
           }
         }
-      }
+      },
+      "feedback_validation": "",
+      "feedback_is_empty": ""
     },
     "shara_tagline": "Fuatilia ni nani unayemdai na ulipwe kwa haraka",
     "onboarding_copy_1": {
@@ -912,7 +926,8 @@
       "start_adding_records": "Anza kuongeza rekodi kwa kugonga kitufe cha '+' hapa chini",
       "transaction_success": "{{transaction_type}} imerekodiwa kwa mafanikio",
       "share_customer_ledger_text": "Tuma leja ya wateja",
-      "view_customer_ledger_text": "Tazama leja ya wateja"
+      "view_customer_ledger_text": "Tazama leja ya wateja",
+      "share_customer_ledger_whatsapp_text": ""
     },
     "receipts": {
       "filter_options": {
@@ -984,7 +999,8 @@
         "title": "Chagua mteja",
         "description": "Mteja yupi ni manunuzi ya"
       },
-      "no_customer_text": "Chagua mteja ili kukamilisha shughuli hii"
+      "no_customer_text": "Chagua mteja ili kukamilisha shughuli hii",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "Rekodi ya kuuza",
@@ -1264,7 +1280,7 @@
       "download_report_toast_text": "Ripoti ya kupakua",
       "results": {
         "one": "matokeo",
-        "zero": "Bado hauna rekodi",
+        "zero": "",
         "other": "Matokeo"
       },
       "download_report_button_text": "Repoti ya kupakua",
@@ -1331,7 +1347,15 @@
     "skip_setup": "Ruka mpangilio",
     "product_details": "chombo kinakaaje",
     "search_input_placeholder": "Tafuta wateja hapa",
-    "country": "Nchi"
+    "country": "Nchi",
+    "home": "",
+    "payments": "",
+    "more_text": "",
+    "client": {
+      "one": "",
+      "other": ""
+    },
+    "in": ""
   },
   "ha": {
     "update_shara": {
@@ -1472,7 +1496,9 @@
             "success": ""
           }
         }
-      }
+      },
+      "feedback_validation": "",
+      "feedback_is_empty": ""
     },
     "shara_tagline": "",
     "onboarding_copy_1": {
@@ -1579,7 +1605,8 @@
       "start_adding_records": "",
       "transaction_success": "",
       "share_customer_ledger_text": "",
-      "view_customer_ledger_text": ""
+      "view_customer_ledger_text": "",
+      "share_customer_ledger_whatsapp_text": ""
     },
     "receipts": {
       "filter_options": {
@@ -1651,7 +1678,8 @@
         "title": "",
         "description": ""
       },
-      "no_customer_text": ""
+      "no_customer_text": "",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "",
@@ -1998,7 +2026,15 @@
     "skip_setup": "",
     "product_details": "",
     "search_input_placeholder": "",
-    "country": ""
+    "country": "",
+    "home": "",
+    "payments": "",
+    "more_text": "",
+    "client": {
+      "one": "",
+      "other": ""
+    },
+    "in": ""
   },
   "yo": {
     "update_shara": {
@@ -2139,7 +2175,9 @@
             "success": ""
           }
         }
-      }
+      },
+      "feedback_validation": "",
+      "feedback_is_empty": ""
     },
     "shara_tagline": "",
     "onboarding_copy_1": {
@@ -2246,7 +2284,8 @@
       "start_adding_records": "",
       "transaction_success": "",
       "share_customer_ledger_text": "",
-      "view_customer_ledger_text": ""
+      "view_customer_ledger_text": "",
+      "share_customer_ledger_whatsapp_text": ""
     },
     "receipts": {
       "filter_options": {
@@ -2318,7 +2357,8 @@
         "title": "",
         "description": ""
       },
-      "no_customer_text": ""
+      "no_customer_text": "",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "",
@@ -2665,7 +2705,15 @@
     "skip_setup": "",
     "product_details": "",
     "search_input_placeholder": "",
-    "country": ""
+    "country": "",
+    "home": "",
+    "payments": "",
+    "more_text": "",
+    "client": {
+      "one": "",
+      "other": ""
+    },
+    "in": ""
   },
   "fr": {
     "update_shara": {
@@ -2806,7 +2854,9 @@
             "success": ""
           }
         }
-      }
+      },
+      "feedback_validation": "",
+      "feedback_is_empty": ""
     },
     "shara_tagline": "",
     "onboarding_copy_1": {
@@ -2913,7 +2963,8 @@
       "start_adding_records": "",
       "transaction_success": "",
       "share_customer_ledger_text": "",
-      "view_customer_ledger_text": ""
+      "view_customer_ledger_text": "",
+      "share_customer_ledger_whatsapp_text": ""
     },
     "receipts": {
       "filter_options": {
@@ -2985,7 +3036,8 @@
         "title": "",
         "description": ""
       },
-      "no_customer_text": ""
+      "no_customer_text": "",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "",
@@ -3332,6 +3384,14 @@
     "skip_setup": "",
     "product_details": "",
     "search_input_placeholder": "",
-    "country": ""
+    "country": "",
+    "home": "",
+    "payments": "",
+    "more_text": "",
+    "client": {
+      "one": "",
+      "other": ""
+    },
+    "in": ""
   }
 }

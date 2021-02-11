@@ -1,26 +1,8 @@
 import csvParser from 'csv-parser';
 import fs from 'fs';
 import _ from 'lodash';
-import {writeSync as copyToClipboard} from 'clipboardy';
+// import {writeSync as copyToClipboard} from 'clipboardy';
 import offlineTranslations from '.';
-
-const generateCSV = (object: {[key: string]: any}, prefix = '') => {
-  let file = '';
-  Object.keys(object).forEach((name) => {
-    const key = `${prefix}${prefix ? '.' : ''}${name}`;
-    let value = object[name];
-    if (typeof value === 'string') {
-      if (value.includes(',')) {
-        value = `"${value}"`;
-      }
-      file += `${key},`;
-      file += `${value}\n`;
-    } else if (typeof value === 'object') {
-      file += generateCSV(value, key);
-    }
-  });
-  return file;
-};
 
 const readCSV = (filename: string): Promise<{[key: string]: string}[]> => {
   const result: {[key: string]: string}[] = [];
@@ -48,28 +30,63 @@ const writeToFile = (filename: string, content: string): Promise<void> => {
   });
 };
 
-let offlineTranslationsFile = 'key,';
-Object.keys(offlineTranslations).forEach((langCode) => {
-  offlineTranslationsFile += langCode;
-});
-offlineTranslationsFile += '\n';
-offlineTranslationsFile += generateCSV(offlineTranslations.en);
-
-writeToFile('offline-translations.json', JSON.stringify(offlineTranslations));
-writeToFile('offline-translations.csv', offlineTranslationsFile);
-
-const transactions: {[key: string]: any} = {};
-
-readCSV('translations.csv').then((data) => {
-  data.forEach(({key, ...translations}) => {
-    Object.keys(translations).forEach((language) => {
-      const [languageCode] = language.split(' ');
-      if (!(languageCode in transactions)) {
-        transactions[languageCode] = {};
-      }
-      _.set(transactions[languageCode], key, translations[language]);
+readCSV('translations.csv')
+  .then((data) => {
+    const translations: {[key: string]: any} = {};
+    data.forEach(({key, ...strings}) => {
+      Object.keys(strings).forEach((language) => {
+        const [languageCode] = language.split(' ');
+        if (!(languageCode in translations)) {
+          translations[languageCode] = {};
+        }
+        _.set(translations[languageCode], key, strings[language]);
+      });
     });
+    return translations;
+  })
+  .then((translations) => {
+    const langCodes = Object.keys(translations);
+    let translationFileContent =
+      langCodes.reduce((acc, curr) => {
+        return `${acc},${curr}`;
+      }, 'key') + '\n';
+    const updateTranslations = (object: {[key: string]: any}, prefix = '') => {
+      Object.keys(object).forEach((name) => {
+        const key = `${prefix}${prefix ? '.' : ''}${name}`;
+        let value = object[name];
+        if (typeof value === 'string') {
+          if (!_.get(translations.en, key)) {
+            langCodes.forEach((langCode) => {
+              _.set(
+                translations[langCode],
+                key,
+                langCode === 'en' ? value : '',
+              );
+            });
+          }
+          translationFileContent += key;
+          langCodes.forEach((langCode) => {
+            if (_.get(translations[langCode], key).includes(',')) {
+              translationFileContent += `,"${_.get(
+                translations[langCode],
+                key,
+              )}"`;
+            } else {
+              translationFileContent += `,${_.get(
+                translations[langCode],
+                key,
+              )}`;
+            }
+          });
+          translationFileContent += '\n';
+        } else if (typeof value === 'object') {
+          updateTranslations(value, key);
+        }
+      });
+    };
+    updateTranslations(offlineTranslations.en);
+    return writeToFile(
+      'translations.json',
+      JSON.stringify(translations),
+    ).then(() => writeToFile('translations.csv', translationFileContent));
   });
-  copyToClipboard(JSON.stringify(transactions));
-  writeToFile('translations.json', JSON.stringify(transactions));
-});
