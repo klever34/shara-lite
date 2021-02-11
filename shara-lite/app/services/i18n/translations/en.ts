@@ -27,7 +27,8 @@ const en: Strings = {
   },
   otp: {
     heading: 'OTP',
-    subheading: 'We’ve sent a one-time password to mobile number **{{mobile}}**, check your SMS or Whatsapp and enter it below.',
+    subheading:
+      'We’ve sent a one-time password to mobile number **{{mobile}}**, check your SMS or Whatsapp and enter it below.',
     otp_resent: 'OTP RESENT',
     otp_button: 'Get Started',
     resend_text: "Didn't receive the code?",
