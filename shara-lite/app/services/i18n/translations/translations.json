@@ -875,7 +875,7 @@
     "recurrence_description": "Malipo haya yanarudia",
     "reminder_message_title": "Ujumbe wa ukumbusho",
     "customer_statement": {
-      "title": "Shiriki taarifa ya mteja",
+      "title": "Tuma taarifa ya mteja",
       "filename": "{{customer name}} taarifa ya kitabu",
       "message": "Pata taarifa yako ya kitabu kutoka {{business_name}}"
     },
@@ -911,7 +911,7 @@
       "no_activities_recorded_for_duration": "Hakuna shughuli zilizorekodiwa kwa muda uliochaguliwa",
       "start_adding_records": "Anza kuongeza rekodi kwa kugonga kitufe cha '+' hapa chini",
       "transaction_success": "{{transaction_type}} imerekodiwa kwa mafanikio",
-      "share_customer_ledger_text": "Shiriki leja ya wateja",
+      "share_customer_ledger_text": "Tuma leja ya wateja",
       "view_customer_ledger_text": "Tazama leja ya wateja"
     },
     "receipts": {
@@ -921,7 +921,7 @@
         "1_month": "Siku 30 zilizopita ",
         "date_range": "Kiwango cha tarehe"
       },
-      "receipt_share_title": "Risiti ya kushiriki",
+      "receipt_share_title": "Tuma Risiti",
       "recent_purchase_message": "Habari {{customer_name}} Asante kwa aslimia ya hivi karibuni",
       "recent_purchase_message_from_business": "Habari {{customer_name}} asante kwa ununuzi wako wa hivi karibuni kutoka {{business_name}}",
       "receipt_for": "Risiti ya",
@@ -930,7 +930,7 @@
     "salutation": "Hujambo {{name}}!",
     "you_paid_message": "Umelipa {{amount}}.",
     "you_owe_message": "Una deni la {{credit_amount}}.",
-    "you_owe_message_with_due_date": "Unadaiwa {{credit amount}} ambayo inapaswa kutolewa kwa {{due_date}}",
+    "you_owe_message_with_due_date": "Unadaiwa {{credit_amount}} ambayo inapaswa kutolewa kwa {{due_date}}",
     "payment_link_message": "Kulipa bonyeza\\n{{payment_link}}",
     "powered_by_shara": "Inaendeswa na Shara bure.\\nwww.shara.co",
     "collection": {
@@ -1102,7 +1102,7 @@
           },
           "phone": {
             "label": "Nambari ya simu ya mteja (Hiari)",
-            "placeholder": "Ingiza nambari ya mteja"
+            "placeholder": "Bonyeza nambari ya mteja"
           }
         }
       }
@@ -1307,7 +1307,7 @@
       "collect_on_text": "Kusanya {{due_date}}",
       "no_collection_date_text": "Unahitaji kuweka tarehe ya kukusanya kabla ya kuweka vikumbusho ",
       "set_collection_date_button_text": "Weka tarehe ya kukusanya",
-      "default_collection_day": "Siku ya Ukusanyaji (Chaguomsingi)",
+      "default_collection_day": "Siku ya Ukusanyaji (Chaguo Msingi)",
       "no_collection_day": "Hakuna (Hakuna kikumbusho kitatumwa)"
     },
     "default_text": "Chagua msingi ama Puuza",
