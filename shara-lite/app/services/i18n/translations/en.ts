@@ -503,7 +503,7 @@ const en: Strings = {
       },
       copy_payment_link: 'COPY LINK',
       preview_payment_page: 'Preview Payment Page',
-      add_new_payment: 'Add New Payment',
+      add_new_payment_method: 'Add New Payment Method',
     },
     payment_form: {
       label: 'Select a payment method',

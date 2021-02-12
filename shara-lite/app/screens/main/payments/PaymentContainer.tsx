@@ -376,7 +376,9 @@ function PaymentContainer(props: ModalWrapperFields) {
 
             <View style={applyStyles('p-16')}>
               <Button
-                title={strings('payment.payment_container.add_new_payment')}
+                title={strings(
+                  'payment.payment_container.add_new_payment_method',
+                )}
                 onPress={handleOpenAddItemModal}
               />
             </View>

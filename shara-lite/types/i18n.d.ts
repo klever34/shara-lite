@@ -382,7 +382,7 @@ export interface Strings {
       };
       copy_payment_link: string;
       preview_payment_page: string;
-      add_new_payment: string;
+      add_new_payment_method: string;
     };
     payment_form: {
       label: string;
