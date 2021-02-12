@@ -98,7 +98,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
             showShareButtons={false}
             onDone={() => {
               closeModal();
-              navigation.navigate('Settings');
+              navigation.navigate('MoreTab');
             }}
             transaction={dummyTransaction}
             subheading={i18Service.strings(
@@ -193,7 +193,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
       header={{
         title: i18Service.strings('business_settings.title'),
         iconLeft: {
-          onPress: () => navigation.navigate('Settings'),
+          onPress: () => navigation.navigate('MoreTab'),
         },
         style: applyStyles('py-8'),
       }}

@@ -7,7 +7,6 @@ import React, {
   useMemo,
   useRef,
   forwardRef,
-  createRef,
 } from 'react';
 import {applyStyles, colors} from '@/styles';
 import Big from 'big.js';
@@ -483,10 +482,13 @@ export const CalculatorInput = forwardRef<TextInput, CalculatorInputProps>(
     const [value, setValue] = useState<number | undefined>(initialValue);
     const onChangeText = useRef(prevOnChangeText).current;
     const onEquals = useRef(prevOnEquals).current;
-    ref = ref ?? createRef();
+    const innerRef = useRef<TextInput>(null);
+    ref = ref ?? innerRef;
     const handleFocus = useCallback(() => {
       handleReset?.(String(value ?? '0'));
-      showKbComponent?.();
+      setTimeout(() => {
+        showKbComponent?.();
+      }, 0);
       if (addEventListener) {
         addEventListener((nextValue) => {
           setValue(nextValue.toNumber());
@@ -500,7 +502,9 @@ export const CalculatorInput = forwardRef<TextInput, CalculatorInputProps>(
           addEqualsListener(onEquals);
         } else {
           addEqualsListener(() => {
-            resetKbComponent?.();
+            setTimeout(() => {
+              resetKbComponent?.();
+            }, 0);
             if (ref && 'current' in ref) {
               ref.current?.blur();
             }
