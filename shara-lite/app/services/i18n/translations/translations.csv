@@ -301,7 +301,7 @@ payment.payment_container.payment_settings,Payment Settings,Mipangilio ya malipo
 payment.payment_container.no_payment_option.description,Add your preferred methods of collecting payment so your customers can know how to pay you,Ongeza  njia unayopendelea ya kukisanya malipo ili wateja wako waweze kujua jinsi ya kukulipa,,,
 payment.payment_container.copy_payment_link,COPY LINK,NA NAKALA YA KIUNGO,,,
 payment.payment_container.preview_payment_page,Preview Payment Page,Hakikisho ukurasa wa malipo,,,
-payment.payment_container.add_new_payment,Add New Payment,Ongeza malipo mapya,,,
+payment.payment_container.add_new_payment_method,Add New Payment Method,,,,
 payment.payment_form.label,Select a payment method,Chagua njia ya malipo,,,
 payment.copied,copied,Kunakiliwa,,,
 payment.copy,copy,Nakala,,,

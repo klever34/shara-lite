@@ -7,7 +7,6 @@ import React, {
   useMemo,
   useRef,
   forwardRef,
-  createRef,
 } from 'react';
 import {applyStyles, colors} from '@/styles';
 import Big from 'big.js';

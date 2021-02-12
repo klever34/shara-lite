@@ -49,15 +49,9 @@
         "label": "What's your phone number?",
         "placeholder": "Enter your number"
       },
-      "password": {
-        "label": "Enter your password"
-      },
-      "confirm_password": {
-        "label": "Confirm password"
-      },
-      "name": {
-        "label": "Name"
-      }
+      "password": {"label": "Enter your password"},
+      "confirm_password": {"label": "Confirm password"},
+      "name": {"label": "Name"}
     },
     "alert": {
       "minimum_phone_digits": "Number should be minimum of 5 digits",
@@ -95,12 +89,8 @@
         },
         "business": {
           "notFound": "Business not found",
-          "create": {
-            "success": "Business created successfully"
-          },
-          "details": {
-            "success": "Business found successfully"
-          },
+          "create": {"success": "Business created successfully"},
+          "details": {"success": "Business found successfully"},
           "customerDetails": {
             "notFound": "Customer not found",
             "success": "Customer found successfully"
@@ -131,15 +121,9 @@
           }
         },
         "paymentProvider": {
-          "list": {
-            "success": "Payment providers retrieved successfully"
-          }
+          "list": {"success": "Payment providers retrieved successfully"}
         },
-        "user": {
-          "update": {
-            "success": "User updated successfully"
-          }
-        }
+        "user": {"update": {"success": "User updated successfully"}}
       }
     },
     "shara_tagline": "Keep track of who owes you and get paid faster",
@@ -180,10 +164,7 @@
         "weeks": "WEEK(S)",
         "months": "MONTH(S)"
       },
-      "reminder_when": {
-        "before": "BEFORE",
-        "after": "AFTER"
-      },
+      "reminder_when": {"before": "BEFORE", "after": "AFTER"},
       "reminder_added": "REMINDER ADDED",
       "reminder_removed": "REMINDER REMOVED",
       "confirm_delete": "Are you sure you want to remove the payment reminder?",
@@ -283,13 +264,8 @@
         "description": "Quickly record a transaction or obligation"
       },
       "fields": {
-        "amount": {
-          "label": "Enter Amount"
-        },
-        "note": {
-          "label": "Note",
-          "placeholder": "Write a note"
-        }
+        "amount": {"label": "Enter Amount"},
+        "note": {"label": "Note", "placeholder": "Write a note"}
       },
       "today_text": "Today",
       "write_a_note_text": "Write a note",
@@ -308,16 +284,9 @@
         "description": "Quickly record a collection or outstanding"
       },
       "fields": {
-        "amount": {
-          "label": "Collected"
-        },
-        "credit": {
-          "label": "Outstanding"
-        },
-        "note": {
-          "label": "Note",
-          "placeholder": "Write a note"
-        }
+        "amount": {"label": "Collected"},
+        "credit": {"label": "Outstanding"},
+        "note": {"label": "Note", "placeholder": "Write a note"}
       },
       "select_customer": {
         "title": "Select Customer",
@@ -326,10 +295,7 @@
       "no_customer_text": "Select a customer to complete this transaction",
       "due_date_is_past": "Select a new collection date for {{customer}}."
     },
-    "entry": {
-      "sale": "Record Sale",
-      "collection": "Record Collection"
-    },
+    "entry": {"sale": "Record Sale", "collection": "Record Collection"},
     "other": "Other",
     "collected": "Collected",
     "collection_due_today": "Collection due today",
@@ -340,20 +306,14 @@
     "scanning": "Scanning",
     "done": "Done",
     "dismiss": "Dismiss",
-    "owe": {
-      "one": "owe",
-      "other": "owes"
-    },
+    "owe": {"one": "owe", "other": "owes"},
     "result": {
       "zero": "No results found",
       "one": "1 Result",
       "other": "{{count}} Results"
     },
     "clear_filter": "Clear filter",
-    "note": {
-      "one": "Note",
-      "other": "Notes"
-    },
+    "note": {"one": "Note", "other": "Notes"},
     "delete": "Delete",
     "edit": "Edit",
     "add": "Add",
@@ -388,23 +348,14 @@
     "confirm": "Confirm",
     "address": "Address",
     "price": "Price",
-    "filter": {
-      "one": "Filter",
-      "other": "Filters"
-    },
+    "filter": {"one": "Filter", "other": "Filters"},
     "filter_options": {
       "owing": "Owing",
       "not_owing": "Not Owing",
       "surplus": "Surplus"
     },
-    "customer": {
-      "one": "Customer",
-      "other": "Customers"
-    },
-    "client": {
-      "one": "Client",
-      "other": "Clients"
-    },
+    "customer": {"one": "Customer", "other": "Customers"},
+    "client": {"one": "Client", "other": "Clients"},
     "customers": {
       "start_adding": "Start adding customers by creating a record with the '+' button below",
       "customer_count": {
@@ -438,12 +389,8 @@
       "search_input_placeholder": "Type customer name",
       "manual_customer_modal": {
         "fields": {
-          "name": {
-            "label": "Customer name"
-          },
-          "email": {
-            "label": "Customer email (Optional)"
-          },
+          "name": {"label": "Customer name"},
+          "email": {"label": "Customer email (Optional)"},
           "phone": {
             "label": "Customer phone number (Optional)",
             "placeholder": "Enter customer number"
@@ -472,11 +419,10 @@
         },
         "copy_payment_link": "COPY LINK",
         "preview_payment_page": "Preview Payment Page",
-        "add_new_payment": "Add New Payment"
+        "add_new_payment": "Add New Payment",
+        "add_new_payment_method": "Add New Payment Method"
       },
-      "payment_form": {
-        "label": "Select a payment method"
-      },
+      "payment_form": {"label": "Select a payment method"},
       "copied": "copied",
       "copy": "copy",
       "payment_preview_modal": {
@@ -505,18 +451,12 @@
           "title": "Payment Settings",
           "description": "View and edit your payment information"
         },
-        "referral": {
-          "title": "Referral",
-          "description": "Enter referral code"
-        },
+        "referral": {"title": "Referral", "description": "Enter referral code"},
         "feedback": {
           "title": "Give Feedback",
           "description": "Provide any feedback here?"
         },
-        "language": {
-          "title": "Language",
-          "description": "Select your language"
-        }
+        "language": {"title": "Language", "description": "Select your language"}
       },
       "logout": {
         "logout_data_verification_text": "Verifying your saved data...",
@@ -532,18 +472,10 @@
       "title": "Profile Settings",
       "toast_text": "User profile updated successfully",
       "fields": {
-        "firstName": {
-          "label": "First Name"
-        },
-        "lastName": {
-          "label": "Last Name"
-        },
-        "mobile": {
-          "label": "What’s your phone number?"
-        },
-        "email": {
-          "label": "What's your email? (Optional)"
-        }
+        "firstName": {"label": "First Name"},
+        "lastName": {"label": "Last Name"},
+        "mobile": {"label": "What’s your phone number?"},
+        "email": {"label": "What's your email? (Optional)"}
       },
       "save_button": "Save"
     },
@@ -551,19 +483,10 @@
       "title": "Business Settings",
       "toast_text": "User profile updated successfully",
       "fields": {
-        "name": {
-          "label": "What’s the name of your business?"
-        },
-        "address": {
-          "label": "Where is your business located?"
-        },
-        "mobile": {
-          "label": "What’s your business phone number?"
-        },
-        "image": {
-          "label": "Do you have a logo?",
-          "placeholder": "Upload logo"
-        }
+        "name": {"label": "What’s the name of your business?"},
+        "address": {"label": "Where is your business located?"},
+        "mobile": {"label": "What’s your business phone number?"},
+        "image": {"label": "Do you have a logo?", "placeholder": "Upload logo"}
       },
       "action_buttons": {
         "preview_receipt_button": "Preview Receipt",
@@ -590,10 +513,7 @@
       "title": "Feedback",
       "toast_text": "Thank you for your Feedback",
       "fields": {
-        "code": {
-          "label": "Feedback",
-          "placeholder": "Enter feedback here"
-        }
+        "code": {"label": "Feedback", "placeholder": "Enter feedback here"}
       },
       "submit_button": "Submit"
     },
@@ -606,11 +526,7 @@
       "clear_filter_button_text": "Clear",
       "net_balance_text": "Net Balance",
       "download_report_toast_text": "Download Report",
-      "results": {
-        "one": "Result",
-        "zero": "",
-        "other": "Results"
-      },
+      "results": {"one": "Result", "zero": "", "other": "Results"},
       "download_report_button_text": "Download Report",
       "empty_state_text": {
         "no_results_found": "No results found",
@@ -728,15 +644,9 @@
         "label": "Namba yako ya simu ni ipi",
         "placeholder": "Weka number yako"
       },
-      "password": {
-        "label": "Eka namba yako ya siri"
-      },
-      "confirm_password": {
-        "label": "Thibitisha namba yako ya siri"
-      },
-      "name": {
-        "label": "Jina"
-      }
+      "password": {"label": "Eka namba yako ya siri"},
+      "confirm_password": {"label": "Thibitisha namba yako ya siri"},
+      "name": {"label": "Jina"}
     },
     "alert": {
       "minimum_phone_digits": "Nambaro inapaswa kuwa na kiwango cha chini cha tarakilimu",
@@ -774,12 +684,8 @@
         },
         "business": {
           "notFound": "Biashara haikupatikana",
-          "create": {
-            "success": "Biashara iliyoundwa kwa mafanikio"
-          },
-          "details": {
-            "success": "Biashara imepatikana kwa mafanikio"
-          },
+          "create": {"success": "Biashara iliyoundwa kwa mafanikio"},
+          "details": {"success": "Biashara imepatikana kwa mafanikio"},
           "customerDetails": {
             "notFound": "Mteja hapatikani",
             "success": "Mteja amepatikana kwa mafanikio"
@@ -810,15 +716,9 @@
           }
         },
         "paymentProvider": {
-          "list": {
-            "success": "Watoa malipo walipata kwa mafanikio"
-          }
+          "list": {"success": "Watoa malipo walipata kwa mafanikio"}
         },
-        "user": {
-          "update": {
-            "success": "Mtumiaji amwsasishwa kwa mafanikio"
-          }
-        }
+        "user": {"update": {"success": "Mtumiaji amwsasishwa kwa mafanikio"}}
       }
     },
     "shara_tagline": "Fuatilia ni nani unayemdai na ulipwe kwa haraka",
@@ -854,15 +754,8 @@
       "no_reminder_set_text": "Ukumbusho utatumwa kwa mteja wako siku hii",
       "coming_soon_recurring_reminders": "Ijayo. Makumbusho ya mara kwa mara",
       "reminder_description": "Ukumbusho utatumwa kwa mteja wako siku hii",
-      "reminder_unit": {
-        "days": "Siku",
-        "weeks": "Wiki",
-        "months": "Mwezi"
-      },
-      "reminder_when": {
-        "before": "Kabla ya",
-        "after": "Baada ya"
-      },
+      "reminder_unit": {"days": "Siku", "weeks": "Wiki", "months": "Mwezi"},
+      "reminder_when": {"before": "Kabla ya", "after": "Baada ya"},
       "reminder_added": "Kikumbusho kimeongozewa",
       "reminder_removed": "Kikumbusho kimeondolewa",
       "confirm_delete": "Unahakika unataka kuondoa kikumbusho cha malipo",
@@ -962,13 +855,8 @@
         "description": "Rekodi haraka shughuli au wajibu"
       },
       "fields": {
-        "amount": {
-          "label": "Ingiza kiasi"
-        },
-        "note": {
-          "label": "Kumbuko",
-          "placeholder": "Andika kumbuko"
-        }
+        "amount": {"label": "Ingiza kiasi"},
+        "note": {"label": "Kumbuko", "placeholder": "Andika kumbuko"}
       },
       "today_text": "Leo",
       "write_a_note_text": "Andika barua",
@@ -987,16 +875,9 @@
         "description": "Rekodi haraka mkusanyiko au bora"
       },
       "fields": {
-        "amount": {
-          "label": "Zilizokusanywa"
-        },
-        "credit": {
-          "label": "Isiyolipwa"
-        },
-        "note": {
-          "label": "Kiandiko",
-          "placeholder": "Andika kiandiko"
-        }
+        "amount": {"label": "Zilizokusanywa"},
+        "credit": {"label": "Isiyolipwa"},
+        "note": {"label": "Kiandiko", "placeholder": "Andika kiandiko"}
       },
       "select_customer": {
         "title": "Chagua mteja",
@@ -1005,10 +886,7 @@
       "no_customer_text": "Chagua mteja ili kukamilisha shughuli hii",
       "due_date_is_past": ""
     },
-    "entry": {
-      "sale": "Rekodi ya kuuza",
-      "collection": "Ukusanyaji wa rekodi"
-    },
+    "entry": {"sale": "Rekodi ya kuuza", "collection": "Ukusanyaji wa rekodi"},
     "other": "Nyingine",
     "collected": "Zilizokusanywa",
     "collection_due_today": "Ukusanyaji unaostahili leo",
@@ -1019,20 +897,14 @@
     "scanning": "Skana",
     "done": "Kumaliza",
     "dismiss": "Ondosha",
-    "owe": {
-      "one": "Deni",
-      "other": "Deni"
-    },
+    "owe": {"one": "Deni", "other": "Deni"},
     "result": {
       "zero": "Hakuna matokeo yaliyopatikana",
       "one": "Tokeo 1",
       "other": "{{count}} Matokeo"
     },
     "clear_filter": "Chujio wazi",
-    "note": {
-      "one": "Kiandikio",
-      "other": "Maelezeo"
-    },
+    "note": {"one": "Kiandikio", "other": "Maelezeo"},
     "delete": "Futa",
     "edit": "Hariri",
     "add": "Ongeza",
@@ -1067,23 +939,14 @@
     "confirm": "Thibitisha",
     "address": "Anwani",
     "price": "Bei",
-    "filter": {
-      "one": "Vichungi",
-      "other": "Deni"
-    },
+    "filter": {"one": "Vichungi", "other": "Deni"},
     "filter_options": {
       "owing": "Deni",
       "not_owing": "Sio deni",
       "surplus": "Ziada"
     },
-    "customer": {
-      "one": "Mteja",
-      "other": "Wateja"
-    },
-    "client": {
-      "one": "",
-      "other": ""
-    },
+    "customer": {"one": "Mteja", "other": "Wateja"},
+    "client": {"one": "", "other": ""},
     "customers": {
       "start_adding": "Anza kuongeza wateja kwa kuunda rekodi na kitufe cha '+' hapa chini",
       "customer_count": {
@@ -1117,12 +980,8 @@
       "search_input_placeholder": "Andika jina la mteja",
       "manual_customer_modal": {
         "fields": {
-          "name": {
-            "label": "Jina la mteja"
-          },
-          "email": {
-            "label": "Barua pepe ya mteja (Hiari)"
-          },
+          "name": {"label": "Jina la mteja"},
+          "email": {"label": "Barua pepe ya mteja (Hiari)"},
           "phone": {
             "label": "Nambari ya simu ya mteja (Hiari)",
             "placeholder": "Bonyeza nambari ya mteja"
@@ -1151,11 +1010,10 @@
         },
         "copy_payment_link": "NA NAKALA YA KIUNGO",
         "preview_payment_page": "Hakikisho ukurasa wa malipo",
-        "add_new_payment": "Ongeza malipo mapya"
+        "add_new_payment": "Ongeza malipo mapya",
+        "add_new_payment_method": ""
       },
-      "payment_form": {
-        "label": "Chagua njia ya malipo"
-      },
+      "payment_form": {"label": "Chagua njia ya malipo"},
       "copied": "Kunakiliwa",
       "copy": "Nakala",
       "payment_preview_modal": {
@@ -1192,10 +1050,7 @@
           "title": "Toa maoni",
           "description": "Toa maoni yoyote hapa"
         },
-        "language": {
-          "title": "Lugha",
-          "description": "Chagua Lugha yako"
-        }
+        "language": {"title": "Lugha", "description": "Chagua Lugha yako"}
       },
       "logout": {
         "logout_data_verification_text": "Kuhakikisha data yako iliyohifadhiwa",
@@ -1211,18 +1066,10 @@
       "title": "Mipangilio ya wasifu",
       "toast_text": "Wasifu wa mtumiaji imesasishwa kwa mafanikio",
       "fields": {
-        "firstName": {
-          "label": "Jina la kwanza"
-        },
-        "lastName": {
-          "label": "Jina la mwisho ama familia"
-        },
-        "mobile": {
-          "label": "Namba yako ya simu ni ipi"
-        },
-        "email": {
-          "label": "Barua pepe yako ni ipi (chaguo)"
-        }
+        "firstName": {"label": "Jina la kwanza"},
+        "lastName": {"label": "Jina la mwisho ama familia"},
+        "mobile": {"label": "Namba yako ya simu ni ipi"},
+        "email": {"label": "Barua pepe yako ni ipi (chaguo)"}
       },
       "save_button": "Hifadhi"
     },
@@ -1230,19 +1077,10 @@
       "title": "Mipangilio ya biashara",
       "toast_text": "Wasigu wa mtumiaji umesasishwa kwa mafanikio",
       "fields": {
-        "name": {
-          "label": "Jina la biashara yako ni lipi?"
-        },
-        "address": {
-          "label": "Biashara yako iko wapi"
-        },
-        "mobile": {
-          "label": "Namba ya biashara yako ni ipi"
-        },
-        "image": {
-          "label": "Una nembo",
-          "placeholder": "Pakia nembo"
-        }
+        "name": {"label": "Jina la biashara yako ni lipi?"},
+        "address": {"label": "Biashara yako iko wapi"},
+        "mobile": {"label": "Namba ya biashara yako ni ipi"},
+        "image": {"label": "Una nembo", "placeholder": "Pakia nembo"}
       },
       "action_buttons": {
         "preview_receipt_button": "Hakikisho risiti",
@@ -1269,10 +1107,7 @@
       "title": "Maoni",
       "toast_text": "Asante kwa maoni yako",
       "fields": {
-        "code": {
-          "label": "Maoni ",
-          "placeholder": "Ingiza maoni hapa"
-        }
+        "code": {"label": "Maoni ", "placeholder": "Ingiza maoni hapa"}
       },
       "submit_button": "Wasilisha"
     },
@@ -1285,11 +1120,7 @@
       "clear_filter_button_text": "Safisha",
       "net_balance_text": "Matokeo",
       "download_report_toast_text": "Ripoti ya kupakua",
-      "results": {
-        "one": "matokeo",
-        "zero": "",
-        "other": "Matokeo"
-      },
+      "results": {"one": "matokeo", "zero": "", "other": "Matokeo"},
       "download_report_button_text": "Repoti ya kupakua",
       "empty_state_text": {
         "no_results_found": "Hakuna matokeo yaliyopatikana",
@@ -1358,11 +1189,7 @@
     "in": ""
   },
   "ha": {
-    "update_shara": {
-      "title": "",
-      "description": "",
-      "submit_button": ""
-    },
+    "update_shara": {"title": "", "description": "", "submit_button": ""},
     "next": "",
     "skip": "",
     "get_started": "",
@@ -1388,11 +1215,7 @@
       "resend_text": "",
       "resend_button": ""
     },
-    "forgot_password": {
-      "heading": "",
-      "subheading": "",
-      "fp_button": ""
-    },
+    "forgot_password": {"heading": "", "subheading": "", "fp_button": ""},
     "reset_password": {
       "header": "",
       "heading": "",
@@ -1403,39 +1226,23 @@
       "repeat_password_label": ""
     },
     "fields": {
-      "phone": {
-        "label": "",
-        "placeholder": ""
-      },
-      "password": {
-        "label": ""
-      },
-      "confirm_password": {
-        "label": ""
-      },
-      "name": {
-        "label": ""
-      }
+      "phone": {"label": "", "placeholder": ""},
+      "password": {"label": ""},
+      "confirm_password": {"label": ""},
+      "name": {"label": ""}
     },
     "alert": {
       "minimum_phone_digits": "",
       "error": "",
       "select_country": "",
       "password_match": "",
-      "required": {
-        "number": "",
-        "password": "",
-        "otp": ""
-      },
+      "required": {"number": "", "password": "", "otp": ""},
       "something_went_wrong": "",
       "feedback_validation": "",
       "feedback_is_empty": "",
       "clear_app_data": "",
       "ok": "",
-      "sync": {
-        "title": "",
-        "description": ""
-      },
+      "sync": {"title": "", "description": ""},
       "api": {
         "fallbackError": "",
         "auth": {
@@ -1445,136 +1252,62 @@
             "selectCountry": "",
             "fallbackError": ""
           },
-          "login": {
-            "otpExpired": "",
-            "success": "",
-            "fallbackError": ""
-          }
+          "login": {"otpExpired": "", "success": "", "fallbackError": ""}
         },
         "business": {
           "notFound": "",
-          "create": {
-            "success": ""
-          },
-          "details": {
-            "success": ""
-          },
-          "customerDetails": {
-            "notFound": "",
-            "success": ""
-          },
-          "update": {
-            "uniqueSlug": "",
-            "success": ""
-          }
+          "create": {"success": ""},
+          "details": {"success": ""},
+          "customerDetails": {"notFound": "", "success": ""},
+          "update": {"uniqueSlug": "", "success": ""}
         },
-        "fcm": {
-          "addToken": {
-            "missingFields": "",
-            "success": ""
-          }
-        },
+        "fcm": {"addToken": {"missingFields": "", "success": ""}},
         "passwordReset": {
           "notFound": "",
-          "create": {
-            "success": ""
-          },
-          "reset": {
-            "invalid": "",
-            "success": ""
-          },
-          "update": {
-            "uniqueSlug": "",
-            "success": ""
-          }
+          "create": {"success": ""},
+          "reset": {"invalid": "", "success": ""},
+          "update": {"uniqueSlug": "", "success": ""}
         },
-        "paymentProvider": {
-          "list": {
-            "success": ""
-          }
-        },
-        "user": {
-          "update": {
-            "success": ""
-          }
-        }
+        "paymentProvider": {"list": {"success": ""}},
+        "user": {"update": {"success": ""}}
       }
     },
     "shara_tagline": "",
-    "onboarding_copy_1": {
-      "title": "",
-      "description": ""
-    },
-    "onboarding_copy_2": {
-      "title": "",
-      "description": ""
-    },
-    "onboarding_copy_3": {
-      "title": "",
-      "description": ""
-    },
+    "onboarding_copy_1": {"title": "", "description": ""},
+    "onboarding_copy_2": {"title": "", "description": ""},
+    "onboarding_copy_3": {"title": "", "description": ""},
     "activities": "",
     "home": "",
     "payments": "",
     "more_text": "",
     "home_screen_setup_business_text": "",
-    "reminder_text": {
-      "one": "",
-      "other": "",
-      "zero": ""
-    },
+    "reminder_text": {"one": "", "other": "", "zero": ""},
     "payment_reminder": {
       "title": "",
       "thank_you_for_doing_business": "",
-      "reminder_count": {
-        "one": "",
-        "other": ""
-      },
+      "reminder_count": {"one": "", "other": ""},
       "no_reminder_set_text": "",
       "coming_soon_recurring_reminders": "",
       "reminder_description": "",
-      "reminder_unit": {
-        "days": "",
-        "weeks": "",
-        "months": ""
-      },
-      "reminder_when": {
-        "before": "",
-        "after": ""
-      },
+      "reminder_unit": {"days": "", "weeks": "", "months": ""},
+      "reminder_when": {"before": "", "after": ""},
       "reminder_added": "",
       "reminder_removed": "",
       "confirm_delete": "",
       "confirm_exit": "",
       "set_reminder": "",
       "collection_settings": "",
-      "set_collection_date": {
-        "title": "",
-        "description": ""
-      },
+      "set_collection_date": {"title": "", "description": ""},
       "reminder_settings": "",
-      "add_reminder": {
-        "title": "",
-        "description": ""
-      },
-      "default_reminder": {
-        "title": "",
-        "description": ""
-      },
+      "add_reminder": {"title": "", "description": ""},
+      "default_reminder": {"title": "", "description": ""},
       "on_the_day_of_collection": "",
-      "no_reminder": {
-        "added": "",
-        "removed": ""
-      }
+      "no_reminder": {"added": "", "removed": ""}
     },
     "recurrence_title": "",
     "recurrence_description": "",
     "reminder_message_title": "",
-    "customer_statement": {
-      "title": "",
-      "filename": "",
-      "message": ""
-    },
+    "customer_statement": {"title": "", "filename": "", "message": ""},
     "transaction": {
       "set_collection_date": "",
       "collection_date": "",
@@ -1632,22 +1365,11 @@
     "powered_by_shara": "",
     "collection": {
       "collection_recorded": "",
-      "button": {
-        "title": "",
-        "description": ""
-      },
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "button": {"title": "", "description": ""},
+      "header": {"title": "", "description": ""},
       "fields": {
-        "amount": {
-          "label": ""
-        },
-        "note": {
-          "label": "",
-          "placeholder": ""
-        }
+        "amount": {"label": ""},
+        "note": {"label": "", "placeholder": ""}
       },
       "today_text": "",
       "write_a_note_text": "",
@@ -1657,37 +1379,18 @@
     },
     "sale": {
       "sale_recorded": "",
-      "button": {
-        "title": "",
-        "description": ""
-      },
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "button": {"title": "", "description": ""},
+      "header": {"title": "", "description": ""},
       "fields": {
-        "amount": {
-          "label": ""
-        },
-        "credit": {
-          "label": ""
-        },
-        "note": {
-          "label": "",
-          "placeholder": ""
-        }
+        "amount": {"label": ""},
+        "credit": {"label": ""},
+        "note": {"label": "", "placeholder": ""}
       },
-      "select_customer": {
-        "title": "",
-        "description": ""
-      },
+      "select_customer": {"title": "", "description": ""},
       "no_customer_text": "",
       "due_date_is_past": ""
     },
-    "entry": {
-      "sale": "",
-      "collection": ""
-    },
+    "entry": {"sale": "", "collection": ""},
     "other": "",
     "collected": "",
     "collection_due_today": "",
@@ -1698,20 +1401,10 @@
     "scanning": "",
     "done": "",
     "dismiss": "",
-    "owe": {
-      "one": "",
-      "other": ""
-    },
-    "result": {
-      "zero": "",
-      "one": "",
-      "other": ""
-    },
+    "owe": {"one": "", "other": ""},
+    "result": {"zero": "", "one": "", "other": ""},
     "clear_filter": "",
-    "note": {
-      "one": "",
-      "other": ""
-    },
+    "note": {"one": "", "other": ""},
     "delete": "",
     "edit": "",
     "add": "",
@@ -1746,49 +1439,23 @@
     "confirm": "",
     "address": "",
     "price": "",
-    "filter": {
-      "one": "",
-      "other": ""
-    },
-    "filter_options": {
-      "owing": "",
-      "not_owing": "",
-      "surplus": ""
-    },
-    "customer": {
-      "one": "",
-      "other": ""
-    },
-    "client": {
-      "one": "",
-      "other": ""
-    },
+    "filter": {"one": "", "other": ""},
+    "filter_options": {"owing": "", "not_owing": "", "surplus": ""},
+    "customer": {"one": "", "other": ""},
+    "client": {"one": "", "other": ""},
     "customers": {
       "start_adding": "",
-      "customer_count": {
-        "zero": "",
-        "one": "",
-        "other": ""
-      },
+      "customer_count": {"zero": "", "one": "", "other": ""},
       "customer_edited": "",
       "customer_deleted": "",
       "confirm_delete": "",
       "delete_customer": "",
       "customer_profile": "",
       "fields": {
-        "phone": {
-          "label": "",
-          "placeholder": ""
-        },
-        "notes": {
-          "label": "",
-          "placeholder": ""
-        }
+        "phone": {"label": "", "placeholder": ""},
+        "notes": {"label": "", "placeholder": ""}
       },
-      "select_customer": {
-        "title": "",
-        "description": ""
-      },
+      "select_customer": {"title": "", "description": ""},
       "add_as_new_customer": "",
       "add_customer": "",
       "add_customer_details": "",
@@ -1796,16 +1463,9 @@
       "search_input_placeholder": "",
       "manual_customer_modal": {
         "fields": {
-          "name": {
-            "label": ""
-          },
-          "email": {
-            "label": ""
-          },
-          "phone": {
-            "label": "",
-            "placeholder": ""
-          }
+          "name": {"label": ""},
+          "email": {"label": ""},
+          "phone": {"label": "", "placeholder": ""}
         }
       }
     },
@@ -1825,56 +1485,29 @@
         "edit_payment_info": "",
         "remove_message": "",
         "payment_settings": "",
-        "no_payment_option": {
-          "description": ""
-        },
+        "no_payment_option": {"description": ""},
         "copy_payment_link": "",
         "preview_payment_page": "",
-        "add_new_payment": ""
+        "add_new_payment": "",
+        "add_new_payment_method": ""
       },
-      "payment_form": {
-        "label": ""
-      },
+      "payment_form": {"label": ""},
       "copied": "",
       "copy": "",
       "payment_preview_modal": {
         "heading": "",
-        "footer": {
-          "title": "",
-          "website_url": ""
-        }
+        "footer": {"title": "", "website_url": ""}
       }
     },
     "more": {
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "header": {"title": "", "description": ""},
       "list": {
-        "profile_settings": {
-          "title": "",
-          "description": ""
-        },
-        "business_settings": {
-          "title": "",
-          "description": ""
-        },
-        "payment_settings": {
-          "title": "",
-          "description": ""
-        },
-        "referral": {
-          "title": "",
-          "description": ""
-        },
-        "feedback": {
-          "title": "",
-          "description": ""
-        },
-        "language": {
-          "title": "",
-          "description": ""
-        }
+        "profile_settings": {"title": "", "description": ""},
+        "business_settings": {"title": "", "description": ""},
+        "payment_settings": {"title": "", "description": ""},
+        "referral": {"title": "", "description": ""},
+        "feedback": {"title": "", "description": ""},
+        "language": {"title": "", "description": ""}
       },
       "logout": {
         "logout_data_verification_text": "",
@@ -1890,18 +1523,10 @@
       "title": "",
       "toast_text": "",
       "fields": {
-        "firstName": {
-          "label": ""
-        },
-        "lastName": {
-          "label": ""
-        },
-        "mobile": {
-          "label": ""
-        },
-        "email": {
-          "label": ""
-        }
+        "firstName": {"label": ""},
+        "lastName": {"label": ""},
+        "mobile": {"label": ""},
+        "email": {"label": ""}
       },
       "save_button": ""
     },
@@ -1909,50 +1534,24 @@
       "title": "",
       "toast_text": "",
       "fields": {
-        "name": {
-          "label": ""
-        },
-        "address": {
-          "label": ""
-        },
-        "mobile": {
-          "label": ""
-        },
-        "image": {
-          "label": "",
-          "placeholder": ""
-        }
+        "name": {"label": ""},
+        "address": {"label": ""},
+        "mobile": {"label": ""},
+        "image": {"label": "", "placeholder": ""}
       },
-      "action_buttons": {
-        "preview_receipt_button": "",
-        "save_button": ""
-      },
-      "receipt_preview": {
-        "title": "",
-        "saved": "",
-        "description": ""
-      }
+      "action_buttons": {"preview_receipt_button": "", "save_button": ""},
+      "receipt_preview": {"title": "", "saved": "", "description": ""}
     },
     "referral": {
       "title": "",
       "toast_text": "",
-      "fields": {
-        "code": {
-          "label": "",
-          "placeholder": ""
-        }
-      },
+      "fields": {"code": {"label": "", "placeholder": ""}},
       "submit_button": ""
     },
     "feedback": {
       "title": "",
       "toast_text": "",
-      "fields": {
-        "code": {
-          "label": "",
-          "placeholder": ""
-        }
-      },
+      "fields": {"code": {"label": "", "placeholder": ""}},
       "submit_button": ""
     },
     "create_receipts_with_shara": "",
@@ -1964,16 +1563,9 @@
       "clear_filter_button_text": "",
       "net_balance_text": "",
       "download_report_toast_text": "",
-      "results": {
-        "one": "",
-        "zero": "",
-        "other": ""
-      },
+      "results": {"one": "", "zero": "", "other": ""},
       "download_report_button_text": "",
-      "empty_state_text": {
-        "no_results_found": "",
-        "no_records_yet": ""
-      },
+      "empty_state_text": {"no_results_found": "", "no_records_yet": ""},
       "report_list_header": {
         "transactions_text": "",
         "total_entries_text": "",
@@ -1991,10 +1583,7 @@
       "downloaded_report_notification_title": ""
     },
     "bluetooth_printer": {
-      "setup": {
-        "title": "",
-        "description": ""
-      },
+      "setup": {"title": "", "description": ""},
       "select_printer": "",
       "no_nearby_bluetooth": "",
       "device_not_supported": "",
@@ -2002,10 +1591,7 @@
     },
     "reminder_popup": {
       "title": "",
-      "collection_day": {
-        "one": "",
-        "other": ""
-      },
+      "collection_day": {"one": "", "other": ""},
       "collect_on_text": "",
       "no_collection_date_text": "",
       "set_collection_date_button_text": "",
@@ -2037,11 +1623,7 @@
     "in": ""
   },
   "yo": {
-    "update_shara": {
-      "title": "",
-      "description": "",
-      "submit_button": ""
-    },
+    "update_shara": {"title": "", "description": "", "submit_button": ""},
     "next": "",
     "skip": "",
     "get_started": "",
@@ -2067,11 +1649,7 @@
       "resend_text": "",
       "resend_button": ""
     },
-    "forgot_password": {
-      "heading": "",
-      "subheading": "",
-      "fp_button": ""
-    },
+    "forgot_password": {"heading": "", "subheading": "", "fp_button": ""},
     "reset_password": {
       "header": "",
       "heading": "",
@@ -2082,39 +1660,23 @@
       "repeat_password_label": ""
     },
     "fields": {
-      "phone": {
-        "label": "",
-        "placeholder": ""
-      },
-      "password": {
-        "label": ""
-      },
-      "confirm_password": {
-        "label": ""
-      },
-      "name": {
-        "label": ""
-      }
+      "phone": {"label": "", "placeholder": ""},
+      "password": {"label": ""},
+      "confirm_password": {"label": ""},
+      "name": {"label": ""}
     },
     "alert": {
       "minimum_phone_digits": "",
       "error": "",
       "select_country": "",
       "password_match": "",
-      "required": {
-        "number": "",
-        "password": "",
-        "otp": ""
-      },
+      "required": {"number": "", "password": "", "otp": ""},
       "something_went_wrong": "",
       "feedback_validation": "",
       "feedback_is_empty": "",
       "clear_app_data": "",
       "ok": "",
-      "sync": {
-        "title": "",
-        "description": ""
-      },
+      "sync": {"title": "", "description": ""},
       "api": {
         "fallbackError": "",
         "auth": {
@@ -2124,136 +1686,62 @@
             "selectCountry": "",
             "fallbackError": ""
           },
-          "login": {
-            "otpExpired": "",
-            "success": "",
-            "fallbackError": ""
-          }
+          "login": {"otpExpired": "", "success": "", "fallbackError": ""}
         },
         "business": {
           "notFound": "",
-          "create": {
-            "success": ""
-          },
-          "details": {
-            "success": ""
-          },
-          "customerDetails": {
-            "notFound": "",
-            "success": ""
-          },
-          "update": {
-            "uniqueSlug": "",
-            "success": ""
-          }
+          "create": {"success": ""},
+          "details": {"success": ""},
+          "customerDetails": {"notFound": "", "success": ""},
+          "update": {"uniqueSlug": "", "success": ""}
         },
-        "fcm": {
-          "addToken": {
-            "missingFields": "",
-            "success": ""
-          }
-        },
+        "fcm": {"addToken": {"missingFields": "", "success": ""}},
         "passwordReset": {
           "notFound": "",
-          "create": {
-            "success": ""
-          },
-          "reset": {
-            "invalid": "",
-            "success": ""
-          },
-          "update": {
-            "uniqueSlug": "",
-            "success": ""
-          }
+          "create": {"success": ""},
+          "reset": {"invalid": "", "success": ""},
+          "update": {"uniqueSlug": "", "success": ""}
         },
-        "paymentProvider": {
-          "list": {
-            "success": ""
-          }
-        },
-        "user": {
-          "update": {
-            "success": ""
-          }
-        }
+        "paymentProvider": {"list": {"success": ""}},
+        "user": {"update": {"success": ""}}
       }
     },
     "shara_tagline": "",
-    "onboarding_copy_1": {
-      "title": "",
-      "description": ""
-    },
-    "onboarding_copy_2": {
-      "title": "",
-      "description": ""
-    },
-    "onboarding_copy_3": {
-      "title": "",
-      "description": ""
-    },
+    "onboarding_copy_1": {"title": "", "description": ""},
+    "onboarding_copy_2": {"title": "", "description": ""},
+    "onboarding_copy_3": {"title": "", "description": ""},
     "activities": "",
     "home": "",
     "payments": "",
     "more_text": "",
     "home_screen_setup_business_text": "",
-    "reminder_text": {
-      "one": "",
-      "other": "",
-      "zero": ""
-    },
+    "reminder_text": {"one": "", "other": "", "zero": ""},
     "payment_reminder": {
       "title": "",
       "thank_you_for_doing_business": "",
-      "reminder_count": {
-        "one": "",
-        "other": ""
-      },
+      "reminder_count": {"one": "", "other": ""},
       "no_reminder_set_text": "",
       "coming_soon_recurring_reminders": "",
       "reminder_description": "",
-      "reminder_unit": {
-        "days": "",
-        "weeks": "",
-        "months": ""
-      },
-      "reminder_when": {
-        "before": "",
-        "after": ""
-      },
+      "reminder_unit": {"days": "", "weeks": "", "months": ""},
+      "reminder_when": {"before": "", "after": ""},
       "reminder_added": "",
       "reminder_removed": "",
       "confirm_delete": "",
       "confirm_exit": "",
       "set_reminder": "",
       "collection_settings": "",
-      "set_collection_date": {
-        "title": "",
-        "description": ""
-      },
+      "set_collection_date": {"title": "", "description": ""},
       "reminder_settings": "",
-      "add_reminder": {
-        "title": "",
-        "description": ""
-      },
-      "default_reminder": {
-        "title": "",
-        "description": ""
-      },
+      "add_reminder": {"title": "", "description": ""},
+      "default_reminder": {"title": "", "description": ""},
       "on_the_day_of_collection": "",
-      "no_reminder": {
-        "added": "",
-        "removed": ""
-      }
+      "no_reminder": {"added": "", "removed": ""}
     },
     "recurrence_title": "",
     "recurrence_description": "",
     "reminder_message_title": "",
-    "customer_statement": {
-      "title": "",
-      "filename": "",
-      "message": ""
-    },
+    "customer_statement": {"title": "", "filename": "", "message": ""},
     "transaction": {
       "set_collection_date": "",
       "collection_date": "",
@@ -2311,22 +1799,11 @@
     "powered_by_shara": "",
     "collection": {
       "collection_recorded": "",
-      "button": {
-        "title": "",
-        "description": ""
-      },
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "button": {"title": "", "description": ""},
+      "header": {"title": "", "description": ""},
       "fields": {
-        "amount": {
-          "label": ""
-        },
-        "note": {
-          "label": "",
-          "placeholder": ""
-        }
+        "amount": {"label": ""},
+        "note": {"label": "", "placeholder": ""}
       },
       "today_text": "",
       "write_a_note_text": "",
@@ -2336,37 +1813,18 @@
     },
     "sale": {
       "sale_recorded": "",
-      "button": {
-        "title": "",
-        "description": ""
-      },
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "button": {"title": "", "description": ""},
+      "header": {"title": "", "description": ""},
       "fields": {
-        "amount": {
-          "label": ""
-        },
-        "credit": {
-          "label": ""
-        },
-        "note": {
-          "label": "",
-          "placeholder": ""
-        }
+        "amount": {"label": ""},
+        "credit": {"label": ""},
+        "note": {"label": "", "placeholder": ""}
       },
-      "select_customer": {
-        "title": "",
-        "description": ""
-      },
+      "select_customer": {"title": "", "description": ""},
       "no_customer_text": "",
       "due_date_is_past": ""
     },
-    "entry": {
-      "sale": "",
-      "collection": ""
-    },
+    "entry": {"sale": "", "collection": ""},
     "other": "",
     "collected": "",
     "collection_due_today": "",
@@ -2377,20 +1835,10 @@
     "scanning": "",
     "done": "",
     "dismiss": "",
-    "owe": {
-      "one": "",
-      "other": ""
-    },
-    "result": {
-      "zero": "",
-      "one": "",
-      "other": ""
-    },
+    "owe": {"one": "", "other": ""},
+    "result": {"zero": "", "one": "", "other": ""},
     "clear_filter": "",
-    "note": {
-      "one": "",
-      "other": ""
-    },
+    "note": {"one": "", "other": ""},
     "delete": "",
     "edit": "",
     "add": "",
@@ -2425,49 +1873,23 @@
     "confirm": "",
     "address": "",
     "price": "",
-    "filter": {
-      "one": "",
-      "other": ""
-    },
-    "filter_options": {
-      "owing": "",
-      "not_owing": "",
-      "surplus": ""
-    },
-    "customer": {
-      "one": "",
-      "other": ""
-    },
-    "client": {
-      "one": "",
-      "other": ""
-    },
+    "filter": {"one": "", "other": ""},
+    "filter_options": {"owing": "", "not_owing": "", "surplus": ""},
+    "customer": {"one": "", "other": ""},
+    "client": {"one": "", "other": ""},
     "customers": {
       "start_adding": "",
-      "customer_count": {
-        "zero": "",
-        "one": "",
-        "other": ""
-      },
+      "customer_count": {"zero": "", "one": "", "other": ""},
       "customer_edited": "",
       "customer_deleted": "",
       "confirm_delete": "",
       "delete_customer": "",
       "customer_profile": "",
       "fields": {
-        "phone": {
-          "label": "",
-          "placeholder": ""
-        },
-        "notes": {
-          "label": "",
-          "placeholder": ""
-        }
+        "phone": {"label": "", "placeholder": ""},
+        "notes": {"label": "", "placeholder": ""}
       },
-      "select_customer": {
-        "title": "",
-        "description": ""
-      },
+      "select_customer": {"title": "", "description": ""},
       "add_as_new_customer": "",
       "add_customer": "",
       "add_customer_details": "",
@@ -2475,16 +1897,9 @@
       "search_input_placeholder": "",
       "manual_customer_modal": {
         "fields": {
-          "name": {
-            "label": ""
-          },
-          "email": {
-            "label": ""
-          },
-          "phone": {
-            "label": "",
-            "placeholder": ""
-          }
+          "name": {"label": ""},
+          "email": {"label": ""},
+          "phone": {"label": "", "placeholder": ""}
         }
       }
     },
@@ -2504,56 +1919,29 @@
         "edit_payment_info": "",
         "remove_message": "",
         "payment_settings": "",
-        "no_payment_option": {
-          "description": ""
-        },
+        "no_payment_option": {"description": ""},
         "copy_payment_link": "",
         "preview_payment_page": "",
-        "add_new_payment": ""
+        "add_new_payment": "",
+        "add_new_payment_method": ""
       },
-      "payment_form": {
-        "label": ""
-      },
+      "payment_form": {"label": ""},
       "copied": "",
       "copy": "",
       "payment_preview_modal": {
         "heading": "",
-        "footer": {
-          "title": "",
-          "website_url": ""
-        }
+        "footer": {"title": "", "website_url": ""}
       }
     },
     "more": {
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "header": {"title": "", "description": ""},
       "list": {
-        "profile_settings": {
-          "title": "",
-          "description": ""
-        },
-        "business_settings": {
-          "title": "",
-          "description": ""
-        },
-        "payment_settings": {
-          "title": "",
-          "description": ""
-        },
-        "referral": {
-          "title": "",
-          "description": ""
-        },
-        "feedback": {
-          "title": "",
-          "description": ""
-        },
-        "language": {
-          "title": "",
-          "description": ""
-        }
+        "profile_settings": {"title": "", "description": ""},
+        "business_settings": {"title": "", "description": ""},
+        "payment_settings": {"title": "", "description": ""},
+        "referral": {"title": "", "description": ""},
+        "feedback": {"title": "", "description": ""},
+        "language": {"title": "", "description": ""}
       },
       "logout": {
         "logout_data_verification_text": "",
@@ -2569,18 +1957,10 @@
       "title": "",
       "toast_text": "",
       "fields": {
-        "firstName": {
-          "label": ""
-        },
-        "lastName": {
-          "label": ""
-        },
-        "mobile": {
-          "label": ""
-        },
-        "email": {
-          "label": ""
-        }
+        "firstName": {"label": ""},
+        "lastName": {"label": ""},
+        "mobile": {"label": ""},
+        "email": {"label": ""}
       },
       "save_button": ""
     },
@@ -2588,50 +1968,24 @@
       "title": "",
       "toast_text": "",
       "fields": {
-        "name": {
-          "label": ""
-        },
-        "address": {
-          "label": ""
-        },
-        "mobile": {
-          "label": ""
-        },
-        "image": {
-          "label": "",
-          "placeholder": ""
-        }
+        "name": {"label": ""},
+        "address": {"label": ""},
+        "mobile": {"label": ""},
+        "image": {"label": "", "placeholder": ""}
       },
-      "action_buttons": {
-        "preview_receipt_button": "",
-        "save_button": ""
-      },
-      "receipt_preview": {
-        "title": "",
-        "saved": "",
-        "description": ""
-      }
+      "action_buttons": {"preview_receipt_button": "", "save_button": ""},
+      "receipt_preview": {"title": "", "saved": "", "description": ""}
     },
     "referral": {
       "title": "",
       "toast_text": "",
-      "fields": {
-        "code": {
-          "label": "",
-          "placeholder": ""
-        }
-      },
+      "fields": {"code": {"label": "", "placeholder": ""}},
       "submit_button": ""
     },
     "feedback": {
       "title": "",
       "toast_text": "",
-      "fields": {
-        "code": {
-          "label": "",
-          "placeholder": ""
-        }
-      },
+      "fields": {"code": {"label": "", "placeholder": ""}},
       "submit_button": ""
     },
     "create_receipts_with_shara": "",
@@ -2643,16 +1997,9 @@
       "clear_filter_button_text": "",
       "net_balance_text": "",
       "download_report_toast_text": "",
-      "results": {
-        "one": "",
-        "zero": "",
-        "other": ""
-      },
+      "results": {"one": "", "zero": "", "other": ""},
       "download_report_button_text": "",
-      "empty_state_text": {
-        "no_results_found": "",
-        "no_records_yet": ""
-      },
+      "empty_state_text": {"no_results_found": "", "no_records_yet": ""},
       "report_list_header": {
         "transactions_text": "",
         "total_entries_text": "",
@@ -2670,10 +2017,7 @@
       "downloaded_report_notification_title": ""
     },
     "bluetooth_printer": {
-      "setup": {
-        "title": "",
-        "description": ""
-      },
+      "setup": {"title": "", "description": ""},
       "select_printer": "",
       "no_nearby_bluetooth": "",
       "device_not_supported": "",
@@ -2681,10 +2025,7 @@
     },
     "reminder_popup": {
       "title": "",
-      "collection_day": {
-        "one": "",
-        "other": ""
-      },
+      "collection_day": {"one": "", "other": ""},
       "collect_on_text": "",
       "no_collection_date_text": "",
       "set_collection_date_button_text": "",
@@ -2716,11 +2057,7 @@
     "in": ""
   },
   "fr": {
-    "update_shara": {
-      "title": "",
-      "description": "",
-      "submit_button": ""
-    },
+    "update_shara": {"title": "", "description": "", "submit_button": ""},
     "next": "",
     "skip": "",
     "get_started": "",
@@ -2746,11 +2083,7 @@
       "resend_text": "",
       "resend_button": ""
     },
-    "forgot_password": {
-      "heading": "",
-      "subheading": "",
-      "fp_button": ""
-    },
+    "forgot_password": {"heading": "", "subheading": "", "fp_button": ""},
     "reset_password": {
       "header": "",
       "heading": "",
@@ -2761,39 +2094,23 @@
       "repeat_password_label": ""
     },
     "fields": {
-      "phone": {
-        "label": "",
-        "placeholder": ""
-      },
-      "password": {
-        "label": ""
-      },
-      "confirm_password": {
-        "label": ""
-      },
-      "name": {
-        "label": ""
-      }
+      "phone": {"label": "", "placeholder": ""},
+      "password": {"label": ""},
+      "confirm_password": {"label": ""},
+      "name": {"label": ""}
     },
     "alert": {
       "minimum_phone_digits": "",
       "error": "",
       "select_country": "",
       "password_match": "",
-      "required": {
-        "number": "",
-        "password": "",
-        "otp": ""
-      },
+      "required": {"number": "", "password": "", "otp": ""},
       "something_went_wrong": "",
       "feedback_validation": "",
       "feedback_is_empty": "",
       "clear_app_data": "",
       "ok": "",
-      "sync": {
-        "title": "",
-        "description": ""
-      },
+      "sync": {"title": "", "description": ""},
       "api": {
         "fallbackError": "",
         "auth": {
@@ -2803,136 +2120,62 @@
             "selectCountry": "",
             "fallbackError": ""
           },
-          "login": {
-            "otpExpired": "",
-            "success": "",
-            "fallbackError": ""
-          }
+          "login": {"otpExpired": "", "success": "", "fallbackError": ""}
         },
         "business": {
           "notFound": "",
-          "create": {
-            "success": ""
-          },
-          "details": {
-            "success": ""
-          },
-          "customerDetails": {
-            "notFound": "",
-            "success": ""
-          },
-          "update": {
-            "uniqueSlug": "",
-            "success": ""
-          }
+          "create": {"success": ""},
+          "details": {"success": ""},
+          "customerDetails": {"notFound": "", "success": ""},
+          "update": {"uniqueSlug": "", "success": ""}
         },
-        "fcm": {
-          "addToken": {
-            "missingFields": "",
-            "success": ""
-          }
-        },
+        "fcm": {"addToken": {"missingFields": "", "success": ""}},
         "passwordReset": {
           "notFound": "",
-          "create": {
-            "success": ""
-          },
-          "reset": {
-            "invalid": "",
-            "success": ""
-          },
-          "update": {
-            "uniqueSlug": "",
-            "success": ""
-          }
+          "create": {"success": ""},
+          "reset": {"invalid": "", "success": ""},
+          "update": {"uniqueSlug": "", "success": ""}
         },
-        "paymentProvider": {
-          "list": {
-            "success": ""
-          }
-        },
-        "user": {
-          "update": {
-            "success": ""
-          }
-        }
+        "paymentProvider": {"list": {"success": ""}},
+        "user": {"update": {"success": ""}}
       }
     },
     "shara_tagline": "",
-    "onboarding_copy_1": {
-      "title": "",
-      "description": ""
-    },
-    "onboarding_copy_2": {
-      "title": "",
-      "description": ""
-    },
-    "onboarding_copy_3": {
-      "title": "",
-      "description": ""
-    },
+    "onboarding_copy_1": {"title": "", "description": ""},
+    "onboarding_copy_2": {"title": "", "description": ""},
+    "onboarding_copy_3": {"title": "", "description": ""},
     "activities": "",
     "home": "",
     "payments": "",
     "more_text": "",
     "home_screen_setup_business_text": "",
-    "reminder_text": {
-      "one": "",
-      "other": "",
-      "zero": ""
-    },
+    "reminder_text": {"one": "", "other": "", "zero": ""},
     "payment_reminder": {
       "title": "",
       "thank_you_for_doing_business": "",
-      "reminder_count": {
-        "one": "",
-        "other": ""
-      },
+      "reminder_count": {"one": "", "other": ""},
       "no_reminder_set_text": "",
       "coming_soon_recurring_reminders": "",
       "reminder_description": "",
-      "reminder_unit": {
-        "days": "",
-        "weeks": "",
-        "months": ""
-      },
-      "reminder_when": {
-        "before": "",
-        "after": ""
-      },
+      "reminder_unit": {"days": "", "weeks": "", "months": ""},
+      "reminder_when": {"before": "", "after": ""},
       "reminder_added": "",
       "reminder_removed": "",
       "confirm_delete": "",
       "confirm_exit": "",
       "set_reminder": "",
       "collection_settings": "",
-      "set_collection_date": {
-        "title": "",
-        "description": ""
-      },
+      "set_collection_date": {"title": "", "description": ""},
       "reminder_settings": "",
-      "add_reminder": {
-        "title": "",
-        "description": ""
-      },
-      "default_reminder": {
-        "title": "",
-        "description": ""
-      },
+      "add_reminder": {"title": "", "description": ""},
+      "default_reminder": {"title": "", "description": ""},
       "on_the_day_of_collection": "",
-      "no_reminder": {
-        "added": "",
-        "removed": ""
-      }
+      "no_reminder": {"added": "", "removed": ""}
     },
     "recurrence_title": "",
     "recurrence_description": "",
     "reminder_message_title": "",
-    "customer_statement": {
-      "title": "",
-      "filename": "",
-      "message": ""
-    },
+    "customer_statement": {"title": "", "filename": "", "message": ""},
     "transaction": {
       "set_collection_date": "",
       "collection_date": "",
@@ -2990,22 +2233,11 @@
     "powered_by_shara": "",
     "collection": {
       "collection_recorded": "",
-      "button": {
-        "title": "",
-        "description": ""
-      },
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "button": {"title": "", "description": ""},
+      "header": {"title": "", "description": ""},
       "fields": {
-        "amount": {
-          "label": ""
-        },
-        "note": {
-          "label": "",
-          "placeholder": ""
-        }
+        "amount": {"label": ""},
+        "note": {"label": "", "placeholder": ""}
       },
       "today_text": "",
       "write_a_note_text": "",
@@ -3015,37 +2247,18 @@
     },
     "sale": {
       "sale_recorded": "",
-      "button": {
-        "title": "",
-        "description": ""
-      },
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "button": {"title": "", "description": ""},
+      "header": {"title": "", "description": ""},
       "fields": {
-        "amount": {
-          "label": ""
-        },
-        "credit": {
-          "label": ""
-        },
-        "note": {
-          "label": "",
-          "placeholder": ""
-        }
+        "amount": {"label": ""},
+        "credit": {"label": ""},
+        "note": {"label": "", "placeholder": ""}
       },
-      "select_customer": {
-        "title": "",
-        "description": ""
-      },
+      "select_customer": {"title": "", "description": ""},
       "no_customer_text": "",
       "due_date_is_past": ""
     },
-    "entry": {
-      "sale": "",
-      "collection": ""
-    },
+    "entry": {"sale": "", "collection": ""},
     "other": "",
     "collected": "",
     "collection_due_today": "",
@@ -3056,20 +2269,10 @@
     "scanning": "",
     "done": "",
     "dismiss": "",
-    "owe": {
-      "one": "",
-      "other": ""
-    },
-    "result": {
-      "zero": "",
-      "one": "",
-      "other": ""
-    },
+    "owe": {"one": "", "other": ""},
+    "result": {"zero": "", "one": "", "other": ""},
     "clear_filter": "",
-    "note": {
-      "one": "",
-      "other": ""
-    },
+    "note": {"one": "", "other": ""},
     "delete": "",
     "edit": "",
     "add": "",
@@ -3104,49 +2307,23 @@
     "confirm": "",
     "address": "",
     "price": "",
-    "filter": {
-      "one": "",
-      "other": ""
-    },
-    "filter_options": {
-      "owing": "",
-      "not_owing": "",
-      "surplus": ""
-    },
-    "customer": {
-      "one": "",
-      "other": ""
-    },
-    "client": {
-      "one": "",
-      "other": ""
-    },
+    "filter": {"one": "", "other": ""},
+    "filter_options": {"owing": "", "not_owing": "", "surplus": ""},
+    "customer": {"one": "", "other": ""},
+    "client": {"one": "", "other": ""},
     "customers": {
       "start_adding": "",
-      "customer_count": {
-        "zero": "",
-        "one": "",
-        "other": ""
-      },
+      "customer_count": {"zero": "", "one": "", "other": ""},
       "customer_edited": "",
       "customer_deleted": "",
       "confirm_delete": "",
       "delete_customer": "",
       "customer_profile": "",
       "fields": {
-        "phone": {
-          "label": "",
-          "placeholder": ""
-        },
-        "notes": {
-          "label": "",
-          "placeholder": ""
-        }
+        "phone": {"label": "", "placeholder": ""},
+        "notes": {"label": "", "placeholder": ""}
       },
-      "select_customer": {
-        "title": "",
-        "description": ""
-      },
+      "select_customer": {"title": "", "description": ""},
       "add_as_new_customer": "",
       "add_customer": "",
       "add_customer_details": "",
@@ -3154,16 +2331,9 @@
       "search_input_placeholder": "",
       "manual_customer_modal": {
         "fields": {
-          "name": {
-            "label": ""
-          },
-          "email": {
-            "label": ""
-          },
-          "phone": {
-            "label": "",
-            "placeholder": ""
-          }
+          "name": {"label": ""},
+          "email": {"label": ""},
+          "phone": {"label": "", "placeholder": ""}
         }
       }
     },
@@ -3183,56 +2353,29 @@
         "edit_payment_info": "",
         "remove_message": "",
         "payment_settings": "",
-        "no_payment_option": {
-          "description": ""
-        },
+        "no_payment_option": {"description": ""},
         "copy_payment_link": "",
         "preview_payment_page": "",
-        "add_new_payment": ""
+        "add_new_payment": "",
+        "add_new_payment_method": ""
       },
-      "payment_form": {
-        "label": ""
-      },
+      "payment_form": {"label": ""},
       "copied": "",
       "copy": "",
       "payment_preview_modal": {
         "heading": "",
-        "footer": {
-          "title": "",
-          "website_url": ""
-        }
+        "footer": {"title": "", "website_url": ""}
       }
     },
     "more": {
-      "header": {
-        "title": "",
-        "description": ""
-      },
+      "header": {"title": "", "description": ""},
       "list": {
-        "profile_settings": {
-          "title": "",
-          "description": ""
-        },
-        "business_settings": {
-          "title": "",
-          "description": ""
-        },
-        "payment_settings": {
-          "title": "",
-          "description": ""
-        },
-        "referral": {
-          "title": "",
-          "description": ""
-        },
-        "feedback": {
-          "title": "",
-          "description": ""
-        },
-        "language": {
-          "title": "",
-          "description": ""
-        }
+        "profile_settings": {"title": "", "description": ""},
+        "business_settings": {"title": "", "description": ""},
+        "payment_settings": {"title": "", "description": ""},
+        "referral": {"title": "", "description": ""},
+        "feedback": {"title": "", "description": ""},
+        "language": {"title": "", "description": ""}
       },
       "logout": {
         "logout_data_verification_text": "",
@@ -3248,18 +2391,10 @@
       "title": "",
       "toast_text": "",
       "fields": {
-        "firstName": {
-          "label": ""
-        },
-        "lastName": {
-          "label": ""
-        },
-        "mobile": {
-          "label": ""
-        },
-        "email": {
-          "label": ""
-        }
+        "firstName": {"label": ""},
+        "lastName": {"label": ""},
+        "mobile": {"label": ""},
+        "email": {"label": ""}
       },
       "save_button": ""
     },
@@ -3267,50 +2402,24 @@
       "title": "",
       "toast_text": "",
       "fields": {
-        "name": {
-          "label": ""
-        },
-        "address": {
-          "label": ""
-        },
-        "mobile": {
-          "label": ""
-        },
-        "image": {
-          "label": "",
-          "placeholder": ""
-        }
+        "name": {"label": ""},
+        "address": {"label": ""},
+        "mobile": {"label": ""},
+        "image": {"label": "", "placeholder": ""}
       },
-      "action_buttons": {
-        "preview_receipt_button": "",
-        "save_button": ""
-      },
-      "receipt_preview": {
-        "title": "",
-        "saved": "",
-        "description": ""
-      }
+      "action_buttons": {"preview_receipt_button": "", "save_button": ""},
+      "receipt_preview": {"title": "", "saved": "", "description": ""}
     },
     "referral": {
       "title": "",
       "toast_text": "",
-      "fields": {
-        "code": {
-          "label": "",
-          "placeholder": ""
-        }
-      },
+      "fields": {"code": {"label": "", "placeholder": ""}},
       "submit_button": ""
     },
     "feedback": {
       "title": "",
       "toast_text": "",
-      "fields": {
-        "code": {
-          "label": "",
-          "placeholder": ""
-        }
-      },
+      "fields": {"code": {"label": "", "placeholder": ""}},
       "submit_button": ""
     },
     "create_receipts_with_shara": "",
@@ -3322,16 +2431,9 @@
       "clear_filter_button_text": "",
       "net_balance_text": "",
       "download_report_toast_text": "",
-      "results": {
-        "one": "",
-        "zero": "",
-        "other": ""
-      },
+      "results": {"one": "", "zero": "", "other": ""},
       "download_report_button_text": "",
-      "empty_state_text": {
-        "no_results_found": "",
-        "no_records_yet": ""
-      },
+      "empty_state_text": {"no_results_found": "", "no_records_yet": ""},
       "report_list_header": {
         "transactions_text": "",
         "total_entries_text": "",
@@ -3349,10 +2451,7 @@
       "downloaded_report_notification_title": ""
     },
     "bluetooth_printer": {
-      "setup": {
-        "title": "",
-        "description": ""
-      },
+      "setup": {"title": "", "description": ""},
       "select_printer": "",
       "no_nearby_bluetooth": "",
       "device_not_supported": "",
@@ -3360,10 +2459,7 @@
     },
     "reminder_popup": {
       "title": "",
-      "collection_day": {
-        "one": "",
-        "other": ""
-      },
+      "collection_day": {"one": "", "other": ""},
       "collect_on_text": "",
       "no_collection_date_text": "",
       "set_collection_date_button_text": "",

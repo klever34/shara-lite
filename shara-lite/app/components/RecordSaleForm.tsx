@@ -113,7 +113,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
 
   const handleOpenSelectCustomer = useCallback(() => {
     navigation.navigate('SelectCustomerList', {
-      onSelectCustomer: (customer?: ICustomer) =>
+      onSelectCustomer: (customer: ICustomer) =>
         navigation.navigate('RecordSale', {customer}),
     });
   }, [navigation]);
