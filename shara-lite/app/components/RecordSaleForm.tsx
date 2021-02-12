@@ -26,6 +26,7 @@ import {TouchableActionItem} from './TouchableActionItem';
 const strings = getI18nService().strings;
 
 type RecordSaleFormProps = {
+  isLoading?: boolean;
   transaction?: IReceipt;
   onSubmit: (payload: {
     note?: string;
@@ -38,7 +39,7 @@ type RecordSaleFormProps = {
 } & ModalWrapperFields;
 
 export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
-  const {onSubmit, customer, transaction, openModal} = props;
+  const {onSubmit, customer, isLoading, transaction, openModal} = props;
   const navigation = useAppNavigation();
   const {updateDueDate} = useTransaction();
   const user = getAuthService().getUser();
@@ -439,6 +440,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
         </Text>
       )}
       <Button
+        isLoading={isLoading}
         onPress={handleSubmit}
         style={applyStyles('mt-20')}
         disabled={

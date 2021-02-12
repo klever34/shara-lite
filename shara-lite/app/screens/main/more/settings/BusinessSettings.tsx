@@ -98,7 +98,7 @@ export const BusinessSettings = withModal((props: ModalWrapperFields) => {
             showShareButtons={false}
             onDone={() => {
               closeModal();
-              navigation.navigate('Settings');
+              navigation.navigate('MoreTab');
             }}
             transaction={dummyTransaction}
             subheading={i18Service.strings(
