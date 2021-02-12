@@ -28,7 +28,7 @@ export const TouchableActionItem = (props: Props) => {
   const {icon, onPress, style, leftSection, rightSection} = props;
   return (
     <Touchable onPress={onPress}>
-      <View style={applyStyles('flex-row p-12', style)}>
+      <View style={applyStyles('flex-row p-12 items-center', style)}>
         {icon && <CircleWithIcon icon={icon} style={applyStyles('mr-12')} />}
         <View style={applyStyles('flex-1 pr-8')}>
           <View style={applyStyles('flex-row items-center justify-between')}>
