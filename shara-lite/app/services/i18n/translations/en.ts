@@ -27,7 +27,8 @@ const en: Strings = {
   },
   otp: {
     heading: 'OTP',
-    subheading: '{{From API response}}',
+    subheading:
+      'We’ve sent a one-time password to mobile number **{{mobile}}**, check your SMS or Whatsapp and enter it below.',
     otp_resent: 'OTP RESENT',
     otp_button: 'Get Started',
     resend_text: "Didn't receive the code?",
@@ -73,6 +74,8 @@ const en: Strings = {
       otp: 'OTP is required',
     },
     something_went_wrong: 'Oops! Something went wrong.',
+    feedback_validation: 'Minimum of 25 charaters allowed',
+    feedback_is_empty: 'Message cannot be empty',
     clear_app_data: 'Try clearing app data from application settings',
     ok: 'OK',
     sync: {
@@ -161,6 +164,9 @@ const en: Strings = {
       'Securely record your business data in a private, secure and backed up',
   },
   activities: 'Activities',
+  home: 'Home',
+  payments: 'Payments',
+  more_text: 'More',
   home_screen_setup_business_text: 'Setup your business',
   reminder_text: {
     one: 'Reminder',
@@ -265,8 +271,9 @@ const en: Strings = {
     start_adding_records:
       "Start adding records by tapping the '+' button below",
     transaction_success: '{{transaction_type}} has been recorded Successfully',
-    share_customer_ledger_text: 'Share customer ledger',
-    view_customer_ledger_text: 'View customer ledger',
+    share_customer_ledger_text: 'Share ledger via other apps',
+    view_customer_ledger_text: 'View ledger',
+    share_customer_ledger_whatsapp_text: 'Share ledger via whatsapp',
   },
   receipts: {
     filter_options: {
@@ -343,6 +350,7 @@ const en: Strings = {
       description: 'Which customer is this transaction for?',
     },
     no_customer_text: 'Select a customer to complete this transaction',
+    due_date_is_past: 'Select a new collection date for {{customer}}.',
   },
   entry: {
     sale: 'Record Sale',
@@ -419,6 +427,10 @@ const en: Strings = {
     one: 'Customer',
     other: 'Customers',
   },
+  client: {
+    one: 'Client',
+    other: 'Clients',
+  },
   customers: {
     start_adding:
       "Start adding customers by creating a record with the '+' button below",
@@ -491,7 +503,7 @@ const en: Strings = {
       },
       copy_payment_link: 'COPY LINK',
       preview_payment_page: 'Preview Payment Page',
-      add_new_payment: 'Add New Payment',
+      add_new_payment_method: 'Add New Payment Method',
     },
     payment_form: {
       label: 'Select a payment method',
@@ -698,6 +710,7 @@ const en: Strings = {
   product_details: 'Product Details',
   search_input_placeholder: 'Search customers here',
   country: 'Country',
+  in: 'in',
 };
 
 export default en;

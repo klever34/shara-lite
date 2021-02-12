@@ -70,6 +70,8 @@
         "otp": "OTP is required"
       },
       "something_went_wrong": "Oops! Something went wrong.",
+      "feedback_validation": "Minimum of 25 charaters allowed",
+      "feedback_is_empty": "Message cannot be empty",
       "clear_app_data": "Try clearing app data from application settings",
       "ok": "OK",
       "sync": {
@@ -154,6 +156,9 @@
       "description": "Securely record your business data in a private, secure and backed up"
     },
     "activities": "Activities",
+    "home": "Home",
+    "payments": "Payments",
+    "more_text": "More",
     "home_screen_setup_business_text": "Setup your business",
     "reminder_text": {
       "one": "Reminder",
@@ -245,7 +250,8 @@
       "start_adding_records": "Start adding records by tapping the '+' button below",
       "transaction_success": "{{transaction_type}} has been recorded Successfully",
       "share_customer_ledger_text": "Share customer ledger",
-      "view_customer_ledger_text": "View customer ledger"
+      "view_customer_ledger_text": "View customer ledger",
+      "share_customer_ledger_whatsapp_text": "Share ledger via whatsapp"
     },
     "receipts": {
       "filter_options": {
@@ -317,7 +323,8 @@
         "title": "Select Customer",
         "description": "Which customer is this transaction for?"
       },
-      "no_customer_text": "Select a customer to complete this transaction"
+      "no_customer_text": "Select a customer to complete this transaction",
+      "due_date_is_past": "Select a new collection date for {{customer}}."
     },
     "entry": {
       "sale": "Record Sale",
@@ -394,6 +401,10 @@
       "one": "Customer",
       "other": "Customers"
     },
+    "client": {
+      "one": "Client",
+      "other": "Clients"
+    },
     "customers": {
       "start_adding": "Start adding customers by creating a record with the '+' button below",
       "customer_count": {
@@ -461,7 +472,7 @@
         },
         "copy_payment_link": "COPY LINK",
         "preview_payment_page": "Preview Payment Page",
-        "add_new_payment": "Add New Payment"
+        "add_new_payment_method": "Add New Payment Method"
       },
       "payment_form": {
         "label": "Select a payment method"
@@ -664,7 +675,8 @@
     "skip_setup": "Skip setup",
     "product_details": "Product Details",
     "search_input_placeholder": "Search customers here",
-    "country": "Country"
+    "country": "Country",
+    "in": "in"
   },
   "sw": {
     "update_shara": {
@@ -737,6 +749,8 @@
         "otp": "OTP inahitajika"
       },
       "something_went_wrong": "Kuna kitu kimeenda vibaya",
+      "feedback_validation": "Kima cha chini cha makaratasi 25 huruhusiwa",
+      "feedback_is_empty": "Ujumbe hauwezi kuwa tupu",
       "clear_app_data": "Jaribu kufuta data ya programu kutoka kwa mipangilio ya programu",
       "ok": "Sawa",
       "sync": {
@@ -821,6 +835,9 @@
       "description": "Rekodi salama data yako ya biashara kwa usalama wa kibinafsi na kuhifadhiwa nakala rudufu"
     },
     "activities": "Shughuli",
+    "home": "Nyumbani",
+    "payments": "Malipo",
+    "more_text": "Zaidi",
     "home_screen_setup_business_text": "Kuanzisha biashara yako",
     "reminder_text": {
       "one": "Ukumbusho",
@@ -875,7 +892,7 @@
     "recurrence_description": "Malipo haya yanarudia",
     "reminder_message_title": "Ujumbe wa ukumbusho",
     "customer_statement": {
-      "title": "Shiriki taarifa ya mteja",
+      "title": "Tuma taarifa ya mteja",
       "filename": "{{customer name}} taarifa ya kitabu",
       "message": "Pata taarifa yako ya kitabu kutoka {{business_name}}"
     },
@@ -901,7 +918,7 @@
       "is_collection_with_customer_message": "Ulikusanya **{{total_amount}}** kutoka *kwa {{customer_name}}*",
       "customer_owes_statement": "*{{customer_name}}* deni **{{credit_amount}}**",
       "customer_has_advance_statement": "*{{customer_name}}* lina mapema ya **{{balance}}**",
-      "you_were_paid_statement": "Ulilipwa **{{amount_paid}}** hakuna (mteja aliyechaguliwa) ",
+      "you_were_paid_statement": "Ulilipwa **{{amount_paid}}** hakuna (mteja aliyechaguliwa)",
       "customer_paid_statement": "*{{customer_name}}* alinilipa **{{amount_paid}}**",
       "customer_paid_with_outstanding_statement": "*{{customer_name}}* alinilipa **{{amount_paid}}** na **{{credit_amount}}** ni bora",
       "amount_collected": "Kiasi kilichokusanywa",
@@ -911,17 +928,18 @@
       "no_activities_recorded_for_duration": "Hakuna shughuli zilizorekodiwa kwa muda uliochaguliwa",
       "start_adding_records": "Anza kuongeza rekodi kwa kugonga kitufe cha '+' hapa chini",
       "transaction_success": "{{transaction_type}} imerekodiwa kwa mafanikio",
-      "share_customer_ledger_text": "Shiriki leja ya wateja",
-      "view_customer_ledger_text": "Tazama leja ya wateja"
+      "share_customer_ledger_text": "Tuma leja ya wateja",
+      "view_customer_ledger_text": "Tazama leja ya wateja",
+      "share_customer_ledger_whatsapp_text": "Tuma leja kupitia whatsapp"
     },
     "receipts": {
       "filter_options": {
         "single_day": "Siku moja",
         "1_week": "Siku 7 zilizopita",
-        "1_month": "Siku 30 zilizopita ",
+        "1_month": "Siku 30 zilizopita",
         "date_range": "Kiwango cha tarehe"
       },
-      "receipt_share_title": "Risiti ya kushiriki",
+      "receipt_share_title": "Tuma Risiti",
       "recent_purchase_message": "Habari {{customer_name}} Asante kwa aslimia ya hivi karibuni",
       "recent_purchase_message_from_business": "Habari {{customer_name}} asante kwa ununuzi wako wa hivi karibuni kutoka {{business_name}}",
       "receipt_for": "Risiti ya",
@@ -930,7 +948,7 @@
     "salutation": "Hujambo {{name}}!",
     "you_paid_message": "Umelipa {{amount}}.",
     "you_owe_message": "Una deni la {{credit_amount}}.",
-    "you_owe_message_with_due_date": "Unadaiwa {{credit amount}} ambayo inapaswa kutolewa kwa {{due_date}}",
+    "you_owe_message_with_due_date": "Unadaiwa {{credit_amount}} ambayo inapaswa kutolewa kwa {{due_date}}",
     "payment_link_message": "Kulipa bonyeza\\n{{payment_link}}",
     "powered_by_shara": "Inaendeswa na Shara bure.\\nwww.shara.co",
     "collection": {
@@ -984,7 +1002,8 @@
         "title": "Chagua mteja",
         "description": "Mteja yupi ni manunuzi ya"
       },
-      "no_customer_text": "Chagua mteja ili kukamilisha shughuli hii"
+      "no_customer_text": "Chagua mteja ili kukamilisha shughuli hii",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "Rekodi ya kuuza",
@@ -1036,7 +1055,7 @@
     "yes": "Ndio",
     "total": "Jumla",
     "yes_delete": "Ndio futa",
-    "yes_proceed": "Ndio endelea ",
+    "yes_proceed": "Ndio endelea",
     "no": "Hapana",
     "all": "Yote",
     "no_result_found": "Hakuna matokeo yaliyopatikana",
@@ -1061,6 +1080,10 @@
       "one": "Mteja",
       "other": "Wateja"
     },
+    "client": {
+      "one": "Mteja",
+      "other": "Wateja"
+    },
     "customers": {
       "start_adding": "Anza kuongeza wateja kwa kuunda rekodi na kitufe cha '+' hapa chini",
       "customer_count": {
@@ -1072,7 +1095,7 @@
       "customer_deleted": "Mteja AMEFUTWA",
       "confirm_delete": "Una hakika unataka kufuta {{customer_name}} kuwa mteja",
       "delete_customer": "Futa mteja",
-      "customer_profile": "Wasifu wa mteja ",
+      "customer_profile": "Wasifu wa mteja",
       "fields": {
         "phone": {
           "label": "Nambari ya simu",
@@ -1102,7 +1125,7 @@
           },
           "phone": {
             "label": "Nambari ya simu ya mteja (Hiari)",
-            "placeholder": "Ingiza nambari ya mteja"
+            "placeholder": "Bonyeza nambari ya mteja"
           }
         }
       }
@@ -1128,7 +1151,7 @@
         },
         "copy_payment_link": "NA NAKALA YA KIUNGO",
         "preview_payment_page": "Hakikisho ukurasa wa malipo",
-        "add_new_payment": "Ongeza malipo mapya"
+        "add_new_payment_method": ""
       },
       "payment_form": {
         "label": "Chagua njia ya malipo"
@@ -1247,7 +1270,7 @@
       "toast_text": "Asante kwa maoni yako",
       "fields": {
         "code": {
-          "label": "Maoni ",
+          "label": "Maoni",
           "placeholder": "Ingiza maoni hapa"
         }
       },
@@ -1264,7 +1287,7 @@
       "download_report_toast_text": "Ripoti ya kupakua",
       "results": {
         "one": "matokeo",
-        "zero": "Bado hauna rekodi",
+        "zero": "",
         "other": "Matokeo"
       },
       "download_report_button_text": "Repoti ya kupakua",
@@ -1290,7 +1313,7 @@
     },
     "bluetooth_printer": {
       "setup": {
-        "title": "Mipangilio ya bluetooth ",
+        "title": "Mipangilio ya bluetooth",
         "description": "Wezesha bluetooth kwenye kifaa chako kuanza kuchapisha"
       },
       "select_printer": "Chagua printa",
@@ -1305,9 +1328,9 @@
         "other": "Siku {{count}} kabla"
       },
       "collect_on_text": "Kusanya {{due_date}}",
-      "no_collection_date_text": "Unahitaji kuweka tarehe ya kukusanya kabla ya kuweka vikumbusho ",
+      "no_collection_date_text": "Unahitaji kuweka tarehe ya kukusanya kabla ya kuweka vikumbusho",
       "set_collection_date_button_text": "Weka tarehe ya kukusanya",
-      "default_collection_day": "Siku ya Ukusanyaji (Chaguomsingi)",
+      "default_collection_day": "Siku ya Ukusanyaji (Chaguo Msingi)",
       "no_collection_day": "Hakuna (Hakuna kikumbusho kitatumwa)"
     },
     "default_text": "Chagua msingi ama Puuza",
@@ -1331,7 +1354,8 @@
     "skip_setup": "Ruka mpangilio",
     "product_details": "chombo kinakaaje",
     "search_input_placeholder": "Tafuta wateja hapa",
-    "country": "Nchi"
+    "country": "Nchi",
+    "in": "ndani"
   },
   "ha": {
     "update_shara": {
@@ -1404,6 +1428,8 @@
         "otp": ""
       },
       "something_went_wrong": "",
+      "feedback_validation": "",
+      "feedback_is_empty": "",
       "clear_app_data": "",
       "ok": "",
       "sync": {
@@ -1488,6 +1514,9 @@
       "description": ""
     },
     "activities": "",
+    "home": "",
+    "payments": "",
+    "more_text": "",
     "home_screen_setup_business_text": "",
     "reminder_text": {
       "one": "",
@@ -1579,7 +1608,8 @@
       "start_adding_records": "",
       "transaction_success": "",
       "share_customer_ledger_text": "",
-      "view_customer_ledger_text": ""
+      "view_customer_ledger_text": "",
+      "share_customer_ledger_whatsapp_text": ""
     },
     "receipts": {
       "filter_options": {
@@ -1651,7 +1681,8 @@
         "title": "",
         "description": ""
       },
-      "no_customer_text": ""
+      "no_customer_text": "",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "",
@@ -1728,6 +1759,10 @@
       "one": "",
       "other": ""
     },
+    "client": {
+      "one": "",
+      "other": ""
+    },
     "customers": {
       "start_adding": "",
       "customer_count": {
@@ -1795,7 +1830,7 @@
         },
         "copy_payment_link": "",
         "preview_payment_page": "",
-        "add_new_payment": ""
+        "add_new_payment_method": ""
       },
       "payment_form": {
         "label": ""
@@ -1998,7 +2033,8 @@
     "skip_setup": "",
     "product_details": "",
     "search_input_placeholder": "",
-    "country": ""
+    "country": "",
+    "in": ""
   },
   "yo": {
     "update_shara": {
@@ -2071,6 +2107,8 @@
         "otp": ""
       },
       "something_went_wrong": "",
+      "feedback_validation": "",
+      "feedback_is_empty": "",
       "clear_app_data": "",
       "ok": "",
       "sync": {
@@ -2155,6 +2193,9 @@
       "description": ""
     },
     "activities": "",
+    "home": "",
+    "payments": "",
+    "more_text": "",
     "home_screen_setup_business_text": "",
     "reminder_text": {
       "one": "",
@@ -2246,7 +2287,8 @@
       "start_adding_records": "",
       "transaction_success": "",
       "share_customer_ledger_text": "",
-      "view_customer_ledger_text": ""
+      "view_customer_ledger_text": "",
+      "share_customer_ledger_whatsapp_text": ""
     },
     "receipts": {
       "filter_options": {
@@ -2318,7 +2360,8 @@
         "title": "",
         "description": ""
       },
-      "no_customer_text": ""
+      "no_customer_text": "",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "",
@@ -2395,6 +2438,10 @@
       "one": "",
       "other": ""
     },
+    "client": {
+      "one": "",
+      "other": ""
+    },
     "customers": {
       "start_adding": "",
       "customer_count": {
@@ -2462,7 +2509,7 @@
         },
         "copy_payment_link": "",
         "preview_payment_page": "",
-        "add_new_payment": ""
+        "add_new_payment_method": ""
       },
       "payment_form": {
         "label": ""
@@ -2665,7 +2712,8 @@
     "skip_setup": "",
     "product_details": "",
     "search_input_placeholder": "",
-    "country": ""
+    "country": "",
+    "in": ""
   },
   "fr": {
     "update_shara": {
@@ -2738,6 +2786,8 @@
         "otp": ""
       },
       "something_went_wrong": "",
+      "feedback_validation": "",
+      "feedback_is_empty": "",
       "clear_app_data": "",
       "ok": "",
       "sync": {
@@ -2822,6 +2872,9 @@
       "description": ""
     },
     "activities": "",
+    "home": "",
+    "payments": "",
+    "more_text": "",
     "home_screen_setup_business_text": "",
     "reminder_text": {
       "one": "",
@@ -2913,7 +2966,8 @@
       "start_adding_records": "",
       "transaction_success": "",
       "share_customer_ledger_text": "",
-      "view_customer_ledger_text": ""
+      "view_customer_ledger_text": "",
+      "share_customer_ledger_whatsapp_text": ""
     },
     "receipts": {
       "filter_options": {
@@ -2985,7 +3039,8 @@
         "title": "",
         "description": ""
       },
-      "no_customer_text": ""
+      "no_customer_text": "",
+      "due_date_is_past": ""
     },
     "entry": {
       "sale": "",
@@ -3062,6 +3117,10 @@
       "one": "",
       "other": ""
     },
+    "client": {
+      "one": "",
+      "other": ""
+    },
     "customers": {
       "start_adding": "",
       "customer_count": {
@@ -3129,7 +3188,7 @@
         },
         "copy_payment_link": "",
         "preview_payment_page": "",
-        "add_new_payment": ""
+        "add_new_payment_method": ""
       },
       "payment_form": {
         "label": ""
@@ -3332,6 +3391,7 @@
     "skip_setup": "",
     "product_details": "",
     "search_input_placeholder": "",
-    "country": ""
+    "country": "",
+    "in": ""
   }
 }

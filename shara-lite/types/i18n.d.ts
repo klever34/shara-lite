@@ -60,6 +60,8 @@ export interface Strings {
       otp: string;
     };
     something_went_wrong: string;
+    feedback_validation: string;
+    feedback_is_empty: string;
     clear_app_data: string;
     ok: string;
     sync: Card;
@@ -133,6 +135,10 @@ export interface Strings {
   onboarding_copy_2: Card;
   onboarding_copy_3: Card;
   activities: string;
+  home: string;
+  payments: string;
+  more_text: string;
+  client: PluralizedString;
   customer: PluralizedString;
   done: string;
   dismiss: string;
@@ -218,6 +224,7 @@ export interface Strings {
     transaction_success: string;
     share_customer_ledger_text: string;
     view_customer_ledger_text: string;
+    share_customer_ledger_whatsapp_text: string;
   };
   receipts: {
     filter_options: {
@@ -278,6 +285,7 @@ export interface Strings {
       description: string;
     };
     no_customer_text: string;
+    due_date_is_past: string;
   };
   filter: PluralizedString;
   filter_options: {
@@ -350,8 +358,8 @@ export interface Strings {
         name: FormField;
         phone: FormField;
         email: FormField;
-      }
-    }
+      };
+    };
   };
   payment: {
     edit_payment_preview_label_modal: {
@@ -374,7 +382,7 @@ export interface Strings {
       };
       copy_payment_link: string;
       preview_payment_page: string;
-      add_new_payment: string;
+      add_new_payment_method: string;
     };
     payment_form: {
       label: string;
@@ -526,6 +534,7 @@ export interface Strings {
   product_details: string;
   search_input_placeholder: string;
   country: string;
+  in: string;
 }
 
 interface PluralizedString {

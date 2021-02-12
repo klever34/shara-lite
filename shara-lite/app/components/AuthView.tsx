@@ -5,6 +5,7 @@ import React, {ReactNode} from 'react';
 import {KeyboardAvoidingView, View, ViewStyle} from 'react-native';
 import {HeaderBackButton} from './HeaderBackButton';
 import {SecureEmblem} from './SecureEmblem';
+import Markdown from 'react-native-markdown-display';
 
 export type AuthViewProps = {
   header?: HeaderTitleProps;
@@ -42,12 +43,20 @@ export const AuthView = ({
           })}>
           {heading}
         </Text>
-        <Text
+        {/* <Text
           style={applyStyles('text-400 text-center text-sm', {
             color: colors['gray-300'],
           })}>
           {description}
-        </Text>
+        </Text> */}
+        <Markdown
+          style={{
+            textgroup: applyStyles(
+              'text-400 text-center text-sm text-gray-300',
+            ),
+          }}>
+          {description}
+        </Markdown>
       </View>
       {children}
       {showEmblem && (

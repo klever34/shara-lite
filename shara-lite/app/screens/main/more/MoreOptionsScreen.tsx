@@ -1,3 +1,17 @@
+import {Image, SecureEmblem, Text} from '@/components';
+import {Icon} from '@/components/Icon';
+import {TitleContainer} from '@/components/TitleContainer';
+import Touchable from '@/components/Touchable';
+import {TouchableActionItem} from '@/components/TouchableActionItem';
+import {AppContext} from '@/contexts/app';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
+import {useErrorHandler} from '@/services/error-boundary';
+import {useAppNavigation} from '@/services/navigation';
+import {useRealmLogout} from '@/services/realm';
+import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
+import {ShareHookProps, useShare} from '@/services/share';
+import {applyStyles, colors, dimensions} from '@/styles';
 import React, {
   useCallback,
   useContext,
@@ -6,28 +20,11 @@ import React, {
   useMemo,
   useState,
 } from 'react';
-import {Text} from '@/components';
 import {Alert, SafeAreaView, ScrollView, View} from 'react-native';
-import {Image} from '@/components';
-import {useAppNavigation} from '@/services/navigation';
-import {Icon} from '@/components/Icon';
-import {applyStyles, colors, dimensions} from '@/styles';
-import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
-import Touchable from '@/components/Touchable';
-import {useErrorHandler} from '@/services/error-boundary';
-import {version} from '../../../../package.json';
 import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
-import {useRealmLogout} from '@/services/realm';
-import {SecureEmblem} from '@/components';
-import {ShareHookProps, useShare} from '@/services/share';
+import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {useSyncChecks} from '@/services/realm/hooks/use-sync-checks';
-import {TitleContainer} from '@/components/TitleContainer';
-import {HeaderBackButton} from '@/components/HeaderBackButton';
-import {TouchableActionItem} from '@/components/TouchableActionItem';
-import {AppContext} from '@/contexts/app';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -58,9 +55,6 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('BusinessSettings');
     }, [navigation]);
 
-    const PaymentSettings = useCallback(() => {
-      navigation.navigate('PaymentSettings');
-    }, [navigation]);
     const {reloadApp} = useContext(AppContext);
 
     const languages = i18nService.getLocales().options;
@@ -97,13 +91,6 @@ export const MoreOptionsScreen = withModal(
           },
           onPress: onEditBusinessSettings,
         },
-        {
-          leftSection: {
-            title: strings('more.list.payment_settings.title'),
-            caption: strings('more.list.payment_settings.description'),
-          },
-          onPress: PaymentSettings,
-        },
         ...(languages.length > 1
           ? [
               {
@@ -136,7 +123,6 @@ export const MoreOptionsScreen = withModal(
       ];
     }, [
       onEditBusinessSettings,
-      PaymentSettings,
       languages.length,
       onLanguageSettings,
       navigation,
@@ -209,19 +195,6 @@ export const MoreOptionsScreen = withModal(
 
     return (
       <SafeAreaView style={applyStyles('flex-1')}>
-        <View
-          style={applyStyles(
-            'flex-row py-8 pr-16 bg-white items-center justify-between',
-            {
-              borderBottomWidth: 1.5,
-              borderBottomColor: colors['gray-20'],
-            },
-          )}>
-          <HeaderBackButton
-            iconName="arrow-left"
-            onPress={() => navigation.navigate('Home')}
-          />
-        </View>
         <ScrollView>
           <View
             style={applyStyles(

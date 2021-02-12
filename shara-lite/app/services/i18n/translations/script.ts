@@ -1,58 +1,92 @@
 import csvParser from 'csv-parser';
 import fs from 'fs';
 import _ from 'lodash';
-import {writeSync as copyToClipboard} from 'clipboardy';
+// import {writeSync as copyToClipboard} from 'clipboardy';
+import offlineTranslations from '.';
 
-// console.log(
-//   (() => {
-//     return JSON.stringify(translations);
-//   })(),
-// );
-//
-// console.log(
-//   (() => {
-//     const generate = (object: {[key: string]: any}, prefix = '') => {
-//       let file = '';
-//       Object.keys(object).forEach((name) => {
-//         const key = `${prefix}${prefix ? '.' : ''}${name}`;
-//         const value = object[name];
-//         if (typeof value === 'string') {
-//           file += `${key},`;
-//           file += `"${value}"\n`;
-//         } else if (typeof value === 'object') {
-//           file += generate(value, key);
-//         }
-//       });
-//       return file;
-//     };
-//     let file = 'Key,';
-//     Object.keys(translations).forEach((langCode) => {
-//       file += langCode;
-//     });
-//     file += '\n';
-//     return file + generate(translations.en);
-//   })(),
-// );
+const readCSV = (filename: string): Promise<{[key: string]: string}[]> => {
+  const result: {[key: string]: string}[] = [];
+  return new Promise((resolve, reject) => {
+    fs.createReadStream(filename)
+      .pipe(csvParser())
+      .on('data', (data) => {
+        result.push(data);
+      })
+      .on('error', reject)
+      .on('end', () => {
+        resolve(result);
+      });
+  });
+};
 
-const compiled: {[key: string]: any} = {};
-
-fs.createReadStream('translations.csv')
-  .pipe(csvParser())
-  .on('data', ({key, ...translations}) => {
-    Object.keys(translations).forEach((language) => {
-      const [languageCode] = language.split(' ');
-      if (!(languageCode in compiled)) {
-        compiled[languageCode] = {};
-      }
-      _.set(compiled[languageCode], key, translations[language]);
-    });
-  })
-  .on('end', () => {
-    copyToClipboard(JSON.stringify(compiled));
-    fs.writeFile('translations.json', JSON.stringify(compiled), (err) => {
+const writeToFile = (filename: string, content: string): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    fs.writeFile(filename, content, (err) => {
       if (err) {
-        throw err;
+        reject(err);
       }
-      console.log('done');
+      resolve();
     });
+  });
+};
+
+readCSV('translations.csv')
+  .then((data) => {
+    const translations: {[key: string]: any} = {};
+    data.forEach(({key, ...strings}) => {
+      Object.keys(strings).forEach((language) => {
+        const [languageCode] = language.split(' ');
+        if (!(languageCode in translations)) {
+          translations[languageCode] = {};
+        }
+        _.set(translations[languageCode], key, strings[language]);
+      });
+    });
+    return translations;
+  })
+  .then((translations) => {
+    const langCodes = Object.keys(translations);
+    let translationFileContent =
+      langCodes.reduce((acc, curr) => {
+        return `${acc},${curr}`;
+      }, 'key') + '\n';
+    const updateTranslations = (object: {[key: string]: any}, prefix = '') => {
+      Object.keys(object).forEach((name) => {
+        const key = `${prefix}${prefix ? '.' : ''}${name}`;
+        let value = object[name];
+        if (typeof value === 'string') {
+          if (!_.get(translations.en, key)) {
+            langCodes.forEach((langCode) => {
+              _.set(
+                translations[langCode],
+                key,
+                langCode === 'en' ? value : '',
+              );
+            });
+          }
+          translationFileContent += key;
+          langCodes.forEach((langCode) => {
+            if (_.get(translations[langCode], key).includes(',')) {
+              translationFileContent += `,"${_.get(
+                translations[langCode],
+                key,
+              )}"`;
+            } else {
+              translationFileContent += `,${_.get(
+                translations[langCode],
+                key,
+              )}`;
+            }
+          });
+          translationFileContent += '\n';
+        } else if (typeof value === 'object') {
+          updateTranslations(value, key);
+        }
+      });
+    };
+    updateTranslations(offlineTranslations.en);
+    return writeToFile(
+      'translations.json',
+      JSON.stringify(translations),
+    ).then(() => writeToFile('translations.csv', translationFileContent));
   });

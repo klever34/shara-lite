@@ -42,7 +42,7 @@ export const colors: {[key: string]: string} = {
   'blue-100': '#386EC4',
   // App Colors
   secondary: '#386EC4',
-  primary: '#0EC99C',
+  primary: '#25A36E',
 };
 
 const sizes = [

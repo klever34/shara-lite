@@ -11,9 +11,11 @@ import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {getAuthService, getI18nService} from '@/services';
-import {EntryButton, EntryContext} from '@/components/EntryView';
+import {EntryContext} from '@/components/EntryView';
 import Touchable from '@/components/Touchable';
 import {useLastSeen} from '@/services/last-seen';
+import {PaymentsScreen} from './payments';
+import {MoreScreen} from './more';
 
 const strings = getI18nService().strings;
 
@@ -26,8 +28,6 @@ export type MainNavParamList = {
 };
 
 const MainNav = createBottomTabNavigator<MainNavParamList>();
-
-const Nothing = () => null;
 
 export const HomeScreen = () => {
   const navigation = useAppNavigation();
@@ -51,18 +51,7 @@ export const HomeScreen = () => {
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
-      <Header
-        style={applyStyles('bg-primary')}
-        headerRight={{
-          options: [
-            {
-              icon: {name: 'menu', color: colors.white},
-              onPress: () => {
-                navigation.navigate('Settings');
-              },
-            },
-          ],
-        }}>
+      <Header style={applyStyles('bg-primary')}>
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             <Image
@@ -84,6 +73,7 @@ export const HomeScreen = () => {
           </View>
         </Touchable>
       </Header>
+
       <MainNav.Navigator
         initialRouteName="TransactionsTab"
         tabBarOptions={{
@@ -100,20 +90,11 @@ export const HomeScreen = () => {
           component={TransactionsScreen}
           options={{
             tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>{strings('activities')}</TabBarLabel>
+              <TabBarLabel {...labelProps}>{strings('home')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="home" size={24} color={color} />
+              <Icon type="material-icons" name="home" size={28} color={color} />
             ),
-          }}
-        />
-        <MainNav.Screen
-          name="EntryTab"
-          component={Nothing}
-          options={{
-            tabBarButton: () => {
-              return <EntryButton />;
-            },
           }}
         />
         <MainNav.Screen
@@ -122,11 +103,45 @@ export const HomeScreen = () => {
           options={{
             tabBarLabel: (labelProps) => (
               <TabBarLabel {...labelProps}>
-                {strings('customer', {count: 2})}
+                {strings('client', {count: 2})}
               </TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
-              <Icon type="feathericons" name="user" size={24} color={color} />
+              <Icon
+                type="material-icons"
+                name="people"
+                size={28}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <MainNav.Screen
+          name="PaymentsTab"
+          component={PaymentsScreen}
+          options={{
+            tabBarLabel: (labelProps) => (
+              <TabBarLabel {...labelProps}>{strings('payments')}</TabBarLabel>
+            ),
+            tabBarIcon: ({color}) => (
+              <Icon
+                type="material-icons"
+                name="attach-money"
+                size={28}
+                color={color}
+              />
+            ),
+          }}
+        />
+        <MainNav.Screen
+          name="MoreTab"
+          component={MoreScreen}
+          options={{
+            tabBarLabel: (labelProps) => (
+              <TabBarLabel {...labelProps}>{strings('more_text')}</TabBarLabel>
+            ),
+            tabBarIcon: ({color}) => (
+              <Icon type="material-icons" name="menu" size={28} color={color} />
             ),
           }}
         />

@@ -1,5 +1,6 @@
 import {Button, SearchFilter, Text} from '@/components';
 import EmptyState from '@/components/EmptyState';
+import {EntryButton} from '@/components/EntryView';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {TransactionFilterModal} from '@/components/TransactionFilterModal';
@@ -13,6 +14,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import {omit, orderBy} from 'lodash';
+import * as Animatable from 'react-native-animatable';
 import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import {ActivityListItem} from './ActivityListItem';
@@ -412,9 +414,12 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         style={applyStyles('bg-white')}
         renderItem={renderActivityItem}
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
+        contentContainerStyle={
+          !activitiesData.length ? applyStyles('flex-1') : undefined
+        }
         ListEmptyComponent={
           <EmptyState
-            style={applyStyles('bg-white', {paddingTop: 200})}
+            style={applyStyles('')}
             source={require('@/assets/images/emblem.png')}
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
             <View style={applyStyles('center px-8')}>
@@ -439,9 +444,49 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
                 {strings('transaction.start_adding_records')}
               </Text>
             </View>
+            <View
+              style={applyStyles(
+                'flex-row items-center justify-between bg-gray-10 px-16 bottom-0 absolute w-full',
+              )}>
+              <View style={applyStyles('flex-row items-center')}>
+                <Text style={applyStyles('text-center text-700 text-xl pr-12')}>
+                  Enter a transaction
+                </Text>
+                <Animatable.View
+                  duration={200}
+                  animation={{
+                    from: {translateX: -10},
+                    to: {translateX: 0},
+                  }}
+                  direction="alternate"
+                  useNativeDriver={true}
+                  iterationCount="infinite">
+                  <Icon
+                    size={40}
+                    name="arrow-right"
+                    type="feathericons"
+                    color={colors.secondary}
+                  />
+                </Animatable.View>
+              </View>
+              <EntryButton
+                style={applyStyles('w-72 h-72 rounded-60', {
+                  elevation: 4,
+                })}
+              />
+            </View>
           </EmptyState>
         }
       />
+      {!!activitiesData.length && (
+        <EntryButton
+          style={applyStyles('absolute w-72 h-72 rounded-60', {
+            bottom: 0,
+            right: 16,
+            elevation: 4,
+          })}
+        />
+      )}
     </SafeAreaView>
   );
 });

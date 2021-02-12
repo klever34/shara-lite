@@ -5,31 +5,47 @@ import {getI18nService} from '@/services';
 import {useFeedback} from '@/services/feedback';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
-import React, {useCallback, useContext, useState} from 'react';
+import {useFormik} from 'formik';
+import React, {useCallback, useContext, useMemo} from 'react';
 import {Alert, View} from 'react-native';
+import * as yup from 'yup';
 
 const i18Service = getI18nService();
 
 export default function ReferralScreen() {
+  const validationSchema = useMemo(
+    () =>
+      yup.object().shape({
+        message: yup
+          .string()
+          .min(25, i18Service.strings('alert.feedback_validation'))
+          .required(i18Service.strings('alert.feedback_is_empty')),
+      }),
+    [],
+  );
+
   const navigation = useAppNavigation();
   const {saveFeedback} = useFeedback();
-
-  const [feedback, setFeedback] = useState('');
   const {showSuccessToast} = useContext(ToastContext);
 
-  const handleChange = useCallback((text) => {
-    setFeedback(text);
-  }, []);
+  const onSubmit = useCallback(
+    async ({message}) => {
+      try {
+        await saveFeedback({message});
+        showSuccessToast(i18Service.strings('feedback.toast_text'));
+        navigation.goBack();
+      } catch (error) {
+        Alert.alert(i18Service.strings('alert.error'), error.message);
+      }
+    },
+    [saveFeedback, navigation, showSuccessToast],
+  );
 
-  const handleSubmit = useCallback(async () => {
-    try {
-      await saveFeedback({message: feedback});
-      showSuccessToast(i18Service.strings('feedback.toast_text'));
-      navigation.goBack();
-    } catch (error) {
-      Alert.alert('Error', error.message);
-    }
-  }, [saveFeedback, navigation, showSuccessToast, feedback]);
+  const {errors, values, touched, handleSubmit, handleChange} = useFormik({
+    validationSchema,
+    initialValues: {message: ''},
+    onSubmit,
+  });
 
   return (
     <Page
@@ -41,10 +57,13 @@ export default function ReferralScreen() {
       style={applyStyles('bg-white')}>
       <View style={applyStyles('flex-1')}>
         <AppInput
-          value={feedback}
           multiline={true}
-          onChangeText={handleChange}
-          style={applyStyles('mb-16', {
+          value={values.message}
+          onChangeText={handleChange('message')}
+          errorMessage={errors.message}
+          isInvalid={touched.message && !!errors.message}
+          containerStyle={applyStyles('mb-16')}
+          style={applyStyles({
             height: 150,
             textAlignVertical: 'top',
           })}
