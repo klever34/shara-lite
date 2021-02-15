@@ -297,7 +297,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
         <Button
           variantColor="transparent"
           style={applyStyles({
-            width: '48%',
+            width: '100%',
           })}
           onPress={onClose}
           title={strings('cancel')}
@@ -307,7 +307,7 @@ export const ReminderPopup = (props: ReminderPopupProps) => {
             title={strings('done')}
             onPress={handleDone}
             style={applyStyles({
-              width: '48%',
+              width: '100%',
             })}
           />
         ) : (

@@ -117,7 +117,7 @@ export const EditCustomerScreen = withModal(
               <Button
                 title={strings('cancel')}
                 onPress={() => close()}
-                style={applyStyles({width: '48%'})}
+                style={applyStyles({width: '100%'})}
               />
             </View>
           </View>
@@ -261,14 +261,14 @@ export const EditCustomerScreen = withModal(
           <Button
             title={strings('customers.delete_customer')}
             variantColor="transparent"
-            style={applyStyles({width: '48%'})}
+            style={applyStyles({width: '100%'})}
             onPress={handleOpenDeleteConfirmation}
           />
           <Button
             title={strings('save')}
             isLoading={loading}
             onPress={handleSubmit}
-            style={applyStyles({width: '48%'})}
+            style={applyStyles({width: '100%'})}
           />
         </View>
       </Page>

@@ -216,7 +216,7 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
                 )}
                 <Button
                   onPress={handleSubmit}
-                  style={applyStyles('mt-20', {width: '48%'})}
+                  style={applyStyles('mt-20', {width: '100%'})}
                   title={
                     transaction.customer ? strings('save') : strings('next')
                   }

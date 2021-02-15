@@ -269,7 +269,7 @@ export const TransactionReview = (props: TransactionReviewProps) => {
             //@ts-ignore
             minimumDate={new Date()}
             value={dueDate ?? new Date()}
-            containerStyle={applyStyles({width: '100%'})}
+            containerStyle={applyStyles({width: '48%'})}
             onChange={(e: Event, date?: Date) => handleDueDateChange(date)}>
             {(toggleShow) => (
               <Button

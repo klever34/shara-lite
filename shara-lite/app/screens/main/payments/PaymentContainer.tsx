@@ -145,12 +145,12 @@ function PaymentContainer(props: ModalWrapperFields) {
                   title={strings('cancel')}
                   onPress={closeModal}
                   variantColor="transparent"
-                  style={applyStyles({width: '48%'})}
+                  style={applyStyles({width: '100%'})}
                 />
                 <Button
                   title={strings('save')}
                   isLoading={isSaving}
-                  style={applyStyles({width: '48%'})}
+                  style={applyStyles({width: '100%'})}
                   onPress={() => {
                     handleSubmit();
                     closeModal();
@@ -197,7 +197,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                   <Button
                     title={strings('remove')}
                     isLoading={isDeleting}
-                    style={applyStyles({width: '48%'})}
+                    style={applyStyles({width: '100%'})}
                     onPress={() => {
                       Alert.alert(
                         strings('warning'),
@@ -222,7 +222,7 @@ function PaymentContainer(props: ModalWrapperFields) {
                   <Button
                     title={strings('save')}
                     isLoading={isSaving}
-                    style={applyStyles({width: '48%'})}
+                    style={applyStyles({width: '100%'})}
                     onPress={() => {
                       handleSubmit();
                       closeModal();

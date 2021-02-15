@@ -91,13 +91,13 @@ export const EditPaymetPreviewLabelModal = ({
           title={strings('cancel')}
           onPress={onClose}
           variantColor="transparent"
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: '100%'})}
         />
         <Button
           title={strings('save')}
           isLoading={isSaving}
           onPress={handleSubmit}
-          style={applyStyles({width: '48%'})}
+          style={applyStyles({width: '100%'})}
         />
       </View>
     </View>

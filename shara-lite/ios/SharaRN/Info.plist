@@ -20,8 +20,6 @@
 	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -31,6 +29,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>CFBundleVersion</key>
+	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>FacebookAppID</key>
 	<string>935358337216662</string>
 	<key>FacebookDisplayName</key>
@@ -45,12 +45,6 @@
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
-	<key>NSContactsUsageDescription</key>
-	<string>Read and Write to users contact</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Access users locations when using the app</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Access users photo library when using the app</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
@@ -64,6 +58,12 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSContactsUsageDescription</key>
+	<string>Read and Write to users contact</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Access users locations when using the app</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Access users photo library when using the app</string>
 	<key>UIAppFonts</key>
 	<array>
 		<string>AntDesign.ttf</string>

@@ -13,7 +13,14 @@ import {applyStyles, colors} from '@/styles';
 import Big from 'big.js';
 import {Keyboard} from 'react-native-ui-lib';
 import {Text} from '@/components';
-import {View, ScrollView, ViewStyle, TextStyle, TextInput} from 'react-native';
+import {
+  View,
+  ScrollView,
+  ViewStyle,
+  TextStyle,
+  TextInput,
+  Platform,
+} from 'react-native';
 import {CurrencyInput, CurrencyInputProps} from '@/components/CurrencyInput';
 import Touchable from '@/components/Touchable';
 import Icon from './Icon';
@@ -197,9 +204,10 @@ export function CalculatorView({children}: CalculatorViewProps) {
   const resetKbComponent = useCallback(() => {
     setKbComponent(undefined);
   }, []);
-  const [valueChangeListener, setValueChangeListener] = useState<
-    CalculatorKeyboardItemSelectedEventCallback
-  >();
+  const [
+    valueChangeListener,
+    setValueChangeListener,
+  ] = useState<CalculatorKeyboardItemSelectedEventCallback>();
   const [equalsListener, setEqualsListener] = useState<() => void>();
   const addEventListener = useCallback(
     (callback: CalculatorKeyboardItemSelectedEventCallback) => {
@@ -523,6 +531,7 @@ export const CalculatorInput = forwardRef<TextInput, CalculatorInputProps>(
       <CurrencyInput
         {...props}
         ref={ref}
+        onChangeText={Platform.select({ios: onChangeText, android: undefined})}
         value={value}
         onFocus={handleFocus}
         onTouchStart={handleFocus}

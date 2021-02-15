@@ -54,6 +54,7 @@ export const AppInput = forwardRef<TextInput, AppInputProps>(
 
     const handleFocus = React.useCallback(
       (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
+        console.log('iuiygggj');        
         setBgStyle({
           borderWidth: 2,
           borderColor: colors['green-100'],

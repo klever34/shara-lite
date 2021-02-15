@@ -183,13 +183,13 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             <Button
               title={strings('yes_delete')}
               variantColor="transparent"
-              style={applyStyles({width: '48%'})}
+              style={applyStyles({width: '100%'})}
               onPress={() => handleDeleteTransaction(closeModal)}
             />
             <Button
               title={strings('cancel')}
               onPress={closeModal}
-              style={applyStyles({width: '48%'})}
+              style={applyStyles({width: '100%'})}
             />
           </View>
         </View>

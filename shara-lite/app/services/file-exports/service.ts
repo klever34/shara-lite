@@ -99,10 +99,19 @@ export const exportHTMLToPDF = async (data: {
   };
   const file = await RNHTMLtoPDF.convert(options);
   const pdfFilePath = file.filePath;
-  const pdfBase64String = await RNFetchBlob.fs.readFile(
-    `file://${pdfFilePath}`,
-    'base64',
-  );
+  let pdfBase64String = null;
+  if(Platform.OS === 'android') {
+    pdfBase64String = await RNFetchBlob.fs.readFile(
+      `file://${pdfFilePath}`,
+      'base64',
+    );
+  }
+  else{
+    pdfBase64String = await RNFetchBlob.fs.readFile(
+      `${pdfFilePath}`,
+      'base64',
+    );
+  }
 
   await saveToFile({
     path,

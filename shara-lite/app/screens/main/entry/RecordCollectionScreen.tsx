@@ -117,11 +117,7 @@ const RecordCollectionScreen = withModal(
             value={values.amount_paid}
             containerStyle={applyStyles('mb-16')}
             onChangeText={(text) => {
-              console.log(text);
-              
               const value = toNumber(text);
-              console.log(value);
-              
               setFieldValue('amount_paid', value);
             }}
             autoFocus

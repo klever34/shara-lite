@@ -193,12 +193,12 @@ export const ReminderSettingsScreen = withModal(
                     navigation.goBack();
                   }}
                   variantColor="transparent"
-                  style={applyStyles({width: '48%'})}
+                  style={applyStyles({width: '100%'})}
                 />
                 <Button
                   title={strings('payment_reminder.set_reminder')}
                   onPress={() => close()}
-                  style={applyStyles({width: '48%'})}
+                  style={applyStyles({width: '100%'})}
                 />
               </View>
             </View>
