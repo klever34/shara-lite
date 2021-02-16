@@ -28,7 +28,7 @@ export class Disbursement extends BaseModel implements Partial<IDisbursement> {
       ...baseModelSchema,
       type: 'string?',
       provider: 'string?',
-      amount: 'float?',
+      amount: 'double?',
       currency_code: 'string?',
       reference: 'string?',
       external_reference: 'string?',

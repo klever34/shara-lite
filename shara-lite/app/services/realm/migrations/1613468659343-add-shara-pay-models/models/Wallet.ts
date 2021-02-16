@@ -17,7 +17,7 @@ export class Wallet extends BaseModel implements Partial<IWallet> {
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
-      balance: 'float?',
+      balance: 'double?',
       currency_code: 'string?',
     },
   };

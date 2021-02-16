@@ -30,7 +30,7 @@ export class Collection extends BaseModel implements Partial<ICollection> {
       ...baseModelSchema,
       type: 'string?',
       provider: 'string?',
-      amount: 'float?',
+      amount: 'double?',
       currency_code: 'string?',
       reference: 'string?',
       external_reference: 'string?',
