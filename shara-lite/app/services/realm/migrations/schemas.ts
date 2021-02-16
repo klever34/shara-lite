@@ -15,6 +15,7 @@ import schema14 from './1610377039908-add-feedback-model';
 import schema15 from './1611048927106-add-last-seen-model';
 import schema16 from './1611236083669-add-activity-x-disable-customer-reminders';
 import schema17 from './1611256639370-re-add-disable-customer-reminders';
+import schema18 from './1613468659343-add-shara-pay-models';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -34,6 +35,7 @@ const schemas: any[] = [
   {schemaVersion: 15, ...schema15},
   {schemaVersion: 16, ...schema16},
   {schemaVersion: 17, ...schema17},
+  {schemaVersion: 18, ...schema18},
 ];
 
 export default schemas;
