@@ -45,10 +45,15 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     filteredActivities,
     handleStatusFilter,
     handleReceiptSearch,
+    receiptsToDisplay,
+    remindersToDisplay,
+    handlePagination,
+    handleSetReceiptsToDisplay,
+    handleSetRemindersToDisplay,
   } = useTransactionList();
 
   const getActivitiesData = useCallback(() => {
-    const data = [...filteredReceipts, ...filteredActivities].map((item) => {
+    const data = [...receiptsToDisplay, ...remindersToDisplay].map((item) => {
       const t = omit(item) as IActivity;
       return {
         ...t,
@@ -63,6 +68,12 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   );
 
   useEffect(() => {
+    handleSetReceiptsToDisplay();
+    handleSetRemindersToDisplay;
+    // eslint-disable-next-line react-hooks/exhaustive-deps();
+  }, []);
+
+  useEffect(() => {
     setActivitiesData(getActivitiesData());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filter, searchTerm, filteredReceipts]);
@@ -71,6 +82,8 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     return navigation.addListener('focus', () => {
       reloadData();
       handleReceiptSearch('');
+      // handleSetReceiptsToDisplay();
+      // handleSetRemindersToDisplay();
       setActivitiesData(getActivitiesData());
     });
   }, [navigation, reloadData, getActivitiesData, handleReceiptSearch]);
@@ -416,6 +429,8 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         initialNumToRender={10}
         style={applyStyles('bg-white')}
         renderItem={renderActivityItem}
+        onEndReachedThreshold={0.1}
+        onEndReached={() => handlePagination()}
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         contentContainerStyle={
           !activitiesData.length ? applyStyles('flex-1') : undefined

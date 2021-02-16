@@ -117,14 +117,16 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   }, [analyticsService, handleSmsShare, transaction]);
 
   const onWhatsappShare = useCallback(() => {
-    analyticsService
-      .logEvent('share', {
-        method: 'whatsapp',
-        item_id: transaction?._id?.toString() ?? '',
-        content_type: 'share-receipt',
-      })
-      .then(() => {});
-    handleWhatsappShare();
+    setTimeout(() => {
+      analyticsService
+        .logEvent('share', {
+          method: 'whatsapp',
+          item_id: transaction?._id?.toString() ?? '',
+          content_type: 'share-receipt',
+        })
+        .then(() => {});
+      handleWhatsappShare();
+    }, 1000);
   }, [analyticsService, handleWhatsappShare, transaction]);
 
   const onOthersShare = useCallback(() => {
@@ -451,7 +453,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
           creditAmount={credit_amount}
           createdAt={transaction_date}
           receiptNo={_id?.toString().substring(0, 6)}
-          getImageUri={(data) => setReceiptImage(data)}
+          getImageUri={(data: any) => setReceiptImage(data)}
         />
       </View>
     </SafeAreaView>

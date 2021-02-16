@@ -6,12 +6,12 @@ import {useActivity} from '@/services/activity';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
+import {omit} from 'lodash';
 import uniqBy from 'lodash/uniqBy';
 import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -24,13 +24,18 @@ interface TransactionListContextValue {
   totalAmount: number;
   filterEndDate: Date;
   filterStartDate: Date;
+  reloadData: () => void;
   collectedAmount: number;
   outstandingAmount: number;
+  handlePagination: () => void;
   filterOptions?: FilterOption[];
-  reloadData: () => void;
+  remindersToDisplay: IActivity[];
+  handleSetReceiptsToDisplay: () => void;
+  handleSetRemindersToDisplay: () => void;
   owedReceipts: (IReceipt & Realm.Object)[];
   handleReceiptSearch: (text: string) => void;
   filteredActivities: Realm.Results<IActivity>;
+  receiptsToDisplay: (IReceipt & Realm.Object)[];
   filteredReceipts: Realm.Results<IReceipt & Realm.Object>;
   handleStatusFilter: (payload: {
     status?: string;
@@ -55,8 +60,16 @@ export const useReceiptList = ({
   const {getTransactions} = useTransaction();
   receipts = receipts ?? getTransactions();
   let activities = getActivities();
+  const perPage = 20;
+  const totalCount = receipts.length;
 
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(perPage);
   const [searchTerm, setSearchTerm] = useState('');
+  const [receiptsToDisplay, setReceiptsToDisplay] = useState<
+    (IReceipt & Realm.Object)[]
+  >([]);
+  const [remindersToDisplay, setRemindersToDisplay] = useState<IActivity[]>([]);
   const [filter, setFilter] = useState<string | undefined>(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState('');
   const [allReceipts, setAllReceipts] = useState(receipts);
@@ -65,6 +78,40 @@ export const useReceiptList = ({
     startOfDay(new Date()),
   );
   const [filterEndDate, setFilterEndDate] = useState(endOfDay(new Date()));
+
+  const handleSetReceiptsToDisplay = useCallback(() => {
+    let userReceipts = (receipts as unknown) as Realm.Results<
+      IReceipt & Realm.Object
+    >;
+    const newData = userReceipts?.sorted('created_at', true).slice(start, end);
+
+    setReceiptsToDisplay([...receiptsToDisplay, ...newData]);
+  }, [end, start, receipts, receiptsToDisplay]);
+
+  const handleSetRemindersToDisplay = useCallback(() => {
+    const newData = activities?.sorted('created_at', true).slice(start, end);
+
+    setRemindersToDisplay([...remindersToDisplay, ...newData]);
+  }, [end, start, activities, remindersToDisplay]);
+
+  const handlePagination = useCallback(() => {
+    console.log('here');
+    console.log(totalCount);
+    if (totalCount > end) {
+      console.log('paginate');
+      setStart(start + perPage);
+      setEnd(end + perPage);
+      handleSetReceiptsToDisplay();
+      handleSetRemindersToDisplay();
+    }
+  }, [
+    end,
+    start,
+    perPage,
+    totalCount,
+    handleSetReceiptsToDisplay,
+    handleSetRemindersToDisplay,
+  ]);
 
   const handleStatusFilter = useCallback(
     (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
@@ -357,10 +404,15 @@ export const useReceiptList = ({
       collectedAmount,
       filterStartDate,
       filteredReceipts,
+      handlePagination,
       outstandingAmount,
+      receiptsToDisplay,
       filteredActivities,
       handleStatusFilter,
+      remindersToDisplay,
       handleReceiptSearch,
+      handleSetReceiptsToDisplay,
+      handleSetRemindersToDisplay,
     }),
     [
       filter,
@@ -372,11 +424,16 @@ export const useReceiptList = ({
       filterOptions,
       filterStartDate,
       collectedAmount,
+      handlePagination,
       filteredReceipts,
+      receiptsToDisplay,
       outstandingAmount,
       filteredActivities,
       handleStatusFilter,
+      remindersToDisplay,
       handleReceiptSearch,
+      handleSetReceiptsToDisplay,
+      handleSetRemindersToDisplay,
     ],
   );
 };
