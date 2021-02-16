@@ -15,7 +15,13 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import {omit, orderBy} from 'lodash';
 import * as Animatable from 'react-native-animatable';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import {ActivityListItem} from './ActivityListItem';
 import {useTransactionList} from './hook';
@@ -52,7 +58,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     handleSetRemindersToDisplay,
   } = useTransactionList();
 
-  const getActivitiesData = useCallback(() => {
+  const activitiesData: any = useMemo(() => {
     const data = [...receiptsToDisplay, ...remindersToDisplay].map((item) => {
       const t = omit(item) as IActivity;
       return {
@@ -61,32 +67,20 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
       };
     });
     return orderBy(data, 'created_at', 'desc');
-  }, [filteredActivities, filteredReceipts]);
-
-  const [activitiesData, setActivitiesData] = useState<any>(
-    getActivitiesData(),
-  );
+  }, [receiptsToDisplay.length, remindersToDisplay.length]);
 
   useEffect(() => {
-    handleSetReceiptsToDisplay();
-    handleSetRemindersToDisplay;
+    handleSetReceiptsToDisplay(0, 20);
+    handleSetRemindersToDisplay(0, 20);
     // eslint-disable-next-line react-hooks/exhaustive-deps();
   }, []);
-
-  useEffect(() => {
-    setActivitiesData(getActivitiesData());
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, searchTerm, filteredReceipts]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
       reloadData();
       handleReceiptSearch('');
-      // handleSetReceiptsToDisplay();
-      // handleSetRemindersToDisplay();
-      setActivitiesData(getActivitiesData());
     });
-  }, [navigation, reloadData, getActivitiesData, handleReceiptSearch]);
+  }, [navigation, reloadData, handleReceiptSearch]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -430,7 +424,9 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         style={applyStyles('bg-white')}
         renderItem={renderActivityItem}
         onEndReachedThreshold={0.1}
-        onEndReached={() => handlePagination()}
+        onEndReached={() => {
+          handlePagination();
+        }}
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         contentContainerStyle={
           !activitiesData.length ? applyStyles('flex-1') : undefined

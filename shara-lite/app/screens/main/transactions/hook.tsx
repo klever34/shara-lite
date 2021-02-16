@@ -30,8 +30,8 @@ interface TransactionListContextValue {
   handlePagination: () => void;
   filterOptions?: FilterOption[];
   remindersToDisplay: IActivity[];
-  handleSetReceiptsToDisplay: () => void;
-  handleSetRemindersToDisplay: () => void;
+  handleSetReceiptsToDisplay: (start: number, end: number) => void;
+  handleSetRemindersToDisplay: (start: number, end: number) => void;
   owedReceipts: (IReceipt & Realm.Object)[];
   handleReceiptSearch: (text: string) => void;
   filteredActivities: Realm.Results<IActivity>;
@@ -79,50 +79,6 @@ export const useReceiptList = ({
   );
   const [filterEndDate, setFilterEndDate] = useState(endOfDay(new Date()));
 
-  const handleSetReceiptsToDisplay = useCallback(() => {
-    let userReceipts = (receipts as unknown) as Realm.Results<
-      IReceipt & Realm.Object
-    >;
-    const newData = userReceipts?.sorted('created_at', true).slice(start, end);
-
-    setReceiptsToDisplay([...receiptsToDisplay, ...newData]);
-  }, [end, start, receipts, receiptsToDisplay]);
-
-  const handleSetRemindersToDisplay = useCallback(() => {
-    const newData = activities?.sorted('created_at', true).slice(start, end);
-
-    setRemindersToDisplay([...remindersToDisplay, ...newData]);
-  }, [end, start, activities, remindersToDisplay]);
-
-  const handlePagination = useCallback(() => {
-    console.log('here');
-    console.log(totalCount);
-    if (totalCount > end) {
-      console.log('paginate');
-      setStart(start + perPage);
-      setEnd(end + perPage);
-      handleSetReceiptsToDisplay();
-      handleSetRemindersToDisplay();
-    }
-  }, [
-    end,
-    start,
-    perPage,
-    totalCount,
-    handleSetReceiptsToDisplay,
-    handleSetRemindersToDisplay,
-  ]);
-
-  const handleStatusFilter = useCallback(
-    (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
-      const {status, startDate, endDate} = payload;
-      setFilter(status);
-      startDate && setFilterStartDate(startDate);
-      endDate && setFilterEndDate(endDate);
-    },
-    [],
-  );
-
   filterOptions =
     filterOptions ??
     useMemo(
@@ -151,10 +107,6 @@ export const useReceiptList = ({
       ],
       [],
     );
-
-  const handleReceiptSearch = useCallback((text: string) => {
-    setSearchTerm(text);
-  }, []);
 
   const filteredReceipts = useMemo(() => {
     let userReceipts = (allReceipts as unknown) as Realm.Results<
@@ -385,12 +337,83 @@ export const useReceiptList = ({
     outstandingAmount,
   ]);
 
+  const handleSetReceiptsToDisplay = useCallback(
+    (start, end) => {
+      const newData = filteredReceipts.slice(start, end);
+
+      setReceiptsToDisplay((receiptsToDisplay) => {
+        return [...receiptsToDisplay, ...newData];
+      });
+    },
+    [filteredReceipts],
+  );
+
+  const handleSetRemindersToDisplay = useCallback(
+    (start, end) => {
+      const newData = filteredActivities.slice(start, end);
+
+      setRemindersToDisplay((remindersToDisplay) => [
+        ...remindersToDisplay,
+        ...newData,
+      ]);
+    },
+    [filteredActivities],
+  );
+
+  const handlePagination = useCallback(() => {
+    if (totalCount > end) {
+      let startCount = start + perPage;
+      let endCount = end + perPage;
+
+      setStart(startCount);
+      setEnd(endCount);
+      handleSetReceiptsToDisplay(startCount, endCount);
+      handleSetRemindersToDisplay(startCount, endCount);
+    }
+  }, [
+    end,
+    start,
+    perPage,
+    totalCount,
+    handleSetReceiptsToDisplay,
+    handleSetRemindersToDisplay,
+  ]);
+
+  const handleResetData = useCallback(() => {
+    setStart(0);
+    setEnd(perPage);
+    setReceiptsToDisplay([]);
+    setRemindersToDisplay([]);
+    handleSetReceiptsToDisplay(0, perPage);
+    handleSetRemindersToDisplay(0, perPage);
+  }, [perPage, handleSetReceiptsToDisplay, handleSetRemindersToDisplay]);
+
+  const handleStatusFilter = useCallback(
+    (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
+      const {status, startDate, endDate} = payload;
+      setFilter(status);
+      startDate && setFilterStartDate(startDate);
+      endDate && setFilterEndDate(endDate);
+      handleResetData();
+    },
+    [handleResetData],
+  );
+
+  const handleReceiptSearch = useCallback(
+    (text: string) => {
+      setSearchTerm(text);
+      handleResetData();
+    },
+    [handleResetData],
+  );
+
   const reloadData = useCallback(() => {
     const myReceipts = receipts ?? getTransactions();
     const myActivities = getActivities();
     setAllReceipts(myReceipts);
     setAllActivities(myActivities);
-  }, [receipts.length, getTransactions, getActivities]);
+    handleResetData();
+  }, [receipts.length, getTransactions, handleResetData, getActivities]);
 
   return useMemo(
     () => ({
