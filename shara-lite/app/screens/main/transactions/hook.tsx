@@ -32,7 +32,6 @@ interface TransactionListContextValue {
   remindersToDisplay: IActivity[];
   handleSetReceiptsToDisplay: (start: number, end: number) => void;
   handleSetRemindersToDisplay: (start: number, end: number) => void;
-  owedReceipts: (IReceipt & Realm.Object)[];
   handleReceiptSearch: (text: string) => void;
   filteredActivities: Realm.Results<IActivity>;
   receiptsToDisplay: (IReceipt & Realm.Object)[];
@@ -160,60 +159,11 @@ export const useReceiptList = ({
         `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
+    console.log(userReceipts.sorted('created_at', true).length, 'userReceipts');
     return (userReceipts.sorted(
       'created_at',
       true,
     ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
-  }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
-
-  const owedReceipts = useMemo(() => {
-    let userReceipts = (allReceipts as unknown) as Realm.Results<
-      IReceipt & Realm.Object
-    >;
-    if (filter) {
-      switch (filter) {
-        case 'all':
-          userReceipts = userReceipts;
-          break;
-        case 'single-day':
-          userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at <= $1',
-            filterStartDate,
-            filterEndDate,
-          );
-          break;
-        case '1-week':
-          userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
-            filterStartDate,
-            filterEndDate,
-          );
-          break;
-        case '1-month':
-          userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
-            filterStartDate,
-            filterEndDate,
-          );
-          break;
-        case 'date-range':
-          userReceipts = userReceipts.filtered(
-            'created_at >= $0 && created_at < $1',
-            filterStartDate,
-            filterEndDate,
-          );
-          break;
-        default:
-          userReceipts = userReceipts;
-          break;
-      }
-    }
-    if (searchTerm) {
-      userReceipts = userReceipts
-        .filtered(`customer.name CONTAINS[c] "${searchTerm}"`)
-        .sorted('created_at', true);
-    }
-    return userReceipts.filter((item) => !item.isPaid);
   }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
 
   const filteredActivities = useMemo(() => {
@@ -339,14 +289,17 @@ export const useReceiptList = ({
 
   const handleSetReceiptsToDisplay = useCallback(
     (start, end) => {
+      console.log(filteredReceipts.length, 'filteredReceipts1');
       const newData = filteredReceipts.slice(start, end);
 
       setReceiptsToDisplay((receiptsToDisplay) => {
         return [...receiptsToDisplay, ...newData];
       });
     },
-    [filteredReceipts],
+    [filteredReceipts.length],
   );
+
+  console.log(filteredReceipts.length, 'filteredReceipts2');
 
   const handleSetRemindersToDisplay = useCallback(
     (start, end) => {
@@ -357,7 +310,7 @@ export const useReceiptList = ({
         ...newData,
       ]);
     },
-    [filteredActivities],
+    [filteredActivities.length],
   );
 
   const handlePagination = useCallback(() => {
@@ -402,9 +355,9 @@ export const useReceiptList = ({
   const handleReceiptSearch = useCallback(
     (text: string) => {
       setSearchTerm(text);
-      handleResetData();
+      handleSetReceiptsToDisplay(0, perPage);
     },
-    [handleResetData],
+    [handleSetReceiptsToDisplay],
   );
 
   const reloadData = useCallback(() => {
@@ -421,7 +374,6 @@ export const useReceiptList = ({
       reloadData,
       searchTerm,
       totalAmount,
-      owedReceipts,
       filterOptions,
       filterEndDate,
       collectedAmount,
@@ -442,7 +394,6 @@ export const useReceiptList = ({
       reloadData,
       searchTerm,
       totalAmount,
-      owedReceipts,
       filterEndDate,
       filterOptions,
       filterStartDate,
