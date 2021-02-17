@@ -6,7 +6,6 @@ import {useActivity} from '@/services/activity';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
-import {omit} from 'lodash';
 import uniqBy from 'lodash/uniqBy';
 import React, {
   createContext,
@@ -29,11 +28,8 @@ interface TransactionListContextValue {
   outstandingAmount: number;
   handlePagination: () => void;
   filterOptions?: FilterOption[];
-  remindersToDisplay: IActivity[];
-  handleSetReceiptsToDisplay: (start: number, end: number) => void;
-  handleSetRemindersToDisplay: (start: number, end: number) => void;
+  activitiesToDisplay: IActivity[];
   handleReceiptSearch: (text: string) => void;
-  filteredActivities: Realm.Results<IActivity>;
   receiptsToDisplay: (IReceipt & Realm.Object)[];
   filteredReceipts: Realm.Results<IReceipt & Realm.Object>;
   handleStatusFilter: (payload: {
@@ -68,11 +64,13 @@ export const useReceiptList = ({
   const [receiptsToDisplay, setReceiptsToDisplay] = useState<
     (IReceipt & Realm.Object)[]
   >([]);
-  const [remindersToDisplay, setRemindersToDisplay] = useState<IActivity[]>([]);
+  const [activitiesToDisplay, setActivitiesToDisplay] = useState<IActivity[]>(
+    [],
+  );
   const [filter, setFilter] = useState<string | undefined>(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState('');
-  const [allReceipts, setAllReceipts] = useState(receipts);
-  const [allActivities, setAllActivities] = useState(activities);
+  // const [allReceipts, setAllReceipts] = useState(receipts);
+  // const [allActivities, setAllActivities] = useState(activities);
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
   );
@@ -108,7 +106,7 @@ export const useReceiptList = ({
     );
 
   const filteredReceipts = useMemo(() => {
-    let userReceipts = (allReceipts as unknown) as Realm.Results<
+    let userReceipts = (receipts as unknown) as Realm.Results<
       IReceipt & Realm.Object
     >;
     if (filter) {
@@ -163,10 +161,10 @@ export const useReceiptList = ({
       'created_at',
       true,
     ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
-  }, [filter, filterStartDate, filterEndDate, allReceipts, searchTerm]);
+  }, [filter, filterStartDate, filterEndDate, receipts.length, searchTerm]);
 
   const filteredActivities = useMemo(() => {
-    let userActivities = allActivities;
+    let userActivities = activities;
     if (filter) {
       switch (filter) {
         case 'all':
@@ -216,7 +214,7 @@ export const useReceiptList = ({
       );
     }
     return userActivities.sorted('created_at', true);
-  }, [searchTerm, allActivities, filter, filterEndDate, filterStartDate]);
+  }, [searchTerm, activities.length, filter, filterEndDate, filterStartDate]);
 
   const sharaProCreditPayments = useMemo(
     () =>
@@ -288,7 +286,6 @@ export const useReceiptList = ({
 
   const handleSetReceiptsToDisplay = useCallback(
     (start, end) => {
-      // console.log(filteredReceipts.length, 'filteredReceipts1');
       const newData = filteredReceipts.slice(start, end);
 
       setReceiptsToDisplay((receiptsToDisplay) => {
@@ -298,14 +295,122 @@ export const useReceiptList = ({
     [filteredReceipts],
   );
 
-  // console.log(filteredReceipts.length, 'filteredReceipts2');
+  const handlePaginatedSearchFilter = useCallback(
+    ({
+      search,
+      status,
+      endDate,
+      endCount,
+      startDate,
+      startCount,
+    }: {
+      search?: string;
+      status?: string;
+      endDate?: Date;
+      startDate?: Date;
+      endCount: number;
+      startCount: number;
+    }) => {
+      let userReceipts = (receipts as unknown) as Realm.Results<
+        IReceipt & Realm.Object
+      >;
+      let userActivities = activities;
 
-  const handleSetRemindersToDisplay = useCallback(
+      if (status) {
+        switch (status) {
+          case 'all':
+            userReceipts = userReceipts;
+            userActivities = userActivities;
+            setAppliedFilter('');
+            break;
+          case 'single-day':
+            userReceipts = userReceipts.filtered(
+              'created_at >= $0 && created_at <= $1',
+              startDate,
+              endDate,
+            );
+            userActivities = userActivities.filtered(
+              'created_at >= $0 && created_at <= $1',
+              startDate,
+              endDate,
+            );
+            setAppliedFilter('created_at >= $0 && created_at <= $1');
+            break;
+          case '1-week':
+            userReceipts = userReceipts.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            userActivities = userActivities.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            setAppliedFilter('created_at >= $0 && created_at < $1');
+            break;
+          case '1-month':
+            userReceipts = userReceipts.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            userActivities = userActivities.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            setAppliedFilter('created_at >= $0 && created_at < $1');
+            break;
+          case 'date-range':
+            userReceipts = userReceipts.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            userActivities = userActivities.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            setAppliedFilter('created_at >= $0 && created_at < $1');
+            break;
+          default:
+            userReceipts = userReceipts;
+            userActivities = userActivities;
+            break;
+        }
+      }
+      if (search) {
+        userReceipts = userReceipts.filtered(
+          `customer.name CONTAINS[c] "${search}"`,
+        );
+        userActivities = userActivities.filtered(
+          `message CONTAINS[c] "${search}"`,
+        );
+      }
+      userReceipts = userReceipts.sorted('created_at', true);
+      userActivities = userActivities.sorted('created_at', true);
+
+      const newReceiptData = userReceipts.slice(startCount, endCount);
+      const newActivitiesData = userActivities.slice(startCount, endCount);
+
+      setReceiptsToDisplay((receiptsToDisplay) => {
+        return [...receiptsToDisplay, ...newReceiptData];
+      });
+      setActivitiesToDisplay((activitiesToDisplay) => {
+        return [...activitiesToDisplay, ...newActivitiesData];
+      });
+    },
+    [receipts.length, activities.length],
+  );
+
+  const handleSetActivitiesToDisplay = useCallback(
     (start, end) => {
       const newData = filteredActivities.slice(start, end);
 
-      setRemindersToDisplay((remindersToDisplay) => [
-        ...remindersToDisplay,
+      setActivitiesToDisplay((activitiesToDisplay) => [
+        ...activitiesToDisplay,
         ...newData,
       ]);
     },
@@ -320,7 +425,7 @@ export const useReceiptList = ({
       setStart(startCount);
       setEnd(endCount);
       handleSetReceiptsToDisplay(startCount, endCount);
-      handleSetRemindersToDisplay(startCount, endCount);
+      handleSetActivitiesToDisplay(startCount, endCount);
     }
   }, [
     end,
@@ -328,17 +433,17 @@ export const useReceiptList = ({
     perPage,
     totalCount,
     handleSetReceiptsToDisplay,
-    handleSetRemindersToDisplay,
+    handleSetActivitiesToDisplay,
   ]);
 
-  const handleResetData = useCallback(() => {
+  const reloadData = useCallback(() => {
     setStart(0);
     setEnd(perPage);
     setReceiptsToDisplay([]);
-    setRemindersToDisplay([]);
+    setActivitiesToDisplay([]);
     handleSetReceiptsToDisplay(0, perPage);
-    handleSetRemindersToDisplay(0, perPage);
-  }, [perPage, handleSetReceiptsToDisplay, handleSetRemindersToDisplay]);
+    handleSetActivitiesToDisplay(0, perPage);
+  }, [perPage, handleSetReceiptsToDisplay, handleSetActivitiesToDisplay]);
 
   const handleStatusFilter = useCallback(
     (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
@@ -346,33 +451,36 @@ export const useReceiptList = ({
       setFilter(status);
       startDate && setFilterStartDate(startDate);
       endDate && setFilterEndDate(endDate);
-      handleResetData();
+      setStart(0);
+      setEnd(perPage);
+      setReceiptsToDisplay([]);
+      setActivitiesToDisplay([]);
+      handlePaginatedSearchFilter({
+        status,
+        endDate,
+        startDate,
+        startCount: 0,
+        endCount: perPage,
+      });
     },
-    [handleResetData],
+    [handlePaginatedSearchFilter],
   );
 
   const handleReceiptSearch = useCallback(
     (text: string) => {
       setSearchTerm(text);
-      handleResetData();
+      setStart(0);
+      setEnd(perPage);
+      setReceiptsToDisplay([]);
+      setActivitiesToDisplay([]);
+      handlePaginatedSearchFilter({
+        search: text,
+        startCount: 0,
+        endCount: perPage,
+      });
     },
-    [handleResetData],
+    [handlePaginatedSearchFilter],
   );
-
-  const reloadData = useCallback(() => {
-    const myReceipts = receipts ?? getTransactions();
-    const myActivities = getActivities();
-    setAllReceipts(myReceipts);
-    setAllActivities(myActivities);
-    handleResetData();
-    // handleReceiptSearch('');
-  }, [
-    receipts.length,
-    getTransactions,
-    handleResetData,
-    // handleReceiptSearch,
-    getActivities,
-  ]);
 
   return useMemo(
     () => ({
@@ -388,12 +496,9 @@ export const useReceiptList = ({
       handlePagination,
       outstandingAmount,
       receiptsToDisplay,
-      filteredActivities,
       handleStatusFilter,
-      remindersToDisplay,
+      activitiesToDisplay,
       handleReceiptSearch,
-      handleSetReceiptsToDisplay,
-      handleSetRemindersToDisplay,
     }),
     [
       filter,
@@ -404,16 +509,13 @@ export const useReceiptList = ({
       filterOptions,
       filterStartDate,
       collectedAmount,
-      handlePagination,
       filteredReceipts,
+      handlePagination,
       receiptsToDisplay,
       outstandingAmount,
-      filteredActivities,
       handleStatusFilter,
-      remindersToDisplay,
+      activitiesToDisplay,
       handleReceiptSearch,
-      handleSetReceiptsToDisplay,
-      handleSetRemindersToDisplay,
     ],
   );
 };

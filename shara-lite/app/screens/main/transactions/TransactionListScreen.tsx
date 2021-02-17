@@ -46,17 +46,16 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     filterOptions,
     collectedAmount,
     filterStartDate,
-    filteredReceipts,
     outstandingAmount,
     handleStatusFilter,
     handleReceiptSearch,
     receiptsToDisplay,
-    remindersToDisplay,
+    activitiesToDisplay,
     handlePagination,
   } = useTransactionList();
 
   const activitiesData: any = useMemo(() => {
-    const data = [...receiptsToDisplay, ...remindersToDisplay].map((item) => {
+    const data = [...receiptsToDisplay, ...activitiesToDisplay].map((item) => {
       const t = omit(item) as IActivity;
       return {
         ...t,
@@ -64,7 +63,12 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
       };
     });
     return orderBy(data, 'created_at', 'desc');
-  }, [receiptsToDisplay, remindersToDisplay]);
+  }, [receiptsToDisplay, activitiesToDisplay]);
+
+  useEffect(() => {
+    reloadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
