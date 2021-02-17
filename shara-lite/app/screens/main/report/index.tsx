@@ -14,7 +14,12 @@ import {useAppNavigation} from '@/services/navigation';
 import {useReports} from '@/services/reports';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useContext, useLayoutEffect} from 'react';
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+} from 'react';
 import {Text} from '@/components';
 import {Alert, FlatList, SafeAreaView, View} from 'react-native';
 import FileViewer from 'react-native-file-viewer';
@@ -32,6 +37,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
   const {showSuccessToast} = useContext(ToastContext);
   const {
     filter,
+    reloadData,
     searchTerm,
     totalAmount,
     filterEndDate,
@@ -43,6 +49,12 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     handleStatusFilter,
     handleReceiptSearch,
   } = useTransactionList();
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      reloadData();
+    });
+  }, [navigation, reloadData]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

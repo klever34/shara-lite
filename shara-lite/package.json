@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -36,7 +36,6 @@
     "big.js": "^6.0.3",
     "bluebird": "^3.7.2",
     "bson": "^4.0.4",
-    "country-currency-map": "^2.1.7",
     "crypto-js": "^3.3.0",
     "date-fns": "^2.14.0",
     "formik": "^2.1.5",
@@ -94,6 +93,7 @@
     "realm": "10.1.2",
     "rn-fetch-blob": "^0.12.0",
     "rsdi": "^1.0.5",
+    "shara-country-currency-map": "^1.0.1",
     "uuid": "^8.2.0",
     "uuid-by-string": "^3.0.2",
     "xlsx": "^0.16.8",
