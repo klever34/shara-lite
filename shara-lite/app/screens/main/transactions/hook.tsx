@@ -27,6 +27,7 @@ interface TransactionListContextValue {
   collectedAmount: number;
   outstandingAmount: number;
   filterOptions?: FilterOption[];
+  reloadData: () => void;
   owedReceipts: (IReceipt & Realm.Object)[];
   handleReceiptSearch: (text: string) => void;
   filteredActivities: Realm.Results<IActivity>;
@@ -289,7 +290,7 @@ export const useReceiptList = ({
 
   const collectedAmount = useMemo(
     () => (filteredReceipts.sum('amount_paid') || 0) + sharaProCreditPayments,
-    [sharaProCreditPayments, filteredReceipts],
+    [sharaProCreditPayments, filteredReceipts.length],
   );
 
   const outstandingAmount = useMemo(() => {
@@ -330,25 +331,24 @@ export const useReceiptList = ({
     }, 0);
 
     return totalBalance;
-  }, [filteredReceipts, appliedFilter, filterStartDate, filterEndDate]);
+  }, [filteredReceipts.length, appliedFilter, filterStartDate, filterEndDate]);
 
   const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
     collectedAmount,
     outstandingAmount,
   ]);
 
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      const myReceipts = receipts ?? getTransactions();
-      const myActivities = getActivities();
-      setAllReceipts(myReceipts);
-      setAllActivities(myActivities);
-    });
-  }, [receipts, navigation, getActivities, getTransactions]);
+  const reloadData = useCallback(() => {
+    const myReceipts = receipts ?? getTransactions();
+    const myActivities = getActivities();
+    setAllReceipts(myReceipts);
+    setAllActivities(myActivities);
+  }, [receipts.length, getTransactions, getActivities]);
 
   return useMemo(
     () => ({
       filter,
+      reloadData,
       searchTerm,
       totalAmount,
       owedReceipts,
@@ -364,6 +364,7 @@ export const useReceiptList = ({
     }),
     [
       filter,
+      reloadData,
       searchTerm,
       totalAmount,
       owedReceipts,

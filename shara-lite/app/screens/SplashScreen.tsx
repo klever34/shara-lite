@@ -65,6 +65,7 @@ const SplashScreen = () => {
     } catch (e) {}
     try {
       await getRemoteConfigService().initialize();
+    } catch (e) {
     } finally {
       getI18nService().initialize();
     }
