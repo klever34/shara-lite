@@ -159,7 +159,6 @@ export const useReceiptList = ({
         `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
-    console.log(userReceipts.sorted('created_at', true).length, 'userReceipts');
     return (userReceipts.sorted(
       'created_at',
       true,
@@ -289,17 +288,17 @@ export const useReceiptList = ({
 
   const handleSetReceiptsToDisplay = useCallback(
     (start, end) => {
-      console.log(filteredReceipts.length, 'filteredReceipts1');
+      // console.log(filteredReceipts.length, 'filteredReceipts1');
       const newData = filteredReceipts.slice(start, end);
 
       setReceiptsToDisplay((receiptsToDisplay) => {
         return [...receiptsToDisplay, ...newData];
       });
     },
-    [filteredReceipts.length],
+    [filteredReceipts],
   );
 
-  console.log(filteredReceipts.length, 'filteredReceipts2');
+  // console.log(filteredReceipts.length, 'filteredReceipts2');
 
   const handleSetRemindersToDisplay = useCallback(
     (start, end) => {
@@ -310,7 +309,7 @@ export const useReceiptList = ({
         ...newData,
       ]);
     },
-    [filteredActivities.length],
+    [filteredActivities],
   );
 
   const handlePagination = useCallback(() => {
@@ -355,9 +354,9 @@ export const useReceiptList = ({
   const handleReceiptSearch = useCallback(
     (text: string) => {
       setSearchTerm(text);
-      handleSetReceiptsToDisplay(0, perPage);
+      handleResetData();
     },
-    [handleSetReceiptsToDisplay],
+    [handleResetData],
   );
 
   const reloadData = useCallback(() => {
@@ -366,7 +365,14 @@ export const useReceiptList = ({
     setAllReceipts(myReceipts);
     setAllActivities(myActivities);
     handleResetData();
-  }, [receipts.length, getTransactions, handleResetData, getActivities]);
+    // handleReceiptSearch('');
+  }, [
+    receipts.length,
+    getTransactions,
+    handleResetData,
+    // handleReceiptSearch,
+    getActivities,
+  ]);
 
   return useMemo(
     () => ({

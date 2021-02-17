@@ -48,14 +48,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     filterStartDate,
     filteredReceipts,
     outstandingAmount,
-    filteredActivities,
     handleStatusFilter,
     handleReceiptSearch,
     receiptsToDisplay,
     remindersToDisplay,
     handlePagination,
-    handleSetReceiptsToDisplay,
-    handleSetRemindersToDisplay,
   } = useTransactionList();
 
   const activitiesData: any = useMemo(() => {
@@ -67,20 +64,13 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
       };
     });
     return orderBy(data, 'created_at', 'desc');
-  }, [receiptsToDisplay.length, remindersToDisplay.length]);
-
-  useEffect(() => {
-    handleSetReceiptsToDisplay(0, 20);
-    handleSetRemindersToDisplay(0, 20);
-    // eslint-disable-next-line react-hooks/exhaustive-deps();
-  }, []);
+  }, [receiptsToDisplay, remindersToDisplay]);
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
       reloadData();
-      handleReceiptSearch('');
     });
-  }, [navigation, reloadData, handleReceiptSearch]);
+  }, [navigation, reloadData]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
