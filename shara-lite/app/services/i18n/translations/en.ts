@@ -517,6 +517,7 @@ const en: Strings = {
         website_url: 'www.shara.co',
       },
     },
+    bvn_input_field_placeholder: 'Enter your BVN',
   },
   more: {
     header: {

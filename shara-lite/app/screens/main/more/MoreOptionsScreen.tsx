@@ -55,6 +55,10 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('BusinessSettings');
     }, [navigation]);
 
+    const onPaymentSettings = useCallback(() => {
+      navigation.navigate('PaymentSettings');
+    }, [navigation]);
+
     const {reloadApp} = useContext(AppContext);
 
     const languages = i18nService.getLocales().options;
@@ -91,6 +95,13 @@ export const MoreOptionsScreen = withModal(
           },
           onPress: onEditBusinessSettings,
         },
+        {
+          leftSection: {
+            title: strings('more.list.payment_settings.title'),
+            caption: strings('more.list.payment_settings.description'),
+          },
+          onPress: onPaymentSettings,
+        },
         ...(languages.length > 1
           ? [
               {
@@ -123,6 +134,7 @@ export const MoreOptionsScreen = withModal(
       ];
     }, [
       onEditBusinessSettings,
+      onPaymentSettings,
       languages.length,
       onLanguageSettings,
       navigation,

@@ -396,6 +396,7 @@ export interface Strings {
         website_url: string;
       };
     };
+    bvn_input_field_placeholder: string;
   };
   more: {
     header: Card;
