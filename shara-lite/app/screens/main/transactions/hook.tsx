@@ -159,7 +159,7 @@ export const useReceiptList = ({
         `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
-    // console.log(userReceipts.sorted('created_at', true).length, 'userReceipts');
+    console.log(userReceipts.sorted('created_at', true).length, 'userReceipts');
     return (userReceipts.sorted(
       'created_at',
       true,
