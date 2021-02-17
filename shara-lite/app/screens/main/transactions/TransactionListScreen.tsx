@@ -33,6 +33,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
   const {
     filter,
+    reloadData,
     searchTerm,
     totalAmount,
     filterEndDate,
@@ -68,9 +69,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
 
   useEffect(() => {
     return navigation.addListener('focus', () => {
+      reloadData();
       handleReceiptSearch('');
+      setActivitiesData(getActivitiesData());
     });
-  }, [navigation, handleReceiptSearch]);
+  }, [navigation, reloadData, getActivitiesData, handleReceiptSearch]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
