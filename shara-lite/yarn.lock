@@ -2770,13 +2770,6 @@ cosmiconfig@^6.0.0:
     path-type "^4.0.0"
     yaml "^1.7.2"
 
-country-currency-map@^2.1.7:
-  version "2.1.7"
-  resolved "https://registry.yarnpkg.com/country-currency-map/-/country-currency-map-2.1.7.tgz#5c7d16b4aba42bf2eaa2760fb0856a5dbfd53666"
-  integrity sha512-rc5BDyhghXOrUzlmrwdeRikGXPy9jkOF6Z/ET84u2kvc7hxXUkqfq8VK7PPigK+um6xGPeU+Oz55YJK+Ur5H2Q==
-  dependencies:
-    lodash.findkey "4.6.0"
-
 create-react-class@*:
   version "15.7.0"
   resolved "https://registry.yarnpkg.com/create-react-class/-/create-react-class-15.7.0.tgz#7499d7ca2e69bb51d13faf59bd04f0c65a1d6c1e"
@@ -7564,6 +7557,13 @@ shallow-clone@^1.0.0:
     is-extendable "^0.1.1"
     kind-of "^5.0.0"
     mixin-object "^2.0.1"
+
+shara-country-currency-map@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/shara-country-currency-map/-/shara-country-currency-map-1.0.1.tgz#2b85cd2604a1b6d80fc1e67e1d1c3a7c186f4aa2"
+  integrity sha512-IxznF9EuTm+DoaamViWgLWNMA7YEf2T60xEaElKFao5w23530ODu+zTx4XIWvqA0xr5W+g5Ng+8SkDMqAC9qFA==
+  dependencies:
+    lodash.findkey "4.6.0"
 
 shebang-command@^1.2.0:
   version "1.2.0"
