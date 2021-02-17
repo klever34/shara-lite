@@ -26,8 +26,6 @@ export const OTPVerification = () => {
   const {showSuccessToast} = useContext(ToastContext);
   const {params} = useRoute<RouteProp<AuthStackParamList, 'OTPVerification'>>();
 
-  console.log('here');
-
   const {initRealm} = useInitRealm();
   const navigation = useAppNavigation();
   const [hash, setHash] = useState('');
