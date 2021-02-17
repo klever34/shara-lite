@@ -69,8 +69,6 @@ export const useReceiptList = ({
   );
   const [filter, setFilter] = useState<string | undefined>(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState('');
-  // const [allReceipts, setAllReceipts] = useState(receipts);
-  // const [allActivities, setAllActivities] = useState(activities);
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
   );
