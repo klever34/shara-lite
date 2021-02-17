@@ -3,6 +3,7 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 export interface IWallet extends BaseModelInterface {
   balance: number;
   currency_code: string;
+  merchant_id: string;
 }
 
 export const modelName = 'Wallet';
@@ -15,6 +16,7 @@ export class Wallet extends BaseModel implements Partial<IWallet> {
       ...baseModelSchema,
       balance: 'double?',
       currency_code: 'string?',
+      merchant_id: 'string?',
     },
   };
 }

@@ -1,6 +1,11 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {ICollection} from '@/models/Collection';
 
+export type WovenAccountDetails = {
+  vnuban: string;
+  bank_name: string;
+};
+
 export interface ICollectionMethod extends BaseModelInterface {
   type: string;
   provider: string;
