@@ -166,6 +166,7 @@ const en: Strings = {
   activities: 'Activities',
   home: 'Home',
   payments: 'Payments',
+  money: 'Money',
   more_text: 'More',
   home_screen_setup_business_text: 'Setup your business',
   reminder_text: {
@@ -711,6 +712,35 @@ const en: Strings = {
   search_input_placeholder: 'Search customers here',
   country: 'Country',
   in: 'in',
+  payment_activities: {
+    empty_state: {
+      description:
+        'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
+      tag: 'Go to Money Settings',
+    },
+    search_placeholder: 'Search payments here...',
+    received: 'Received',
+    withdrawn: 'Withdrawn',
+    wallet_balance: 'Your wallet balance',
+    merchant_id: '{{merchant_id}} - merchant Id',
+    tap_to_copy: 'Tap to copy',
+    deposit: 'Deposit',
+    withdraw: 'Withdraw',
+    drawdown: 'Drawdown',
+    money_activities: 'Money Activities',
+    no_money_activities: 'You have no Money activities yet',
+  },
+  drawdown: {
+    title: 'Drawdown',
+    amount_available: 'Amount available for drawdown',
+    amount_owed: 'Total Owed - {{total_owed}}',
+    take_drawdown: 'Take Drawdown',
+    make_repayment: 'Make Repayment',
+    nothing_here: 'Nothing to show here',
+    drawdown_history: 'Drawdown History',
+    active_drawdowns: 'Active Drawdowns',
+  },
+  copied: 'Copied',
 };
 
 export default en;

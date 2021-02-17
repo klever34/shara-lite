@@ -40,6 +40,7 @@ import {TransactionListProvider} from './transactions/hook';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
+import {DrawdownScreen} from '@/screens/main/money/DrawdownScreen';
 
 const strings = getI18nService().strings;
 
@@ -73,6 +74,9 @@ export type MainStackParamList = {
 
   // Report
   Report: undefined;
+
+  // Money
+  Drawdown: undefined;
 };
 
 const MainStack = createStackNavigator<MainStackParamList>();
@@ -296,6 +300,15 @@ const MainScreens = () => {
           <MainStack.Screen
             name="Report"
             component={ReportScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+
+          {/* Money */}
+          <MainStack.Screen
+            name="Drawdown"
+            component={DrawdownScreen}
             options={{
               headerShown: false,
             }}

@@ -2,9 +2,14 @@ import {TextStyle, ViewStyle} from 'react-native';
 import {Falsy} from 'types/app';
 import {globalStyles} from '@/styles/global';
 
-export const applyStyles = (
-  ...styles: ({[key: string]: any} | ViewStyle | TextStyle | string | Falsy)[]
-): {[key: string]: any} =>
+export type ClassName =
+  | {[key: string]: any}
+  | ViewStyle
+  | TextStyle
+  | string
+  | Falsy;
+
+export const applyStyles = (...styles: ClassName[]): {[key: string]: any} =>
   styles.reduce<{[key: string]: any}>((acc, curr) => {
     if (typeof curr === 'string') {
       const classNames = curr.split(' ');
@@ -17,6 +22,8 @@ export const applyStyles = (
     }
     return {...acc, ...curr};
   }, {});
+
+export const as = applyStyles;
 
 export const appendPrefix = (
   prefix: string,

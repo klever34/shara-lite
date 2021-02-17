@@ -1,4 +1,4 @@
-import {applyStyles, colors} from '@/styles';
+import {applySpacing, applyStyles, colors} from '@/styles';
 import React from 'react';
 import {View, TextInput, ViewStyle} from 'react-native';
 import {Icon} from '../Icon';
@@ -50,7 +50,7 @@ export const SearchFilter = ({
           style={applyStyles(
             'px-40 text-400 text-lg bg-white ml-12',
             {
-              height: 40,
+              height: applySpacing(40),
             },
             inputStyle,
           )}

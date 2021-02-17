@@ -137,6 +137,7 @@ export interface Strings {
   activities: string;
   home: string;
   payments: string;
+  money: string;
   more_text: string;
   client: PluralizedString;
   customer: PluralizedString;
@@ -535,6 +536,31 @@ export interface Strings {
   search_input_placeholder: string;
   country: string;
   in: string;
+  payment_activities: {
+    empty_state: Card;
+    search_placeholder: string;
+    received: string;
+    withdrawn: string;
+    wallet_balance: string;
+    merchant_id: string;
+    tap_to_copy: string;
+    deposit: string;
+    withdraw: string;
+    drawdown: string;
+    money_activities: string;
+    no_money_activities: string;
+  };
+  drawdown: {
+    title: string;
+    amount_available: string;
+    amount_owed: string;
+    take_drawdown: string;
+    make_repayment: string;
+    nothing_here: string;
+    drawdown_history: string;
+    active_drawdowns: string;
+  };
+  copied: string;
 }
 
 interface PluralizedString {
@@ -544,8 +570,9 @@ interface PluralizedString {
 }
 
 interface Card {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
+  tag?: string;
 }
 
 interface FormField {

@@ -3,7 +3,6 @@ import {IActivity} from '@/models/Activity';
 import {IReceipt} from '@/models/Receipt';
 import {getI18nService} from '@/services';
 import {useActivity} from '@/services/activity';
-import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
 import uniqBy from 'lodash/uniqBy';
@@ -11,7 +10,6 @@ import React, {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
   useState,
 } from 'react';
@@ -50,7 +48,6 @@ export const useReceiptList = ({
   filterOptions,
   initialFilter = 'all',
 }: UseReceiptListProps = {}) => {
-  const navigation = useAppNavigation();
   const {getActivities} = useActivity();
   const {getTransactions} = useTransaction();
   receipts = receipts ?? getTransactions();
@@ -290,7 +287,7 @@ export const useReceiptList = ({
 
   const collectedAmount = useMemo(
     () => (filteredReceipts.sum('amount_paid') || 0) + sharaProCreditPayments,
-    [sharaProCreditPayments, filteredReceipts.length],
+    [filteredReceipts, sharaProCreditPayments],
   );
 
   const outstandingAmount = useMemo(() => {
@@ -331,7 +328,7 @@ export const useReceiptList = ({
     }, 0);
 
     return totalBalance;
-  }, [filteredReceipts.length, appliedFilter, filterStartDate, filterEndDate]);
+  }, [filteredReceipts, appliedFilter, filterStartDate, filterEndDate]);
 
   const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
     collectedAmount,
@@ -343,7 +340,7 @@ export const useReceiptList = ({
     const myActivities = getActivities();
     setAllReceipts(myReceipts);
     setAllActivities(myActivities);
-  }, [receipts.length, getTransactions, getActivities]);
+  }, [receipts, getTransactions, getActivities]);
 
   return useMemo(
     () => ({
