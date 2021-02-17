@@ -24,7 +24,7 @@
     },
     "otp": {
       "heading": "OTP",
-      "subheading": "{{From API response}}",
+      "subheading": "We’ve sent a one-time password to mobile number **{{mobile}}**, check your SMS or Whatsapp and enter it below.",
       "otp_resent": "OTP RESENT",
       "otp_button": "Get Started",
       "resend_text": "Didn't receive the code?",
@@ -472,7 +472,8 @@
         },
         "copy_payment_link": "COPY LINK",
         "preview_payment_page": "Preview Payment Page",
-        "add_new_payment_method": "Add New Payment Method"
+        "add_new_payment": "Add New Payment",
+        "add_new_payment_method": "Add New Payment"
       },
       "payment_form": {
         "label": "Select a payment method"
@@ -676,7 +677,36 @@
     "product_details": "Product Details",
     "search_input_placeholder": "Search customers here",
     "country": "Country",
-    "in": "in"
+    "in": "in",
+    "money": "Money",
+    "payment_activities": {
+      "empty_state": {
+        "description": "Receive and withdraw money using your Shara wallet. Click the button below to get started.",
+        "tag": "Go to Money Settings"
+      },
+      "search_placeholder": "Search payments here...",
+      "received": "Received",
+      "withdrawn": "Withdrawn",
+      "wallet_balance": "Your wallet balance",
+      "merchant_id": "{{merchant_id}} - merchant Id",
+      "tap_to_copy": "Tap to copy",
+      "deposit": "Deposit",
+      "withdraw": "Withdraw",
+      "drawdown": "Drawdown",
+      "money_activities": "Money Activities",
+      "no_money_activities": "You have no Money activities yet"
+    },
+    "drawdown": {
+      "title": "Drawdown",
+      "amount_available": "Amount available for drawdown",
+      "amount_owed": "Total Owed - {{total_owed}}",
+      "take_drawdown": "Take Drawdown",
+      "make_repayment": "Make Repayment",
+      "nothing_here": "Nothing to show here",
+      "drawdown_history": "Drawdown History",
+      "active_drawdowns": "Active Drawdowns"
+    },
+    "copied": "Copied"
   },
   "sw": {
     "update_shara": {
@@ -703,7 +733,7 @@
     },
     "otp": {
       "heading": "OTP",
-      "subheading": "{{Majibu kutoka kwa API}}",
+      "subheading": "Kichwa kidogo cha OTP",
       "otp_resent": "OTP imerudishwa",
       "otp_button": "Anza",
       "resend_text": "Hukupokea nambari hiyo",
@@ -1151,7 +1181,8 @@
         },
         "copy_payment_link": "NA NAKALA YA KIUNGO",
         "preview_payment_page": "Hakikisho ukurasa wa malipo",
-        "add_new_payment_method": ""
+        "add_new_payment": "Ongeza malipo mapya",
+        "add_new_payment_method": "Ongeza malipo mapya"
       },
       "payment_form": {
         "label": "Chagua njia ya malipo"
@@ -1355,7 +1386,36 @@
     "product_details": "chombo kinakaaje",
     "search_input_placeholder": "Tafuta wateja hapa",
     "country": "Nchi",
-    "in": "ndani"
+    "in": "ndani",
+    "money": "",
+    "payment_activities": {
+      "empty_state": {
+        "description": "",
+        "tag": ""
+      },
+      "search_placeholder": "",
+      "received": "",
+      "withdrawn": "",
+      "wallet_balance": "",
+      "merchant_id": "",
+      "tap_to_copy": "",
+      "deposit": "",
+      "withdraw": "",
+      "drawdown": "",
+      "money_activities": "",
+      "no_money_activities": ""
+    },
+    "drawdown": {
+      "title": "",
+      "amount_available": "",
+      "amount_owed": "",
+      "take_drawdown": "",
+      "make_repayment": "",
+      "nothing_here": "",
+      "drawdown_history": "",
+      "active_drawdowns": ""
+    },
+    "copied": ""
   },
   "ha": {
     "update_shara": {
@@ -1830,6 +1890,7 @@
         },
         "copy_payment_link": "",
         "preview_payment_page": "",
+        "add_new_payment": "",
         "add_new_payment_method": ""
       },
       "payment_form": {
@@ -2034,7 +2095,36 @@
     "product_details": "",
     "search_input_placeholder": "",
     "country": "",
-    "in": ""
+    "in": "",
+    "money": "",
+    "payment_activities": {
+      "empty_state": {
+        "description": "",
+        "tag": ""
+      },
+      "search_placeholder": "",
+      "received": "",
+      "withdrawn": "",
+      "wallet_balance": "",
+      "merchant_id": "",
+      "tap_to_copy": "",
+      "deposit": "",
+      "withdraw": "",
+      "drawdown": "",
+      "money_activities": "",
+      "no_money_activities": ""
+    },
+    "drawdown": {
+      "title": "",
+      "amount_available": "",
+      "amount_owed": "",
+      "take_drawdown": "",
+      "make_repayment": "",
+      "nothing_here": "",
+      "drawdown_history": "",
+      "active_drawdowns": ""
+    },
+    "copied": ""
   },
   "yo": {
     "update_shara": {
@@ -2509,6 +2599,7 @@
         },
         "copy_payment_link": "",
         "preview_payment_page": "",
+        "add_new_payment": "",
         "add_new_payment_method": ""
       },
       "payment_form": {
@@ -2713,7 +2804,36 @@
     "product_details": "",
     "search_input_placeholder": "",
     "country": "",
-    "in": ""
+    "in": "",
+    "money": "",
+    "payment_activities": {
+      "empty_state": {
+        "description": "",
+        "tag": ""
+      },
+      "search_placeholder": "",
+      "received": "",
+      "withdrawn": "",
+      "wallet_balance": "",
+      "merchant_id": "",
+      "tap_to_copy": "",
+      "deposit": "",
+      "withdraw": "",
+      "drawdown": "",
+      "money_activities": "",
+      "no_money_activities": ""
+    },
+    "drawdown": {
+      "title": "",
+      "amount_available": "",
+      "amount_owed": "",
+      "take_drawdown": "",
+      "make_repayment": "",
+      "nothing_here": "",
+      "drawdown_history": "",
+      "active_drawdowns": ""
+    },
+    "copied": ""
   },
   "fr": {
     "update_shara": {
@@ -3188,6 +3308,7 @@
         },
         "copy_payment_link": "",
         "preview_payment_page": "",
+        "add_new_payment": "",
         "add_new_payment_method": ""
       },
       "payment_form": {
@@ -3392,6 +3513,744 @@
     "product_details": "",
     "search_input_placeholder": "",
     "country": "",
-    "in": ""
+    "in": "",
+    "money": "",
+    "payment_activities": {
+      "empty_state": {
+        "description": "",
+        "tag": ""
+      },
+      "search_placeholder": "",
+      "received": "",
+      "withdrawn": "",
+      "wallet_balance": "",
+      "merchant_id": "",
+      "tap_to_copy": "",
+      "deposit": "",
+      "withdraw": "",
+      "drawdown": "",
+      "money_activities": "",
+      "no_money_activities": ""
+    },
+    "drawdown": {
+      "title": "",
+      "amount_available": "",
+      "amount_owed": "",
+      "take_drawdown": "",
+      "make_repayment": "",
+      "nothing_here": "",
+      "drawdown_history": "",
+      "active_drawdowns": ""
+    },
+    "copied": ""
+  },
+  "ar": {
+    "update_shara": {
+      "title": "",
+      "description": "",
+      "submit_button": ""
+    },
+    "next": "",
+    "skip": "",
+    "get_started": "",
+    "login": {
+      "heading": "",
+      "subheading": "",
+      "login_button": "",
+      "forgot_password": ""
+    },
+    "register": {
+      "header": "",
+      "heading": "",
+      "subheading": "",
+      "submit_button": "",
+      "have_account": "",
+      "sign_in": ""
+    },
+    "otp": {
+      "heading": "",
+      "subheading": "",
+      "otp_resent": "",
+      "otp_button": "",
+      "resend_text": "",
+      "resend_button": ""
+    },
+    "forgot_password": {
+      "heading": "",
+      "subheading": "",
+      "fp_button": ""
+    },
+    "reset_password": {
+      "header": "",
+      "heading": "",
+      "password_match": "",
+      "submit_button": "",
+      "otp_label": "",
+      "password_label": "",
+      "repeat_password_label": ""
+    },
+    "fields": {
+      "phone": {
+        "label": "",
+        "placeholder": ""
+      },
+      "password": {
+        "label": ""
+      },
+      "confirm_password": {
+        "label": ""
+      },
+      "name": {
+        "label": ""
+      }
+    },
+    "alert": {
+      "minimum_phone_digits": "",
+      "error": "",
+      "select_country": "",
+      "password_match": "",
+      "required": {
+        "number": "",
+        "password": "",
+        "otp": ""
+      },
+      "something_went_wrong": "",
+      "feedback_validation": "",
+      "feedback_is_empty": "",
+      "clear_app_data": "",
+      "ok": "",
+      "sync": {
+        "title": "",
+        "description": ""
+      },
+      "api": {
+        "fallbackError": "",
+        "auth": {
+          "otp": {
+            "welcomeBack": "",
+            "welcome": "",
+            "selectCountry": "",
+            "fallbackError": ""
+          },
+          "login": {
+            "otpExpired": "",
+            "success": "",
+            "fallbackError": ""
+          }
+        },
+        "business": {
+          "notFound": "",
+          "create": {
+            "success": ""
+          },
+          "details": {
+            "success": ""
+          },
+          "customerDetails": {
+            "notFound": "",
+            "success": ""
+          },
+          "update": {
+            "uniqueSlug": "",
+            "success": ""
+          }
+        },
+        "fcm": {
+          "addToken": {
+            "missingFields": "",
+            "success": ""
+          }
+        },
+        "passwordReset": {
+          "notFound": "",
+          "create": {
+            "success": ""
+          },
+          "reset": {
+            "invalid": "",
+            "success": ""
+          },
+          "update": {
+            "uniqueSlug": "",
+            "success": ""
+          }
+        },
+        "paymentProvider": {
+          "list": {
+            "success": ""
+          }
+        },
+        "user": {
+          "update": {
+            "success": ""
+          }
+        }
+      }
+    },
+    "shara_tagline": "",
+    "onboarding_copy_1": {
+      "title": "",
+      "description": ""
+    },
+    "onboarding_copy_2": {
+      "title": "",
+      "description": ""
+    },
+    "onboarding_copy_3": {
+      "title": "",
+      "description": ""
+    },
+    "activities": "",
+    "home": "",
+    "payments": "",
+    "more_text": "",
+    "home_screen_setup_business_text": "",
+    "reminder_text": {
+      "one": "",
+      "other": "",
+      "zero": ""
+    },
+    "payment_reminder": {
+      "title": "",
+      "thank_you_for_doing_business": "",
+      "reminder_count": {
+        "one": "",
+        "other": ""
+      },
+      "no_reminder_set_text": "",
+      "coming_soon_recurring_reminders": "",
+      "reminder_description": "",
+      "reminder_unit": {
+        "days": "",
+        "weeks": "",
+        "months": ""
+      },
+      "reminder_when": {
+        "before": "",
+        "after": ""
+      },
+      "reminder_added": "",
+      "reminder_removed": "",
+      "confirm_delete": "",
+      "confirm_exit": "",
+      "set_reminder": "",
+      "collection_settings": "",
+      "set_collection_date": {
+        "title": "",
+        "description": ""
+      },
+      "reminder_settings": "",
+      "add_reminder": {
+        "title": "",
+        "description": ""
+      },
+      "default_reminder": {
+        "title": "",
+        "description": ""
+      },
+      "on_the_day_of_collection": "",
+      "no_reminder": {
+        "added": "",
+        "removed": ""
+      }
+    },
+    "recurrence_title": "",
+    "recurrence_description": "",
+    "reminder_message_title": "",
+    "customer_statement": {
+      "title": "",
+      "filename": "",
+      "message": ""
+    },
+    "transaction": {
+      "set_collection_date": "",
+      "collection_date": "",
+      "change_collection_date": "",
+      "collect_on_date": "",
+      "on_$date": "",
+      "no_reminder_set": "",
+      "send_reminder": "",
+      "balance_statement": "",
+      "not_owing": "",
+      "generating_statement": "",
+      "share_statement": "",
+      "start_here": "",
+      "add_first": "",
+      "no_credit_or_amount_warning": "",
+      "edit_transaction": "",
+      "transaction_deleted": "",
+      "confirm_delete": "",
+      "is_collection_message": "",
+      "is_collection_with_customer_message": "",
+      "customer_owes_statement": "",
+      "customer_has_advance_statement": "",
+      "you_were_paid_statement": "",
+      "customer_paid_statement": "",
+      "customer_paid_with_outstanding_statement": "",
+      "amount_collected": "",
+      "amount_outstanding": "",
+      "total_amount": "",
+      "view_report": "",
+      "no_activities_recorded_for_duration": "",
+      "start_adding_records": "",
+      "transaction_success": "",
+      "share_customer_ledger_text": "",
+      "view_customer_ledger_text": "",
+      "share_customer_ledger_whatsapp_text": ""
+    },
+    "receipts": {
+      "filter_options": {
+        "single_day": "",
+        "1_week": "",
+        "1_month": "",
+        "date_range": ""
+      },
+      "receipt_share_title": "",
+      "recent_purchase_message": "",
+      "recent_purchase_message_from_business": "",
+      "receipt_for": "",
+      "receipt_no": ""
+    },
+    "salutation": "",
+    "you_paid_message": "",
+    "you_owe_message": "",
+    "you_owe_message_with_due_date": "",
+    "payment_link_message": "",
+    "powered_by_shara": "",
+    "collection": {
+      "collection_recorded": "",
+      "button": {
+        "title": "",
+        "description": ""
+      },
+      "header": {
+        "title": "",
+        "description": ""
+      },
+      "fields": {
+        "amount": {
+          "label": ""
+        },
+        "note": {
+          "label": "",
+          "placeholder": ""
+        }
+      },
+      "today_text": "",
+      "write_a_note_text": "",
+      "select_a_photo_text": "",
+      "transaction_date_text": "",
+      "coming_soon_select_a_photo": ""
+    },
+    "sale": {
+      "sale_recorded": "",
+      "button": {
+        "title": "",
+        "description": ""
+      },
+      "header": {
+        "title": "",
+        "description": ""
+      },
+      "fields": {
+        "amount": {
+          "label": ""
+        },
+        "credit": {
+          "label": ""
+        },
+        "note": {
+          "label": "",
+          "placeholder": ""
+        }
+      },
+      "select_customer": {
+        "title": "",
+        "description": ""
+      },
+      "no_customer_text": "",
+      "due_date_is_past": ""
+    },
+    "entry": {
+      "sale": "",
+      "collection": ""
+    },
+    "other": "",
+    "collected": "",
+    "collection_due_today": "",
+    "outstanding": "",
+    "clear": "",
+    "cancel": "",
+    "scan": "",
+    "scanning": "",
+    "done": "",
+    "dismiss": "",
+    "owe": {
+      "one": "",
+      "other": ""
+    },
+    "result": {
+      "zero": "",
+      "one": "",
+      "other": ""
+    },
+    "clear_filter": "",
+    "note": {
+      "one": "",
+      "other": ""
+    },
+    "delete": "",
+    "edit": "",
+    "add": "",
+    "close": "",
+    "enable": "",
+    "unknown": "",
+    "share": "",
+    "balance": "",
+    "paid": "",
+    "save": "",
+    "from": "",
+    "to": "",
+    "success": "",
+    "start_date": "",
+    "end_date": "",
+    "and": "",
+    "optional": "",
+    "warning": "",
+    "date": "",
+    "yes": "",
+    "total": "",
+    "yes_delete": "",
+    "yes_proceed": "",
+    "no": "",
+    "all": "",
+    "no_result_found": "",
+    "remove": "",
+    "tel": "",
+    "select_from_phonebook": "",
+    "whatsapp": "",
+    "sms": "",
+    "confirm": "",
+    "address": "",
+    "price": "",
+    "filter": {
+      "one": "",
+      "other": ""
+    },
+    "filter_options": {
+      "owing": "",
+      "not_owing": "",
+      "surplus": ""
+    },
+    "customer": {
+      "one": "",
+      "other": ""
+    },
+    "client": {
+      "one": "",
+      "other": ""
+    },
+    "customers": {
+      "start_adding": "",
+      "customer_count": {
+        "zero": "",
+        "one": "",
+        "other": ""
+      },
+      "customer_edited": "",
+      "customer_deleted": "",
+      "confirm_delete": "",
+      "delete_customer": "",
+      "customer_profile": "",
+      "fields": {
+        "phone": {
+          "label": "",
+          "placeholder": ""
+        },
+        "notes": {
+          "label": "",
+          "placeholder": ""
+        }
+      },
+      "select_customer": {
+        "title": "",
+        "description": ""
+      },
+      "add_as_new_customer": "",
+      "add_customer": "",
+      "add_customer_details": "",
+      "add_new_customer_text": "",
+      "search_input_placeholder": "",
+      "manual_customer_modal": {
+        "fields": {
+          "name": {
+            "label": ""
+          },
+          "email": {
+            "label": ""
+          },
+          "phone": {
+            "label": "",
+            "placeholder": ""
+          }
+        }
+      }
+    },
+    "payment": {
+      "edit_payment_preview_label_modal": {
+        "title": "",
+        "description": "",
+        "payment_label_updated": "",
+        "validation_message": "",
+        "you_can_pay_me_via": ""
+      },
+      "payment_container": {
+        "payment_added": "",
+        "warning_message": "",
+        "payment_edited": "",
+        "add_payment_info": "",
+        "edit_payment_info": "",
+        "remove_message": "",
+        "payment_settings": "",
+        "no_payment_option": {
+          "description": ""
+        },
+        "copy_payment_link": "",
+        "preview_payment_page": "",
+        "add_new_payment": "",
+        "add_new_payment_method": ""
+      },
+      "payment_form": {
+        "label": ""
+      },
+      "copied": "",
+      "copy": "",
+      "payment_preview_modal": {
+        "heading": "",
+        "footer": {
+          "title": "",
+          "website_url": ""
+        }
+      }
+    },
+    "more": {
+      "header": {
+        "title": "",
+        "description": ""
+      },
+      "list": {
+        "profile_settings": {
+          "title": "",
+          "description": ""
+        },
+        "business_settings": {
+          "title": "",
+          "description": ""
+        },
+        "payment_settings": {
+          "title": "",
+          "description": ""
+        },
+        "referral": {
+          "title": "",
+          "description": ""
+        },
+        "feedback": {
+          "title": "",
+          "description": ""
+        },
+        "language": {
+          "title": "",
+          "description": ""
+        }
+      },
+      "logout": {
+        "logout_data_verification_text": "",
+        "logout_confirmation_text": "",
+        "logout_unsaved_data_text": ""
+      },
+      "business_settings_edit_button": "",
+      "logout_button": "",
+      "yes": "",
+      "no": ""
+    },
+    "profile_settings": {
+      "title": "",
+      "toast_text": "",
+      "fields": {
+        "firstName": {
+          "label": ""
+        },
+        "lastName": {
+          "label": ""
+        },
+        "mobile": {
+          "label": ""
+        },
+        "email": {
+          "label": ""
+        }
+      },
+      "save_button": ""
+    },
+    "business_settings": {
+      "title": "",
+      "toast_text": "",
+      "fields": {
+        "name": {
+          "label": ""
+        },
+        "address": {
+          "label": ""
+        },
+        "mobile": {
+          "label": ""
+        },
+        "image": {
+          "label": "",
+          "placeholder": ""
+        }
+      },
+      "action_buttons": {
+        "preview_receipt_button": "",
+        "save_button": ""
+      },
+      "receipt_preview": {
+        "title": "",
+        "saved": "",
+        "description": ""
+      }
+    },
+    "referral": {
+      "title": "",
+      "toast_text": "",
+      "fields": {
+        "code": {
+          "label": "",
+          "placeholder": ""
+        }
+      },
+      "submit_button": ""
+    },
+    "feedback": {
+      "title": "",
+      "toast_text": "",
+      "fields": {
+        "code": {
+          "label": "",
+          "placeholder": ""
+        }
+      },
+      "submit_button": ""
+    },
+    "create_receipts_with_shara": "",
+    "report": {
+      "title": "",
+      "filter_button_text": "",
+      "search_input_placeholder": "",
+      "active_filter_label_text": "",
+      "clear_filter_button_text": "",
+      "net_balance_text": "",
+      "download_report_toast_text": "",
+      "results": {
+        "one": "",
+        "zero": "",
+        "other": ""
+      },
+      "download_report_button_text": "",
+      "empty_state_text": {
+        "no_results_found": "",
+        "no_records_yet": ""
+      },
+      "report_list_header": {
+        "transactions_text": "",
+        "total_entries_text": "",
+        "total_cost_text": "",
+        "amount_paid_text": ""
+      },
+      "excel_report_headings": {
+        "date": "",
+        "name": "",
+        "note": "",
+        "total_amount": "",
+        "amount_paid": "",
+        "balance": ""
+      },
+      "downloaded_report_notification_title": ""
+    },
+    "bluetooth_printer": {
+      "setup": {
+        "title": "",
+        "description": ""
+      },
+      "select_printer": "",
+      "no_nearby_bluetooth": "",
+      "device_not_supported": "",
+      "search_for_devices": ""
+    },
+    "reminder_popup": {
+      "title": "",
+      "collection_day": {
+        "one": "",
+        "other": ""
+      },
+      "collect_on_text": "",
+      "no_collection_date_text": "",
+      "set_collection_date_button_text": "",
+      "default_collection_day": "",
+      "no_collection_day": ""
+    },
+    "default_text": "",
+    "payment_method": "",
+    "save_to_phonebook": "",
+    "user_profile": "",
+    "my_customers": "",
+    "reports": "",
+    "menu": "",
+    "user_id": "",
+    "payment_reminder_for": "",
+    "payment_due": "",
+    "payment_due_text": "",
+    "outstanding_text": "",
+    "record": "",
+    "cancel_confirmation_text": "",
+    "cancellation_text": "",
+    "cancellation_placeholder": "",
+    "upload_business_logo": "",
+    "business_name": "",
+    "skip_setup": "",
+    "product_details": "",
+    "search_input_placeholder": "",
+    "country": "",
+    "in": "",
+    "money": "",
+    "payment_activities": {
+      "empty_state": {
+        "description": "",
+        "tag": ""
+      },
+      "search_placeholder": "",
+      "received": "",
+      "withdrawn": "",
+      "wallet_balance": "",
+      "merchant_id": "",
+      "tap_to_copy": "",
+      "deposit": "",
+      "withdraw": "",
+      "drawdown": "",
+      "money_activities": "",
+      "no_money_activities": ""
+    },
+    "drawdown": {
+      "title": "",
+      "amount_available": "",
+      "amount_owed": "",
+      "take_drawdown": "",
+      "make_repayment": "",
+      "nothing_here": "",
+      "drawdown_history": "",
+      "active_drawdowns": ""
+    },
+    "copied": ""
   }
 }

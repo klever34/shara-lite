@@ -328,7 +328,7 @@ export const useReceiptList = ({
     }, 0);
 
     return totalBalance;
-  }, [appliedFilter, filterStartDate, filterEndDate, filteredReceipts]);
+  }, [filteredReceipts, appliedFilter, filterStartDate, filterEndDate]);
 
   const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
     collectedAmount,

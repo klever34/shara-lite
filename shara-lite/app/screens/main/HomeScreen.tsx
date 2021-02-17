@@ -14,14 +14,14 @@ import {getAuthService, getI18nService} from '@/services';
 import {EntryContext} from '@/components/EntryView';
 import Touchable from '@/components/Touchable';
 import {useLastSeen} from '@/services/last-seen';
-import {PaymentsScreen} from './payments';
+import {MoneyScreen} from './money';
 import {MoreScreen} from './more';
 
 const strings = getI18nService().strings;
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
-  PaymentsTab: undefined;
+  MoneyTab: undefined;
   EntryTab: undefined;
   CustomersTab: undefined;
   MoreTab: undefined;
@@ -117,11 +117,11 @@ export const HomeScreen = () => {
           }}
         />
         <MainNav.Screen
-          name="PaymentsTab"
-          component={PaymentsScreen}
+          name="MoneyTab"
+          component={MoneyScreen}
           options={{
             tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>{strings('payments')}</TabBarLabel>
+              <TabBarLabel {...labelProps}>{strings('money')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
               <Icon
