@@ -1,5 +1,9 @@
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {ICollection} from '@/models/Collection';
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {ICollection} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/Collection';
 
 export interface ICollectionMethod extends BaseModelInterface {
   type: string;

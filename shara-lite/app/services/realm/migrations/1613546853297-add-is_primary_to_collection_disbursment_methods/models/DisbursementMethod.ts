@@ -1,5 +1,9 @@
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IDisbursement} from '@/models/Disbursement';
+import {
+  BaseModel,
+  BaseModelInterface,
+  baseModelSchema,
+} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IDisbursement} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/Disbursement';
 
 export interface IDisbursementMethod extends BaseModelInterface {
   type: string;

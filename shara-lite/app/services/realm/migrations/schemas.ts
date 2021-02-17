@@ -16,6 +16,7 @@ import schema15 from './1611048927106-add-last-seen-model';
 import schema16 from './1611236083669-add-activity-x-disable-customer-reminders';
 import schema17 from './1611256639370-re-add-disable-customer-reminders';
 import schema18 from './1613468659343-add-shara-pay-models';
+import schema19 from './1613546853297-add-is_primary_to_collection_disbursment_methods';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -36,6 +37,8 @@ const schemas: any[] = [
   {schemaVersion: 16, ...schema16},
   {schemaVersion: 17, ...schema17},
   {schemaVersion: 18, ...schema18},
+  {schemaVersion: 18, ...schema18},
+  {schemaVersion: 19, ...schema19},
 ];
 
 export default schemas;
