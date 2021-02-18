@@ -41,6 +41,7 @@ const BottomHalfModal = ({
   renderContent,
   swipeDirection = ['down'],
   onCloseModal,
+  showHandleNub = true,
 }: BottomHalfModalProps) => {
   const handleCloseModal = useCallback(() => {
     closeModal();
@@ -55,11 +56,13 @@ const BottomHalfModal = ({
       swipeDirection={swipeDirection}
       style={applyStyles('justify-end m-0')}>
       <View style={styles.content}>
-        <View
-          style={applyStyles(
-            'w-60 h-4 bg-gray-20 self-center rounded-8 mt-24 mb-16',
-          )}
-        />
+        {showHandleNub && (
+          <View
+            style={applyStyles(
+              'w-60 h-4 bg-gray-20 self-center rounded-8 mt-16 mb-8',
+            )}
+          />
+        )}
         {renderContent({closeModal: handleCloseModal})}
       </View>
     </Modal>

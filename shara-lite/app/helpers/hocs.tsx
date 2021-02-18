@@ -1,10 +1,4 @@
-import React, {
-  ComponentProps,
-  ElementType,
-  useCallback,
-  useContext,
-  useState,
-} from 'react';
+import React, {ReactElement, useCallback, useContext, useState} from 'react';
 import LoadingModal from '../modals/LoadingModal';
 import {ModalOptionsList, ModalVisibilityList} from 'types/modal';
 import BottomHalfModal from '../modals/BottomHalfModal';
@@ -56,9 +50,9 @@ export const useModal = () => {
   return useContext(ModalContext);
 };
 
-export const withModal = (Component: ElementType) => (
-  props: ComponentProps<typeof Component> & ModalWrapperFields,
-) => {
+export const withModal = <Props extends {} = {}>(
+  Component: (props: Props & ModalWrapperFields) => ReactElement<Props>,
+) => (props: Props) => {
   const [modalVisibility, setModalVisibility] = useState<ModalVisibilityList>(
     defaultModalVisibility,
   );
@@ -92,7 +86,11 @@ export const withModal = (Component: ElementType) => (
     [closeModal],
   );
   return (
-    <ModalContext.Provider value={{openModal, closeModal}}>
+    <ModalContext.Provider
+      value={{
+        openModal,
+        closeModal,
+      }}>
       <Component {...props} openModal={openModal} closeModal={closeModal} />
       <LoadingModal
         visible={modalVisibility.loading}

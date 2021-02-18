@@ -1,8 +1,7 @@
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import {applyStyles, as, colors} from '@/styles';
-import {Button, SearchFilter, Text} from '@/components';
-import Touchable from '@/components/Touchable';
+import {Button, Text} from '@/components';
 import {Icon} from '@/components/Icon';
 import {getI18nService} from '@/services';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -11,17 +10,20 @@ import EmptyState from '@/components/EmptyState';
 import {useAppNavigation} from '@/services/navigation';
 import {MoneyActionsContainer} from './MoneyActionsContainer';
 import Emblem from '@/assets/images/emblem-gray.svg';
+import {withModal} from '@/helpers/hocs';
+import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
+import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
 
 const strings = getI18nService().strings;
 
-export const PaymentActivitiesScreen = () => {
+export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const navigation = useAppNavigation();
   const {copyToClipboard} = useClipboard();
-  const [searchTerm] = useState('');
-  const handleReceiptSearch = useCallback((text: string) => {
-    console.log(text);
-  }, []);
-  const handleOpenFilterModal = useCallback(() => {}, []);
+  // const [searchTerm] = useState('');
+  // const handleSearch = useCallback((text: string) => {
+  //   console.log(text);
+  // }, []);
+  // const handleOpenFilterModal = useCallback(() => {}, []);
   const totalReceivedAmount = 0;
   const totalWithdrawnAmount = 0;
   const totalWalletBalance = 0;
@@ -29,14 +31,27 @@ export const PaymentActivitiesScreen = () => {
   const handleCopyMerchantId = useCallback(() => {
     copyToClipboard(String(merchantId));
   }, [copyToClipboard]);
-  const handleDeposit = useCallback(() => {}, []);
-  const handleWithdraw = useCallback(() => {}, []);
-  const onGoToMoneySettings = useCallback(() => {}, []);
+  const handleDeposit = useCallback(() => {
+    openModal('bottom-half', {
+      renderContent: () => <MoneyDepositScreen onClose={closeModal} />,
+      showHandleNub: false,
+    });
+  }, [closeModal, openModal]);
+  const handleWithdraw = useCallback(() => {
+    openModal('bottom-half', {
+      renderContent: () => <MoneyWithdrawModal onClose={closeModal} />,
+      showHandleNub: false,
+    });
+  }, [closeModal, openModal]);
+  // TODO: Add logic to check whether money settings is set up
+  const moneySettingsNotSetup = false;
+  const onGoToMoneySettings = useCallback(() => {
+    navigation.navigate('PaymentSettings');
+  }, [navigation]);
   const handleDrawdown = useCallback(() => {
     navigation.navigate('Drawdown');
   }, [navigation]);
   const renderListItem = useCallback(() => null, []);
-  const moneySettingsNotSetup = false;
 
   if (moneySettingsNotSetup) {
     return (
@@ -58,39 +73,39 @@ export const PaymentActivitiesScreen = () => {
 
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
-      <View
-        style={applyStyles('pr-8 flex-row items-center justify-between', {
-          borderBottomWidth: 1.5,
-          borderBottomColor: colors['gray-20'],
-        })}>
-        <SearchFilter
-          value={searchTerm}
-          onSearch={handleReceiptSearch}
-          containerStyle={applyStyles('flex-1')}
-          onClearInput={() => handleReceiptSearch('')}
-          placeholderText={strings('payment_activities.search_placeholder')}
-        />
-        {!searchTerm && (
-          <Touchable onPress={handleOpenFilterModal}>
-            <View
-              style={applyStyles('py-4 px-8 flex-row items-center', {
-                borderWidth: 1,
-                borderRadius: 4,
-                borderColor: colors['gray-20'],
-              })}>
-              <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
-                {strings('filter', {count: 2})}
-              </Text>
-              <Icon
-                size={16}
-                name="calendar"
-                type="feathericons"
-                color={colors['gray-50']}
-              />
-            </View>
-          </Touchable>
-        )}
-      </View>
+      {/*<View*/}
+      {/*  style={applyStyles('pr-8 flex-row items-center justify-between', {*/}
+      {/*    borderBottomWidth: 1.5,*/}
+      {/*    borderBottomColor: colors['gray-20'],*/}
+      {/*  })}>*/}
+      {/*  <SearchFilter*/}
+      {/*    value={searchTerm}*/}
+      {/*    onSearch={handleSearch}*/}
+      {/*    containerStyle={applyStyles('flex-1')}*/}
+      {/*    onClearInput={() => handleSearch('')}*/}
+      {/*    placeholderText={strings('payment_activities.search_placeholder')}*/}
+      {/*  />*/}
+      {/*  {!searchTerm && (*/}
+      {/*    <Touchable onPress={handleOpenFilterModal}>*/}
+      {/*      <View*/}
+      {/*        style={applyStyles('py-4 px-8 flex-row items-center', {*/}
+      {/*          borderWidth: 1,*/}
+      {/*          borderRadius: 4,*/}
+      {/*          borderColor: colors['gray-20'],*/}
+      {/*        })}>*/}
+      {/*        <Text style={applyStyles('text-gray-200 text-700 pr-8')}>*/}
+      {/*          {strings('filter', {count: 2})}*/}
+      {/*        </Text>*/}
+      {/*        <Icon*/}
+      {/*          size={16}*/}
+      {/*          name="calendar"*/}
+      {/*          type="feathericons"*/}
+      {/*          color={colors['gray-50']}*/}
+      {/*        />*/}
+      {/*      </View>*/}
+      {/*    </Touchable>*/}
+      {/*  )}*/}
+      {/*</View>*/}
       <View
         style={as(
           'flex-row justify-between py-12 border-b-1 border-b-gray-20 px-12',
@@ -130,7 +145,7 @@ export const PaymentActivitiesScreen = () => {
       </View>
       <MoneyActionsContainer
         figure={{
-          label: strings('payment_activities.wallet_balance'),
+          label: strings('payment_activities.your_wallet_balance'),
           value: amountWithCurrency(totalWalletBalance),
         }}
         tag={{
@@ -184,22 +199,22 @@ export const PaymentActivitiesScreen = () => {
             <Text style={applyStyles('text-base text-gray-300')}>
               {strings('payment_activities.money_activities')}
             </Text>
-            <Touchable onPress={handleOpenFilterModal}>
-              <View style={applyStyles('py-4 px-8 flex-row items-center')}>
-                <Text
-                  style={applyStyles(
-                    'text-base text-gray-300 text-700 text-uppercase pr-8',
-                  )}>
-                  All Time
-                </Text>
-                <Icon
-                  size={16}
-                  type="feathericons"
-                  name="chevron-down"
-                  color={colors['gray-50']}
-                />
-              </View>
-            </Touchable>
+            {/*<Touchable onPress={handleOpenFilterModal}>*/}
+            {/*  <View style={applyStyles('py-4 px-8 flex-row items-center')}>*/}
+            {/*    <Text*/}
+            {/*      style={applyStyles(*/}
+            {/*        'text-base text-gray-300 text-700 text-uppercase pr-8',*/}
+            {/*      )}>*/}
+            {/*      All Time*/}
+            {/*    </Text>*/}
+            {/*    <Icon*/}
+            {/*      size={16}*/}
+            {/*      type="feathericons"*/}
+            {/*      name="chevron-down"*/}
+            {/*      color={colors['gray-50']}*/}
+            {/*    />*/}
+            {/*  </View>*/}
+            {/*</Touchable>*/}
           </View>
         }
         ListEmptyComponent={
@@ -214,4 +229,4 @@ export const PaymentActivitiesScreen = () => {
       />
     </SafeAreaView>
   );
-};
+});

@@ -50,7 +50,7 @@ export const MoneyActionsContainer = ({
             <Touchable onPress={disabled ? undefined : onPress}>
               <View style={as('items-center px-20 py-12')}>
                 <View
-                  style={as('rounded-32 p-4 mb-8', {
+                  style={as('rounded-32 p-8 mb-8', {
                     backgroundColor: disabled
                       ? colors['gray-20']
                       : icon.bgColor,
@@ -58,7 +58,7 @@ export const MoneyActionsContainer = ({
                   <Icon
                     type="feathericons"
                     name={icon.name}
-                    size={40}
+                    size={32}
                     color={disabled ? colors['gray-50'] : icon.color}
                   />
                 </View>
