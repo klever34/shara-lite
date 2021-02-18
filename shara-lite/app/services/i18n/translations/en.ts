@@ -722,10 +722,27 @@ const en: Strings = {
     search_placeholder: 'Search payments here...',
     received: 'Received',
     withdrawn: 'Withdrawn',
-    wallet_balance: 'Your wallet balance',
+    wallet_balance: 'Wallet balance',
+    your_wallet_balance: 'Your wallet balance',
     merchant_id: '{{merchant_id}} - merchant Id',
+    your_merchant_id_is: 'Your Merchant ID is',
+    your_wallet_account_no_is: 'Your wallet account number is',
     tap_to_copy: 'Tap to copy',
+    tap_to_copy_merchant_id: 'Tap to copy Merchant ID',
+    tap_to_copy_wallet_account_no: 'Tap to copy wallet account number',
     deposit: 'Deposit',
+    withdraw_fields: {
+      amount: {
+        label: 'Enter Amount',
+      },
+      note: {
+        label: 'Write a note',
+      },
+    },
+    deposit_help_text:
+      'See below the various ways to deposit funds into your wallet',
+    select_withdrawal_account: 'Select withdrawal account',
+    confirm_withdrawal: 'Confirm withdrawal',
     withdraw: 'Withdraw',
     drawdown: 'Drawdown',
     money_activities: 'Money Activities',

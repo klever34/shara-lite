@@ -7,7 +7,6 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect} from 'react';
 import {Text} from '@/components';
 import {Image, SafeAreaView, View} from 'react-native';
-import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {getAuthService, getI18nService} from '@/services';
@@ -51,7 +50,10 @@ export const HomeScreen = () => {
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
-      <Header style={applyStyles('bg-primary')}>
+      <View
+        style={applyStyles(
+          'flex-row py-16 bg-white relative items-center bg-primary',
+        )}>
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             <Image
@@ -72,10 +74,10 @@ export const HomeScreen = () => {
             </View>
           </View>
         </Touchable>
-      </Header>
+      </View>
 
       <MainNav.Navigator
-        initialRouteName="TransactionsTab"
+        initialRouteName="MoneyTab"
         tabBarOptions={{
           labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: colors.primary,
