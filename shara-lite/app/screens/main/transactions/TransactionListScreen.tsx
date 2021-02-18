@@ -73,13 +73,6 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [reloadData, searchTerm, filteredReceipts.length]);
 
-  // useEffect(() => {
-  //   return navigation.addListener('focus', () => {
-  //     reloadData();
-  //   });
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [reloadData]);
-
   useLayoutEffect(() => {
     navigation.setOptions({
       header: () => null,
