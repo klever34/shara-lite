@@ -1,7 +1,7 @@
 import {withModal} from '@/helpers/hocs';
 import {useAppNavigation} from '@/services/navigation';
 import React, {useLayoutEffect} from 'react';
-import PaymentContainer from './PaymentContainer';
+import WithdrawalMethod from './WithdrawalMethod';
 
 export const PaymentListScreen = withModal(() => {
   const navigation = useAppNavigation();
@@ -12,5 +12,5 @@ export const PaymentListScreen = withModal(() => {
     });
   }, [navigation]);
 
-  return <PaymentContainer />;
+  return <WithdrawalMethod />;
 });

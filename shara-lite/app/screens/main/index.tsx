@@ -41,6 +41,8 @@ import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
 import {DrawdownScreen} from '@/screens/main/money/DrawdownScreen';
+import {BVNVerification} from './payments/BVNVerification';
+import PaymentContainer from './payments/PaymentContainer';
 
 const strings = getI18nService().strings;
 
@@ -69,7 +71,9 @@ export type MainStackParamList = {
   Referral: undefined;
   Feedback: undefined;
   PaymentSettings: undefined;
+  BVNVerification: undefined;
   BusinessSettings: undefined;
+  PaymentContainer: undefined;
   UserProfileSettings: undefined;
 
   // Report
@@ -263,6 +267,16 @@ const MainScreens = () => {
           <MainStack.Screen
             name="Feedback"
             component={FeedbackScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="BVNVerification"
+            component={BVNVerification}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="PaymentContainer"
+            component={PaymentContainer}
             options={{headerShown: false}}
           />
 

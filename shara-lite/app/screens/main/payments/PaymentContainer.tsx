@@ -292,6 +292,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       header={{
         title: strings('payment.payment_container.payment_settings'),
         style: applyStyles('py-8'),
+        iconLeft: {},
       }}
       style={applyStyles('px-0')}>
       <KeyboardAwareScrollView
