@@ -47,6 +47,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     collectedAmount,
     filterStartDate,
     outstandingAmount,
+    filteredReceipts,
     handleStatusFilter,
     handleReceiptSearch,
     receiptsToDisplay,
@@ -66,15 +67,18 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   }, [receiptsToDisplay, activitiesToDisplay]);
 
   useEffect(() => {
-    reloadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
+    if (!searchTerm) {
       reloadData();
-    });
-  }, [navigation, reloadData]);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reloadData, searchTerm, filteredReceipts.length]);
+
+  // useEffect(() => {
+  //   return navigation.addListener('focus', () => {
+  //     reloadData();
+  //   });
+  //   // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [reloadData]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
