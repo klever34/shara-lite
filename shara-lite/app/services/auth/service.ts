@@ -1,6 +1,6 @@
 import {IStorageService} from '../storage';
 //@ts-ignore
-import {getCurrency} from 'country-currency-map';
+import {getCurrency} from 'shara-country-currency-map';
 import {Business, User} from 'types/app';
 import {IAnalyticsService} from '@/services/analytics';
 import {handleError} from '@/services/error-boundary';
