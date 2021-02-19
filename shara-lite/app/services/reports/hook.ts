@@ -1,7 +1,7 @@
 import {numberWithCommas} from '@/helpers/utils';
 import {IReceipt} from '@/models/Receipt';
 import {getAuthService, getI18nService} from '@/services';
-import {exportHTMLToPDF, exportToExcel} from '@/services/file-exports';
+import {exportHTMLToPDF} from '@/services/file-exports';
 import {useReceipt} from '@/services/receipt';
 import {format} from 'date-fns';
 import {useCallback} from 'react';
@@ -12,10 +12,6 @@ import {
 } from './pdf-utils';
 
 interface getReceiptsDataInterface {
-  receipts?: Realm.Results<IReceipt & Realm.Object>;
-}
-
-interface exportReportsToExcelInterface {
   receipts?: Realm.Results<IReceipt & Realm.Object>;
 }
 
@@ -118,40 +114,6 @@ export const useReports = () => {
     [getReceipts, currencyCode],
   );
 
-  const exportReportsToExcel = useCallback(
-    async ({receipts}: exportReportsToExcelInterface) => {
-      const {data, columns} = getReceiptsData({receipts});
-      const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
-
-      return await exportToExcel({
-        data,
-        columns,
-        filename: `Shara/Reports/Shara Reports - ${date}`,
-        notificationTitle: i18Service.strings(
-          'report.downloaded_report_notification_title',
-        ),
-      });
-    },
-    [getReceiptsData],
-  );
-
-  const exportCustomerReportsToExcel = useCallback(
-    async ({receipts}: exportReportsToExcelInterface) => {
-      const {data, columns} = getCustomerReceiptsData({receipts});
-      const date = format(new Date(), 'dd-MM-yyyy hh-mm-a');
-
-      return await exportToExcel({
-        data,
-        columns,
-        filename: `Shara/Reports/Shara Reports - ${date}`,
-        notificationTitle: i18Service.strings(
-          'report.downloaded_report_notification_title',
-        ),
-      });
-    },
-    [getCustomerReceiptsData],
-  );
-
   const exportUserReportToPDF = useCallback(
     async (options: ReportToHTMLInterface) => {
       const html = generateUserReportHTML(options);
@@ -184,9 +146,7 @@ export const useReports = () => {
   );
 
   return {
-    exportReportsToExcel,
     exportUserReportToPDF,
     exportCustomerReportToPDF,
-    exportCustomerReportsToExcel,
   };
 };
