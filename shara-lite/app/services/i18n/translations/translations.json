@@ -620,7 +620,6 @@
       "download_report_toast_text": "Download Report",
       "results": {
         "one": "Result",
-        "zero": "",
         "other": "Results"
       },
       "download_report_button_text": "Download Report",
@@ -1234,15 +1233,15 @@
           "website_url": "www.shara.co"
         }
       },
-      "bvn_input_field_placeholder": "",
+      "bvn_input_field_placeholder": "Ingiza BVN yako",
       "withdrawal_method": {
-        "bvn_description": "",
-        "bvn_input_field_placeholder": "",
-        "otp_description": "",
-        "add_withdrawal_method": "",
-        "withdrawal_method_list": "",
-        "edit_withdrawal_method": "",
-        "withdrawal_method_description": ""
+        "bvn_description": "Nakala zingine juu ya kwanini tunakusanya BVN huenda hapa. Pia kuwaambia inahitaji kulinganisha jina kwenye akaunti yao",
+        "bvn_input_field_placeholder": "Ingiza BVN yako",
+        "otp_description": "OTP imetumwa kwa nambari yako ya BVN *******4343",
+        "add_withdrawal_method": "Ongeza Njia ya Kuondoa",
+        "withdrawal_method_list": "Hizi ni njia unazopendelea za kukusanya malipo ili wateja wako waweze kujua jinsi ya kukulipa. Tazama kiunga chako hapo chini:",
+        "edit_withdrawal_method": "Hariri Njia ya Kuondoa",
+        "withdrawal_method_description": "Ongeza njia unazopendelea za kuchukua pesa kutoka Shara."
       }
     },
     "more": {
@@ -1366,7 +1365,6 @@
       "download_report_toast_text": "Ripoti ya kupakua",
       "results": {
         "one": "matokeo",
-        "zero": "",
         "other": "Matokeo"
       },
       "download_report_button_text": "Repoti ya kupakua",
@@ -1435,61 +1433,61 @@
     "search_input_placeholder": "Tafuta wateja hapa",
     "country": "Nchi",
     "in": "ndani",
-    "money": "",
+    "money": "Pesa",
     "payment_activities": {
       "empty_state": {
-        "description": "",
-        "tag": ""
+        "description": "Pokea na toa pesa kwa kutumia mkoba wako wa Shara. Bonyeza kitufe hapa chini ili kuanza.",
+        "tag": "Nenda kwenye Mipangilio ya Pesa"
       },
-      "search_placeholder": "",
-      "received": "",
-      "withdrawn": "",
-      "wallet_balance": "",
-      "merchant_id": "",
-      "tap_to_copy": "",
-      "deposit": "",
-      "withdraw": "",
-      "drawdown": "",
-      "payment_activities": "",
-      "no_money_activities": "",
-      "your_wallet_balance": "",
-      "your_merchant_id_is": "",
+      "search_placeholder": "Tafuta malipo hapa...",
+      "received": "Imepokelewa",
+      "withdrawn": "Imeondolewa",
+      "wallet_balance": "Usawa wako wa mkoba",
+      "merchant_id": "{{merchant_id}} - mfanyabiashara Id",
+      "tap_to_copy": "Gonga ili unakili",
+      "deposit": "Amana",
+      "withdraw": "Kutoa",
+      "drawdown": "Kuchora",
+      "payment_activities": "Shughuli za Malipo",
+      "no_money_activities": "Bado huna shughuli za Pesa",
+      "your_wallet_balance": "Usawa wako wa mkoba",
+      "your_merchant_id_is": "Kitambulisho chako cha Muuzaji ni",
       "your_wallet_account_no_is": {
-        "one": "",
-        "other": ""
+        "one": "Nambari yako ya akaunti ya mkoba ni",
+        "other": "Nambari za akaunti yako ya mkoba ni"
       },
-      "tap_to_copy_merchant_id": "",
-      "tap_to_copy_wallet_account_no": "",
+      "tap_to_copy_merchant_id": "Gonga ili unakili Kitambulisho cha Wauzaji",
+      "tap_to_copy_wallet_account_no": "Gonga ili kunakili nambari ya akaunti ya mkoba",
       "withdraw_fields": {
         "amount": {
-          "label": ""
+          "label": "Ingiza Kiasi"
         },
         "note": {
-          "label": ""
+          "label": "Andika dokezo"
         }
       },
-      "deposit_help_text": "",
-      "select_withdrawal_account": "",
-      "confirm_withdrawal": "",
-      "about_to_withdraw": ""
+      "deposit_help_text": "Tazama hapa chini njia anuwai za kuweka pesa kwenye mkoba wako",
+      "select_withdrawal_account": "Chagua akaunti ya kujiondoa",
+      "confirm_withdrawal": "Thibitisha uondoaji",
+      "about_to_withdraw": "Uko karibu kutoa **{{amount}}** kwa\\n**{{bank_details}}**"
     },
     "drawdown": {
-      "title": "",
-      "amount_available": "",
-      "amount_owed": "",
-      "take_drawdown": "",
-      "make_repayment": "",
-      "nothing_here": "",
-      "drawdown_history": "",
-      "active_drawdowns": "",
-      "take_drawdown_lead_text": "",
-      "repayment": "",
-      "make_payment": "",
-      "repayment_date": "",
-      "repayment_amount": "",
-      "request": ""
+      "title": "Kuchora",
+      "amount_available": "Kiasi kinapatikana kwa kushuka",
+      "amount_owed": "Jumla ya Owed - {{total_owed}}",
+      "take_drawdown": "Chukua Mchoro",
+      "make_repayment": "Ulipa",
+      "nothing_here": "Hakuna cha kuonyesha hapa",
+      "drawdown_history": "Historia ya Kuchora",
+      "active_drawdowns": "Vivutio Vinavyotumika",
+      "take_drawdown_lead_text": "Kumbuka: Fedha zote zitaongezwa kwenye salio lako la mkoba",
+      "repayment": "Ulipaji",
+      "make_payment": "Fanya Malipo",
+      "repayment_date": "Tarehe ya Ulipaji",
+      "repayment_amount": "Kiasi cha ulipaji (inajumuisha ada ya manunuzi ya {{amount}})",
+      "request": "Omba"
     },
-    "copied": ""
+    "copied": "Imenakiliwa"
   },
   "ha": {
     "update_shara": {
@@ -2112,7 +2110,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",
@@ -2858,7 +2855,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",
@@ -3604,7 +3600,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",
@@ -4350,7 +4345,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",

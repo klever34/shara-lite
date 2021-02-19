@@ -654,7 +654,6 @@ const en: Strings = {
     download_report_toast_text: 'Download Report',
     results: {
       one: 'Result',
-      zero: '',
       other: 'Results',
     },
     download_report_button_text: 'Download Report',
