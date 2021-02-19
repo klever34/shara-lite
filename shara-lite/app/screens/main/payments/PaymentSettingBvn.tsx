@@ -18,10 +18,14 @@ export const PaymentSettingBvn = () => {
         <Emblem width={64} height={64} />
         <Text
           style={applyStyles('text-center text-gray-200 text-base pt-16 px-8')}>
-          {strings('payment.payment_container.no_payment_option.description')}
+          {strings('payment.withdrawal_method.bvn_description')}
         </Text>
       </View>
-      <AppInput placeholder={strings('payment.bvn_input_field_placeholder')} />
+      <AppInput
+        placeholder={strings(
+          'payment.withdrawal_method.bvn_input_field_placeholder',
+        )}
+      />
       <View style={applyStyles('pt-24 items-center')}>
         <Button
           title={strings('next')}

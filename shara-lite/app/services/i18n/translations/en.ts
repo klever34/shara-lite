@@ -518,7 +518,18 @@ const en: Strings = {
         website_url: 'www.shara.co',
       },
     },
-    bvn_input_field_placeholder: 'Enter your BVN',
+    withdrawal_method: {
+      bvn_description:
+        'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
+      bvn_input_field_placeholder: 'Enter your BVN',
+      otp_description: 'An OTP has been sent to your BVN number *******4343',
+      add_withdrawal_method: 'Add Withdrawal Method',
+      withdrawal_method_list:
+        'These are your preferred methods of collecting payment so your customers can know how to pay you. See your link below:',
+      edit_withdrawal_method: 'Edit Withdrawal Method',
+      withdrawal_method_description:
+        'Add your preferred methods of withdrawing funds from Shara.',
+    },
   },
   more: {
     header: {
