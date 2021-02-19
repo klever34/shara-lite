@@ -654,7 +654,6 @@ const en: Strings = {
     download_report_toast_text: 'Download Report',
     results: {
       one: 'Result',
-      zero: '',
       other: 'Results',
     },
     download_report_button_text: 'Download Report',
@@ -737,7 +736,10 @@ const en: Strings = {
     your_wallet_balance: 'Your wallet balance',
     merchant_id: '{{merchant_id}} - merchant Id',
     your_merchant_id_is: 'Your Merchant ID is',
-    your_wallet_account_no_is: 'Your wallet account number is',
+    your_wallet_account_no_is: {
+      one: 'Your wallet account number is',
+      other: 'Your wallet account numbers are',
+    },
     tap_to_copy: 'Tap to copy',
     tap_to_copy_merchant_id: 'Tap to copy Merchant ID',
     tap_to_copy_wallet_account_no: 'Tap to copy wallet account number',
@@ -756,7 +758,7 @@ const en: Strings = {
     confirm_withdrawal: 'Confirm withdrawal',
     withdraw: 'Withdraw',
     drawdown: 'Drawdown',
-    money_activities: 'Money Activities',
+    payment_activities: 'Payment Activities',
     no_money_activities: 'You have no Money activities yet',
     about_to_withdraw: String.raw`You are about to withdraw **{{amount}}** to\n**{{bank_details}}**`,
   },

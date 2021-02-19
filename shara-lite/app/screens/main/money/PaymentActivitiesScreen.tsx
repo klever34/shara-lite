@@ -1,4 +1,4 @@
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import {applyStyles, as, colors} from '@/styles';
 import {Button, Text} from '@/components';
@@ -13,6 +13,9 @@ import Emblem from '@/assets/images/emblem-gray.svg';
 import {withModal} from '@/helpers/hocs';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
+import {useWallet} from '@/services/wallet';
+import {useCollection} from '@/services/collection';
+import {useDisbursement} from '@/services/disbursement';
 
 const strings = getI18nService().strings;
 
@@ -24,13 +27,23 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   //   console.log(text);
   // }, []);
   // const handleOpenFilterModal = useCallback(() => {}, []);
-  const totalReceivedAmount = 0;
-  const totalWithdrawnAmount = 0;
-  const totalWalletBalance = 0;
-  const merchantId = 12345667780;
+  const {getCollections} = useCollection();
+  const {getDisbursements} = useDisbursement();
+  const collections = getCollections();
+  const disbursements = getDisbursements();
+  const totalReceivedAmount = useMemo(() => {
+    return collections.sum('amount') ?? 0;
+  }, [collections]);
+  const totalWithdrawnAmount = useMemo(() => {
+    return disbursements.sum('amount') ?? 0;
+  }, [disbursements]);
+  const {getWallet} = useWallet();
+  const wallet = getWallet();
+  const walletBalance = wallet?.balance;
+  const merchantId = wallet?.merchant_id;
   const handleCopyMerchantId = useCallback(() => {
     copyToClipboard(String(merchantId));
-  }, [copyToClipboard]);
+  }, [copyToClipboard, merchantId]);
   const handleDeposit = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyDepositScreen onClose={closeModal} />,
@@ -146,15 +159,19 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
       <MoneyActionsContainer
         figure={{
           label: strings('payment_activities.your_wallet_balance'),
-          value: amountWithCurrency(totalWalletBalance),
+          value: amountWithCurrency(walletBalance),
         }}
-        tag={{
-          label: strings('payment_activities.merchant_id', {
-            merchant_id: merchantId,
-          }),
-          onPress: handleCopyMerchantId,
-          pressInfo: strings('payment_activities.tap_to_copy'),
-        }}
+        tag={
+          !merchantId
+            ? undefined
+            : {
+                label: strings('payment_activities.merchant_id', {
+                  merchant_id: merchantId,
+                }),
+                onPress: handleCopyMerchantId,
+                pressInfo: strings('payment_activities.tap_to_copy'),
+              }
+        }
         actions={[
           {
             icon: {
@@ -197,7 +214,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
               'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
             )}>
             <Text style={applyStyles('text-base text-gray-300')}>
-              {strings('payment_activities.money_activities')}
+              {strings('payment_activities.payment_activities')}
             </Text>
             {/*<Touchable onPress={handleOpenFilterModal}>*/}
             {/*  <View style={applyStyles('py-4 px-8 flex-row items-center')}>*/}

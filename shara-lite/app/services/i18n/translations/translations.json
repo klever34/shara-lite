@@ -251,7 +251,8 @@
       "transaction_success": "{{transaction_type}} has been recorded Successfully",
       "share_customer_ledger_text": "Share customer ledger",
       "view_customer_ledger_text": "View customer ledger",
-      "share_customer_ledger_whatsapp_text": "Share ledger via whatsapp"
+      "share_customer_ledger_whatsapp_text": "Share ledger via whatsapp",
+      "search_input_placeholder": "Search activities by customer here"
     },
     "receipts": {
       "filter_options": {
@@ -487,7 +488,16 @@
           "website_url": "www.shara.co"
         }
       },
-      "bvn_input_field_placeholder": "Enter your BVN"
+      "bvn_input_field_placeholder": "Enter your BVN",
+      "withdrawal_method": {
+        "bvn_description": "Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account",
+        "bvn_input_field_placeholder": "Enter your BVN",
+        "otp_description": "An OTP has been sent to your BVN number *******4343",
+        "add_withdrawal_method": "Add Withdrawal Method",
+        "withdrawal_method_list": "These are your preferred methods of collecting payment so your customers can know how to pay you. See your link below:",
+        "edit_withdrawal_method": "Edit Withdrawal Method",
+        "withdrawal_method_description": "Add your preferred methods of withdrawing funds from Shara."
+      }
     },
     "more": {
       "header": {
@@ -610,7 +620,6 @@
       "download_report_toast_text": "Download Report",
       "results": {
         "one": "Result",
-        "zero": "",
         "other": "Results"
       },
       "download_report_button_text": "Download Report",
@@ -694,11 +703,14 @@
       "deposit": "Deposit",
       "withdraw": "Withdraw",
       "drawdown": "Drawdown",
-      "money_activities": "Money Activities",
+      "payment_activities": "Payment Activities",
       "no_money_activities": "You have no Money activities yet",
       "your_wallet_balance": "Your wallet balance",
       "your_merchant_id_is": "Your Merchant ID is",
-      "your_wallet_account_no_is": "Your wallet account number is",
+      "your_wallet_account_no_is": {
+        "one": "Your wallet account number is",
+        "other": "Your wallet account numbers are"
+      },
       "tap_to_copy_merchant_id": "Tap to copy Merchant ID",
       "tap_to_copy_wallet_account_no": "Tap to copy wallet account number",
       "withdraw_fields": {
@@ -984,7 +996,8 @@
       "transaction_success": "{{transaction_type}} imerekodiwa kwa mafanikio",
       "share_customer_ledger_text": "Tuma leja ya wateja",
       "view_customer_ledger_text": "Tazama leja ya wateja",
-      "share_customer_ledger_whatsapp_text": "Tuma leja kupitia whatsapp"
+      "share_customer_ledger_whatsapp_text": "Tuma leja kupitia whatsapp",
+      "search_input_placeholder": "Tafuta shughuli na mteja hapa"
     },
     "receipts": {
       "filter_options": {
@@ -1220,7 +1233,16 @@
           "website_url": "www.shara.co"
         }
       },
-      "bvn_input_field_placeholder": ""
+      "bvn_input_field_placeholder": "Ingiza BVN yako",
+      "withdrawal_method": {
+        "bvn_description": "Nakala zingine juu ya kwanini tunakusanya BVN huenda hapa. Pia kuwaambia inahitaji kulinganisha jina kwenye akaunti yao",
+        "bvn_input_field_placeholder": "Ingiza BVN yako",
+        "otp_description": "OTP imetumwa kwa nambari yako ya BVN *******4343",
+        "add_withdrawal_method": "Ongeza Njia ya Kuondoa",
+        "withdrawal_method_list": "Hizi ni njia unazopendelea za kukusanya malipo ili wateja wako waweze kujua jinsi ya kukulipa. Tazama kiunga chako hapo chini:",
+        "edit_withdrawal_method": "Hariri Njia ya Kuondoa",
+        "withdrawal_method_description": "Ongeza njia unazopendelea za kuchukua pesa kutoka Shara."
+      }
     },
     "more": {
       "header": {
@@ -1343,7 +1365,6 @@
       "download_report_toast_text": "Ripoti ya kupakua",
       "results": {
         "one": "matokeo",
-        "zero": "",
         "other": "Matokeo"
       },
       "download_report_button_text": "Repoti ya kupakua",
@@ -1412,58 +1433,61 @@
     "search_input_placeholder": "Tafuta wateja hapa",
     "country": "Nchi",
     "in": "ndani",
-    "money": "",
+    "money": "Pesa",
     "payment_activities": {
       "empty_state": {
-        "description": "",
-        "tag": ""
+        "description": "Pokea na toa pesa kwa kutumia mkoba wako wa Shara. Bonyeza kitufe hapa chini ili kuanza.",
+        "tag": "Nenda kwenye Mipangilio ya Pesa"
       },
-      "search_placeholder": "",
-      "received": "",
-      "withdrawn": "",
-      "wallet_balance": "",
-      "merchant_id": "",
-      "tap_to_copy": "",
-      "deposit": "",
-      "withdraw": "",
-      "drawdown": "",
-      "money_activities": "",
-      "no_money_activities": "",
-      "your_wallet_balance": "",
-      "your_merchant_id_is": "",
-      "your_wallet_account_no_is": "",
-      "tap_to_copy_merchant_id": "",
-      "tap_to_copy_wallet_account_no": "",
+      "search_placeholder": "Tafuta malipo hapa...",
+      "received": "Imepokelewa",
+      "withdrawn": "Imeondolewa",
+      "wallet_balance": "Usawa wako wa mkoba",
+      "merchant_id": "{{merchant_id}} - mfanyabiashara Id",
+      "tap_to_copy": "Gonga ili unakili",
+      "deposit": "Amana",
+      "withdraw": "Kutoa",
+      "drawdown": "Kuchora",
+      "payment_activities": "Shughuli za Malipo",
+      "no_money_activities": "Bado huna shughuli za Pesa",
+      "your_wallet_balance": "Usawa wako wa mkoba",
+      "your_merchant_id_is": "Kitambulisho chako cha Muuzaji ni",
+      "your_wallet_account_no_is": {
+        "one": "Nambari yako ya akaunti ya mkoba ni",
+        "other": "Nambari za akaunti yako ya mkoba ni"
+      },
+      "tap_to_copy_merchant_id": "Gonga ili unakili Kitambulisho cha Wauzaji",
+      "tap_to_copy_wallet_account_no": "Gonga ili kunakili nambari ya akaunti ya mkoba",
       "withdraw_fields": {
         "amount": {
-          "label": ""
+          "label": "Ingiza Kiasi"
         },
         "note": {
-          "label": ""
+          "label": "Andika dokezo"
         }
       },
-      "deposit_help_text": "",
-      "select_withdrawal_account": "",
-      "confirm_withdrawal": "",
-      "about_to_withdraw": ""
+      "deposit_help_text": "Tazama hapa chini njia anuwai za kuweka pesa kwenye mkoba wako",
+      "select_withdrawal_account": "Chagua akaunti ya kujiondoa",
+      "confirm_withdrawal": "Thibitisha uondoaji",
+      "about_to_withdraw": "Uko karibu kutoa **{{amount}}** kwa\\n**{{bank_details}}**"
     },
     "drawdown": {
-      "title": "",
-      "amount_available": "",
-      "amount_owed": "",
-      "take_drawdown": "",
-      "make_repayment": "",
-      "nothing_here": "",
-      "drawdown_history": "",
-      "active_drawdowns": "",
-      "take_drawdown_lead_text": "",
-      "repayment": "",
-      "make_payment": "",
-      "repayment_date": "",
-      "repayment_amount": "",
-      "request": ""
+      "title": "Kuchora",
+      "amount_available": "Kiasi kinapatikana kwa kushuka",
+      "amount_owed": "Jumla ya Owed - {{total_owed}}",
+      "take_drawdown": "Chukua Mchoro",
+      "make_repayment": "Ulipa",
+      "nothing_here": "Hakuna cha kuonyesha hapa",
+      "drawdown_history": "Historia ya Kuchora",
+      "active_drawdowns": "Vivutio Vinavyotumika",
+      "take_drawdown_lead_text": "Kumbuka: Fedha zote zitaongezwa kwenye salio lako la mkoba",
+      "repayment": "Ulipaji",
+      "make_payment": "Fanya Malipo",
+      "repayment_date": "Tarehe ya Ulipaji",
+      "repayment_amount": "Kiasi cha ulipaji (inajumuisha ada ya manunuzi ya {{amount}})",
+      "request": "Omba"
     },
-    "copied": ""
+    "copied": "Imenakiliwa"
   },
   "ha": {
     "update_shara": {
@@ -1717,7 +1741,8 @@
       "transaction_success": "",
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
-      "share_customer_ledger_whatsapp_text": ""
+      "share_customer_ledger_whatsapp_text": "",
+      "search_input_placeholder": ""
     },
     "receipts": {
       "filter_options": {
@@ -1953,7 +1978,16 @@
           "website_url": ""
         }
       },
-      "bvn_input_field_placeholder": ""
+      "bvn_input_field_placeholder": "",
+      "withdrawal_method": {
+        "bvn_description": "",
+        "bvn_input_field_placeholder": "",
+        "otp_description": "",
+        "add_withdrawal_method": "",
+        "withdrawal_method_list": "",
+        "edit_withdrawal_method": "",
+        "withdrawal_method_description": ""
+      }
     },
     "more": {
       "header": {
@@ -2076,7 +2110,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",
@@ -2160,11 +2193,14 @@
       "deposit": "",
       "withdraw": "",
       "drawdown": "",
-      "money_activities": "",
+      "payment_activities": "",
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": "",
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
@@ -2450,7 +2486,8 @@
       "transaction_success": "",
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
-      "share_customer_ledger_whatsapp_text": ""
+      "share_customer_ledger_whatsapp_text": "",
+      "search_input_placeholder": ""
     },
     "receipts": {
       "filter_options": {
@@ -2686,7 +2723,16 @@
           "website_url": ""
         }
       },
-      "bvn_input_field_placeholder": ""
+      "bvn_input_field_placeholder": "",
+      "withdrawal_method": {
+        "bvn_description": "",
+        "bvn_input_field_placeholder": "",
+        "otp_description": "",
+        "add_withdrawal_method": "",
+        "withdrawal_method_list": "",
+        "edit_withdrawal_method": "",
+        "withdrawal_method_description": ""
+      }
     },
     "more": {
       "header": {
@@ -2809,7 +2855,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",
@@ -2893,11 +2938,14 @@
       "deposit": "",
       "withdraw": "",
       "drawdown": "",
-      "money_activities": "",
+      "payment_activities": "",
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": "",
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
@@ -3183,7 +3231,8 @@
       "transaction_success": "",
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
-      "share_customer_ledger_whatsapp_text": ""
+      "share_customer_ledger_whatsapp_text": "",
+      "search_input_placeholder": ""
     },
     "receipts": {
       "filter_options": {
@@ -3419,7 +3468,16 @@
           "website_url": ""
         }
       },
-      "bvn_input_field_placeholder": ""
+      "bvn_input_field_placeholder": "",
+      "withdrawal_method": {
+        "bvn_description": "",
+        "bvn_input_field_placeholder": "",
+        "otp_description": "",
+        "add_withdrawal_method": "",
+        "withdrawal_method_list": "",
+        "edit_withdrawal_method": "",
+        "withdrawal_method_description": ""
+      }
     },
     "more": {
       "header": {
@@ -3542,7 +3600,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",
@@ -3626,11 +3683,14 @@
       "deposit": "",
       "withdraw": "",
       "drawdown": "",
-      "money_activities": "",
+      "payment_activities": "",
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": "",
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
@@ -3916,7 +3976,8 @@
       "transaction_success": "",
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
-      "share_customer_ledger_whatsapp_text": ""
+      "share_customer_ledger_whatsapp_text": "",
+      "search_input_placeholder": ""
     },
     "receipts": {
       "filter_options": {
@@ -4152,7 +4213,16 @@
           "website_url": ""
         }
       },
-      "bvn_input_field_placeholder": ""
+      "bvn_input_field_placeholder": "",
+      "withdrawal_method": {
+        "bvn_description": "",
+        "bvn_input_field_placeholder": "",
+        "otp_description": "",
+        "add_withdrawal_method": "",
+        "withdrawal_method_list": "",
+        "edit_withdrawal_method": "",
+        "withdrawal_method_description": ""
+      }
     },
     "more": {
       "header": {
@@ -4275,7 +4345,6 @@
       "download_report_toast_text": "",
       "results": {
         "one": "",
-        "zero": "",
         "other": ""
       },
       "download_report_button_text": "",
@@ -4359,11 +4428,14 @@
       "deposit": "",
       "withdraw": "",
       "drawdown": "",
-      "money_activities": "",
+      "payment_activities": "",
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": "",
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
