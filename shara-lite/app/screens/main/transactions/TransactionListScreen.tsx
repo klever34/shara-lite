@@ -208,7 +208,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           onSearch={handleReceiptSearch}
           containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
-          placeholderText={strings('search_input_placeholder')}
+          placeholderText={strings('transaction.search_input_placeholder')}
         />
         {!searchTerm && (
           <Touchable onPress={handleOpenFilterModal}>
