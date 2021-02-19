@@ -26,6 +26,9 @@ const AccountDetailsCard = ({
   copyMessage,
 }: AccountDetailsCardProps) => {
   const {copyToClipboard} = useClipboard();
+  if (!accountDetailsList.length) {
+    return null;
+  }
   return (
     <View style={as('py-12 items-center w-full')}>
       <Text style={as('text-gray-100')}>{label}</Text>
