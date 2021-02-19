@@ -397,7 +397,15 @@ export interface Strings {
         website_url: string;
       };
     };
-    bvn_input_field_placeholder: string;
+    withdrawal_method: {
+      bvn_description: string;
+      bvn_input_field_placeholder: string;
+      otp_description: string;
+      add_withdrawal_method: string;
+      withdrawal_method_list: string;
+      withdrawal_method_description: string;
+      edit_withdrawal_method: string;
+    };
   };
   more: {
     header: Card;

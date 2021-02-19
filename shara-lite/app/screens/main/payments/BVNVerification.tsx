@@ -27,7 +27,7 @@ export const BVNVerification = () => {
         </View>
         <Text
           style={applyStyles('text-center text-gray-200 text-base pt-16 px-8')}>
-          {strings('payment.payment_container.no_payment_option.description')}
+          {strings('payment.withdrawal_method.otp_description')}
         </Text>
         <OTPInputView
           pinCount={6}
@@ -50,7 +50,7 @@ export const BVNVerification = () => {
         />
         <Button
           title={strings('done')}
-          onPress={() => navigation.navigate('PaymentContainer')}
+          onPress={() => navigation.navigate('PaymentContainer2')}
           style={applyStyles('w-full', {width: '48%'})}
         />
       </View>
