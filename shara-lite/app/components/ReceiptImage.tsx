@@ -161,7 +161,7 @@ export const ReceiptImage = memo((props: Props) => {
               <View>
                 <Text
                   style={applyStyles('pb-4 print-text-400 text-black text-lg')}>
-                  {strings('note', {count: 1})}: {note}
+                  {note}
                 </Text>
               </View>
             )}
