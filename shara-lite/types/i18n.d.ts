@@ -561,7 +561,7 @@ export interface Strings {
     your_wallet_balance: string;
     merchant_id: string;
     your_merchant_id_is: string;
-    your_wallet_account_no_is: string;
+    your_wallet_account_no_is: PluralizedString;
     tap_to_copy: string;
     tap_to_copy_merchant_id: string;
     tap_to_copy_wallet_account_no: string;

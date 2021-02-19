@@ -13,6 +13,7 @@ import Emblem from '@/assets/images/emblem-gray.svg';
 import {withModal} from '@/helpers/hocs';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
+import {useWallet} from '@/services/wallet';
 
 const strings = getI18nService().strings;
 
@@ -26,11 +27,13 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   // const handleOpenFilterModal = useCallback(() => {}, []);
   const totalReceivedAmount = 0;
   const totalWithdrawnAmount = 0;
-  const totalWalletBalance = 0;
-  const merchantId = 12345667780;
+  const {getWallet} = useWallet();
+  const wallet = getWallet();
+  const walletBalance = wallet?.balance;
+  const merchantId = wallet?.merchant_id;
   const handleCopyMerchantId = useCallback(() => {
     copyToClipboard(String(merchantId));
-  }, [copyToClipboard]);
+  }, [copyToClipboard, merchantId]);
   const handleDeposit = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyDepositScreen onClose={closeModal} />,
@@ -146,15 +149,19 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
       <MoneyActionsContainer
         figure={{
           label: strings('payment_activities.your_wallet_balance'),
-          value: amountWithCurrency(totalWalletBalance),
+          value: amountWithCurrency(walletBalance),
         }}
-        tag={{
-          label: strings('payment_activities.merchant_id', {
-            merchant_id: merchantId,
-          }),
-          onPress: handleCopyMerchantId,
-          pressInfo: strings('payment_activities.tap_to_copy'),
-        }}
+        tag={
+          !merchantId
+            ? undefined
+            : {
+                label: strings('payment_activities.merchant_id', {
+                  merchant_id: merchantId,
+                }),
+                onPress: handleCopyMerchantId,
+                pressInfo: strings('payment_activities.tap_to_copy'),
+              }
+        }
         actions={[
           {
             icon: {

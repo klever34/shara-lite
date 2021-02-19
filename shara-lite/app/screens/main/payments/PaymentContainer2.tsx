@@ -136,7 +136,8 @@ function PaymentContainer2(props: ModalWrapperFields) {
                       <Text style={applyStyles('text-400 text-base')}>
                         {strings('reminder_popup.default_collection_day')}
                       </Text>
-                    }></Checkbox>
+                    }
+                  />
                   <View
                     style={applyStyles(
                       'pt-10 flex-row items-center justify-between',
@@ -201,7 +202,8 @@ function PaymentContainer2(props: ModalWrapperFields) {
                         <Text style={applyStyles('text-400 text-base')}>
                           {strings('reminder_popup.default_collection_day')}
                         </Text>
-                      }></Checkbox>
+                      }
+                    />
                   </View>
                   <View
                     style={applyStyles(

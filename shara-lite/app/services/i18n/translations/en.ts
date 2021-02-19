@@ -737,7 +737,10 @@ const en: Strings = {
     your_wallet_balance: 'Your wallet balance',
     merchant_id: '{{merchant_id}} - merchant Id',
     your_merchant_id_is: 'Your Merchant ID is',
-    your_wallet_account_no_is: 'Your wallet account number is',
+    your_wallet_account_no_is: {
+      one: 'Your wallet account number is',
+      other: 'Your wallet account numbers are',
+    },
     tap_to_copy: 'Tap to copy',
     tap_to_copy_merchant_id: 'Tap to copy Merchant ID',
     tap_to_copy_wallet_account_no: 'Tap to copy wallet account number',
