@@ -556,7 +556,7 @@ export interface Strings {
     deposit: string;
     withdraw: string;
     drawdown: string;
-    money_activities: string;
+    payment_activities: string;
     no_money_activities: string;
     your_wallet_balance: string;
     merchant_id: string;

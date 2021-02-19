@@ -759,7 +759,7 @@ const en: Strings = {
     confirm_withdrawal: 'Confirm withdrawal',
     withdraw: 'Withdraw',
     drawdown: 'Drawdown',
-    money_activities: 'Money Activities',
+    payment_activities: 'Payment Activities',
     no_money_activities: 'You have no Money activities yet',
     about_to_withdraw: String.raw`You are about to withdraw **{{amount}}** to\n**{{bank_details}}**`,
   },
