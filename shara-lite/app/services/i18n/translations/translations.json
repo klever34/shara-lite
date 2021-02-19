@@ -688,8 +688,7 @@
       "search_placeholder": "Search payments here...",
       "received": "Received",
       "withdrawn": "Withdrawn",
-      "wallet_balance": "Wallet balance",
-      "your_wallet_balance": "Your wallet balance",
+      "wallet_balance": "Your wallet balance",
       "merchant_id": "{{merchant_id}} - merchant Id",
       "tap_to_copy": "Tap to copy",
       "deposit": "Deposit",
@@ -697,6 +696,7 @@
       "drawdown": "Drawdown",
       "money_activities": "Money Activities",
       "no_money_activities": "You have no Money activities yet",
+      "your_wallet_balance": "Your wallet balance",
       "your_merchant_id_is": "Your Merchant ID is",
       "your_wallet_account_no_is": "Your wallet account number is",
       "tap_to_copy_merchant_id": "Tap to copy Merchant ID",
@@ -711,7 +711,8 @@
       },
       "deposit_help_text": "See below the various ways to deposit funds into your wallet",
       "select_withdrawal_account": "Select withdrawal account",
-      "confirm_withdrawal": "Confirm withdrawal"
+      "confirm_withdrawal": "Confirm withdrawal",
+      "about_to_withdraw": "You are about to withdraw **{{amount}}** to\\n**{{bank_details}}**"
     },
     "drawdown": {
       "title": "Drawdown",
@@ -721,7 +722,13 @@
       "make_repayment": "Make Repayment",
       "nothing_here": "Nothing to show here",
       "drawdown_history": "Drawdown History",
-      "active_drawdowns": "Active Drawdowns"
+      "active_drawdowns": "Active Drawdowns",
+      "take_drawdown_lead_text": "Note: All funds will be added to your wallet balance",
+      "repayment": "Repayment",
+      "make_payment": "Make Payment",
+      "repayment_date": "Repayment Date",
+      "repayment_amount": "Repayment amount (includes {{amount}} transaction fee)",
+      "request": "Request"
     },
     "copied": "Copied"
   },
@@ -1415,7 +1422,6 @@
       "received": "",
       "withdrawn": "",
       "wallet_balance": "",
-      "your_wallet_balance": "",
       "merchant_id": "",
       "tap_to_copy": "",
       "deposit": "",
@@ -1423,6 +1429,7 @@
       "drawdown": "",
       "money_activities": "",
       "no_money_activities": "",
+      "your_wallet_balance": "",
       "your_merchant_id_is": "",
       "your_wallet_account_no_is": "",
       "tap_to_copy_merchant_id": "",
@@ -1437,7 +1444,8 @@
       },
       "deposit_help_text": "",
       "select_withdrawal_account": "",
-      "confirm_withdrawal": ""
+      "confirm_withdrawal": "",
+      "about_to_withdraw": ""
     },
     "drawdown": {
       "title": "",
@@ -1447,7 +1455,13 @@
       "make_repayment": "",
       "nothing_here": "",
       "drawdown_history": "",
-      "active_drawdowns": ""
+      "active_drawdowns": "",
+      "take_drawdown_lead_text": "",
+      "repayment": "",
+      "make_payment": "",
+      "repayment_date": "",
+      "repayment_amount": "",
+      "request": ""
     },
     "copied": ""
   },
@@ -2141,7 +2155,6 @@
       "received": "",
       "withdrawn": "",
       "wallet_balance": "",
-      "your_wallet_balance": "",
       "merchant_id": "",
       "tap_to_copy": "",
       "deposit": "",
@@ -2149,6 +2162,7 @@
       "drawdown": "",
       "money_activities": "",
       "no_money_activities": "",
+      "your_wallet_balance": "",
       "your_merchant_id_is": "",
       "your_wallet_account_no_is": "",
       "tap_to_copy_merchant_id": "",
@@ -2163,7 +2177,8 @@
       },
       "deposit_help_text": "",
       "select_withdrawal_account": "",
-      "confirm_withdrawal": ""
+      "confirm_withdrawal": "",
+      "about_to_withdraw": ""
     },
     "drawdown": {
       "title": "",
@@ -2173,7 +2188,13 @@
       "make_repayment": "",
       "nothing_here": "",
       "drawdown_history": "",
-      "active_drawdowns": ""
+      "active_drawdowns": "",
+      "take_drawdown_lead_text": "",
+      "repayment": "",
+      "make_payment": "",
+      "repayment_date": "",
+      "repayment_amount": "",
+      "request": ""
     },
     "copied": ""
   },
@@ -2867,7 +2888,6 @@
       "received": "",
       "withdrawn": "",
       "wallet_balance": "",
-      "your_wallet_balance": "",
       "merchant_id": "",
       "tap_to_copy": "",
       "deposit": "",
@@ -2875,6 +2895,7 @@
       "drawdown": "",
       "money_activities": "",
       "no_money_activities": "",
+      "your_wallet_balance": "",
       "your_merchant_id_is": "",
       "your_wallet_account_no_is": "",
       "tap_to_copy_merchant_id": "",
@@ -2889,7 +2910,8 @@
       },
       "deposit_help_text": "",
       "select_withdrawal_account": "",
-      "confirm_withdrawal": ""
+      "confirm_withdrawal": "",
+      "about_to_withdraw": ""
     },
     "drawdown": {
       "title": "",
@@ -2899,7 +2921,13 @@
       "make_repayment": "",
       "nothing_here": "",
       "drawdown_history": "",
-      "active_drawdowns": ""
+      "active_drawdowns": "",
+      "take_drawdown_lead_text": "",
+      "repayment": "",
+      "make_payment": "",
+      "repayment_date": "",
+      "repayment_amount": "",
+      "request": ""
     },
     "copied": ""
   },
@@ -3593,7 +3621,6 @@
       "received": "",
       "withdrawn": "",
       "wallet_balance": "",
-      "your_wallet_balance": "",
       "merchant_id": "",
       "tap_to_copy": "",
       "deposit": "",
@@ -3601,6 +3628,7 @@
       "drawdown": "",
       "money_activities": "",
       "no_money_activities": "",
+      "your_wallet_balance": "",
       "your_merchant_id_is": "",
       "your_wallet_account_no_is": "",
       "tap_to_copy_merchant_id": "",
@@ -3615,7 +3643,8 @@
       },
       "deposit_help_text": "",
       "select_withdrawal_account": "",
-      "confirm_withdrawal": ""
+      "confirm_withdrawal": "",
+      "about_to_withdraw": ""
     },
     "drawdown": {
       "title": "",
@@ -3625,7 +3654,13 @@
       "make_repayment": "",
       "nothing_here": "",
       "drawdown_history": "",
-      "active_drawdowns": ""
+      "active_drawdowns": "",
+      "take_drawdown_lead_text": "",
+      "repayment": "",
+      "make_payment": "",
+      "repayment_date": "",
+      "repayment_amount": "",
+      "request": ""
     },
     "copied": ""
   },
@@ -4319,7 +4354,6 @@
       "received": "",
       "withdrawn": "",
       "wallet_balance": "",
-      "your_wallet_balance": "",
       "merchant_id": "",
       "tap_to_copy": "",
       "deposit": "",
@@ -4327,6 +4361,7 @@
       "drawdown": "",
       "money_activities": "",
       "no_money_activities": "",
+      "your_wallet_balance": "",
       "your_merchant_id_is": "",
       "your_wallet_account_no_is": "",
       "tap_to_copy_merchant_id": "",
@@ -4341,7 +4376,8 @@
       },
       "deposit_help_text": "",
       "select_withdrawal_account": "",
-      "confirm_withdrawal": ""
+      "confirm_withdrawal": "",
+      "about_to_withdraw": ""
     },
     "drawdown": {
       "title": "",
@@ -4351,7 +4387,13 @@
       "make_repayment": "",
       "nothing_here": "",
       "drawdown_history": "",
-      "active_drawdowns": ""
+      "active_drawdowns": "",
+      "take_drawdown_lead_text": "",
+      "repayment": "",
+      "make_payment": "",
+      "repayment_date": "",
+      "repayment_amount": "",
+      "request": ""
     },
     "copied": ""
   }

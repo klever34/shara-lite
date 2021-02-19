@@ -747,6 +747,7 @@ const en: Strings = {
     drawdown: 'Drawdown',
     money_activities: 'Money Activities',
     no_money_activities: 'You have no Money activities yet',
+    about_to_withdraw: String.raw`You are about to withdraw **{{amount}}** to\n**{{bank_details}}**`,
   },
   drawdown: {
     title: 'Drawdown',
@@ -757,6 +758,13 @@ const en: Strings = {
     nothing_here: 'Nothing to show here',
     drawdown_history: 'Drawdown History',
     active_drawdowns: 'Active Drawdowns',
+    take_drawdown_lead_text:
+      'Note: All funds will be added to your wallet balance',
+    repayment: 'Repayment',
+    make_payment: 'Make Payment',
+    repayment_date: 'Repayment Date',
+    repayment_amount: 'Repayment amount (includes {{amount}} transaction fee)',
+    request: 'Request',
   },
   copied: 'Copied',
 };

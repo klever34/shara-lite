@@ -562,9 +562,10 @@ export interface Strings {
       amount: FormField;
       note: FormField;
     };
-    deposit_help_text: 'See below the various ways to deposit funds into your wallet';
-    select_withdrawal_account: 'Select withdrawal account';
-    confirm_withdrawal: 'Confirm withdrawal';
+    deposit_help_text: string;
+    select_withdrawal_account: string;
+    confirm_withdrawal: string;
+    about_to_withdraw: string;
   };
   drawdown: {
     title: string;
@@ -575,6 +576,12 @@ export interface Strings {
     nothing_here: string;
     drawdown_history: string;
     active_drawdowns: string;
+    take_drawdown_lead_text: string;
+    repayment: string;
+    make_payment: string;
+    repayment_date: string;
+    repayment_amount: string;
+    request: string;
   };
   copied: string;
 }

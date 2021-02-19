@@ -77,7 +77,7 @@ export const HomeScreen = () => {
       </View>
 
       <MainNav.Navigator
-        initialRouteName="MoneyTab"
+        initialRouteName="TransactionsTab"
         tabBarOptions={{
           labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: colors.primary,

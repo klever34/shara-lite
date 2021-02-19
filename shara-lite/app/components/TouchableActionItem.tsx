@@ -17,7 +17,7 @@ type Section = {
   style?: ViewStyle;
 };
 
-interface Props {
+export interface TouchableActionItemProps {
   icon?: string;
   style?: ViewStyle;
   onPress?(): void;
@@ -25,7 +25,7 @@ interface Props {
   rightSection?: Section;
 }
 
-export const TouchableActionItem = (props: Props) => {
+export const TouchableActionItem = (props: TouchableActionItemProps) => {
   const {icon, onPress, style, leftSection, rightSection} = props;
   return (
     <Touchable onPress={onPress}>
