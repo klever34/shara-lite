@@ -19,11 +19,11 @@ export const ReportsScreen = () => {
 
   const {
     filter,
-    filterOptionLabels,
-    filteredReceipts,
-    filterOptions,
-    handleReceiptSearch,
     totalAmount,
+    filterOptions,
+    filteredReceipts,
+    filterOptionLabels,
+    handleReceiptSearch,
   } = useReceiptList({initialFilter: 'all'});
   const {showSuccessToast} = useContext(ToastContext);
   const handleExport = useCallback(async () => {
