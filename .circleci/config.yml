@@ -769,8 +769,8 @@ jobs:
         default: true
     steps:
       - checkout
-      - android/install-ndk:
-          ndk-version: android-ndk-r19c
+#      - android/install-ndk:
+#          ndk-version: android-ndk-r19c
       - run:
           name: Yarn Install Dependencies
           command: |
