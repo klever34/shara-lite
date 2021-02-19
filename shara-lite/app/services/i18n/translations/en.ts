@@ -522,7 +522,7 @@ const en: Strings = {
       bvn_description:
         'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
       bvn_input_field_placeholder: 'Enter your BVN',
-      otp_description: 'An OTP has been sent to your BVN number *******4343',
+      otp_description: 'An OTP has been sent to your BVN number {{mobile}}',
       add_withdrawal_method: 'Add Withdrawal Method',
       withdrawal_method_list:
         'These are your preferred methods of collecting payment so your customers can know how to pay you. See your link below:',
