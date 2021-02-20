@@ -434,7 +434,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
           {strings('sale.no_customer_text')}
         </Text>
       )}
-      {dueDate && isBefore(dueDate, new Date()) && (
+      {!!values.credit_amount && dueDate && isBefore(dueDate, new Date()) && (
         <Text style={applyStyles('text-sm text-400 text-red-100 text-center')}>
           {strings('sale.due_date_is_past', {customer: customer?.name})}
         </Text>
@@ -445,7 +445,7 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
         style={applyStyles('mt-20')}
         disabled={
           (!!values.credit_amount && !customer) ||
-          (dueDate && isBefore(dueDate, new Date()))
+          (!!values.credit_amount && dueDate && isBefore(dueDate, new Date()))
         }
         title={customer ? strings('save') : strings('next')}
       />
