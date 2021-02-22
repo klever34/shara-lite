@@ -27,7 +27,7 @@ export const MoneyActionsContainer = ({
   actions,
 }: MoneyActionsContainerProps) => {
   return (
-    <View style={as('items-center py-24 px-16')}>
+    <View style={as('items-center pt-16 px-16')}>
       <Text style={as('mb-8 text-gray-100')}>{figure.label}</Text>
       <Text style={as('mb-16 text-3xl font-bold')}>{figure.value}</Text>
       {tag && (

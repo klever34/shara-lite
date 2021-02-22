@@ -254,42 +254,43 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
           },
         ]}
       />
+      <View
+        style={applyStyles(
+          'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
+        )}>
+        <Text style={applyStyles('text-base text-gray-300')}>
+          {strings('payment_activities.payment_activities')}
+        </Text>
+        <Touchable onPress={handleOpenFilterModal}>
+          <View style={applyStyles('py-4 px-8 flex-row items-center')}>
+            <Text
+              style={applyStyles(
+                'text-base text-gray-300 text-700 text-uppercase pr-8',
+              )}>
+              {getFilterLabelText()}
+            </Text>
+            <Icon
+              size={16}
+              type="feathericons"
+              name="chevron-down"
+              color={colors['gray-50']}
+            />
+          </View>
+        </Touchable>
+      </View>
       <FlatList
         data={activitiesData}
         initialNumToRender={10}
         renderItem={renderListItem}
         onEndReachedThreshold={0.2}
-        style={applyStyles('bg-white')}
-        contentContainerStyle={as('flex-1')}
+        style={applyStyles('bg-white flex-1', {paddingBottom: 50})}
+        keyExtractor={(item) => `${item?._id?.toString()}`}
+        contentContainerStyle={
+          !activitiesData.length ? as('flex-1') : undefined
+        }
         onEndReached={() => {
           handlePagination();
         }}
-        ListHeaderComponent={
-          <View
-            style={applyStyles(
-              'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
-            )}>
-            <Text style={applyStyles('text-base text-gray-300')}>
-              {strings('payment_activities.payment_activities')}
-            </Text>
-            <Touchable onPress={handleOpenFilterModal}>
-              <View style={applyStyles('py-4 px-8 flex-row items-center')}>
-                <Text
-                  style={applyStyles(
-                    'text-base text-gray-300 text-700 text-uppercase pr-8',
-                  )}>
-                  {getFilterLabelText()}
-                </Text>
-                <Icon
-                  size={16}
-                  type="feathericons"
-                  name="chevron-down"
-                  color={colors['gray-50']}
-                />
-              </View>
-            </Touchable>
-          </View>
-        }
         ListEmptyComponent={
           <EmptyState>
             <View style={applyStyles('center px-8')}>
