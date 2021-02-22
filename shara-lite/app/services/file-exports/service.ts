@@ -1,4 +1,3 @@
-import XLSX from 'xlsx';
 import {PermissionsAndroid} from 'react-native';
 import RNFetchBlob from 'rn-fetch-blob';
 import RNHTMLtoPDF from 'react-native-html-to-pdf-lite';
@@ -12,33 +11,6 @@ export interface ExcelExportInterface {
   filename?: string;
 }
 
-export const exportToExcel = async (options: ExcelExportInterface) => {
-  const {data, columns, notificationTitle, filename} = options;
-
-  const ws = XLSX.utils.aoa_to_sheet(data);
-  if (columns) {
-    ws['!cols'] = columns;
-  }
-
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'Reports');
-  const wbout = XLSX.write(wb, {type: 'binary', bookType: 'xlsx'});
-
-  const dataToExport = wbout.split('').map((x: string) => x.charCodeAt(0));
-  const path = `${dirs.DownloadDir}/${filename || 'Shara export'}.xlsx`;
-  const mime = 'application/xlsx';
-  const encoding = 'ascii';
-
-  await saveToFile({
-    data: dataToExport,
-    path,
-    mime,
-    encoding,
-    notificationTitle,
-  });
-
-  return path;
-};
 
 export const saveToFile = async ({
   data,
