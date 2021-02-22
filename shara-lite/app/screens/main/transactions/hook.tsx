@@ -17,7 +17,7 @@ import React, {
 const strings = getI18nService().strings;
 
 interface TransactionListContextValue {
-  filter?: string;
+  filter: string;
   searchTerm: string;
   totalAmount: number;
   filterEndDate: Date;
@@ -32,7 +32,7 @@ interface TransactionListContextValue {
   receiptsToDisplay: (IReceipt & Realm.Object)[];
   filteredReceipts: Realm.Results<IReceipt & Realm.Object>;
   handleStatusFilter: (payload: {
-    status?: string;
+    status: string;
     startDate?: Date;
     endDate?: Date;
   }) => void;
@@ -65,7 +65,7 @@ export const useReceiptList = ({
   const [activitiesToDisplay, setActivitiesToDisplay] = useState<IActivity[]>(
     [],
   );
-  const [filter, setFilter] = useState<string | undefined>(initialFilter);
+  const [filter, setFilter] = useState<string>(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState('');
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
@@ -442,7 +442,7 @@ export const useReceiptList = ({
   }, [perPage, handleSetReceiptsToDisplay, handleSetActivitiesToDisplay]);
 
   const handleStatusFilter = useCallback(
-    (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
+    (payload: {status: string; startDate?: Date; endDate?: Date}) => {
       const {status, startDate, endDate} = payload;
       setFilter(status);
       startDate && setFilterStartDate(startDate);

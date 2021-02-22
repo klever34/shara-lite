@@ -45,9 +45,11 @@ export const MoneyActionsContainer = ({
         </Touchable>
       )}
       <View style={as('flex-row my-16')}>
-        {actions.map(({onPress, label, icon, disabled = false}) => {
+        {actions.map(({onPress, label, icon, disabled = false}, index) => {
           return (
-            <Touchable onPress={disabled ? undefined : onPress}>
+            <Touchable
+              onPress={disabled ? undefined : onPress}
+              key={`${label}-${index}`}>
               <View style={as('items-center px-20 py-12')}>
                 <View
                   style={as('rounded-32 p-8 mb-8', {

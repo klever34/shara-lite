@@ -1,6 +1,6 @@
 import {AppInput, Button} from '@/components';
 import {applyStyles} from '@/styles';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Text, View} from 'react-native';
 import {Page} from '@/components/Page';
 import {getI18nService} from '@/services';
@@ -11,6 +11,12 @@ const strings = getI18nService().strings;
 
 export const PaymentSettingBvn = () => {
   const navigation = useAppNavigation();
+
+  const handleSubmit = useCallback(() => {
+    requestAnimationFrame(() => {
+      navigation.navigate('BVNVerification');
+    });
+  }, [navigation]);
 
   return (
     <Page style={applyStyles('px-14')}>
@@ -29,7 +35,7 @@ export const PaymentSettingBvn = () => {
       <View style={applyStyles('pt-24 items-center')}>
         <Button
           title={strings('next')}
-          onPress={() => navigation.navigate('BVNVerification')}
+          onPress={handleSubmit}
           style={applyStyles({width: '48%'})}
         />
       </View>
