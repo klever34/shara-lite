@@ -10,7 +10,6 @@ import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
 import React, {useCallback, useState} from 'react';
 import {InteractionManager, Text, View} from 'react-native';
-import Markdown from 'react-native-markdown-display';
 
 function isCollection(item: ICollection | IDisbursement): item is ICollection {
   return (item as ICollection).collection_method !== undefined;
