@@ -1,16 +1,14 @@
-import { FilterOption } from '@/components/TransactionFilterModal';
-import { ICollection } from '@/models/Collection';
-import { IDisbursement } from '@/models/Disbursement';
-import { getI18nService } from '@/services';
-import { useCollection } from '@/services/collection';
-import { useDisbursement } from '@/services/disbursement';
-import { useWallet } from '@/services/wallet';
-import { subMonths, subWeeks } from 'date-fns';
-import { useCallback, useMemo, useState } from 'react';
-
+import {FilterOption} from '@/components/TransactionFilterModal';
+import {ICollection} from '@/models/Collection';
+import {IDisbursement} from '@/models/Disbursement';
+import {getI18nService} from '@/services';
+import {useCollection} from '@/services/collection';
+import {useDisbursement} from '@/services/disbursement';
+import {useWallet} from '@/services/wallet';
+import {subMonths, subWeeks} from 'date-fns';
+import {useCallback, useMemo, useState} from 'react';
 
 const strings = getI18nService().strings;
-
 
 interface UsePaymentActivitiesValue {
   filter: string;
@@ -36,7 +34,6 @@ interface UsePaymentActivitiesValue {
   }) => void;
 }
 
-
 export type UsePaymentActivitiesOptions = {
   initialFilter?: string;
   filterOptions?: FilterOption[];
@@ -53,7 +50,7 @@ export const usePaymentActivities = ({
   const wallet = getWallet();
   const collections = getCollections();
   const disbursements = getDisbursements();
-  
+
   const perPage = 20;
   const walletBalance = wallet?.balance;
   const merchantId = wallet?.merchant_id;
@@ -66,8 +63,10 @@ export const usePaymentActivities = ({
   const [filter, setFilter] = useState(initialFilter);
   const [filterEndDate, setFilterEndDate] = useState(new Date());
   const [filterStartDate, setFilterStartDate] = useState(new Date());
-  const [displayedCollections, setDisplayedCollections] = useState<(ICollection & Realm.Object)[]>([]);
-  const [displayedDisbursements, setDisplayedDisbursements] = useState<(IDisbursement & Realm.Object)[]>([]);
+  const [displayedCollections, setDisplayedCollections] = useState<(ICollection & Realm.Object)[]
+  >([]);
+  const [displayedDisbursements, setDisplayedDisbursements] = useState<(IDisbursement & Realm.Object)[]
+  >([]);
 
   filterOptions =
     filterOptions ??
@@ -143,10 +142,7 @@ export const usePaymentActivities = ({
         `customer.name CONTAINS[c] "${searchTerm}"`,
       );
     }
-    return userCollections.sorted(
-      'created_at',
-      true,
-    );
+    return userCollections.sorted('created_at', true);
   }, [filter, filterStartDate, filterEndDate, collections.length, searchTerm]);
 
   const filteredDisbursements = useMemo(() => {
@@ -195,12 +191,18 @@ export const usePaymentActivities = ({
       );
     }
     return userDisbursement.sorted('created_at', true);
-  }, [ searchTerm, disbursements.length, filter, filterEndDate, filterStartDate ] );
-    
+  }, [
+    searchTerm,
+    disbursements.length,
+    filter,
+    filterEndDate,
+    filterStartDate,
+  ]);
+
   const totalReceivedAmount = useMemo(() => {
     return filteredCollections.sum('amount') ?? 0;
   }, [filteredCollections]);
-    
+
   const totalWithdrawnAmount = useMemo(() => {
     return filteredDisbursements.sum('amount') ?? 0;
   }, [filteredDisbursements]);
@@ -254,7 +256,8 @@ export const usePaymentActivities = ({
     handleSetDisplayDisbursements,
   ]);
 
-  const handlePaginatedSearchFilter = useCallback(({
+  const handlePaginatedSearchFilter = useCallback(
+    ({
       search,
       status,
       endDate,
@@ -269,92 +272,93 @@ export const usePaymentActivities = ({
       endCount: number;
       startCount: number;
     }) => {
-        let collectionData = collections;
-        let disbursementData = disbursements;
+      let collectionData = collections;
+      let disbursementData = disbursements;
 
-        if (status) {
-            switch (status) {
-            case 'all':
-                collectionData = collectionData;
-                disbursementData = disbursementData;
-                break;
-            case 'single-day':
-                collectionData = collectionData.filtered(
-                'created_at >= $0 && created_at <= $1',
-                startDate,
-                endDate,
-                );
-                disbursementData = disbursementData.filtered(
-                'created_at >= $0 && created_at <= $1',
-                startDate,
-                endDate,
-                );
-                break;
-            case '1-week':
-                collectionData = collectionData.filtered(
-                'created_at >= $0 && created_at < $1',
-                startDate,
-                endDate,
-                );
-                disbursementData = disbursementData.filtered(
-                'created_at >= $0 && created_at < $1',
-                startDate,
-                endDate,
-                );
-                break;
-            case '1-month':
-                collectionData = collectionData.filtered(
-                'created_at >= $0 && created_at < $1',
-                startDate,
-                endDate,
-                );
-                disbursementData = disbursementData.filtered(
-                'created_at >= $0 && created_at < $1',
-                startDate,
-                endDate,
-                );
-                break;
-            case 'date-range':
-                collectionData = collectionData.filtered(
-                'created_at >= $0 && created_at < $1',
-                startDate,
-                endDate,
-                );
-                disbursementData = disbursementData.filtered(
-                'created_at >= $0 && created_at < $1',
-                startDate,
-                endDate,
-                );
-                break;
-            default:
-                collectionData = collectionData;
-                disbursementData = disbursementData;
-                break;
-            }
-        }
-        if (search) {
+      if (status) {
+        switch (status) {
+          case 'all':
+            collectionData = collectionData;
+            disbursementData = disbursementData;
+            break;
+          case 'single-day':
             collectionData = collectionData.filtered(
-            `customer.name CONTAINS[c] "${search}"`,
+              'created_at >= $0 && created_at <= $1',
+              startDate,
+              endDate,
             );
             disbursementData = disbursementData.filtered(
-            `message CONTAINS[c] "${search}"`,
+              'created_at >= $0 && created_at <= $1',
+              startDate,
+              endDate,
             );
+            break;
+          case '1-week':
+            collectionData = collectionData.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            disbursementData = disbursementData.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            break;
+          case '1-month':
+            collectionData = collectionData.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            disbursementData = disbursementData.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            break;
+          case 'date-range':
+            collectionData = collectionData.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            disbursementData = disbursementData.filtered(
+              'created_at >= $0 && created_at < $1',
+              startDate,
+              endDate,
+            );
+            break;
+          default:
+            collectionData = collectionData;
+            disbursementData = disbursementData;
+            break;
         }
+      }
+      if (search) {
+        collectionData = collectionData.filtered(
+          `customer.name CONTAINS[c] "${search}"`,
+        );
+        disbursementData = disbursementData.filtered(
+          `message CONTAINS[c] "${search}"`,
+        );
+      }
 
-        collectionData = collectionData.sorted('created_at', true);
-        disbursementData = disbursementData.sorted('created_at', true);
+      collectionData = collectionData.sorted('created_at', true);
+      disbursementData = disbursementData.sorted('created_at', true);
 
-        const newCollectionData = collectionData.slice(startCount, endCount);
-        const newDisbursementData = disbursementData.slice(startCount, endCount);
+      const newCollectionData = collectionData.slice(startCount, endCount);
+      const newDisbursementData = disbursementData.slice(startCount, endCount);
 
-        setDisplayedCollections((prevCollections) => {
-            return [...prevCollections, ...newCollectionData];
-        });
-        setDisplayedDisbursements((prevDisbursements) => {
-            return [...prevDisbursements, ...newDisbursementData];
-        });
-  }, [collections, disbursements])
-
+      setDisplayedCollections((prevCollections) => {
+        return [...prevCollections, ...newCollectionData];
+      });
+      setDisplayedDisbursements((prevDisbursements) => {
+        return [...prevDisbursements, ...newDisbursementData];
+      });
+    },
+    [collections, disbursements],
+  );
 
   const handleFilter = useCallback(
     (payload: {status: string; startDate?: Date; endDate?: Date}) => {
@@ -402,43 +406,44 @@ export const usePaymentActivities = ({
     handleSetDisplayDisbursements(0, perPage);
   }, [perPage, handleSetDisplayCollections, handleSetDisplayDisbursements]);
 
-    return useMemo( () => ( {
+  return useMemo(
+    () => ({
       filter,
-      reloadData, 
+      reloadData,
       searchTerm,
       merchantId,
-      handleFilter, 
-      handleSearch, 
+      handleFilter,
+      handleSearch,
       filterOptions,
       filterEndDate,
       walletBalance,
       filterStartDate,
-      handlePagination, 
-      filteredCollections, 
+      handlePagination,
+      filteredCollections,
       totalReceivedAmount,
       totalWithdrawnAmount,
       filteredDisbursements,
       collections: displayedCollections,
       disbursements: displayedDisbursements,
-    }), 
-      [
-        filter,
-        searchTerm,
+    }),
+    [
+      filter,
+      searchTerm,
       merchantId,
-          reloadData, 
-          collections,
-          handleFilter, 
-          handleSearch,
-      filterOptions, 
+      reloadData,
+      collections,
+      handleFilter,
+      handleSearch,
+      filterOptions,
       filterEndDate,
       walletBalance,
       filterStartDate,
-          disbursements,
-          handlePagination, 
-          filteredCollections,  
-          totalReceivedAmount,
+      disbursements,
+      handlePagination,
+      filteredCollections,
+      totalReceivedAmount,
       totalWithdrawnAmount,
-          filteredDisbursements
-        ])
-
-}
+      filteredDisbursements,
+    ],
+  );
+};

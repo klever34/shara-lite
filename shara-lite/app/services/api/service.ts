@@ -143,6 +143,10 @@ export interface IApiService {
   }): Promise<string>;
 
   fcmToken(payload: {token: string; platform?: string}): Promise<ApiResponse>;
+  makeDisbursement(payload: {
+    amount: string;
+    disbursement_method_id: number;
+  }): Promise<ApiResponse>;
 }
 
 export class ApiService implements IApiService {
@@ -657,6 +661,17 @@ export class ApiService implements IApiService {
     try {
       const response = await this.requester.post('/fcm/token', payload);
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async makeDisbursement(payload: {
+    amount: string;
+    disbursement_method_id: number;
+  }): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/disbursement', payload);
     } catch (error) {
       throw error;
     }
