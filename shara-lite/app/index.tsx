@@ -6,12 +6,13 @@ import {handleError} from '@/services/error-boundary';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 import {NavigationContainer} from '@react-navigation/native';
 import {NavigationState} from '@react-navigation/routers';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import Sentry from '@sentry/react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {withErrorBoundary} from 'react-error-boundary';
 import {Platform} from 'react-native';
 import 'react-native-gesture-handler';
+import {enableScreens} from 'react-native-screens';
 import {MenuProvider} from 'react-native-popup-menu';
 import ErrorFallback from './components/ErrorFallback';
 import AuthScreens from './screens/auth';
@@ -20,6 +21,8 @@ import SplashScreen from './screens/SplashScreen';
 import RealmProvider from './services/realm/provider';
 import Config from 'react-native-config';
 import {AppContext} from './contexts/app';
+
+enableScreens();
 
 if (Platform.OS === 'android') {
   // only android needs polyfill
@@ -34,7 +37,7 @@ export type RootStackParamList = {
   Main: undefined;
 };
 
-const RootStack = createStackNavigator<RootStackParamList>();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   const [reloadFlag, setReloadFlag] = useState(false);

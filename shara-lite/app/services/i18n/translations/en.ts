@@ -251,6 +251,7 @@ const en: Strings = {
       'Please enter collected amount or outstanding amount',
     edit_transaction: 'Edit Transaction',
     transaction_deleted: 'TRANSACTION DELETED',
+    search_input_placeholder: 'Search activities by customer here',
     confirm_delete: 'Are you sure you want to delete this transaction?',
     is_collection_message: 'You Collected **{{total_amount}}**.',
     is_collection_with_customer_message:

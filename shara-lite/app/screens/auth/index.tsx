@@ -3,7 +3,7 @@ import ForgotPassword from '@/screens/auth/ForgotPassword';
 import ResetPassword from '@/screens/auth/ResetPassword';
 import {getStorageService} from '@/services';
 import {applyStyles, colors} from '@/styles';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import React, {useCallback, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import {Login} from './Login';
@@ -21,7 +21,7 @@ export type AuthStackParamList = {
   OTPVerification: {mobile: string; message: string; countryCode: string};
 };
 
-const AuthStack = createStackNavigator<AuthStackParamList>();
+const AuthStack = createNativeStackNavigator<AuthStackParamList>();
 
 const AuthScreens = () => {
   const [initialRouteName, setInitialRouteName] = useState<

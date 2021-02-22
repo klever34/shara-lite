@@ -1,12 +1,12 @@
 import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {PaymentActivitiesScreen} from '@/screens/main/money/PaymentActivitiesScreen';
 
 export type MoneyStackParamList = {
   PaymentActivities: undefined;
 };
 
-const MoneyStack = createStackNavigator<MoneyStackParamList>();
+const MoneyStack = createNativeStackNavigator<MoneyStackParamList>();
 
 export const MoneyScreen = () => {
   return (

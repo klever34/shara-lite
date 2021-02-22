@@ -3,7 +3,7 @@ import {getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles} from '@/styles';
 import {format, isToday} from 'date-fns';
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {memo, useCallback, useEffect, useRef} from 'react';
 import {Text} from '@/components';
 import {Image, ScrollView, View} from 'react-native';
 import ViewShot, {ViewShotProperties} from 'react-native-view-shot';
@@ -125,4 +125,4 @@ function PaymentReminderImage({
   );
 }
 
-export default PaymentReminderImage;
+export default memo(PaymentReminderImage);

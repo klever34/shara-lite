@@ -23,7 +23,9 @@ type AmountFormProps = {
   leadText: string;
   actionItems: TouchableActionItemProps[];
   onClose: () => void;
-  doneButton: ButtonProps;
+  doneButton: Omit<ButtonProps, 'onPress'> & {
+    onPress: (amount: string) => void;
+  };
 };
 
 export const AmountForm = ({
@@ -73,7 +75,12 @@ export const AmountForm = ({
               variantColor: 'clear',
               onPress: onClose,
             },
-            doneButton,
+            {
+              ...doneButton,
+              onPress: () => {
+                doneButton.onPress?.(values.amount);
+              },
+            },
           ]}
         />
       </View>

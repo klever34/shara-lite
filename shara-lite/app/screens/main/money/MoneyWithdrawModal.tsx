@@ -1,6 +1,6 @@
-import React, {useCallback, useState} from 'react';
+import React, {ReactNode, useCallback, useState} from 'react';
 import {Header, Text} from '@/components';
-import {getI18nService} from '@/services';
+import {getApiService, getI18nService} from '@/services';
 import {View} from 'react-native';
 import {applyStyles, as} from '@/styles';
 import {withModal} from '@/helpers/hocs';
@@ -9,6 +9,9 @@ import ActionButtonSet from '@/components/ActionButtonSet';
 import Touchable from '@/components/Touchable';
 import Markdown from 'react-native-markdown-display';
 import {AmountForm} from './AmountForm';
+import {useDisbursementMethod} from '@/services/disbursement-method';
+import {useWallet} from '@/services/wallet';
+import {IDisbursementMethod} from '@/models/DisbursementMethod';
 
 const markdownStyle = {
   body: applyStyles('text-gray-300 text-400 text-base mb-32'),
@@ -21,36 +24,31 @@ const markdownStyle = {
 
 const strings = getI18nService().strings;
 
-type BankDetails = {bankName: string; accountNo: string};
-
 type SelectWithdrawalAccountModalProps = {
   onClose: () => void;
-  onDone: (selectedBankDetails: BankDetails) => void;
+  onDone: (
+    selectedDisbursementMethod: IDisbursementMethod & Realm.Object,
+  ) => void;
 };
 
 const SelectWithdrawalAccountModal = ({
   onClose,
   onDone,
 }: SelectWithdrawalAccountModalProps) => {
-  const bankAccounts: BankDetails[] = [
-    {
-      bankName: 'GTBank',
-      accountNo: '1234566780',
-    },
-    {
-      bankName: 'Mpesa',
-      accountNo: '1122343551',
-    },
-  ];
-  const [selectedBankDetails, setSelectedBankDetails] = useState<BankDetails>(
-    bankAccounts[0],
+  const {getDisbursementMethods} = useDisbursementMethod();
+  const methods = getDisbursementMethods() ?? [];
+  const [selectedDisbursementMethod, setSelectedDisbursementMethod] = useState(
+    methods[0],
   );
-  const handleSelect = useCallback((bankDetails: BankDetails) => {
-    setSelectedBankDetails(bankDetails);
-  }, []);
+  let handleSelect = useCallback(
+    (disbursementMethod: IDisbursementMethod & Realm.Object) => {
+      setSelectedDisbursementMethod(disbursementMethod);
+    },
+    [],
+  );
   const handleDone = useCallback(() => {
-    onDone(selectedBankDetails);
-  }, [onDone, selectedBankDetails]);
+    onDone(selectedDisbursementMethod);
+  }, [onDone, selectedDisbursementMethod]);
   return (
     <View style={as('')}>
       <Header
@@ -58,14 +56,15 @@ const SelectWithdrawalAccountModal = ({
         style={as('border-b-0 pt-12 pb-0')}
       />
       <View style={as('px-16 py-12')}>
-        {bankAccounts.map((bankDetails) => {
-          const {bankName, accountNo} = bankDetails;
-          const isSelected = accountNo === selectedBankDetails.accountNo;
+        {methods.map((disbursementMethod) => {
+          const {bank_name, nuban} = disbursementMethod.parsedAccountDetails;
+          const isSelected =
+            nuban === selectedDisbursementMethod.parsedAccountDetails.nuban;
           return (
             <Touchable
-              key={accountNo}
+              key={nuban}
               onPress={() => {
-                handleSelect(bankDetails);
+                handleSelect(disbursementMethod);
               }}>
               <View
                 style={as(
@@ -73,9 +72,9 @@ const SelectWithdrawalAccountModal = ({
                 )}>
                 <View style={as('flex-1')}>
                   <Text style={as('uppercase mb-4 font-bold text-gray-300')}>
-                    {bankName}
+                    {bank_name}
                   </Text>
-                  <Text style={as('text-gray-300')}>{accountNo}</Text>
+                  <Text style={as('text-gray-300')}>{nuban}</Text>
                 </View>
                 <View
                   style={as(
@@ -103,7 +102,7 @@ const SelectWithdrawalAccountModal = ({
               onPress: onClose,
             },
             {
-              title: strings('payment_activities.withdraw'),
+              title: strings('done'),
               onPress: handleDone,
             },
           ]}
@@ -114,11 +113,16 @@ const SelectWithdrawalAccountModal = ({
 };
 
 type ConfirmationModalProps = {
+  children: ReactNode;
   onClose: () => void;
   onConfirm: () => void;
 };
 
-const ConfirmationModal = ({onClose, onConfirm}: ConfirmationModalProps) => {
+const ConfirmationModal = ({
+  children,
+  onClose,
+  onConfirm,
+}: ConfirmationModalProps) => {
   return (
     <View style={as('')}>
       <Header
@@ -126,12 +130,7 @@ const ConfirmationModal = ({onClose, onConfirm}: ConfirmationModalProps) => {
         style={as('border-b-0 pt-12 pb-0')}
       />
       <View style={as('px-24 py-12 items-center')}>
-        <Markdown style={markdownStyle}>
-          {strings('payment_activities.about_to_withdraw', {
-            amount: amountWithCurrency(1000),
-            bank_details: 'GTBank - 12345556780',
-          })}
-        </Markdown>
+        {children}
         <ActionButtonSet
           actionBtns={[
             {
@@ -156,14 +155,24 @@ type MoneyWithdrawScreenProps = {
 
 const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
   ({onClose, openModal, closeModal}) => {
-    const walletBalance = 20000;
-    const selectedBankAccount = 'WEMA Bank - 1234556780';
+    const {getPrimaryDisbursementMethod} = useDisbursementMethod();
+    const {getWallet} = useWallet();
+    const walletBalance = getWallet()?.balance ?? 0;
+    const primaryDisbursementMethod = getPrimaryDisbursementMethod();
+    const [disbursementMethod, setDisbursementMethod] = useState(
+      primaryDisbursementMethod,
+    );
+    const withdrawAccountDetails = disbursementMethod?.parsedAccountDetails;
+    const selectedBankAccount = !withdrawAccountDetails
+      ? ''
+      : `${withdrawAccountDetails.bank_name} - ${withdrawAccountDetails.nuban}`;
     const handleSelectWithdrawalAccount = useCallback(() => {
       openModal('bottom-half', {
         renderContent: () => (
           <SelectWithdrawalAccountModal
             onClose={closeModal}
-            onDone={() => {
+            onDone={(selectedDisbursementMethod) => {
+              setDisbursementMethod(selectedDisbursementMethod);
               closeModal();
             }}
           />
@@ -171,19 +180,36 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         showHandleNub: false,
       });
     }, [closeModal, openModal]);
-    const handleNext = useCallback(() => {
-      openModal('bottom-half', {
-        renderContent: () => (
-          <ConfirmationModal
-            onClose={closeModal}
-            onConfirm={() => {
-              closeModal();
-            }}
-          />
-        ),
-        showHandleNub: false,
-      });
-    }, [closeModal, openModal]);
+    const handleNext = useCallback(
+      (amount: string) => {
+        if (Number(amount) && disbursementMethod?.api_id) {
+          openModal('bottom-half', {
+            renderContent: () => (
+              <ConfirmationModal
+                onClose={closeModal}
+                onConfirm={() => {
+                  return getApiService()
+                    .makeDisbursement({
+                      amount,
+                      disbursement_method_id: disbursementMethod.api_id,
+                    })
+                    .then(closeModal)
+                    .then(onClose);
+                }}>
+                <Markdown style={markdownStyle}>
+                  {strings('payment_activities.about_to_withdraw', {
+                    amount: amountWithCurrency(Number(amount)),
+                    bank_details: selectedBankAccount,
+                  })}
+                </Markdown>
+              </ConfirmationModal>
+            ),
+            showHandleNub: false,
+          });
+        }
+      },
+      [closeModal, disbursementMethod, onClose, openModal, selectedBankAccount],
+    );
     return (
       <AmountForm
         header={{
@@ -196,18 +222,26 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         actionItems={[
           {
             icon: 'calendar',
-            leftSection: {
-              title: selectedBankAccount,
-              caption: strings('payment_activities.select_withdrawal_account'),
-            },
+            leftSection: selectedBankAccount
+              ? {
+                  title: selectedBankAccount,
+                  caption: strings(
+                    'payment_activities.select_withdrawal_account',
+                  ),
+                }
+              : {
+                  title: strings(
+                    'payment_activities.select_withdrawal_account',
+                  ),
+                },
             onPress: handleSelectWithdrawalAccount,
           },
-          {
-            icon: 'edit-2',
-            leftSection: {
-              title: strings('payment_activities.withdraw_fields.note.label'),
-            },
-          },
+          // {
+          //   icon: 'edit-2',
+          //   leftSection: {
+          //     title: strings('payment_activities.withdraw_fields.note.label'),
+          //   },
+          // },
         ]}
         doneButton={{
           title: strings('next'),

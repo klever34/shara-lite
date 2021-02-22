@@ -4,7 +4,7 @@ import {getAuthService} from '@/services';
 import {useIPGeolocation} from '@/services/ip-geolocation';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, {memo, useCallback, useEffect, useRef} from 'react';
 import {Text} from '@/components';
 import {Image, ScrollView, View, ViewStyle} from 'react-native';
 import ViewShot from 'react-native-view-shot';
@@ -26,7 +26,7 @@ type Props = {
   getImageUri: (base64: string) => void;
 };
 
-export const ReceiptImage = (props: Props) => {
+export const ReceiptImage = memo((props: Props) => {
   const {
     note,
     customer,
@@ -161,7 +161,7 @@ export const ReceiptImage = (props: Props) => {
               <View>
                 <Text
                   style={applyStyles('pb-4 print-text-400 text-black text-lg')}>
-                  {strings('note', {count: 1})}: {note}
+                  {note}
                 </Text>
               </View>
             )}
@@ -211,4 +211,4 @@ export const ReceiptImage = (props: Props) => {
       </ViewShot>
     </ScrollView>
   );
-};
+});

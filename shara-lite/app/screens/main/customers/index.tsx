@@ -1,27 +1,19 @@
-import {colors} from '@/styles';
-import React from 'react';
-import {createStackNavigator} from '@react-navigation/stack';
 import {CustomerListScreen} from '@/screens/main/customers/CustomerListScreen';
+import React from 'react';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 
 export type CustomersStackParamList = {
   CustomerList: undefined;
 };
 
-const CustomersStack = createStackNavigator<CustomersStackParamList>();
+const CustomersStack = createNativeStackNavigator<CustomersStackParamList>();
 
 export const CustomersScreen = () => {
   return (
     <CustomersStack.Navigator
       initialRouteName="CustomerList"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.white,
-        },
-        headerTitleStyle: {
-          fontSize: 16,
-          fontFamily: 'CocogoosePro-SemiLight',
-        },
-        headerTintColor: colors['gray-300'],
+        headerShown: false,
       }}>
       <CustomersStack.Screen
         name="CustomerList"

@@ -27,7 +27,7 @@ export const MoneyActionsContainer = ({
   actions,
 }: MoneyActionsContainerProps) => {
   return (
-    <View style={as('items-center py-24 px-16')}>
+    <View style={as('items-center pt-16 px-16')}>
       <Text style={as('mb-8 text-gray-100')}>{figure.label}</Text>
       <Text style={as('mb-16 text-3xl font-bold')}>{figure.value}</Text>
       {tag && (
@@ -47,7 +47,7 @@ export const MoneyActionsContainer = ({
       <View style={as('flex-row my-16')}>
         {actions.map(({onPress, label, icon, disabled = false}) => {
           return (
-            <Touchable onPress={disabled ? undefined : onPress}>
+            <Touchable onPress={disabled ? undefined : onPress} key={label}>
               <View style={as('items-center px-20 py-12')}>
                 <View
                   style={as('rounded-32 p-8 mb-8', {

@@ -1,70 +1,124 @@
-import React, {useCallback, useMemo} from 'react';
-import {FlatList, SafeAreaView, View} from 'react-native';
-import {applyStyles, as, colors} from '@/styles';
-import {Button, Text} from '@/components';
-import {Icon} from '@/components/Icon';
-import {getI18nService} from '@/services';
-import {amountWithCurrency} from '@/helpers/utils';
-import {useClipboard} from '@/helpers/hooks';
-import EmptyState from '@/components/EmptyState';
-import {useAppNavigation} from '@/services/navigation';
-import {MoneyActionsContainer} from './MoneyActionsContainer';
 import Emblem from '@/assets/images/emblem-gray.svg';
+import {Button, SearchFilter, Text} from '@/components';
+import EmptyState from '@/components/EmptyState';
+import {Icon} from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {withModal} from '@/helpers/hocs';
+import {useClipboard} from '@/helpers/hooks';
+import {amountWithCurrency} from '@/helpers/utils';
+import {ICollection} from '@/models/Collection';
+import {IDisbursement} from '@/models/Disbursement';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
-import {useWallet} from '@/services/wallet';
-import {useCollection} from '@/services/collection';
-import {useDisbursement} from '@/services/disbursement';
+import {getI18nService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
+import {applyStyles, as, colors} from '@/styles';
+import {format} from 'date-fns';
+import {orderBy} from 'lodash';
+import React, {useCallback, useEffect, useMemo} from 'react';
+import {FlatList, SafeAreaView, View} from 'react-native';
+import {usePaymentActivities} from './hook';
+import {MoneyActionsContainer} from './MoneyActionsContainer';
+import {PaymentActivityItem} from './PaymentActivityItem';
+import {useDisbursementMethod} from '@/services/disbursement-method';
 
 const strings = getI18nService().strings;
 
 export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const navigation = useAppNavigation();
   const {copyToClipboard} = useClipboard();
-  // const [searchTerm] = useState('');
-  // const handleSearch = useCallback((text: string) => {
-  //   console.log(text);
-  // }, []);
-  // const handleOpenFilterModal = useCallback(() => {}, []);
-  const {getCollections} = useCollection();
-  const {getDisbursements} = useDisbursement();
-  const collections = getCollections();
-  const disbursements = getDisbursements();
-  const totalReceivedAmount = useMemo(() => {
-    return collections.sum('amount') ?? 0;
-  }, [collections]);
-  const totalWithdrawnAmount = useMemo(() => {
-    return disbursements.sum('amount') ?? 0;
-  }, [disbursements]);
-  const {getWallet} = useWallet();
-  const wallet = getWallet();
-  const walletBalance = wallet?.balance;
-  const merchantId = wallet?.merchant_id;
+  const {
+    filter,
+    searchTerm,
+    merchantId,
+    reloadData,
+    collections,
+    handleFilter,
+    handleSearch,
+    filterOptions,
+    walletBalance,
+    filterEndDate,
+    disbursements,
+    filterStartDate,
+    handlePagination,
+    totalReceivedAmount,
+    totalWithdrawnAmount,
+  } = usePaymentActivities();
+
+  const activitiesData: (ICollection | IDisbursement)[] = useMemo(() => {
+    const data = [...collections, ...disbursements];
+    return orderBy(data, 'created_at', 'desc');
+  }, [collections, disbursements]);
+
+  useEffect(() => {
+    if (!searchTerm) {
+      reloadData();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [reloadData, searchTerm]);
+
   const handleCopyMerchantId = useCallback(() => {
     copyToClipboard(String(merchantId));
   }, [copyToClipboard, merchantId]);
+
   const handleDeposit = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyDepositScreen onClose={closeModal} />,
       showHandleNub: false,
     });
   }, [closeModal, openModal]);
+
   const handleWithdraw = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyWithdrawModal onClose={closeModal} />,
       showHandleNub: false,
     });
   }, [closeModal, openModal]);
+
+  const handleOpenFilterModal = useCallback(() => {
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <TransactionFilterModal
+          onClose={closeModal}
+          onDone={handleFilter}
+          initialFilter={filter}
+          options={filterOptions}
+        />
+      ),
+    });
+  }, [filter, filterOptions, openModal, handleFilter]);
+
+  const getFilterLabelText = useCallback(() => {
+    const activeOption = filterOptions?.find((item) => item.value === filter);
+    if (filter === 'date-range' && filterStartDate && filterEndDate) {
+      return `${strings('from')} ${format(
+        filterStartDate,
+        'dd MMM, yyyy',
+      )} ${strings('to')} ${format(filterEndDate, 'dd MMM, yyyy')}`;
+    }
+    if (filter === 'single-day') {
+      return format(filterStartDate, 'dd MMM, yyyy');
+    }
+    return activeOption?.text;
+  }, [filter, filterEndDate, filterOptions, filterStartDate]);
+
   // TODO: Add logic to check whether money settings is set up
-  const moneySettingsNotSetup = false;
+  const {getDisbursementMethods} = useDisbursementMethod();
+  const disbursementMethods = getDisbursementMethods();
+  const moneySettingsNotSetup = !!disbursementMethods.length;
   const onGoToMoneySettings = useCallback(() => {
     navigation.navigate('PaymentSettings');
   }, [navigation]);
+
   const handleDrawdown = useCallback(() => {
     navigation.navigate('Drawdown');
   }, [navigation]);
-  const renderListItem = useCallback(() => null, []);
+
+  const renderListItem = useCallback(
+    ({item: data}) => <PaymentActivityItem data={data} />,
+    [],
+  );
 
   if (moneySettingsNotSetup) {
     return (
@@ -86,39 +140,39 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
 
   return (
     <SafeAreaView style={applyStyles('flex-1 bg-white')}>
-      {/*<View*/}
-      {/*  style={applyStyles('pr-8 flex-row items-center justify-between', {*/}
-      {/*    borderBottomWidth: 1.5,*/}
-      {/*    borderBottomColor: colors['gray-20'],*/}
-      {/*  })}>*/}
-      {/*  <SearchFilter*/}
-      {/*    value={searchTerm}*/}
-      {/*    onSearch={handleSearch}*/}
-      {/*    containerStyle={applyStyles('flex-1')}*/}
-      {/*    onClearInput={() => handleSearch('')}*/}
-      {/*    placeholderText={strings('payment_activities.search_placeholder')}*/}
-      {/*  />*/}
-      {/*  {!searchTerm && (*/}
-      {/*    <Touchable onPress={handleOpenFilterModal}>*/}
-      {/*      <View*/}
-      {/*        style={applyStyles('py-4 px-8 flex-row items-center', {*/}
-      {/*          borderWidth: 1,*/}
-      {/*          borderRadius: 4,*/}
-      {/*          borderColor: colors['gray-20'],*/}
-      {/*        })}>*/}
-      {/*        <Text style={applyStyles('text-gray-200 text-700 pr-8')}>*/}
-      {/*          {strings('filter', {count: 2})}*/}
-      {/*        </Text>*/}
-      {/*        <Icon*/}
-      {/*          size={16}*/}
-      {/*          name="calendar"*/}
-      {/*          type="feathericons"*/}
-      {/*          color={colors['gray-50']}*/}
-      {/*        />*/}
-      {/*      </View>*/}
-      {/*    </Touchable>*/}
-      {/*  )}*/}
-      {/*</View>*/}
+      <View
+        style={applyStyles('pr-8 flex-row items-center justify-between', {
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors['gray-20'],
+        })}>
+        <SearchFilter
+          value={searchTerm}
+          onSearch={handleSearch}
+          containerStyle={applyStyles('flex-1')}
+          onClearInput={() => handleSearch('')}
+          placeholderText={strings('payment_activities.search_placeholder')}
+        />
+        {!searchTerm && (
+          <Touchable onPress={handleOpenFilterModal}>
+            <View
+              style={applyStyles('py-4 px-8 flex-row items-center', {
+                borderWidth: 1,
+                borderRadius: 4,
+                borderColor: colors['gray-20'],
+              })}>
+              <Text style={applyStyles('text-gray-200 text-700 pr-8')}>
+                {strings('filter', {count: 2})}
+              </Text>
+              <Icon
+                size={16}
+                name="calendar"
+                type="feathericons"
+                color={colors['gray-50']}
+              />
+            </View>
+          </Touchable>
+        )}
+      </View>
       <View
         style={as(
           'flex-row justify-between py-12 border-b-1 border-b-gray-20 px-12',
@@ -202,38 +256,43 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
           },
         ]}
       />
-      <FlatList
-        data={[]}
-        initialNumToRender={10}
-        style={applyStyles('bg-white')}
-        renderItem={renderListItem}
-        contentContainerStyle={as('flex-1')}
-        ListHeaderComponent={
-          <View
-            style={applyStyles(
-              'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
-            )}>
-            <Text style={applyStyles('text-base text-gray-300')}>
-              {strings('payment_activities.payment_activities')}
+      <View
+        style={applyStyles(
+          'px-16 py-12 flex-row bg-gray-10 justify-between items-center',
+        )}>
+        <Text style={applyStyles('text-base text-gray-300')}>
+          {strings('payment_activities.payment_activities')}
+        </Text>
+        <Touchable onPress={handleOpenFilterModal}>
+          <View style={applyStyles('py-4 px-8 flex-row items-center')}>
+            <Text
+              style={applyStyles(
+                'text-base text-gray-300 text-700 text-uppercase pr-8',
+              )}>
+              {getFilterLabelText()}
             </Text>
-            {/*<Touchable onPress={handleOpenFilterModal}>*/}
-            {/*  <View style={applyStyles('py-4 px-8 flex-row items-center')}>*/}
-            {/*    <Text*/}
-            {/*      style={applyStyles(*/}
-            {/*        'text-base text-gray-300 text-700 text-uppercase pr-8',*/}
-            {/*      )}>*/}
-            {/*      All Time*/}
-            {/*    </Text>*/}
-            {/*    <Icon*/}
-            {/*      size={16}*/}
-            {/*      type="feathericons"*/}
-            {/*      name="chevron-down"*/}
-            {/*      color={colors['gray-50']}*/}
-            {/*    />*/}
-            {/*  </View>*/}
-            {/*</Touchable>*/}
+            <Icon
+              size={16}
+              type="feathericons"
+              name="chevron-down"
+              color={colors['gray-50']}
+            />
           </View>
+        </Touchable>
+      </View>
+      <FlatList
+        data={activitiesData}
+        initialNumToRender={10}
+        renderItem={renderListItem}
+        onEndReachedThreshold={0.2}
+        style={applyStyles('bg-white flex-1', {paddingBottom: 50})}
+        keyExtractor={(item) => `${item?._id?.toString()}`}
+        contentContainerStyle={
+          !activitiesData.length ? as('flex-1') : undefined
         }
+        onEndReached={() => {
+          handlePagination();
+        }}
         ListEmptyComponent={
           <EmptyState>
             <View style={applyStyles('center px-8')}>
