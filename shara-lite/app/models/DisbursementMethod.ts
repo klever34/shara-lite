@@ -12,6 +12,28 @@ export interface IDisbursementMethod extends BaseModelInterface {
   disbursements?: Realm.Results<IDisbursement & Realm.Object>;
 }
 
+export type DisbursementOption = {
+  name: string;
+  slug: string;
+  is_primary: boolean;
+  fieldsData: Array<{
+    key: string;
+    label: string;
+    value:
+      | string
+      | {
+          label: string;
+          value: string;
+        };
+    required: string;
+    type: string;
+    options: Array<{
+      label: string;
+      value: string;
+    }>;
+  }>;
+};
+
 export const modelName = 'DisbursementMethod';
 
 export class DisbursementMethod extends BaseModel

@@ -9,6 +9,7 @@ import {IStorageService} from '../storage';
 import {
   ApiResponse,
   Business,
+  DisbursementProvider,
   GroupChat,
   GroupChatMember,
   PaymentProvider,
@@ -16,6 +17,7 @@ import {
 } from 'types/app';
 import {BaseModelInterface} from '@/models/baseSchema';
 import {getI18nService} from '@/services';
+import {DisbursementOption} from '@/models/DisbursementMethod';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -77,6 +79,10 @@ export interface IApiService {
   getPaymentProviders(params: {
     country_code: string | undefined;
   }): Promise<PaymentProvider[]>;
+
+  getDisbursementProviders(params: {
+    country_code: string | undefined;
+  }): Promise<DisbursementProvider[]>;
 
   getSyncedRecord(params: {
     model: string;
@@ -143,6 +149,8 @@ export interface IApiService {
   }): Promise<string>;
 
   fcmToken(payload: {token: string; platform?: string}): Promise<ApiResponse>;
+
+  disbursement(payload: Omit<DisbursementOption, 'fieldsData'>): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -369,6 +377,23 @@ export class ApiService implements IApiService {
         {country_code},
       );
       return paymentProviders;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getDisbursementProviders({
+    country_code,
+  }: {
+    country_code: string | undefined;
+  }) {
+    try {
+      const {
+        data: {disbursementProviders},
+      } = await this.requester.get<{
+        disbursementProviders: DisbursementProvider[];
+      }>('/disbursement-provider', {country_code});
+      return disbursementProviders;
     } catch (e) {
       throw e;
     }
@@ -657,6 +682,19 @@ export class ApiService implements IApiService {
     try {
       const response = await this.requester.post('/fcm/token', payload);
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async disbursement(
+    payload: Omit<DisbursementOption, 'fieldsData'>,
+  ): Promise<any> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/disbursement-method',
+        payload,
+      );
+      return fetchResponse;
     } catch (error) {
       throw error;
     }

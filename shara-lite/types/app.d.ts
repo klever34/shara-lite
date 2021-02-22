@@ -43,6 +43,22 @@ type PaymentProvider = {
   }>;
 };
 
+type DisbursementProvider = {
+  name: string;
+  slug: string;
+  allowed_countries: string[];
+  fields: Array<{
+    key: string;
+    label: string;
+    required: string;
+    type: string;
+    options: Array<{
+      label: string;
+      value: string;
+    }>;
+  }>;
+};
+
 type GroupChat = {
   name: string;
   description: string | null;

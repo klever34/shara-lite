@@ -4,20 +4,15 @@ import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {IPaymentOption} from '@/models/PaymentOption';
-import {
-  getAnalyticsService,
-  getApiService,
-  getAuthService,
-  getStorageService,
-} from '@/services';
+import omit from 'lodash/omit';
+import {getAnalyticsService, getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
-import {omit} from 'lodash';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text} from '@/components';
 import {Alert, FlatList, View} from 'react-native';
-import {PaymentProvider} from 'types/app';
+import {DisbursementProvider} from 'types/app';
 import {PaymentForm} from './PaymentForm';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
@@ -25,6 +20,9 @@ import {Page} from '@/components/Page';
 import {getI18nService} from '@/services';
 import {Checkbox} from '@/components/Checkbox';
 import Emblem from '@/assets/images/emblem-gray.svg';
+import {DisbursementForm} from './DisbursementForm';
+import {DisbursementOption} from '@/models/DisbursementMethod';
+import {handleError} from '@/services/error-boundary';
 const strings = getI18nService().strings;
 
 function PaymentContainer2(props: ModalWrapperFields) {
@@ -32,15 +30,14 @@ function PaymentContainer2(props: ModalWrapperFields) {
   const apiService = getApiService();
   const navigation = useAppNavigation();
   const {
-    savePaymentOption,
     getPaymentOptions,
     updatePaymentOption,
     deletePaymentOption,
   } = usePaymentOption();
   const paymentOptions = getPaymentOptions();
-  const [paymentProviders, setPaymentProviders] = useState<PaymentProvider[]>(
-    [],
-  );
+  const [disbursementProviders, setDisbursementProviders] = useState<
+    DisbursementProvider[]
+  >([]);
   const [isSaving, setIsSaving] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [user, setUser] = useState(getAuthService().getUser());
@@ -49,17 +46,27 @@ function PaymentContainer2(props: ModalWrapperFields) {
   const {showSuccessToast} = useContext(ToastContext);
 
   const onFormSubmit = useCallback(
-    async (values: IPaymentOption) => {
+    async (values: DisbursementOption) => {
+      //@ts-ignore
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const {fieldsData, ...rest} = values;
+      const updatedValues = {
+        ...rest,
+        fields: values?.fieldsData?.map((data) => omit(data, 'options')),
+      };
+
       if (
         values?.fieldsData
           ?.filter((item) => item.required)
           .every((item) => item.value)
       ) {
         setIsSaving(true);
-        await savePaymentOption({paymentOption: values});
-        getAnalyticsService()
-          .logEvent('paymentOptionAdded', {})
-          .then(() => {});
+        try {
+          const res = await apiService.disbursement(updatedValues);
+          console.log('>>', res);
+        } catch (error) {
+          handleError(error);
+        }
         showSuccessToast(strings('payment.payment_container.payment_added'));
         setIsSaving(false);
       } else {
@@ -69,7 +76,7 @@ function PaymentContainer2(props: ModalWrapperFields) {
         );
       }
     },
-    [savePaymentOption, showSuccessToast],
+    [apiService, showSuccessToast],
   );
 
   const handleEditItem = useCallback(
@@ -123,21 +130,12 @@ function PaymentContainer2(props: ModalWrapperFields) {
             )}>
             {strings('payment.withdrawal_method.add_withdrawal_method')}
           </Text>
-          <PaymentForm
+          <DisbursementForm
             onFormSubmit={onFormSubmit}
-            paymentProviders={paymentProviders}
+            disbursementProviders={disbursementProviders}
             renderButtons={(handleSubmit) => (
               <>
                 <View style={applyStyles('px-2 py-14')}>
-                  <Checkbox
-                    value=""
-                    containerStyle={applyStyles('justify-between mb-8')}
-                    leftLabel={
-                      <Text style={applyStyles('text-400 text-base')}>
-                        {strings('reminder_popup.default_collection_day')}
-                      </Text>
-                    }
-                  />
                   <View
                     style={applyStyles(
                       'pt-10 flex-row items-center justify-between',
@@ -165,7 +163,7 @@ function PaymentContainer2(props: ModalWrapperFields) {
         </KeyboardAwareScrollView>
       ),
     });
-  }, [openModal, isSaving, onFormSubmit, paymentProviders]);
+  }, [openModal, isSaving, onFormSubmit, disbursementProviders]);
 
   const handleOpenEditItemModal = useCallback(
     (item: IPaymentOption) => {
@@ -184,7 +182,7 @@ function PaymentContainer2(props: ModalWrapperFields) {
             </Text>
             <PaymentForm
               hidePicker={true}
-              paymentProviders={paymentProviders}
+              disbursementProviders={disbursementProviders}
               onFormSubmit={(values) => handleEditItem(item, values)}
               initialValues={{
                 ...initialValues,
@@ -257,24 +255,19 @@ function PaymentContainer2(props: ModalWrapperFields) {
       isDeleting,
       handleEditItem,
       handleRemoveItem,
-      paymentProviders,
+      disbursementProviders,
     ],
   );
 
-  const fectchPaymentProviders = useCallback(async () => {
-    const savedProviders = (await getStorageService().getItem(
-      'providers',
-    )) as PaymentProvider[];
-
+  const fectchDisbursementProviders = useCallback(async () => {
     try {
       const country_code = business.country_code || user?.country_code;
-      const providers = await apiService.getPaymentProviders({
+      const providers = await apiService.getDisbursementProviders({
         country_code,
       });
-      await getStorageService().setItem('providers', JSON.stringify(providers));
-      setPaymentProviders(providers);
+      setDisbursementProviders(providers);
     } catch (error) {
-      setPaymentProviders(savedProviders ?? []);
+      setDisbursementProviders([]);
     }
   }, [apiService, business, user]);
 
@@ -286,8 +279,8 @@ function PaymentContainer2(props: ModalWrapperFields) {
   }, [navigation]);
 
   useEffect(() => {
-    fectchPaymentProviders();
-  }, [fectchPaymentProviders]);
+    fectchDisbursementProviders();
+  }, [fectchDisbursementProviders]);
 
   return (
     <Page
@@ -317,7 +310,7 @@ function PaymentContainer2(props: ModalWrapperFields) {
             </View>
             <PaymentForm
               onFormSubmit={onFormSubmit}
-              paymentProviders={paymentProviders}
+              disbursementProviders={disbursementProviders}
               renderButtons={(handleSubmit, values) => (
                 <View
                   style={applyStyles(
