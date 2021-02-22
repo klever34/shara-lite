@@ -1,6 +1,5 @@
-import {colors} from '@/styles';
-import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {PaymentListScreen} from './PaymentListScreen';
 
 export type ProductsStackParamList = {
@@ -8,21 +7,14 @@ export type ProductsStackParamList = {
   ManageItems: undefined;
 };
 
-const ProductsStack = createStackNavigator<ProductsStackParamList>();
+const ProductsStack = createNativeStackNavigator<ProductsStackParamList>();
 
 export const PaymentsScreen = () => {
   return (
     <ProductsStack.Navigator
       initialRouteName="ProductList"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.white,
-        },
-        headerTitleStyle: {
-          fontSize: 16,
-          fontFamily: 'CocogoosePro-SemiLight',
-        },
-        headerTintColor: colors['gray-300'],
+        headerShown: false,
       }}>
       <ProductsStack.Screen name="ProductList" component={PaymentListScreen} />
     </ProductsStack.Navigator>
