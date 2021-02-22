@@ -25,6 +25,7 @@ import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
+import {RootStackParamList} from '@/index';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -32,7 +33,7 @@ const strings = getI18nService().strings;
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
     const navigation = useAppNavigation<
-      MainStackParamList & MoreStackParamList
+      RootStackParamList & MainStackParamList & MoreStackParamList
     >();
     const shareProps: ShareHookProps = {
       image: inviteImageBase64String,

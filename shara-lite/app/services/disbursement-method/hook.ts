@@ -5,6 +5,9 @@ interface useDisbursementMethodInterface {
   getDisbursementMethods: () => Realm.Results<
     IDisbursementMethod & Realm.Object
   >;
+  getPrimaryDisbursementMethod: () =>
+    | (IDisbursementMethod & Realm.Object)
+    | null;
 }
 
 export const useDisbursementMethod = (): useDisbursementMethodInterface => {
@@ -17,7 +20,16 @@ export const useDisbursementMethod = (): useDisbursementMethodInterface => {
       .filtered('is_deleted != true');
   };
 
+  const getPrimaryDisbursementMethod = ():
+    | (IDisbursementMethod & Realm.Object)
+    | null => {
+    return realm
+      .objects<IDisbursementMethod>(modelName)
+      .filtered('is_deleted != true AND is_primary == true')[0];
+  };
+
   return {
     getDisbursementMethods,
+    getPrimaryDisbursementMethod,
   };
 };
