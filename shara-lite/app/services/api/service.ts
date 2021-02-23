@@ -699,6 +699,8 @@ export class ApiService implements IApiService {
         payload,
       );
       return fetchResponse;
+    } catch (error) {
+      throw error;
     }
   }
 
