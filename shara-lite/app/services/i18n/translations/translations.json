@@ -1471,7 +1471,7 @@
       "select_withdrawal_account": "Chagua akaunti ya kujiondoa",
       "confirm_withdrawal": "Thibitisha uondoaji",
       "about_to_withdraw": "Uko karibu kutoa **{{amount}}** kwa\\n**{{bank_details}}**",
-      "withdraw_success": ""
+      "withdraw_success": "Uondoaji wako wa **{{amount}}** kwenda **{{bank_details}}** ulifanikiwa"
     },
     "drawdown": {
       "title": "Kuchora",
