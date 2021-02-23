@@ -48,7 +48,7 @@ export const MoneyActionsContainer = ({
         {actions.map(({onPress, label, icon, disabled = false}) => {
           return (
             <Touchable onPress={disabled ? undefined : onPress} key={label}>
-              <View style={as('items-center px-20 py-12')}>
+              <View style={as('items-center px-4 py-12 w-96')}>
                 <View
                   style={as('rounded-32 p-8 mb-8', {
                     backgroundColor: disabled
@@ -62,7 +62,9 @@ export const MoneyActionsContainer = ({
                     color={disabled ? colors['gray-50'] : icon.color}
                   />
                 </View>
-                <Text style={as(disabled ? 'text-gray-50' : '')}>{label}</Text>
+                <Text style={as(disabled ? 'text-gray-50' : '', 'text-center')}>
+                  {label}
+                </Text>
               </View>
             </Touchable>
           );
