@@ -407,6 +407,8 @@ export interface Strings {
       withdrawal_method_description: string;
       edit_withdrawal_method: string;
       make_default_withdrawal: string;
+      withdrawal_picker_placeholder: string;
+      select_an_option: string;
     };
   };
   more: {

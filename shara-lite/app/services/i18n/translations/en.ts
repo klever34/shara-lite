@@ -531,6 +531,8 @@ const en: Strings = {
       withdrawal_method_description:
         'Add your preferred methods of withdrawing funds from Shara.',
       make_default_withdrawal: 'Make default withdrawal account',
+      withdrawal_picker_placeholder: 'Select a withdrawal method',
+      select_an_option: 'Select an option',
     },
   },
   more: {

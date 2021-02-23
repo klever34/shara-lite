@@ -99,7 +99,9 @@ export const DisbursementForm = ({
           {!hidePicker && (
             <Picker
               mode="dropdown"
-              prompt={'Select a withdrawal method'}
+              prompt={strings(
+                'payment.withdrawal_method.withdrawal_picker_placeholder',
+              )}
               selectedValue={values.slug}
               onValueChange={(itemValue) => {
                 setFieldValue('slug', itemValue);
@@ -114,7 +116,12 @@ export const DisbursementForm = ({
                 setSelectedDisbursementProvider(selectedProvider);
               }}
               style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-              <Picker.Item label={'Select a withdrawal method'} value="" />
+              <Picker.Item
+                label={strings(
+                  'payment.withdrawal_method.withdrawal_picker_placeholder',
+                )}
+                value=""
+              />
               {disbursementProviders.map((provider) => (
                 <Picker.Item
                   key={provider.slug}
@@ -184,7 +191,12 @@ export const DisbursementForm = ({
                       setFieldValue('fieldsData', updatedFieldsData);
                     }}
                     style={applyStyles('bg-gray-10 py-16 pl-16 rounded-12')}>
-                    <Picker.Item label={'Select an option'} value="" />
+                    <Picker.Item
+                      label={strings(
+                        'payment.withdrawal_method.select_an_option',
+                      )}
+                      value=""
+                    />
                     {field.options.map((option) => (
                       <Picker.Item
                         key={JSON.stringify(option)}
