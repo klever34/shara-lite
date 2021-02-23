@@ -1,6 +1,23 @@
 import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IDisbursement} from '@/models/Disbursement';
 
+export type FieldsData = Array<{
+  key: string;
+  label: string;
+  value:
+    | string
+    | {
+        label: string;
+        value: string;
+      };
+  required: string;
+  type: string;
+  options: Array<{
+    label: string;
+    value: string;
+  }>;
+}>;
+
 export interface IDisbursementMethod extends BaseModelInterface {
   type: string;
   provider: string;
@@ -18,6 +35,7 @@ export interface IDisbursementMethod extends BaseModelInterface {
     bank_name: string;
     nuban: string;
     account_name: string;
+    fields: FieldsData;
   } | null;
 }
 
@@ -25,22 +43,7 @@ export type DisbursementOption = {
   name: string;
   slug: string;
   is_primary: boolean;
-  fieldsData: Array<{
-    key: string;
-    label: string;
-    value:
-      | string
-      | {
-          label: string;
-          value: string;
-        };
-    required: string;
-    type: string;
-    options: Array<{
-      label: string;
-      value: string;
-    }>;
-  }>;
+  fieldsData: FieldsData;
 };
 
 export const modelName = 'DisbursementMethod';
