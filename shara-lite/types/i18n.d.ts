@@ -406,6 +406,7 @@ export interface Strings {
       withdrawal_method_list: string;
       withdrawal_method_description: string;
       edit_withdrawal_method: string;
+      make_default_withdrawal: string;
     };
   };
   more: {

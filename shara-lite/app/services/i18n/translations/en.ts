@@ -530,6 +530,7 @@ const en: Strings = {
       edit_withdrawal_method: 'Edit Withdrawal Method',
       withdrawal_method_description:
         'Add your preferred methods of withdrawing funds from Shara.',
+      make_default_withdrawal: 'Make default withdrawal account',
     },
   },
   more: {
