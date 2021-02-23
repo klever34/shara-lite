@@ -152,7 +152,7 @@ export interface IApiService {
 
   disbursement(payload: Omit<DisbursementOption, 'fieldsData'>): Promise<any>;
   makeDisbursement(payload: {
-    amount: string;
+    amount: number;
     disbursement_method_id: number;
   }): Promise<ApiResponse>;
 }
@@ -705,7 +705,7 @@ export class ApiService implements IApiService {
   }
 
   async makeDisbursement(payload: {
-    amount: string;
+    amount: number;
     disbursement_method_id: number;
   }): Promise<ApiResponse> {
     try {

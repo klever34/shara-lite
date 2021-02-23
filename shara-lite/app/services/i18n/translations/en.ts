@@ -762,6 +762,8 @@ const en: Strings = {
     payment_activities: 'Payment Activities',
     no_money_activities: 'You have no Money activities yet',
     about_to_withdraw: String.raw`You are about to withdraw **{{amount}}** to\n**{{bank_details}}**`,
+    withdraw_success:
+      'Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful',
   },
   drawdown: {
     title: 'Drawdown',

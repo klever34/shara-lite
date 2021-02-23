@@ -12,6 +12,7 @@ import {AmountForm} from './AmountForm';
 import {useDisbursementMethod} from '@/services/disbursement-method';
 import {useWallet} from '@/services/wallet';
 import {IDisbursementMethod} from '@/models/DisbursementMethod';
+import {TransactionSuccessModal} from '@/components/TransactionSuccessModal';
 
 const markdownStyle = {
   body: applyStyles('text-gray-300 text-400 text-base mb-32'),
@@ -57,9 +58,12 @@ const SelectWithdrawalAccountModal = ({
       />
       <View style={as('px-16 py-12')}>
         {methods.map((disbursementMethod) => {
+          if (!disbursementMethod.parsedAccountDetails) {
+            return null;
+          }
           const {bank_name, nuban} = disbursementMethod.parsedAccountDetails;
           const isSelected =
-            nuban === selectedDisbursementMethod.parsedAccountDetails.nuban;
+            nuban === selectedDisbursementMethod.parsedAccountDetails?.nuban;
           return (
             <Touchable
               key={nuban}
@@ -190,11 +194,34 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                 onConfirm={() => {
                   return getApiService()
                     .makeDisbursement({
-                      amount,
+                      amount: Number(amount),
                       disbursement_method_id: disbursementMethod.api_id,
                     })
-                    .then(closeModal)
-                    .then(onClose);
+                    .then((response) => {
+                      console.log(response);
+                      closeModal();
+                      openModal('full', {
+                        renderContent: () => (
+                          <TransactionSuccessModal
+                            subheading={strings(
+                              'payment_activities.withdraw_success',
+                              {
+                                amount: amountWithCurrency(Number(amount)),
+                                bank_details: selectedBankAccount,
+                              },
+                            )}
+                            onDone={() => {
+                              closeModal();
+                              onClose();
+                            }}
+                          />
+                        ),
+                      });
+                    })
+                    .catch((e) => {
+                      console.log(e.message);
+                      closeModal();
+                    });
                 }}>
                 <Markdown style={markdownStyle}>
                   {strings('payment_activities.about_to_withdraw', {

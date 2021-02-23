@@ -455,6 +455,7 @@ payment_activities.deposit_help_text,See below the various ways to deposit funds
 payment_activities.select_withdrawal_account,Select withdrawal account,Chagua akaunti ya kujiondoa,,,,
 payment_activities.confirm_withdrawal,Confirm withdrawal,Thibitisha uondoaji,,,,
 payment_activities.about_to_withdraw,You are about to withdraw **{{amount}}** to\n**{{bank_details}}**,Uko karibu kutoa **{{amount}}** kwa\n**{{bank_details}}**,,,,
+payment_activities.withdraw_success,Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful,,,,,
 drawdown.title,Drawdown,Kuchora,,,,
 drawdown.amount_available,Amount available for drawdown,Kiasi kinapatikana kwa kushuka,,,,
 drawdown.amount_owed,Total Owed - {{total_owed}},Jumla ya Owed - {{total_owed}},,,,

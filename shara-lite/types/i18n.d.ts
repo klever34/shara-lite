@@ -575,6 +575,7 @@ export interface Strings {
     select_withdrawal_account: string;
     confirm_withdrawal: string;
     about_to_withdraw: string;
+    withdraw_success: string;
   };
   drawdown: {
     title: string;
