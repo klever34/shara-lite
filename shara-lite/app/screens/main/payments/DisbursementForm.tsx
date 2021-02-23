@@ -15,6 +15,7 @@ import {DisbursementProvider} from 'types/app';
 import {getI18nService} from '@/services';
 import {DisbursementOption} from '@/models/DisbursementMethod';
 import {Checkbox} from '@/components/Checkbox';
+import {useDisbursementMethod} from '@/services/disbursement-method';
 const strings = getI18nService().strings;
 
 type DisbursementFormProps = {
@@ -40,6 +41,8 @@ export const DisbursementForm = ({
     selectedDisbursementProvider,
     setSelectedDisbursementProvider,
   ] = useState<DisbursementProvider | undefined>();
+  const {getDisbursementMethods} = useDisbursementMethod();
+  const disbursementMethods = getDisbursementMethods();
 
   const [fieldRefNames, fieldRefs] = useMemo(() => {
     const nextFieldRefs: FormFieldRefs = {};
@@ -157,7 +160,12 @@ export const DisbursementForm = ({
             if (field.type === 'dropdown') {
               return (
                 <>
-                  <Text>{field.label}</Text>
+                  <Text
+                    style={applyStyles(
+                      'text-base text-500 text-gray-50 pb-8 flex-1 mt-20',
+                    )}>
+                    {field.label}
+                  </Text>
                   <Picker
                     mode="dropdown"
                     prompt={field.label}
@@ -165,7 +173,6 @@ export const DisbursementForm = ({
                       values?.fieldsData ? values?.fieldsData[index]?.value : ''
                     }
                     onValueChange={(itemValue) => {
-                      console.log(itemValue);
                       const updatedFieldsData = values?.fieldsData?.map(
                         (item) => {
                           if (item.key === field.key) {
@@ -191,23 +198,32 @@ export const DisbursementForm = ({
             }
           })}
 
-          <Checkbox
-            value={values.is_primary}
-            onChange={(value) => {
-              if (value) {
-                setFieldValue('is_primary', false);
-              } else {
-                setFieldValue('is_primary', true);
-              }
-            }}
-            isChecked={!!values.is_primary}
-            containerStyle={applyStyles('justify-between mb-8')}
-            leftLabel={
-              <Text style={applyStyles('text-400 text-base')}>
-                {strings('reminder_popup.default_collection_day')}
-              </Text>
-            }
-          />
+          {disbursementMethods.length && (
+            <View
+              style={applyStyles(
+                'text-base text-400 text-gray-200 mt-14 mx-10',
+              )}>
+              <Checkbox
+                value={values.is_primary}
+                onChange={(value) => {
+                  if (value) {
+                    setFieldValue('is_primary', false);
+                  } else {
+                    setFieldValue('is_primary', true);
+                  }
+                }}
+                isChecked={!!values.is_primary}
+                containerStyle={applyStyles('justify-between mb-2')}
+                leftLabel={
+                  <Text style={applyStyles('text-400 text-base')}>
+                    {strings(
+                      'payment.withdrawal_method.make_default_withdrawal',
+                    )}
+                  </Text>
+                }
+              />
+            </View>
+          )}
 
           {renderButtons(handleSubmit, values)}
         </View>

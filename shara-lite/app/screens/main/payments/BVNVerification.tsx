@@ -50,7 +50,7 @@ export const BVNVerification = () => {
         />
         <Button
           title={strings('done')}
-          onPress={() => navigation.navigate('PaymentContainer2')}
+          onPress={() => navigation.navigate('DisburementScreen')}
           style={applyStyles('w-full', {width: '48%'})}
         />
       </View>

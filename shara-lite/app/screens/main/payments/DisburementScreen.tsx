@@ -1,45 +1,35 @@
 import {Button} from '@/components';
-import {Icon} from '@/components/Icon';
 import {ToastContext} from '@/components/Toast';
-import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {IPaymentOption} from '@/models/PaymentOption';
 import omit from 'lodash/omit';
-import {getAnalyticsService, getApiService, getAuthService} from '@/services';
+import {getApiService, getAuthService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
-import {usePaymentOption} from '@/services/payment-option';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text} from '@/components';
 import {Alert, FlatList, View} from 'react-native';
 import {DisbursementProvider} from 'types/app';
-import {PaymentForm} from './PaymentForm';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import {Page} from '@/components/Page';
 import {getI18nService} from '@/services';
-import {Checkbox} from '@/components/Checkbox';
 import Emblem from '@/assets/images/emblem-gray.svg';
 import {DisbursementForm} from './DisbursementForm';
 import {DisbursementOption} from '@/models/DisbursementMethod';
 import {handleError} from '@/services/error-boundary';
+import {useDisbursementMethod} from '@/services/disbursement-method';
 const strings = getI18nService().strings;
 
-function PaymentContainer2(props: ModalWrapperFields) {
+function DisburementScreen(props: ModalWrapperFields) {
   const {openModal} = props;
   const apiService = getApiService();
   const navigation = useAppNavigation();
-  const {
-    getPaymentOptions,
-    updatePaymentOption,
-    deletePaymentOption,
-  } = usePaymentOption();
-  const paymentOptions = getPaymentOptions();
+  const {getDisbursementMethods} = useDisbursementMethod();
+  const disbursementMethods = getDisbursementMethods();
   const [disbursementProviders, setDisbursementProviders] = useState<
     DisbursementProvider[]
   >([]);
   const [isSaving, setIsSaving] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
   const [user, setUser] = useState(getAuthService().getUser());
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
@@ -62,8 +52,7 @@ function PaymentContainer2(props: ModalWrapperFields) {
       ) {
         setIsSaving(true);
         try {
-          const res = await apiService.disbursement(updatedValues);
-          console.log('>>', res);
+          await apiService.disbursement(updatedValues);
         } catch (error) {
           handleError(error);
         }
@@ -77,44 +66,6 @@ function PaymentContainer2(props: ModalWrapperFields) {
       }
     },
     [apiService, showSuccessToast],
-  );
-
-  const handleEditItem = useCallback(
-    async (paymentOption: IPaymentOption, updates: Partial<IPaymentOption>) => {
-      if (
-        updates?.fieldsData
-          ?.filter((item) => item.required)
-          .every((item) => item.value)
-      ) {
-        delete updates.fields;
-        setIsSaving(true);
-        await updatePaymentOption({paymentOption, updates});
-        getAnalyticsService()
-          .logEvent('paymentOptionEdited', {})
-          .then(() => {});
-        showSuccessToast(strings('payment.payment_container.payment_edited'));
-        setIsSaving(false);
-      } else {
-        Alert.alert(
-          strings('warning'),
-          strings('payment.payment_container.warning_message'),
-        );
-      }
-    },
-    [updatePaymentOption, showSuccessToast],
-  );
-
-  const handleRemoveItem = useCallback(
-    async (values) => {
-      setIsDeleting(true);
-      await deletePaymentOption({paymentOption: values});
-      getAnalyticsService()
-        .logEvent('paymentOptionRemoved', {})
-        .then(() => {});
-      showSuccessToast('PAYMENT OPTION REMOVED');
-      setIsDeleting(false);
-    },
-    [deletePaymentOption, showSuccessToast],
   );
 
   const handleOpenAddItemModal = useCallback(() => {
@@ -165,100 +116,6 @@ function PaymentContainer2(props: ModalWrapperFields) {
     });
   }, [openModal, isSaving, onFormSubmit, disbursementProviders]);
 
-  const handleOpenEditItemModal = useCallback(
-    (item: IPaymentOption) => {
-      const initialValues = omit(item);
-      const closeModal = openModal('bottom-half', {
-        renderContent: () => (
-          <KeyboardAwareScrollView
-            nestedScrollEnabled
-            persistentScrollbar={true}
-            keyboardShouldPersistTaps="always">
-            <Text
-              style={applyStyles(
-                'text-center text-uppercase text-700 text-gray-300 mt-10',
-              )}>
-              {strings('payment.withdrawal_method.edit_withdrawal_method')}
-            </Text>
-            <PaymentForm
-              hidePicker={true}
-              disbursementProviders={disbursementProviders}
-              onFormSubmit={(values) => handleEditItem(item, values)}
-              initialValues={{
-                ...initialValues,
-                fieldsData: initialValues.fields
-                  ? JSON.parse(initialValues.fields)
-                  : [],
-              }}
-              renderButtons={(handleSubmit) => (
-                <>
-                  <View style={applyStyles('px-2 py-14')}>
-                    <Checkbox
-                      value=""
-                      containerStyle={applyStyles('justify-between mb-8')}
-                      leftLabel={
-                        <Text style={applyStyles('text-400 text-base')}>
-                          {strings('reminder_popup.default_collection_day')}
-                        </Text>
-                      }
-                    />
-                  </View>
-                  <View
-                    style={applyStyles(
-                      'pt-10 flex-row items-center justify-between',
-                    )}>
-                    <Button
-                      title={strings('remove')}
-                      isLoading={isDeleting}
-                      style={applyStyles({width: '48%'})}
-                      onPress={() => {
-                        Alert.alert(
-                          strings('warning'),
-                          strings('payment.payment_container.remove_message'),
-                          [
-                            {
-                              text: strings('no'),
-                              onPress: () => {},
-                            },
-                            {
-                              text: strings('yes'),
-                              onPress: () => {
-                                handleRemoveItem(item);
-                                closeModal();
-                              },
-                            },
-                          ],
-                        );
-                      }}
-                      variantColor="transparent"
-                    />
-                    <Button
-                      title={strings('save')}
-                      isLoading={isSaving}
-                      style={applyStyles({width: '48%'})}
-                      onPress={() => {
-                        handleSubmit();
-                        closeModal();
-                      }}
-                    />
-                  </View>
-                </>
-              )}
-            />
-          </KeyboardAwareScrollView>
-        ),
-      });
-    },
-    [
-      openModal,
-      isSaving,
-      isDeleting,
-      handleEditItem,
-      handleRemoveItem,
-      disbursementProviders,
-    ],
-  );
-
   const fectchDisbursementProviders = useCallback(async () => {
     try {
       const country_code = business.country_code || user?.country_code;
@@ -295,7 +152,7 @@ function PaymentContainer2(props: ModalWrapperFields) {
         persistentScrollbar={true}
         keyboardShouldPersistTaps="always"
         style={applyStyles('py-18 bg-white flex-1')}>
-        {paymentOptions.length === 0 ? (
+        {disbursementMethods.length === 0 ? (
           <View style={applyStyles('flex-1')}>
             <View style={applyStyles('center pb-32')}>
               <Emblem width={64} height={64} />
@@ -308,26 +165,16 @@ function PaymentContainer2(props: ModalWrapperFields) {
                 )}
               </Text>
             </View>
-            <PaymentForm
+            <DisbursementForm
               onFormSubmit={onFormSubmit}
               disbursementProviders={disbursementProviders}
               renderButtons={(handleSubmit, values) => (
-                <View
-                  style={applyStyles(
-                    'pt-24 flex-row items-center justify-between',
-                  )}>
+                <View style={applyStyles('pt-24', {paddingBottom: 300})}>
                   <Button
-                    // onPress={closeModal}
-                    title={strings('cancel')}
-                    variantColor="transparent"
-                    style={applyStyles({width: '48%'})}
-                  />
-                  <Button
+                    title={strings('save')}
                     isLoading={isSaving}
                     onPress={handleSubmit}
-                    title={strings('save')}
                     disabled={!values?.slug}
-                    style={applyStyles({width: '48%'})}
                   />
                 </View>
               )}
@@ -343,13 +190,13 @@ function PaymentContainer2(props: ModalWrapperFields) {
             <View style={applyStyles('p-16')}>
               <Button
                 title={strings(
-                  'payment.payment_container.add_new_payment_method',
+                  'payment.withdrawal_method.add_withdrawal_method',
                 )}
                 onPress={handleOpenAddItemModal}
               />
             </View>
             <FlatList
-              data={paymentOptions}
+              data={disbursementMethods}
               style={applyStyles('pb-56')}
               renderItem={({item}) => (
                 <View
@@ -363,35 +210,29 @@ function PaymentContainer2(props: ModalWrapperFields) {
                     },
                   )}>
                   <View style={applyStyles('py-8')}>
-                    <Text
-                      style={applyStyles('pb-2 text-gray-100 text-uppercase')}>
-                      {item.name}
-                    </Text>
-                    {item?.fieldsData?.map((i) => (
-                      <Text
-                        key={i.key}
-                        style={applyStyles(
-                          'pb-2 text-gray-300 text-700 text-base',
-                        )}>
-                        {i.label} - {i.value}
-                      </Text>
-                    ))}
-                  </View>
-                  <View>
-                    <Touchable onPress={() => handleOpenEditItemModal(item)}>
-                      <View style={applyStyles('px-16 py-8')}>
-                        <Icon
-                          size={20}
-                          name="edit"
-                          type="feathericons"
-                          color={colors['gray-50']}
-                        />
-                      </View>
-                    </Touchable>
+                    {item?.parsedAccountDetails?.fields?.map((i) =>
+                      i.type === 'dropdown' ? (
+                        <Text
+                          key={i.key}
+                          style={applyStyles(
+                            'pb-2 text-gray-300 text-700 text-base',
+                          )}>
+                          {i.label} - {JSON.parse(i.value).label}
+                        </Text>
+                      ) : (
+                        <Text
+                          key={i.key}
+                          style={applyStyles(
+                            'pb-2 text-gray-300 text-700 text-base',
+                          )}>
+                          {i.label} - {i.value}
+                        </Text>
+                      ),
+                    )}
                   </View>
                 </View>
               )}
-              keyExtractor={(item, index) => `${item.slug}-${index}`}
+              keyExtractor={(item, index) => `${item}-${index}`}
             />
           </View>
         )}
@@ -400,4 +241,4 @@ function PaymentContainer2(props: ModalWrapperFields) {
   );
 }
 
-export default withModal(PaymentContainer2);
+export default withModal(DisburementScreen);

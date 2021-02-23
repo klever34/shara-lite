@@ -42,7 +42,7 @@ import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
 import {DrawdownScreen} from '@/screens/main/money/DrawdownScreen';
 import {BVNVerification} from './payments/BVNVerification';
-import PaymentContainer2 from './payments/PaymentContainer2';
+import DisburementScreen from './payments/DisburementScreen';
 
 const strings = getI18nService().strings;
 
@@ -73,7 +73,7 @@ export type MainStackParamList = {
   PaymentSettings: undefined;
   BVNVerification: undefined;
   BusinessSettings: undefined;
-  PaymentContainer2: undefined;
+  DisburementScreen: undefined;
   UserProfileSettings: undefined;
 
   // Report
@@ -268,8 +268,8 @@ const MainScreens = () => {
             options={{headerShown: false}}
           />
           <MainStack.Screen
-            name="PaymentContainer2"
-            component={PaymentContainer2}
+            name="DisburementScreen"
+            component={DisburementScreen}
             options={{headerShown: false}}
           />
 
