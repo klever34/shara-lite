@@ -106,7 +106,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   // TODO: Add logic to check whether money settings is set up
   const {getDisbursementMethods} = useDisbursementMethod();
   const disbursementMethods = getDisbursementMethods();
-  const moneySettingsNotSetup = !!disbursementMethods.length;
+  const isPaymentSettingsSetup = !!disbursementMethods.length;
   const onGoToMoneySettings = useCallback(() => {
     navigation.navigate('PaymentSettings');
   }, [navigation]);
@@ -120,7 +120,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     [],
   );
 
-  if (moneySettingsNotSetup) {
+  if (!isPaymentSettingsSetup) {
     return (
       <SafeAreaView style={applyStyles('flex-1 bg-white')}>
         <View style={as('flex-1 center px-32')}>
