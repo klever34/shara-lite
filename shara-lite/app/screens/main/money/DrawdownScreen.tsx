@@ -54,7 +54,6 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
           }}
         />
       ),
-      showHandleNub: false,
     });
   }, [closeModal, openModal]);
 
@@ -95,7 +94,6 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
           }}
         />
       ),
-      showHandleNub: false,
     });
   }, [closeModal, openModal]);
 

@@ -1,7 +1,7 @@
 import React, {ReactNode, useCallback, useState} from 'react';
 import {Header, Text} from '@/components';
 import {getApiService, getI18nService} from '@/services';
-import {View} from 'react-native';
+import {ScrollView, View} from 'react-native';
 import {applyStyles, as} from '@/styles';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -51,7 +51,7 @@ const SelectWithdrawalAccountModal = ({
     onDone(selectedDisbursementMethod);
   }, [onDone, selectedDisbursementMethod]);
   return (
-    <View style={as('')}>
+    <ScrollView style={as('')}>
       <Header
         title={strings('payment_activities.select_withdrawal_account')}
         style={as('border-b-0 pt-12 pb-0')}
@@ -112,7 +112,7 @@ const SelectWithdrawalAccountModal = ({
           ]}
         />
       </View>
-    </View>
+    </ScrollView>
   );
 };
 
@@ -181,7 +181,6 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
             }}
           />
         ),
-        showHandleNub: false,
       });
     }, [closeModal, openModal]);
     const handleNext = useCallback(
@@ -231,7 +230,6 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                 </Markdown>
               </ConfirmationModal>
             ),
-            showHandleNub: false,
           });
         }
       },
@@ -239,6 +237,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     );
     return (
       <AmountForm
+        walletBalance={walletBalance}
         header={{
           title: strings('payment_activities.withdraw'),
         }}

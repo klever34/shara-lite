@@ -72,14 +72,12 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const handleDeposit = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyDepositScreen onClose={closeModal} />,
-      showHandleNub: false,
     });
   }, [closeModal, openModal]);
 
   const handleWithdraw = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyWithdrawModal onClose={closeModal} />,
-      showHandleNub: false,
     });
   }, [closeModal, openModal]);
 
