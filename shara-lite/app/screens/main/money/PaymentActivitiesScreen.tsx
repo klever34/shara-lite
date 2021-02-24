@@ -114,6 +114,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const {getDisbursementMethods} = useDisbursementMethod();
   const disbursementMethods = getDisbursementMethods();
   const isPaymentSettingsSetup = !!disbursementMethods.length;
+
   const onGoToMoneySettings = useCallback(() => {
     navigation.navigate('PaymentSettings');
   }, [navigation]);
