@@ -13,6 +13,7 @@ import {getAnalyticsService, getI18nService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
+import * as Animatable from 'react-native-animatable';
 import orderBy from 'lodash/orderBy';
 import React, {
   useCallback,
@@ -22,6 +23,7 @@ import React, {
   useState,
 } from 'react';
 import {FlatList, ListRenderItemInfo, SafeAreaView, View} from 'react-native';
+import {EntryButton} from '@/components/EntryView';
 
 const strings = getI18nService().strings;
 
@@ -365,6 +367,37 @@ export const CustomerListScreen = withModal(
                 })}>
                 {strings('customers.start_adding')}
               </Text>
+            </View>
+            <View
+              style={applyStyles(
+                'flex-row items-center justify-between bg-gray-10 px-16 bottom-0 absolute w-full',
+              )}>
+              <View style={applyStyles('flex-row items-center')}>
+                <Text style={applyStyles('text-center text-700 text-xl pr-12')}>
+                  Enter a transaction
+                </Text>
+                <Animatable.View
+                  duration={200}
+                  animation={{
+                    from: {translateX: -10},
+                    to: {translateX: 0},
+                  }}
+                  direction="alternate"
+                  useNativeDriver={true}
+                  iterationCount="infinite">
+                  <Icon
+                    size={40}
+                    name="arrow-right"
+                    type="feathericons"
+                    color={colors.secondary}
+                  />
+                </Animatable.View>
+              </View>
+              <EntryButton
+                style={applyStyles('w-72 h-72 rounded-60', {
+                  elevation: 4,
+                })}
+              />
             </View>
           </EmptyState>
         )}

@@ -424,7 +424,6 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         }
         ListEmptyComponent={
           <EmptyState
-            style={applyStyles('')}
             source={require('@/assets/images/emblem.png')}
             imageStyle={applyStyles('pb-32', {width: 60, height: 60})}>
             <View style={applyStyles('center px-8')}>
