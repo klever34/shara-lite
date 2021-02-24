@@ -748,6 +748,7 @@ const en: Strings = {
     tap_to_copy_merchant_id: 'Tap to copy Merchant ID',
     tap_to_copy_wallet_account_no: 'Tap to copy wallet account number',
     deposit: 'Deposit',
+    withdraw_excess_error: 'Withdrawal amount is greater than your wallent balance',
     withdraw_fields: {
       amount: {
         label: 'Enter Amount',

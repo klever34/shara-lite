@@ -54,7 +54,7 @@ export const AmountForm = ({
           onChangeText={(text) => setFieldValue('amount', text)}
           keyboardType="numeric"
           isInvalid={toNumber(values.amount) > walletBalance}
-          errorMessage="Withdrawal amount is greater than your wallent balance"
+          errorMessage={strings('payment_activities.withdraw_excess_error')}
         />
         <Text style={as('self-center mt-8 text-gray-200 text-sm')}>
           {leadText}
