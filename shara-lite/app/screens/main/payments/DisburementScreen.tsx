@@ -205,7 +205,6 @@ function DisburementScreen(props: ModalWrapperFields) {
               data={disbursementMethods}
               style={applyStyles('pb-56')}
               renderItem={({item}) => {
-                const parsedAccountDetails = JSON.parse(item.account_details);
                 return (
                   <View
                     style={applyStyles(
@@ -218,7 +217,7 @@ function DisburementScreen(props: ModalWrapperFields) {
                       },
                     )}>
                     <View style={applyStyles('py-8')}>
-                      {parsedAccountDetails?.fields?.map((i: any) =>
+                      {item.parsedAccountDetails?.fields?.map((i: any) =>
                         i.type === 'dropdown' ? (
                           <Text
                             key={i.key}
