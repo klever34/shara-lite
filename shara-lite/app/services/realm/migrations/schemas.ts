@@ -18,6 +18,7 @@ import schema17 from './1611256639370-re-add-disable-customer-reminders';
 import schema18 from './1613468659343-add-shara-pay-models';
 import schema19 from './1613546853297-add-is_primary_to_collection_disbursment_methods';
 import schema20 from './1613556320339-merchant-id-to-wallet';
+import schema21 from './1614163165589-add-drawdown-to-wallet';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -41,6 +42,7 @@ const schemas: any[] = [
   {schemaVersion: 18, ...schema18},
   {schemaVersion: 19, ...schema19},
   {schemaVersion: 20, ...schema20},
+  {schemaVersion: 21, ...schema21},
 ];
 
 export default schemas;
