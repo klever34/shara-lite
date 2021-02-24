@@ -210,7 +210,7 @@ export const DisbursementForm = ({
             }
           })}
 
-          {!!disbursementMethods.length && (
+          {!!disbursementMethods.length && !!values.slug && (
             <View
               style={applyStyles(
                 'text-base text-400 text-gray-200 mt-14 mx-10',

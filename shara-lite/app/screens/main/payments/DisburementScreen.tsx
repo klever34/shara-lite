@@ -24,7 +24,10 @@ function DisburementScreen(props: ModalWrapperFields) {
   const {openModal} = props;
   const apiService = getApiService();
   const navigation = useAppNavigation();
-  const {getDisbursementMethods} = useDisbursementMethod();
+  const {
+    getDisbursementMethods,
+    saveDisbursementMethod,
+  } = useDisbursementMethod();
   const disbursementMethods = getDisbursementMethods();
   const [disbursementProviders, setDisbursementProviders] = useState<
     DisbursementProvider[]
@@ -52,7 +55,8 @@ function DisburementScreen(props: ModalWrapperFields) {
       ) {
         setIsSaving(true);
         try {
-          await apiService.disbursement(updatedValues);
+          const {data} = await apiService.saveDisbursementMethod(updatedValues);
+          saveDisbursementMethod(data.disbursementMethod);
         } catch (error) {
           handleError(error);
         }
@@ -65,7 +69,7 @@ function DisburementScreen(props: ModalWrapperFields) {
         );
       }
     },
-    [apiService, showSuccessToast],
+    [apiService, saveDisbursementMethod, showSuccessToast],
   );
 
   const handleOpenAddItemModal = useCallback(() => {
@@ -166,7 +170,9 @@ function DisburementScreen(props: ModalWrapperFields) {
               </Text>
             </View>
             <DisbursementForm
-              onFormSubmit={onFormSubmit}
+              onFormSubmit={(values) =>
+                onFormSubmit({...values, is_primary: true})
+              }
               disbursementProviders={disbursementProviders}
               renderButtons={(handleSubmit, values) => (
                 <View style={applyStyles('pt-24', {paddingBottom: 300})}>
@@ -198,40 +204,43 @@ function DisburementScreen(props: ModalWrapperFields) {
             <FlatList
               data={disbursementMethods}
               style={applyStyles('pb-56')}
-              renderItem={({item}) => (
-                <View
-                  style={applyStyles(
-                    'flex-row items-center py-8 px-16 bg-white justify-between',
-                    {
-                      borderTopColor: colors['gray-10'],
-                      borderTopWidth: 1,
-                      borderBottomColor: colors['gray-10'],
-                      borderBottomWidth: 1,
-                    },
-                  )}>
-                  <View style={applyStyles('py-8')}>
-                    {item?.parsedAccountDetails?.fields?.map((i) =>
-                      i.type === 'dropdown' ? (
-                        <Text
-                          key={i.key}
-                          style={applyStyles(
-                            'pb-2 text-gray-300 text-700 text-base',
-                          )}>
-                          {i.label} - {JSON.parse(i.value).label}
-                        </Text>
-                      ) : (
-                        <Text
-                          key={i.key}
-                          style={applyStyles(
-                            'pb-2 text-gray-300 text-700 text-base',
-                          )}>
-                          {i.label} - {i.value}
-                        </Text>
-                      ),
-                    )}
+              renderItem={({item}) => {
+                const parsedAccountDetails = JSON.parse(item.account_details);
+                return (
+                  <View
+                    style={applyStyles(
+                      'flex-row items-center py-8 px-16 bg-white justify-between',
+                      {
+                        borderTopColor: colors['gray-10'],
+                        borderTopWidth: 1,
+                        borderBottomColor: colors['gray-10'],
+                        borderBottomWidth: 1,
+                      },
+                    )}>
+                    <View style={applyStyles('py-8')}>
+                      {parsedAccountDetails?.fields?.map((i: any) =>
+                        i.type === 'dropdown' ? (
+                          <Text
+                            key={i.key}
+                            style={applyStyles(
+                              'pb-2 text-gray-300 text-700 text-base',
+                            )}>
+                            {i.label} - {JSON.parse(i.value).label}
+                          </Text>
+                        ) : (
+                          <Text
+                            key={i.key}
+                            style={applyStyles(
+                              'pb-2 text-gray-300 text-700 text-base',
+                            )}>
+                            {i.label} - {i.value}
+                          </Text>
+                        ),
+                      )}
+                    </View>
                   </View>
-                </View>
-              )}
+                );
+              }}
               keyExtractor={(item, index) => `${item}-${index}`}
             />
           </View>
