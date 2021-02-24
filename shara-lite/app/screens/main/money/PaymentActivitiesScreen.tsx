@@ -43,7 +43,9 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     filterStartDate,
     handlePagination,
     totalReceivedAmount,
+    filteredCollections,
     totalWithdrawnAmount,
+    filteredDisbursements,
   } = usePaymentActivities();
 
   const activitiesData: (ICollection | IDisbursement)[] = useMemo(() => {
@@ -56,7 +58,12 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
       reloadData();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [reloadData, searchTerm]);
+  }, [
+    reloadData,
+    searchTerm,
+    filteredCollections.length,
+    filteredDisbursements.length,
+  ]);
 
   const handleCopyMerchantId = useCallback(() => {
     copyToClipboard(String(merchantId));
