@@ -41,7 +41,7 @@ export const PaymentActivityItem = ({
       if (isCollection(data)) {
         setCustomer(customer);
         updateCollection({collection: data, updates: {customer}});
-        navigation.goBack();
+        navigation.navigate('PaymentActivities');
       }
     },
     [updateCollection, navigation, data],
@@ -83,7 +83,7 @@ export const PaymentActivityItem = ({
         </Text>
       </View>
     );
-  }, [data]);
+  }, [data, customer, amount, provider]);
 
   return (
     <Touchable
