@@ -1,6 +1,6 @@
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {ICustomer} from '@/models/Customer';
-import {ICollectionMethod} from '@/models/CollectionMethod';
+import {BaseModel, BaseModelInterface, baseModelSchema} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {ICustomer} from '@/services/realm/migrations/1611256639370-re-add-disable-customer-reminders/models/Customer';
+import {ICollectionMethod} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/CollectionMethod';
 
 export interface ICollection extends BaseModelInterface {
   type: string;

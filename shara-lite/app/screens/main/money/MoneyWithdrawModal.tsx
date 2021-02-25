@@ -13,6 +13,7 @@ import {useDisbursementMethod} from '@/services/disbursement-method';
 import {useWallet} from '@/services/wallet';
 import {IDisbursementMethod} from '@/models/DisbursementMethod';
 import {TransactionSuccessModal} from '@/components/TransactionSuccessModal';
+import {handleError} from '@/services/error-boundary';
 
 const markdownStyle = {
   body: applyStyles('text-gray-300 text-400 text-base mb-32'),
@@ -196,8 +197,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                       amount: Number(amount),
                       disbursement_method_id: disbursementMethod.api_id,
                     })
-                    .then((response) => {
-                      console.log(response);
+                    .then(() => {
                       closeModal();
                       openModal('full', {
                         renderContent: () => (
@@ -218,7 +218,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                       });
                     })
                     .catch((e) => {
-                      console.log(e.message);
+                      handleError(e);
                       closeModal();
                     });
                 }}>
@@ -237,7 +237,8 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     );
     return (
       <AmountForm
-        walletBalance={walletBalance}
+        maxAmount={walletBalance}
+        errorMessage={strings('payment_activities.withdraw_excess_error')}
         header={{
           title: strings('payment_activities.withdraw'),
         }}

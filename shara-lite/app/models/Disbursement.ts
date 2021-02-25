@@ -12,6 +12,7 @@ export interface IDisbursement extends BaseModelInterface {
   status: string;
   meta: string;
   disbursement_method?: IDisbursementMethod;
+  provider_label?: string;
 }
 
 export const modelName = 'Disbursement';
@@ -34,6 +35,7 @@ export class Disbursement extends BaseModel implements Partial<IDisbursement> {
       api_id: 'int?',
       disbursement_method_id: 'int?',
       disbursement_method: 'DisbursementMethod?',
+      provider_label: 'string?',
     },
   };
 }

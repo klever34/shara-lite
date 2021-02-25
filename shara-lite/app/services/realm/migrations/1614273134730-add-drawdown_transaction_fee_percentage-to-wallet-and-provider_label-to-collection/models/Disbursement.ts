@@ -1,8 +1,7 @@
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {ICustomer} from '@/models/Customer';
-import {ICollectionMethod} from '@/models/CollectionMethod';
+import {BaseModel, BaseModelInterface, baseModelSchema} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IDisbursementMethod} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/DisbursementMethod';
 
-export interface ICollection extends BaseModelInterface {
+export interface IDisbursement extends BaseModelInterface {
   type: string;
   provider: string;
   amount: number;
@@ -12,16 +11,15 @@ export interface ICollection extends BaseModelInterface {
   external_id: string;
   status: string;
   meta: string;
-  customer?: ICustomer;
-  collection_method?: ICollectionMethod;
+  disbursement_method?: IDisbursementMethod;
   provider_label?: string;
 }
 
-export const modelName = 'Collection';
+export const modelName = 'Disbursement';
 
-export class Collection extends BaseModel implements Partial<ICollection> {
+export class Disbursement extends BaseModel implements Partial<IDisbursement> {
   public static schema: Realm.ObjectSchema = {
-    name: 'Collection',
+    name: 'Disbursement',
     primaryKey: '_id',
     properties: {
       ...baseModelSchema,
@@ -34,10 +32,9 @@ export class Collection extends BaseModel implements Partial<ICollection> {
       external_id: 'string?',
       status: 'string?',
       meta: 'string?',
-      collection_method_id: 'int?',
       api_id: 'int?',
-      customer: 'Customer?',
-      collection_method: 'CollectionMethod?',
+      disbursement_method_id: 'int?',
+      disbursement_method: 'DisbursementMethod?',
       provider_label: 'string?',
     },
   };

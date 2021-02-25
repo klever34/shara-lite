@@ -23,10 +23,18 @@ export interface TouchableActionItemProps {
   onPress?(): void;
   leftSection?: Section;
   rightSection?: Section;
+  showChevronIcon?: boolean;
 }
 
 export const TouchableActionItem = (props: TouchableActionItemProps) => {
-  const {icon, onPress, style, leftSection, rightSection} = props;
+  const {
+    icon,
+    onPress,
+    style,
+    leftSection,
+    rightSection,
+    showChevronIcon = true,
+  } = props;
   return (
     <Touchable onPress={onPress}>
       <View style={applyStyles('flex-row p-12 items-center', style)}>
@@ -81,12 +89,14 @@ export const TouchableActionItem = (props: TouchableActionItemProps) => {
             )}
           </View>
         </View>
-        <Icon
-          size={20}
-          type="feathericons"
-          name="chevron-right"
-          color={colors['gray-50']}
-        />
+        {showChevronIcon && (
+          <Icon
+            size={20}
+            type="feathericons"
+            name="chevron-right"
+            color={colors['gray-50']}
+          />
+        )}
       </View>
     </Touchable>
   );

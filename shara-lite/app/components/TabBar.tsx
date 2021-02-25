@@ -33,7 +33,7 @@ export const TabBar = ({options, onChangeOption}: TabBarProps) => {
               onTabPress(option);
             }}>
             <View
-              style={as(isSelected ? 'bg-white' : '', 'rounded-16 py-4 px-12')}>
+              style={as(isSelected ? 'bg-white' : '', 'rounded-16 py-8 px-12')}>
               <Text
                 style={as(
                   isSelected ? 'text-black font-bold' : 'text-gray-200',

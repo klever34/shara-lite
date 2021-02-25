@@ -580,6 +580,11 @@ export interface Strings {
     confirm_withdrawal: string;
     about_to_withdraw: string;
     withdraw_success: string;
+    payment_activity: {
+      received_payment: string;
+      withdrawal: string;
+      select_customer: string;
+    }
   };
   drawdown: {
     title: string;
@@ -596,6 +601,13 @@ export interface Strings {
     repayment_date: string;
     repayment_amount: string;
     request: string;
+    what_is_drawdown: string;
+    drawdown_item_text: string;
+    transaction_fee: string;
+    withdraw_success: string;
+    withdraw_excess_error: string;
+    repayment_excess_error: string;
+    not_qualified: string;
   };
   copied: string;
 }

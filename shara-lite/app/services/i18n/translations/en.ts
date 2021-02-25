@@ -251,7 +251,7 @@ const en: Strings = {
       'Please enter collected amount or outstanding amount',
     edit_transaction: 'Edit Transaction',
     transaction_deleted: 'TRANSACTION DELETED',
-    search_input_placeholder: 'Search activities by customer here',
+    search_input_placeholder: 'Search activities by client',
     confirm_delete: 'Are you sure you want to delete this transaction?',
     is_collection_message: 'You Collected **{{total_amount}}**.',
     is_collection_with_customer_message:
@@ -421,9 +421,9 @@ const en: Strings = {
     other: 'Filters',
   },
   filter_options: {
-    owing: 'Owing',
-    not_owing: 'Not Owing',
-    surplus: 'Surplus',
+    owing: 'You owe',
+    not_owing: 'Owes you',
+    surplus: 'Paid in full',
   },
   customer: {
     one: 'Customer',
@@ -435,11 +435,11 @@ const en: Strings = {
   },
   customers: {
     start_adding:
-      "Start adding customers by creating a record with the '+' button below",
+      "Start adding clients by creating a record with the '+' button below",
     customer_count: {
-      zero: 'You have no customers yet.',
-      one: '1 Customer',
-      other: '{{count}} Customers',
+      zero: 'You have no clients yet.',
+      one: '1 clients',
+      other: '{{count}} clients',
     },
     customer_edited: 'CUSTOMER EDITED',
     customer_deleted: 'CUSTOMER DELETED',
@@ -748,7 +748,6 @@ const en: Strings = {
     tap_to_copy_merchant_id: 'Tap to copy Merchant ID',
     tap_to_copy_wallet_account_no: 'Tap to copy wallet account number',
     deposit: 'Deposit',
-    withdraw_excess_error: 'Withdrawal amount is greater than your wallent balance',
     withdraw_fields: {
       amount: {
         label: 'Enter Amount',
@@ -768,6 +767,12 @@ const en: Strings = {
     about_to_withdraw: String.raw`You are about to withdraw **{{amount}}** to\n**{{bank_details}}**`,
     withdraw_success:
       'Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful',
+    withdraw_excess_error: 'Withdrawal amount is more than your wallet balance',
+    payment_activity: {
+      received_payment: 'Received payment of **{{amount}}** via **{{provider}}**',
+      withdrawal: 'Withdrawal of **{{amount}}** to your **{{provider}}**',
+      select_customer: 'Select Customer'
+    }
   },
   drawdown: {
     title: 'Drawdown',
@@ -785,6 +790,13 @@ const en: Strings = {
     repayment_date: 'Repayment Date',
     repayment_amount: 'Repayment amount (includes {{amount}} transaction fee)',
     request: 'Request',
+    what_is_drawdown: 'What is drawdown?',
+    drawdown_item_text: 'Drawdown of **{{amount}}** to your wallet on **{{date}}**',
+    transaction_fee: 'Transaction Fee',
+    withdraw_success: 'Your withdrawal of **{{amount}}** was successful. Funds have been added to your wallet balance.',
+    withdraw_excess_error: 'Withdrawal amount is more than your drawdown limit',
+    repayment_excess_error: 'The amount you want to pay is more than your wallet balance',
+    not_qualified: 'You do not qualify for drawdowns at the moment.',
   },
   copied: 'Copied',
 };

@@ -157,6 +157,9 @@ export interface IApiService {
     amount: number;
     disbursement_method_id: number;
   }): Promise<ApiResponse>;
+  saveDrawdown(
+    payload: {amount: number},
+  ): Promise<any>;
 }
 
 export class ApiService implements IApiService {
@@ -712,6 +715,20 @@ export class ApiService implements IApiService {
   }): Promise<ApiResponse> {
     try {
       return await this.requester.post('/disbursement', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async saveDrawdown(
+    payload: {amount: number},
+  ): Promise<any> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/drawdown',
+        payload,
+      );
+      return fetchResponse;
     } catch (error) {
       throw error;
     }

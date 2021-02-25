@@ -1,56 +1,51 @@
-import React, {useCallback} from 'react';
+import {TabBar, Text, toNumber} from '@/components';
+import EmptyState from '@/components/EmptyState';
 import {Page} from '@/components/Page';
-import {FlatList, View} from 'react-native';
+import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
-import {applyStyles, as, colors} from '@/styles';
+import {IDrawdown} from '@/models/Drawdown';
 import {MoneyActionsContainer} from '@/screens/main/money/MoneyActionsContainer';
 import {getI18nService} from '@/services';
-import {Text, TabBar} from '@/components';
-import EmptyState from '@/components/EmptyState';
-import {withModal} from '@/helpers/hocs';
-import {AmountForm} from '@/screens/main/money/AmountForm';
+import {useDrawdown} from '@/services/drawdown';
+import {useAppNavigation} from '@/services/navigation';
+import {useWallet} from '@/services/wallet';
+import {applyStyles, as, colors} from '@/styles';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
+import {FlatList, View} from 'react-native';
+import {DrawdownActivityItem} from './DrawdownActivityItem';
+import {DrawdownExplanationModal} from './DrawdownExplanationModal';
+import {MakeDrawdownRepaymentForm} from './MakeDrawdownRepaymentForm';
+import {TakeDrawdownForm} from './TakeDrawdownForm';
 
 const strings = getI18nService().strings;
 
 export const DrawdownScreen = withModal(({openModal, closeModal}) => {
-  const availableDrawdownAmount = 0;
-  const amountOwed = 0;
-  const walletBalance = 1000000;
-  const transactionFee = 5000;
-  const totalRepaymentAmount = 105000;
+  const {getDrawdowns} = useDrawdown();
+  const {getWallet} = useWallet();
+  const navigation = useAppNavigation();
+
+  const drawdowns = getDrawdowns().sorted('created_at', true);
+
+  const [wallet, setWallet] = useState(getWallet());
+  const [filterStatus, setFilterStatus] = useState('all');
+
+  const amountOwed = wallet?.drawdown_amount_owed;
+  const availableDrawdownAmount = wallet?.drawdown_amount_available;
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      setWallet(getWallet());
+    });
+  }, [navigation]);
 
   const handleTakeDrawdown = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => (
-        <AmountForm
-          header={{
-            title: strings('drawdown.take_drawdown'),
-          }}
-          leadText={strings('drawdown.take_drawdown_lead_text')}
-          onClose={closeModal}
-          actionItems={[
-            {
-              icon: 'calendar',
-              leftSection: {
-                title: '21 Jun, 2021 - 30days',
-                caption: strings('drawdown.repayment_date'),
-              },
-            },
-            {
-              icon: 'divide',
-              leftSection: {
-                caption: strings('drawdown.repayment_amount', {
-                  amount: amountWithCurrency(transactionFee),
-                }),
-                title: amountWithCurrency(totalRepaymentAmount),
-              },
-            },
-          ]}
-          doneButton={{
-            title: strings('drawdown.request'),
-            onPress: () => {
-              closeModal();
-            },
+        <TakeDrawdownForm
+          {...{
+            wallet,
+            openModal,
+            closeModal,
           }}
         />
       ),
@@ -60,47 +55,50 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
   const handleMakeRepayment = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => (
-        <AmountForm
-          header={{
-            title: strings('drawdown.repayment'),
-          }}
-          leadText={`${strings(
-            'payment_activities.wallet_balance',
-          )}: ${amountWithCurrency(walletBalance)}`}
-          onClose={closeModal}
-          actionItems={[
-            {
-              icon: 'calendar',
-              leftSection: {
-                title: '21 Jun, 2021 - 30days',
-                caption: strings('drawdown.repayment_date'),
-              },
-            },
-            {
-              icon: 'divide',
-              leftSection: {
-                caption: strings('drawdown.repayment_amount', {
-                  amount: amountWithCurrency(transactionFee),
-                }),
-                title: amountWithCurrency(totalRepaymentAmount),
-              },
-            },
-          ]}
-          doneButton={{
-            title: strings('drawdown.make_payment'),
-            onPress: () => {
-              closeModal();
-            },
-          }}
+        <MakeDrawdownRepaymentForm
+          wallet={wallet}
+          openModal={openModal}
+          closeModal={closeModal}
         />
       ),
     });
   }, [closeModal, openModal]);
 
-  const onDrawdownTabChange = useCallback(() => {}, []);
-  const onHelp = useCallback(() => {}, []);
-  const renderListItem = useCallback(() => null, []);
-  const drawdownHistory: any[] = [];
+  const onDrawdownTabChange = useCallback((tab) => {
+    setFilterStatus(tab.value);
+  }, []);
+
+  const onHelp = useCallback(() => {
+    openModal('bottom-half', {
+      renderContent: () => (
+        <DrawdownExplanationModal
+          header={{
+            title: strings('drawdown.what_is_drawdown'),
+          }}
+        />
+      ),
+    });
+  }, []);
+
+  const renderListItem = useCallback(
+    ({item: drawdown}: {item: IDrawdown}) => (
+      <DrawdownActivityItem drawdown={drawdown} />
+    ),
+    [],
+  );
+
+  const filteredDrawdowns = useMemo(() => {
+    let userDrawdowns = drawdowns;
+    switch (filterStatus) {
+      case 'all':
+        return userDrawdowns;
+      case 'active':
+        return userDrawdowns.filtered('status == "active"');
+      default:
+        return userDrawdowns;
+    }
+  }, [filterStatus, drawdowns]);
+
   return (
     <Page
       header={{
@@ -118,7 +116,7 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
         }}
         tag={{
           label: strings('drawdown.amount_owed', {
-            total_owed: amountOwed,
+            total_owed: amountWithCurrency(amountOwed),
           }),
           style: as('bg-red-10 text-red-100'),
         }}
@@ -130,6 +128,7 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
               bgColor: colors['red-10'],
             },
             onPress: handleTakeDrawdown,
+            disabled: !wallet?.is_drawdown_active,
             label: strings('drawdown.take_drawdown'),
           },
           {
@@ -139,41 +138,53 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
               bgColor: colors['blue-10'],
             },
             onPress: handleMakeRepayment,
+            disabled: !wallet?.is_drawdown_active,
             label: strings('drawdown.make_repayment'),
           },
         ]}
       />
-      {!!drawdownHistory.length && (
-        <TabBar
-          options={[
-            {
-              label: strings('drawdown.drawdown_history'),
-              value: 'drawdown_history',
-            },
-            {
-              label: strings('drawdown.active_drawdowns'),
-              value: 'active_drawdowns',
-            },
-          ]}
-          onChangeOption={onDrawdownTabChange}
-        />
+      {!!filteredDrawdowns.length && (
+        <View style={applyStyles('pb-16')}>
+          <TabBar
+            options={[
+              {
+                label: strings('drawdown.drawdown_history'),
+                value: 'all',
+              },
+              {
+                label: strings('drawdown.active_drawdowns'),
+                value: 'active',
+              },
+            ]}
+            onChangeOption={onDrawdownTabChange}
+          />
+        </View>
       )}
-      <FlatList
-        data={drawdownHistory}
-        initialNumToRender={10}
-        style={applyStyles('bg-white')}
-        renderItem={renderListItem}
-        contentContainerStyle={as('flex-1')}
-        ListEmptyComponent={
-          <EmptyState style={as('mt-32')}>
-            <View style={applyStyles('center px-8')}>
-              <Text style={applyStyles('text-black text-sm text-center')}>
-                {strings('drawdown.nothing_here')}
-              </Text>
-            </View>
-          </EmptyState>
-        }
-      />
+      {wallet?.is_drawdown_active ? (
+        <FlatList
+          data={filteredDrawdowns}
+          initialNumToRender={10}
+          style={applyStyles('bg-white')}
+          renderItem={renderListItem}
+          contentContainerStyle={as('flex-1')}
+          keyExtractor={(item) => `${item?._id?.toString()}`}
+          ListEmptyComponent={
+            <EmptyState style={as('mt-32')}>
+              <View style={applyStyles('center px-8')}>
+                <Text style={applyStyles('text-black text-sm text-center')}>
+                  {strings('drawdown.nothing_here')}
+                </Text>
+              </View>
+            </EmptyState>
+          }
+        />
+      ) : (
+        <View style={applyStyles('flex-1 py-64 flex-row center')}>
+          <Text style={applyStyles('text-center', {width: 320})}>
+            {strings('drawdown.not_qualified')}
+          </Text>
+        </View>
+      )}
     </Page>
   );
 });

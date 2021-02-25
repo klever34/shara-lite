@@ -14,7 +14,7 @@ import {
 import {getI18nService} from '@/services';
 import {as} from '@/styles';
 import {useFormik} from 'formik';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {View} from 'react-native';
 
 const strings = getI18nService().strings;
@@ -27,7 +27,9 @@ type AmountFormProps = {
   doneButton: Omit<ButtonProps, 'onPress'> & {
     onPress: (amount: string) => void;
   };
-  walletBalance: number;
+  maxAmount?: number;
+  errorMessage?: string;
+  onCurrencyInputChange?(value: string): void;
 };
 
 export const AmountForm = ({
@@ -36,7 +38,9 @@ export const AmountForm = ({
   actionItems,
   onClose,
   doneButton,
-  walletBalance,
+  maxAmount,
+  errorMessage,
+  onCurrencyInputChange,
 }: AmountFormProps) => {
   const {values, setFieldValue} = useFormik({
     initialValues: {
@@ -44,6 +48,13 @@ export const AmountForm = ({
     },
     onSubmit: () => {},
   });
+  const handleChange = useCallback(
+    (text: string) => {
+      setFieldValue('amount', text);
+      onCurrencyInputChange?.(text);
+    },
+    [setFieldValue, onCurrencyInputChange],
+  );
   return (
     <View style={as('')}>
       <Header {...header} style={as('border-b-0 pt-12 pb-0')} />
@@ -51,16 +62,16 @@ export const AmountForm = ({
         <CurrencyInput
           value={toNumber(values.amount)}
           label={strings('payment_activities.withdraw_fields.amount.label')}
-          onChangeText={(text) => setFieldValue('amount', text)}
+          onChangeText={handleChange}
           keyboardType="numeric"
-          isInvalid={toNumber(values.amount) > walletBalance}
-          errorMessage={strings('payment_activities.withdraw_excess_error')}
+          isInvalid={!!maxAmount && toNumber(values.amount) > maxAmount}
+          errorMessage={errorMessage}
         />
         <Text style={as('self-center mt-8 text-gray-200 text-sm')}>
           {leadText}
         </Text>
         <View style={as('mt-24 mb-32')}>
-          {actionItems.map((actionItem) => {
+          {actionItems.map((actionItem, index) => {
             return (
               <TouchableActionItem
                 {...actionItem}
@@ -68,6 +79,7 @@ export const AmountForm = ({
                   ...actionItem.leftSection,
                   style: as('flex-col-reverse'),
                 }}
+                key={`${index}`}
                 style={as('px-0')}
               />
             );
@@ -83,7 +95,8 @@ export const AmountForm = ({
             {
               ...doneButton,
               disabled:
-                !values.amount || toNumber(values.amount) > walletBalance,
+                !values.amount ||
+                (!!maxAmount && toNumber(values.amount) > maxAmount),
               onPress: () => {
                 doneButton.onPress?.(values.amount);
               },

@@ -4,12 +4,15 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {ICollection} from '@/models/Collection';
 import {IDisbursement} from '@/models/Disbursement';
+import {getI18nService} from '@/services';
 import {useCollection} from '@/services/collection';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {formatDistanceToNowStrict} from 'date-fns';
+import {omit} from 'lodash';
 import React, {useCallback, useState} from 'react';
 import {InteractionManager, Text, View} from 'react-native';
+import Markdown from 'react-native-markdown-display';
 
 function isCollection(item: ICollection | IDisbursement): item is ICollection {
   return (item as ICollection).collection_method !== undefined;
@@ -23,12 +26,14 @@ const markdownStyle = {
   }),
 };
 
+const strings = getI18nService().strings;
+
 export const PaymentActivityItem = ({
   data,
 }: {
   data: ICollection | IDisbursement;
 }) => {
-  const {amount, created_at, provider} = data;
+  const {amount, created_at, type, provider_label} = data;
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     isCollection(data) ? data.customer : undefined,
   );
@@ -59,9 +64,12 @@ export const PaymentActivityItem = ({
     if (isCollection(data)) {
       return (
         <View>
-          <Text style={applyStyles('text-gray-300 pb-2')}>
-            Received payment of {amountWithCurrency(amount)} via {provider}
-          </Text>
+          <Markdown style={markdownStyle}>
+            {strings('payment_activities.payment_activity.received_payment', {
+              amount: amountWithCurrency(amount),
+              provider: provider_label || type,
+            })}
+          </Markdown>
           <View>
             {customer ? (
               <Text style={applyStyles('text-700 text-gray-100')}>
@@ -69,7 +77,7 @@ export const PaymentActivityItem = ({
               </Text>
             ) : (
               <Text style={applyStyles('flex-1 text-secondary text-700')}>
-                Select customer
+                {strings('payment_activities.payment_activity.select_customer')}
               </Text>
             )}
           </View>
@@ -78,12 +86,15 @@ export const PaymentActivityItem = ({
     }
     return (
       <View>
-        <Text>
-          Withdrawal of {amountWithCurrency(amount)} to your {provider}
-        </Text>
+        <Markdown style={markdownStyle}>
+          {strings('payment_activities.payment_activity.withdrawal', {
+            amount: amountWithCurrency(amount),
+            provider: provider_label || type,
+          })}
+        </Markdown>
       </View>
     );
-  }, [data, customer, amount, provider]);
+  }, [data, customer, amount, type, provider_label]);
 
   return (
     <Touchable
