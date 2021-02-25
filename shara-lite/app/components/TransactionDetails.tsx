@@ -8,9 +8,8 @@ import Touchable from '@/components/Touchable';
 import TransactionListHeader from '@/components/TransactionListHeader';
 import TransactionListItem from '@/components/TransactionListItem';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {amountWithCurrency} from '@/helpers/utils';
+import {amountWithCurrency, sortDatesRelativeToDate} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {ReminderUnit, ReminderWhen} from '@/models/PaymentReminder';
 import {IReceipt} from '@/models/Receipt';
 import {useReceiptList} from '@/screens/main/transactions/hook';
 import {
@@ -28,14 +27,11 @@ import {ShareHookProps, useShare} from '@/services/share';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {
-  addDays,
-  addMonths,
-  addWeeks,
   format,
   formatDistanceToNowStrict,
+  isFuture,
+  isToday,
   subDays,
-  subMonths,
-  subWeeks,
 } from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Alert, Dimensions, FlatList, SafeAreaView, View} from 'react-native';
@@ -92,44 +88,27 @@ const TransactionDetails = withModal(
     }, [customer, setCurrentCustomer]);
 
     const getNextReminderDateText = useCallback(() => {
-      const dates: Date[] = [];
       if (dueDate) {
-        getPaymentReminders({customer}).forEach((item) => {
-          switch (item.unit) {
-            case ReminderUnit.DAYS:
-              if (item.when === ReminderWhen.AFTER) {
-                dates.push(addDays(dueDate, item.amount));
-              } else {
-                dates.push(subDays(dueDate, item.amount));
-              }
-              break;
-            case ReminderUnit.WEEKS:
-              if (item.when === ReminderWhen.AFTER) {
-                dates.push(addWeeks(dueDate, item.amount));
-              } else {
-                dates.push(subWeeks(dueDate, item.amount));
-              }
-              break;
-            case ReminderUnit.MONTHS:
-              if (item.when === ReminderWhen.AFTER) {
-                dates.push(addMonths(dueDate, item.amount));
-              } else {
-                dates.push(subMonths(dueDate, item.amount));
-              }
-              break;
-
-            default:
-              break;
-          }
-        });
-        if (dates.length) {
-          return formatDistanceToNowStrict(dates[0], {
-            addSuffix: true,
-          });
+        const reminderDates = getPaymentReminders({customer}).map((item) =>
+          subDays(dueDate, item.amount),
+        );
+        const sortedDates = sortDatesRelativeToDate(reminderDates, new Date());
+        if (sortedDates.length) {
+          return (
+            <Text
+              style={applyStyles(
+                'pl-8 text-gray-100 text-uppercase text-700 text-xs',
+              )}>
+              {strings('transaction.next_reminder')}{' '}
+              <Text style={applyStyles('text-red-200')}>
+                {formatDistanceToNowStrict(sortedDates[0], {
+                  addSuffix: true,
+                })}
+              </Text>
+            </Text>
+          );
         }
-        return formatDistanceToNowStrict(addDays(dueDate, 1), {
-          addSuffix: true,
-        });
+        return null;
       }
     }, [dueDate, getPaymentReminders, customer]);
 
@@ -520,60 +499,114 @@ const TransactionDetails = withModal(
                       </Text>
                     </View>
                   )}
-                  <Touchable onPress={handleGoToReminderSettings}>
-                    <View style={applyStyles('flex-row center py-8 flex-wrap')}>
-                      <View
-                        style={applyStyles(
-                          `p-8 flex-row items-center ${
-                            dueDate ? 'bg-white' : 'bg-red-200'
-                          }`,
-                          dueDate
-                            ? {
-                                borderWidth: 1,
-                                borderRadius: 8,
-                                borderColor: colors['gray-50'],
-                              }
-                            : {borderRadius: 8},
-                        )}>
-                        <Icon
-                          size={16}
-                          name="calendar"
-                          type="feathericons"
-                          color={dueDate ? colors['red-200'] : colors['red-50']}
-                        />
-                        <Text
-                          style={applyStyles(
-                            `pl-sm text-xs text-uppercase text-700 ${
-                              dueDate ? 'text-gray-300' : 'text-white'
-                            }`,
-                          )}>
-                          {dueDate
-                            ? strings('transaction.on_$date', {
-                                date: format(dueDate, 'ccc, dd MMM yyyy'),
-                              })
-                            : strings('transaction.set_collection_date')}
-                        </Text>
-                      </View>
-                      {!!dueDate && !!getPaymentReminders({customer}).length ? (
-                        <Text
-                          style={applyStyles(
-                            'pl-8 text-gray-100 text-uppercase text-700 text-xs',
-                          )}>
-                          Next reminder{' '}
-                          <Text style={applyStyles('text-red-200')}>
-                            {getNextReminderDateText()}
-                          </Text>
-                        </Text>
+                  {dueDate ? (
+                    <>
+                      {!!customer.balance &&
+                      customer.balance < 0 &&
+                      (isFuture(dueDate) || isToday(dueDate)) ? (
+                        <Touchable onPress={handleGoToReminderSettings}>
+                          <View
+                            style={applyStyles(
+                              'flex-row center py-8 flex-wrap',
+                            )}>
+                            <View
+                              style={applyStyles(
+                                `p-8 flex-row items-center ${
+                                  dueDate ? 'bg-white' : 'bg-red-200'
+                                }`,
+                                dueDate
+                                  ? {
+                                      borderWidth: 1,
+                                      borderRadius: 8,
+                                      borderColor: colors['gray-50'],
+                                    }
+                                  : {borderRadius: 8},
+                              )}>
+                              <Icon
+                                size={16}
+                                name="calendar"
+                                type="feathericons"
+                                color={
+                                  dueDate ? colors['red-200'] : colors['red-50']
+                                }
+                              />
+                              <Text
+                                style={applyStyles(
+                                  `pl-sm text-xs text-uppercase text-700 ${
+                                    dueDate ? 'text-gray-300' : 'text-white'
+                                  }`,
+                                )}>
+                                {dueDate
+                                  ? strings('transaction.on_$date', {
+                                      date: format(dueDate, 'ccc, dd MMM yyyy'),
+                                    })
+                                  : strings('transaction.set_collection_date')}
+                              </Text>
+                            </View>
+                            {!!dueDate &&
+                            !!getPaymentReminders({customer}).length ? (
+                              getNextReminderDateText()
+                            ) : (
+                              <Text
+                                style={applyStyles(
+                                  'pl-8 text-gray-100 text-uppercase text-700 text-xs',
+                                )}>
+                                {strings('transaction.no_reminder_set')}
+                              </Text>
+                            )}
+                          </View>
+                        </Touchable>
                       ) : (
-                        <Text
-                          style={applyStyles(
-                            'pl-8 text-gray-100 text-uppercase text-700 text-xs',
-                          )}>
-                          {strings('transaction.no_reminder_set')}
-                        </Text>
+                        <Touchable onPress={handleGoToReminderSettings}>
+                          <View
+                            style={applyStyles(
+                              'flex-row center py-8 flex-wrap',
+                            )}>
+                            <View
+                              style={applyStyles(
+                                'p-8 flex-row items-center bg-red-200 rounded-8',
+                              )}>
+                              <Icon
+                                size={16}
+                                name="calendar"
+                                type="feathericons"
+                                color={colors.white}
+                              />
+                              <Text
+                                style={applyStyles(
+                                  'pl-sm text-xs text-uppercase text-700 text-white',
+                                )}>
+                                {strings('transaction.collection_overdue')}
+                              </Text>
+                            </View>
+                          </View>
+                        </Touchable>
                       )}
-                    </View>
-                  </Touchable>
+                    </>
+                  ) : (
+                    <Touchable onPress={handleGoToReminderSettings}>
+                      <View
+                        style={applyStyles('flex-row center py-8 flex-wrap')}>
+                        <View
+                          style={applyStyles(
+                            'p-8 flex-row items-center bg-red-200 rounded-8',
+                          )}>
+                          <Icon
+                            size={16}
+                            name="calendar"
+                            type="feathericons"
+                            color={colors['red-50']}
+                          />
+                          <Text
+                            style={applyStyles(
+                              'pl-sm text-xs text-uppercase text-700 text-white',
+                            )}>
+                            {strings('transaction.set_collection_date')}
+                          </Text>
+                        </View>
+                      </View>
+                    </Touchable>
+                  )}
                   <View style={applyStyles('flex-row items-center flex-wrap')}>
                     <Text
                       style={applyStyles(

@@ -233,7 +233,9 @@
       "share_customer_ledger_text": "Share customer ledger",
       "view_customer_ledger_text": "View customer ledger",
       "share_customer_ledger_whatsapp_text": "Share ledger via whatsapp",
-      "search_input_placeholder": "Search activities by client"
+      "search_input_placeholder": "Search activities by client",
+      "collection_overdue": "Collection overdue",
+      "next_reminder": "Next Reminder"
     },
     "receipts": {
       "filter_options": {
@@ -604,7 +606,7 @@
     "business_name": "Business Name",
     "skip_setup": "Skip setup",
     "product_details": "Product Details",
-    "search_input_placeholder": "Search customers here",
+    "search_input_placeholder": "Search clients here",
     "country": "Country",
     "in": "in",
     "money": "Money",
@@ -903,7 +905,9 @@
       "share_customer_ledger_text": "Tuma leja ya wateja",
       "view_customer_ledger_text": "Tazama leja ya wateja",
       "share_customer_ledger_whatsapp_text": "Tuma leja kupitia whatsapp",
-      "search_input_placeholder": "Tafuta shughuli na mteja"
+      "search_input_placeholder": "Tafuta shughuli na mteja",
+      "collection_overdue": "Mkusanyiko umechelewa",
+      "next_reminder": "Mawaidha Yanayofuata"
     },
     "receipts": {
       "filter_options": {
@@ -1501,7 +1505,9 @@
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
       "share_customer_ledger_whatsapp_text": "",
-      "search_input_placeholder": ""
+      "search_input_placeholder": "",
+      "collection_overdue": "",
+      "next_reminder": ""
     },
     "receipts": {
       "filter_options": {
@@ -2005,7 +2011,9 @@
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
       "share_customer_ledger_whatsapp_text": "",
-      "search_input_placeholder": ""
+      "search_input_placeholder": "",
+      "collection_overdue": "",
+      "next_reminder": ""
     },
     "receipts": {
       "filter_options": {
@@ -2509,7 +2517,9 @@
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
       "share_customer_ledger_whatsapp_text": "",
-      "search_input_placeholder": ""
+      "search_input_placeholder": "",
+      "collection_overdue": "",
+      "next_reminder": ""
     },
     "receipts": {
       "filter_options": {
@@ -3013,7 +3023,9 @@
       "share_customer_ledger_text": "",
       "view_customer_ledger_text": "",
       "share_customer_ledger_whatsapp_text": "",
-      "search_input_placeholder": ""
+      "search_input_placeholder": "",
+      "collection_overdue": "",
+      "next_reminder": ""
     },
     "receipts": {
       "filter_options": {

@@ -52,9 +52,9 @@ export const useCustomerList = (options: UseCustomerListOptions = {}) => {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [myCustomers, setMyCustomers] = useState(getCustomers());
-  const [filter, setFilter] = useState<string | undefined>(initialFilter);
+  const [filter, setFilter] = useState<string>(initialFilter);
 
-  const handleStatusFilter = useCallback((payload: {status?: string}) => {
+  const handleStatusFilter = useCallback((payload: {status: string}) => {
     const {status} = payload;
     setFilter(status);
   }, []);

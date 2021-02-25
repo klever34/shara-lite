@@ -227,6 +227,8 @@ export interface Strings {
     share_customer_ledger_text: string;
     view_customer_ledger_text: string;
     share_customer_ledger_whatsapp_text: string;
+    collection_overdue: string;
+    next_reminder: string
   };
   receipts: {
     filter_options: {

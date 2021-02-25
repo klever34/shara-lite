@@ -132,7 +132,7 @@ const customerReportTableHTML = ({data}: {data: IReceipt[]}) => {
       <p style="margin:0;width: 25%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Note</p>
       <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;font-weight: 700;font-size:12px;">Total Amount</p>
       <p style="margin:0;width: 20%;padding: 12px 12px 12px 0;text-align: center;font-weight: 700;font-size:12px;">Amount Paid</p>
-      <p style="margin:0;width: 20%;text-align: center;font-weight: 700;font-size:12px;padding: 12px 0;">Balance</p>
+      <p style="margin:0;width: 20%;text-align: center;font-weight: 700;font-size:12px;padding: 12px 0;">Running Balance</p>
     </div>
     ${data
       .map((item) => {

@@ -276,6 +276,8 @@ const en: Strings = {
     share_customer_ledger_text: 'Share ledger via other apps',
     view_customer_ledger_text: 'View ledger',
     share_customer_ledger_whatsapp_text: 'Share ledger via whatsapp',
+    collection_overdue: 'Collection overdue',
+    next_reminder: 'Next Reminder',
   },
   receipts: {
     filter_options: {
@@ -724,7 +726,7 @@ const en: Strings = {
   business_name: 'Business Name',
   skip_setup: 'Skip setup',
   product_details: 'Product Details',
-  search_input_placeholder: 'Search customers here',
+  search_input_placeholder: 'Search clients here',
   country: 'Country',
   in: 'in',
   payment_activities: {
