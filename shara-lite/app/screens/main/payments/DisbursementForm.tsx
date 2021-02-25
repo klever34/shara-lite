@@ -16,6 +16,7 @@ import {getI18nService} from '@/services';
 import {DisbursementOption} from '@/models/DisbursementMethod';
 import {Checkbox} from '@/components/Checkbox';
 import {useDisbursementMethod} from '@/services/disbursement-method';
+import {sortBy} from 'lodash';
 const strings = getI18nService().strings;
 
 type DisbursementFormProps = {
@@ -197,7 +198,7 @@ export const DisbursementForm = ({
                       )}
                       value=""
                     />
-                    {field.options.map((option) => (
+                    {sortBy(field.options, 'label').map((option) => (
                       <Picker.Item
                         key={JSON.stringify(option)}
                         label={option.label}
