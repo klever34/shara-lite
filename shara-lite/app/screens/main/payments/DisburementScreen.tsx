@@ -18,6 +18,7 @@ import {DisbursementForm} from './DisbursementForm';
 import {DisbursementOption} from '@/models/DisbursementMethod';
 import {handleError} from '@/services/error-boundary';
 import {useDisbursementMethod} from '@/services/disbursement-method';
+import {format, parseISO} from 'date-fns';
 const strings = getI18nService().strings;
 
 function DisburementScreen(props: ModalWrapperFields) {
@@ -56,7 +57,14 @@ function DisburementScreen(props: ModalWrapperFields) {
         setIsSaving(true);
         try {
           const {data} = await apiService.saveDisbursementMethod(updatedValues);
-          saveDisbursementMethod(data.disbursementMethod);
+          const {disbursementMethod} = data;
+          await saveDisbursementMethod({
+            disbursementMethod: {
+              ...disbursementMethod,
+              created_at: parseISO(disbursementMethod.created_at),
+              updated_at: parseISO(disbursementMethod.updated_at),
+            },
+          });
         } catch (error) {
           handleError(error);
         }

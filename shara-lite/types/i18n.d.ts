@@ -574,6 +574,7 @@ export interface Strings {
       amount: FormField;
       note: FormField;
     };
+    withdraw_excess_error: string;
     deposit_help_text: string;
     select_withdrawal_account: string;
     confirm_withdrawal: string;

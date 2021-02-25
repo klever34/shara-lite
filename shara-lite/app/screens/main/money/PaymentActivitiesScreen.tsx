@@ -72,14 +72,12 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const handleDeposit = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyDepositScreen onClose={closeModal} />,
-      showHandleNub: false,
     });
   }, [closeModal, openModal]);
 
   const handleWithdraw = useCallback(() => {
     openModal('bottom-half', {
       renderContent: () => <MoneyWithdrawModal onClose={closeModal} />,
-      showHandleNub: false,
     });
   }, [closeModal, openModal]);
 
@@ -114,6 +112,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const {getDisbursementMethods} = useDisbursementMethod();
   const disbursementMethods = getDisbursementMethods();
   const isPaymentSettingsSetup = !!disbursementMethods.length;
+
   const onGoToMoneySettings = useCallback(() => {
     navigation.navigate('PaymentSettings');
   }, [navigation]);
