@@ -97,7 +97,7 @@ export const TakeDrawdownForm = (props: any) => {
           },
         },
         {
-          icon: 'divide',
+          icon: 'plus',
           showChevronIcon: false,
           leftSection: {
             caption: strings('drawdown.repayment_amount', {
