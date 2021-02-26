@@ -600,7 +600,7 @@ export interface Strings {
     take_drawdown_lead_text: string;
     repayment: string;
     make_payment: string;
-    repayment_date: string;
+    repayment_date: { without_date: string; with_date: string};
     repayment_amount: string;
     request: string;
     what_is_drawdown: string;

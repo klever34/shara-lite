@@ -1,4 +1,4 @@
-import {TabBar, Text, toNumber} from '@/components';
+import {TabBar, Text} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {Page} from '@/components/Page';
 import {withModal} from '@/helpers/hocs';
@@ -10,6 +10,7 @@ import {useDrawdown} from '@/services/drawdown';
 import {useAppNavigation} from '@/services/navigation';
 import {useWallet} from '@/services/wallet';
 import {applyStyles, as, colors} from '@/styles';
+import {format} from 'date-fns';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {DrawdownActivityItem} from './DrawdownActivityItem';
@@ -121,10 +122,16 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
           style: as('bg-red-10 text-red-100'),
         }}
         caption={{
-          label: strings('drawdown.repayment_date', {
-            date: wallet?.drawdown_repayment_date,
+          label: strings('drawdown.repayment_date.with_date', {
+            date: `${format(
+              wallet?.drawdown_repayment_date ?? new Date(),
+              'dd MMM, yyyy',
+            )}`,
           }),
-          style: {},
+          style: {
+            body: applyStyles('text-gray-100 text-400 text-base'),
+            strong: applyStyles('text-500 text-black'),
+          },
         }}
         actions={[
           {

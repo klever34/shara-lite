@@ -91,9 +91,9 @@ export const TakeDrawdownForm = (props: any) => {
           leftSection: {
             title: `${format(
               wallet?.drawdown_repayment_date ?? new Date(),
-              'dd MMM, yyyy',
+              'dd MMMM, yyyy',
             )}`,
-            caption: strings('drawdown.repayment_date'),
+            caption: strings('drawdown.repayment_date.without_date'),
           },
         },
         {

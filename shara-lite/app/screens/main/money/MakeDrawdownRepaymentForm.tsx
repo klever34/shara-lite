@@ -47,7 +47,7 @@ export const MakeDrawdownRepaymentForm = (props: any) => {
               wallet?.drawdown_repayment_date ?? new Date(),
               'dd MMM, yyyy',
             )}`,
-            caption: strings('drawdown.repayment_date'),
+            caption: strings('drawdown.repayment_date.single'),
           },
         },
         {
