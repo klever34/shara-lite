@@ -9,7 +9,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {applyStyles} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
-import React, {useCallback} from 'react';
+import React, {useCallback, useState} from 'react';
 import {MainStackParamList} from '..';
 import {SelectCustomerListItem} from './SelectCustomerScreen';
 
@@ -23,14 +23,17 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
   const {goBack, customer} = route.params;
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSaveRecordSale = useCallback(
     async (payload) => {
       try {
+        setIsLoading(true);
         const transaction = await saveTransaction({
           ...payload,
           is_collection: false,
         });
+        setIsLoading(false);
         navigation.navigate('TransactionSuccess', {
           transaction,
           onDone: goBack,
@@ -75,7 +78,11 @@ const RecordSaleScreen = ({route}: RecordSaleScreenProps) => {
             getDateText={() => null}
           />
         )}
-        <RecordSaleForm onSubmit={handleSave} customer={customer} />
+        <RecordSaleForm
+          isLoading={isLoading}
+          onSubmit={handleSave}
+          customer={customer}
+        />
       </Page>
     </CalculatorView>
   );

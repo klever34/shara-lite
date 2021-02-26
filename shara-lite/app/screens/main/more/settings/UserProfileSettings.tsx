@@ -98,7 +98,7 @@ export const UserProfileSettings = () => {
           try {
             await apiService.userProfileUpdate(formValues);
             showSuccessToast(
-              i18nService.strings('profile_settings.success_text'),
+              i18nService.strings('profile_settings.toast_text'),
             );
             getAnalyticsService()
               .logEvent('userProfileUpdated', {})

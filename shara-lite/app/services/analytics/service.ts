@@ -237,9 +237,13 @@ export class AnalyticsService implements IAnalyticsService {
         {},
       );
       if (this.installReferrer) {
-        Object.keys(this.installReferrer).forEach((utmKey) => {
-          userData[utmKey] = this.installReferrer?.[utmKey] ?? '';
-        });
+        Object.keys(this.installReferrer)
+          .filter((utmKey) => {
+            return ['gclid'].includes(utmKey);
+          })
+          .forEach((utmKey) => {
+            userData[utmKey] = this.installReferrer?.[utmKey] ?? '';
+          });
       }
       userData.environment = Config.ENVIRONMENT;
       userData.businessName = user.businesses?.[0]?.name ?? '';

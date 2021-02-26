@@ -1,22 +1,20 @@
+import {Text} from '@/components';
+import {Icon} from '@/components/Icon';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {ICustomer} from '@/models';
+import {getI18nService} from '@/services';
+import {useAppNavigation} from '@/services/navigation';
+import {applyStyles, colors} from '@/styles';
 import React, {
   createContext,
   Dispatch,
   ReactNode,
   SetStateAction,
   useCallback,
-  useRef,
-  useState,
   useContext,
+  useState,
 } from 'react';
-import {Text} from '@/components';
-import {View, ViewProps} from 'react-native';
-import {applyStyles, colors} from '@/styles';
-import {HeaderBackButton} from '@react-navigation/stack';
-import {useAppNavigation} from '@/services/navigation';
-import {ICustomer} from '@/models';
-import {getI18nService} from '@/services';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {Icon} from '@/components/Icon';
+import {View, ViewStyle} from 'react-native';
 import {Touchable} from './Touchable';
 
 const strings = getI18nService().strings;
@@ -164,42 +162,22 @@ export const EntryView = withModal(
 );
 
 type EntryButtonProps = {
-  container?: ViewProps;
   ghost?: boolean;
+  style?: ViewStyle;
 };
 
-export const EntryButton = ({container, ghost}: EntryButtonProps) => {
-  const containerRef = useRef<View | null>(null);
+export const EntryButton = ({ghost, style}: EntryButtonProps) => {
   const {showEntryDialog} = useContext(EntryContext);
 
   return (
-    <View
-      style={applyStyles('relative', {
-        zIndex: 20,
-        opacity: 1,
-        bottom: 6,
-      })}
-      {...container}
-      ref={containerRef}>
-      <HeaderBackButton
-        labelVisible={false}
-        backImage={() => {
-          return (
-            <View
-              style={applyStyles(
-                'w-60 h-60 my-12 rounded-32 center bg-secondary relative',
-              )}>
-              <Icon
-                size={40}
-                name="plus"
-                type="feathericons"
-                color={colors.white}
-              />
-            </View>
-          );
-        }}
-        onPress={ghost ? undefined : showEntryDialog}
-      />
-    </View>
+    <Touchable onPress={ghost ? undefined : showEntryDialog}>
+      <View
+        style={applyStyles(
+          'w-60 h-60 my-12 rounded-32 center bg-secondary relative',
+          style,
+        )}>
+        <Icon size={40} name="plus" type="feathericons" color={colors.white} />
+      </View>
+    </Touchable>
   );
 };
