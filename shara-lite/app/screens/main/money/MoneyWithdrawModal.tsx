@@ -1,6 +1,6 @@
 import React, {ReactNode, useCallback, useState} from 'react';
 import {Header, Text} from '@/components';
-import {getApiService, getI18nService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {ScrollView, View} from 'react-native';
 import {applyStyles, as} from '@/styles';
 import {withModal} from '@/helpers/hocs';
@@ -198,6 +198,12 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                       disbursement_method_id: disbursementMethod.api_id,
                     })
                     .then(() => {
+                      getAnalyticsService()
+                        .logEvent('moneyWithdrawn', {
+                          amount: Number(amount),
+                          bank_details: selectedBankAccount,
+                        })
+                        .then(() => {});
                       closeModal();
                       openModal('full', {
                         renderContent: () => (

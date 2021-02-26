@@ -2,7 +2,7 @@ import React, {useMemo} from 'react';
 import {toNumber} from '@/components';
 import {TransactionSuccessModal} from '@/components/TransactionSuccessModal';
 import {amountWithCurrency} from '@/helpers/utils';
-import {getApiService, getI18nService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useDrawdown} from '@/services/drawdown';
 import {handleError} from '@/services/error-boundary';
 import {format, parseISO} from 'date-fns';
@@ -55,6 +55,11 @@ export const TakeDrawdownForm = (props: any) => {
         setIsSavingDrawdown(false);
         setAmount(undefined);
         closeModal();
+        getAnalyticsService()
+          .logEvent('takeDrawdown', {
+            amount: Number(amount),
+          })
+          .then(() => {});
         openModal('full', {
           renderContent: () => (
             <TransactionSuccessModal

@@ -4,7 +4,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {ICollection} from '@/models/Collection';
 import {IDisbursement} from '@/models/Disbursement';
-import {getI18nService} from '@/services';
+import {getAnalyticsService, getI18nService} from '@/services';
 import {useCollection} from '@/services/collection';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
@@ -47,6 +47,9 @@ export const PaymentActivityItem = ({
         setCustomer(customer);
         updateCollection({collection: data, updates: {customer}});
         navigation.navigate('PaymentActivities');
+        getAnalyticsService()
+          .logEvent('updateCollectionWithCustomer', {})
+          .then(() => {});
       }
     },
     [updateCollection, navigation, data],
