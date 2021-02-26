@@ -121,18 +121,22 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
           }),
           style: as('bg-red-10 text-red-100'),
         }}
-        caption={{
-          label: strings('drawdown.repayment_date.with_date', {
-            date: `${format(
-              wallet?.drawdown_repayment_date ?? new Date(),
-              'dd MMM, yyyy',
-            )}`,
-          }),
-          style: {
-            body: applyStyles('text-gray-100 text-400 text-base'),
-            strong: applyStyles('text-500 text-black'),
-          },
-        }}
+        caption={
+          wallet?.drawdown_repayment_date
+            ? {
+                label: strings('drawdown.repayment_date.with_date', {
+                  date: `${format(
+                    wallet?.drawdown_repayment_date,
+                    'dd MMMM, yyyy',
+                  )}`,
+                }),
+                style: {
+                  body: applyStyles('text-gray-100 text-400 text-base'),
+                  strong: applyStyles('text-500 text-black'),
+                },
+              }
+            : undefined
+        }
         actions={[
           {
             icon: {

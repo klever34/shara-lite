@@ -74,6 +74,7 @@ export const TakeDrawdownForm = (props: any) => {
     },
     [openModal, closeModal, saveDrawdown],
   );
+
   return (
     <AmountForm
       header={{
@@ -91,7 +92,7 @@ export const TakeDrawdownForm = (props: any) => {
           leftSection: {
             title: `${format(
               wallet?.drawdown_repayment_date ?? new Date(),
-              'dd MMMM, yyyy',
+              'dd MMM, yyyy',
             )}`,
             caption: strings('drawdown.repayment_date.without_date'),
           },
