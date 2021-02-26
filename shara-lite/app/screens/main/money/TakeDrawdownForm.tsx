@@ -59,7 +59,7 @@ export const TakeDrawdownForm = (props: any) => {
           renderContent: () => (
             <TransactionSuccessModal
               subheading={strings('drawdown.withdraw_success', {
-                amount: amountWithCurrency(amount),
+                amount: amountWithCurrency(toNumber(amount)),
               })}
               onDone={() => {
                 closeModal();

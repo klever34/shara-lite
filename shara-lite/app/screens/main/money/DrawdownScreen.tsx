@@ -120,6 +120,12 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
           }),
           style: as('bg-red-10 text-red-100'),
         }}
+        caption={{
+          label: strings('drawdown.repayment_date', {
+            date: wallet?.drawdown_repayment_date,
+          }),
+          style: {},
+        }}
         actions={[
           {
             icon: {

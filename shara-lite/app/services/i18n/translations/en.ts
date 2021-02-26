@@ -789,7 +789,7 @@ const en: Strings = {
       'Note: All funds will be added to your wallet balance',
     repayment: 'Repayment',
     make_payment: 'Make Payment',
-    repayment_date: 'Repayment Date',
+    repayment_date: 'Repayment Date**{{date}}**',
     repayment_amount: 'Repayment amount (includes {{amount}} transaction fee)',
     request: 'Request',
     what_is_drawdown: 'What is drawdown?',

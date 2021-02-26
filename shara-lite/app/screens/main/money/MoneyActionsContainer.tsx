@@ -1,9 +1,10 @@
-import React from 'react';
-import {as, colors} from '@/styles';
 import {Text} from '@/components';
-import Touchable from '@/components/Touchable';
-import {TextStyle, View} from 'react-native';
 import {Icon} from '@/components/Icon';
+import Touchable from '@/components/Touchable';
+import {as, colors} from '@/styles';
+import React from 'react';
+import {StyleSheet, TextStyle, View} from 'react-native';
+import Markdown from 'react-native-markdown-display';
 
 export type MoneyActionsContainerProps = {
   figure: {label: string; value: string};
@@ -12,6 +13,10 @@ export type MoneyActionsContainerProps = {
     style?: TextStyle;
     onPress?: () => void;
     pressInfo?: string;
+  };
+  caption?: {
+    label: string;
+    style?: StyleSheet.NamedStyles<any>;
   };
   actions: {
     label: string;
@@ -25,6 +30,7 @@ export const MoneyActionsContainer = ({
   figure,
   tag,
   actions,
+  caption,
 }: MoneyActionsContainerProps) => {
   return (
     <View style={as('items-center pt-16 px-16')}>
@@ -44,6 +50,7 @@ export const MoneyActionsContainer = ({
           </View>
         </Touchable>
       )}
+      {caption && <Markdown style={caption.style}>{caption.label}</Markdown>}
       <View style={as('flex-row my-16')}>
         {actions.map(({onPress, label, icon, disabled = false}) => {
           return (
