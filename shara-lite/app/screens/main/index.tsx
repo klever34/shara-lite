@@ -22,7 +22,7 @@ import {useRealm} from '@/services/realm';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {ObjectId} from 'bson';
 import React, {useCallback, useContext, useEffect} from 'react';
 import {ActivityIndicator, View} from 'react-native';
@@ -75,7 +75,7 @@ export type MainStackParamList = {
   Report: undefined;
 };
 
-const MainStack = createStackNavigator<MainStackParamList>();
+const MainStack = createNativeStackNavigator<MainStackParamList>();
 
 const MainScreens = () => {
   useRepeatBackToExit();
