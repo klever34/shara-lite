@@ -610,6 +610,7 @@ export interface Strings {
     withdraw_excess_error: string;
     repayment_excess_error: string;
     not_qualified: string;
+    repayment_success: string;
   };
   copied: string;
 }
