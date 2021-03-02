@@ -18,6 +18,7 @@ import {useNavigation} from '@react-navigation/native';
 import {useInitRealm} from '@/services/realm';
 import {version as currentVersion} from '../../package.json';
 import {getI18nService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 const strings = getI18nService().strings;
 
 const remoteConfigService = getRemoteConfigService();
@@ -67,7 +68,10 @@ const SplashScreen = () => {
       await getRemoteConfigService().initialize();
     } catch (e) {
     } finally {
-      getI18nService().initialize();
+      const user = authService.getUser();
+      if (user) {
+        getI18nService().initialize(user).catch(handleError);
+      }
     }
   }, []);
 
