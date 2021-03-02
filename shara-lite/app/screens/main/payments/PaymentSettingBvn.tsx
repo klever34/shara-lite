@@ -28,6 +28,7 @@ export const PaymentSettingBvn = () => {
         </Text>
       </View>
       <AppInput
+        keyboardType="numeric"
         placeholder={strings(
           'payment.withdrawal_method.bvn_input_field_placeholder',
         )}
