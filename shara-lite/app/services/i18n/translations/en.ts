@@ -799,6 +799,7 @@ const en: Strings = {
     withdraw_excess_error: 'Withdrawal amount is more than your drawdown limit',
     repayment_excess_error: 'The amount you want to pay is more than your wallet balance',
     not_qualified: 'You do not qualify for drawdowns at the moment.',
+    repayment_success: 'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
   },
   copied: 'Copied',
 };

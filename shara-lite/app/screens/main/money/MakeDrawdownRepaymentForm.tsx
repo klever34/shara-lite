@@ -1,38 +1,58 @@
 import {toNumber} from '@/components';
+import {TransactionSuccessModal} from '@/components/TransactionSuccessModal';
 import {amountWithCurrency} from '@/helpers/utils';
-import {getI18nService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
+import {handleError} from '@/services/error-boundary';
 import {format} from 'date-fns';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useState} from 'react';
 import {AmountForm} from './AmountForm';
 
 const strings = getI18nService().strings;
 
 export const MakeDrawdownRepaymentForm = (props: any) => {
-  const {wallet, closeModal} = props;
-  const [amount, setAmount] = useState<string | undefined>();
+  const {wallet, openModal, closeModal} = props;
+  const [isSaving, setIsSaving] = useState(false);
 
-  const transactionFee = useMemo(() => {
-    const transactionPercentage =
-      wallet?.drawdown_transaction_fee_percentage ?? 0;
-    return (transactionPercentage / 100) * toNumber(amount ?? '0');
-  }, [amount, wallet?.drawdown_transaction_fee_percentage]);
+  const handleSaveRepayment = useCallback(
+    async (amount) => {
+      try {
+        setIsSaving(true);
+        await getApiService().makeDrawdownRepayment({
+          amount: toNumber(amount),
+        });
+        setIsSaving(false);
+        closeModal();
+        getAnalyticsService()
+          .logEvent('takeDrawdown', {
+            amount: Number(amount),
+          })
+          .then(() => {});
+        openModal('full', {
+          renderContent: () => (
+            <TransactionSuccessModal
+              subheading={strings('drawdown.repayment_success', {
+                amount: amountWithCurrency(toNumber(amount)),
+              })}
+              onDone={() => {
+                closeModal();
+              }}
+            />
+          ),
+        });
+      } catch (error) {
+        setIsSaving(false);
+        handleError(error);
+      }
+    },
+    [openModal, closeModal],
+  );
 
-  const totalRepaymentAmount = useMemo(() => {
-    if (amount) {
-      return toNumber(amount) + transactionFee;
-    }
-  }, [amount, transactionFee]);
-
-  const handleRepaymentAmountChange = useCallback((value: string) => {
-    setAmount(value);
-  }, []);
   return (
     <AmountForm
       header={{
         title: strings('drawdown.repayment'),
       }}
       maxAmount={wallet?.balance}
-      onCurrencyInputChange={handleRepaymentAmountChange}
       errorMessage={strings('drawdown.repayment_excess_error')}
       leadText={`${strings(
         'payment_activities.wallet_balance',
@@ -47,25 +67,14 @@ export const MakeDrawdownRepaymentForm = (props: any) => {
               wallet?.drawdown_repayment_date ?? new Date(),
               'dd MMM, yyyy',
             )}`,
-            caption: strings('drawdown.repayment_date.single'),
-          },
-        },
-        {
-          icon: 'divide',
-          showChevronIcon: false,
-          leftSection: {
-            caption: strings('drawdown.repayment_amount', {
-              amount: amountWithCurrency(transactionFee),
-            }),
-            title: amountWithCurrency(totalRepaymentAmount),
+            caption: strings('drawdown.repayment_date.without_date'),
           },
         },
       ]}
       doneButton={{
+        isLoading: isSaving,
+        onPress: handleSaveRepayment,
         title: strings('drawdown.make_payment'),
-        onPress: () => {
-          closeModal();
-        },
       }}
     />
   );

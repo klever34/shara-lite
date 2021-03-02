@@ -487,4 +487,5 @@ drawdown.withdraw_success,Your withdrawal of **{{amount}}** was successful. Fund
 drawdown.withdraw_excess_error,Withdrawal amount is more than your drawdown limit,Kiasi cha uondoaji ni zaidi ya kikomo chako cha kushuka,,,,
 drawdown.repayment_excess_error,The amount you want to pay is more than your wallet balance,Kiasi unachotaka kulipa ni zaidi ya salio lako la mkoba,,,,
 drawdown.not_qualified,You do not qualify for drawdowns at the moment.,Haustahiki kushuka kwa wakati huu.,,,,
+drawdown.repayment_success,Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.,Ulipaji wako wa kushuka kwa ** {{amount}} ** ulifanikiwa. Fedha zimekatwa kutoka kwenye salio lako la mkoba.,,,,
 copied,Copied,Imenakiliwa,,,,
