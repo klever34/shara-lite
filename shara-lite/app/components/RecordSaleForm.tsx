@@ -411,6 +411,12 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
             />
           </>
         )}
+        {!!values.credit_amount && dueDate && isBefore(dueDate, new Date()) && (
+          <Text
+            style={applyStyles('text-sm text-400 text-red-100 text-center')}>
+            {strings('sale.due_date_is_past', {customer: customer?.name})}
+          </Text>
+        )}
         <TouchableActionItem
           icon="image"
           style={applyStyles('py-12 px-0 items-center')}
@@ -432,11 +438,6 @@ export const RecordSaleForm = withModal((props: RecordSaleFormProps) => {
       {!customer && !!values.credit_amount && (
         <Text style={applyStyles('text-sm text-400 text-red-100 text-center')}>
           {strings('sale.no_customer_text')}
-        </Text>
-      )}
-      {!!values.credit_amount && dueDate && isBefore(dueDate, new Date()) && (
-        <Text style={applyStyles('text-sm text-400 text-red-100 text-center')}>
-          {strings('sale.due_date_is_past', {customer: customer?.name})}
         </Text>
       )}
       <Button
