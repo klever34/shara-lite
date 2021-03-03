@@ -387,6 +387,7 @@ export interface Strings {
       copy_payment_link: string;
       preview_payment_page: string;
       add_new_payment_method: string;
+      others_placeholder_text: string;
     };
     payment_form: {
       label: string;

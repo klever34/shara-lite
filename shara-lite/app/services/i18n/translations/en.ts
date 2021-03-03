@@ -508,6 +508,8 @@ const en: Strings = {
       copy_payment_link: 'COPY LINK',
       preview_payment_page: 'Preview Payment Page',
       add_new_payment_method: 'Add New Payment Method',
+      others_placeholder_text:
+        'Enter the full information on how you want to get paid. It can contain, account number, name of bank, mobile money information, etc.',
     },
     payment_form: {
       label: 'Select a payment method',
