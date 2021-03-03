@@ -596,6 +596,7 @@ export interface Strings {
         };
       };
     };
+    not_withdrawal_acct: Card;
   };
   drawdown: {
     title: string;

@@ -786,6 +786,11 @@ const en: Strings = {
         },
       },
     },
+    not_withdrawal_acct: {
+      title: 'No Withdrawal Method',
+      description: 'You have not set up any withrawal method',
+      tag: 'Set up now',
+    },
   },
   drawdown: {
     title: 'Drawdown',

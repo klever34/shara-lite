@@ -745,6 +745,11 @@
             "label": "How do you receive payment in your country?"
           }
         }
+      },
+      "not_withdrawal_acct": {
+        "title": "No Withdrawal Method Added",
+        "description": "You have not set up any withrawal method",
+        "tag": "Set up now"
       }
     },
     "drawdown": {
@@ -1523,6 +1528,11 @@
             "label": "Je! Unapokeaje malipo katika nchi yako?"
           }
         }
+      },
+      "not_withdrawal_acct": {
+        "title": "Hakuna Njia ya Uondoaji Imeongezwa",
+        "description": "Hujaweka njia yoyote ya kujiondoa",
+        "tag": "Sanidi sasa"
       }
     },
     "drawdown": {
@@ -2301,6 +2311,11 @@
             "label": ""
           }
         }
+      },
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
       }
     },
     "drawdown": {
@@ -3079,6 +3094,11 @@
             "label": ""
           }
         }
+      },
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
       }
     },
     "drawdown": {
@@ -3857,6 +3877,11 @@
             "label": ""
           }
         }
+      },
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
       }
     },
     "drawdown": {
@@ -4635,6 +4660,11 @@
             "label": ""
           }
         }
+      },
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
       }
     },
     "drawdown": {

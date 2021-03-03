@@ -14,6 +14,7 @@ import {useWallet} from '@/services/wallet';
 import {IDisbursementMethod} from '@/models/DisbursementMethod';
 import {TransactionSuccessModal} from '@/components/TransactionSuccessModal';
 import {handleError} from '@/services/error-boundary';
+import {useAppNavigation} from '@/services/navigation';
 
 const markdownStyle = {
   body: applyStyles('text-gray-300 text-400 text-base mb-32'),
@@ -160,7 +161,10 @@ type MoneyWithdrawScreenProps = {
 
 const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
   ({onClose, openModal, closeModal}) => {
-    const {getPrimaryDisbursementMethod} = useDisbursementMethod();
+    const {
+      getPrimaryDisbursementMethod,
+      getDisbursementMethods,
+    } = useDisbursementMethod();
     const {getWallet} = useWallet();
     const walletBalance = getWallet()?.balance ?? 0;
     const primaryDisbursementMethod = getPrimaryDisbursementMethod();
@@ -241,6 +245,32 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       },
       [closeModal, disbursementMethod, onClose, openModal, selectedBankAccount],
     );
+    // TODO: Add logic to check whether money settings is set up
+    const disbursementMethods = getDisbursementMethods();
+    const navigation = useAppNavigation();
+    const onGoToMoneySettings = useCallback(() => {
+      navigation.navigate('PaymentSettings');
+    }, [navigation]);
+    if (!disbursementMethods.length) {
+      return (
+        <View style={as('center px-32 py-16')}>
+          <Text style={as('text-center font-bold text-2xl mb-8')}>
+            {strings('payment_activities.not_withdrawal_acct.title')}
+          </Text>
+          <Text style={as('text-center leading-24 mb-32')}>
+            {strings('payment_activities.not_withdrawal_acct.description')}
+          </Text>
+          <ActionButtonSet
+            actionBtns={[
+              {
+                title: strings('payment_activities.not_withdrawal_acct.tag'),
+                onPress: onGoToMoneySettings,
+              },
+            ]}
+          />
+        </View>
+      );
+    }
     return (
       <AmountForm
         maxAmount={walletBalance}
