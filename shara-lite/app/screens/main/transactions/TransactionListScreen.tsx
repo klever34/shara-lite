@@ -24,8 +24,9 @@ import React, {
 } from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import {ActivityListItem} from './ActivityListItem';
-import {useTransactionList} from './hook';
+import {useReceiptList, useTransactionList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
+import {useTransaction} from '@/services/transaction';
 // TODO: Translate
 
 const strings = getI18nService().strings;
@@ -37,6 +38,9 @@ type ActivityData = IActivityData & {date?: Date; is_reminder: boolean};
 
 export const TransactionListScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
+  const {getTransactions} = useTransaction();
+
+  const receipts = getTransactions();
   const {
     filter,
     reloadData,
@@ -46,14 +50,14 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     filterOptions,
     collectedAmount,
     filterStartDate,
-    outstandingAmount,
     filteredReceipts,
+    outstandingAmount,
     handleStatusFilter,
     handleReceiptSearch,
     receiptsToDisplay,
     activitiesToDisplay,
     handlePagination,
-  } = useTransactionList();
+  } = useReceiptList({receipts});
 
   const activitiesData: any = useMemo(() => {
     const data = [...receiptsToDisplay, ...activitiesToDisplay].map((item) => {
@@ -67,11 +71,14 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   }, [receiptsToDisplay, activitiesToDisplay]);
 
   useEffect(() => {
-    if (!searchTerm) {
-      reloadData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    reloadData();
   }, [reloadData, searchTerm, filteredReceipts.length]);
+
+  useEffect(() => {
+    return navigation.addListener('focus', () => {
+      reloadData();
+    });
+  }, [navigation, reloadData]);
 
   useLayoutEffect(() => {
     navigation.setOptions({

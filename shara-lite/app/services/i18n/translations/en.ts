@@ -148,7 +148,7 @@ const en: Strings = {
       },
     },
   },
-  shara_tagline: 'Keep track of who owes you and get paid faster',
+  shara_tagline: 'Built To Get You Paid Faster',
   onboarding_copy_1: {
     title: 'Get paid on time',
     description: 'Get paid 2.5 times faster with Shara',
