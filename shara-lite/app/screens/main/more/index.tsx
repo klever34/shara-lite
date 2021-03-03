@@ -1,13 +1,13 @@
 import React from 'react';
 import {colors} from '@/styles';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import {MoreOptionsScreen} from './MoreOptionsScreen';
 
 export type MoreStackParamList = {
   MoreOptions: undefined;
 };
 
-const MoreStack = createNativeStackNavigator<MoreStackParamList>();
+const MoreStack = createStackNavigator<MoreStackParamList>();
 
 export const MoreScreen = () => {
   return (

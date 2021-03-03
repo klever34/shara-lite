@@ -1,6 +1,6 @@
 import {IReceipt} from '@/models/Receipt';
 import {colors} from '@/styles';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {TransactionListScreen} from './TransactionListScreen';
 
@@ -9,7 +9,7 @@ export type TransactionStackParamList = {
   ReceiptDetails: {receipt: IReceipt};
 };
 
-const ReceiptsStack = createNativeStackNavigator<TransactionStackParamList>();
+const ReceiptsStack = createStackNavigator<TransactionStackParamList>();
 
 export const TransactionsScreen = () => {
   return (

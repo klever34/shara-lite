@@ -1,13 +1,13 @@
 import {colors} from '@/styles';
 import React from 'react';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import {CustomerListScreen} from '@/screens/main/customers/CustomerListScreen';
 
 export type CustomersStackParamList = {
   CustomerList: undefined;
 };
 
-const CustomersStack = createNativeStackNavigator<CustomersStackParamList>();
+const CustomersStack = createStackNavigator<CustomersStackParamList>();
 
 export const CustomersScreen = () => {
   return (

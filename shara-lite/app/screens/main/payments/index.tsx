@@ -1,5 +1,5 @@
 import {colors} from '@/styles';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
+import {createStackNavigator} from '@react-navigation/stack';
 import React from 'react';
 import {PaymentListScreen} from './PaymentListScreen';
 
@@ -8,7 +8,7 @@ export type ProductsStackParamList = {
   ManageItems: undefined;
 };
 
-const ProductsStack = createNativeStackNavigator<ProductsStackParamList>();
+const ProductsStack = createStackNavigator<ProductsStackParamList>();
 
 export const PaymentsScreen = () => {
   return (
