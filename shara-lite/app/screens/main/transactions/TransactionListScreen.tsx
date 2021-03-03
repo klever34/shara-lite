@@ -11,22 +11,16 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import {omit, orderBy} from 'lodash';
-import * as Animatable from 'react-native-animatable';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
+import * as Animatable from 'react-native-animatable';
 import {ActivityListItem} from './ActivityListItem';
-import {useReceiptList, useTransactionList} from './hook';
+import {useReceiptList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
-import {useTransaction} from '@/services/transaction';
 // TODO: Translate
 
 const strings = getI18nService().strings;
