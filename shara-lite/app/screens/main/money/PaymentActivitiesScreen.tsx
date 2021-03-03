@@ -21,7 +21,6 @@ import {FlatList, SafeAreaView, View} from 'react-native';
 import {usePaymentActivities} from './hook';
 import {MoneyActionsContainer} from './MoneyActionsContainer';
 import {PaymentActivityItem} from './PaymentActivityItem';
-import {useDisbursementMethod} from '@/services/disbursement-method';
 
 const strings = getI18nService().strings;
 
@@ -108,10 +107,6 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     return activeOption?.text;
   }, [filter, filterEndDate, filterOptions, filterStartDate]);
 
-  // TODO: Add logic to check whether money settings is set up
-  const {getDisbursementMethods} = useDisbursementMethod();
-  const disbursementMethods = getDisbursementMethods();
-  // const isPaymentSettingsSetup = !!disbursementMethods.length;
   const isPaymentSettingsSetup = true;
 
   const onGoToMoneySettings = useCallback(() => {

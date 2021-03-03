@@ -2,6 +2,7 @@ interface RemoteConfig {
   translations: Translations;
   countries: Countries;
   minimumVersion: string;
+  sharaMoneyEnabledCountries: {[key: string]: {}};
 }
 
 interface Countries {

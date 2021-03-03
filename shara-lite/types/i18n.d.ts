@@ -228,7 +228,7 @@ export interface Strings {
     view_customer_ledger_text: string;
     share_customer_ledger_whatsapp_text: string;
     collection_overdue: string;
-    next_reminder: string
+    next_reminder: string;
   };
   receipts: {
     filter_options: {
@@ -586,7 +586,17 @@ export interface Strings {
       received_payment: string;
       withdrawal: string;
       select_customer: string;
-    }
+    };
+    not_available: {
+      title: string;
+      description: string;
+      fields: {
+        method_of_disbursement: {
+          label: string;
+        };
+      };
+    };
+    not_withdrawal_acct: Card;
   };
   drawdown: {
     title: string;
@@ -600,7 +610,7 @@ export interface Strings {
     take_drawdown_lead_text: string;
     repayment: string;
     make_payment: string;
-    repayment_date: { without_date: string; with_date: string};
+    repayment_date: {without_date: string; with_date: string};
     repayment_amount: string;
     request: string;
     what_is_drawdown: string;
@@ -613,6 +623,7 @@ export interface Strings {
     repayment_success: string;
   };
   copied: string;
+  submit: string;
 }
 
 interface PluralizedString {

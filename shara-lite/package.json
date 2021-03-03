@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.7.7-shara-lite-feature.shara-pay+build.7021",
+  "version": "0.7.7-shara-lite-feature.shara-pay+build.7029",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
