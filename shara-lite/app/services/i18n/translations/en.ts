@@ -771,10 +771,21 @@ const en: Strings = {
       'Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful',
     withdraw_excess_error: 'Withdrawal amount is more than your wallet balance',
     payment_activity: {
-      received_payment: 'Received payment of **{{amount}}** via **{{provider}}**',
+      received_payment:
+        'Received payment of **{{amount}}** via **{{provider}}**',
       withdrawal: 'Withdrawal of **{{amount}}** to your **{{provider}}**',
-      select_customer: 'Select Customer'
-    }
+      select_customer: 'Select Customer',
+    },
+    not_available: {
+      title: 'Not available in your country',
+      description:
+        "Hey there, payment is currently unavailable in your country. We're working hard to bring it to you soon.",
+      fields: {
+        method_of_disbursement: {
+          label: 'How do you receive payment in your country?',
+        },
+      },
+    },
   },
   drawdown: {
     title: 'Drawdown',
@@ -789,19 +800,27 @@ const en: Strings = {
       'Note: All funds will be added to your wallet balance',
     repayment: 'Repayment',
     make_payment: 'Make Payment',
-    repayment_date: {without_date:'Repayment Date', with_date: 'Repayment Date **{{date}}**'},
+    repayment_date: {
+      without_date: 'Repayment Date',
+      with_date: 'Repayment Date **{{date}}**',
+    },
     repayment_amount: 'Repayment amount (includes {{amount}} transaction fee)',
     request: 'Request',
     what_is_drawdown: 'What is drawdown?',
-    drawdown_item_text: 'Drawdown of **{{amount}}** to your wallet on **{{date}}**',
+    drawdown_item_text:
+      'Drawdown of **{{amount}}** to your wallet on **{{date}}**',
     transaction_fee: 'Transaction Fee',
-    withdraw_success: 'Your withdrawal of **{{amount}}** was successful. Funds have been added to your wallet balance.',
+    withdraw_success:
+      'Your withdrawal of **{{amount}}** was successful. Funds have been added to your wallet balance.',
     withdraw_excess_error: 'Withdrawal amount is more than your drawdown limit',
-    repayment_excess_error: 'The amount you want to pay is more than your wallet balance',
+    repayment_excess_error:
+      'The amount you want to pay is more than your wallet balance',
     not_qualified: 'You do not qualify for drawdowns at the moment.',
-    repayment_success: 'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
+    repayment_success:
+      'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
   },
   copied: 'Copied',
+  submit: 'Submit',
 };
 
 export default en;
