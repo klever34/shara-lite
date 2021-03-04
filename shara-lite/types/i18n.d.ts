@@ -137,6 +137,7 @@ export interface Strings {
   activities: string;
   home: string;
   payments: string;
+  money: string;
   more_text: string;
   client: PluralizedString;
   customer: PluralizedString;
@@ -226,6 +227,8 @@ export interface Strings {
     share_customer_ledger_text: string;
     view_customer_ledger_text: string;
     share_customer_ledger_whatsapp_text: string;
+    collection_overdue: string;
+    next_reminder: string;
   };
   receipts: {
     filter_options: {
@@ -332,7 +335,6 @@ export interface Strings {
   enable: string;
   unknown: string;
   whatsapp: string;
-  sms: string;
   confirm: string;
   address: string;
   price: string;
@@ -383,7 +385,9 @@ export interface Strings {
       };
       copy_payment_link: string;
       preview_payment_page: string;
+      add_new_payment: string;
       add_new_payment_method: string;
+      others_placeholder_text: string;
     };
     payment_form: {
       label: string;
@@ -396,6 +400,19 @@ export interface Strings {
         title: string;
         website_url: string;
       };
+    };
+    bvn_input_field_placeholder: string;
+    withdrawal_method: {
+      bvn_description: string;
+      bvn_input_field_placeholder: string;
+      otp_description: string;
+      add_withdrawal_method: string;
+      withdrawal_method_list: string;
+      withdrawal_method_description: string;
+      edit_withdrawal_method: string;
+      make_default_withdrawal: string;
+      withdrawal_picker_placeholder: string;
+      select_an_option: string;
     };
   };
   more: {
@@ -536,6 +553,76 @@ export interface Strings {
   search_input_placeholder: string;
   country: string;
   in: string;
+  payment_activities: {
+    empty_state: Card;
+    search_placeholder: string;
+    received: string;
+    withdrawn: string;
+    wallet_balance: string;
+    merchant_id: string;
+    tap_to_copy: string;
+    withdraw: string;
+    drawdown: string;
+    payment_activities: string;
+    no_money_activities: string;
+    your_wallet_balance: string;
+    your_merchant_id_is: string;
+    your_wallet_account_no_is: PluralizedString;
+    tap_to_copy_merchant_id: string;
+    tap_to_copy_wallet_account_no: string;
+    deposit: string;
+    withdraw_fields: {
+      amount: FormField;
+      note: FormField;
+    };
+    withdraw_excess_error: string;
+    deposit_help_text: string;
+    select_withdrawal_account: string;
+    confirm_withdrawal: string;
+    about_to_withdraw: string;
+    withdraw_success: string;
+    payment_activity: {
+      received_payment: string;
+      withdrawal: string;
+      select_customer: string;
+    };
+    not_available: {
+      title: string;
+      description: string;
+      fields: {
+        method_of_disbursement: {
+          label: string;
+        };
+      };
+    };
+    not_withdrawal_acct: Card;
+  };
+  drawdown: {
+    title: string;
+    amount_available: string;
+    amount_owed: string;
+    take_drawdown: string;
+    make_repayment: string;
+    nothing_here: string;
+    drawdown_history: string;
+    active_drawdowns: string;
+    take_drawdown_lead_text: string;
+    repayment: string;
+    make_payment: string;
+    repayment_date: {without_date: string; with_date: string};
+    repayment_amount: string;
+    request: string;
+    what_is_drawdown: string;
+    drawdown_item_text: string;
+    transaction_fee: string;
+    withdraw_success: string;
+    withdraw_excess_error: string;
+    repayment_excess_error: string;
+    not_qualified: string;
+    repayment_success: string;
+  };
+  copied: string;
+  submit: string;
 }
 
 interface PluralizedString {
@@ -545,8 +632,9 @@ interface PluralizedString {
 }
 
 interface Card {
-  title: string;
-  description: string;
+  title?: string;
+  description?: string;
+  tag?: string;
 }
 
 interface FormField {

@@ -161,7 +161,7 @@ const en: Strings = {
   onboarding_copy_3: {
     title: 'Keep track of your revenue and who owes you',
     description:
-      'Securely record your business data in a private, secure and backed up',
+      "Securely record your business data. It's private, secure and backed up in case you lose your device",
   },
   activities: 'Activities',
   home: 'Home',
@@ -250,7 +250,6 @@ const en: Strings = {
       'Please enter collected amount or outstanding amount',
     edit_transaction: 'Edit Transaction',
     transaction_deleted: 'TRANSACTION DELETED',
-    search_input_placeholder: 'Search activities by customer here',
     confirm_delete: 'Are you sure you want to delete this transaction?',
     is_collection_message: 'You Collected **{{total_amount}}**.',
     is_collection_with_customer_message:
@@ -272,9 +271,12 @@ const en: Strings = {
     start_adding_records:
       "Start adding records by tapping the '+' button below",
     transaction_success: '{{transaction_type}} has been recorded Successfully',
-    share_customer_ledger_text: 'Share ledger via other apps',
-    view_customer_ledger_text: 'View ledger',
+    share_customer_ledger_text: 'Share customer ledger',
+    view_customer_ledger_text: 'View customer ledger',
     share_customer_ledger_whatsapp_text: 'Share ledger via whatsapp',
+    search_input_placeholder: 'Search activities by client',
+    collection_overdue: 'Collection overdue',
+    next_reminder: 'Next Reminder',
   },
   receipts: {
     filter_options: {
@@ -296,8 +298,8 @@ const en: Strings = {
   you_owe_message: 'You owe {{credit_amount}}.',
   you_owe_message_with_due_date:
     'You owe {{credit_amount}} which is due on {{due_date}}.',
-  payment_link_message: String.raw`To pay click\n{{payment_link}}.`,
-  powered_by_shara: String.raw`Powered by Shara for free.\nwww.shara.co`,
+  payment_link_message: 'To pay click\\n{{payment_link}}.',
+  powered_by_shara: 'Powered by Shara for free.\\nwww.shara.co',
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
     button: {
@@ -420,9 +422,9 @@ const en: Strings = {
     other: 'Filters',
   },
   filter_options: {
-    owing: 'Owing',
-    not_owing: 'Not Owing',
-    surplus: 'Surplus',
+    owing: 'You owe',
+    not_owing: 'Owes you',
+    surplus: 'Paid in full',
   },
   customer: {
     one: 'Customer',
@@ -434,11 +436,11 @@ const en: Strings = {
   },
   customers: {
     start_adding:
-      "Start adding customers by creating a record with the '+' button below",
+      "Start adding clients by creating a record with the '+' button below",
     customer_count: {
-      zero: 'You have no customers yet.',
-      one: '1 Customer',
-      other: '{{count}} Customers',
+      zero: 'You have no clients yet.',
+      one: '1 Client',
+      other: '{{count}} Clients',
     },
     customer_edited: 'CUSTOMER EDITED',
     customer_deleted: 'CUSTOMER DELETED',
@@ -504,7 +506,10 @@ const en: Strings = {
       },
       copy_payment_link: 'COPY LINK',
       preview_payment_page: 'Preview Payment Page',
-      add_new_payment_method: 'Add New Payment Method',
+      add_new_payment: 'Add New Payment',
+      add_new_payment_method: 'Add New Payment',
+      others_placeholder_text:
+        'Enter the full information on how you want to get paid. It can contain, account number, name of bank, mobile money information, etc.',
     },
     payment_form: {
       label: 'Select a payment method',
@@ -517,6 +522,22 @@ const en: Strings = {
         title: 'Powered by Shara Inc © 2021',
         website_url: 'www.shara.co',
       },
+    },
+    bvn_input_field_placeholder: 'Enter your BVN',
+    withdrawal_method: {
+      bvn_description:
+        'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
+      bvn_input_field_placeholder: 'Enter your BVN',
+      otp_description: 'An OTP has been sent to your BVN number *******4343',
+      add_withdrawal_method: 'Add Withdrawal Method',
+      withdrawal_method_list:
+        'These are your preferred methods of collecting payment so your customers can know how to pay you. See your link below:',
+      edit_withdrawal_method: 'Edit Withdrawal Method',
+      withdrawal_method_description:
+        'Add your preferred methods of withdrawing funds from Shara.',
+      make_default_withdrawal: 'Make default withdrawal account',
+      withdrawal_picker_placeholder: 'Select a withdrawal method',
+      select_an_option: 'Select an option',
     },
   },
   more: {
@@ -642,8 +663,8 @@ const en: Strings = {
     download_report_toast_text: 'Download Report',
     results: {
       one: 'Result',
-      zero: '',
       other: 'Results',
+      zero: '',
     },
     download_report_button_text: 'Download Report',
     empty_state_text: {
@@ -709,9 +730,110 @@ const en: Strings = {
   business_name: 'Business Name',
   skip_setup: 'Skip setup',
   product_details: 'Product Details',
-  search_input_placeholder: 'Search customers here',
+  search_input_placeholder: 'Search clients here',
   country: 'Country',
   in: 'in',
+  money: 'Money',
+  payment_activities: {
+    empty_state: {
+      description:
+        'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
+      tag: 'Go to Money Settings',
+    },
+    search_placeholder: 'Search payments here...',
+    received: 'Received',
+    withdrawn: 'Withdrawn',
+    wallet_balance: 'Your wallet balance',
+    merchant_id: '{{merchant_id}} - merchant Id',
+    tap_to_copy: 'Tap to copy',
+    deposit: 'Deposit',
+    withdraw: 'Withdraw',
+    drawdown: 'Drawdown',
+    payment_activities: 'Payment Activities',
+    no_money_activities: 'You have no Money activities yet',
+    your_wallet_balance: 'Your wallet balance',
+    your_merchant_id_is: 'Your Merchant ID is',
+    your_wallet_account_no_is: {
+      one: 'Your wallet account number is',
+      other: 'Your wallet account numbers are',
+    },
+    tap_to_copy_merchant_id: 'Tap to copy Merchant ID',
+    tap_to_copy_wallet_account_no: 'Tap to copy wallet account number',
+    withdraw_fields: {
+      amount: {
+        label: 'Enter Amount',
+      },
+      note: {
+        label: 'Write a note',
+      },
+    },
+    deposit_help_text:
+      'See below the various ways to deposit funds into your wallet',
+    select_withdrawal_account: 'Select withdrawal account',
+    confirm_withdrawal: 'Confirm withdrawal',
+    about_to_withdraw:
+      'You are about to withdraw **{{amount}}** to\\n**{{bank_details}}**',
+    withdraw_success:
+      'Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful',
+    payment_activity: {
+      received_payment:
+        'Received payment of **{{amount}}** via **{{provider}}**',
+      withdrawal: 'Withdrawal of **{{amount}}** to your **{{provider}}**',
+      select_customer: 'Select Customer',
+    },
+    withdraw_excess_error:
+      'Withdrawal amount is greater than your wallet balance',
+    not_available: {
+      title: 'Not available in your country',
+      description:
+        "Hey there, payment is currently unavailable in your country. We're working hard to bring it to you soon",
+      fields: {
+        method_of_disbursement: {
+          label: 'How do you receive payment in your country?',
+        },
+      },
+    },
+    not_withdrawal_acct: {
+      title: 'No Withdrawal Account',
+      description:
+        'Hi {{merchant_name}}, Please we need to know where to send your money to. Please go and set this up',
+      tag: 'Go to payment settings',
+    },
+  },
+  drawdown: {
+    title: 'Drawdown',
+    amount_available: 'Amount available for drawdown',
+    amount_owed: 'Total Owed - {{total_owed}}',
+    take_drawdown: 'Take Drawdown',
+    make_repayment: 'Make Repayment',
+    nothing_here: 'Nothing to show here',
+    drawdown_history: 'Drawdown History',
+    active_drawdowns: 'Active Drawdowns',
+    take_drawdown_lead_text:
+      'Note: All funds will be added to your wallet balance',
+    repayment: 'Repayment',
+    make_payment: 'Make Payment',
+    repayment_date: {
+      without_date: 'Repayment Date',
+      with_date: 'Repayment Date **{{date}}**',
+    },
+    repayment_amount: 'Repayment amount (includes {{amount}} transaction fee)',
+    request: 'Request',
+    what_is_drawdown: 'What is drawdown',
+    drawdown_item_text:
+      'Drawdown of **{{amount}}** to your wallet on **{{date}}**',
+    transaction_fee: 'Transaction Fee',
+    withdraw_success:
+      'Your withdrawal of **{{amount}}** was successful. Funds have been added to your wallet balance.',
+    withdraw_excess_error: 'Withdrawal amount is more than your drawdown limit',
+    repayment_excess_error:
+      'The amount you want to pay is more than your wallet balance',
+    not_qualified: 'You do not qualify for drawdowns at the moment.',
+    repayment_success:
+      'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
+  },
+  copied: 'Copied',
+  submit: 'Submit',
 };
 
 export default en;
