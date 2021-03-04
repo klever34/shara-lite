@@ -17,6 +17,7 @@ import {format} from 'date-fns';
 import {omit, orderBy} from 'lodash';
 import React, {useCallback, useEffect, useLayoutEffect, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
 import {ActivityListItem} from './ActivityListItem';
 import {useReceiptList} from './hook';
@@ -68,11 +69,11 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     reloadData();
   }, [reloadData, searchTerm, filteredReceipts.length]);
 
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
+  useFocusEffect(
+    useCallback(() => {
       reloadData();
-    });
-  }, [navigation, reloadData]);
+    }, [reloadData]),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({
