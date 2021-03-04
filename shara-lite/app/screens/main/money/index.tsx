@@ -18,7 +18,7 @@ export const MoneyScreen = () => {
         .getValue('sharaMoneyEnabledCountries')
         .asString();
       const user = getAuthService().getUser();
-      return JSON.parse(sharaMoneyEnabledCountries)[user?.currency_code ?? '']
+      return !JSON.parse(sharaMoneyEnabledCountries)[user?.currency_code ?? '']
         ? 'PaymentActivities'
         : 'MoneyUnavailable';
     } catch (e) {

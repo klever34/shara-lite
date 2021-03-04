@@ -795,9 +795,10 @@ const en: Strings = {
     not_withdrawal_acct: {
       title: 'No Withdrawal Account',
       description:
-        'Hi {{merchant_name}}, Please we need to know where to send your money to. Please go and set this up',
+        'Please we need to know where to send your money to. Please go and set this up',
       tag: 'Go to payment settings',
     },
+    feedback_submitted: 'Feedback Submitted',
   },
   drawdown: {
     title: 'Drawdown',

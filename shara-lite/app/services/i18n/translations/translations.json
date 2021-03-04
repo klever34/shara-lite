@@ -749,9 +749,10 @@
       },
       "not_withdrawal_acct": {
         "title": "No Withdrawal Account",
-        "description": "Hi {{merchant_name}}, Please we need to know where to send your money to. Please go and set this up",
+        "description": "Please we need to know where to send your money to. Please go and set this up",
         "tag": "Go to payment settings"
-      }
+      },
+      "feedback_submitted": "Feedback Submitted"
     },
     "drawdown": {
       "title": "Drawdown",
@@ -1533,9 +1534,10 @@
       },
       "not_withdrawal_acct": {
         "title": "Hakuna Akaunti ya Kuondoa",
-        "description": "Halo {{merchant_name}}, Tafadhali tunahitaji kujua mahali pa kutuma pesa zako. Tafadhali nenda na usanidi hii",
+        "description": "Tafadhali tunahitaji kujua mahali pa kutuma pesa zako. Tafadhali nenda na usanidi hii",
         "tag": "Nenda kwenye mipangilio ya malipo"
-      }
+      },
+      "feedback_submitted": ""
     },
     "drawdown": {
       "title": "Kuchora",
@@ -2319,7 +2321,8 @@
         "title": "",
         "description": "",
         "tag": ""
-      }
+      },
+      "feedback_submitted": ""
     },
     "drawdown": {
       "title": "",
@@ -3103,7 +3106,8 @@
         "title": "",
         "description": "",
         "tag": ""
-      }
+      },
+      "feedback_submitted": ""
     },
     "drawdown": {
       "title": "",
@@ -3887,7 +3891,8 @@
         "title": "",
         "description": "",
         "tag": ""
-      }
+      },
+      "feedback_submitted": ""
     },
     "drawdown": {
       "title": "",
@@ -4671,7 +4676,8 @@
         "title": "",
         "description": "",
         "tag": ""
-      }
+      },
+      "feedback_submitted": ""
     },
     "drawdown": {
       "title": "",
