@@ -62,17 +62,11 @@ const SplashScreen = () => {
 
   const initializeServices = useCallback(async () => {
     try {
-      await authService.initialize();
+      await getRemoteConfigService().initialize();
     } catch (e) {}
     try {
-      await getRemoteConfigService().initialize();
-    } catch (e) {
-    } finally {
-      const user = authService.getUser();
-      if (user) {
-        getI18nService().initialize(user).catch(handleError);
-      }
-    }
+      await authService.initialize();
+    } catch (e) {}
   }, []);
 
   const handleRedirect = useCallback(async () => {
