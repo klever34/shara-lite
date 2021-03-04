@@ -476,7 +476,8 @@
         "copy_payment_link": "COPY LINK",
         "preview_payment_page": "Preview Payment Page",
         "add_new_payment": "Add New Payment",
-        "add_new_payment_method": "Add New Payment"
+        "add_new_payment_method": "Add New Payment",
+        "others_placeholder_text": "Enter the full information on how you want to get paid. It can contain, account number, name of bank, mobile money information, etc."
       },
       "payment_form": {
         "label": "Select a payment method"
@@ -747,9 +748,9 @@
         }
       },
       "not_withdrawal_acct": {
-        "title": "No Withdrawal Method Added",
-        "description": "You have not set up any withrawal method",
-        "tag": "Set up now"
+        "title": "No Withdrawal Account",
+        "description": "Hi {{merchant_name}}, Please we need to know where to send your money to. Please go and set this up",
+        "tag": "Go to payment settings"
       }
     },
     "drawdown": {
@@ -1259,7 +1260,8 @@
         "copy_payment_link": "NA NAKALA YA KIUNGO",
         "preview_payment_page": "Hakikisho ukurasa wa malipo",
         "add_new_payment": "Ongeza malipo mapya",
-        "add_new_payment_method": "Ongeza malipo mapya"
+        "add_new_payment_method": "Ongeza malipo mapya",
+        "others_placeholder_text": ""
       },
       "payment_form": {
         "label": "Chagua njia ya malipo"
@@ -1530,9 +1532,9 @@
         }
       },
       "not_withdrawal_acct": {
-        "title": "Hakuna Njia ya Uondoaji Imeongezwa",
-        "description": "Hujaweka njia yoyote ya kujiondoa",
-        "tag": "Sanidi sasa"
+        "title": "Hakuna Akaunti ya Kuondoa",
+        "description": "Halo {{merchant_name}}, Tafadhali tunahitaji kujua mahali pa kutuma pesa zako. Tafadhali nenda na usanidi hii",
+        "tag": "Nenda kwenye mipangilio ya malipo"
       }
     },
     "drawdown": {
@@ -1567,161 +1569,161 @@
   },
   "ha": {
     "update_shara": {
-      "title": "",
-      "description": "",
-      "submit_button": ""
+      "title": "Sabunta shara",
+      "description": "Ansaki sabon launin manhajar. Yi maza ka sabunta naka yanzu",
+      "submit_button": "Sabuntawa yanzu"
     },
-    "next": "",
-    "skip": "",
-    "get_started": "",
+    "next": "Na Gaba",
+    "skip": "Tsallake",
+    "get_started": "Farawa",
     "login": {
-      "heading": "",
-      "subheading": "",
-      "login_button": "",
-      "forgot_password": ""
+      "heading": "Farawa kyauta",
+      "subheading": "Shiga ciki don adana bayanan kai tsaye ka kuma daidaita bayanan ka lafiya",
+      "login_button": "Na Gaba",
+      "forgot_password": "Manta lambar sirri"
     },
     "register": {
-      "header": "",
-      "heading": "",
-      "subheading": "",
-      "submit_button": "",
-      "have_account": "",
-      "sign_in": ""
+      "header": "Yi rejista",
+      "heading": "Farawa kyauta",
+      "subheading": "Yi rijista domin ku mori tsarukan da ake da su a shara. Yana daukan kankanin loakcine kawai.",
+      "submit_button": "Yi rijista",
+      "have_account": "Ina da rijista",
+      "sign_in": "shiga"
     },
     "otp": {
-      "heading": "",
-      "subheading": "",
-      "otp_resent": "",
-      "otp_button": "",
-      "resend_text": "",
-      "resend_button": ""
+      "heading": "OTP",
+      "subheading": "Muntura OTP, duba cikin sakon wayar ka ko whatsapp dinka sai kashigar da it anan",
+      "otp_resent": "A sake tura OTP",
+      "otp_button": "Farawa",
+      "resend_text": "Ban samu lambar ba",
+      "resend_button": "Sake turo wata lambar"
     },
     "forgot_password": {
-      "heading": "",
-      "subheading": "",
-      "fp_button": ""
+      "heading": "Manta lambar sirri",
+      "subheading": "Shigar da lambar wayarka domin samun OTP",
+      "fp_button": "Turawa"
     },
     "reset_password": {
-      "header": "",
-      "heading": "",
-      "password_match": "",
-      "submit_button": "",
-      "otp_label": "",
-      "password_label": "",
-      "repeat_password_label": ""
+      "header": "Sake seta lambar sirri",
+      "heading": "Sake seta lambar sirri",
+      "password_match": "lambar sirri bata zo iri daya ba",
+      "submit_button": "Turawa",
+      "otp_label": "OTP",
+      "password_label": "Sanya sabuwar lambar sirri",
+      "repeat_password_label": "sake sanya lambar sirri "
     },
     "fields": {
       "phone": {
-        "label": "",
-        "placeholder": ""
+        "label": "Lambar waya",
+        "placeholder": "Kusanya lambar ku"
       },
       "password": {
-        "label": ""
+        "label": "Sanya lambar sirri"
       },
       "confirm_password": {
-        "label": ""
+        "label": "Tabbatar da lambar sirri"
       },
       "name": {
-        "label": ""
+        "label": "Suna"
       }
     },
     "alert": {
-      "minimum_phone_digits": "",
-      "error": "",
-      "select_country": "",
-      "password_match": "",
+      "minimum_phone_digits": "lambar kar ta wuce guda biyar",
+      "error": "Kuskure",
+      "select_country": "Zabi Kasa",
+      "password_match": "Dole lambar sirri tazo iri daya",
       "required": {
-        "number": "",
-        "password": "",
-        "otp": ""
+        "number": "Ana bukatar lamba",
+        "password": " Ana bukatar lambar sirri",
+        "otp": "Ana bukatar OTP"
       },
-      "something_went_wrong": "",
-      "feedback_validation": "",
-      "feedback_is_empty": "",
-      "clear_app_data": "",
-      "ok": "",
+      "something_went_wrong": "Oops! Akwai abun daya faru",
+      "feedback_validation": "Mafi karancin harufa 25 aka yarda asaka",
+      "feedback_is_empty": "Sako bazai zama fanko ba",
+      "clear_app_data": "Gwada share bayanan manhajar daga cikin saitin aikace aikace",
+      "ok": "Yayi",
       "sync": {
-        "title": "",
-        "description": ""
+        "title": "Ana kan daidaita aiki",
+        "description": "Ana kan daidaita bayananku zuwa sassan manhajar shara. zai dan dauki lokaci"
       },
       "api": {
-        "fallbackError": "",
+        "fallbackError": "Oops! Akwai abun daya faru cikin rashin tsammani",
         "auth": {
           "otp": {
-            "welcomeBack": "",
-            "welcome": "",
-            "selectCountry": "",
-            "fallbackError": ""
+            "welcomeBack": "Barka da dawowa shara. Mun turo OTP zuwa lambar wayar ka",
+            "welcome": "Barka da shigowa shara. Mun turo OTP zuwa lambar wayar ",
+            "selectCountry": "Zabi Kasa",
+            "fallbackError": "Oopa! Ansamu kuskure yayin yin rijista"
           },
           "login": {
-            "otpExpired": "",
-            "success": "",
-            "fallbackError": ""
+            "otpExpired": "OTP Ta Kare",
+            "success": "Shiga tayi nasara",
+            "fallbackError": "Ansaka lamba ko OTP ba daidai ba"
           }
         },
         "business": {
-          "notFound": "",
+          "notFound": "Ba a samo cinikayya ba",
           "create": {
-            "success": ""
+            "success": "Anyi nasarar hada cinikayya"
           },
           "details": {
-            "success": ""
+            "success": "Ansamu nasarar samo cinikayya"
           },
           "customerDetails": {
-            "notFound": "",
-            "success": ""
+            "notFound": "Ba asamo kwastoma ba",
+            "success": "Anyi nasarar samo kwastoma"
           },
           "update": {
-            "uniqueSlug": "",
-            "success": ""
+            "uniqueSlug": "Anriga an dauki wannan slug din",
+            "success": "Anyi nasarar sabunta cinikayya"
           }
         },
         "fcm": {
           "addToken": {
-            "missingFields": "",
-            "success": ""
+            "missingFields": "Ana buqata alamar da dandamalin FCM",
+            "success": "Anyi nasarar sbunta alama"
           }
         },
         "passwordReset": {
-          "notFound": "",
+          "notFound": "Ba asamu asusu ba",
           "create": {
-            "success": ""
+            "success": "Yi amfani da OTP da aka tura"
           },
           "reset": {
-            "invalid": "",
-            "success": ""
+            "invalid": "OTP ta lalace ko ta kare",
+            "success": "Anyi nasarar sbunta lambar sirri"
           },
           "update": {
-            "uniqueSlug": "",
-            "success": ""
+            "uniqueSlug": "Anriga an dauki wannan slug din",
+            "success": "Anyi nasarar sabunta cinikayya"
           }
         },
         "paymentProvider": {
           "list": {
-            "success": ""
+            "success": "Anyi nasarar dawo da masu biyan kudi"
           }
         },
         "user": {
           "update": {
-            "success": ""
+            "success": "Anyi nasarar sabunta user"
           }
         }
       }
     },
-    "shara_tagline": "",
+    "shara_tagline": "Domin biyan ku kudinku cikin sauri",
     "onboarding_copy_1": {
-      "title": "",
-      "description": ""
+      "title": "A biya ku kudinku akan lokaci",
+      "description": "Da shara za asamu saurin biya sau 2.5"
     },
     "onboarding_copy_2": {
-      "title": "",
-      "description": ""
+      "title": "Aika sakon tuni kyeuta",
+      "description": "Aika sakon tunatarwa na musamman akan biyan kudi ta cikin whatsapp ko sakon waya"
     },
     "onboarding_copy_3": {
-      "title": "",
-      "description": ""
+      "title": "Kula da kudadan shiga dakuma wadanda suka ci bashi",
+      "description": "Amintaccen ricordin na bayanan kasuwancin ku. dakuma adana maku bayanaan ku cikin sirri"
     },
-    "activities": "",
+    "activities": "Ayyuka",
     "home": "",
     "payments": "",
     "more_text": "",
@@ -2042,7 +2044,8 @@
         "copy_payment_link": "",
         "preview_payment_page": "",
         "add_new_payment": "",
-        "add_new_payment_method": ""
+        "add_new_payment_method": "",
+        "others_placeholder_text": ""
       },
       "payment_form": {
         "label": ""
@@ -2825,7 +2828,8 @@
         "copy_payment_link": "",
         "preview_payment_page": "",
         "add_new_payment": "",
-        "add_new_payment_method": ""
+        "add_new_payment_method": "",
+        "others_placeholder_text": ""
       },
       "payment_form": {
         "label": ""
@@ -3608,7 +3612,8 @@
         "copy_payment_link": "",
         "preview_payment_page": "",
         "add_new_payment": "",
-        "add_new_payment_method": ""
+        "add_new_payment_method": "",
+        "others_placeholder_text": ""
       },
       "payment_form": {
         "label": ""
@@ -4391,7 +4396,8 @@
         "copy_payment_link": "",
         "preview_payment_page": "",
         "add_new_payment": "",
-        "add_new_payment_method": ""
+        "add_new_payment_method": "",
+        "others_placeholder_text": ""
       },
       "payment_form": {
         "label": ""
