@@ -139,6 +139,66 @@
           "update": {
             "success": "User updated successfully"
           }
+        },
+        "mPesa": {
+          "initiateSTKPush": {
+            "business": {
+              "notFound": "Business not found"
+            },
+            "customer": {
+              "notFound": "Business not found"
+            },
+            "kenyaOnly": {
+              "Business not found": ""
+            },
+            "success": {
+              "We were unable to send an STK push to your mobile number": " please try again or contact us through the Shara mobile application"
+            }
+          },
+          "processValidationEvent": {
+            "success": "Error Validating Payment"
+          },
+          "processConfirmationEvent": {
+            "success": "Error Confirming Payment"
+          }
+        },
+        "disbursement": {
+          "create": {
+            "notFound": "Your selected withdrawal method is not available",
+            "success": "Your withdrawal has been processed successfully",
+            "insufficientBalance": "You cannot withdraw more than {{maxAmount}}",
+            "error": "We were unable to process your withdrawal, please try again or contact us through the Shara mobile application"
+          }
+        },
+        "drawdown": {
+          "create": {
+            "notFound": "No drawdown has been approved for you",
+            "invalidAmount": "Amount specified is more than the amount available for drawdown",
+            "inactive": "Drawdown is not currently active",
+            "error": "We were unable to process your drawdown, please try again or contact us through the Shara mobile application",
+            "success": "Drawdown taken successfully"
+          }
+        },
+        "drawdownRepayment": {
+          "create": {
+            "notFound": "No drawdown has been approved for you",
+            "complete": "You've already finished repaying your loans",
+            "error": "We were unable to process your drawdown, please try again or contact us through the Shara mobile application",
+            "insufficientBalance": "Your wallet balance is not sufficient",
+            "success": "Repayment successful"
+          }
+        },
+        "identity": {
+          "verify": {
+            "error": "We were unable to verify your identity, please try again or contact us through the Shara mobile application",
+            "invalid": "Your ID is invalid",
+            "success": "Verification successful"
+          },
+          "validate": {
+            "error": "OTP Validation Failed",
+            "invalid": "Your OTP is invalid",
+            "success": "OTP Validation successful"
+          }
         }
       }
     },
@@ -400,6 +460,14 @@
       "not_owing": "Owes you",
       "surplus": "Paid in full"
     },
+    "customer": {
+      "one": "Customer",
+      "other": "Customers"
+    },
+    "client": {
+      "one": "Client",
+      "other": "Clients"
+    },
     "customers": {
       "start_adding": "Start adding clients by creating a record with the '+' button below",
       "customer_count": {
@@ -470,6 +538,9 @@
         "add_new_payment": "Add New Payment",
         "add_new_payment_method": "Add New Payment",
         "others_placeholder_text": "Enter the full information on how you want to get paid. It can contain, account number, name of bank, mobile money information, etc."
+      },
+      "payment_form": {
+        "label": "Select a payment method"
       },
       "copied": "copied",
       "copy": "copy",
@@ -616,7 +687,10 @@
       "clear_filter_button_text": "Clear",
       "net_balance_text": "Net Balance",
       "download_report_toast_text": "Download Report",
-      "results": {"one": "Result", "other": "Results"},
+      "results": {
+        "one": "Result",
+        "other": "Results"
+      },
       "download_report_button_text": "Download Report",
       "empty_state_text": {
         "no_results_found": "No results found",
@@ -914,6 +988,66 @@
           "update": {
             "success": "Mtumiaji amwsasishwa kwa mafanikio"
           }
+        },
+        "mPesa": {
+          "initiateSTKPush": {
+            "business": {
+              "notFound": ""
+            },
+            "customer": {
+              "notFound": ""
+            },
+            "kenyaOnly": {
+              "Business not found": ""
+            },
+            "success": {
+              "We were unable to send an STK push to your mobile number": ""
+            }
+          },
+          "processValidationEvent": {
+            "success": ""
+          },
+          "processConfirmationEvent": {
+            "success": ""
+          }
+        },
+        "disbursement": {
+          "create": {
+            "notFound": "",
+            "success": "",
+            "insufficientBalance": "",
+            "error": ""
+          }
+        },
+        "drawdown": {
+          "create": {
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
+          }
+        },
+        "drawdownRepayment": {
+          "create": {
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
+          }
+        },
+        "identity": {
+          "verify": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          },
+          "validate": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          }
         }
       }
     },
@@ -1175,6 +1309,14 @@
       "not_owing": "Deni Wewe",
       "surplus": "Imelipwa ndani kamili"
     },
+    "customer": {
+      "one": "Mteja",
+      "other": "Wateja"
+    },
+    "client": {
+      "one": "Mteja",
+      "other": "Wateja"
+    },
     "customers": {
       "start_adding": "Anza kuongeza wateja kwa kuunda rekodi na kitufe cha '+' hapa chini",
       "customer_count": {
@@ -1245,6 +1387,9 @@
         "add_new_payment": "Ongeza malipo mapya",
         "add_new_payment_method": "Ongeza malipo mapya",
         "others_placeholder_text": ""
+      },
+      "payment_form": {
+        "label": "Chagua njia ya malipo"
       },
       "copied": "Kunakiliwa",
       "copy": "Nakala",
@@ -1391,7 +1536,10 @@
       "clear_filter_button_text": "Safisha",
       "net_balance_text": "Matokeo",
       "download_report_toast_text": "Ripoti ya kupakua",
-      "results": {"one": "matokeo", "other": "Matokeo"},
+      "results": {
+        "one": "matokeo",
+        "other": "Matokeo"
+      },
       "download_report_button_text": "Repoti ya kupakua",
       "empty_state_text": {
         "no_results_found": "Hakuna matokeo yaliyopatikana",
@@ -1484,8 +1632,12 @@
       "tap_to_copy_merchant_id": "Gonga ili unakili Kitambulisho cha Wauzaji",
       "tap_to_copy_wallet_account_no": "Gonga ili kunakili nambari ya akaunti ya mkoba",
       "withdraw_fields": {
-        "amount": {"label": "Ingiza Kiasi"},
-        "note": {"label": "Andika dokezo"}
+        "amount": {
+          "label": "Ingiza Kiasi"
+        },
+        "note": {
+          "label": "Andika dokezo"
+        }
       },
       "deposit_help_text": "Tazama hapa chini njia anuwai za kuweka pesa kwenye mkoba wako",
       "select_withdrawal_account": "Chagua akaunti ya kujiondoa",
@@ -1591,10 +1743,19 @@
       "repeat_password_label": "sake sanya lambar sirri"
     },
     "fields": {
-      "phone": {"label": "Lambar waya", "placeholder": "Kusanya lambar ku"},
-      "password": {"label": "Sanya lambar sirri"},
-      "confirm_password": {"label": "Tabbatar da lambar sirri"},
-      "name": {"label": "Suna"}
+      "phone": {
+        "label": "Lambar waya",
+        "placeholder": "Kusanya lambar ku"
+      },
+      "password": {
+        "label": "Sanya lambar sirri"
+      },
+      "confirm_password": {
+        "label": "Tabbatar da lambar sirri"
+      },
+      "name": {
+        "label": "Suna"
+      }
     },
     "alert": {
       "minimum_phone_digits": "lambar kar ta wuce guda biyar",
@@ -1632,8 +1793,12 @@
         },
         "business": {
           "notFound": "Ba a samo cinikayya ba",
-          "create": {"success": "Anyi nasarar hada cinikayya"},
-          "details": {"success": "Ansamu nasarar samo cinikayya"},
+          "create": {
+            "success": "Anyi nasarar hada cinikayya"
+          },
+          "details": {
+            "success": "Ansamu nasarar samo cinikayya"
+          },
           "customerDetails": {
             "notFound": "Ba asamo kwastoma ba",
             "success": "Anyi nasarar samo kwastoma"
@@ -1651,7 +1816,9 @@
         },
         "passwordReset": {
           "notFound": "Ba asamu asusu ba",
-          "create": {"success": "Yi amfani da OTP da aka tura"},
+          "create": {
+            "success": "Yi amfani da OTP da aka tura"
+          },
           "reset": {
             "invalid": "OTP ta lalace ko ta kare",
             "success": "Anyi nasarar sbunta lambar sirri"
@@ -1662,9 +1829,75 @@
           }
         },
         "paymentProvider": {
-          "list": {"success": "Anyi nasarar dawo da masu biyan kudi"}
+          "list": {
+            "success": "Anyi nasarar dawo da masu biyan kudi"
+          }
         },
-        "user": {"update": {"success": "Anyi nasarar sabunta user"}}
+        "user": {
+          "update": {
+            "success": "Anyi nasarar sabunta user"
+          }
+        },
+        "mPesa": {
+          "initiateSTKPush": {
+            "business": {
+              "notFound": ""
+            },
+            "customer": {
+              "notFound": ""
+            },
+            "kenyaOnly": {
+              "Business not found": ""
+            },
+            "success": {
+              "We were unable to send an STK push to your mobile number": ""
+            }
+          },
+          "processValidationEvent": {
+            "success": ""
+          },
+          "processConfirmationEvent": {
+            "success": ""
+          }
+        },
+        "disbursement": {
+          "create": {
+            "notFound": "",
+            "success": "",
+            "insufficientBalance": "",
+            "error": ""
+          }
+        },
+        "drawdown": {
+          "create": {
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
+          }
+        },
+        "drawdownRepayment": {
+          "create": {
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
+          }
+        },
+        "identity": {
+          "verify": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          },
+          "validate": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          }
+        }
       }
     },
     "shara_tagline": "Domin biyan ku kudinku cikin sauri",
@@ -1700,8 +1933,15 @@
       "no_reminder_set_text": "Za a turawa kwastoma Tunatarwa a ranar biya. Taba domin saita Tunatarwa",
       "coming_soon_recurring_reminders": "Tana nan tafe: Tunatarwa akai akai",
       "reminder_description": "Za a turawa kwastomanka tunatarwa a wannan ranar",
-      "reminder_unit": {"days": "v", "weeks": "Sati", "months": "Wata"},
-      "reminder_when": {"before": "Kafin", "after": "Bayan"},
+      "reminder_unit": {
+        "days": "v",
+        "weeks": "Sati",
+        "months": "Wata"
+      },
+      "reminder_when": {
+        "before": "Kafin",
+        "after": "Bayan"
+      },
       "reminder_added": "An sanya Tunatarwa",
       "reminder_removed": "An cire Tunatarwa",
       "confirm_delete": "",
@@ -1804,8 +2044,13 @@
         "description": "Da sauri ka shigar da cinikayya ko yar jejeniya"
       },
       "fields": {
-        "amount": {"label": "shigar da adadin kudi"},
-        "note": {"label": "Saqo", "placeholder": "Rubuta saqo"}
+        "amount": {
+          "label": "shigar da adadin kudi"
+        },
+        "note": {
+          "label": "Saqo",
+          "placeholder": "Rubuta saqo"
+        }
       },
       "today_text": "Yau",
       "write_a_note_text": "Rubuta saqo",
@@ -1824,9 +2069,16 @@
         "description": "cikin sauri ka shigar da karba ko bashi"
       },
       "fields": {
-        "amount": {"label": "An karba"},
-        "credit": {"label": "Bashi"},
-        "note": {"label": "Saqo", "placeholder": "Rubuta saqo"}
+        "amount": {
+          "label": "An karba"
+        },
+        "credit": {
+          "label": "Bashi"
+        },
+        "note": {
+          "label": "Saqo",
+          "placeholder": "Rubuta saqo"
+        }
       },
       "select_customer": {
         "title": "zabi kwastoma",
@@ -1835,7 +2087,10 @@
       "no_customer_text": "zabi kwastoma domin kammala cinikayya",
       "due_date_is_past": "zabi sabon lokacin karba daga {{customer}}"
     },
-    "entry": {"sale": "shigar da ciniki", "collection": "shigar da karba"},
+    "entry": {
+      "sale": "shigar da ciniki",
+      "collection": "shigar da karba"
+    },
     "other": "Wasu",
     "collected": "An karba",
     "collection_due_today": "Ranar karba",
@@ -1846,14 +2101,20 @@
     "scanning": "Dubawa",
     "done": "An gama",
     "dismiss": "Fasawa",
-    "owe": {"one": "Bashi", "other": "Yana bin"},
+    "owe": {
+      "one": "Bashi",
+      "other": "Yana bin"
+    },
     "result": {
       "zero": "Ba sakamako",
       "one": "Sako daya",
       "other": "{{sakamako}}"
     },
     "clear_filter": "Goge Matata",
-    "note": {"one": "Sako", "other": "Sakuna"},
+    "note": {
+      "one": "Sako",
+      "other": "Sakuna"
+    },
     "delete": "Gogewa",
     "edit": "Gyara",
     "add": "Sanyawa",
@@ -1888,14 +2149,23 @@
     "confirm": "Tabbatarwa",
     "address": "Adireshi",
     "price": "farashi",
-    "filter": {"one": "Matata", "other": "Matata"},
+    "filter": {
+      "one": "Matata",
+      "other": "Matata"
+    },
     "filter_options": {
       "owing": "Ana binku",
       "not_owing": "kuna bin",
       "surplus": "Anbiya gaba daya"
     },
-    "customer": {"one": "kwastomer", "other": "kwastomomi"},
-    "client": {"one": "abokin ciniki", "other": "abokan ciniki"},
+    "customer": {
+      "one": "kwastomer",
+      "other": "kwastomomi"
+    },
+    "client": {
+      "one": "abokin ciniki",
+      "other": "abokan ciniki"
+    },
     "customers": {
       "start_adding": "fara sanya abokan cinki ta hanyar shigar da bayanai da '+' madanni na kasa",
       "customer_count": {
@@ -1913,7 +2183,10 @@
           "label": "Lambar waya",
           "placeholder": "Kusanya lambar kwastoma"
         },
-        "notes": {"label": "Sako", "placeholder": "Karin bayanai akan kwastoma"}
+        "notes": {
+          "label": "Sako",
+          "placeholder": "Karin bayanai akan kwastoma"
+        }
       },
       "select_customer": {
         "title": "Zabi kwastoma",
@@ -1926,8 +2199,12 @@
       "search_input_placeholder": "Rubuta Sunan kwastoma",
       "manual_customer_modal": {
         "fields": {
-          "name": {"label": "Sunan kwastoma"},
-          "email": {"label": "adireshin yanar gizo (idan akwai)"},
+          "name": {
+            "label": "Sunan kwastoma"
+          },
+          "email": {
+            "label": "adireshin yanar gizo (idan akwai)"
+          },
           "phone": {
             "label": "lambar wayar kwastoma (idan akwai)",
             "placeholder": "Sanya lambar kwastoma"
@@ -1960,7 +2237,9 @@
         "add_new_payment_method": "Karin Biya",
         "others_placeholder_text": "Sanya cikaken bayani akan yadda kukeso a biyaku.zai iya daukan lambar account,sunan banki, bayanan manhajar kudinku. da dai suaransu."
       },
-      "payment_form": {"label": "Zabi tsarin biya"},
+      "payment_form": {
+        "label": "Zabi tsarin biya"
+      },
       "copied": "An kofa",
       "copy": "Kofa",
       "payment_preview_modal": {
@@ -1988,7 +2267,10 @@
       }
     },
     "more": {
-      "header": {"title": "Akawun dina", "description": "Bayanan akawun dinku"},
+      "header": {
+        "title": "Akawun dina",
+        "description": "Bayanan akawun dinku"
+      },
       "list": {
         "profile_settings": {
           "title": "Bayanaina",
@@ -2010,7 +2292,10 @@
           "title": "Bamu amsarku",
           "description": "Sanya duk wata amsa anan"
         },
-        "language": {"title": "Yare", "description": "Zabi Yare"}
+        "language": {
+          "title": "Yare",
+          "description": "Zabi Yare"
+        }
       },
       "logout": {
         "logout_data_verification_text": "Tabbatarwa da Adanin bayananku",
@@ -2026,10 +2311,18 @@
       "title": "Saitin bayanai",
       "toast_text": "An sabunta bayananka cikin nasara",
       "fields": {
-        "firstName": {"label": "Suna"},
-        "lastName": {"label": "Sunan Mahaifi"},
-        "mobile": {"label": "Mene lambar wayarku ?"},
-        "email": {"label": "Adreshin yanar gizo (idan akwai)"}
+        "firstName": {
+          "label": "Suna"
+        },
+        "lastName": {
+          "label": "Sunan Mahaifi"
+        },
+        "mobile": {
+          "label": "Mene lambar wayarku ?"
+        },
+        "email": {
+          "label": "Adreshin yanar gizo (idan akwai)"
+        }
       },
       "save_button": "Adanawa"
     },
@@ -2037,10 +2330,19 @@
       "title": "Saitin cinikayya",
       "toast_text": "Anyi nasarar sabunta bayanan ku",
       "fields": {
-        "name": {"label": "Mene sunan masana'antar ku?"},
-        "address": {"label": "Aina Masana'antar take?"},
-        "mobile": {"label": "Mene lambar wayarku Masana'antar ?"},
-        "image": {"label": "kuna da bajo ?", "placeholder": "Sanya bajo"}
+        "name": {
+          "label": "Mene sunan masana'antar ku?"
+        },
+        "address": {
+          "label": "Aina Masana'antar take?"
+        },
+        "mobile": {
+          "label": "Mene lambar wayarku Masana'antar?"
+        },
+        "image": {
+          "label": "kuna da bajo ?",
+          "placeholder": "Sanya bajo"
+        }
       },
       "action_buttons": {
         "preview_receipt_button": "Duba samfir na rasif",
@@ -2066,7 +2368,12 @@
     "feedback": {
       "title": "Amsa",
       "toast_text": "Mungode da amsar ku",
-      "fields": {"code": {"label": "Amsa", "placeholder": "Sanya amsa anan"}},
+      "fields": {
+        "code": {
+          "label": "Amsa",
+          "placeholder": "Sanya amsa anan"
+        }
+      },
       "submit_button": "Tura"
     },
     "create_receipts_with_shara": "Hada rasif na kyeuta da shara",
@@ -2078,7 +2385,10 @@
       "clear_filter_button_text": "sharewa",
       "net_balance_text": "",
       "download_report_toast_text": "",
-      "results": {"one": "", "other": ""},
+      "results": {
+        "one": "",
+        "other": ""
+      },
       "download_report_button_text": "",
       "empty_state_text": {
         "no_results_found": "",
@@ -2164,7 +2474,10 @@
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": {"one": "", "other": ""},
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
@@ -2189,9 +2502,17 @@
       "not_available": {
         "title": "",
         "description": "",
-        "fields": {"method_of_disbursement": {"label": ""}}
+        "fields": {
+          "method_of_disbursement": {
+            "label": ""
+          }
+        }
       },
-      "not_withdrawal_acct": {"title": "", "description": "", "tag": ""},
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
+      },
       "feedback_submitted": ""
     },
     "drawdown": {
@@ -2206,7 +2527,10 @@
       "take_drawdown_lead_text": "",
       "repayment": "",
       "make_payment": "",
-      "repayment_date": {"without_date": "", "with_date": ""},
+      "repayment_date": {
+        "without_date": "",
+        "with_date": ""
+      },
       "repayment_amount": "Adadin kudin da za a biya (yahada da {{amount}} Ladan cinikayya)",
       "request": "Nema",
       "what_is_drawdown": "Mene Bashi",
@@ -2362,6 +2686,66 @@
           "update": {
             "success": ""
           }
+        },
+        "mPesa": {
+          "initiateSTKPush": {
+            "business": {
+              "notFound": ""
+            },
+            "customer": {
+              "notFound": ""
+            },
+            "kenyaOnly": {
+              "Business not found": ""
+            },
+            "success": {
+              "We were unable to send an STK push to your mobile number": ""
+            }
+          },
+          "processValidationEvent": {
+            "success": ""
+          },
+          "processConfirmationEvent": {
+            "success": ""
+          }
+        },
+        "disbursement": {
+          "create": {
+            "notFound": "",
+            "success": "",
+            "insufficientBalance": "",
+            "error": ""
+          }
+        },
+        "drawdown": {
+          "create": {
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
+          }
+        },
+        "drawdownRepayment": {
+          "create": {
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
+          }
+        },
+        "identity": {
+          "verify": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          },
+          "validate": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          }
         }
       }
     },
@@ -2702,6 +3086,9 @@
         "add_new_payment_method": "",
         "others_placeholder_text": ""
       },
+      "payment_form": {
+        "label": ""
+      },
       "copied": "",
       "copy": "",
       "payment_preview_modal": {
@@ -2847,7 +3234,10 @@
       "clear_filter_button_text": "",
       "net_balance_text": "",
       "download_report_toast_text": "",
-      "results": {"one": "", "other": ""},
+      "results": {
+        "one": "",
+        "other": ""
+      },
       "download_report_button_text": "",
       "empty_state_text": {
         "no_results_found": "",
@@ -2933,7 +3323,10 @@
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": {"one": "", "other": ""},
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
@@ -2958,9 +3351,17 @@
       "not_available": {
         "title": "",
         "description": "",
-        "fields": {"method_of_disbursement": {"label": ""}}
+        "fields": {
+          "method_of_disbursement": {
+            "label": ""
+          }
+        }
       },
-      "not_withdrawal_acct": {"title": "", "description": "", "tag": ""},
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
+      },
       "feedback_submitted": ""
     },
     "drawdown": {
@@ -2975,7 +3376,10 @@
       "take_drawdown_lead_text": "",
       "repayment": "",
       "make_payment": "",
-      "repayment_date": {"without_date": "", "with_date": ""},
+      "repayment_date": {
+        "without_date": "",
+        "with_date": ""
+      },
       "repayment_amount": "",
       "request": "",
       "what_is_drawdown": "",
@@ -3131,6 +3535,66 @@
           "update": {
             "success": ""
           }
+        },
+        "mPesa": {
+          "initiateSTKPush": {
+            "business": {
+              "notFound": ""
+            },
+            "customer": {
+              "notFound": ""
+            },
+            "kenyaOnly": {
+              "Business not found": ""
+            },
+            "success": {
+              "We were unable to send an STK push to your mobile number": ""
+            }
+          },
+          "processValidationEvent": {
+            "success": ""
+          },
+          "processConfirmationEvent": {
+            "success": ""
+          }
+        },
+        "disbursement": {
+          "create": {
+            "notFound": "",
+            "success": "",
+            "insufficientBalance": "",
+            "error": ""
+          }
+        },
+        "drawdown": {
+          "create": {
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
+          }
+        },
+        "drawdownRepayment": {
+          "create": {
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
+          }
+        },
+        "identity": {
+          "verify": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          },
+          "validate": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          }
         }
       }
     },
@@ -3471,6 +3935,9 @@
         "add_new_payment_method": "",
         "others_placeholder_text": ""
       },
+      "payment_form": {
+        "label": ""
+      },
       "copied": "",
       "copy": "",
       "payment_preview_modal": {
@@ -3616,7 +4083,10 @@
       "clear_filter_button_text": "",
       "net_balance_text": "",
       "download_report_toast_text": "",
-      "results": {"one": "", "other": ""},
+      "results": {
+        "one": "",
+        "other": ""
+      },
       "download_report_button_text": "",
       "empty_state_text": {
         "no_results_found": "",
@@ -3702,7 +4172,10 @@
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": {"one": "", "other": ""},
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
@@ -3727,9 +4200,17 @@
       "not_available": {
         "title": "",
         "description": "",
-        "fields": {"method_of_disbursement": {"label": ""}}
+        "fields": {
+          "method_of_disbursement": {
+            "label": ""
+          }
+        }
       },
-      "not_withdrawal_acct": {"title": "", "description": "", "tag": ""},
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
+      },
       "feedback_submitted": ""
     },
     "drawdown": {
@@ -3744,7 +4225,10 @@
       "take_drawdown_lead_text": "",
       "repayment": "",
       "make_payment": "",
-      "repayment_date": {"without_date": "", "with_date": ""},
+      "repayment_date": {
+        "without_date": "",
+        "with_date": ""
+      },
       "repayment_amount": "",
       "request": "",
       "what_is_drawdown": "",
@@ -3900,6 +4384,66 @@
           "update": {
             "success": ""
           }
+        },
+        "mPesa": {
+          "initiateSTKPush": {
+            "business": {
+              "notFound": ""
+            },
+            "customer": {
+              "notFound": ""
+            },
+            "kenyaOnly": {
+              "Business not found": ""
+            },
+            "success": {
+              "We were unable to send an STK push to your mobile number": ""
+            }
+          },
+          "processValidationEvent": {
+            "success": ""
+          },
+          "processConfirmationEvent": {
+            "success": ""
+          }
+        },
+        "disbursement": {
+          "create": {
+            "notFound": "",
+            "success": "",
+            "insufficientBalance": "",
+            "error": ""
+          }
+        },
+        "drawdown": {
+          "create": {
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
+          }
+        },
+        "drawdownRepayment": {
+          "create": {
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
+          }
+        },
+        "identity": {
+          "verify": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          },
+          "validate": {
+            "error": "",
+            "invalid": "",
+            "success": ""
+          }
         }
       }
     },
@@ -4240,6 +4784,9 @@
         "add_new_payment_method": "",
         "others_placeholder_text": ""
       },
+      "payment_form": {
+        "label": ""
+      },
       "copied": "",
       "copy": "",
       "payment_preview_modal": {
@@ -4385,7 +4932,10 @@
       "clear_filter_button_text": "",
       "net_balance_text": "",
       "download_report_toast_text": "",
-      "results": {"one": "", "other": ""},
+      "results": {
+        "one": "",
+        "other": ""
+      },
       "download_report_button_text": "",
       "empty_state_text": {
         "no_results_found": "",
@@ -4471,7 +5021,10 @@
       "no_money_activities": "",
       "your_wallet_balance": "",
       "your_merchant_id_is": "",
-      "your_wallet_account_no_is": {"one": "", "other": ""},
+      "your_wallet_account_no_is": {
+        "one": "",
+        "other": ""
+      },
       "tap_to_copy_merchant_id": "",
       "tap_to_copy_wallet_account_no": "",
       "withdraw_fields": {
@@ -4496,9 +5049,17 @@
       "not_available": {
         "title": "",
         "description": "",
-        "fields": {"method_of_disbursement": {"label": ""}}
+        "fields": {
+          "method_of_disbursement": {
+            "label": ""
+          }
+        }
       },
-      "not_withdrawal_acct": {"title": "", "description": "", "tag": ""},
+      "not_withdrawal_acct": {
+        "title": "",
+        "description": "",
+        "tag": ""
+      },
       "feedback_submitted": ""
     },
     "drawdown": {
@@ -4513,7 +5074,10 @@
       "take_drawdown_lead_text": "",
       "repayment": "",
       "make_payment": "",
-      "repayment_date": {"without_date": "", "with_date": ""},
+      "repayment_date": {
+        "without_date": "",
+        "with_date": ""
+      },
       "repayment_amount": "",
       "request": "",
       "what_is_drawdown": "",

@@ -146,6 +146,72 @@ const en: Strings = {
           success: 'User updated successfully',
         },
       },
+      mPesa: {
+        initiateSTKPush: {
+          business: {
+            notFound: 'Business not found',
+          },
+          customer: {
+            notFound: 'Business not found',
+          },
+          kenyaOnly: {
+            'Business not found': '',
+          },
+          success: {
+            'We were unable to send an STK push to your mobile number':
+              ' please try again or contact us through the Shara mobile application',
+          },
+        },
+        processValidationEvent: {
+          success: 'Error Validating Payment',
+        },
+        processConfirmationEvent: {
+          success: 'Error Confirming Payment',
+        },
+      },
+      disbursement: {
+        create: {
+          notFound: 'Your selected withdrawal method is not available',
+          success: 'Your withdrawal has been processed successfully',
+          insufficientBalance: 'You cannot withdraw more than {{maxAmount}}',
+          error:
+            'We were unable to process your withdrawal, please try again or contact us through the Shara mobile application',
+        },
+      },
+      drawdown: {
+        create: {
+          notFound: 'No drawdown has been approved for you',
+          invalidAmount:
+            'Amount specified is more than the amount available for drawdown',
+          inactive: 'Drawdown is not currently active',
+          error:
+            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
+          success: 'Drawdown taken successfully',
+        },
+      },
+      drawdownRepayment: {
+        create: {
+          notFound: 'No drawdown has been approved for you',
+          complete: "You've already finished repaying your loans",
+          error:
+            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
+          insufficientBalance: 'Your wallet balance is not sufficient',
+          success: 'Repayment successful',
+        },
+      },
+      identity: {
+        verify: {
+          error:
+            'We were unable to verify your identity, please try again or contact us through the Shara mobile application',
+          invalid: 'Your ID is invalid',
+          success: 'Verification successful',
+        },
+        validate: {
+          error: 'OTP Validation Failed',
+          invalid: 'Your OTP is invalid',
+          success: 'OTP Validation successful',
+        },
+      },
     },
   },
   shara_tagline: 'Built To Get You Paid Faster',
@@ -528,7 +594,7 @@ const en: Strings = {
       bvn_description:
         'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
       bvn_input_field_placeholder: 'Enter your BVN',
-      otp_description: 'An OTP has been sent to your BVN number {{mobile}}',
+      otp_description: 'An OTP has been sent to your BVN number *******4343',
       id_description:
         'Some copy about why we are collecting {{idType}} goes here. Also telling them it needs to match the name on their account',
       id_input_field_placeholder: 'Enter your {{idType}}',
@@ -669,7 +735,6 @@ const en: Strings = {
     results: {
       one: 'Result',
       other: 'Results',
-      zero: '',
     },
     download_report_button_text: 'Download Report',
     empty_state_text: {
