@@ -658,22 +658,22 @@ workflows:
           app: shara-lite
           requires:
             - checkout_code
-      - fastlane:
-          app: shara-lite
-          context: shara-beta
-          lane: play
-          track: beta
-          packageName: co.shara.lite
-          sentryProject: shara-lite
-          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
-          productFlavor: production
-          env: beta
-          requires:
-            - test
-          filters:
-            branches:
-              only:
-                - master
+#      - fastlane:
+#          app: shara-lite
+#          context: shara-beta
+#          lane: play
+#          track: beta
+#          packageName: co.shara.lite
+#          sentryProject: shara-lite
+#          firebaseAppId: 1:23333573770:android:aea162cb5b9fe4c5718973
+#          productFlavor: production
+#          env: beta
+#          requires:
+#            - test
+#          filters:
+#            branches:
+#              only:
+#                - master
       - fastlane:
           app: shara-lite
           context: shara-beta
