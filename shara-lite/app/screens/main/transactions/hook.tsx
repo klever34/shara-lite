@@ -48,13 +48,11 @@ export const useReceiptList = ({
   receipts,
   filterOptions,
   initialFilter = 'all',
-}: UseReceiptListProps = {}) => {
+}: UseReceiptListProps) => {
   const {getActivities} = useActivity();
-  const {getTransactions} = useTransaction();
-  receipts = receipts ?? getTransactions();
   let activities = getActivities();
   const perPage = 20;
-  const totalCount = receipts.length;
+  const totalCount = receipts?.length ?? 0;
 
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(perPage);
@@ -157,7 +155,7 @@ export const useReceiptList = ({
       'created_at',
       true,
     ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
-  }, [filter, filterStartDate, filterEndDate, receipts.length, searchTerm]);
+  }, [filter, filterStartDate, filterEndDate, receipts?.length, searchTerm]);
 
   const filteredActivities = useMemo(() => {
     let userActivities = activities;
@@ -398,7 +396,7 @@ export const useReceiptList = ({
         return [...activitiesToDisplay, ...newActivitiesData];
       });
     },
-    [receipts.length, activities.length],
+    [receipts?.length, activities.length],
   );
 
   const handleSetActivitiesToDisplay = useCallback(
@@ -525,11 +523,13 @@ export const useTransactionList = (): TransactionListContextValue => {
 };
 
 export const TransactionListProvider = ({
+  receipts,
   children,
 }: {
+  receipts: IReceipt[];
   children: React.ReactNode;
 }) => {
-  const data = useReceiptList();
+  const data = useReceiptList({receipts});
   return (
     <TransactionListContext.Provider value={data}>
       {children}

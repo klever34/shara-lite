@@ -11,20 +11,16 @@ import {IReceipt} from '@/models/Receipt';
 import {getAnalyticsService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import {omit, orderBy} from 'lodash';
-import * as Animatable from 'react-native-animatable';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
+import * as Animatable from 'react-native-animatable';
 import {ActivityListItem} from './ActivityListItem';
-import {useTransactionList} from './hook';
+import {useReceiptList} from './hook';
 import {TransactionListItem} from './TransactionListItem';
 // TODO: Translate
 
@@ -37,6 +33,9 @@ type ActivityData = IActivityData & {date?: Date; is_reminder: boolean};
 
 export const TransactionListScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
+  const {getTransactions} = useTransaction();
+
+  const receipts = getTransactions();
   const {
     filter,
     reloadData,
@@ -46,14 +45,14 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
     filterOptions,
     collectedAmount,
     filterStartDate,
-    outstandingAmount,
     filteredReceipts,
+    outstandingAmount,
     handleStatusFilter,
     handleReceiptSearch,
     receiptsToDisplay,
     activitiesToDisplay,
     handlePagination,
-  } = useTransactionList();
+  } = useReceiptList({receipts});
 
   const activitiesData: any = useMemo(() => {
     const data = [...receiptsToDisplay, ...activitiesToDisplay].map((item) => {
@@ -67,11 +66,14 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   }, [receiptsToDisplay, activitiesToDisplay]);
 
   useEffect(() => {
-    if (!searchTerm) {
-      reloadData();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    reloadData();
   }, [reloadData, searchTerm, filteredReceipts.length]);
+
+  useFocusEffect(
+    useCallback(() => {
+      reloadData();
+    }, [reloadData]),
+  );
 
   useLayoutEffect(() => {
     navigation.setOptions({

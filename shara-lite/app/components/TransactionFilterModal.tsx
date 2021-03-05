@@ -14,9 +14,13 @@ const strings = getI18nService().strings;
 
 type TransactionFilterModalProps = {
   onClose: () => void;
-  initialFilter: string;
+  initialFilter?: string;
   options?: FilterOption[];
-  onDone: (payload: {status: string; startDate?: Date; endDate?: Date}) => void;
+  onDone: (payload: {
+    status?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }) => void;
 };
 
 export type FilterOption = {

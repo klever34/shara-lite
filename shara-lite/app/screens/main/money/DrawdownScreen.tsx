@@ -114,7 +114,7 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
       case 'active':
         return userDrawdowns.filtered('status == "active"');
       default:
-        return userDrawdowns;
+        return [...userDrawdowns, ...userDrawdownRepayments];
     }
   }, [filterStatus, drawdowns]);
 
