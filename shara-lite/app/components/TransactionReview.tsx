@@ -1,4 +1,4 @@
-import {Button, DatePicker} from '@/components';
+import {Button, DatePicker, Text} from '@/components';
 import {Icon} from '@/components/Icon';
 import {ReceiptImage} from '@/components/ReceiptImage';
 import Touchable from '@/components/Touchable';
@@ -11,7 +11,6 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import LottieView from 'lottie-react-native';
 import React, {useCallback, useState} from 'react';
-import {Text} from '@/components';
 import {Image, View} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
@@ -51,13 +50,16 @@ export const TransactionReview = (props: TransactionReviewProps) => {
     transaction.customer &&
     (transaction.credit_amount || dueDate);
 
-  const shareReceiptMessage = `${strings(
-    'receipts.recent_purchase_message_from_business',
-    {
-      customer_name: transaction.customer?.name ?? '',
-      business_name: businessInfo.name || user?.firstname,
-    },
-  )} ${strings('you_paid_message', {
+  const shareReceiptMessage = `${
+    businessInfo.name || user?.firstname
+      ? strings('receipts.recent_purchase_message_from_business', {
+          customer_name: transaction.customer?.name ?? '',
+          business_name: businessInfo.name || user?.firstname,
+        })
+      : strings('receipts.recent_purchase_message', {
+          customer_name: transaction.customer?.name ?? '',
+        })
+  } ${strings('you_paid_message', {
     amount: amountWithCurrency(transaction.amount_paid),
   })}\n\n${strings('powered_by_shara')}`;
 

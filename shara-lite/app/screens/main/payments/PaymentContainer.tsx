@@ -1,6 +1,6 @@
-import {Button, SecureEmblem, Text} from '@/components';
+import {Button, Text} from '@/components';
 import {Icon} from '@/components/Icon';
-import {TitleContainer} from '@/components/TitleContainer';
+import {Page} from '@/components/Page';
 import {ToastContext} from '@/components/Toast';
 import Touchable from '@/components/Touchable';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
@@ -25,6 +25,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
 import {PaymentProvider} from 'types/app';
 import {PaymentForm} from './PaymentForm';
 import {PaymentPreviewModal} from './PaymentPreviewModal';
+import Emblem from '@/assets/images/emblem-gray.svg';
 const strings = getI18nService().strings;
 
 function PaymentContainer(props: ModalWrapperFields) {
@@ -291,140 +292,145 @@ function PaymentContainer(props: ModalWrapperFields) {
       nestedScrollEnabled
       persistentScrollbar={true}
       keyboardShouldPersistTaps="always"
-      style={applyStyles('py-18 bg-white flex-1')}>
-      <TitleContainer
-        containerStyle={applyStyles('px-16 mb-32')}
-        title={strings('more.list.payment_settings.title')}
-        description={strings('more.list.payment_settings.description')}
-      />
-      {paymentOptions.length === 0 ? (
-        <View style={applyStyles('flex-1')}>
-          <View style={applyStyles('center pb-32')}>
-            <SecureEmblem />
-            <Text
-              style={applyStyles(
-                'text-center text-gray-200 text-base pt-16 px-8',
-              )}>
-              {strings(
-                'payment.payment_container.no_payment_option.description',
+      style={applyStyles('bg-white flex-1')}>
+      <Page
+        header={{
+          title: strings('payment.payment_container.payment_settings'),
+          style: applyStyles('py-8'),
+          iconLeft: {},
+        }}
+        style={applyStyles('px-0')}>
+        {paymentOptions.length === 0 ? (
+          <View style={applyStyles('flex-1')}>
+            <View style={applyStyles('center pb-32')}>
+              <Emblem width={64} height={64} />
+              <Text
+                style={applyStyles(
+                  'text-center text-gray-200 text-base pt-16 px-8',
+                )}>
+                {strings(
+                  'payment.payment_container.no_payment_option.description',
+                )}
+              </Text>
+            </View>
+            <PaymentForm
+              onFormSubmit={onFormSubmit}
+              paymentProviders={paymentProviders}
+              renderButtons={(handleSubmit, values) => (
+                <View style={applyStyles('pt-24', {paddingBottom: 300})}>
+                  <Button
+                    title={strings('save')}
+                    isLoading={isSaving}
+                    onPress={handleSubmit}
+                    disabled={!values?.slug}
+                  />
+                </View>
               )}
-            </Text>
+            />
           </View>
-          <PaymentForm
-            onFormSubmit={onFormSubmit}
-            paymentProviders={paymentProviders}
-            renderButtons={(handleSubmit, values) => (
-              <View style={applyStyles('pt-24', {paddingBottom: 300})}>
-                <Button
-                  title={strings('save')}
-                  isLoading={isSaving}
-                  onPress={handleSubmit}
-                  disabled={!values?.slug}
-                />
-              </View>
-            )}
-          />
-        </View>
-      ) : (
-        <View style={applyStyles('flex-1')}>
-          <View style={applyStyles('center')}>
-            <Touchable onPress={copyToClipboard}>
-              <View style={applyStyles('flex-row px-32 mb-24')}>
-                <Text
-                  style={applyStyles('text-400 leading-16 flex-1', {
-                    color: colors['green-100'],
-                    textDecorationLine: 'underline',
-                  })}>
-                  {paymentLink}
-                </Text>
+        ) : (
+          <View style={applyStyles('flex-1')}>
+            <View style={applyStyles('center')}>
+              <Touchable onPress={copyToClipboard}>
+                <View style={applyStyles('flex-row px-32 mb-24')}>
+                  <Text
+                    style={applyStyles('text-400 leading-16 flex-1', {
+                      color: colors['green-100'],
+                      textDecorationLine: 'underline',
+                    })}>
+                    {paymentLink}
+                  </Text>
 
-                <View style={applyStyles('flex-row items-center')}>
+                  <View style={applyStyles('flex-row items-center')}>
+                    <Icon
+                      size={18}
+                      name="copy"
+                      type="feathericons"
+                      color={colors['gray-50']}
+                    />
+                    <Text
+                      style={applyStyles(
+                        'text-gray-200 text-400 text-xxs pl-4',
+                      )}>
+                      {strings('payment.payment_container.copy_payment_link')}
+                    </Text>
+                  </View>
+                </View>
+              </Touchable>
+              <Touchable onPress={handleOpenPreviewModal}>
+                <View
+                  style={applyStyles(
+                    'py-8 px-16 rounded-8 flex-row items-center bg-gray-20',
+                  )}>
                   <Icon
-                    size={18}
-                    name="copy"
+                    name="eye"
+                    size={16}
                     type="feathericons"
                     color={colors['gray-50']}
                   />
-                  <Text
-                    style={applyStyles('text-gray-200 text-400 text-xxs pl-4')}>
-                    {strings('payment.payment_container.copy_payment_link')}
+                  <Text style={applyStyles('pl-4 text-400 text-gray-200')}>
+                    {strings('payment.payment_container.preview_payment_page')}
                   </Text>
                 </View>
-              </View>
-            </Touchable>
-            <Touchable onPress={handleOpenPreviewModal}>
-              <View
-                style={applyStyles(
-                  'py-8 px-16 rounded-8 flex-row items-center bg-gray-20',
-                )}>
-                <Icon
-                  name="eye"
-                  size={16}
-                  type="feathericons"
-                  color={colors['gray-50']}
-                />
-                <Text style={applyStyles('pl-4 text-400 text-gray-200')}>
-                  {strings('payment.payment_container.preview_payment_page')}
-                </Text>
-              </View>
-            </Touchable>
-          </View>
+              </Touchable>
+            </View>
 
-          <View style={applyStyles('p-16')}>
-            <Button
-              title={strings(
-                'payment.payment_container.add_new_payment_method',
+            <View style={applyStyles('p-16')}>
+              <Button
+                title={strings(
+                  'payment.payment_container.add_new_payment_method',
+                )}
+                onPress={handleOpenAddItemModal}
+              />
+            </View>
+            <FlatList
+              data={paymentOptions}
+              style={applyStyles('pb-56')}
+              renderItem={({item}) => (
+                <View
+                  style={applyStyles(
+                    'flex-row items-center py-8 px-16 bg-white justify-between',
+                    {
+                      borderTopColor: colors['gray-10'],
+                      borderTopWidth: 1,
+                      borderBottomColor: colors['gray-10'],
+                      borderBottomWidth: 1,
+                    },
+                  )}>
+                  <View style={applyStyles('py-8')}>
+                    <Text
+                      style={applyStyles('pb-2 text-gray-100 text-uppercase')}>
+                      {item.name}
+                    </Text>
+                    {item?.fieldsData?.map((i) => (
+                      <Text
+                        key={i.key}
+                        style={applyStyles(
+                          'pb-2 text-gray-300 text-700 text-base',
+                        )}>
+                        {i.label} - {i.value}
+                      </Text>
+                    ))}
+                  </View>
+                  <View>
+                    <Touchable onPress={() => handleOpenEditItemModal(item)}>
+                      <View style={applyStyles('px-16 py-8')}>
+                        <Icon
+                          size={20}
+                          name="edit"
+                          type="feathericons"
+                          color={colors['gray-50']}
+                        />
+                      </View>
+                    </Touchable>
+                  </View>
+                </View>
               )}
-              onPress={handleOpenAddItemModal}
+              keyExtractor={(item, index) => `${item.slug}-${index}`}
             />
           </View>
-          <FlatList
-            data={paymentOptions}
-            style={applyStyles('pb-56')}
-            renderItem={({item}) => (
-              <View
-                style={applyStyles(
-                  'flex-row items-center py-8 px-16 bg-white justify-between',
-                  {
-                    borderTopColor: colors['gray-10'],
-                    borderTopWidth: 1,
-                    borderBottomColor: colors['gray-10'],
-                    borderBottomWidth: 1,
-                  },
-                )}>
-                <View style={applyStyles('py-8')}>
-                  <Text
-                    style={applyStyles('pb-2 text-gray-100 text-uppercase')}>
-                    {item.name}
-                  </Text>
-                  {item?.fieldsData?.map((i) => (
-                    <Text
-                      key={i.key}
-                      style={applyStyles(
-                        'pb-2 text-gray-300 text-700 text-base',
-                      )}>
-                      {i.label} - {i.value}
-                    </Text>
-                  ))}
-                </View>
-                <View>
-                  <Touchable onPress={() => handleOpenEditItemModal(item)}>
-                    <View style={applyStyles('px-16 py-8')}>
-                      <Icon
-                        size={20}
-                        name="edit"
-                        type="feathericons"
-                        color={colors['gray-50']}
-                      />
-                    </View>
-                  </Touchable>
-                </View>
-              </View>
-            )}
-            keyExtractor={(item, index) => `${item.slug}-${index}`}
-          />
-        </View>
-      )}
+        )}
+      </Page>
     </KeyboardAwareScrollView>
   );
 }

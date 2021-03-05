@@ -3,7 +3,6 @@ import {IActivity} from '@/models/Activity';
 import {IReceipt} from '@/models/Receipt';
 import {getI18nService} from '@/services';
 import {useActivity} from '@/services/activity';
-import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
 import uniqBy from 'lodash/uniqBy';
@@ -18,7 +17,7 @@ import React, {
 const strings = getI18nService().strings;
 
 interface TransactionListContextValue {
-  filter?: string;
+  filter: string;
   searchTerm: string;
   totalAmount: number;
   filterEndDate: Date;
@@ -33,7 +32,7 @@ interface TransactionListContextValue {
   receiptsToDisplay: (IReceipt & Realm.Object)[];
   filteredReceipts: Realm.Results<IReceipt & Realm.Object>;
   handleStatusFilter: (payload: {
-    status?: string;
+    status: string;
     startDate?: Date;
     endDate?: Date;
   }) => void;
@@ -49,14 +48,11 @@ export const useReceiptList = ({
   receipts,
   filterOptions,
   initialFilter = 'all',
-}: UseReceiptListProps = {}) => {
-  const navigation = useAppNavigation();
+}: UseReceiptListProps) => {
   const {getActivities} = useActivity();
-  const {getTransactions} = useTransaction();
-  receipts = receipts ?? getTransactions();
   let activities = getActivities();
   const perPage = 20;
-  const totalCount = receipts.length;
+  const totalCount = receipts?.length ?? 0;
 
   const [start, setStart] = useState(0);
   const [end, setEnd] = useState(perPage);
@@ -67,7 +63,7 @@ export const useReceiptList = ({
   const [activitiesToDisplay, setActivitiesToDisplay] = useState<IActivity[]>(
     [],
   );
-  const [filter, setFilter] = useState<string | undefined>(initialFilter);
+  const [filter, setFilter] = useState<string>(initialFilter);
   const [appliedFilter, setAppliedFilter] = useState('');
   const [filterStartDate, setFilterStartDate] = useState(
     startOfDay(new Date()),
@@ -159,7 +155,7 @@ export const useReceiptList = ({
       'created_at',
       true,
     ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
-  }, [filter, filterStartDate, filterEndDate, receipts.length, searchTerm]);
+  }, [filter, filterStartDate, filterEndDate, receipts?.length, searchTerm]);
 
   const filteredActivities = useMemo(() => {
     let userActivities = activities;
@@ -234,7 +230,7 @@ export const useReceiptList = ({
 
   const collectedAmount = useMemo(
     () => (filteredReceipts.sum('amount_paid') || 0) + sharaProCreditPayments,
-    [sharaProCreditPayments, filteredReceipts.length],
+    [filteredReceipts, sharaProCreditPayments],
   );
 
   const outstandingAmount = useMemo(() => {
@@ -275,7 +271,7 @@ export const useReceiptList = ({
     }, 0);
 
     return totalBalance;
-  }, [filteredReceipts.length, appliedFilter, filterStartDate, filterEndDate]);
+  }, [filteredReceipts, appliedFilter, filterStartDate, filterEndDate]);
 
   const totalAmount = useMemo(() => collectedAmount + outstandingAmount, [
     collectedAmount,
@@ -400,7 +396,7 @@ export const useReceiptList = ({
         return [...activitiesToDisplay, ...newActivitiesData];
       });
     },
-    [receipts.length, activities.length],
+    [receipts?.length, activities.length],
   );
 
   const handleSetActivitiesToDisplay = useCallback(
@@ -444,7 +440,7 @@ export const useReceiptList = ({
   }, [perPage, handleSetReceiptsToDisplay, handleSetActivitiesToDisplay]);
 
   const handleStatusFilter = useCallback(
-    (payload: {status?: string; startDate?: Date; endDate?: Date}) => {
+    (payload: {status: string; startDate?: Date; endDate?: Date}) => {
       const {status, startDate, endDate} = payload;
       setFilter(status);
       startDate && setFilterStartDate(startDate);
@@ -527,11 +523,13 @@ export const useTransactionList = (): TransactionListContextValue => {
 };
 
 export const TransactionListProvider = ({
+  receipts,
   children,
 }: {
+  receipts: IReceipt[];
   children: React.ReactNode;
 }) => {
-  const data = useReceiptList();
+  const data = useReceiptList({receipts});
   return (
     <TransactionListContext.Provider value={data}>
       {children}

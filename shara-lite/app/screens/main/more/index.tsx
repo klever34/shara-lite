@@ -1,27 +1,19 @@
 import React from 'react';
-import {colors} from '@/styles';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {MoreOptionsScreen} from './MoreOptionsScreen';
 
 export type MoreStackParamList = {
   MoreOptions: undefined;
 };
 
-const MoreStack = createStackNavigator<MoreStackParamList>();
+const MoreStack = createNativeStackNavigator<MoreStackParamList>();
 
 export const MoreScreen = () => {
   return (
     <MoreStack.Navigator
       initialRouteName="MoreOptions"
       screenOptions={{
-        headerStyle: {
-          backgroundColor: colors.white,
-        },
-        headerTitleStyle: {
-          fontSize: 16,
-          fontFamily: 'CocogoosePro-SemiLight',
-        },
-        headerTintColor: colors['gray-300'],
+        headerShown: false,
       }}>
       <MoreStack.Screen name="MoreOptions" component={MoreOptionsScreen} />
     </MoreStack.Navigator>

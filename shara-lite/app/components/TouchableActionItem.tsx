@@ -14,24 +14,33 @@ type Section = {
   captionStyle?: TextStyle;
   titleNumberOfLines?: TextProps['numberOfLines'];
   captionNumberOfLines?: TextProps['numberOfLines'];
+  style?: ViewStyle;
 };
 
-interface Props {
+export interface TouchableActionItemProps {
   icon?: string;
   style?: ViewStyle;
   onPress?(): void;
   leftSection?: Section;
   rightSection?: Section;
+  showChevronIcon?: boolean;
 }
 
-export const TouchableActionItem = (props: Props) => {
-  const {icon, onPress, style, leftSection, rightSection} = props;
+export const TouchableActionItem = (props: TouchableActionItemProps) => {
+  const {
+    icon,
+    onPress,
+    style,
+    leftSection,
+    rightSection,
+    showChevronIcon = true,
+  } = props;
   return (
     <Touchable onPress={onPress}>
       <View style={applyStyles('flex-row p-12 items-center', style)}>
         {icon && <CircleWithIcon icon={icon} style={applyStyles('mr-12')} />}
-        <View style={applyStyles('flex-1 pr-8')}>
-          <View style={applyStyles('flex-row items-center justify-between')}>
+        <View style={applyStyles('flex-row flex-1 pr-8')}>
+          <View style={applyStyles('flex-1', leftSection?.style)}>
             {!!leftSection?.title && (
               <Text
                 numberOfLines={leftSection.titleNumberOfLines}
@@ -42,18 +51,6 @@ export const TouchableActionItem = (props: Props) => {
                 {leftSection.title}
               </Text>
             )}
-            {!!rightSection?.title && (
-              <Text
-                numberOfLines={rightSection.titleNumberOfLines}
-                style={applyStyles(
-                  'text-400 text-xs text-gray-100',
-                  rightSection.titleStyle,
-                )}>
-                {rightSection.title}
-              </Text>
-            )}
-          </View>
-          <View style={applyStyles('flex-row items-center justify-between')}>
             {!!leftSection?.caption && (
               <Text
                 numberOfLines={leftSection.captionNumberOfLines}
@@ -64,24 +61,42 @@ export const TouchableActionItem = (props: Props) => {
                 {leftSection.caption}
               </Text>
             )}
+          </View>
+          <View style={applyStyles()}>
+            {!!rightSection?.title && (
+              <View style={applyStyles('flex-1 justify-end')}>
+                <Text
+                  numberOfLines={rightSection.titleNumberOfLines}
+                  style={applyStyles(
+                    'text-400 text-xs text-gray-100',
+                    rightSection.titleStyle,
+                  )}>
+                  {rightSection.title}
+                </Text>
+              </View>
+            )}
             {!!rightSection?.caption && (
-              <Text
-                numberOfLines={rightSection.captionNumberOfLines}
-                style={applyStyles(
-                  'text-400 text-xs text-gray-100',
-                  rightSection.captionStyle,
-                )}>
-                {rightSection.caption}
-              </Text>
+              <View style={applyStyles('flex-1 justify-end')}>
+                <Text
+                  numberOfLines={rightSection.captionNumberOfLines}
+                  style={applyStyles(
+                    'text-400 text-xs text-gray-100',
+                    rightSection.captionStyle,
+                  )}>
+                  {rightSection.caption}
+                </Text>
+              </View>
             )}
           </View>
         </View>
-        <Icon
-          size={20}
-          type="feathericons"
-          name="chevron-right"
-          color={colors['gray-50']}
-        />
+        {showChevronIcon && (
+          <Icon
+            size={20}
+            type="feathericons"
+            name="chevron-right"
+            color={colors['gray-50']}
+          />
+        )}
       </View>
     </Touchable>
   );

@@ -6,7 +6,7 @@ import {useFeedback} from '@/services/feedback';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useCallback, useContext, useMemo} from 'react';
+import React, {useCallback, useContext, useMemo, useState} from 'react';
 import {Alert, View} from 'react-native';
 import * as yup from 'yup';
 
@@ -26,15 +26,18 @@ export default function ReferralScreen() {
 
   const navigation = useAppNavigation();
   const {saveFeedback} = useFeedback();
+  const [loading, setLoading] = useState(false);
   const {showSuccessToast} = useContext(ToastContext);
 
   const onSubmit = useCallback(
     async ({message}) => {
       try {
         await saveFeedback({message});
+        setLoading(true);
         showSuccessToast(i18Service.strings('feedback.toast_text'));
         navigation.goBack();
       } catch (error) {
+        setLoading(false);
         Alert.alert(i18Service.strings('alert.error'), error.message);
       }
     },
@@ -72,6 +75,8 @@ export default function ReferralScreen() {
         />
       </View>
       <Button
+        disabled={!values.message}
+        isLoading={loading}
         onPress={handleSubmit}
         title={i18Service.strings('feedback.submit_button')}
       />
