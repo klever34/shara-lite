@@ -1,172 +1,43 @@
 import {SearchFilter, Text} from '@/components';
 import {CustomerListItem} from '@/components/CustomerListItem';
 import EmptyState from '@/components/EmptyState';
+import {EntryButton} from '@/components/EntryView';
 import Icon from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {
-  FilterOption,
-  TransactionFilterModal,
-} from '@/components/TransactionFilterModal';
+import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {ICustomer} from '@/models';
 import {getAnalyticsService, getI18nService} from '@/services';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
-import * as Animatable from 'react-native-animatable';
-import orderBy from 'lodash/orderBy';
-import React, {
-  useCallback,
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useState,
-} from 'react';
+import React, {useCallback, useEffect, useLayoutEffect} from 'react';
 import {FlatList, ListRenderItemInfo, SafeAreaView, View} from 'react-native';
-import {EntryButton} from '@/components/EntryView';
+import * as Animatable from 'react-native-animatable';
+import {useCustomerList} from './hook';
 
 const strings = getI18nService().strings;
 
 type CustomerListItem = ICustomer;
 
-interface UseCustomerListOptions {
-  orderByOptions?: {
-    orderByQuery: string[];
-    orderByOrder:
-      | boolean
-      | 'asc'
-      | 'desc'
-      | readonly (boolean | 'asc' | 'desc')[]
-      | undefined;
-  };
-  initialFilter?: string;
-  filterOptions?: FilterOption[];
-}
-
-export const useCustomerList = (options: UseCustomerListOptions = {}) => {
-  let {orderByOptions, filterOptions, initialFilter = 'all'} = options;
-  const {orderByOrder = ['desc', 'asc'], orderByQuery = ['debtLevel', 'name']} =
-    orderByOptions ?? {};
-  const {getCustomers} = useCustomer();
-  const navigation = useAppNavigation();
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [myCustomers, setMyCustomers] = useState(getCustomers());
-  const [filter, setFilter] = useState<string>(initialFilter);
-
-  const handleStatusFilter = useCallback((payload: {status: string}) => {
-    const {status} = payload;
-    setFilter(status);
-  }, []);
-
-  const reloadMyCustomers = useCallback(() => {
-    const nextMyCustomers = getCustomers();
-    setMyCustomers(nextMyCustomers);
-  }, [getCustomers]);
-
-  const handleCustomerSearch = useCallback((query) => {
-    setSearchTerm(query);
-  }, []);
-
-  const filteredCustomers = useMemo(() => {
-    let customers = (myCustomers as unknown) as Realm.Results<
-      ICustomer & Realm.Object
-    >;
-    if (searchTerm) {
-      customers = customers.filtered(
-        `name CONTAINS[c] "${searchTerm}" OR mobile CONTAINS[c] "${searchTerm}"`,
-      );
-    }
-    if (filter) {
-      switch (filter) {
-        case 'all':
-          customers = customers;
-          break;
-        case 'owing':
-          customers = (customers.filter(
-            (item) => item?.balance && item?.balance < 0,
-          ) as unknown) as Realm.Results<ICustomer & Realm.Object>;
-          break;
-        case 'not-owing':
-          customers = (customers.filter(
-            (item) => item?.balance !== undefined && item?.balance >= 0,
-          ) as unknown) as Realm.Results<ICustomer & Realm.Object>;
-          break;
-        case 'surplus':
-          customers = (customers.filter(
-            (item) => item?.balance && item?.balance > 0,
-          ) as unknown) as Realm.Results<ICustomer & Realm.Object>;
-          break;
-        default:
-          customers = customers;
-          break;
-      }
-    }
-    return orderBy(
-      customers,
-      orderByQuery as (keyof ICustomer)[],
-      orderByOrder,
-    );
-  }, [filter, myCustomers, searchTerm, orderByQuery, orderByOrder]);
-
-  filterOptions =
-    filterOptions ??
-    useMemo(
-      () => [
-        {text: 'All', value: 'all'},
-        {
-          text: strings('filter_options.owing'),
-          value: 'owing',
-        },
-        {
-          text: strings('filter_options.not_owing'),
-          value: 'not-owing',
-        },
-        {
-          text: strings('filter_options.surplus'),
-          value: 'surplus',
-        },
-      ],
-      [],
-    );
-
-  useEffect(() => {
-    return navigation.addListener('focus', reloadMyCustomers);
-  }, [navigation, reloadMyCustomers]);
-
-  return useMemo(
-    () => ({
-      filter,
-      searchTerm,
-      filterOptions,
-      filteredCustomers,
-      handleStatusFilter,
-      handleCustomerSearch,
-    }),
-    [
-      filter,
-      searchTerm,
-      filterOptions,
-      filteredCustomers,
-      handleStatusFilter,
-      handleCustomerSearch,
-    ],
-  );
-};
-
 export const CustomerListScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
+    const {getCustomers} = useCustomer();
     const navigation = useAppNavigation();
-    const analyticsService = getAnalyticsService();
 
+    const customers = getCustomers();
+    const analyticsService = getAnalyticsService();
     const {
       filter,
+      reloadData,
       searchTerm,
       filterOptions,
+      handlePagination,
       filteredCustomers,
+      customersToDisplay,
       handleStatusFilter,
       handleCustomerSearch,
-    } = useCustomerList();
+    } = useCustomerList({customers});
 
     const handleSelectCustomer = useCallback(
       (item?: ICustomer) => {
@@ -186,25 +57,13 @@ export const CustomerListScreen = withModal(
     const renderCustomerListItem = useCallback(
       ({
         item: customer,
-        onPress,
-      }: Pick<ListRenderItemInfo<CustomerListItem>, 'item'> & {
-        onPress?: () => void;
-      }) => {
+      }: Pick<ListRenderItemInfo<CustomerListItem>, 'item'>) => {
         return (
           <CustomerListItem
             customer={customer}
-            onPress={
-              '_id' in customer
-                ? () => {
-                    onPress?.();
-                    getAnalyticsService().logEvent('selectContent', {
-                      item_id: String(customer._id),
-                      content_type: 'Customer',
-                    });
-                    handleSelectCustomer(customer);
-                  }
-                : undefined
-            }
+            onPress={() => {
+              handleSelectCustomer(customer);
+            }}
             containerStyle={applyStyles('p-16')}
           />
         );
@@ -246,6 +105,10 @@ export const CustomerListScreen = withModal(
         ),
       });
     }, [filter, filterOptions, openModal, handleStatusFilter]);
+
+    useEffect(() => {
+      reloadData();
+    }, [reloadData, filteredCustomers.length]);
 
     useLayoutEffect(() => {
       navigation.setOptions({
@@ -339,8 +202,12 @@ export const CustomerListScreen = withModal(
             </View>
             <FlatList
               initialNumToRender={10}
-              data={filteredCustomers}
+              data={customersToDisplay}
               keyExtractor={keyExtractor}
+              onEndReachedThreshold={0.1}
+              onEndReached={() => {
+                handlePagination();
+              }}
               style={applyStyles('bg-white')}
               renderItem={renderCustomerListItem}
               getItemLayout={(_, index) => ({

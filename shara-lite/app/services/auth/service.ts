@@ -4,6 +4,7 @@ import {getCurrency} from 'shara-country-currency-map';
 import {Business, User} from 'types/app';
 import {IAnalyticsService} from '@/services/analytics';
 import {handleError} from '@/services/error-boundary';
+import {II18nService} from '@/services/i18n';
 
 export interface IAuthService {
   initialize(): Promise<void>;
@@ -39,6 +40,7 @@ export class AuthService implements IAuthService {
   constructor(
     private storageService: IStorageService,
     private analyticsService: IAnalyticsService,
+    private i18nService: II18nService,
   ) {}
 
   public async initialize(): Promise<void> {
@@ -67,6 +69,7 @@ export class AuthService implements IAuthService {
   public setUser(user: User) {
     this.user = user;
     this.analyticsService.setUser(user).catch(handleError);
+    this.i18nService.initialize(user).catch(handleError);
   }
 
   public setRealmCredentials(realmCredentials: any) {

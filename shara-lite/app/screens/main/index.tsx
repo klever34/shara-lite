@@ -22,10 +22,10 @@ import {useRealm} from '@/services/realm';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {ObjectId} from 'bson';
 import React, {useContext, useEffect} from 'react';
 import {ActivityIndicator, View} from 'react-native';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 import {
@@ -38,7 +38,6 @@ import {BVNVerification} from './payments/BVNVerification';
 import DisburementScreen from './payments/DisburementScreen';
 import {ReportScreen} from './report';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
-import {TransactionListProvider} from './transactions/hook';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
@@ -136,159 +135,163 @@ const MainScreens = () => {
   }
 
   return (
-    <TransactionListProvider>
-      <EntryView>
-        <MainStack.Navigator
-          initialRouteName="Home"
-          screenOptions={{
+    <EntryView>
+      <MainStack.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerStyle: {
+            backgroundColor: colors.white,
+          },
+          headerTitleStyle: {
+            fontSize: 16,
+            fontFamily: 'Roboto-Regular',
+          },
+          headerTintColor: colors['gray-300'],
+        }}>
+        {/* Home */}
+        <MainStack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{headerShown: false}}
+        />
+
+        {/* Customers */}
+        <MainStack.Screen
+          name="CustomerDetails"
+          component={CustomerDetailsScreen}
+          options={({route}) => ({
+            title: route.params.customer?.name,
             headerShown: false,
-          }}>
-          {/* Home */}
-          <MainStack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{headerShown: false}}
-          />
+          })}
+        />
 
-          {/* Customers */}
-          <MainStack.Screen
-            name="CustomerDetails"
-            component={CustomerDetailsScreen}
-            options={({route}) => ({
-              title: route.params.customer?.name,
-              headerShown: false,
-            })}
-          />
+        <MainStack.Screen
+          name="SelectCustomerList"
+          component={SelectCustomerListScreen}
+          options={{headerShown: false}}
+          initialParams={{
+            onSelectCustomer: () => {},
+          }}
+        />
 
-          <MainStack.Screen
-            name="SelectCustomerList"
-            component={SelectCustomerListScreen}
-            options={{headerShown: false}}
-            initialParams={{
-              onSelectCustomer: () => {},
-            }}
-          />
+        <MainStack.Screen
+          name="RecordSale"
+          component={RecordSaleScreen}
+          options={{headerShown: false}}
+        />
 
-          <MainStack.Screen
-            name="RecordSale"
-            component={RecordSaleScreen}
-            options={{headerShown: false}}
-          />
+        <MainStack.Screen
+          name="RecordCollection"
+          component={RecordCollectionScreen}
+          options={{headerShown: false}}
+        />
 
-          <MainStack.Screen
-            name="RecordCollection"
-            component={RecordCollectionScreen}
-            options={{headerShown: false}}
-          />
+        <MainStack.Screen
+          name="ReminderSettings"
+          component={ReminderSettingsScreen}
+          options={{headerShown: false}}
+        />
 
-          <MainStack.Screen
-            name="ReminderSettings"
-            component={ReminderSettingsScreen}
-            options={{headerShown: false}}
-          />
+        <MainStack.Screen
+          name="EditCustomer"
+          component={EditCustomerScreen}
+          options={{headerShown: false}}
+        />
 
-          <MainStack.Screen
-            name="EditCustomer"
-            component={EditCustomerScreen}
-            options={{headerShown: false}}
-          />
+        {/* More */}
+        <MainStack.Screen
+          name="BusinessSettings"
+          component={BusinessSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="UserProfileSettings"
+          component={UserProfileSettings}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Referral"
+          component={ReferralScreen}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="Settings"
+          component={MoreScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="PaymentSettings"
+          component={PaymentsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="Feedback"
+          component={FeedbackScreen}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="BVNVerification"
+          component={BVNVerification}
+          options={{headerShown: false}}
+        />
+        <MainStack.Screen
+          name="DisburementScreen"
+          component={DisburementScreen}
+          options={{headerShown: false}}
+        />
 
-          {/* More */}
-          <MainStack.Screen
-            name="BusinessSettings"
-            component={BusinessSettings}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="UserProfileSettings"
-            component={UserProfileSettings}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="Referral"
-            component={ReferralScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="Settings"
-            component={MoreScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="PaymentSettings"
-            component={PaymentsScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="Feedback"
-            component={FeedbackScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="BVNVerification"
-            component={BVNVerification}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="DisburementScreen"
-            component={DisburementScreen}
-            options={{headerShown: false}}
-          />
+        {/* Transactions */}
+        <MainStack.Screen
+          name="TransactionDetails"
+          component={TransactionDetailsScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="LedgerEntry"
+          component={LedgerEntryScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="EditTransaction"
+          component={EditTransactionScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="TransactionSuccess"
+          component={TransactionSuccessScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
 
-          {/* Transactions */}
-          <MainStack.Screen
-            name="TransactionDetails"
-            component={TransactionDetailsScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="LedgerEntry"
-            component={LedgerEntryScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="EditTransaction"
-            component={EditTransactionScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="TransactionSuccess"
-            component={TransactionSuccessScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-
-          {/* Report */}
-          <MainStack.Screen
-            name="Report"
-            component={ReportScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-
-          {/* Money */}
-          <MainStack.Screen
-            name="Drawdown"
-            component={DrawdownScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-        </MainStack.Navigator>
-      </EntryView>
-    </TransactionListProvider>
+        {/* Report */}
+        <MainStack.Screen
+          name="Report"
+          component={ReportScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        {/* Money */}
+        <MainStack.Screen
+          name="Drawdown"
+          component={DrawdownScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+      </MainStack.Navigator>
+    </EntryView>
   );
 };
 

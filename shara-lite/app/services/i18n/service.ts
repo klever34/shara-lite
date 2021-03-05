@@ -1,12 +1,12 @@
 import {I18nManager} from 'react-native';
 import I18n from 'i18n-js';
 import {IRemoteConfigService} from '@/services/remote-config';
-import {IAuthService} from '@/services/auth';
 import defaultTranslations from './translations';
 import {IStorageService} from '@/services/storage';
+import {User} from 'types/app';
 
 export interface II18nService {
-  initialize(): Promise<void>;
+  initialize(user: User): Promise<void>;
   getCurrentLocale(): string;
   setCurrentLocale(code: string): void;
   getLocales(): CountryLocale;
@@ -21,18 +21,13 @@ export class I18nService implements II18nService {
   };
   constructor(
     private remoteConfigService: IRemoteConfigService,
-    private authService: IAuthService,
     private storageService: IStorageService,
   ) {
     I18n.fallbacks = true;
     I18n.translations = defaultTranslations;
     this.setCurrentLocale(undefined, false);
   }
-  async initialize(): Promise<void> {
-    const user = this.authService.getUser();
-    if (!user) {
-      return Promise.resolve();
-    }
+  async initialize(user: User): Promise<void> {
     const translations: string = this.remoteConfigService
       .getValue('translations')
       .asString();
