@@ -7,6 +7,7 @@ import CustomerDetailsScreen from '@/screens/main/customers/CustomerDetailsScree
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
 import RecordSaleScreen from '@/screens/main/entry/RecordSaleScreen';
 import {HomeScreen} from '@/screens/main/HomeScreen';
+import {DrawdownScreen} from '@/screens/main/money/DrawdownScreen';
 import {MoreScreen} from '@/screens/main/more';
 import {
   BusinessSettings,
@@ -14,7 +15,6 @@ import {
 } from '@/screens/main/more/settings';
 import {PaymentsScreen} from '@/screens/main/payments';
 import {getI18nService, getNotificationService} from '@/services';
-import {useActivity} from '@/services/activity';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation, useRepeatBackToExit} from '@/services/navigation';
@@ -22,10 +22,10 @@ import {useRealm} from '@/services/realm';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {ObjectId} from 'bson';
-import React, {useCallback, useContext, useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {ActivityIndicator, View} from 'react-native';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 import {
@@ -34,15 +34,14 @@ import {
 } from './entry/SelectCustomerScreen';
 import FeedbackScreen from './more/feedback';
 import ReferralScreen from './more/referral';
+import {BVNVerification} from './payments/BVNVerification';
+import DisburementScreen from './payments/DisburementScreen';
 import {ReportScreen} from './report';
 import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {TransactionListProvider} from './transactions/hook';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
-import {DrawdownScreen} from '@/screens/main/money/DrawdownScreen';
-import {BVNVerification} from './payments/BVNVerification';
-import DisburementScreen from './payments/DisburementScreen';
 
 const strings = getI18nService().strings;
 
@@ -91,26 +90,9 @@ const MainScreens = () => {
   const {isSyncCompleted} = useContext(RealmContext);
   const {getCustomer} = useCustomer();
   const navigation = useAppNavigation();
-  const {saveActivity} = useActivity();
 
   useSyncLoader();
   useCreditReminder();
-
-  const handleSaveReminderNotification = useCallback(
-    async (remoteMessage) => {
-      const payload =
-        remoteMessage?.data?.payload &&
-        JSON.parse(remoteMessage?.data?.payload);
-
-      if (realm && isSyncCompleted && payload) {
-        if (payload.type === 'activity') {
-          const activity = payload.activity;
-          await saveActivity({activity});
-        }
-      }
-    },
-    [realm, saveActivity, isSyncCompleted],
-  );
 
   // Effect to when FCM notification is clicked
   useEffect(() => {
@@ -131,22 +113,6 @@ const MainScreens = () => {
       }
     });
   }, [realm, isSyncCompleted, navigation, getCustomer]);
-
-  // Effect to run when app is in background and notification comes in
-  useEffect(() => {
-    const unsubscribe = getNotificationService().setBackgroundMessageHandler(
-      handleSaveReminderNotification,
-    );
-    return unsubscribe;
-  }, [handleSaveReminderNotification]);
-
-  // Effect to run when app is in foreground and notification comes in
-  useEffect(() => {
-    const unsubscribe = getNotificationService().onMessage(
-      handleSaveReminderNotification,
-    );
-    return unsubscribe;
-  }, [handleSaveReminderNotification]);
 
   if (!realm) {
     return (

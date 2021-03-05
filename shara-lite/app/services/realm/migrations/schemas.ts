@@ -21,6 +21,7 @@ import schema20 from './1613556320339-merchant-id-to-wallet';
 import schema21 from './1614163165589-add-drawdown-to-wallet';
 import schema22 from './1614251072879-add-repayment-date-to-wallet-and-drawdown';
 import schema23 from './1614273134730-add-drawdown_transaction_fee_percentage-to-wallet-and-provider_label-to-collection';
+import schema24 from './1614892607570-add-drawdown-repayment-model';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -47,6 +48,7 @@ const schemas: any[] = [
   {schemaVersion: 21, ...schema21},
   {schemaVersion: 22, ...schema22},
   {schemaVersion: 23, ...schema23},
+  {schemaVersion: 24, ...schema24},
 ];
 
 export default schemas;

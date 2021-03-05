@@ -148,7 +148,7 @@ const en: Strings = {
       },
     },
   },
-  shara_tagline: 'Keep track of who owes you and get paid faster',
+  shara_tagline: 'Built To Get You Paid Faster',
   onboarding_copy_1: {
     title: 'Get paid on time',
     description: 'Get paid 2.5 times faster with Shara',
@@ -161,12 +161,11 @@ const en: Strings = {
   onboarding_copy_3: {
     title: 'Keep track of your revenue and who owes you',
     description:
-      'Securely record your business data in a private, secure and backed up',
+      "Securely record your business data. It's private, secure and backed up in case you lose your device",
   },
   activities: 'Activities',
   home: 'Home',
   payments: 'Payments',
-  money: 'Money',
   more_text: 'More',
   home_screen_setup_business_text: 'Setup your business',
   reminder_text: {
@@ -251,7 +250,6 @@ const en: Strings = {
       'Please enter collected amount or outstanding amount',
     edit_transaction: 'Edit Transaction',
     transaction_deleted: 'TRANSACTION DELETED',
-    search_input_placeholder: 'Search activities by client',
     confirm_delete: 'Are you sure you want to delete this transaction?',
     is_collection_message: 'You Collected **{{total_amount}}**.',
     is_collection_with_customer_message:
@@ -273,9 +271,10 @@ const en: Strings = {
     start_adding_records:
       "Start adding records by tapping the '+' button below",
     transaction_success: '{{transaction_type}} has been recorded Successfully',
-    share_customer_ledger_text: 'Share ledger via other apps',
-    view_customer_ledger_text: 'View ledger',
+    share_customer_ledger_text: 'Share customer ledger',
+    view_customer_ledger_text: 'View customer ledger',
     share_customer_ledger_whatsapp_text: 'Share ledger via whatsapp',
+    search_input_placeholder: 'Search activities by client',
     collection_overdue: 'Collection overdue',
     next_reminder: 'Next Reminder',
   },
@@ -299,8 +298,8 @@ const en: Strings = {
   you_owe_message: 'You owe {{credit_amount}}.',
   you_owe_message_with_due_date:
     'You owe {{credit_amount}} which is due on {{due_date}}.',
-  payment_link_message: String.raw`To pay click\n{{payment_link}}.`,
-  powered_by_shara: String.raw`Powered by Shara for free.\nwww.shara.co`,
+  payment_link_message: 'To pay click\\n{{payment_link}}.',
+  powered_by_shara: 'Powered by Shara for free.\\nwww.shara.co',
   collection: {
     collection_recorded: 'COLLECTION RECORDED',
     button: {
@@ -440,8 +439,8 @@ const en: Strings = {
       "Start adding clients by creating a record with the '+' button below",
     customer_count: {
       zero: 'You have no clients yet.',
-      one: '1 clients',
-      other: '{{count}} clients',
+      one: '1 Client',
+      other: '{{count}} Clients',
     },
     customer_edited: 'CUSTOMER EDITED',
     customer_deleted: 'CUSTOMER DELETED',
@@ -507,7 +506,8 @@ const en: Strings = {
       },
       copy_payment_link: 'COPY LINK',
       preview_payment_page: 'Preview Payment Page',
-      add_new_payment_method: 'Add New Payment Method',
+      add_new_payment: 'Add New Payment',
+      add_new_payment_method: 'Add New Payment',
       others_placeholder_text:
         'Enter the full information on how you want to get paid. It can contain, account number, name of bank, mobile money information, etc.',
     },
@@ -523,6 +523,7 @@ const en: Strings = {
         website_url: 'www.shara.co',
       },
     },
+    bvn_input_field_placeholder: 'Enter your BVN',
     withdrawal_method: {
       bvn_description:
         'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
@@ -736,6 +737,7 @@ const en: Strings = {
   search_input_placeholder: 'Search clients here',
   country: 'Country',
   in: 'in',
+  money: 'Money',
   payment_activities: {
     empty_state: {
       description:
@@ -745,18 +747,22 @@ const en: Strings = {
     search_placeholder: 'Search payments here...',
     received: 'Received',
     withdrawn: 'Withdrawn',
-    wallet_balance: 'Wallet balance',
-    your_wallet_balance: 'Your wallet balance',
+    wallet_balance: 'Your wallet balance',
     merchant_id: '{{merchant_id}} - merchant Id',
+    tap_to_copy: 'Tap to copy',
+    deposit: 'Deposit',
+    withdraw: 'Withdraw',
+    drawdown: 'Drawdown',
+    payment_activities: 'Payment Activities',
+    no_money_activities: 'You have no Money activities yet',
+    your_wallet_balance: 'Your wallet balance',
     your_merchant_id_is: 'Your Merchant ID is',
     your_wallet_account_no_is: {
       one: 'Your wallet account number is',
       other: 'Your wallet account numbers are',
     },
-    tap_to_copy: 'Tap to copy',
     tap_to_copy_merchant_id: 'Tap to copy Merchant ID',
     tap_to_copy_wallet_account_no: 'Tap to copy wallet account number',
-    deposit: 'Deposit',
     withdraw_fields: {
       amount: {
         label: 'Enter Amount',
@@ -769,24 +775,22 @@ const en: Strings = {
       'See below the various ways to deposit funds into your wallet',
     select_withdrawal_account: 'Select withdrawal account',
     confirm_withdrawal: 'Confirm withdrawal',
-    withdraw: 'Withdraw',
-    drawdown: 'Drawdown',
-    payment_activities: 'Payment Activities',
-    no_money_activities: 'You have no Money activities yet',
-    about_to_withdraw: String.raw`You are about to withdraw **{{amount}}** to\n**{{bank_details}}**`,
+    about_to_withdraw:
+      'You are about to withdraw **{{amount}}** to\\n**{{bank_details}}**',
     withdraw_success:
       'Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful',
-    withdraw_excess_error: 'Withdrawal amount is more than your wallet balance',
     payment_activity: {
       received_payment:
         'Received payment of **{{amount}}** via **{{provider}}**',
       withdrawal: 'Withdrawal of **{{amount}}** to your **{{provider}}**',
       select_customer: 'Select Customer',
     },
+    withdraw_excess_error:
+      'Withdrawal amount is greater than your wallet balance',
     not_available: {
       title: 'Not available in your country',
       description:
-        "Hey there, payment is currently unavailable in your country. We're working hard to bring it to you soon.",
+        "Hey there, payment is currently unavailable in your country. We're working hard to bring it to you soon",
       fields: {
         method_of_disbursement: {
           label: 'How do you receive payment in your country?',
@@ -794,10 +798,12 @@ const en: Strings = {
       },
     },
     not_withdrawal_acct: {
-      title: 'No Withdrawal Method',
-      description: 'You have not set up any withrawal method',
-      tag: 'Set up now',
+      title: 'No Withdrawal Account',
+      description:
+        'Please we need to know where to send your money to. Please go and set this up',
+      tag: 'Go to payment settings',
     },
+    feedback_submitted: 'Feedback Submitted',
   },
   drawdown: {
     title: 'Drawdown',
@@ -818,7 +824,7 @@ const en: Strings = {
     },
     repayment_amount: 'Repayment amount (includes {{amount}} transaction fee)',
     request: 'Request',
-    what_is_drawdown: 'What is drawdown?',
+    what_is_drawdown: 'What is drawdown',
     drawdown_item_text:
       'Drawdown of **{{amount}}** to your wallet on **{{date}}**',
     transaction_fee: 'Transaction Fee',
@@ -830,6 +836,8 @@ const en: Strings = {
     not_qualified: 'You do not qualify for drawdowns at the moment.',
     repayment_success:
       'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
+    repayment_item_text:
+      'Drawdown repayment of **{{amount}}** from your wallet on **{{date}}**',
   },
   copied: 'Copied',
   submit: 'Submit',

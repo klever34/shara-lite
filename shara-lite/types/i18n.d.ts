@@ -335,7 +335,6 @@ export interface Strings {
   enable: string;
   unknown: string;
   whatsapp: string;
-  sms: string;
   confirm: string;
   address: string;
   price: string;
@@ -386,6 +385,7 @@ export interface Strings {
       };
       copy_payment_link: string;
       preview_payment_page: string;
+      add_new_payment: string;
       add_new_payment_method: string;
       others_placeholder_text: string;
     };
@@ -401,6 +401,7 @@ export interface Strings {
         website_url: string;
       };
     };
+    bvn_input_field_placeholder: string;
     withdrawal_method: {
       bvn_description: string;
       bvn_input_field_placeholder: string;
@@ -563,16 +564,13 @@ export interface Strings {
     wallet_balance: string;
     merchant_id: string;
     tap_to_copy: string;
-    deposit: string;
     withdraw: string;
     drawdown: string;
     payment_activities: string;
     no_money_activities: string;
     your_wallet_balance: string;
-    merchant_id: string;
     your_merchant_id_is: string;
     your_wallet_account_no_is: PluralizedString;
-    tap_to_copy: string;
     tap_to_copy_merchant_id: string;
     tap_to_copy_wallet_account_no: string;
     deposit: string;
@@ -601,6 +599,7 @@ export interface Strings {
       };
     };
     not_withdrawal_acct: Card;
+    feedback_submitted: string;
   };
   drawdown: {
     title: string;
@@ -625,6 +624,7 @@ export interface Strings {
     repayment_excess_error: string;
     not_qualified: string;
     repayment_success: string;
+    repayment_item_text: string;
   };
   copied: string;
   submit: string;
