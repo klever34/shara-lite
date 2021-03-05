@@ -17,6 +17,7 @@ type User = {
   referrer_code?: string;
   device_id?: string;
   ux_cam_id: string;
+  is_identity_verified: boolean;
 };
 
 type Business = {
@@ -40,6 +41,22 @@ type PaymentProvider = {
   fields: Array<{
     key: string;
     label: string;
+  }>;
+};
+
+type DisbursementProvider = {
+  name: string;
+  slug: string;
+  allowed_countries: string[];
+  fields: Array<{
+    key: string;
+    label: string;
+    required: string;
+    type: string;
+    options: Array<{
+      label: string;
+      value: string;
+    }>;
   }>;
 };
 

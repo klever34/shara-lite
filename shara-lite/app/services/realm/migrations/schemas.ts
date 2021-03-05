@@ -15,6 +15,13 @@ import schema14 from './1610377039908-add-feedback-model';
 import schema15 from './1611048927106-add-last-seen-model';
 import schema16 from './1611236083669-add-activity-x-disable-customer-reminders';
 import schema17 from './1611256639370-re-add-disable-customer-reminders';
+import schema18 from './1613468659343-add-shara-pay-models';
+import schema19 from './1613546853297-add-is_primary_to_collection_disbursment_methods';
+import schema20 from './1613556320339-merchant-id-to-wallet';
+import schema21 from './1614163165589-add-drawdown-to-wallet';
+import schema22 from './1614251072879-add-repayment-date-to-wallet-and-drawdown';
+import schema23 from './1614273134730-add-drawdown_transaction_fee_percentage-to-wallet-and-provider_label-to-collection';
+import schema24 from './1614892607570-add-drawdown-repayment-model';
 
 const schemas: any[] = [
   {schemaVersion: 1, ...schema1},
@@ -34,6 +41,14 @@ const schemas: any[] = [
   {schemaVersion: 15, ...schema15},
   {schemaVersion: 16, ...schema16},
   {schemaVersion: 17, ...schema17},
+  {schemaVersion: 18, ...schema18},
+  {schemaVersion: 18, ...schema18},
+  {schemaVersion: 19, ...schema19},
+  {schemaVersion: 20, ...schema20},
+  {schemaVersion: 21, ...schema21},
+  {schemaVersion: 22, ...schema22},
+  {schemaVersion: 23, ...schema23},
+  {schemaVersion: 24, ...schema24},
 ];
 
 export default schemas;

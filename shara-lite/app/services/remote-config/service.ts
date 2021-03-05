@@ -7,6 +7,10 @@ export const remoteConfigDefaults: RemoteConfig = {
   translations: defaultTranslations,
   countries: {},
   minimumVersion: '0.0.0',
+  sharaMoneyEnabledCountries: {
+    NGN: {},
+    KES: {},
+  },
 };
 
 export interface IRemoteConfigService {

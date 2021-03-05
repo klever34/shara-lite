@@ -9,6 +9,7 @@ import {IStorageService} from '../storage';
 import {
   ApiResponse,
   Business,
+  DisbursementProvider,
   GroupChat,
   GroupChatMember,
   PaymentProvider,
@@ -16,6 +17,7 @@ import {
 } from 'types/app';
 import {BaseModelInterface} from '@/models/baseSchema';
 import {getI18nService} from '@/services';
+import {DisbursementOption} from '@/models/DisbursementMethod';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -24,6 +26,11 @@ export type Requester = {
     isExternalDomain?: boolean,
   ) => Promise<ApiResponse<T>>;
   post: <T extends any = any>(
+    url: string,
+    data: {[key: string]: any},
+    config?: {[key: string]: any},
+  ) => Promise<ApiResponse<T>>;
+  put: <T extends any = any>(
     url: string,
     data: {[key: string]: any},
     config?: {[key: string]: any},
@@ -77,6 +84,10 @@ export interface IApiService {
   getPaymentProviders(params: {
     country_code: string | undefined;
   }): Promise<PaymentProvider[]>;
+
+  getDisbursementProviders(params: {
+    country_code: string | undefined;
+  }): Promise<DisbursementProvider[]>;
 
   getSyncedRecord(params: {
     model: string;
@@ -143,6 +154,18 @@ export interface IApiService {
   }): Promise<string>;
 
   fcmToken(payload: {token: string; platform?: string}): Promise<ApiResponse>;
+
+  saveDisbursementMethod(
+    payload: Omit<DisbursementOption, 'fieldsData'>,
+  ): Promise<any>;
+  makeDisbursement(payload: {
+    amount: number;
+    disbursement_method_id: number;
+  }): Promise<ApiResponse>;
+  saveDrawdown(payload: {amount: number}): Promise<any>;
+  makeDrawdownRepayment(payload: {amount: number}): Promise<any>;
+  verify(payload: {idNumber: string}): Promise<ApiResponse>;
+  validate(payload: {otp: string}): Promise<ApiResponse>;
 }
 
 export class ApiService implements IApiService {
@@ -189,6 +212,28 @@ export class ApiService implements IApiService {
         const trace = await perf().startTrace(url);
         const response = await fetch(`${Config.API_BASE_URL}${url}`, {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+            'Content-Type': 'application/json',
+            ...config?.headers,
+          },
+          body: config ? data : JSON.stringify(data),
+        });
+        await trace.stop();
+        return (await this.handleFetchErrors<T>(response)) as T;
+      } catch (e) {
+        throw this.handleNetworkErrors(e);
+      }
+    },
+    put: async <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+      config?: {[key: string]: any},
+    ) => {
+      try {
+        const trace = await perf().startTrace(url);
+        const response = await fetch(`${Config.API_BASE_URL}${url}`, {
+          method: 'PUT',
           headers: {
             Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
             'Content-Type': 'application/json',
@@ -369,6 +414,23 @@ export class ApiService implements IApiService {
         {country_code},
       );
       return paymentProviders;
+    } catch (e) {
+      throw e;
+    }
+  }
+
+  async getDisbursementProviders({
+    country_code,
+  }: {
+    country_code: string | undefined;
+  }) {
+    try {
+      const {
+        data: {disbursementProviders},
+      } = await this.requester.get<{
+        disbursementProviders: DisbursementProvider[];
+      }>('/disbursement-provider', {country_code});
+      return disbursementProviders;
     } catch (e) {
       throw e;
     }
@@ -657,6 +719,67 @@ export class ApiService implements IApiService {
     try {
       const response = await this.requester.post('/fcm/token', payload);
       return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+  async saveDisbursementMethod(
+    payload: Omit<DisbursementOption, 'fieldsData'>,
+  ): Promise<any> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/disbursement-method',
+        payload,
+      );
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async makeDisbursement(payload: {
+    amount: number;
+    disbursement_method_id: number;
+  }): Promise<ApiResponse> {
+    try {
+      return await this.requester.post('/disbursement', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async saveDrawdown(payload: {amount: number}): Promise<any> {
+    try {
+      const fetchResponse = await this.requester.post('/drawdown', payload);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async makeDrawdownRepayment(payload: {amount: number}): Promise<any> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/drawdown-repayment',
+        payload,
+      );
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async verify(payload: {idNumber: string}): Promise<ApiResponse> {
+    try {
+      return await this.requester.put('/identity/verify', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async validate(payload: {otp: string}): Promise<ApiResponse> {
+    try {
+      return await this.requester.put('/identity/validate', payload);
     } catch (error) {
       throw error;
     }

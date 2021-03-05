@@ -20,6 +20,13 @@ import {PaymentReminder} from '@/models/PaymentReminder';
 import {Feedback} from '@/models/Feedback';
 import {LastSeen} from '@/models/LastSeen';
 import {Activity} from '@/models/Activity';
+import {Wallet} from '@/models/Wallet';
+import {CollectionMethod} from '@/models/CollectionMethod';
+import {Collection} from '@/models/Collection';
+import {DisbursementMethod} from '@/models/DisbursementMethod';
+import {Disbursement} from '@/models/Disbursement';
+import {Drawdown} from '@/models/Drawdown';
+import {DrawdownRepayment} from '@/models/DrawdownRepayment';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
@@ -45,6 +52,13 @@ export const schema = [
   Feedback,
   LastSeen,
   Activity,
+  Wallet,
+  CollectionMethod,
+  Collection,
+  DisbursementMethod,
+  Disbursement,
+  Drawdown,
+  DrawdownRepayment,
 ];
 
 export const createLocalRealm = async () => {

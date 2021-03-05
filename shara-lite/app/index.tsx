@@ -6,7 +6,7 @@ import {handleError} from '@/services/error-boundary';
 import IPGeolocationProvider from '@/services/ip-geolocation/provider';
 import {NavigationContainer} from '@react-navigation/native';
 import {NavigationState} from '@react-navigation/routers';
-import {createStackNavigator} from '@react-navigation/stack';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import Sentry from '@sentry/react-native';
 import React, {useCallback, useEffect, useState} from 'react';
 import {withErrorBoundary} from 'react-error-boundary';
@@ -37,7 +37,7 @@ export type RootStackParamList = {
   Main: undefined;
 };
 
-const RootStack = createStackNavigator<RootStackParamList>();
+const RootStack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   const [reloadFlag, setReloadFlag] = useState(false);

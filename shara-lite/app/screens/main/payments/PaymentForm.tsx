@@ -126,13 +126,26 @@ export const PaymentForm = ({
               <AppInput
                 key={field.key}
                 ref={fieldRef}
-                label={field.label}
+                label={values.slug === 'others' ? undefined : field.label}
                 containerStyle={applyStyles('mt-24')}
                 returnKeyType={getReturnKeyType(field.key)}
                 onSubmitEditing={getSubmitEditingHandler(
                   field.key,
                   handleSubmit,
                 )}
+                placeholder={
+                  values.slug === 'others'
+                    ? strings(
+                        'payment.payment_container.others_placeholder_text',
+                      )
+                    : undefined
+                }
+                style={
+                  values.slug === 'others'
+                    ? // eslint-disable-next-line react-native/no-inline-styles
+                      {height: 150, textAlignVertical: 'top'}
+                    : {}
+                }
                 value={
                   values?.fieldsData ? values?.fieldsData[index]?.value : ''
                 }

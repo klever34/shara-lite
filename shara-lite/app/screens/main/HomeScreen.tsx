@@ -7,21 +7,20 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import React, {useContext, useEffect} from 'react';
 import {Text} from '@/components';
 import {Image, SafeAreaView, View} from 'react-native';
-import {Header} from '@/components';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
 import {getAuthService, getI18nService} from '@/services';
 import {EntryContext} from '@/components/EntryView';
 import Touchable from '@/components/Touchable';
 import {useLastSeen} from '@/services/last-seen';
-import {PaymentsScreen} from './payments';
+import {MoneyScreen} from './money';
 import {MoreScreen} from './more';
 
 const strings = getI18nService().strings;
 
 export type MainNavParamList = {
   TransactionsTab: undefined;
-  PaymentsTab: undefined;
+  MoneyTab: undefined;
   EntryTab: undefined;
   CustomersTab: undefined;
   MoreTab: undefined;
@@ -51,7 +50,10 @@ export const HomeScreen = () => {
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
-      <Header style={applyStyles('bg-primary')}>
+      <View
+        style={applyStyles(
+          'flex-row py-16 bg-white relative items-center bg-primary',
+        )}>
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             <Image
@@ -72,7 +74,7 @@ export const HomeScreen = () => {
             </View>
           </View>
         </Touchable>
-      </Header>
+      </View>
 
       <MainNav.Navigator
         initialRouteName="TransactionsTab"
@@ -117,11 +119,11 @@ export const HomeScreen = () => {
           }}
         />
         <MainNav.Screen
-          name="PaymentsTab"
-          component={PaymentsScreen}
+          name="MoneyTab"
+          component={MoneyScreen}
           options={{
             tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>{strings('payments')}</TabBarLabel>
+              <TabBarLabel {...labelProps}>{strings('money')}</TabBarLabel>
             ),
             tabBarIcon: ({color}) => (
               <Icon

@@ -16,6 +16,12 @@ export const globalStyles: {[key: string]: any} = StyleSheet.create({
     col: {
       flexDirection: 'column',
     },
+    'row-reverse': {
+      flexDirection: 'row-reverse',
+    },
+    'col-reverse': {
+      flexDirection: 'column-reverse',
+    },
   }),
   'justify-start': {
     justifyContent: 'flex-start',

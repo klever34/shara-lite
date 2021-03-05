@@ -225,26 +225,24 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <View
-        style={applyStyles(
-          'flex-row py-8 pr-16 bg-white items-center justify-between',
-          {
-            borderBottomWidth: 1.5,
-            borderBottomColor: colors['gray-20'],
-          },
-        )}>
+        style={applyStyles('flex-row py-8 pr-16 bg-white items-center', {
+          borderBottomWidth: 1.5,
+          borderBottomColor: colors['gray-20'],
+        })}>
         <HeaderBackButton iconName="arrow-left" />
         <View style={applyStyles('items-end')}>
           {customer ? (
             <Touchable onPress={handleOpenCustomerScreen}>
               <View style={applyStyles('flex-row items-center')}>
-                <Text style={applyStyles('text-400 text-black text-base')}>
-                  {customer?.name}
-                </Text>
                 <PlaceholderImage
                   style={applyStyles('ml-4')}
                   text={customer?.name ?? ''}
                   image={customer.image ? {uri: customer?.image} : undefined}
                 />
+                <Text
+                  style={applyStyles('text-400 text-black text-base pl-sm')}>
+                  {customer?.name}
+                </Text>
               </View>
             </Touchable>
           ) : (
