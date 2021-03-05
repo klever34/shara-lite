@@ -195,7 +195,7 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
           />
         </View>
       )}
-      {wallet?.is_drawdown_active ? (
+      {wallet?.is_drawdown_active || filteredDrawdowns.length ? (
         <FlatList
           data={filteredDrawdowns}
           initialNumToRender={10}
