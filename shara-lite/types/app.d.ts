@@ -17,6 +17,7 @@ type User = {
   referrer_code?: string;
   device_id?: string;
   ux_cam_id: string;
+  is_identity_verified: boolean;
 };
 
 type Business = {

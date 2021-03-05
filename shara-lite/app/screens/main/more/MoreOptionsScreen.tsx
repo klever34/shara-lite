@@ -57,7 +57,12 @@ export const MoreOptionsScreen = withModal(
     }, [navigation]);
 
     const onPaymentSettings = useCallback(() => {
-      navigation.navigate('PaymentSettings');
+      const user = getAuthService().getUser();
+      if (user?.is_identity_verified) {
+        navigation.navigate('DisburementScreen');
+      } else {
+        navigation.navigate('PaymentSettings');
+      }
     }, [navigation]);
 
     const {reloadApp} = useContext(AppContext);

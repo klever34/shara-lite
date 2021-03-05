@@ -18,7 +18,7 @@ import {DisbursementForm} from './DisbursementForm';
 import {DisbursementOption} from '@/models/DisbursementMethod';
 import {handleError} from '@/services/error-boundary';
 import {useDisbursementMethod} from '@/services/disbursement-method';
-import {format, parseISO} from 'date-fns';
+import {parseISO} from 'date-fns';
 const strings = getI18nService().strings;
 
 function DisburementScreen(props: ModalWrapperFields) {
@@ -140,6 +140,15 @@ function DisburementScreen(props: ModalWrapperFields) {
     }
   }, [apiService, business, user]);
 
+  const handleGoBack = useCallback(() => {
+    const userData = getAuthService().getUser();
+    if (userData?.is_identity_verified) {
+      navigation.navigate('Settings');
+    } else {
+      navigation.goBack();
+    }
+  }, [navigation]);
+
   useEffect(() => {
     return navigation.addListener('focus', () => {
       setBusiness(getAuthService().getBusinessInfo());
@@ -156,7 +165,7 @@ function DisburementScreen(props: ModalWrapperFields) {
       header={{
         title: strings('payment.payment_container.payment_settings'),
         style: applyStyles('py-8'),
-        iconLeft: {},
+        iconLeft: {onPress: handleGoBack},
       }}
       style={applyStyles('px-0')}>
       <KeyboardAwareScrollView

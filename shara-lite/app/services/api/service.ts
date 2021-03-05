@@ -30,6 +30,11 @@ export type Requester = {
     data: {[key: string]: any},
     config?: {[key: string]: any},
   ) => Promise<ApiResponse<T>>;
+  put: <T extends any = any>(
+    url: string,
+    data: {[key: string]: any},
+    config?: {[key: string]: any},
+  ) => Promise<ApiResponse<T>>;
   patch: <T extends any = any>(
     url: string,
     data: {[key: string]: any},
@@ -157,12 +162,10 @@ export interface IApiService {
     amount: number;
     disbursement_method_id: number;
   }): Promise<ApiResponse>;
-  saveDrawdown(
-    payload: {amount: number},
-  ): Promise<any>;
-  makeDrawdownRepayment(
-    payload: {amount: number},
-  ): Promise<any>;
+  saveDrawdown(payload: {amount: number}): Promise<any>;
+  makeDrawdownRepayment(payload: {amount: number}): Promise<any>;
+  verify(payload: {idNumber: string}): Promise<ApiResponse>;
+  validate(payload: {otp: string}): Promise<ApiResponse>;
 }
 
 export class ApiService implements IApiService {
@@ -209,6 +212,28 @@ export class ApiService implements IApiService {
         const trace = await perf().startTrace(url);
         const response = await fetch(`${Config.API_BASE_URL}${url}`, {
           method: 'POST',
+          headers: {
+            Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
+            'Content-Type': 'application/json',
+            ...config?.headers,
+          },
+          body: config ? data : JSON.stringify(data),
+        });
+        await trace.stop();
+        return (await this.handleFetchErrors<T>(response)) as T;
+      } catch (e) {
+        throw this.handleNetworkErrors(e);
+      }
+    },
+    put: async <T extends any = any>(
+      url: string,
+      data: {[key: string]: any},
+      config?: {[key: string]: any},
+    ) => {
+      try {
+        const trace = await perf().startTrace(url);
+        const response = await fetch(`${Config.API_BASE_URL}${url}`, {
+          method: 'PUT',
           headers: {
             Authorization: `Bearer ${this.authService.getToken() ?? ''}`,
             'Content-Type': 'application/json',
@@ -723,12 +748,19 @@ export class ApiService implements IApiService {
     }
   }
 
-  async saveDrawdown(
-    payload: {amount: number},
-  ): Promise<any> {
+  async saveDrawdown(payload: {amount: number}): Promise<any> {
+    try {
+      const fetchResponse = await this.requester.post('/drawdown', payload);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async makeDrawdownRepayment(payload: {amount: number}): Promise<any> {
     try {
       const fetchResponse = await this.requester.post(
-        '/drawdown',
+        '/drawdown-repayment',
         payload,
       );
       return fetchResponse;
@@ -737,15 +769,17 @@ export class ApiService implements IApiService {
     }
   }
 
-  async makeDrawdownRepayment(
-    payload: {amount: number},
-  ): Promise<any> {
+  async verify(payload: {idNumber: string}): Promise<ApiResponse> {
     try {
-      const fetchResponse = await this.requester.post(
-        '/drawdown-repayment',
-        payload,
-      );
-      return fetchResponse;
+      return await this.requester.put('/identity/verify', payload);
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async validate(payload: {otp: string}): Promise<ApiResponse> {
+    try {
+      return await this.requester.put('/identity/validate', payload);
     } catch (error) {
       throw error;
     }
