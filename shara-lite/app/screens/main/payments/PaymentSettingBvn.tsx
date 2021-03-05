@@ -1,11 +1,17 @@
 import Emblem from '@/assets/images/emblem-gray.svg';
 import {AppInput, Button} from '@/components';
 import {Page} from '@/components/Page';
-import {getApiService, getAuthService, getI18nService} from '@/services';
+import {
+  getApiService,
+  getAuthService,
+  getI18nService,
+  getStorageService,
+} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles} from '@/styles';
 import React, {useCallback, useMemo, useState} from 'react';
 import {Alert, Text, View} from 'react-native';
+import {User} from 'types/app';
 
 const strings = getI18nService().strings;
 
@@ -33,13 +39,24 @@ export const PaymentSettingBvn = () => {
   const handleSubmit = useCallback(async () => {
     const apiService = getApiService();
     try {
+      let user = authService.getUser() as User;
       const payload = {idNumber};
       await apiService.verify(payload);
-      navigation.navigate('BVNVerification');
+      if (user?.country_code !== '234') {
+        const userInfo = {
+          ...user,
+          is_identity_verified: true,
+        };
+        authService.setUser(userInfo);
+        await getStorageService().setItem('user', userInfo);
+        navigation.navigate('DisburementScreen');
+      } else {
+        navigation.navigate('BVNVerification');
+      }
     } catch (error) {
       Alert.alert(strings('alert.error'), error.message);
     }
-  }, [idNumber, navigation]);
+  }, [authService, idNumber, navigation]);
 
   return (
     <Page style={applyStyles('px-14')}>

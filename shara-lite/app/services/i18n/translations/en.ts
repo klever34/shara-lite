@@ -669,6 +669,7 @@ const en: Strings = {
     results: {
       one: 'Result',
       other: 'Results',
+      zero: '',
     },
     download_report_button_text: 'Download Report',
     empty_state_text: {

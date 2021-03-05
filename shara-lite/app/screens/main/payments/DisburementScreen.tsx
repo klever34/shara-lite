@@ -143,7 +143,7 @@ function DisburementScreen(props: ModalWrapperFields) {
   const handleGoBack = useCallback(() => {
     const userData = getAuthService().getUser();
     if (userData?.is_identity_verified) {
-      navigation.navigate('Settings');
+      navigation.navigate('MoreTab');
     } else {
       navigation.goBack();
     }
