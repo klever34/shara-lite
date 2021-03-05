@@ -40,25 +40,28 @@ export const BVNVerification = () => {
     setOtp(code);
   }, []);
 
-  const handleSubmit = useCallback(async () => {
-    const apiService = getApiService();
-    setLoading(true);
-    try {
-      const payload = {otp};
-      await apiService.validate(payload);
-      let userInfo = {
-        ...user,
-        is_identity_verified: true,
-      };
-      authService.setUser(userInfo);
-      await storageService.setItem('user', userInfo);
-      setLoading(false);
-      navigation.navigate('DisburementScreen');
-    } catch (error) {
-      setLoading(false);
-      Alert.alert(strings('alert.error'), error.message);
-    }
-  }, [user, authService, navigation, otp, storageService]);
+  const handleSubmit = useCallback(
+    async (otp: string) => {
+      const apiService = getApiService();
+      setLoading(true);
+      try {
+        const payload = {otp};
+        await apiService.validate(payload);
+        let userInfo = {
+          ...user,
+          is_identity_verified: true,
+        };
+        authService.setUser(userInfo);
+        await storageService.setItem('user', userInfo);
+        setLoading(false);
+        navigation.navigate('DisburementScreen');
+      } catch (error) {
+        setLoading(false);
+        Alert.alert(strings('alert.error'), error.message);
+      }
+    },
+    [user, authService, navigation, otp, storageService],
+  );
 
   return (
     <Page
@@ -103,7 +106,7 @@ export const BVNVerification = () => {
         />
         <Button
           isLoading={loading}
-          onPress={handleSubmit}
+          onPress={() => handleSubmit(otp)}
           title={strings('done')}
           style={applyStyles('w-full', {width: '48%'})}
         />
