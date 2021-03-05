@@ -405,6 +405,9 @@ export interface Strings {
       bvn_description: string;
       bvn_input_field_placeholder: string;
       otp_description: string;
+      id_description: string;
+      id_input_field_placeholder: string;
+      id_otp_description: string;
       add_withdrawal_method: string;
       withdrawal_method_list: string;
       withdrawal_method_description: string;
