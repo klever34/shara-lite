@@ -621,6 +621,7 @@ export interface Strings {
     repayment_excess_error: string;
     not_qualified: string;
     repayment_success: string;
+    repayment_item_text: string;
   };
   copied: string;
   submit: string;

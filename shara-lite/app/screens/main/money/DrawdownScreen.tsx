@@ -4,28 +4,38 @@ import {Page} from '@/components/Page';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {IDrawdown} from '@/models/Drawdown';
+import {IDrawdownRepayment} from '@/models/DrawdownRepayment';
 import {MoneyActionsContainer} from '@/screens/main/money/MoneyActionsContainer';
 import {getI18nService} from '@/services';
 import {useDrawdown} from '@/services/drawdown';
+import {useDrawdownRepayment} from '@/services/drawdown-repayment';
 import {useAppNavigation} from '@/services/navigation';
 import {useWallet} from '@/services/wallet';
 import {applyStyles, as, colors} from '@/styles';
 import {format} from 'date-fns';
+import {orderBy} from 'lodash';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {FlatList, View} from 'react-native';
 import {DrawdownActivityItem} from './DrawdownActivityItem';
 import {DrawdownExplanationModal} from './DrawdownExplanationModal';
+import {DrawdownRepaymentActivityItem} from './DrawdownRepaymentActivityItem';
 import {MakeDrawdownRepaymentForm} from './MakeDrawdownRepaymentForm';
 import {TakeDrawdownForm} from './TakeDrawdownForm';
 
 const strings = getI18nService().strings;
 
+function isDrawdown(item: IDrawdown | IDrawdownRepayment): item is IDrawdown {
+  return (item as IDrawdown).transaction_fee_amount !== undefined;
+}
+
 export const DrawdownScreen = withModal(({openModal, closeModal}) => {
   const {getDrawdowns} = useDrawdown();
+  const {getDrawdownRepayments} = useDrawdownRepayment();
   const {getWallet} = useWallet();
   const navigation = useAppNavigation();
 
   const drawdowns = getDrawdowns().sorted('created_at', true);
+  const drawdownRepayments = getDrawdownRepayments().sorted('created_at', true);
 
   const [wallet, setWallet] = useState(getWallet());
   const [filterStatus, setFilterStatus] = useState('all');
@@ -82,17 +92,25 @@ export const DrawdownScreen = withModal(({openModal, closeModal}) => {
   }, []);
 
   const renderListItem = useCallback(
-    ({item: drawdown}: {item: IDrawdown}) => (
-      <DrawdownActivityItem drawdown={drawdown} />
-    ),
+    ({item}: {item: IDrawdown | IDrawdownRepayment}) =>
+      isDrawdown(item) ? (
+        <DrawdownActivityItem data={item} />
+      ) : (
+        <DrawdownRepaymentActivityItem data={item} />
+      ),
     [],
   );
 
   const filteredDrawdowns = useMemo(() => {
     let userDrawdowns = drawdowns;
+    let userDrawdownRepayments = drawdownRepayments;
     switch (filterStatus) {
       case 'all':
-        return userDrawdowns;
+        return orderBy(
+          [...userDrawdowns, ...userDrawdownRepayments],
+          'created_at',
+          'desc',
+        );
       case 'active':
         return userDrawdowns.filtered('status == "active"');
       default:

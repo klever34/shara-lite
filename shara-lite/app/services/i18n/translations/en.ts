@@ -831,6 +831,7 @@ const en: Strings = {
     not_qualified: 'You do not qualify for drawdowns at the moment.',
     repayment_success:
       'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
+    repayment_item_text: 'Drawdown repayment of **{{amount}}** from your wallet on **{{date}}**'
   },
   copied: 'Copied',
   submit: 'Submit',
