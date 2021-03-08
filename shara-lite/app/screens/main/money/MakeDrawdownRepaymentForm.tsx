@@ -52,7 +52,7 @@ export const MakeDrawdownRepaymentForm = (props: any) => {
       header={{
         title: strings('drawdown.repayment'),
       }}
-      maxAmount={wallet?.balance}
+      maxAmount={wallet?.drawdown_amount_owed}
       errorMessage={strings('drawdown.repayment_excess_error')}
       leadText={`${strings(
         'payment_activities.wallet_balance',
