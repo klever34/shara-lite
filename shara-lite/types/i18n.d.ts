@@ -566,6 +566,7 @@ export interface Strings {
     tap_to_copy: string;
     withdraw: string;
     drawdown: string;
+    bnpl_text: string;
     payment_activities: string;
     no_money_activities: string;
     your_wallet_balance: string;
@@ -625,6 +626,47 @@ export interface Strings {
     not_qualified: string;
     repayment_success: string;
     repayment_item_text: string;
+  };
+  bnpl: {
+    not_available: {
+      button_text: string;
+      instruction: string;
+    };
+    empty_state: string;
+    active_text: string;
+    complete_text: string;
+    clients_text: string;
+    new_transaction_text: string;
+    total_completed_text: string;
+    amount_used_text: string;
+    amount_available_text: string;
+    completed_text: string;
+    payment_left_text: PluralizedString;
+    repayment_per_week: string;
+    record_transaction: {
+      fields: {
+        note: FormField;
+        total_amount: FormField;
+        amount_paid: FormField;
+        customer: FormField;
+      }
+      balance: string;
+      bnpl_terms_text: string;
+      repayment_date: string;
+    },
+    confirmation: {
+      title: string;
+      instruction: string;
+      client_terms: string;
+      merchant_terms: string;
+      terms: string;
+    },
+    success: {
+      heading: string;
+      outstanding_amount: string;
+      client_pays: string;
+      share_receipt: string;
+    }
   };
   copied: string;
   submit: string;

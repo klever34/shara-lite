@@ -41,6 +41,10 @@ import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
+import {BNPLScreen} from './bnpl';
+import {BNPLSuccessScreen} from './bnpl/BNPLSuccessScreen';
+import {BNPLClientScreen} from './bnpl/BNPLClientScreen';
+import {BNPLRecordTransactionScreen} from './bnpl/BNPLRecordTransactionScreen';
 
 const strings = getI18nService().strings;
 
@@ -79,6 +83,10 @@ export type MainStackParamList = {
 
   // Money
   Drawdown: undefined;
+  BNPLScreen: undefined;
+  BNPLClientScreen: undefined;
+  BNPLSuccessScreen: undefined;
+  BNPLRecordTransactionScreen: undefined;
 };
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
@@ -286,6 +294,38 @@ const MainScreens = () => {
         <MainStack.Screen
           name="Drawdown"
           component={DrawdownScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLScreen"
+          component={BNPLScreen}
+          options={{
+            headerShown: true,
+            headerTintColor: colors.white,
+            headerTitle: 'Buy Now Pay Later',
+            headerStyle: applyStyles('bg-primary'),
+            headerTitleStyle: applyStyles('text-white'),
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLClientScreen"
+          component={BNPLClientScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLSuccessScreen"
+          component={BNPLSuccessScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLRecordTransactionScreen"
+          component={BNPLRecordTransactionScreen}
           options={{
             headerShown: false,
           }}

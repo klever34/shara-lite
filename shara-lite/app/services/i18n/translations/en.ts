@@ -810,6 +810,7 @@ const en: Strings = {
         'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
       tag: 'Go to Money Settings',
     },
+    bnpl_text: 'BNPL',
     search_placeholder: 'Search payments here...',
     received: 'Received',
     withdrawn: 'Withdrawn',
@@ -904,6 +905,59 @@ const en: Strings = {
       'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
     repayment_item_text:
       'Drawdown repayment of **{{amount}}** from your wallet on **{{date}}**',
+  },
+  bnpl: {
+    not_available: {
+      button_text: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
+      instruction: 'Go to money settings',
+    },
+    active_text: 'Active',
+    complete_text: 'Complete',
+    clients_text: 'Clients',
+    empty_state: 'You have not recorded any BNPL transactions yet. Click to button below to get started.',
+    new_transaction_text: 'New transaction',
+    total_completed_text: 'Total completed',
+    amount_used_text: 'Amount used',
+    amount_available_text: 'Amount available',
+    completed_text: 'Completed',
+    payment_left_text: {
+      one: '{{amount}} payment left',
+      other: '{{amount}} payments left'
+    },
+    repayment_per_week: '{{amount}}/week',
+    record_transaction: {
+      fields: {
+        note: {
+          label: "Note",
+          placeholder: 'E.g what was sold or any other information',
+        },
+        total_amount: {
+          label: "Total Amount",
+          placeholder: 'Enter total amount',
+        },
+        amount_paid: {
+          label: "Amount Paid",
+          placeholder: 'Enter amount paid',
+        },
+        customer: {label: 'Customer', placeholder: 'Select a customer'},
+      },
+      balance: 'Balance',
+      bnpl_terms_text: 'Buy now pay later terms',
+      repayment_date: 'to be paid in full by {{date}}',
+    },
+    confirmation: {
+      instruction: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      title: 'Confirm Buy Now Pay Later',
+      client_terms: 'Yes, my client has accepted',
+      merchant_terms: 'I have accepted',
+      terms: '**Terms**',
+    },
+    success: {
+      heading: 'Buy Now Pay Later Successful',
+      outstanding_amount: 'The outstanding amount of {{amount}} has been added to your wallet.',
+      client_pays: 'Client pays {{amount}} over {{days}} days',
+      share_receipt: 'Share Receipt',
+    }
   },
   copied: 'Copied',
   submit: 'Submit',

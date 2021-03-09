@@ -117,6 +117,10 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     navigation.navigate('Drawdown');
   }, [navigation]);
 
+  const handleBNPL = useCallback(() => {
+    navigation.navigate('BNPLScreen');
+  }, [navigation]);
+
   const renderListItem = useCallback(
     ({item: data}) => <PaymentActivityItem data={data} />,
     [],
@@ -253,8 +257,8 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
               color: colors['blue-100'],
               bgColor: colors['blue-10'],
             },
-            onPress: handleDrawdown,
-            label: strings('payment_activities.drawdown'),
+            onPress: handleBNPL,
+            label: strings('payment_activities.bnpl_text'),
           },
         ]}
       />
