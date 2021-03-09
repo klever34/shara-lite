@@ -15,12 +15,13 @@ import * as yup from 'yup';
 
 type AddRepaymentModalProps = {
   onSubmit(): void;
+  onClose(): void;
 };
 
 const strings = getI18nService().strings;
 
 export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
-  const {onSubmit} = props;
+  const {onSubmit, onClose} = props;
 
   const {getWallet} = useWallet();
   const wallet = getWallet();
@@ -86,6 +87,7 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
         })}>
         <View style={applyStyles('flex-row items-center')}>
           <Button
+            onPress={onClose}
             variantColor="clear"
             title={strings('cancel')}
             textStyle={applyStyles('text-secondary text-uppercase')}

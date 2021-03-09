@@ -31,14 +31,17 @@ type FormValues = {
 const strings = getI18nService().strings;
 
 export const BNPLRecordTransactionScreen = withModal((props) => {
-  const {openModal} = props;
+  const {openModal, closeModal} = props;
   const navigation = useAppNavigation();
 
   const handleOpenConfirmModal = useCallback(
     (values) => {
       openModal('bottom-half', {
         renderContent: () => (
-          <ConfirmationModal onSubmit={() => handleSaveTransaction(values)} />
+          <ConfirmationModal
+            onClose={closeModal}
+            onSubmit={() => handleSaveTransaction(values)}
+          />
         ),
       });
     },
@@ -295,6 +298,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
           <View style={applyStyles('flex-row items-center')}>
             <Button
               variantColor="clear"
+              onPress={handleGoBack}
               title={strings('cancel')}
               textStyle={applyStyles('text-secondary text-uppercase')}
               style={applyStyles('mr-16', {width: 120, borderWidth: 0})}

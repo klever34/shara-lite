@@ -42,8 +42,13 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
   const handleSaveRepayment = useCallback(() => {}, []);
 
   const handleAddRepayment = useCallback(() => {
-    openModal('bottom-half', {
-      renderContent: () => <AddRepaymentModal onSubmit={handleSaveRepayment} />,
+    const closeModal = openModal('bottom-half', {
+      renderContent: () => (
+        <AddRepaymentModal
+          onClose={closeModal}
+          onSubmit={handleSaveRepayment}
+        />
+      ),
     });
   }, [navigation]);
 

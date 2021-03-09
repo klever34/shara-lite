@@ -8,12 +8,13 @@ import Markdown from 'react-native-markdown-display';
 
 type ConfirmationModalProps = {
   onSubmit(): void;
+  onClose(): void;
 };
 
 const strings = getI18nService().strings;
 
 export const ConfirmationModal = (props: ConfirmationModalProps) => {
-  const {onSubmit} = props;
+  const {onSubmit, onClose} = props;
 
   const [clientTerm, setClientTerm] = useState(false);
   const [merchantTerm, setMerchantTerm] = useState(false);
@@ -50,11 +51,16 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
           value=""
           isChecked={merchantTerm}
           onChange={handleMerchantTermChange}
-          containerStyle={applyStyles('justify-between mb-16')}
+          containerStyle={applyStyles('justify-between')}
           leftLabel={
-            <Text style={applyStyles('text-400 text-lg text-gray-200')}>
-              {strings('bnpl.confirmation.merchant_terms')}
-            </Text>
+            <View style={applyStyles('flex-row items-center')}>
+              <Text style={applyStyles('text-400 text-lg text-gray-200')}>
+                {strings('bnpl.confirmation.merchant_terms')}
+              </Text>
+              <Markdown style={{textgroup: applyStyles('pl-4 text-lg')}}>
+                {strings('bnpl.confirmation.terms')}
+              </Markdown>
+            </View>
           }
         />
         <Checkbox
@@ -63,9 +69,14 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
           onChange={handleClientTermChange}
           containerStyle={applyStyles('justify-between mb-32')}
           leftLabel={
-            <Text style={applyStyles('text-400 text-lg text-gray-200')}>
-              {strings('bnpl.confirmation.client_terms')}
-            </Text>
+            <View style={applyStyles('flex-row items-center')}>
+              <Text style={applyStyles('text-400 text-lg text-gray-200')}>
+                {strings('bnpl.confirmation.client_terms')}
+              </Text>
+              <Markdown style={{textgroup: applyStyles('pl-4 text-lg')}}>
+                {strings('bnpl.confirmation.terms')}
+              </Markdown>
+            </View>
           }
         />
       </View>
@@ -75,6 +86,7 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
         })}>
         <View style={applyStyles('flex-row items-center')}>
           <Button
+            onPress={onClose}
             variantColor="clear"
             title={strings('cancel')}
             textStyle={applyStyles('text-secondary text-uppercase')}
