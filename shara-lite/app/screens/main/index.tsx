@@ -42,9 +42,11 @@ import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
 import {BNPLScreen} from './bnpl';
-import {BNPLSuccessScreen} from './bnpl/BNPLSuccessScreen';
+import {BNPLTransactionSuccessScreen} from './bnpl/BNPLTransactionSuccessScreen';
 import {BNPLClientScreen} from './bnpl/BNPLClientScreen';
 import {BNPLRecordTransactionScreen} from './bnpl/BNPLRecordTransactionScreen';
+import {BNPLTransactionDetailsScreen} from './bnpl/BNPLTransactionDetailsScreen';
+import {BNPLRepaymentSuccessScreen} from './bnpl/BNPLRepaymentSuccessScreen';
 
 const strings = getI18nService().strings;
 
@@ -84,9 +86,11 @@ export type MainStackParamList = {
   // Money
   Drawdown: undefined;
   BNPLScreen: undefined;
-  BNPLClientScreen: undefined;
+  BNPLClientScreen: {data: any};
   BNPLRecordTransactionScreen: undefined;
-  BNPLSuccessScreen: {transaction: any; onDone?: () => void};
+  BNPLTransactionDetailsScreen: {transaction: any};
+  BNPLTransactionSuccessScreen: {transaction: any; onDone?: () => void};
+  BNPLRepaymentSuccessScreen: {transaction: any; onDone?: () => void};
 };
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
@@ -304,9 +308,9 @@ const MainScreens = () => {
           options={{
             headerShown: true,
             headerTintColor: colors.white,
-            headerTitle: 'Buy Now Pay Later',
             headerStyle: applyStyles('bg-primary'),
-            headerTitleStyle: applyStyles('text-white'),
+            headerTitle: strings('bnpl.buy_now_pay_later'),
+            headerTitleStyle: applyStyles('text-white text-capitalize'),
           }}
         />
         <MainStack.Screen
@@ -317,8 +321,15 @@ const MainScreens = () => {
           }}
         />
         <MainStack.Screen
-          name="BNPLSuccessScreen"
-          component={BNPLSuccessScreen}
+          name="BNPLTransactionSuccessScreen"
+          component={BNPLTransactionSuccessScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLRepaymentSuccessScreen"
+          component={BNPLRepaymentSuccessScreen}
           options={{
             headerShown: false,
           }}
@@ -328,6 +339,17 @@ const MainScreens = () => {
           component={BNPLRecordTransactionScreen}
           options={{
             headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLTransactionDetailsScreen"
+          component={BNPLTransactionDetailsScreen}
+          options={{
+            headerShown: true,
+            headerTintColor: colors.white,
+            headerStyle: applyStyles('bg-primary'),
+            headerTitle: strings('bnpl.transaction_details'),
+            headerTitleStyle: applyStyles('text-white text-capitalize'),
           }}
         />
       </MainStack.Navigator>

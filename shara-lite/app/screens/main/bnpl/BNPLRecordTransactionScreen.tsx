@@ -110,7 +110,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
 
   const handleSaveTransaction = useCallback(
     (values) => {
-      navigation.navigate('BNPLSuccessScreen', {
+      navigation.navigate('BNPLTransactionSuccessScreen', {
         transaction: values,
         onDone: handleDone,
       });

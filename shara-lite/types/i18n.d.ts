@@ -127,6 +127,66 @@ export interface Strings {
           success: string;
         };
       };
+      mPesa: {
+        initiateSTKPush: {
+          business: {
+            notFound: string;
+          },
+          customer: {
+            notFound: string;
+          },
+          kenyaOnly: {
+            [key: string]: string;
+          },
+          success: {
+            [key: string]: string;
+          },
+        },
+        processValidationEvent: {
+          success: string,
+        },
+        processConfirmationEvent: {
+          success: string,
+        },
+      },
+      disbursement: {
+        create: {
+          notFound: string;
+          success: string;
+          insufficientBalance: string;
+          error: string;
+        },
+      },
+      drawdown: {
+        create: {
+          notFound: string;
+          invalidAmount: string;
+          inactive: string;
+          error: string;
+          success: string;
+        },
+      },
+      drawdownRepayment: {
+        create: {
+          notFound: string;
+          complete: string;
+          error: string;
+          insufficientBalance: string;
+          success: string;
+        },
+      },
+      identity: {
+        verify: {
+          error: string;
+          invalid: string;
+          success: string;
+        },
+        validate: {
+          error: string;
+          invalid: string;
+          success: string;
+        },
+      },
     };
   };
   home_screen_setup_business_text: string;
@@ -637,13 +697,18 @@ export interface Strings {
     active_text: string;
     complete_text: string;
     clients_text: string;
+    buy_now_pay_later: string;
+    transaction_details: string;
     new_transaction_text: string;
     total_completed_text: string;
     amount_used_text: string;
     amount_available_text: string;
     completed_text: string;
     payment_left_text: PluralizedString;
+    payment_made_text: PluralizedString;
     repayment_per_week: string;
+    add_repayment: string;
+    share_receipt: string;
     record_transaction: {
       title: string;
       fields: {
@@ -665,12 +730,28 @@ export interface Strings {
     },
     success: {
       heading: string;
-      outstanding_amount: string;
-      client_pays: string;
-      share_receipt: string;
+      outstanding: string;
+      payment: string;
     },
     receipt: {
       bnpl_text: string;
+    },
+    client: {
+      upcoming_text: string;
+      paid_text: string;
+      wallet_balance: string;
+      add_repayment_note: string;
+      repayment_to_shara: string;
+      repayment: {
+        fields: {
+          amount: FormField
+        },
+        success: {
+          heading: string;
+          outstanding: string;
+          payment: string;         
+        }
+      }
     }
   };
   copied: string;

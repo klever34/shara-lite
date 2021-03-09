@@ -76,7 +76,7 @@ export const BNPLTransactionList = (props: BNPLTransactionListProps) => {
 
   const handlePressListItem = useCallback(
     (item: any) => {
-      navigation.navigate('BNPLClientScreen');
+      navigation.navigate('BNPLClientScreen', {data: item});
     },
     [navigation],
   );

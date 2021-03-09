@@ -911,6 +911,8 @@ const en: Strings = {
       button_text: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
       instruction: 'Go to money settings',
     },
+    buy_now_pay_later: 'Buy now pay later',
+    transaction_details: 'Transaction Details',
     day_text: {one: '{{amount}} day', other: '{{amount}} days'},
     active_text: 'Active',
     complete_text: 'Complete',
@@ -925,6 +927,11 @@ const en: Strings = {
       one: '{{amount}} payment left',
       other: '{{amount}} payments left'
     },
+    payment_made_text: {
+      one: '{{amount}} payment made',
+      other: '{{amount}} payments made'
+    },
+    share_receipt: 'Share Receipt',
     repayment_per_week: '{{amount}}/week',
     record_transaction: {
       title: 'Enter transaction',
@@ -959,12 +966,32 @@ const en: Strings = {
     },
     success: {
       heading: 'Buy Now Pay Later Successful',
-      outstanding_amount: 'The outstanding amount of {{amount}} has been added to your wallet.',
-      client_pays: 'Client pays {{amount}} over {{days}} days',
-      share_receipt: 'Share Receipt',
+      outstanding: 'The outstanding amount of {{amount}} has been added to your wallet.',
+      payment: 'Client pays {{amount}} over {{days}} days',
     },
     receipt: {
       bnpl_text: 'Buy Now Pay Later (8 weeks)',
+    },
+    add_repayment: 'Add Repayment',
+    client: {
+      upcoming_text: 'Upcoming',
+      paid_text: 'Paid',
+      wallet_balance: 'Wallet balance {{amount}}',
+      add_repayment_note: 'Note that this amount will be deducted from your wallet balance',
+      repayment_to_shara: 'Repayment to Shara Inc.',
+      repayment: {
+        fields: {
+          amount: {
+            label: 'Amount',
+            errorMessage: 'Amount is required'
+          }
+        },
+        success: {
+          heading: 'Buy Now Pay Later Payment Successful',
+          payment: 'Payment of {{amount}} confirmed and deducted from your wallet balance',
+          outstanding: 'Outstanding: {{amount}} over {{days}} days',         
+        }
+      }
     }
   },
   copied: 'Copied',

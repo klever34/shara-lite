@@ -12,15 +12,14 @@ import {Button} from '@/components';
 import {BNPLReceiptImage} from './BNPLReceiptImage';
 import {amountWithCurrency} from '@/helpers/utils';
 
-type BNPLSuccessScreenProps = {
-  route: RouteProp<MainStackParamList, 'BNPLSuccessScreen'>;
+type BNPLSuccessProps = MainStackParamList['BNPLTransactionSuccessScreen'] & {
+  captions: {heading: string; outstanding: string; payment: string};
 };
 
 const strings = getI18nService().strings;
 
-export const BNPLSuccessScreen = (props: BNPLSuccessScreenProps) => {
-  const {route} = props;
-  const {onDone, transaction} = route.params;
+export const BNPLSuccess = (props: BNPLSuccessProps) => {
+  const {onDone, transaction, captions} = props;
   const {credit_amount} = transaction;
 
   const [receiptImage, setReceiptImage] = useState('');
@@ -87,18 +86,13 @@ export const BNPLSuccessScreen = (props: BNPLSuccessScreenProps) => {
             style={applyStyles('pb-16 text-center text-black text-2xl', {
               width: 200,
             })}>
-            {strings('bnpl.success.heading')}
+            {captions.heading}
           </Text>
           <Text style={applyStyles('pb-16 text-center text-gray-200 text-lg')}>
-            {strings('bnpl.success.outstanding_amount', {
-              amount: amountWithCurrency(credit_amount),
-            })}
+            {captions.outstanding}
           </Text>
           <Text style={applyStyles('text-center text-gray-200 text-lg')}>
-            {strings('bnpl.success.client_pays', {
-              amount: amountWithCurrency(0),
-              days: 56,
-            })}
+            {captions.payment}
           </Text>
           <View style={applyStyles('py-40 center')}>
             <Text
@@ -196,16 +190,16 @@ export const BNPLSuccessScreen = (props: BNPLSuccessScreenProps) => {
           />
         </View>
       </View>
-      {/* <View
+      <View
         style={applyStyles({
           opacity: 0,
           height: 0,
-        })}> */}
-      <BNPLReceiptImage
-        transaction={transaction}
-        getImageUri={(data) => setReceiptImage(data)}
-      />
-      {/* </View> */}
+        })}>
+        <BNPLReceiptImage
+          transaction={transaction}
+          getImageUri={(data) => setReceiptImage(data)}
+        />
+      </View>
     </SafeAreaView>
   );
 };
