@@ -23,10 +23,10 @@ export const BNPLTransactionSuccessScreen = (
         heading: strings('bnpl.success.heading'),
         outstanding: strings('bnpl.success.outstanding', {
           amount: amountWithCurrency(transaction.credit_amount),
-          days: 56,
         }),
         payment: strings('bnpl.success.payment', {
           amount: amountWithCurrency(0),
+          days: 56,
         }),
       }}
       {...route.params}

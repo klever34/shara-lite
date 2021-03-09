@@ -99,7 +99,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
               style={applyStyles(
                 'pb-16 text-center text-700 text-uppercase text-gray-300',
               )}>
-              {strings('bnpl.success.share_receipt')}
+              {strings('bnpl.share_receipt')}
             </Text>
             <View style={applyStyles('flex-row items-center px-24')}>
               <Touchable onPress={onWhatsappShare}>
