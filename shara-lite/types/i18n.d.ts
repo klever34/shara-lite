@@ -628,6 +628,7 @@ export interface Strings {
     repayment_item_text: string;
   };
   bnpl: {
+    day_text: PluralizedString;
     not_available: {
       button_text: string;
       instruction: string;
@@ -644,6 +645,7 @@ export interface Strings {
     payment_left_text: PluralizedString;
     repayment_per_week: string;
     record_transaction: {
+      title: string;
       fields: {
         note: FormField;
         total_amount: FormField;
@@ -666,6 +668,9 @@ export interface Strings {
       outstanding_amount: string;
       client_pays: string;
       share_receipt: string;
+    },
+    receipt: {
+      bnpl_text: string;
     }
   };
   copied: string;
@@ -687,4 +692,5 @@ interface Card {
 interface FormField {
   label: string;
   placeholder?: string;
+  errorMessage?: string;
 }

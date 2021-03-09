@@ -85,8 +85,8 @@ export type MainStackParamList = {
   Drawdown: undefined;
   BNPLScreen: undefined;
   BNPLClientScreen: undefined;
-  BNPLSuccessScreen: undefined;
   BNPLRecordTransactionScreen: undefined;
+  BNPLSuccessScreen: {transaction: any; onDone?: () => void};
 };
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();

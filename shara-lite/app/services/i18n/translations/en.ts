@@ -911,6 +911,7 @@ const en: Strings = {
       button_text: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
       instruction: 'Go to money settings',
     },
+    day_text: {one: '{{amount}} day', other: '{{amount}} days'},
     active_text: 'Active',
     complete_text: 'Complete',
     clients_text: 'Clients',
@@ -926,6 +927,7 @@ const en: Strings = {
     },
     repayment_per_week: '{{amount}}/week',
     record_transaction: {
+      title: 'Enter transaction',
       fields: {
         note: {
           label: "Note",
@@ -933,20 +935,23 @@ const en: Strings = {
         },
         total_amount: {
           label: "Total Amount",
-          placeholder: 'Enter total amount',
+          errorMessage: "Total amount is required"
         },
         amount_paid: {
           label: "Amount Paid",
-          placeholder: 'Enter amount paid',
         },
-        customer: {label: 'Customer', placeholder: 'Select a customer'},
+        customer: {
+          label: 'Customer',
+          placeholder: 'Select a customer',
+          errorMessage: 'Customer is required',
+        },
       },
       balance: 'Balance',
       bnpl_terms_text: 'Buy now pay later terms',
       repayment_date: 'to be paid in full by {{date}}',
     },
     confirmation: {
-      instruction: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+      instruction: '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
       title: 'Confirm Buy Now Pay Later',
       client_terms: 'Yes, my client has accepted',
       merchant_terms: 'I have accepted',
@@ -957,6 +962,9 @@ const en: Strings = {
       outstanding_amount: 'The outstanding amount of {{amount}} has been added to your wallet.',
       client_pays: 'Client pays {{amount}} over {{days}} days',
       share_receipt: 'Share Receipt',
+    },
+    receipt: {
+      bnpl_text: 'Buy Now Pay Later (8 weeks)',
     }
   },
   copied: 'Copied',
