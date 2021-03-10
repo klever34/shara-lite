@@ -7,7 +7,7 @@ import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors, dimensions} from '@/styles';
 import React, {useCallback} from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, InteractionManager, Text, View} from 'react-native';
 import {AddRepaymentModal} from './AddRepaymentModal';
 import {BNPLClientTransactionListItem} from './BNPLClientTransactionListItem';
 
@@ -19,7 +19,7 @@ type Props = {
 const strings = getI18nService().strings;
 
 export const BNPLClientDetailsList = withModal((props: Props) => {
-  const {data, header, openModal} = props;
+  const {data, header, openModal, closeModal} = props;
   const navigation = useAppNavigation();
 
   const handlePressListItem = useCallback(
@@ -39,7 +39,22 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
     [],
   );
 
-  const handleSaveRepayment = useCallback(() => {}, []);
+  const handleDone = useCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      closeModal();
+      navigation.navigate('BNPLScreen');
+    });
+  }, [navigation]);
+
+  const handleSaveRepayment = useCallback(
+    (values) => {
+      navigation.navigate('BNPLRepaymentSuccessScreen', {
+        onDone: handleDone,
+        transaction: values,
+      });
+    },
+    [navigation],
+  );
 
   const handleAddRepayment = useCallback(() => {
     const closeModal = openModal('bottom-half', {

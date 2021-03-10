@@ -8,14 +8,14 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {getI18nService} from '@/services';
 import {useWallet} from '@/services/wallet';
 import {applyStyles, colors} from '@/styles';
-import {useFormik} from 'formik';
+import {FormikConfig, useFormik} from 'formik';
 import React from 'react';
 import {Text, View} from 'react-native';
 import * as yup from 'yup';
 
 type AddRepaymentModalProps = {
-  onSubmit(): void;
   onClose(): void;
+  onSubmit: FormikConfig<{amount: string}>['onSubmit'];
 };
 
 const strings = getI18nService().strings;
