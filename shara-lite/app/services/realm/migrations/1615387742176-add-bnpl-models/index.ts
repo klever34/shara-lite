@@ -37,8 +37,11 @@ import {DisbursementMethod} from '@/services/realm/migrations/1613546853297-add-
 import {Wallet} from '@/services/realm/migrations/1614273134730-add-drawdown_transaction_fee_percentage-to-wallet-and-provider_label-to-collection/models/Wallet';
 import {Drawdown} from '@/services/realm/migrations/1614251072879-add-repayment-date-to-wallet-and-drawdown/models/Drawdown';
 
+import {DrawdownRepayment} from '@/services/realm/migrations/1614892607570-add-drawdown-repayment-model/models/DrawdownRepayment';
 
-import {DrawdownRepayment} from '@/services/realm/migrations/1614892607570-add-drawdown-repayment-model/models/DrawdownRepayment'
+import {BNPLApproval} from '@/services/realm/migrations/1615387742176-add-bnpl-models/models/BNPLApproval';
+import {BNPLDrawdown} from '@/services/realm/migrations/1615387742176-add-bnpl-models/models/BNPLDrawdown';
+import {BNPLRepayment} from '@/services/realm/migrations/1615387742176-add-bnpl-models/models/BNPLRepayment';
 
 const schema = [
   Address,
@@ -68,6 +71,9 @@ const schema = [
   Disbursement,
   Drawdown,
   DrawdownRepayment,
+  BNPLApproval,
+  BNPLDrawdown,
+  BNPLRepayment,
 ];
 
 export default {
