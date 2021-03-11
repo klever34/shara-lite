@@ -164,6 +164,7 @@ export const MoreOptionsScreen = withModal(
       const closeLoadingModal = openModal('loading', {
         text: strings('more.logout.logout_data_verification_text'),
       });
+      
       const {isSynced} = await hasAllRecordsBeenSynced();
       closeLoadingModal();
 

@@ -49,6 +49,7 @@ export const Header = ({
         {
           borderBottomWidth: 1.5,
           borderBottomColor: colors['gray-20'],
+          marginTop: 50
         },
         style,
       )}>

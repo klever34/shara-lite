@@ -78,7 +78,7 @@ export const UserProfileSettings = () => {
       header={{
         title: i18nService.strings('profile_settings.title'),
         iconLeft: {},
-        style: applyStyles('py-8'),
+        style: applyStyles({}),
       }}
       style={applyStyles('bg-white')}>
       <FormBuilder

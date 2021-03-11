@@ -201,6 +201,7 @@ export interface Strings {
     share_statement: string;
     start_here: string;
     add_first: string;
+    search_input_placeholder: string;
     no_credit_or_amount_warning: string;
     edit_transaction: string;
     transaction_deleted: string;

@@ -14,7 +14,7 @@ import React, {
   useContext,
   useState,
 } from 'react';
-import {View, ViewStyle} from 'react-native';
+import {View, ViewStyle, TouchableOpacity} from 'react-native';
 import {Touchable} from './Touchable';
 
 const strings = getI18nService().strings;

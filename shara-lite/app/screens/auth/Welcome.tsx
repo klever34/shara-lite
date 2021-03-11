@@ -118,11 +118,11 @@ export const Welcome = () => {
           shadowRadius: 6.27,
           elevation: 10,
         })}>
-        <View style={applyStyles('flex-row justify-between items-center')}>
+        <View style={applyStyles()}>
           {count === 2 ? (
             <Button
               onPress={handleSkip}
-              style={applyStyles('w-full')}
+              style={applyStyles({width: '50%', alignSelf: 'flex-end'})}
               title={strings('get_started')}
             />
           ) : (

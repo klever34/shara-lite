@@ -15,7 +15,13 @@ import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import {omit, orderBy} from 'lodash';
 import * as Animatable from 'react-native-animatable';
-import React, {useCallback, useEffect, useLayoutEffect, useState} from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
 import {ActivityListItem} from './ActivityListItem';
 import {useTransactionList} from './hook';
@@ -33,21 +39,24 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
   const {
     filter,
+    reloadData,
     searchTerm,
     totalAmount,
     filterEndDate,
     filterOptions,
     collectedAmount,
     filterStartDate,
-    filteredReceipts,
     outstandingAmount,
-    filteredActivities,
+    filteredReceipts,
     handleStatusFilter,
     handleReceiptSearch,
+    receiptsToDisplay,
+    activitiesToDisplay,
+    handlePagination,
   } = useTransactionList();
 
-  const getActivitiesData = useCallback(() => {
-    const data = [...filteredReceipts, ...filteredActivities].map((item) => {
+  const activitiesData: any = useMemo(() => {
+    const data = [...receiptsToDisplay, ...activitiesToDisplay].map((item) => {
       const t = omit(item) as IActivity;
       return {
         ...t,
@@ -55,22 +64,14 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
       };
     });
     return orderBy(data, 'created_at', 'desc');
-  }, [filteredActivities, filteredReceipts]);
-
-  const [activitiesData, setActivitiesData] = useState<any>(
-    getActivitiesData(),
-  );
+  }, [receiptsToDisplay, activitiesToDisplay]);
 
   useEffect(() => {
-    setActivitiesData(getActivitiesData());
+    if (!searchTerm) {
+      reloadData();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter, searchTerm, filteredReceipts]);
-
-  useEffect(() => {
-    return navigation.addListener('focus', () => {
-      handleReceiptSearch('');
-    });
-  }, [navigation, handleReceiptSearch]);
+  }, [reloadData, searchTerm, filteredReceipts.length]);
 
   useLayoutEffect(() => {
     navigation.setOptions({
@@ -207,7 +208,7 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
           onSearch={handleReceiptSearch}
           containerStyle={applyStyles('flex-1')}
           onClearInput={() => handleReceiptSearch('')}
-          placeholderText={strings('search_input_placeholder')}
+          placeholderText={strings('transaction.search_input_placeholder')}
         />
         {!searchTerm && (
           <Touchable onPress={handleOpenFilterModal}>
@@ -413,6 +414,10 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
         initialNumToRender={10}
         style={applyStyles('bg-white')}
         renderItem={renderActivityItem}
+        onEndReachedThreshold={0.1}
+        onEndReached={() => {
+          handlePagination();
+        }}
         keyExtractor={(item, index) => `${item?._id?.toString()}-${index}`}
         contentContainerStyle={
           !activitiesData.length ? applyStyles('flex-1') : undefined
@@ -472,6 +477,13 @@ export const TransactionListScreen = withModal(({openModal}: Props) => {
               <EntryButton
                 style={applyStyles('w-72 h-72 rounded-60', {
                   elevation: 4,
+                  shadowColor: '#000',
+                  shadowOffset: {
+                    width: 0,
+                    height: 5,
+                  },
+                  shadowOpacity: 0.34,
+                  shadowRadius: 6.27,
                 })}
               />
             </View>

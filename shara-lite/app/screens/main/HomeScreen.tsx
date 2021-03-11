@@ -50,8 +50,9 @@ export const HomeScreen = () => {
   });
 
   return (
-    <SafeAreaView style={applyStyles('flex-1')}>
-      <Header style={applyStyles('bg-primary')}>
+    <View style={applyStyles({flex: 1})}>
+      <Header
+        style={applyStyles({backgroundColor: colors.primary, paddingTop: 20})}>
         <Touchable onPress={() => navigation.navigate('BusinessSettings')}>
           <View style={applyStyles('flex-row items-center ml-16')}>
             <Image
@@ -80,7 +81,18 @@ export const HomeScreen = () => {
           labelStyle: {fontFamily: 'Rubik-Regular'},
           activeTintColor: colors.primary,
           inactiveTintColor: colors['gray-50'],
-          style: applyStyles({height: navBarHeight}),
+          style: applyStyles({
+            height: navBarHeight,
+            shadowColor: '#000',
+            shadowOffset: {
+              width: 0,
+              height: 2,
+            },
+            shadowOpacity: 0.34,
+            shadowRadius: 6.27,
+            elevation: 10,
+            paddingTop: 10,
+          }),
           // tabStyle: applyStyles('py-20'),
           // iconStyle: applyStyles('py-4'),
           keyboardHidesTabBar: true,
@@ -146,6 +158,6 @@ export const HomeScreen = () => {
           }}
         />
       </MainNav.Navigator>
-    </SafeAreaView>
+    </View>
   );
 };

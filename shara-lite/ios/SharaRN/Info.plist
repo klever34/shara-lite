@@ -58,6 +58,8 @@
 			</dict>
 		</dict>
 	</dict>
+	<key>NSCameraUsageDescription</key>
+	<string>Access users phone camera</string>
 	<key>NSContactsUsageDescription</key>
 	<string>Read and Write to users contact</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

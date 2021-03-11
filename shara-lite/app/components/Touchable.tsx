@@ -37,7 +37,7 @@ export const Touchable = ({
         </TouchableNativeFeedback>
       ),
       ios: (
-        <TouchableHighlight onPress={onPress} {...restProps}>
+        <TouchableHighlight underlayColor={"transparent"} onPress={onPress} {...restProps}>
           {children}
         </TouchableHighlight>
       ),

@@ -222,7 +222,7 @@ export const baseButtonStyles = StyleSheet.create({
     backgroundColor: colors.primary,
     alignItems: 'center',
     borderRadius: 36,
-    shadowColor: 'red',
+    shadowColor: 'transparent',
     shadowOffset: {
       width: 0,
       height: 4,

@@ -139,7 +139,7 @@ export const PhoneNumberField = forwardRef<TextInput, PhoneNumberFieldProps>(
                 preferredCountries={['NG', 'KE', 'ZA', 'ZW']}
                 containerButtonStyle={applyStyles('w-full text-500')}
                 theme={{
-                  fontSize: applySpacing(18),
+                  fontSize: applySpacing(15),
                 }}
               />
             </View>

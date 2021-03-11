@@ -184,7 +184,7 @@ export const OTPVerification = () => {
                   {
                     textDecorationStyle: 'solid',
                     textDecorationColor: colors.secondary,
-                    textDecorationLine: count > 0 ? '' : 'underline',
+                    textDecorationLine: count > 0 ? 'none' : 'underline',
                   },
                   count > 0 ? 'text-gray-100' : 'text-secondary',
                 )}>
