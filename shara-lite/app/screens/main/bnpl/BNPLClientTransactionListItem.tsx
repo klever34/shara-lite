@@ -23,7 +23,7 @@ export const BNPLClientTransactionListItem = ({
   const pillTextColor = isNotPaid ? 'text-gray-100' : undefined;
 
   return (
-    <Touchable onPress={onPress}>
+    <Touchable>
       <View style={applyStyles('flex-row px-24 pt-16 justify-between')}>
         <View
           style={applyStyles(
