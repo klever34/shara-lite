@@ -1,5 +1,5 @@
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IBNPLDrawdown} from './BNPLDrawdown';
+import {BaseModel, BaseModelInterface, baseModelSchema} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IBNPLDrawdown} from '@/services/realm/migrations/1615387742176-add-bnpl-models/models/BNPLDrawdown';
 
 export interface IBNPLRepayment extends BaseModelInterface {
     amount_repaid?: number;
