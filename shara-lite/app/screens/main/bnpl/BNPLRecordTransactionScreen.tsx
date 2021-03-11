@@ -45,7 +45,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
         ),
       });
     },
-    [openModal],
+    [closeModal, handleSaveTransaction, openModal],
   );
 
   const {
@@ -94,7 +94,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
       setFieldValue('customer', customer);
       navigation.navigate('BNPLRecordTransactionScreen');
     },
-    [navigation],
+    [navigation, setFieldValue],
   );
 
   const handleOpenSelectCustomer = useCallback(() => {
@@ -103,7 +103,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
         onSelectCustomer: handleAddCustomerCustomer,
       });
     });
-  }, [navigation]);
+  }, [handleAddCustomerCustomer, navigation]);
 
   const handleDone = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -118,7 +118,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
         onDone: handleDone,
       });
     },
-    [navigation],
+    [handleDone, navigation],
   );
 
   return (

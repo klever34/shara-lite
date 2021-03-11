@@ -29,7 +29,7 @@ export const BNPLScreen = () => {
         </Touchable>
       ),
     });
-  }, [navigation]);
+  }, [bnplIsAvailable, handleGoToSettings, navigation]);
 
   return !bnplIsAvailable ? (
     <BNPLNotAvailableScreen onPress={handleGoToSettings} />

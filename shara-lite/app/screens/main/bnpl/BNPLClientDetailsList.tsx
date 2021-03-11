@@ -7,7 +7,7 @@ import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors, dimensions} from '@/styles';
 import React, {useCallback} from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, InteractionManager, Text, View} from 'react-native';
 import {AddRepaymentModal} from './AddRepaymentModal';
 import {BNPLClientTransactionListItem} from './BNPLClientTransactionListItem';
 
@@ -36,21 +36,38 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         onPress={() => handlePressListItem(item)}
       />
     ),
-    [],
+    [handlePressListItem],
   );
 
-  const handleSaveRepayment = useCallback(() => {}, []);
-
-  const handleAddRepayment = useCallback(() => {
-    const closeModal = openModal('bottom-half', {
-      renderContent: () => (
-        <AddRepaymentModal
-          onClose={closeModal}
-          onSubmit={handleSaveRepayment}
-        />
-      ),
+  const handleDone = useCallback(() => {
+    InteractionManager.runAfterInteractions(() => {
+      navigation.navigate('BNPLScreen');
     });
   }, [navigation]);
+
+  const handleSaveRepayment = useCallback(
+    (values) => {
+      navigation.navigate('BNPLRepaymentSuccessScreen', {
+        transaction: values,
+        onDone: handleDone,
+      });
+    },
+    [handleDone, navigation],
+  );
+
+  const handleAddRepayment = useCallback(
+    (values) => {
+      const closeModal = openModal('bottom-half', {
+        renderContent: () => (
+          <AddRepaymentModal
+            onClose={closeModal}
+            onSubmit={() => handleSaveRepayment(values)}
+          />
+        ),
+      });
+    },
+    [handleSaveRepayment, openModal],
+  );
 
   return (
     <View style={applyStyles('flex-1 bg-white')}>
@@ -64,7 +81,20 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
           </View>
         </View>
       )}
-      <View style={applyStyles('pt-16')}>
+      <View>
+        <View style={applyStyles('bg-gray-10 py-16 px-24')}>
+          <View
+            style={applyStyles('pb-8 flex-row items-center justify-between')}>
+            <Text style={applyStyles('text-gray-300')}>
+              {strings('bnpl.payment_left', {
+                no_of_payment: 5,
+              })}
+            </Text>
+            <Text style={applyStyles('text-gray-300')}>
+              {amountWithCurrency(0)}
+            </Text>
+          </View>
+        </View>
         <FlatList
           data={data}
           initialNumToRender={10}
