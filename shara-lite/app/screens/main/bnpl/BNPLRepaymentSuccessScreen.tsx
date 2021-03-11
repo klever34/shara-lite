@@ -21,11 +21,11 @@ export const BNPLRepaymentSuccessScreen = (
     <BNPLSuccess
       captions={{
         heading: strings('bnpl.client.repayment.success.heading'),
-        outstanding: strings('bnpl.client.repayment.success.outstanding', {
+        payment: strings('bnpl.client.repayment.success.outstanding', {
           amount: amountWithCurrency(transaction.credit_amount),
           days: 56,
         }),
-        payment: strings('bnpl.success.payment', {
+        outstanding: strings('bnpl.client.repayment.success.payment', {
           amount: amountWithCurrency(0),
         }),
       }}

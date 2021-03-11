@@ -27,6 +27,9 @@ import {DisbursementMethod} from '@/models/DisbursementMethod';
 import {Disbursement} from '@/models/Disbursement';
 import {Drawdown} from '@/models/Drawdown';
 import {DrawdownRepayment} from '@/models/DrawdownRepayment';
+import {BNPLApproval} from '@/models/BNPLApproval';
+import {BNPLDrawdown} from '@/models/BNPLDrawdown';
+import {BNPLRepayment} from '@/models/BNPLRepayment';
 import {setRealmPartitionKey} from '@/models/baseSchema';
 import {setBasePartitionKey} from '@/helpers/models';
 import {runMigration} from '@/services/realm/migrations';
@@ -59,6 +62,9 @@ export const schema = [
   Disbursement,
   Drawdown,
   DrawdownRepayment,
+  BNPLApproval,
+  BNPLDrawdown,
+  BNPLRepayment,
 ];
 
 export const createLocalRealm = async () => {

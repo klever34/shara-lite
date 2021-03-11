@@ -19,7 +19,7 @@ type Props = {
 const strings = getI18nService().strings;
 
 export const BNPLClientDetailsList = withModal((props: Props) => {
-  const {data, header, openModal} = props;
+  const {data, header, openModal, closeModal} = props;
   const navigation = useAppNavigation();
 
   const handlePressListItem = useCallback(
