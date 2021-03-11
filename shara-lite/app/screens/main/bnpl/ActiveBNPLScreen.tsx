@@ -2,6 +2,7 @@ import {Button} from '@/components';
 import {Icon} from '@/components/Icon';
 import {amountWithCurrency} from '@/helpers/utils';
 import {getI18nService} from '@/services';
+import {useBNPLApproval} from '@/services/bnpl-approval';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors, dimensions} from '@/styles';
 import React, {useCallback} from 'react';
@@ -29,6 +30,8 @@ const data = [
 
 export const ActiveBNPLScreen = () => {
   const navigation = useAppNavigation();
+  const {getBNPLApproval} = useBNPLApproval();
+  console.log(getBNPLApproval()?.amount_available);
 
   const handleRecordTransaction = useCallback(() => {
     navigation.navigate('BNPLRecordTransactionScreen');

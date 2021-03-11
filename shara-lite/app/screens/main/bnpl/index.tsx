@@ -10,7 +10,8 @@ import {BNPLNotAvailableScreen} from './BNPLNotAvailableScreen';
 export const BNPLScreen = () => {
   const navigation = useAppNavigation();
   const {getDisbursementMethods} = useDisbursementMethod();
-  const bnplIsAvailable = !!getDisbursementMethods().length;
+  // const bnplIsAvailable = !!getDisbursementMethods().length;
+  const bnplIsAvailable = true;
 
   const handleGoToSettings = useCallback(() => {
     navigation.navigate('PaymentSettings');
