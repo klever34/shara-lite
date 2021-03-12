@@ -908,7 +908,8 @@ const en: Strings = {
   },
   bnpl: {
     not_available: {
-      button_text: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
+      button_text:
+        'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
       instruction: 'Go to money settings',
     },
     buy_now_pay_later: 'Buy now pay later',
@@ -917,7 +918,8 @@ const en: Strings = {
     active_text: 'Active',
     complete_text: 'Complete',
     clients_text: 'Clients',
-    empty_state: 'You have not recorded any BNPL transactions yet. Click to button below to get started.',
+    empty_state:
+      'You have not recorded any BNPL transactions yet. Click to button below to get started.',
     new_transaction_text: 'New transaction',
     total_completed_text: 'Total completed',
     amount_used_text: 'Amount used',
@@ -925,11 +927,11 @@ const en: Strings = {
     completed_text: 'Completed',
     payment_left_text: {
       one: '{{amount}} payment left',
-      other: '{{amount}} payments left'
+      other: '{{amount}} payments left',
     },
     payment_made_text: {
       one: '{{amount}} payment made',
-      other: '{{amount}} payments made'
+      other: '{{amount}} payments made',
     },
     share_receipt: 'Share Receipt',
     repayment_per_week: '{{amount}}/week',
@@ -937,15 +939,15 @@ const en: Strings = {
       title: 'Enter transaction',
       fields: {
         note: {
-          label: "Note",
+          label: 'Note',
           placeholder: 'E.g what was sold or any other information',
         },
         total_amount: {
-          label: "Total Amount",
-          errorMessage: "Total amount is required"
+          label: 'Total Amount',
+          errorMessage: 'Total amount is required',
         },
         amount_paid: {
-          label: "Amount Paid",
+          label: 'Amount Paid',
         },
         customer: {
           label: 'Customer',
@@ -958,7 +960,8 @@ const en: Strings = {
       repayment_date: 'to be paid in full by {{date}}',
     },
     confirmation: {
-      instruction: '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
+      instruction:
+        '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
       title: 'Confirm Buy Now Pay Later',
       client_terms: 'Yes, my client has accepted',
       merchant_terms: 'I have accepted',
@@ -966,7 +969,8 @@ const en: Strings = {
     },
     success: {
       heading: 'Buy Now Pay Later Successful',
-      outstanding: 'The outstanding amount of {{amount}} has been added to your wallet.',
+      outstanding:
+        'The outstanding amount of {{amount}} has been added to your wallet.',
       payment: 'Client pays {{amount}} over {{days}} days',
     },
     receipt: {
@@ -977,22 +981,35 @@ const en: Strings = {
       upcoming_text: 'Upcoming',
       paid_text: 'Paid',
       wallet_balance: 'Wallet balance {{amount}}',
-      add_repayment_note: 'Note that this amount will be deducted from your wallet balance',
+      add_repayment_note:
+        'Note that this amount will be deducted from your wallet balance',
       repayment_to_shara: 'Repayment to Shara Inc.',
       repayment: {
         fields: {
           amount: {
             label: 'Amount',
-            errorMessage: 'Amount is required'
-          }
+            errorMessage: 'Amount is required',
+          },
         },
         success: {
           heading: 'Buy Now Pay Later Payment Successful',
-          payment: 'Payment of {{amount}} confirmed and deducted from your wallet balance',
-          outstanding: 'Outstanding: {{amount}} over {{days}} days',         
-        }
-      }
-    }
+          payment:
+            'Payment of {{amount}} confirmed and deducted from your wallet balance',
+          outstanding: 'Outstanding: {{amount}} over {{days}} days',
+        },
+      },
+    },
+    transaction_info: {
+      date: '{{date}}',
+      total_amount_text: 'Total Amount',
+      total_amount: '{{amount}}',
+      paid_text: 'Paid',
+      paid_amount: '{{amount}}',
+      outstanding_text: 'Outstanding',
+      outstanding_amount: '{{amount}}',
+      notes: 'Notes',
+      notes_text_content: '{{notes}}',
+    },
   },
   copied: 'Copied',
   submit: 'Submit',

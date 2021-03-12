@@ -131,32 +131,32 @@ export interface Strings {
         initiateSTKPush: {
           business: {
             notFound: string;
-          },
+          };
           customer: {
             notFound: string;
-          },
+          };
           kenyaOnly: {
             [key: string]: string;
-          },
+          };
           success: {
             [key: string]: string;
-          },
-        },
+          };
+        };
         processValidationEvent: {
-          success: string,
-        },
+          success: string;
+        };
         processConfirmationEvent: {
-          success: string,
-        },
-      },
+          success: string;
+        };
+      };
       disbursement: {
         create: {
           notFound: string;
           success: string;
           insufficientBalance: string;
           error: string;
-        },
-      },
+        };
+      };
       drawdown: {
         create: {
           notFound: string;
@@ -164,8 +164,8 @@ export interface Strings {
           inactive: string;
           error: string;
           success: string;
-        },
-      },
+        };
+      };
       drawdownRepayment: {
         create: {
           notFound: string;
@@ -173,20 +173,20 @@ export interface Strings {
           error: string;
           insufficientBalance: string;
           success: string;
-        },
-      },
+        };
+      };
       identity: {
         verify: {
           error: string;
           invalid: string;
           success: string;
-        },
+        };
         validate: {
           error: string;
           invalid: string;
           success: string;
-        },
-      },
+        };
+      };
     };
   };
   home_screen_setup_business_text: string;
@@ -716,26 +716,26 @@ export interface Strings {
         total_amount: FormField;
         amount_paid: FormField;
         customer: FormField;
-      }
+      };
       balance: string;
       bnpl_terms_text: string;
       repayment_date: string;
-    },
+    };
     confirmation: {
       title: string;
       instruction: string;
       client_terms: string;
       merchant_terms: string;
       terms: string;
-    },
+    };
     success: {
       heading: string;
       outstanding: string;
       payment: string;
-    },
+    };
     receipt: {
       bnpl_text: string;
-    },
+    };
     client: {
       upcoming_text: string;
       paid_text: string;
@@ -744,15 +744,26 @@ export interface Strings {
       repayment_to_shara: string;
       repayment: {
         fields: {
-          amount: FormField
-        },
+          amount: FormField;
+        };
         success: {
           heading: string;
           outstanding: string;
-          payment: string;         
-        }
-      }
-    }
+          payment: string;
+        };
+      };
+    };
+    transaction_info: {
+      date: string;
+      total_amount_text: string;
+      total_amount: string;
+      paid_text: string;
+      paid_amount: string;
+      outstanding_text: string;
+      outstanding_amount: string;
+      notes: string;
+      notes_text_content: string;
+    };
   };
   copied: string;
   submit: string;

@@ -4,10 +4,10 @@ import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getI18nService} from '@/services';
+import {getApiService, getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
-import {format} from 'date-fns';
+import {addWeeks, format} from 'date-fns';
 import {useFormik} from 'formik';
 import * as yup from 'yup';
 import React, {useCallback, useMemo} from 'react';
@@ -20,12 +20,15 @@ import {
 } from 'react-native';
 import {withModal} from '@/helpers/hocs';
 import {ConfirmationModal} from './ConfirmationModal';
+import {useTransaction} from '@/services/transaction';
+import {handleError} from '@/services/error-boundary';
+import {useBNPLApproval} from '@/services/bnpl-approval';
 
 type FormValues = {
   amount_paid: string;
   total_amount: string;
   note: string;
-  customer?: any;
+  customer?: ICustomer;
 };
 
 const strings = getI18nService().strings;
@@ -33,20 +36,9 @@ const strings = getI18nService().strings;
 export const BNPLRecordTransactionScreen = withModal((props) => {
   const {openModal, closeModal} = props;
   const navigation = useAppNavigation();
-
-  const handleOpenConfirmModal = useCallback(
-    (values) => {
-      openModal('bottom-half', {
-        renderContent: () => (
-          <ConfirmationModal
-            onClose={closeModal}
-            onSubmit={() => handleSaveTransaction(values)}
-          />
-        ),
-      });
-    },
-    [openModal],
-  );
+  const {saveTransaction} = useTransaction();
+  const {getBNPLApproval} = useBNPLApproval();
+  const {interest_rate, payment_frequency} = getBNPLApproval() ?? {};
 
   const {
     values,
@@ -56,12 +48,16 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
     handleChange,
     setFieldValue,
   } = useFormik<FormValues>({
-    onSubmit: (values) =>
+    onSubmit: (values) => {
+      const {total_amount, amount_paid, ...rest} = values;
       handleOpenConfirmModal({
-        ...values,
+        ...rest,
+        total_amount: toNumber(total_amount),
+        amount_paid: toNumber(amount_paid || '0'),
         credit_amount:
           toNumber(values.total_amount) - toNumber(values.amount_paid || '0'),
-      }),
+      });
+    },
     initialValues: {
       note: '',
       amount_paid: '',
@@ -85,25 +81,31 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
     return toNumber(values.total_amount) - toNumber(values.amount_paid || '0');
   }, [values.total_amount, values.amount_paid]);
 
+  const amountToPay =
+    (((interest_rate ?? 0) * (payment_frequency ?? 0)) / 100) * credit_amount +
+    credit_amount;
+
+  const amountToPayPerWeek = amountToPay / (payment_frequency ?? 0);
+
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
 
-  const handleAddCustomerCustomer = useCallback(
+  const handleAddCustomer = useCallback(
     (customer: ICustomer) => {
       setFieldValue('customer', customer);
       navigation.navigate('BNPLRecordTransactionScreen');
     },
-    [navigation],
+    [navigation, setFieldValue],
   );
 
   const handleOpenSelectCustomer = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
       navigation.navigate('SelectCustomerList', {
-        onSelectCustomer: handleAddCustomerCustomer,
+        onSelectCustomer: handleAddCustomer,
       });
     });
-  }, [navigation]);
+  }, [handleAddCustomer, navigation]);
 
   const handleDone = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -112,13 +114,47 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
   }, [navigation]);
 
   const handleSaveTransaction = useCallback(
+    async (values: {
+      credit_amount: number;
+      amount_paid: number;
+      total_amount: number;
+      customer?: ICustomer;
+    }) => {
+      try {
+        const {customer, credit_amount} = values;
+        const transaction = await saveTransaction({
+          ...values,
+          is_collection: false,
+        });
+        const response = await getApiService().saveBNPLDrawdown({
+          amount: credit_amount,
+          customer_id: `${customer?._id}`,
+          receipt_id: `${transaction?._id}`,
+        });
+        console.log(response);
+        navigation.navigate('BNPLTransactionSuccessScreen', {
+          transaction: values,
+          onDone: handleDone,
+        });
+      } catch (error) {
+        handleError(error);
+      }
+    },
+    [handleDone, navigation],
+  );
+
+  const handleOpenConfirmModal = useCallback(
     (values) => {
-      navigation.navigate('BNPLTransactionSuccessScreen', {
-        transaction: values,
-        onDone: handleDone,
+      openModal('bottom-half', {
+        renderContent: () => (
+          <ConfirmationModal
+            onClose={closeModal}
+            onSubmit={() => handleSaveTransaction(values)}
+          />
+        ),
       });
     },
-    [navigation],
+    [closeModal, handleSaveTransaction, openModal],
   );
 
   return (
@@ -198,11 +234,11 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
                 )}>
                 <View style={applyStyles({width: '48%'})}>
                   <Text style={applyStyles('pb-8 text-gray-300 text-2xl')}>
-                    {amountWithCurrency(0)}
+                    {amountWithCurrency(amountToPay)}
                   </Text>
                   <Text style={applyStyles('text-gray-100')}>
                     {strings('bnpl.repayment_per_week', {
-                      amount: amountWithCurrency(0),
+                      amount: amountWithCurrency(amountToPayPerWeek),
                     })}
                   </Text>
                 </View>
@@ -212,12 +248,12 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
                       'pb-8 text-right text-gray-300 text-2xl',
                     )}>
                     {strings('bnpl.day_text.other', {
-                      amount: 56,
+                      amount: (payment_frequency ?? 0) * 7,
                     })}
                   </Text>
                   <Text style={applyStyles('text-right text-gray-100')}>
                     {strings('bnpl.payment_left_text.other', {
-                      amount: 8,
+                      amount: payment_frequency,
                     })}
                   </Text>
                 </View>
@@ -227,7 +263,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
                   'pt-24 pb-8 text-red-100 text-center text-uppercase',
                 )}>
                 {strings('bnpl.record_transaction.repayment_date', {
-                  date: format(new Date(), 'dd MMM, yyyy'),
+                  date: format(addWeeks(new Date(), 8), 'dd MMM, yyyy'),
                 })}
               </Text>
             </>

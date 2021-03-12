@@ -1,7 +1,7 @@
-import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
-import {IBNPLRepayment} from './BNPLRepayment';
-import {ICustomer} from './Customer';
-import {IReceipt} from './Receipt';
+import {BaseModel, BaseModelInterface, baseModelSchema} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {IBNPLRepayment} from '@/services/realm/migrations/1615502330481-add-bnpl-repayment-model-principal_amount-and-bnpl-drawdown-payment_frequency_amount/models/BNPLRepayment';
+import {IReceipt} from '@/services/realm/migrations/1608550098360-add-is-collection-x-transaction-date-to-receipt/models/Receipt';
+import {ICustomer} from '@/services/realm/migrations/1611256639370-re-add-disable-customer-reminders/models/Customer';
 
 export interface IBNPLDrawdown extends BaseModelInterface {
     amount_drawn?: number;

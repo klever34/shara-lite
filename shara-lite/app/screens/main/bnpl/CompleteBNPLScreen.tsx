@@ -2,6 +2,7 @@ import {Button} from '@/components';
 import {Icon} from '@/components/Icon';
 import {amountWithCurrency} from '@/helpers/utils';
 import {getI18nService} from '@/services';
+import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors, dimensions} from '@/styles';
 import React, {useCallback} from 'react';
@@ -10,18 +11,12 @@ import {BNPLTransactionList} from './BNPLTransactionList';
 
 const strings = getI18nService().strings;
 
-const data = [
-  {
-    _id: 1,
-    customer: {name: 'Jordan Solomon'},
-    status: 'complete',
-    amount: 20000,
-    payments: [],
-  },
-];
-
 export const CompleteBNPLScreen = () => {
   const navigation = useAppNavigation();
+  const {getBNPLDrawdowns} = useBNPLDrawdown();
+
+  const bnplDrawdowns = getBNPLDrawdowns().filtered('status = "complete"');
+  const totalAmount = bnplDrawdowns.sum('repayment_amount');
 
   const handleRecordTransaction = useCallback(() => {
     navigation.navigate('BNPLRecordTransactionScreen');
@@ -34,16 +29,18 @@ export const CompleteBNPLScreen = () => {
           <Text style={applyStyles('text-gray-300')}>
             {strings('bnpl.total_completed_text')}
           </Text>
-          <Text style={applyStyles('text-gray-300')}>
-            {amountWithCurrency(0)}
+          <Text style={applyStyles('text-gray-300 text-700')}>
+            {amountWithCurrency(totalAmount ?? 0)}
           </Text>
         </View>
       </View>
-      <View style={applyStyles('pt-16')}>
-        <Text style={applyStyles('px-24 pb-8 text-uppercase text-gray-100')}>
-          {strings('bnpl.clients_text')}
-        </Text>
-        <BNPLTransactionList data={data} />
+      <View style={applyStyles('pt-16 flex-1')}>
+        {!!bnplDrawdowns.length && (
+          <Text style={applyStyles('px-24 pb-8 text-uppercase text-gray-100')}>
+            {strings('bnpl.clients_text')}
+          </Text>
+        )}
+        <BNPLTransactionList data={bnplDrawdowns} />
       </View>
       <Button
         onPress={handleRecordTransaction}

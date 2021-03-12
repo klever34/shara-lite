@@ -36,12 +36,11 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         onPress={() => handlePressListItem(item)}
       />
     ),
-    [],
+    [handlePressListItem],
   );
 
   const handleDone = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
-      closeModal();
       navigation.navigate('BNPLScreen');
     });
   }, [navigation]);
@@ -49,11 +48,11 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
   const handleSaveRepayment = useCallback(
     (values) => {
       navigation.navigate('BNPLRepaymentSuccessScreen', {
-        onDone: handleDone,
         transaction: values,
+        onDone: handleDone,
       });
     },
-    [navigation],
+    [handleDone, navigation],
   );
 
   const handleAddRepayment = useCallback(() => {
@@ -65,7 +64,7 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         />
       ),
     });
-  }, [navigation]);
+  }, [handleSaveRepayment, openModal]);
 
   return (
     <View style={applyStyles('flex-1 bg-white')}>
@@ -79,7 +78,20 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
           </View>
         </View>
       )}
-      <View style={applyStyles('pt-16')}>
+      <View>
+        <View style={applyStyles('bg-gray-10 py-16 px-24')}>
+          <View
+            style={applyStyles('pb-8 flex-row items-center justify-between')}>
+            <Text style={applyStyles('text-gray-300')}>
+              {strings('bnpl.payment_left_text.one', {
+                amount: 5,
+              })}
+            </Text>
+            <Text style={applyStyles('text-gray-300')}>
+              {amountWithCurrency(0)}
+            </Text>
+          </View>
+        </View>
         <FlatList
           data={data}
           initialNumToRender={10}

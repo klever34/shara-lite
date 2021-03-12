@@ -3,6 +3,7 @@ import {Icon} from '@/components/Icon';
 import {amountWithCurrency} from '@/helpers/utils';
 import {getI18nService} from '@/services';
 import {useBNPLApproval} from '@/services/bnpl-approval';
+import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors, dimensions} from '@/styles';
 import React, {useCallback} from 'react';
@@ -11,27 +12,14 @@ import {BNPLTransactionList} from './BNPLTransactionList';
 
 const strings = getI18nService().strings;
 
-const data = [
-  {
-    _id: 1,
-    customer: {name: 'Jordan Solomon'},
-    status: 'active',
-    amount: 20000,
-    payments: [{}],
-  },
-  {
-    _id: 2,
-    customer: {name: 'Jordan Solomon'},
-    status: 'active',
-    amount: 20000,
-    payments: [{}],
-  },
-];
-
 export const ActiveBNPLScreen = () => {
   const navigation = useAppNavigation();
   const {getBNPLApproval} = useBNPLApproval();
-  console.log(getBNPLApproval()?.amount_available);
+  const {getBNPLDrawdowns} = useBNPLDrawdown();
+
+  const bnplDrawdowns = getBNPLDrawdowns();
+  const amount_available = getBNPLApproval()?.amount_available;
+  const amount_drawn = getBNPLApproval()?.amount_drawn;
 
   const handleRecordTransaction = useCallback(() => {
     navigation.navigate('BNPLRecordTransactionScreen');
@@ -45,24 +33,26 @@ export const ActiveBNPLScreen = () => {
           <Text style={applyStyles('text-gray-300')}>
             {strings('bnpl.amount_used_text')}
           </Text>
-          <Text style={applyStyles('text-gray-300')}>
-            {amountWithCurrency(0)}
+          <Text style={applyStyles('text-gray-300 text-700')}>
+            {amountWithCurrency(amount_drawn)}
           </Text>
         </View>
         <View style={applyStyles('flex-row items-center justify-between')}>
           <Text style={applyStyles('text-gray-300')}>
             {strings('bnpl.amount_available_text')}
           </Text>
-          <Text style={applyStyles('text-gray-300')}>
-            {amountWithCurrency(0)}
+          <Text style={applyStyles('text-gray-300 text-700')}>
+            {amountWithCurrency(amount_available)}
           </Text>
         </View>
       </View>
-      <View style={applyStyles('pt-16')}>
-        <Text style={applyStyles('px-24 pb-8 text-uppercase text-gray-100')}>
-          {strings('bnpl.clients_text')}
-        </Text>
-        <BNPLTransactionList data={data} />
+      <View style={applyStyles('pt-16 flex-1')}>
+        {!!bnplDrawdowns.length && (
+          <Text style={applyStyles('px-24 pb-8 text-uppercase text-gray-100')}>
+            {strings('bnpl.clients_text')}
+          </Text>
+        )}
+        <BNPLTransactionList data={bnplDrawdowns} />
       </View>
       <Button
         onPress={handleRecordTransaction}

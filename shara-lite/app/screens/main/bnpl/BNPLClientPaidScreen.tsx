@@ -5,10 +5,10 @@ import {BNPLClientDetailsList} from './BNPLClientDetailsList';
 const data = [
   {
     _id: 1,
-    customer: {name: 'Jordan Solomon'},
-    status: 'complete',
-    amount: 20000,
-    payments: [],
+    week: 'Week 3',
+    status: 'paid',
+    amount: 183.33,
+    date: '05 March, 2021',
   },
 ];
 
@@ -19,7 +19,7 @@ export const BNPLClientPaidScreen = () => {
     <BNPLClientDetailsList
       data={data}
       header={{
-        caption: strings('bnpl.payment_left.one', {amount: 0}),
+        caption: strings('bnpl.payment_made_text.one', {amount: 0}),
         amount: 0,
       }}
     />

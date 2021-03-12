@@ -795,7 +795,7 @@
         "repayment_date": "to be paid in full by {{date}}"
       },
       "confirmation": {
-        "instruction": "1. Accept the terms of the BNPL offered by Shara to you. \n2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.",
+        "instruction": "1. Accept the terms of the BNPL offered by Shara to you \n2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.",
         "title": "Confirm Buy Now Pay Later",
         "terms": "**Terms**",
         "client_terms": "Yes, my client has accepted",
@@ -827,6 +827,17 @@
             "outstanding": "Outstanding: {{amount}} over {{days}} days"
           }
         }
+      },
+      "transaction_info": {
+        "date": "{{date}}",
+        "total_amount_text": "Total Amount",
+        "total_amount": "{{amount}}",
+        "paid_text": "Paid",
+        "paid_amount": "{{amount}}",
+        "outstanding_text": "Outstanding",
+        "outstanding_amount": "{{amount}}",
+        "notes": "Notes",
+        "notes_text_content": "{{notes}}"
       }
     },
     "copied": "Copied",
@@ -1619,7 +1630,7 @@
         "repayment_date": "kulipwa kamili na {{date}}"
       },
       "confirmation": {
-        "instruction": "1. Kubali masharti ya BNPL uliyopewa na Shara kwako.\n2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara.",
+        "instruction": "1. Kubali masharti ya BNPL uliyopewa na Shara kwako\n2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara",
         "title": "Thibitisha Nunua Sasa Lipa Baadaye",
         "terms": "** Masharti **",
         "client_terms": "Ndio, mteja wangu amekubali",
@@ -1651,6 +1662,17 @@
             "outstanding": "Iliyoangaziwa: {{amount}} zaidi ya siku {{days}}"
           }
         }
+      },
+      "transaction_info": {
+        "date": "{{tarehe}}",
+        "total_amount_text": "Jumla",
+        "total_amount": "{{kiasi}}",
+        "paid_text": "Imelipwa",
+        "paid_amount": "{{kiasi}}",
+        "outstanding_text": "Bora",
+        "outstanding_amount": "{{kiasi}}",
+        "notes": "Vidokezo",
+        "notes_text_content": "{{noti}}"
       }
     },
     "copied": "Imenakiliwa",
@@ -1809,7 +1831,7 @@
         },
         "drawdownRepayment": {
           "create": {
-            "notFound": "Ba bashin da aka tabbatar ",
+            "notFound": "Ba bashin da aka tabbatar",
             "complete": "Anriga da angama biyan bashi",
             "error": "Mungaza aiwatar da bashinka, adaure a sake gwadawa ko a nememu ta manhajar shara",
             "insufficientBalance": "balans din wallet dinka basu kai ba",
@@ -2296,7 +2318,7 @@
     "payment_reminder_for": "Tunatarwa na tsarin biya na",
     "payment_due": "Ranar biya",
     "payment_due_text": "Za ayi wannan biyan ranar",
-    "outstanding_text": "Akwai bashin ",
+    "outstanding_text": "Akwai bashin",
     "record": "Bayani",
     "cancel_confirmation_text": "Tabbatar da fasawa",
     "cancellation_text": "Mesa aka fasa",
@@ -2341,13 +2363,13 @@
       "select_withdrawal_account": "Zabi akawun na cirar kudi",
       "confirm_withdrawal": "Tabbatar da cirar kudi",
       "about_to_withdraw": "Kuna shirin cirar **{{amount}}** zuwa\\n**{{bank_details}}**",
-      "withdraw_success": "**{{amount}}** da aka cira zuwa **{{bank_details}}** Sunzo cikin nasara ",
+      "withdraw_success": "**{{amount}}** da aka cira zuwa **{{bank_details}}** Sunzo cikin nasara",
       "payment_activity": {
         "received_payment": "Na karbi biyan **{{amount}}**  ta **{{provider}}**",
         "withdrawal": "Cirar **{{amount}}** Zuwa**{{provider}}**",
         "select_customer": "Zabi kwastoma"
       },
-      "withdraw_excess_error": "Farashin da ake son cira Yawucan yawan balans din walet ",
+      "withdraw_excess_error": "Farashin da ake son cira Yawucan yawan balans din walet",
       "not_available": {
         "title": "Babushi a kasar ku",
         "description": "Bamu da tsarin biya a cikin kasarku a yanzu. Muna kokarin mu samar maku dashi nan ba da dadewa ba",
@@ -2440,7 +2462,7 @@
         "repayment_date": "da za a biya su cikakke ta {{date}}"
       },
       "confirmation": {
-        "instruction": "1. Yarda da sharuddan BNPL da Shara ta gabatar muku.\n2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.",
+        "instruction": "1. Yarda da sharuddan BNPL da Shara ta gabatar muku\n2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.",
         "title": "Tabbatar Sayi Yanzu Biya Daga baya",
         "terms": "** Sharudda **",
         "client_terms": "Haka ne, abokin ciniki na ya karɓa",
@@ -2472,6 +2494,17 @@
             "outstanding": "Fitacce: {{amount}} sama da kwanaki {{days}}"
           }
         }
+      },
+      "transaction_info": {
+        "date": "{{kwanan wata}}",
+        "total_amount_text": "Jimla",
+        "total_amount": "{{adadin}}",
+        "paid_text": "An biya",
+        "paid_amount": "{{adadin}}",
+        "outstanding_text": "Fitacce",
+        "outstanding_amount": "{{adadin}}",
+        "notes": "Bayanan kula",
+        "notes_text_content": "{{bayanin kula}}"
       }
     },
     "copied": "An kwafa",
@@ -3087,6 +3120,17 @@
           "fields": {"amount": {"label": "", "errorMessage": ""}},
           "success": {"heading": "", "payment": "", "outstanding": ""}
         }
+      },
+      "transaction_info": {
+        "date": "",
+        "total_amount_text": "",
+        "total_amount": "",
+        "paid_text": "",
+        "paid_amount": "",
+        "outstanding_text": "",
+        "outstanding_amount": "",
+        "notes": "",
+        "notes_text_content": ""
       }
     },
     "copied": "",
@@ -3702,6 +3746,17 @@
           "fields": {"amount": {"label": "", "errorMessage": ""}},
           "success": {"heading": "", "payment": "", "outstanding": ""}
         }
+      },
+      "transaction_info": {
+        "date": "",
+        "total_amount_text": "",
+        "total_amount": "",
+        "paid_text": "",
+        "paid_amount": "",
+        "outstanding_text": "",
+        "outstanding_amount": "",
+        "notes": "",
+        "notes_text_content": ""
       }
     },
     "copied": "",
@@ -4317,6 +4372,17 @@
           "fields": {"amount": {"label": "", "errorMessage": ""}},
           "success": {"heading": "", "payment": "", "outstanding": ""}
         }
+      },
+      "transaction_info": {
+        "date": "",
+        "total_amount_text": "",
+        "total_amount": "",
+        "paid_text": "",
+        "paid_amount": "",
+        "outstanding_text": "",
+        "outstanding_amount": "",
+        "notes": "",
+        "notes_text_content": ""
       }
     },
     "copied": "",

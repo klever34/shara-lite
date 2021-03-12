@@ -37,6 +37,13 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
     navigation.goBack();
   }, [navigation]);
 
+  const handlePressListItem = useCallback(
+    (item: any) => {
+      navigation.navigate('BNPLTransactionDetailsScreen', {transaction: item});
+    },
+    [navigation],
+  );
+
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
       <View style={applyStyles('px-24 py-16 bg-primary flex-row items-center')}>
@@ -63,6 +70,16 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
             <Text style={applyStyles('text-white')}>
               {amountWithCurrency(0)}
             </Text>
+          </View>
+          <View style={applyStyles('flex-1 center pl-32')}>
+            <Touchable onPress={(item) => handlePressListItem(item)}>
+              <Icon
+                size={24}
+                color={colors.white}
+                type="material-icons"
+                name="menu"
+              />
+            </Touchable>
           </View>
         </View>
       </View>
