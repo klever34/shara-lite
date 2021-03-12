@@ -165,6 +165,7 @@ export interface IApiService {
   saveDrawdown(payload: {amount: number}): Promise<any>;
   makeDrawdownRepayment(payload: {amount: number}): Promise<any>;
   saveBNPLDrawdown (payload: {amount: number; customer_id: string; receipt_id: string}): Promise<any>;
+  saveBNPLRepayment (payload: {amount: number; drawdown_id?: number;}): Promise<any>;
   verify(payload: {idNumber: string}): Promise<ApiResponse>;
   validate(payload: {otp: string}): Promise<ApiResponse>;
 }
@@ -789,6 +790,15 @@ export class ApiService implements IApiService {
   async saveBNPLDrawdown(payload: {amount: number; customer_id: string; receipt_id: string}): Promise<any> {
     try {
       const fetchResponse = await this.requester.post('/bnpl/drawdown', payload);
+      return fetchResponse;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  async saveBNPLRepayment (payload: {amount: number; drawdown_id: number;}): Promise<any> {
+    try {
+      const fetchResponse = await this.requester.post('/bnpl/repayment', payload);
       return fetchResponse;
     } catch (error) {
       throw error;

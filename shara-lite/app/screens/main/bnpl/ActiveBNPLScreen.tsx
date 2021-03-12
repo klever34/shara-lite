@@ -17,7 +17,7 @@ export const ActiveBNPLScreen = () => {
   const {getBNPLApproval} = useBNPLApproval();
   const {getBNPLDrawdowns} = useBNPLDrawdown();
 
-  const bnplDrawdowns = getBNPLDrawdowns();
+  const bnplDrawdowns = getBNPLDrawdowns().filtered('status != "complete"');
   const amount_available = getBNPLApproval()?.amount_available;
   const amount_drawn = getBNPLApproval()?.amount_drawn;
 

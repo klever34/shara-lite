@@ -2,21 +2,22 @@ import {Icon} from '@/components/Icon';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
+import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
 import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/core';
 import {createMaterialTopTabNavigator} from '@react-navigation/material-top-tabs';
 import React, {useCallback} from 'react';
-import {View, Text} from 'react-native';
+import {Text, View} from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {MainStackParamList} from '..';
 import {BNPLClientPaidScreen} from './BNPLClientPaidScreen';
 import {BNPLClientUpcomingScreen} from './BNPLClientUpcomingScreen';
 
-type BNPLClientTabParamList = {
-  Upcoming: undefined;
-  Paid: undefined;
+export type BNPLClientTabParamList = {
+  Upcoming: {data: IBNPLDrawdown};
+  Paid: {data: IBNPLDrawdown};
 };
 
 type BNPLClientScreenProps = {
@@ -61,14 +62,14 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
           <PlaceholderImage
             text={customer?.name ?? ''}
             style={applyStyles('mr-16')}
-            image={customer.image ? {uri: customer?.image} : undefined}
+            image={customer?.image ? {uri: customer?.image} : undefined}
           />
           <View style={applyStyles('flex-1')}>
             <Text style={applyStyles('pb-4 text-700 text-white')}>
               {customer?.name}
             </Text>
             <Text style={applyStyles('text-white')}>
-              {amountWithCurrency(0)}
+              {amountWithCurrency(data.repayment_amount)}
             </Text>
           </View>
           <View style={applyStyles('flex-1 center pl-32')}>
@@ -96,6 +97,7 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
         }}>
         <BNPLClientTab.Screen
           name="Upcoming"
+          initialParams={{data}}
           component={BNPLClientUpcomingScreen}
           options={{
             title: strings('bnpl.client.upcoming_text'),
@@ -113,6 +115,7 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
         />
         <BNPLClientTab.Screen
           name="Paid"
+          initialParams={{data}}
           component={BNPLClientPaidScreen}
           options={{
             title: strings('bnpl.client.paid_text'),

@@ -795,11 +795,11 @@
         "repayment_date": "to be paid in full by {{date}}"
       },
       "confirmation": {
-        "instruction": "1. Accept the terms of the BNPL offered by Shara to you \n2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.",
+        "instruction": "1. Accept the terms of the BNPL offered by Shara to you  \n2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.",
         "title": "Confirm Buy Now Pay Later",
         "terms": "**Terms**",
-        "client_terms": "Yes, my client has accepted",
-        "merchant_terms": "I have accepted"
+        "client_terms": "I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.",
+        "merchant_terms": "I have accepted the (Terms and Conditions)[https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub] for Shara Buy Now Pay Later"
       },
       "success": {
         "heading": "Buy Now Pay Later Successful",
@@ -826,7 +826,11 @@
             "payment": "Payment of {{amount}} confirmed and deducted from your wallet balance",
             "outstanding": "Outstanding: {{amount}} over {{days}} days"
           }
-        }
+        },
+        "empty_state": "{{client}} has made no repayment yet. Click the button below to record a repayment.",
+        "paid": "Paid",
+        "not_paid": "Not paid",
+        "past_due": "Past due"
       },
       "transaction_info": {
         "date": "{{date}}",
@@ -1633,8 +1637,8 @@
         "instruction": "1. Kubali masharti ya BNPL uliyopewa na Shara kwako\n2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara",
         "title": "Thibitisha Nunua Sasa Lipa Baadaye",
         "terms": "** Masharti **",
-        "client_terms": "Ndio, mteja wangu amekubali",
-        "merchant_terms": "Nimekubali"
+        "client_terms": "Ninathibitisha kuwa Mteja wangu amekubali masharti ya bidhaa ya Nunua Sasa Lipa Baadaye ninayompa.",
+        "merchant_terms": "Nimekubali (Kanuni na Masharti)[https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub] ya Shara Nunua Sasa Lipa Baadaye"
       },
       "success": {
         "heading": "Nunua sasa Lipa Baadaye Umefanikiwa",
@@ -1661,7 +1665,11 @@
             "payment": "Malipo ya {{amount}} yamethibitishwa na kutolewa kwenye salio lako la mkoba",
             "outstanding": "Iliyoangaziwa: {{amount}} zaidi ya siku {{days}}"
           }
-        }
+        },
+        "empty_state": "{{mteja}} bado hajalipa. Bonyeza kitufe hapa chini kurekodi ulipaji.",
+        "paid": "Imelipwa",
+        "not_paid": "Haikulipwa",
+        "past_due": "Uliopita"
       },
       "transaction_info": {
         "date": "{{tarehe}}",
@@ -2465,8 +2473,8 @@
         "instruction": "1. Yarda da sharuddan BNPL da Shara ta gabatar muku\n2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.",
         "title": "Tabbatar Sayi Yanzu Biya Daga baya",
         "terms": "** Sharudda **",
-        "client_terms": "Haka ne, abokin ciniki na ya karɓa",
-        "merchant_terms": "Na karba"
+        "client_terms": "Na tabbatar cewa Abokin ciniki na ya amince da sharuɗɗan kayan Siyarwa Na Biyar Yanzu Ina ba shi ko ita.",
+        "merchant_terms": "Na yarda da (Sharuɗɗa da Sharuɗɗa)[https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub] don Shara Buy Yanzu Biya Daga baya"
       },
       "success": {
         "heading": "Sayi Yanzu Biya Biyan Nasara Daga baya",
@@ -2493,7 +2501,11 @@
             "payment": "Biya na {{amount}} an tabbatar kuma an cire daga cikin walat din ku",
             "outstanding": "Fitacce: {{amount}} sama da kwanaki {{days}}"
           }
-        }
+        },
+        "empty_state": "{{abokin ciniki}} bai biya ba tukuna. Danna maɓallin da ke ƙasa don yin rikodin biya.",
+        "paid": "An biya",
+        "not_paid": "Ba a biya ba",
+        "past_due": "Lokacin da ya wuce"
       },
       "transaction_info": {
         "date": "{{kwanan wata}}",
@@ -3119,7 +3131,11 @@
         "repayment": {
           "fields": {"amount": {"label": "", "errorMessage": ""}},
           "success": {"heading": "", "payment": "", "outstanding": ""}
-        }
+        },
+        "empty_state": "",
+        "paid": "",
+        "not_paid": "",
+        "past_due": ""
       },
       "transaction_info": {
         "date": "",
@@ -3745,7 +3761,11 @@
         "repayment": {
           "fields": {"amount": {"label": "", "errorMessage": ""}},
           "success": {"heading": "", "payment": "", "outstanding": ""}
-        }
+        },
+        "empty_state": "",
+        "paid": "",
+        "not_paid": "",
+        "past_due": ""
       },
       "transaction_info": {
         "date": "",
@@ -4371,7 +4391,11 @@
         "repayment": {
           "fields": {"amount": {"label": "", "errorMessage": ""}},
           "success": {"heading": "", "payment": "", "outstanding": ""}
-        }
+        },
+        "empty_state": "",
+        "paid": "",
+        "not_paid": "",
+        "past_due": ""
       },
       "transaction_info": {
         "date": "",

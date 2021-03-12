@@ -10,18 +10,19 @@ import {Image, ScrollView, View, ViewStyle} from 'react-native';
 import ViewShot from 'react-native-view-shot';
 import RNFetchBlob from 'rn-fetch-blob';
 import {getI18nService} from '@/services';
+import {IReceipt} from '@/models/Receipt';
+import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
+import {IBNPLRepayment} from '@/models/BNPLRepayment';
+import {IBNPLApproval} from '@/models/BNPLApproval';
 
 const strings = getI18nService().strings;
 
 type Props = {
   transaction: {
-    _id?: string;
-    note?: string;
-    createdAt?: Date;
-    amount_paid?: number;
-    customer?: ICustomer;
-    total_amount?: number;
-    credit_amount?: number;
+    receiptData?: IReceipt;
+    drawdown: IBNPLDrawdown;
+    approval: IBNPLApproval;
+    repayments: IBNPLRepayment[];
   };
   containerStyle?: ViewStyle;
   getImageUri: (base64: string) => void;
@@ -29,15 +30,17 @@ type Props = {
 
 export const BNPLReceiptImage = memo((props: Props) => {
   const {transaction, getImageUri} = props;
+  const {receiptData, repayments, drawdown} = transaction;
   const {
     _id,
     note,
     customer,
-    createdAt,
+    created_at,
     amount_paid,
     total_amount,
     credit_amount,
-  } = transaction;
+  } = receiptData ?? {};
+  const {repayment_amount} = drawdown;
 
   const receiptNo = _id?.toString().substring(0, 6);
 
@@ -139,7 +142,7 @@ export const BNPLReceiptImage = memo((props: Props) => {
               <Text
                 style={applyStyles('pl-sm print-text-400 text-lg texy-black')}>
                 {format(
-                  createdAt ? new Date(createdAt) : new Date(),
+                  created_at ? new Date(created_at) : new Date(),
                   'dd/MM/yyyy',
                 )}
               </Text>
@@ -209,21 +212,33 @@ export const BNPLReceiptImage = memo((props: Props) => {
                 {strings('bnpl.receipt.bnpl_text')}
               </Text>
               <Text style={applyStyles('print-text-400 text-xl')}>
-                {amountWithCurrency(0)}
+                {amountWithCurrency(repayment_amount)}
               </Text>
             </View>
             <View>
-              <View
-                style={applyStyles(
-                  'py-16 flex-row items-center justify-between',
-                )}>
-                <Text style={applyStyles('print-text-400 text-xl')}>
-                  1. {format(new Date(), 'dd MMM yyyy')} ({strings('paid')})
-                </Text>
-                <Text style={applyStyles('print-text-400 text-xl')}>
-                  {amountWithCurrency(0)}
-                </Text>
-              </View>
+              {repayments.map(
+                ({batch_no, due_at, status, amount_owed, repayment_amount}) => (
+                  <View
+                    key={batch_no}
+                    style={applyStyles(
+                      'py-16 flex-row items-center justify-between',
+                    )}>
+                    <Text style={applyStyles('print-text-400 text-xl')}>
+                      {batch_no}.{' '}
+                      {format(
+                        due_at ? new Date(due_at) : new Date(),
+                        'dd MMM yyyy',
+                      )}
+                      {status === 'complete' ? ` ${strings('paid')}` : ''}
+                    </Text>
+                    <Text style={applyStyles('print-text-400 text-xl')}>
+                      {status === 'pending' || 'complete'
+                        ? amountWithCurrency(repayment_amount)
+                        : amountWithCurrency(amount_owed || repayment_amount)}
+                    </Text>
+                  </View>
+                ),
+              )}
             </View>
           </View>
         </View>

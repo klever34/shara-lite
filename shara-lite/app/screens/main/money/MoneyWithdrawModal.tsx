@@ -174,7 +174,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     const withdrawAccountDetails = disbursementMethod?.parsedAccountDetails;
     const selectedBankAccount = !withdrawAccountDetails
       ? ''
-      : `${withdrawAccountDetails.bank_name} - ${withdrawAccountDetails.nuban}`;
+      : `${withdrawAccountDetails.provider_label} - ${withdrawAccountDetails.account_label}`;
     const handleSelectWithdrawalAccount = useCallback(() => {
       openModal('bottom-half', {
         renderContent: () => (

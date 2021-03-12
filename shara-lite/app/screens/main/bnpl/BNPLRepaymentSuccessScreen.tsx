@@ -15,18 +15,19 @@ export const BNPLRepaymentSuccessScreen = (
   props: BNPLRepaymentSuccessScreenProps,
 ) => {
   const {route} = props;
-  const {transaction} = route.params;
+  const {transaction, amount} = route.params;
+  const {drawdown} = transaction;
 
   return (
     <BNPLSuccess
       captions={{
         heading: strings('bnpl.client.repayment.success.heading'),
         payment: strings('bnpl.client.repayment.success.outstanding', {
-          amount: amountWithCurrency(transaction.credit_amount),
+          amount: amountWithCurrency(drawdown.amount_owed),
           days: 56,
         }),
         outstanding: strings('bnpl.client.repayment.success.payment', {
-          amount: amountWithCurrency(0),
+          amount: amountWithCurrency(amount),
         }),
       }}
       {...route.params}

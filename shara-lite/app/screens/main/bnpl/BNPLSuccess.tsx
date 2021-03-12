@@ -1,16 +1,14 @@
+import {Button} from '@/components';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
 import {getAnalyticsService, getI18nService} from '@/services';
-import {applyStyles, colors} from '@/styles';
-import React, {useCallback, useState} from 'react';
-import {Image, ScrollView, Text, View, SafeAreaView} from 'react-native';
-import LottieView from 'lottie-react-native';
 import {ShareHookProps, useShare} from '@/services/share';
+import {applyStyles, colors} from '@/styles';
+import LottieView from 'lottie-react-native';
+import React, {useCallback, useState} from 'react';
+import {Image, SafeAreaView, ScrollView, Text, View} from 'react-native';
 import {MainStackParamList} from '..';
-import {RouteProp} from '@react-navigation/core';
-import {Button} from '@/components';
 import {BNPLReceiptImage} from './BNPLReceiptImage';
-import {amountWithCurrency} from '@/helpers/utils';
 
 type BNPLSuccessProps = MainStackParamList['BNPLTransactionSuccessScreen'] & {
   captions: {heading: string; outstanding: string; payment: string};
@@ -20,7 +18,7 @@ const strings = getI18nService().strings;
 
 export const BNPLSuccess = (props: BNPLSuccessProps) => {
   const {onDone, transaction, captions} = props;
-  const {credit_amount} = transaction;
+  const {drawdown} = transaction;
 
   const [receiptImage, setReceiptImage] = useState('');
 
@@ -29,7 +27,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
   const receiptShareProps: ShareHookProps = {
     image: receiptImage,
     message: shareReceiptMessage,
-    recipient: transaction?.customer?.mobile,
+    recipient: drawdown?.customer?.mobile,
     title: strings('receipts.receipt_share_title'),
     subject: strings('receipts.receipt_share_title'),
   };
@@ -42,7 +40,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
     analyticsService
       .logEvent('share', {
         method: 'sms',
-        item_id: transaction?._id?.toString() ?? '',
+        item_id: drawdown?.receipt?.toString() ?? '',
         content_type: 'share-receipt',
       })
       .then(() => {});
@@ -54,7 +52,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
       .logEvent('share', {
         method: 'whatsapp',
         content_type: 'share-receipt',
-        item_id: transaction?._id?.toString() ?? '',
+        item_id: drawdown?.receipt?.toString() ?? '',
       })
       .then(() => {});
     handleWhatsappShare();
@@ -65,7 +63,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
       .logEvent('share', {
         method: 'others',
         content_type: 'share-receipt',
-        item_id: transaction?._id?.toString() ?? '',
+        item_id: drawdown?.receipt?.toString() ?? '',
       })
       .then(() => {});
     handleEmailShare();

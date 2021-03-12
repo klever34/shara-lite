@@ -23,6 +23,7 @@ import {ConfirmationModal} from './ConfirmationModal';
 import {useTransaction} from '@/services/transaction';
 import {handleError} from '@/services/error-boundary';
 import {useBNPLApproval} from '@/services/bnpl-approval';
+import {useBNPLRepayment} from '@/services/bnpl-repayment';
 
 type FormValues = {
   amount_paid: string;
@@ -122,18 +123,23 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
     }) => {
       try {
         const {customer, credit_amount} = values;
-        const transaction = await saveTransaction({
+        const receipt = await saveTransaction({
           ...values,
           is_collection: false,
         });
-        const response = await getApiService().saveBNPLDrawdown({
+        const {data} = await getApiService().saveBNPLDrawdown({
           amount: credit_amount,
           customer_id: `${customer?._id}`,
-          receipt_id: `${transaction?._id}`,
+          receipt_id: `${receipt?._id}`,
         });
-        console.log(response);
+        const {approval, repayments, drawdown} = data;
         navigation.navigate('BNPLTransactionSuccessScreen', {
-          transaction: values,
+          transaction: {
+            approval,
+            drawdown,
+            repayments,
+            receiptData: receipt,
+          },
           onDone: handleDone,
         });
       } catch (error) {

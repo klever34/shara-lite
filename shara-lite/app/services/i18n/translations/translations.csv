@@ -557,14 +557,14 @@ bnpl.record_transaction.fields.customer.errorMessage,Customer is required,Mteja 
 bnpl.record_transaction.balance,Balance,Usawa,Daidaita,,,
 bnpl.record_transaction.bnpl_terms_text,Buy now pay later terms,Nunua sasa ulipe masharti ya baadaye,Sayi yanzu biya sharuɗɗa daga baya,,,
 bnpl.record_transaction.repayment_date,to be paid in full by {{date}},kulipwa kamili na {{date}},da za a biya su cikakke ta {{date}},,,
-bnpl.confirmation.instruction,1. Accept the terms of the BNPL offered by Shara to you 
+bnpl.confirmation.instruction,1. Accept the terms of the BNPL offered by Shara to you  
 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.,1. Kubali masharti ya BNPL uliyopewa na Shara kwako
 2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara,1. Yarda da sharuddan BNPL da Shara ta gabatar muku
 2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.,,,
 bnpl.confirmation.title,Confirm Buy Now Pay Later,Thibitisha Nunua Sasa Lipa Baadaye,Tabbatar Sayi Yanzu Biya Daga baya,,,
 bnpl.confirmation.terms,**Terms**,** Masharti **,** Sharudda **,,,
-bnpl.confirmation.client_terms,"Yes, my client has accepted","Ndio, mteja wangu amekubali","Haka ne, abokin ciniki na ya karɓa",,,
-bnpl.confirmation.merchant_terms,I have accepted,Nimekubali,Na karba,,,
+bnpl.confirmation.client_terms,I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.,Ninathibitisha kuwa Mteja wangu amekubali masharti ya bidhaa ya Nunua Sasa Lipa Baadaye ninayompa.,Na tabbatar cewa Abokin ciniki na ya amince da sharuɗɗan kayan Siyarwa Na Biyar Yanzu Ina ba shi ko ita.,,,
+bnpl.confirmation.merchant_terms,I have accepted the (Terms and Conditions)[https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub] for Shara Buy Now Pay Later,Nimekubali (Kanuni na Masharti)[https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub] ya Shara Nunua Sasa Lipa Baadaye,Na yarda da (Sharuɗɗa da Sharuɗɗa)[https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub] don Shara Buy Yanzu Biya Daga baya,,,
 bnpl.success.heading,Buy Now Pay Later Successful,Nunua sasa Lipa Baadaye Umefanikiwa,Sayi Yanzu Biya Biyan Nasara Daga baya,,,
 bnpl.success.outstanding,The outstanding amount of {{amount}} has been added to your wallet.,Kiasi kilichobaki cha {{amount}} kimeongezwa kwenye mkoba wako.,An saka fitaccen adadin {{amount}} a cikin walat din ku.,,,
 bnpl.success.payment,Client pays {{amount}} over {{days}} days,Mteja hulipa {{amount}} zaidi ya siku {{days}},Abokin ciniki yana biyan {{adadin}} sama da kwanaki {{days}},,,
@@ -583,6 +583,10 @@ bnpl.client.repayment.fields.amount.errorMessage,Amount is required,Kiasi kinahi
 bnpl.client.repayment.success.heading,Buy Now Pay Later Payment Successful,Nunua sasa Lipa baadaye Malipo Yamefanikiwa,Sayi Yanzu Biyan Biyan Daga Baya Yayi Nasara,,,
 bnpl.client.repayment.success.payment,Payment of {{amount}} confirmed and deducted from your wallet balance,Malipo ya {{amount}} yamethibitishwa na kutolewa kwenye salio lako la mkoba,Biya na {{amount}} an tabbatar kuma an cire daga cikin walat din ku,,,
 bnpl.client.repayment.success.outstanding,Outstanding: {{amount}} over {{days}} days,Iliyoangaziwa: {{amount}} zaidi ya siku {{days}},Fitacce: {{amount}} sama da kwanaki {{days}},,,
+bnpl.client.empty_state,{{client}} has made no repayment yet. Click the button below to record a repayment.,{{mteja}} bado hajalipa. Bonyeza kitufe hapa chini kurekodi ulipaji.,{{abokin ciniki}} bai biya ba tukuna. Danna maɓallin da ke ƙasa don yin rikodin biya.,,,
+bnpl.client.paid,Paid,Imelipwa,An biya,,,
+bnpl.client.not_paid,Not paid,Haikulipwa,Ba a biya ba,,,
+bnpl.client.past_due,Past due,Uliopita,Lokacin da ya wuce,,,
 bnpl.transaction_info.date,{{date}},{{tarehe}},{{kwanan wata}},,,
 bnpl.transaction_info.total_amount_text,Total Amount,Jumla,Jimla,,,
 bnpl.transaction_info.total_amount,{{amount}},{{kiasi}},{{adadin}},,,

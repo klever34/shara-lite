@@ -752,6 +752,10 @@ export interface Strings {
           payment: string;
         };
       };
+      empty_state: string;
+      paid: string;
+      not_paid: string;
+      past_due: string;
     };
     transaction_info: {
       date: string;

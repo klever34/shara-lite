@@ -47,6 +47,9 @@ import {BNPLClientScreen} from './bnpl/BNPLClientScreen';
 import {BNPLRecordTransactionScreen} from './bnpl/BNPLRecordTransactionScreen';
 import {BNPLTransactionDetailsScreen} from './bnpl/BNPLTransactionDetailsScreen';
 import {BNPLRepaymentSuccessScreen} from './bnpl/BNPLRepaymentSuccessScreen';
+import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
+import {IBNPLRepayment} from '@/models/BNPLRepayment';
+import {IBNPLApproval} from '@/models/BNPLApproval';
 
 const strings = getI18nService().strings;
 
@@ -86,11 +89,28 @@ export type MainStackParamList = {
   // Money
   Drawdown: undefined;
   BNPLScreen: undefined;
-  BNPLClientScreen: {data: any};
+  BNPLClientScreen: {data: IBNPLDrawdown};
   BNPLRecordTransactionScreen: undefined;
-  BNPLTransactionDetailsScreen: {transaction: any};
-  BNPLTransactionSuccessScreen: {transaction: any; onDone?: () => void};
-  BNPLRepaymentSuccessScreen: {transaction: any; onDone?: () => void};
+  BNPLTransactionDetailsScreen: {transaction: IBNPLDrawdown};
+  BNPLTransactionSuccessScreen: {
+    transaction: {
+      receiptData?: IReceipt;
+      drawdown: IBNPLDrawdown;
+      repayments: IBNPLRepayment[];
+      approval: IBNPLApproval;
+    };
+    onDone?: () => void;
+  };
+  BNPLRepaymentSuccessScreen: {
+    amount: number;
+    transaction: {
+      receiptData?: IReceipt;
+      drawdown: IBNPLDrawdown;
+      repayments: IBNPLRepayment[];
+      approval: IBNPLApproval;
+    };
+    onDone?: () => void;
+  };
 };
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();

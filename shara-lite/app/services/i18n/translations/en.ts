@@ -919,7 +919,7 @@ const en: Strings = {
     complete_text: 'Complete',
     clients_text: 'Clients',
     empty_state:
-      'You have not recorded any BNPL transactions yet. Click to button below to get started.',
+      'You have not recorded any BNPL transactions yet. Click the button below to get started.',
     new_transaction_text: 'New transaction',
     total_completed_text: 'Total completed',
     amount_used_text: 'Amount used',
@@ -963,8 +963,8 @@ const en: Strings = {
       instruction:
         '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
       title: 'Confirm Buy Now Pay Later',
-      client_terms: 'Yes, my client has accepted',
-      merchant_terms: 'I have accepted',
+      client_terms: 'I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.',
+      merchant_terms: 'I have accepted the (Terms and Conditions)[https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub] for Shara Buy Now Pay Later',
       terms: '**Terms**',
     },
     success: {
@@ -998,6 +998,10 @@ const en: Strings = {
           outstanding: 'Outstanding: {{amount}} over {{days}} days',
         },
       },
+      empty_state: '{{client}} has made no repayment yet. Click the button below to record a repayment.',
+      paid: 'Paid',
+      not_paid: 'Not paid',
+      past_due: 'Past due',
     },
     transaction_info: {
       date: '{{date}}',

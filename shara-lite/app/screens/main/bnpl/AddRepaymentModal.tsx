@@ -26,7 +26,14 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
   const {getWallet} = useWallet();
   const wallet = getWallet();
 
-  const {values, errors, touched, setFieldValue, handleSubmit} = useFormik({
+  const {
+    values,
+    errors,
+    touched,
+    isSubmitting,
+    setFieldValue,
+    handleSubmit,
+  } = useFormik({
     onSubmit,
     initialValues: {amount: ''},
     validationSchema: yup.object().shape({
@@ -37,6 +44,9 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
         ),
     }),
   });
+
+  const btnIsDisabled =
+    !values.amount || toNumber(values.amount) > (wallet?.balance ?? 0);
 
   return (
     <View>
@@ -96,7 +106,8 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
           <Button
             variantColor="blue"
             onPress={handleSubmit}
-            disabled={!values.amount}
+            isLoading={isSubmitting}
+            disabled={btnIsDisabled}
             title={strings('confirm')}
             style={applyStyles({width: 120})}
             textStyle={applyStyles('text-uppercase')}

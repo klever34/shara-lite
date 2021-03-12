@@ -30,7 +30,6 @@ const BNPLTransactionListItem = ({
     payment_frequency_amount,
   } = item;
   const isComplete = status === 'complete';
-  console.log(bnpl_repayments?.length);
   const noOfPayments =
     bnpl_repayments?.filtered('status != "complete"').length ?? 8;
   const pillText = isComplete

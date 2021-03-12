@@ -54,11 +54,11 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
           containerStyle={applyStyles('justify-between')}
           leftLabel={
             <View style={applyStyles('flex-row items-center')}>
-              <Text style={applyStyles('text-400 text-lg text-gray-200')}>
+              <Markdown
+                style={{
+                  textgroup: applyStyles('text-400 text-lg text-gray-200'),
+                }}>
                 {strings('bnpl.confirmation.merchant_terms')}
-              </Text>
-              <Markdown style={{textgroup: applyStyles('pl-4 text-lg')}}>
-                {strings('bnpl.confirmation.terms')}
               </Markdown>
             </View>
           }
@@ -70,11 +70,11 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
           containerStyle={applyStyles('justify-between mb-32')}
           leftLabel={
             <View style={applyStyles('flex-row items-center')}>
-              <Text style={applyStyles('text-400 text-lg text-gray-200')}>
+              <Markdown
+                style={{
+                  textgroup: applyStyles('text-400 text-lg text-gray-200'),
+                }}>
                 {strings('bnpl.confirmation.client_terms')}
-              </Text>
-              <Markdown style={{textgroup: applyStyles('pl-4 text-lg')}}>
-                {strings('bnpl.confirmation.terms')}
               </Markdown>
             </View>
           }
