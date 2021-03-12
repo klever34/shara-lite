@@ -38,12 +38,9 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
     navigation.goBack();
   }, [navigation]);
 
-  const handlePressListItem = useCallback(
-    (item: any) => {
-      navigation.navigate('BNPLTransactionDetailsScreen', {transaction: item});
-    },
-    [navigation],
-  );
+  const handlePressListItem = useCallback(() => {
+    navigation.navigate('BNPLTransactionDetailsScreen', {transaction: data});
+  }, [navigation]);
 
   return (
     <SafeAreaView style={applyStyles('flex-1')}>
@@ -73,7 +70,7 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
             </Text>
           </View>
           <View style={applyStyles('flex-1 center pl-32')}>
-            <Touchable onPress={(item) => handlePressListItem(item)}>
+            <Touchable onPress={handlePressListItem}>
               <Icon
                 size={24}
                 color={colors.white}
