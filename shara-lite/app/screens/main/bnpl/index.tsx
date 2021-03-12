@@ -1,6 +1,6 @@
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {useDisbursementMethod} from '@/services/disbursement-method';
+import {useBNPLApproval} from '@/services/bnpl-approval';
 import {useAppNavigation} from '@/services/navigation';
 import {colors} from '@/styles';
 import React, {useCallback, useLayoutEffect} from 'react';
@@ -9,8 +9,10 @@ import {BNPLNotAvailableScreen} from './BNPLNotAvailableScreen';
 
 export const BNPLScreen = () => {
   const navigation = useAppNavigation();
-  const {getDisbursementMethods} = useDisbursementMethod();
-  const bnplIsAvailable = !!getDisbursementMethods().length;
+
+  const {getBNPLApproval} = useBNPLApproval();
+  const bnplApproval = getBNPLApproval();
+  const bnplIsAvailable = !!bnplApproval;
 
   const handleGoToSettings = useCallback(() => {
     navigation.navigate('PaymentSettings');

@@ -909,8 +909,8 @@ const en: Strings = {
   bnpl: {
     not_available: {
       button_text:
-        'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
-      instruction: 'Go to money settings',
+        'Go to money settings',
+      instruction: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
     },
     buy_now_pay_later: 'Buy now pay later',
     transaction_details: 'Transaction Details',

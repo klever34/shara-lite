@@ -41,6 +41,9 @@ export const colors: { [ key: string ]: string; } = {
   // Blues
   'blue-10': '#D8E6FB',
   'blue-100': '#386EC4',
+  //Yellow
+  'yellow-50': '#FFE7A9',
+  'yellow-100': '#F2B109',
   // App Colors
   secondary: '#386EC4',
   primary: '#25A36E',
