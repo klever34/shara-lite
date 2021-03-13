@@ -1,4 +1,4 @@
-import EmptyState from '@/components/EmptyState';
+import EmptyState, {EmptyStateProps} from '@/components/EmptyState';
 import PlaceholderImage from '@/components/PlaceholderImage';
 import Touchable from '@/components/Touchable';
 import {amountWithCurrency} from '@/helpers/utils';
@@ -10,6 +10,7 @@ import React, {useCallback} from 'react';
 import {FlatList, Text, View} from 'react-native';
 
 type BNPLTransactionListProps = {
+  emptyState?: EmptyStateProps;
   data: Realm.Results<IBNPLDrawdown & Realm.Object>;
 };
 
@@ -24,9 +25,9 @@ const BNPLTransactionListItem = ({
 }) => {
   const {
     customer,
-    repayment_amount,
     status,
     bnpl_repayments,
+    repayment_amount,
     payment_frequency_amount,
   } = item;
   const isComplete = status === 'complete';
@@ -79,7 +80,7 @@ const BNPLTransactionListItem = ({
 };
 
 export const BNPLTransactionList = (props: BNPLTransactionListProps) => {
-  const {data} = props;
+  const {data, emptyState} = props;
   const navigation = useAppNavigation();
 
   const handlePressListItem = useCallback(
@@ -107,7 +108,7 @@ export const BNPLTransactionList = (props: BNPLTransactionListProps) => {
       keyExtractor={(item) => `${item?._id?.toString()}`}
       ListEmptyComponent={
         <EmptyState
-          text={strings('bnpl.empty_state')}
+          {...emptyState}
           source={require('@/assets/images/emblem.png')}
           imageStyle={applyStyles('pb-32', {width: 60, height: 60})}
         />

@@ -28,6 +28,14 @@ export const ActiveBNPLScreen = () => {
   return (
     <View style={applyStyles('flex-1 bg-white')}>
       <View style={applyStyles('bg-gray-10 py-16 px-24')}>
+        <View style={applyStyles('flex-row items-center justify-between')}>
+          <Text style={applyStyles('text-gray-300')}>
+            {strings('bnpl.amount_available_text')}
+          </Text>
+          <Text style={applyStyles('text-gray-300 text-700')}>
+            {amountWithCurrency(amount_available)}
+          </Text>
+        </View>
         <View
           style={applyStyles('pb-16 flex-row items-center justify-between')}>
           <Text style={applyStyles('text-gray-300')}>
@@ -37,14 +45,6 @@ export const ActiveBNPLScreen = () => {
             {amountWithCurrency(amount_drawn)}
           </Text>
         </View>
-        <View style={applyStyles('flex-row items-center justify-between')}>
-          <Text style={applyStyles('text-gray-300')}>
-            {strings('bnpl.amount_available_text')}
-          </Text>
-          <Text style={applyStyles('text-gray-300 text-700')}>
-            {amountWithCurrency(amount_available)}
-          </Text>
-        </View>
       </View>
       <View style={applyStyles('pt-16 flex-1')}>
         {!!bnplDrawdowns.length && (
@@ -52,7 +52,12 @@ export const ActiveBNPLScreen = () => {
             {strings('bnpl.clients_text')}
           </Text>
         )}
-        <BNPLTransactionList data={bnplDrawdowns} />
+        <BNPLTransactionList
+          data={bnplDrawdowns}
+          emptyState={{
+            text: strings('bnpl.active_empty_state'),
+          }}
+        />
       </View>
       <Button
         onPress={handleRecordTransaction}

@@ -2,14 +2,17 @@ import {Button, FloatingLabelInput, toNumber} from '@/components';
 import {FlatFloatingLabelCurrencyInput} from '@/components/FloatingLabelCurrencyInput';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
+import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {getApiService, getI18nService} from '@/services';
+import {useBNPLApproval} from '@/services/bnpl-approval';
+import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
+import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {addWeeks, format} from 'date-fns';
 import {useFormik} from 'formik';
-import * as yup from 'yup';
 import React, {useCallback, useMemo} from 'react';
 import {
   InteractionManager,
@@ -18,12 +21,8 @@ import {
   Text,
   View,
 } from 'react-native';
-import {withModal} from '@/helpers/hocs';
+import * as yup from 'yup';
 import {ConfirmationModal} from './ConfirmationModal';
-import {useTransaction} from '@/services/transaction';
-import {handleError} from '@/services/error-boundary';
-import {useBNPLApproval} from '@/services/bnpl-approval';
-import {useBNPLRepayment} from '@/services/bnpl-repayment';
 
 type FormValues = {
   amount_paid: string;
@@ -127,12 +126,14 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
           ...values,
           is_collection: false,
         });
+
         const {data} = await getApiService().saveBNPLDrawdown({
           amount: credit_amount,
-          customer_id: `${customer?._id}`,
           receipt_id: `${receipt?._id}`,
+          customer_id: `${customer?._id}`,
         });
         const {approval, repayments, drawdown} = data;
+        closeModal();
         navigation.navigate('BNPLTransactionSuccessScreen', {
           transaction: {
             approval,
@@ -184,11 +185,13 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
         <View style={applyStyles('flex-row items-center justify-between')}>
           <View style={applyStyles({width: '48%'})}>
             <FlatFloatingLabelCurrencyInput
+              autoFocus
               errorMessage={errors.total_amount}
               value={toNumber(values.total_amount)}
               label={strings(
                 'bnpl.record_transaction.fields.total_amount.label',
               )}
+              flatContainerStyle={applyStyles('bg-white')}
               isInvalid={!!touched.total_amount && !!errors.total_amount}
               onChangeText={(value) => setFieldValue('total_amount', value)}
             />
@@ -200,6 +203,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
               label={strings(
                 'bnpl.record_transaction.fields.amount_paid.label',
               )}
+              flatContainerStyle={applyStyles('bg-white')}
               isInvalid={!!touched.amount_paid && !!errors.amount_paid}
               onChangeText={(value) => setFieldValue('amount_paid', value)}
             />
@@ -348,7 +352,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
             <Button
               variantColor="blue"
               onPress={handleSubmit}
-              title={strings('save')}
+              title={strings('next')}
               style={applyStyles({width: 120})}
               textStyle={applyStyles('text-uppercase')}
             />

@@ -2,7 +2,7 @@ import {Text} from '@/components';
 import {applyStyles} from '@/styles';
 import {isFinite} from 'lodash';
 import React, {forwardRef, useCallback, useEffect, useState} from 'react';
-import {TextInput, TextStyle, View} from 'react-native';
+import {TextInput, TextStyle, View, ViewStyle} from 'react-native';
 import {getAuthService} from '../services';
 import {
   FloatingLabelInput,
@@ -34,9 +34,11 @@ const toThousandString = (text: string) => {
   }
 };
 
-export const FlatFloatingLabelCurrencyInput = (props: CurrencyInputProps) => {
+export const FlatFloatingLabelCurrencyInput = (
+  props: CurrencyInputProps & {flatContainerStyle?: ViewStyle},
+) => {
   return (
-    <View style={applyStyles('bg-gray-20')}>
+    <View style={applyStyles('bg-gray-20', props.flatContainerStyle)}>
       <FloatingLabelCurrencyInput
         iconStyle={applyStyles('px-24', props.iconStyle)}
         labelStyle={applyStyles('px-24', props.labelStyle)}
@@ -59,7 +61,7 @@ export const FloatingLabelCurrencyInput = forwardRef<
     isFinite(valueProp) ? valueProp?.toString() : '',
   );
 
-  const inputPaddingLeft = currency.length > 1 ? 'pl-48' : 'pl-32';
+  const inputPaddingLeft = currency.length > 1 ? 'pl-64' : 'pl-32';
 
   useEffect(() => {
     if (valueProp !== undefined && isFinite(valueProp)) {
@@ -92,7 +94,7 @@ export const FloatingLabelCurrencyInput = forwardRef<
       leftIcon={
         <Text
           style={applyStyles('text-400 text-gray-300', {
-            top: 4,
+            top: 2,
             fontSize: 16,
             ...iconStyle,
           })}>

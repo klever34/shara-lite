@@ -1,5 +1,5 @@
 import flatten from 'lodash/flatten';
-import {IContact} from '@/models';
+import {IContact, ICustomer} from '@/models';
 import Config from 'react-native-config';
 import queryString from 'query-string';
 import {ObjectId} from 'bson';
@@ -18,6 +18,7 @@ import {
 import {BaseModelInterface} from '@/models/baseSchema';
 import {getI18nService} from '@/services';
 import {DisbursementOption} from '@/models/DisbursementMethod';
+import { IReceipt } from '@/models/Receipt';
 
 export type Requester = {
   get: <T extends any = any>(
@@ -164,7 +165,7 @@ export interface IApiService {
   }): Promise<ApiResponse>;
   saveDrawdown(payload: {amount: number}): Promise<any>;
   makeDrawdownRepayment(payload: {amount: number}): Promise<any>;
-  saveBNPLDrawdown (payload: {amount: number; customer_id: string; receipt_id: string}): Promise<any>;
+  saveBNPLDrawdown (payload: {amount: number; customer_id: string; receipt_id: string; receipt_data?: IReceipt; customer_data?: ICustomer;}): Promise<any>;
   saveBNPLRepayment (payload: {amount: number; drawdown_id?: number;}): Promise<any>;
   verify(payload: {idNumber: string}): Promise<ApiResponse>;
   validate(payload: {otp: string}): Promise<ApiResponse>;
@@ -787,7 +788,14 @@ export class ApiService implements IApiService {
     }
   }
 
-  async saveBNPLDrawdown(payload: {amount: number; customer_id: string; receipt_id: string}): Promise<any> {
+  async saveBNPLDrawdown ( payload: {
+    amount: number;
+    receipt_id: string;
+    customer_id: string;
+    receipt_data?: IReceipt;
+    customer_data?: ICustomer;
+  }): Promise<any>
+  {
     try {
       const fetchResponse = await this.requester.post('/bnpl/drawdown', payload);
       return fetchResponse;

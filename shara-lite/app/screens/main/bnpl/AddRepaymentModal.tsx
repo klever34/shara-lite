@@ -15,13 +15,14 @@ import * as yup from 'yup';
 
 type AddRepaymentModalProps = {
   onClose(): void;
+  initialValues?: {amount: string};
   onSubmit: FormikConfig<{amount: string}>['onSubmit'];
 };
 
 const strings = getI18nService().strings;
 
 export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
-  const {onSubmit, onClose} = props;
+  const {onSubmit, onClose, initialValues} = props;
 
   const {getWallet} = useWallet();
   const wallet = getWallet();
@@ -35,7 +36,7 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
     handleSubmit,
   } = useFormik({
     onSubmit,
-    initialValues: {amount: ''},
+    initialValues: initialValues ? initialValues : {amount: ''},
     validationSchema: yup.object().shape({
       amount: yup
         .string()

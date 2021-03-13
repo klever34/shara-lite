@@ -693,7 +693,8 @@ export interface Strings {
       button_text: string;
       instruction: string;
     };
-    empty_state: string;
+    active_empty_state: string;
+    complete_empty_state: string;
     active_text: string;
     complete_text: string;
     clients_text: string;

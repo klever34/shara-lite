@@ -77,6 +77,9 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         <AddRepaymentModal
           onClose={closeModal}
           onSubmit={handleSaveRepayment}
+          initialValues={{
+            amount: drawdown.payment_frequency_amount?.toString() ?? '',
+          }}
         />
       ),
     });

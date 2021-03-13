@@ -40,7 +40,12 @@ export const CompleteBNPLScreen = () => {
             {strings('bnpl.clients_text')}
           </Text>
         )}
-        <BNPLTransactionList data={bnplDrawdowns} />
+        <BNPLTransactionList
+          data={bnplDrawdowns}
+          emptyState={{
+            text: strings('bnpl.complete_empty_state'),
+          }}
+        />
       </View>
       <Button
         onPress={handleRecordTransaction}

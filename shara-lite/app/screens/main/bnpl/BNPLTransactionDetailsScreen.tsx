@@ -8,13 +8,32 @@ import Icon from '@/components/Icon';
 import {Button} from '@/components';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {ShareModal} from './ShareModal';
+import {RouteProp} from '@react-navigation/core';
+import {MainStackParamList} from '..';
+import {useReceipt} from '@/services/receipt';
 
 const strings = getI18nService().strings;
 
-type Props = {} & ModalWrapperFields;
+type Props = {
+  route: RouteProp<MainStackParamList, 'BNPLTransactionDetailsScreen'>;
+} & ModalWrapperFields;
 
 export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
-  const {openModal} = props;
+  const {openModal, route} = props;
+  const {transaction} = route.params;
+  const {
+    due_at,
+    receipt,
+    created_at,
+    bnpl_repayments,
+    repayment_amount,
+    payment_frequency_amount,
+  } = transaction;
+  const {getReceipt} = useReceipt();
+  const receiptData =
+    receipt && receipt?._id && getReceipt({receiptId: receipt?._id});
+  const repaymentsLeft = bnpl_repayments?.filtered('status != "complete"')
+    .length;
 
   const handleShareModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
@@ -28,7 +47,10 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
         <Text
           style={applyStyles('py-24 text-gray-100 text-center text-uppercase')}>
           {strings('bnpl.transaction_info.date', {
-            date: format(new Date(), 'dd MMMM, yyyy'),
+            date: format(
+              created_at ? new Date(created_at) : new Date(),
+              'dd MMMM, yyyy',
+            ),
           })}
         </Text>
         <View style={applyStyles('flex-row px-24 justify-around')}>
@@ -37,7 +59,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
           </Text>
           <Text style={applyStyles('py-18 text-gray-100')}>
             {strings('bnpl.transaction_info.total_amount', {
-              amount: amountWithCurrency(1000),
+              amount: amountWithCurrency(receiptData?.total_amount),
             })}
           </Text>
         </View>
@@ -47,7 +69,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
           </Text>
           <Text style={applyStyles('py-18 text-gray-100 text-right')}>
             {strings('bnpl.transaction_info.paid_amount', {
-              amount: amountWithCurrency(1000),
+              amount: amountWithCurrency(receiptData?.amount_paid),
             })}
           </Text>
         </View>
@@ -60,7 +82,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
           </Text>
           <Text style={applyStyles('py-18 text-gray-100')}>
             {strings('bnpl.transaction_info.outstanding_amount', {
-              amount: amountWithCurrency(1000),
+              amount: amountWithCurrency(receiptData?.credit_amount),
             })}
           </Text>
         </View>
@@ -81,11 +103,11 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
           )}>
           <View style={applyStyles({width: '48%'})}>
             <Text style={applyStyles('pb-8 text-gray-300 text-2xl')}>
-              {amountWithCurrency(0)}
+              {amountWithCurrency(repayment_amount)}
             </Text>
             <Text style={applyStyles('text-gray-100')}>
               {strings('bnpl.repayment_per_week', {
-                amount: amountWithCurrency(0),
+                amount: amountWithCurrency(payment_frequency_amount),
               })}
             </Text>
           </View>
@@ -97,7 +119,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
             </Text>
             <Text style={applyStyles('text-right text-gray-100')}>
               {strings('bnpl.payment_left_text.other', {
-                amount: 8,
+                amount: repaymentsLeft,
               })}
             </Text>
           </View>
@@ -107,24 +129,28 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
             'pt-24 pb-8 text-red-100 text-center text-uppercase',
           )}>
           {strings('bnpl.record_transaction.repayment_date', {
-            date: format(new Date(), 'dd MMM, yyyy'),
+            date: format(
+              due_at ? new Date(due_at) : new Date(),
+              'dd MMM, yyyy',
+            ),
           })}
         </Text>
 
-        <View style={applyStyles('py-24')}>
-          <Text
-            style={applyStyles(
-              'pb-10 text-gray-100 text-left text-uppercase text-sm',
-            )}>
-            {strings('bnpl.transaction_info.notes')}
-          </Text>
-          <Text style={applyStyles('text-gray-200 text-left text-base')}>
-            {strings('bnpl.transaction_info.notes_text_content', {
-              notes:
-                'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua',
-            })}
-          </Text>
-        </View>
+        {!!receiptData?.note && (
+          <View style={applyStyles('py-24')}>
+            <Text
+              style={applyStyles(
+                'pb-10 text-gray-100 text-left text-uppercase text-sm',
+              )}>
+              {strings('bnpl.transaction_info.notes')}
+            </Text>
+            <Text style={applyStyles('text-gray-200 text-left text-base')}>
+              {strings('bnpl.transaction_info.notes_text_content', {
+                notes: receiptData?.note,
+              })}
+            </Text>
+          </View>
+        )}
       </View>
       <Button
         onPress={handleShareModal}

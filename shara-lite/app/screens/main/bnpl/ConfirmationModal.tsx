@@ -53,10 +53,13 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
           onChange={handleMerchantTermChange}
           containerStyle={applyStyles('justify-between')}
           leftLabel={
-            <View style={applyStyles('flex-row items-center')}>
+            <View style={applyStyles('flex-1')}>
               <Markdown
                 style={{
-                  textgroup: applyStyles('text-400 text-lg text-gray-200'),
+                  link: applyStyles('text-secondary'),
+                  textgroup: applyStyles(
+                    'text-400 pr-32 text-lg text-gray-200',
+                  ),
                 }}>
                 {strings('bnpl.confirmation.merchant_terms')}
               </Markdown>
@@ -69,10 +72,12 @@ export const ConfirmationModal = (props: ConfirmationModalProps) => {
           onChange={handleClientTermChange}
           containerStyle={applyStyles('justify-between mb-32')}
           leftLabel={
-            <View style={applyStyles('flex-row items-center')}>
+            <View style={applyStyles('flex-1')}>
               <Markdown
                 style={{
-                  textgroup: applyStyles('text-400 text-lg text-gray-200'),
+                  textgroup: applyStyles(
+                    'text-400 pr-32 text-lg text-gray-200',
+                  ),
                 }}>
                 {strings('bnpl.confirmation.client_terms')}
               </Markdown>
