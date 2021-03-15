@@ -61,34 +61,43 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
             ),
           })}
         </Text>
-        <View style={applyStyles('flex-row px-24 justify-around')}>
-          <Text style={applyStyles('py-18 text-gray-100')}>
+        <View style={applyStyles('flex-row px-24 justify-end')}>
+          <Text style={applyStyles('flex-1 py-18 text-gray-200 text-right')}>
             {strings('bnpl.transaction_info.total_amount_text')}
           </Text>
-          <Text style={applyStyles('py-18 text-gray-100')}>
+          <Text
+            style={applyStyles(
+              'flex-1 py-18 text-gray-300 text-700 text-right',
+            )}>
             {strings('bnpl.transaction_info.total_amount', {
               amount: amountWithCurrency(receiptData?.total_amount),
             })}
           </Text>
         </View>
-        <View style={applyStyles('flex-row px-24 justify-around')}>
-          <Text style={applyStyles('py-18 text-gray-100 text-right')}>
+        <View style={applyStyles('flex-row px-24 justify-end')}>
+          <Text style={applyStyles('flex-1 py-18 text-gray-200 text-right')}>
             {strings('bnpl.transaction_info.paid_text')}
           </Text>
-          <Text style={applyStyles('py-18 text-gray-100 text-right')}>
+          <Text
+            style={applyStyles(
+              'flex-1 py-18 text-gray-300 text-700 text-right',
+            )}>
             {strings('bnpl.transaction_info.paid_amount', {
               amount: amountWithCurrency(receiptData?.amount_paid),
             })}
           </Text>
         </View>
         <View
-          style={applyStyles('flex-row px-24 justify-around border-t-1', {
+          style={applyStyles('flex-row px-24 justify-end border-t-1', {
             borderColor: colors['gray-20'],
           })}>
-          <Text style={applyStyles('py-18 text-gray-100')}>
+          <Text style={applyStyles('flex-1 py-18 text-gray-200 text-right')}>
             {strings('bnpl.transaction_info.outstanding_text')}
           </Text>
-          <Text style={applyStyles('py-18 text-gray-100')}>
+          <Text
+            style={applyStyles(
+              'flex-1 py-18 text-red-100 text-700 text-right',
+            )}>
             {strings('bnpl.transaction_info.outstanding_amount', {
               amount: amountWithCurrency(receiptData?.credit_amount),
             })}
