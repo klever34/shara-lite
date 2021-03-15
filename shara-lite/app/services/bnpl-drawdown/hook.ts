@@ -7,8 +7,13 @@ import perf from '@react-native-firebase/perf';
 interface saveBNPLDrawdownInterface {
   bnplDrawdown: IBNPLDrawdown;
 }
+
+interface getBNPLDrawdownInterface {
+  bnplDrawdownId: ObjectId;
+}
 interface useBNPLDrawdownInterface {
   getBNPLDrawdowns: () => Realm.Results<IBNPLDrawdown & Realm.Object>;
+  getBNPLDrawdown: (data: getBNPLDrawdownInterface) => IBNPLDrawdown;
   saveBNPLDrawdown: (
     data: saveBNPLDrawdownInterface,
   ) => Promise<IBNPLDrawdown>;
@@ -20,6 +25,10 @@ export const useBNPLDrawdown = (): useBNPLDrawdownInterface => {
     return realm
       .objects<IBNPLDrawdown>(modelName)
       .filtered('is_deleted != true');
+  };
+
+  const getBNPLDrawdown = ({bnplDrawdownId}: getBNPLDrawdownInterface ) => {
+    return realm.objectForPrimaryKey(modelName, bnplDrawdownId) as IBNPLDrawdown;
   };
 
   const saveBNPLDrawdown = async ({
@@ -47,6 +56,7 @@ export const useBNPLDrawdown = (): useBNPLDrawdownInterface => {
 
 
   return {
+    getBNPLDrawdown,
     getBNPLDrawdowns,
     saveBNPLDrawdown,
   };

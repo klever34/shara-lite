@@ -173,6 +173,74 @@
             "invalid": "Your OTP is invalid",
             "success": "OTP Validation successful"
           }
+        },
+        "bnplApproval": {
+          "create": {
+            "success": {
+              "message": "BNPL approved successfully",
+              "messageCode": "alert.api.bnplApproval.create.success"
+            },
+            "error": {
+              "message": "Unable to approve BNPL for user",
+              "messageCode": "alert.api.bnplApproval.create.error"
+            },
+            "exists": {
+              "message": "An active BNPL exists for this user",
+              "messageCode": "alert.api.bnplApproval.create.exists"
+            },
+            "userNotFound": {
+              "message": "User not found",
+              "messageCode": "alert.api.bnplApproval.create.userNotFound"
+            }
+          }
+        },
+        "bnplDrawdown": {
+          "create": {
+            "notFound": {
+              "message": "No BNPL has been approved for you",
+              "messageCode": "alert.api.bnplDrawdown.create.notFound"
+            },
+            "invalidAmount": {
+              "message": "Amount specified is more than the amount available for drawdown",
+              "messageCode": "alert.api.bnplDrawdown.create.invalidAmount"
+            },
+            "inactive": {
+              "message": "Drawdown is not currently active",
+              "messageCode": "alert.api.bnplDrawdown.create.inactive"
+            },
+            "error": {
+              "message": "We were unable to process your drawdown, please try again or contact us through the Shara mobile application",
+              "messageCode": "alert.api.bnplDrawdown.create.error"
+            },
+            "success": {
+              "message": "Drawdown taken successfully",
+              "messageCode": "alert.api.bnplDrawdown.create.success"
+            }
+          }
+        },
+        "bnplRepayment": {
+          "create": {
+            "notFound": {
+              "message": "No BNPL has been approved for you",
+              "messageCode": "alert.api.bnplRepayment.create.notFound"
+            },
+            "complete": {
+              "message": "You've already finished repaying your loans",
+              "messageCode": "alert.api.bnplRepayment.create.complete"
+            },
+            "error": {
+              "message": "We were unable to process your repayment, please try again or contact us through the Shara mobile application",
+              "messageCode": "alert.api.bnplRepayment.create.error"
+            },
+            "insufficientBalance": {
+              "message": "Your wallet balance is not sufficient",
+              "messageCode": "alert.api.bnplRepayment.create.insufficientBalance"
+            },
+            "success": {
+              "message": "Repayment successful",
+              "messageCode": "alert.api.bnplRepayment.create.success"
+            }
+          }
         }
       }
     },
@@ -696,7 +764,7 @@
       "select_withdrawal_account": "Select withdrawal account",
       "confirm_withdrawal": "Confirm withdrawal",
       "about_to_withdraw": "You are about to withdraw **{{amount}}** to\\n**{{bank_details}}**",
-      "withdraw_success": "Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful",
+      "withdraw_success": "Your transaction is being processed. It may take up to a few minutes to reflect in your Shara wallet",
       "payment_activity": {
         "received_payment": "Received payment of **{{amount}}** via **{{provider}}**",
         "withdrawal": "Withdrawal of **{{amount}}** to your **{{provider}}**",
@@ -1020,6 +1088,32 @@
         "identity": {
           "verify": {"error": "", "invalid": "", "success": ""},
           "validate": {"error": "", "invalid": "", "success": ""}
+        },
+        "bnplApproval": {
+          "create": {
+            "success": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "exists": {"message": "", "messageCode": ""},
+            "userNotFound": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplDrawdown": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "invalidAmount": {"message": "", "messageCode": ""},
+            "inactive": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplRepayment": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "complete": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "insufficientBalance": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
         }
       }
     },
@@ -1542,7 +1636,7 @@
       "select_withdrawal_account": "Chagua akaunti ya kujiondoa",
       "confirm_withdrawal": "Thibitisha uondoaji",
       "about_to_withdraw": "Uko karibu kutoa **{{amount}}** kwa\\n**{{bank_details}}**",
-      "withdraw_success": "Uondoaji wako wa **{{amount}}** kwenda **{{bank_details}}** ulifanikiwa",
+      "withdraw_success": "Shughuli yako inashughulikiwa. Inaweza kuchukua hadi dakika chache kutafakari kwenye mkoba wako wa Shara",
       "payment_activity": {
         "received_payment": "Imepokelewa malipo ya **{{amount}}** kupitia **{{provider}}**",
         "withdrawal": "Uondoaji ya **{{amount}}** kwa yako **{{provider}}**",
@@ -1870,6 +1964,32 @@
             "error": "Ba ayi nasarar in ganta OTP ba",
             "invalid": "OTP bata inganta ba",
             "success": "Anyi nasarar inganta OTP"
+          }
+        },
+        "bnplApproval": {
+          "create": {
+            "success": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "exists": {"message": "", "messageCode": ""},
+            "userNotFound": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplDrawdown": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "invalidAmount": {"message": "", "messageCode": ""},
+            "inactive": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplRepayment": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "complete": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "insufficientBalance": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
           }
         }
       }
@@ -2385,7 +2505,7 @@
       "select_withdrawal_account": "Zabi akawun na cirar kudi",
       "confirm_withdrawal": "Tabbatar da cirar kudi",
       "about_to_withdraw": "Kuna shirin cirar **{{amount}}** zuwa\\n**{{bank_details}}**",
-      "withdraw_success": "**{{amount}}** da aka cira zuwa **{{bank_details}}** Sunzo cikin nasara",
+      "withdraw_success": "Ana aiwatar da ma'amalar ku Yana iya ɗaukar toan mintuna kaɗan don yin tunani a cikin walat ɗin ku na Shara",
       "payment_activity": {
         "received_payment": "Na karbi biyan **{{amount}}**  ta **{{provider}}**",
         "withdrawal": "Cirar **{{amount}}** Zuwa**{{provider}}**",
@@ -2666,6 +2786,32 @@
         "identity": {
           "verify": {"error": "", "invalid": "", "success": ""},
           "validate": {"error": "", "invalid": "", "success": ""}
+        },
+        "bnplApproval": {
+          "create": {
+            "success": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "exists": {"message": "", "messageCode": ""},
+            "userNotFound": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplDrawdown": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "invalidAmount": {"message": "", "messageCode": ""},
+            "inactive": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplRepayment": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "complete": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "insufficientBalance": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
         }
       }
     },
@@ -3303,6 +3449,32 @@
         "identity": {
           "verify": {"error": "", "invalid": "", "success": ""},
           "validate": {"error": "", "invalid": "", "success": ""}
+        },
+        "bnplApproval": {
+          "create": {
+            "success": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "exists": {"message": "", "messageCode": ""},
+            "userNotFound": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplDrawdown": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "invalidAmount": {"message": "", "messageCode": ""},
+            "inactive": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplRepayment": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "complete": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "insufficientBalance": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
         }
       }
     },
@@ -3940,6 +4112,32 @@
         "identity": {
           "verify": {"error": "", "invalid": "", "success": ""},
           "validate": {"error": "", "invalid": "", "success": ""}
+        },
+        "bnplApproval": {
+          "create": {
+            "success": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "exists": {"message": "", "messageCode": ""},
+            "userNotFound": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplDrawdown": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "invalidAmount": {"message": "", "messageCode": ""},
+            "inactive": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
+        },
+        "bnplRepayment": {
+          "create": {
+            "notFound": {"message": "", "messageCode": ""},
+            "complete": {"message": "", "messageCode": ""},
+            "error": {"message": "", "messageCode": ""},
+            "insufficientBalance": {"message": "", "messageCode": ""},
+            "success": {"message": "", "messageCode": ""}
+          }
         }
       }
     },

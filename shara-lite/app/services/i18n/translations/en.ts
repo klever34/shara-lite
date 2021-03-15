@@ -916,7 +916,7 @@ const en: Strings = {
     about_to_withdraw:
       'You are about to withdraw **{{amount}}** to\\n**{{bank_details}}**',
     withdraw_success:
-      'Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful',
+      'Your transaction is being processed. It may take up to a few minutes to reflect in your Shara wallet',
     payment_activity: {
       received_payment:
         'Received payment of **{{amount}}** via **{{provider}}**',
