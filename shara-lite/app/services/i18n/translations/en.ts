@@ -212,6 +212,77 @@ const en: Strings = {
           success: 'OTP Validation successful',
         },
       },
+      bnplApproval: {
+        create: {
+          success: {
+            message: 'BNPL approved successfully',
+            messageCode: 'alert.api.bnplApproval.create.success',
+          },
+          error: {
+            message: 'Unable to approve BNPL for user',
+            messageCode: 'alert.api.bnplApproval.create.error',
+          },
+          exists: {
+            message: 'An active BNPL exists for this user',
+            messageCode: 'alert.api.bnplApproval.create.exists',
+          },
+          userNotFound: {
+            message: 'User not found',
+            messageCode: 'alert.api.bnplApproval.create.userNotFound',
+          },
+        },
+      },
+      bnplDrawdown: {
+        create: {
+          notFound: {
+            message: 'No BNPL has been approved for you',
+            messageCode: 'alert.api.bnplDrawdown.create.notFound',
+          },
+          invalidAmount: {
+            message:
+              'Amount specified is more than the amount available for drawdown',
+            messageCode: 'alert.api.bnplDrawdown.create.invalidAmount',
+          },
+          inactive: {
+            message: 'Drawdown is not currently active',
+            messageCode: 'alert.api.bnplDrawdown.create.inactive',
+          },
+          error: {
+            message:
+              'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
+            messageCode: 'alert.api.bnplDrawdown.create.error',
+          },
+          success: {
+            message: 'Drawdown taken successfully',
+            messageCode: 'alert.api.bnplDrawdown.create.success',
+          },
+        },
+      },
+      bnplRepayment: {
+        create: {
+          notFound: {
+            message: 'No BNPL has been approved for you',
+            messageCode: 'alert.api.bnplRepayment.create.notFound',
+          },
+          complete: {
+            message: "You've already finished repaying your loans",
+            messageCode: 'alert.api.bnplRepayment.create.complete',
+          },
+          error: {
+            message:
+              'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
+            messageCode: 'alert.api.bnplRepayment.create.error',
+          },
+          insufficientBalance: {
+            message: 'Your wallet balance is not sufficient',
+            messageCode: 'alert.api.bnplRepayment.create.insufficientBalance',
+          },
+          success: {
+            message: 'Repayment successful',
+            messageCode: 'alert.api.bnplRepayment.create.success',
+          },
+        },
+      },
     },
   },
   shara_tagline: 'Built To Get You Paid Faster',
@@ -1016,6 +1087,14 @@ const en: Strings = {
       notes: 'Notes',
       notes_text_content: '{{notes}}',
     },
+    recent_purchase_message:
+      'Hi {{customer_name}}, thank you for your recent purchase.',
+    recent_purchase_message_from_business:
+      'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.',
+    you_paid_message: 'You paid {{amount}}.',
+    you_owe_message: 'You owe {{credit_amount}}.',
+    next_repayment: 'Your next repayment is {{amount}} and it is due on {{date}}.',
+    first_repayment: 'Your first repayment is {{amount}} and it is due on {{date}}.'
   },
   copied: 'Copied',
   submit: 'Submit',

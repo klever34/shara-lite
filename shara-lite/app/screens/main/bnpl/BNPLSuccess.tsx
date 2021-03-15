@@ -11,23 +11,23 @@ import {MainStackParamList} from '..';
 import {BNPLReceiptImage} from './BNPLReceiptImage';
 
 type BNPLSuccessProps = MainStackParamList['BNPLTransactionSuccessScreen'] & {
+  shareReceiptMessage: string;
   captions: {heading: string; outstanding: string; payment: string};
 };
 
 const strings = getI18nService().strings;
 
 export const BNPLSuccess = (props: BNPLSuccessProps) => {
-  const {onDone, transaction, captions} = props;
-  const {drawdown} = transaction;
+  const {onDone, transaction, captions, shareReceiptMessage} = props;
+  const {drawdown, receiptData} = transaction;
 
   const [receiptImage, setReceiptImage] = useState('');
 
   const analyticsService = getAnalyticsService();
-  const shareReceiptMessage = ``;
   const receiptShareProps: ShareHookProps = {
     image: receiptImage,
     message: shareReceiptMessage,
-    recipient: drawdown?.customer?.mobile,
+    recipient: receiptData?.customer?.mobile,
     title: strings('receipts.receipt_share_title'),
     subject: strings('receipts.receipt_share_title'),
   };
@@ -45,7 +45,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
       })
       .then(() => {});
     handleSmsShare();
-  }, [analyticsService, handleSmsShare, transaction]);
+  }, [analyticsService, handleSmsShare, drawdown]);
 
   const onWhatsappShare = useCallback(() => {
     analyticsService
@@ -56,7 +56,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
       })
       .then(() => {});
     handleWhatsappShare();
-  }, [analyticsService, handleWhatsappShare, transaction]);
+  }, [analyticsService, handleWhatsappShare, drawdown]);
 
   const onOthersShare = useCallback(() => {
     analyticsService
@@ -67,7 +67,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
       })
       .then(() => {});
     handleEmailShare();
-  }, [analyticsService, transaction, handleEmailShare]);
+  }, [analyticsService, drawdown, handleEmailShare]);
 
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>

@@ -63,7 +63,12 @@ const SelectWithdrawalAccountModal = ({
           if (!disbursementMethod.parsedAccountDetails) {
             return null;
           }
-          const {bank_name, nuban} = disbursementMethod.parsedAccountDetails;
+          const {
+            bank_name,
+            nuban,
+            account_label,
+            provider_label,
+          } = disbursementMethod.parsedAccountDetails;
           const isSelected =
             nuban === selectedDisbursementMethod.parsedAccountDetails?.nuban;
           return (
@@ -80,7 +85,7 @@ const SelectWithdrawalAccountModal = ({
                   <Text style={as('uppercase mb-4 font-bold text-gray-300')}>
                     {bank_name}
                   </Text>
-                  <Text style={as('text-gray-300')}>{nuban}</Text>
+                  <Text style={as('text-gray-300')}>{account_label}</Text>
                 </View>
                 <View
                   style={as(

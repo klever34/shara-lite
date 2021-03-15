@@ -759,7 +759,7 @@
       "clients_text": "Clients",
       "new_transaction_text": "New transaction",
       "total_completed_text": "Total completed",
-      "amount_used_text": "Amount used",
+      "amount_used_text": "Amount drawn",
       "amount_available_text": "Amount available",
       "completed_text": "Completed",
       "payment_left_text": {
@@ -770,7 +770,8 @@
         "one": "{{amount}} payment made",
         "other": "{{amount}} payments made"
       },
-      "empty_state": "You have not recorded any BNPL transactions yet. Click to button below to get started.",
+      "active_empty_state": "You have no active BNPL transactions yet. Click the button below to get started.",
+      "complete_empty_state": "You have no fully completed BNPL transactions yet. Click the button below to get started.",
       "repayment_per_week": "{{amount}}/week",
       "record_transaction": {
         "title": "Enter transaction",
@@ -795,7 +796,7 @@
         "repayment_date": "to be paid in full by {{date}}"
       },
       "confirmation": {
-        "instruction": "1. Accept the terms of the BNPL offered by Shara to you  \n2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.",
+        "instruction": "1. Accept the terms of the BNPL offered by Shara to you 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.",
         "title": "Confirm Buy Now Pay Later",
         "terms": "**Terms**",
         "client_terms": "I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.",
@@ -842,7 +843,13 @@
         "outstanding_amount": "{{amount}}",
         "notes": "Notes",
         "notes_text_content": "{{notes}}"
-      }
+      },
+      "recent_purchase_message": "Hi {{customer_name}}, thank you for your recent purchase.",
+      "recent_purchase_message_from_business": "Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.",
+      "you_paid_message": "You paid {{amount}}.",
+      "you_owe_message": "You owe {{credit_amount}}.",
+      "next_repayment": "Your next repayment is {{amount}} and it is due on {{date}}.",
+      "first_repayment": "Your first repayment is {{amount}} and it is due on {{date}}."
     },
     "copied": "Copied",
     "submit": "Submit"
@@ -1598,7 +1605,7 @@
       "clients_text": "Wateja",
       "new_transaction_text": "Shughuli mpya",
       "total_completed_text": "Jumla imekamilika",
-      "amount_used_text": "Kiasi kilichotumiwa",
+      "amount_used_text": "Kiasi kilichochorwa",
       "amount_available_text": "Kiasi kinapatikana",
       "completed_text": "Imekamilika",
       "payment_left_text": {
@@ -1609,7 +1616,8 @@
         "one": "{{amount}} malipo yamefanywa",
         "other": "Malipo {{amount}} yamefanywa"
       },
-      "empty_state": "Bado haujarekodi shughuli zozote za BNPL. Bonyeza kitufe hapa chini ili uanze.",
+      "active_empty_state": "Bado huna shughuli zozote za BNPL. Bonyeza kitufe hapa chini ili kuanza.",
+      "complete_empty_state": "Bado hujamaliza shughuli zote za BNPL. Bonyeza kitufe hapa chini ili kuanza.",
       "repayment_per_week": "{{amount}}/wiki",
       "record_transaction": {
         "title": "Ingiza shughuli",
@@ -1634,7 +1642,7 @@
         "repayment_date": "kulipwa kamili na {{date}}"
       },
       "confirmation": {
-        "instruction": "1. Kubali masharti ya BNPL uliyopewa na Shara kwako\n2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara.",
+        "instruction": "1. Kubali masharti ya BNPL uliyopewa na Shara kwako 2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara.",
         "title": "Thibitisha Nunua Sasa Lipa Baadaye",
         "terms": "** Masharti **",
         "client_terms": "Ninathibitisha kuwa Mteja wangu amekubali masharti ya bidhaa ya Nunua Sasa Lipa Baadaye ninayompa.",
@@ -1681,7 +1689,13 @@
         "outstanding_amount": "{{kiasi}}",
         "notes": "Vidokezo",
         "notes_text_content": "{{noti}}"
-      }
+      },
+      "recent_purchase_message": "Habari {{mteja_ jina}}, asante kwa ununuzi wako wa hivi karibuni",
+      "recent_purchase_message_from_business": "Habari {{mteja_jina}}, asante kwa ununuzi wako wa hivi majuzi kutoka {{{jina_la jina}}.",
+      "you_paid_message": "Ulilipa {{amount}}.",
+      "you_owe_message": "Unadaiwa {{credit_mount}}.",
+      "next_repayment": "Ulipaji wako unaofuata ni {{kiasi}} na unastahili kulipwa tarehe {{date}}.",
+      "first_repayment": "Ulipaji wako wa kwanza ni {{kiasi}} na unastahili kulipwa tarehe {{date}}."
     },
     "copied": "Imenakiliwa",
     "submit": "Wasilisha"
@@ -2434,7 +2448,7 @@
       "clients_text": "Abokan ciniki",
       "new_transaction_text": "Sabuwar ma'amala",
       "total_completed_text": "An gama duka",
-      "amount_used_text": "Adadin da aka yi amfani da shi",
+      "amount_used_text": "Adadin da aka zana",
       "amount_available_text": "Adadin akwai",
       "completed_text": "Kammala",
       "payment_left_text": {
@@ -2445,7 +2459,8 @@
         "one": "{{amount}} biyan da aka yi",
         "other": "{{amount}} biyan kuɗi"
       },
-      "empty_state": "Ba ku yi rikodin kowane ma'amala na BNPL ba tukuna. Danna maɓallin da ke ƙasa don farawa.",
+      "active_empty_state": "Ba ku da ma'amalar BNPL mai aiki tukuna. Danna maballin da ke ƙasa don farawa.",
+      "complete_empty_state": "Ba ku da cikakkiyar ma'amalar BNPL har yanzu. Danna maballin da ke ƙasa don farawa.",
       "repayment_per_week": "{{amount}}/mako",
       "record_transaction": {
         "title": "Shigar da ma'amala",
@@ -2470,7 +2485,7 @@
         "repayment_date": "da za a biya su cikakke ta {{date}}"
       },
       "confirmation": {
-        "instruction": "1. Yarda da sharuddan BNPL da Shara ta gabatar muku\n2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.",
+        "instruction": "1. Yarda da sharuddan BNPL da Shara ta gabatar muku 2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.",
         "title": "Tabbatar Sayi Yanzu Biya Daga baya",
         "terms": "** Sharudda **",
         "client_terms": "Na tabbatar cewa Abokin ciniki na ya amince da sharuɗɗan kayan Siyarwa Na Biyar Yanzu Ina ba shi ko ita.",
@@ -2517,7 +2532,13 @@
         "outstanding_amount": "{{adadin}}",
         "notes": "Bayanan kula",
         "notes_text_content": "{{bayanin kula}}"
-      }
+      },
+      "recent_purchase_message": "Barka dai {{sunan abokin ciniki}}, na gode da siyan da kuka yi kwanan nan.",
+      "recent_purchase_message_from_business": "Barka dai {{abokin ciniki_name}}, na gode da siyan kwanan nan daga {{kasuwanci_name}}.",
+      "you_paid_message": "Kun biya {{adadin}}.",
+      "you_owe_message": "Ana binka {{credit_amount}}",
+      "next_repayment": "Biyan ku na gaba shine {{adadin}} kuma ya dace a kan {{date}}",
+      "first_repayment": "Biyan ku na farko shine {{adadin}} kuma ya dace a ranar {{date}}."
     },
     "copied": "An kwafa",
     "submit": "Tura"
@@ -3095,7 +3116,8 @@
       "completed_text": "",
       "payment_left_text": {"one": "", "other": ""},
       "payment_made_text": {"one": "", "other": ""},
-      "empty_state": "",
+      "active_empty_state": "",
+      "complete_empty_state": "",
       "repayment_per_week": "",
       "record_transaction": {
         "title": "",
@@ -3147,7 +3169,13 @@
         "outstanding_amount": "",
         "notes": "",
         "notes_text_content": ""
-      }
+      },
+      "recent_purchase_message": "",
+      "recent_purchase_message_from_business": "",
+      "you_paid_message": "",
+      "you_owe_message": "",
+      "next_repayment": "",
+      "first_repayment": ""
     },
     "copied": "",
     "submit": ""
@@ -3725,7 +3753,8 @@
       "completed_text": "",
       "payment_left_text": {"one": "", "other": ""},
       "payment_made_text": {"one": "", "other": ""},
-      "empty_state": "",
+      "active_empty_state": "",
+      "complete_empty_state": "",
       "repayment_per_week": "",
       "record_transaction": {
         "title": "",
@@ -3777,7 +3806,13 @@
         "outstanding_amount": "",
         "notes": "",
         "notes_text_content": ""
-      }
+      },
+      "recent_purchase_message": "",
+      "recent_purchase_message_from_business": "",
+      "you_paid_message": "",
+      "you_owe_message": "",
+      "next_repayment": "",
+      "first_repayment": ""
     },
     "copied": "",
     "submit": ""
@@ -4355,7 +4390,8 @@
       "completed_text": "",
       "payment_left_text": {"one": "", "other": ""},
       "payment_made_text": {"one": "", "other": ""},
-      "empty_state": "",
+      "active_empty_state": "",
+      "complete_empty_state": "",
       "repayment_per_week": "",
       "record_transaction": {
         "title": "",
@@ -4407,7 +4443,13 @@
         "outstanding_amount": "",
         "notes": "",
         "notes_text_content": ""
-      }
+      },
+      "recent_purchase_message": "",
+      "recent_purchase_message_from_business": "",
+      "you_paid_message": "",
+      "you_owe_message": "",
+      "next_repayment": "",
+      "first_repayment": ""
     },
     "copied": "",
     "submit": ""

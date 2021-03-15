@@ -187,6 +187,74 @@ export interface Strings {
           success: string;
         };
       };
+      bnplApproval: {
+        create: {
+          success: {
+            message: string;
+            messageCode: string;
+          },
+          error: {
+            message: string;
+            messageCode: string;
+          },
+          exists: {
+            message: string;
+            messageCode: string;
+          },
+          userNotFound: {
+            message: string;
+            messageCode: string;
+          },
+        },
+      },
+      bnplDrawdown: {
+        create: {
+          notFound: {
+            message: string;
+            messageCode: string;
+          },
+          invalidAmount: {
+            message: string;
+            messageCode: string;
+          },
+          inactive: {
+            message: string
+            messageCode: string;
+          },
+          error: {
+            message: string;
+            messageCode: string;
+          },
+          success: {
+            message: string;
+            messageCode: string;
+          },
+        },
+      },
+      bnplRepayment: {
+        create: {
+          notFound: {
+            message: string;
+            messageCode: string;
+          },
+          complete: {
+            message: string;
+            messageCode: string;
+          },
+          error: {
+            message: string;
+            messageCode: string;
+          },
+          insufficientBalance: {
+            message: string;
+            messageCode: string;
+          },
+          success: {
+            message: string;
+            messageCode: string;
+          },
+        },
+      };
     };
   };
   home_screen_setup_business_text: string;
@@ -769,6 +837,12 @@ export interface Strings {
       notes: string;
       notes_text_content: string;
     };
+    recent_purchase_message: string;
+    recent_purchase_message_from_business: string;
+    you_paid_message: string;
+    you_owe_message: string;
+    next_repayment: string;
+    first_repayment: string;
   };
   copied: string;
   submit: string;

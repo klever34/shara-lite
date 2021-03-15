@@ -21,8 +21,8 @@ type Props = {
   transaction: {
     receiptData?: IReceipt;
     drawdown: IBNPLDrawdown;
-    approval: IBNPLApproval;
-    repayments: IBNPLRepayment[];
+    approval?: IBNPLApproval;
+    repayments?: IBNPLRepayment[];
   };
   containerStyle?: ViewStyle;
   getImageUri: (base64: string) => void;
@@ -216,7 +216,7 @@ export const BNPLReceiptImage = memo((props: Props) => {
               </Text>
             </View>
             <View>
-              {repayments.map(
+              {repayments?.map(
                 ({batch_no, due_at, status, amount_owed, repayment_amount}) => (
                   <View
                     key={batch_no}

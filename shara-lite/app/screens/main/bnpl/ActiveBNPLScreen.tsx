@@ -28,7 +28,8 @@ export const ActiveBNPLScreen = () => {
   return (
     <View style={applyStyles('flex-1 bg-white')}>
       <View style={applyStyles('bg-gray-10 py-16 px-24')}>
-        <View style={applyStyles('flex-row items-center justify-between')}>
+        <View
+          style={applyStyles('pb-16 flex-row items-center justify-between')}>
           <Text style={applyStyles('text-gray-300')}>
             {strings('bnpl.amount_available_text')}
           </Text>
@@ -36,8 +37,7 @@ export const ActiveBNPLScreen = () => {
             {amountWithCurrency(amount_available)}
           </Text>
         </View>
-        <View
-          style={applyStyles('pb-16 flex-row items-center justify-between')}>
+        <View style={applyStyles('flex-row items-center justify-between')}>
           <Text style={applyStyles('text-gray-300')}>
             {strings('bnpl.amount_used_text')}
           </Text>

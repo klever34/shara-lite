@@ -37,7 +37,15 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
 
   const handleShareModal = useCallback(() => {
     const closeModal = openModal('bottom-half', {
-      renderContent: () => <ShareModal onClose={closeModal} />,
+      renderContent: () => (
+        <ShareModal
+          transaction={{
+            receiptData,
+            drawdown: transaction,
+          }}
+          onClose={closeModal}
+        />
+      ),
     });
   }, [openModal]);
 

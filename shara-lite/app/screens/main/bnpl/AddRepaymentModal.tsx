@@ -63,6 +63,7 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
       </Text>
       <View style={applyStyles('px-24')}>
         <FlatFloatingLabelCurrencyInput
+          editable={false}
           errorMessage={errors.amount}
           value={toNumber(values.amount)}
           isInvalid={!!touched.amount && !!errors.amount}
