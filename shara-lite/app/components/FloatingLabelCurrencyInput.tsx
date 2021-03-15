@@ -37,12 +37,16 @@ const toThousandString = (text: string) => {
 export const FlatFloatingLabelCurrencyInput = (
   props: CurrencyInputProps & {flatContainerStyle?: ViewStyle},
 ) => {
+  const currency = getAuthService().getUserCurrency();
   return (
     <View style={applyStyles('bg-gray-20', props.flatContainerStyle)}>
       <FloatingLabelCurrencyInput
         iconStyle={applyStyles('px-24', props.iconStyle)}
         labelStyle={applyStyles('px-24', props.labelStyle)}
-        inputStyle={applyStyles({paddingLeft: 40}, props.inputStyle)}
+        inputStyle={applyStyles(
+          {paddingLeft: currency.length > 1 ? 56 : 40},
+          props.inputStyle,
+        )}
         {...props}
       />
     </View>
@@ -94,7 +98,7 @@ export const FloatingLabelCurrencyInput = forwardRef<
       leftIcon={
         <Text
           style={applyStyles('text-400 text-gray-300', {
-            top: 2,
+            top: 1,
             fontSize: 16,
             ...iconStyle,
           })}>

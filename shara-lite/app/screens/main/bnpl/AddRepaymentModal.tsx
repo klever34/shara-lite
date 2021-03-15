@@ -46,9 +46,6 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
     }),
   });
 
-  const btnIsDisabled =
-    !values.amount || toNumber(values.amount) > (wallet?.balance ?? 0);
-
   return (
     <View>
       <Text
@@ -109,7 +106,7 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
             variantColor="blue"
             onPress={handleSubmit}
             isLoading={isSubmitting}
-            disabled={btnIsDisabled}
+            disabled={!values.amount}
             title={strings('confirm')}
             style={applyStyles({width: 120})}
             textStyle={applyStyles('text-uppercase')}

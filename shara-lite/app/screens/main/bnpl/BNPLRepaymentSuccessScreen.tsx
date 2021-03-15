@@ -6,6 +6,8 @@ import {MainStackParamList} from '..';
 import {BNPLSuccess} from './BNPLSuccess';
 import Config from 'react-native-config';
 import format from 'date-fns/format';
+import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
+import {ObjectId} from 'bson';
 
 const strings = getI18nService().strings;
 
@@ -20,28 +22,43 @@ export const BNPLRepaymentSuccessScreen = (
   const {transaction, amount} = route.params;
   const {drawdown, receiptData} = transaction;
 
+  const {getBNPLDrawdown} = useBNPLDrawdown();
+  const bnplDrawdown =
+    drawdown._id &&
+    getBNPLDrawdown({
+      bnplDrawdownId: new ObjectId(drawdown._id),
+    });
+
   const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
 
-  const activeRepayments = drawdown.bnpl_repayments
-    ?.filtered('status != "completed"')
+  const activeRepayments = bnplDrawdown?.bnpl_repayments
+    ?.filtered('status != "complete"')
     .sorted('batch_no', false);
+  const activeRepaymentsLength = activeRepayments?.length;
+  const remainingDays =
+    activeRepayments && drawdown
+      ? (drawdown?.repayment_period ?? 8) *
+        (activeRepaymentsLength && activeRepaymentsLength < 8
+          ? activeRepaymentsLength
+          : 7)
+      : 56;
   const nextRepayment = activeRepayments && activeRepayments[0];
   const paymentLink =
     businessInfo.slug &&
     `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
-      drawdown.customer?._id
-        ? `?customer=${String(drawdown.customer?._id)}`
+      receiptData?.customer?._id
+        ? `?customer=${String(receiptData?.customer?._id)}`
         : ''
     }`;
   const shareReceiptMessage = `${
     businessInfo.name || user?.firstname
       ? strings('bnpl.recent_purchase_message_from_business', {
-          customer_name: drawdown.customer?.name ?? '',
+          customer_name: receiptData?.customer?.name ?? '',
           business_name: businessInfo.name || user?.firstname,
         })
       : strings('bnpl.recent_purchase_message', {
-          customer_name: drawdown.customer?.name ?? '',
+          customer_name: receiptData?.customer?.name ?? '',
         })
   } ${strings('bnpl.you_paid_message', {
     amount: amountWithCurrency(receiptData?.amount_paid),
@@ -53,7 +70,7 @@ export const BNPLRepaymentSuccessScreen = (
       'dd MMM yyyy',
     ),
     amount: amountWithCurrency(drawdown?.payment_frequency_amount),
-  })} ${
+  })}\n${
     paymentLink
       ? strings('payment_link_message', {
           payment_link: paymentLink,
@@ -68,7 +85,7 @@ export const BNPLRepaymentSuccessScreen = (
         heading: strings('bnpl.client.repayment.success.heading'),
         payment: strings('bnpl.client.repayment.success.outstanding', {
           amount: amountWithCurrency(drawdown.amount_owed),
-          days: 56,
+          days: remainingDays,
         }),
         outstanding: strings('bnpl.client.repayment.success.payment', {
           amount: amountWithCurrency(amount),

@@ -26,7 +26,7 @@ type Props = {
 const strings = getI18nService().strings;
 
 export const BNPLClientDetailsList = withModal((props: Props) => {
-  const {data, header, drawdown, customer, openModal} = props;
+  const {data, header, drawdown, customer, openModal, closeModal} = props;
   const navigation = useAppNavigation();
   const {getReceipt} = useReceipt();
 
@@ -53,8 +53,9 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         if (drawdown && drawdown.receipt?._id) {
           receipt = drawdown && getReceipt({receiptId: drawdown.receipt?._id});
         }
+        closeModal();
 
-        navigation.navigate('BNPLTransactionSuccessScreen', {
+        navigation.navigate('BNPLRepaymentSuccessScreen', {
           amount: toNumber(values.amount),
           transaction: {
             approval,
