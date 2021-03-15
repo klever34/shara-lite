@@ -71,12 +71,14 @@ export const BNPLClientScreen = (props: BNPLClientScreenProps) => {
           </View>
           <View style={applyStyles('flex-1 center pl-32')}>
             <Touchable onPress={handlePressListItem}>
-              <Icon
-                size={24}
-                color={colors.white}
-                type="material-icons"
-                name="menu"
-              />
+              <View style={applyStyles('w-40 h-40 rounded-32 center')}>
+                <Icon
+                  size={24}
+                  color={colors.white}
+                  type="material-icons"
+                  name="menu"
+                />
+              </View>
             </Touchable>
           </View>
         </View>
