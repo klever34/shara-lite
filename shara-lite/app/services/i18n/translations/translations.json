@@ -176,70 +176,28 @@
         },
         "bnplApproval": {
           "create": {
-            "success": {
-              "message": "BNPL approved successfully",
-              "messageCode": "alert.api.bnplApproval.create.success"
-            },
-            "error": {
-              "message": "Unable to approve BNPL for user",
-              "messageCode": "alert.api.bnplApproval.create.error"
-            },
-            "exists": {
-              "message": "An active BNPL exists for this user",
-              "messageCode": "alert.api.bnplApproval.create.exists"
-            },
-            "userNotFound": {
-              "message": "User not found",
-              "messageCode": "alert.api.bnplApproval.create.userNotFound"
-            }
+            "success": "BNPL approved successfully",
+            "error": "Unable to approve BNPL for user",
+            "exists": "An active BNPL exists for this user",
+            "userNotFound": "User not found"
           }
         },
         "bnplDrawdown": {
           "create": {
-            "notFound": {
-              "message": "No BNPL has been approved for you",
-              "messageCode": "alert.api.bnplDrawdown.create.notFound"
-            },
-            "invalidAmount": {
-              "message": "Amount specified is more than the amount available for drawdown",
-              "messageCode": "alert.api.bnplDrawdown.create.invalidAmount"
-            },
-            "inactive": {
-              "message": "Drawdown is not currently active",
-              "messageCode": "alert.api.bnplDrawdown.create.inactive"
-            },
-            "error": {
-              "message": "We were unable to process your drawdown, please try again or contact us through the Shara mobile application",
-              "messageCode": "alert.api.bnplDrawdown.create.error"
-            },
-            "success": {
-              "message": "Drawdown taken successfully",
-              "messageCode": "alert.api.bnplDrawdown.create.success"
-            }
+            "notFound": "No BNPL has been approved for you",
+            "invalidAmount": "Amount specified is more than the amount available for drawdown",
+            "inactive": "Drawdown is not currently active",
+            "error": "We were unable to process your drawdown, please try again or contact us through the Shara mobile application",
+            "success": "Drawdown taken successfully"
           }
         },
         "bnplRepayment": {
           "create": {
-            "notFound": {
-              "message": "No BNPL has been approved for you",
-              "messageCode": "alert.api.bnplRepayment.create.notFound"
-            },
-            "complete": {
-              "message": "You've already finished repaying your loans",
-              "messageCode": "alert.api.bnplRepayment.create.complete"
-            },
-            "error": {
-              "message": "We were unable to process your repayment, please try again or contact us through the Shara mobile application",
-              "messageCode": "alert.api.bnplRepayment.create.error"
-            },
-            "insufficientBalance": {
-              "message": "Your wallet balance is not sufficient",
-              "messageCode": "alert.api.bnplRepayment.create.insufficientBalance"
-            },
-            "success": {
-              "message": "Repayment successful",
-              "messageCode": "alert.api.bnplRepayment.create.success"
-            }
+            "notFound": "No BNPL has been approved for you",
+            "complete": "You've already finished repaying your loans",
+            "error": "We were unable to process your repayment, please try again or contact us through the Shara mobile application",
+            "insufficientBalance": "Your wallet balance is not sufficient",
+            "success": "Repayment successful"
           }
         }
       }
@@ -1091,28 +1049,28 @@
         },
         "bnplApproval": {
           "create": {
-            "success": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "exists": {"message": "", "messageCode": ""},
-            "userNotFound": {"message": "", "messageCode": ""}
+            "success": "",
+            "error": "",
+            "exists": "",
+            "userNotFound": ""
           }
         },
         "bnplDrawdown": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "invalidAmount": {"message": "", "messageCode": ""},
-            "inactive": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
           }
         },
         "bnplRepayment": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "complete": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "insufficientBalance": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
           }
         }
       }
@@ -1968,28 +1926,28 @@
         },
         "bnplApproval": {
           "create": {
-            "success": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "exists": {"message": "", "messageCode": ""},
-            "userNotFound": {"message": "", "messageCode": ""}
+            "success": "",
+            "error": "",
+            "exists": "",
+            "userNotFound": ""
           }
         },
         "bnplDrawdown": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "invalidAmount": {"message": "", "messageCode": ""},
-            "inactive": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
           }
         },
         "bnplRepayment": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "complete": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "insufficientBalance": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
           }
         }
       }
@@ -2789,28 +2747,28 @@
         },
         "bnplApproval": {
           "create": {
-            "success": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "exists": {"message": "", "messageCode": ""},
-            "userNotFound": {"message": "", "messageCode": ""}
+            "success": "",
+            "error": "",
+            "exists": "",
+            "userNotFound": ""
           }
         },
         "bnplDrawdown": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "invalidAmount": {"message": "", "messageCode": ""},
-            "inactive": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
           }
         },
         "bnplRepayment": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "complete": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "insufficientBalance": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
           }
         }
       }
@@ -3452,28 +3410,28 @@
         },
         "bnplApproval": {
           "create": {
-            "success": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "exists": {"message": "", "messageCode": ""},
-            "userNotFound": {"message": "", "messageCode": ""}
+            "success": "",
+            "error": "",
+            "exists": "",
+            "userNotFound": ""
           }
         },
         "bnplDrawdown": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "invalidAmount": {"message": "", "messageCode": ""},
-            "inactive": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
           }
         },
         "bnplRepayment": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "complete": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "insufficientBalance": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
           }
         }
       }
@@ -4115,28 +4073,28 @@
         },
         "bnplApproval": {
           "create": {
-            "success": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "exists": {"message": "", "messageCode": ""},
-            "userNotFound": {"message": "", "messageCode": ""}
+            "success": "",
+            "error": "",
+            "exists": "",
+            "userNotFound": ""
           }
         },
         "bnplDrawdown": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "invalidAmount": {"message": "", "messageCode": ""},
-            "inactive": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "invalidAmount": "",
+            "inactive": "",
+            "error": "",
+            "success": ""
           }
         },
         "bnplRepayment": {
           "create": {
-            "notFound": {"message": "", "messageCode": ""},
-            "complete": {"message": "", "messageCode": ""},
-            "error": {"message": "", "messageCode": ""},
-            "insufficientBalance": {"message": "", "messageCode": ""},
-            "success": {"message": "", "messageCode": ""}
+            "notFound": "",
+            "complete": "",
+            "error": "",
+            "insufficientBalance": "",
+            "success": ""
           }
         }
       }

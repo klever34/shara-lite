@@ -189,70 +189,28 @@ export interface Strings {
       };
       bnplApproval: {
         create: {
-          success: {
-            message: string;
-            messageCode: string;
-          },
-          error: {
-            message: string;
-            messageCode: string;
-          },
-          exists: {
-            message: string;
-            messageCode: string;
-          },
-          userNotFound: {
-            message: string;
-            messageCode: string;
-          },
+          success: string,
+          error: string,
+          exists: string,
+          userNotFound: string,
         },
       },
       bnplDrawdown: {
         create: {
-          notFound: {
-            message: string;
-            messageCode: string;
-          },
-          invalidAmount: {
-            message: string;
-            messageCode: string;
-          },
-          inactive: {
-            message: string
-            messageCode: string;
-          },
-          error: {
-            message: string;
-            messageCode: string;
-          },
-          success: {
-            message: string;
-            messageCode: string;
-          },
+          notFound: string,
+          invalidAmount: string,
+          inactive: string,
+          error: string,
+          success: string,
         },
       },
       bnplRepayment: {
         create: {
-          notFound: {
-            message: string;
-            messageCode: string;
-          },
-          complete: {
-            message: string;
-            messageCode: string;
-          },
-          error: {
-            message: string;
-            messageCode: string;
-          },
-          insufficientBalance: {
-            message: string;
-            messageCode: string;
-          },
-          success: {
-            message: string;
-            messageCode: string;
-          },
+          notFound: string,
+          complete: string,
+          error: string,
+          insufficientBalance: string,
+          success: string,
         },
       };
     };
