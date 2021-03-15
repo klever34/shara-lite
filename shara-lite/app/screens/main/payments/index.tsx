@@ -3,6 +3,7 @@ import React, {useMemo} from 'react';
 import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import PaymentContainer from './PaymentContainer';
 import {PaymentListScreen} from './PaymentListScreen';
+import {useSharaMoney} from '@/screens/main/HomeScreen';
 
 export type ProductsStackParamList = {
   ProductList: undefined;
@@ -13,19 +14,25 @@ export type ProductsStackParamList = {
 const ProductsStack = createNativeStackNavigator<ProductsStackParamList>();
 
 export const PaymentsScreen = () => {
+  const {enableSharaMoney} = useSharaMoney();
   const initialRouteName = useMemo(() => {
+    const sharaMoneyRouteName = 'WithdrawalMethod';
+    const fallbackRouteName = 'ProductList';
+    if (!enableSharaMoney) {
+      return fallbackRouteName;
+    }
     try {
       const sharaMoneyEnabledCountries = getRemoteConfigService()
         .getValue('sharaMoneyEnabledCountries')
         .asString();
       const user = getAuthService().getUser();
       return JSON.parse(sharaMoneyEnabledCountries)[user?.currency_code ?? '']
-        ? 'WithdrawalMethod'
-        : 'ProductList';
+        ? sharaMoneyRouteName
+        : fallbackRouteName;
     } catch (e) {
-      return 'ProductList';
+      return fallbackRouteName;
     }
-  }, []);
+  }, [enableSharaMoney]);
   return (
     <ProductsStack.Navigator
       initialRouteName={initialRouteName}

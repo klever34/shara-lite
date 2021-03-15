@@ -3,6 +3,7 @@ interface RemoteConfig {
   countries: Countries;
   minimumVersion: string;
   sharaMoneyEnabledCountries: {[key: string]: {}};
+  sharaMoneyEnabledUsers: {[key: string]: {id: string; name: string}};
 }
 
 interface Countries {
