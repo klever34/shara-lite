@@ -5,7 +5,7 @@ import {getI18nService} from '@/services';
 import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors, dimensions} from '@/styles';
-import React, {useCallback} from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {Text, View} from 'react-native';
 import {useFocusEffect} from '@react-navigation/native';
 import {BNPLTransactionList} from './BNPLTransactionList';
@@ -29,6 +29,10 @@ export const CompleteBNPLScreen = () => {
   const handleRecordTransaction = useCallback(() => {
     navigation.navigate('BNPLRecordTransactionScreen');
   }, [navigation]);
+
+  useEffect(() => {
+    reloadData();
+  }, [reloadData]);
 
   useFocusEffect(
     useCallback(() => {
