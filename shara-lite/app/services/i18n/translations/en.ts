@@ -1013,7 +1013,7 @@ const en: Strings = {
       paid_text: 'Paid',
       wallet_balance: 'Wallet balance {{amount}}',
       add_repayment_note:
-        'Note that this amount will be deducted from your wallet balance',
+        'Note that this amount will be deducted from your wallet balance.',
       repayment_to_shara: 'Repayment to Shara Inc.',
       repayment: {
         fields: {
