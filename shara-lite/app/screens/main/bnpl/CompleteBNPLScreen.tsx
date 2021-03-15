@@ -7,7 +7,9 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors, dimensions} from '@/styles';
 import React, {useCallback} from 'react';
 import {Text, View} from 'react-native';
+import {useFocusEffect} from '@react-navigation/native';
 import {BNPLTransactionList} from './BNPLTransactionList';
+import {useBNPLDrawdownsList} from './hook';
 
 const strings = getI18nService().strings;
 
@@ -18,9 +20,21 @@ export const CompleteBNPLScreen = () => {
   const bnplDrawdowns = getBNPLDrawdowns().filtered('status = "complete"');
   const totalAmount = bnplDrawdowns.sum('repayment_amount');
 
+  const {
+    reloadData,
+    handlePagination,
+    bnplDrawdownsToDisplay,
+  } = useBNPLDrawdownsList({bnplDrawdowns});
+
   const handleRecordTransaction = useCallback(() => {
     navigation.navigate('BNPLRecordTransactionScreen');
   }, [navigation]);
+
+  useFocusEffect(
+    useCallback(() => {
+      reloadData();
+    }, [reloadData]),
+  );
 
   return (
     <View style={applyStyles('flex-1 bg-white')}>
@@ -41,7 +55,11 @@ export const CompleteBNPLScreen = () => {
           </Text>
         )}
         <BNPLTransactionList
-          data={bnplDrawdowns}
+          onEndReachedThreshold={0.1}
+          onEndReached={() => {
+            handlePagination();
+          }}
+          data={bnplDrawdownsToDisplay}
           emptyState={{
             text: strings('bnpl.complete_empty_state'),
           }}

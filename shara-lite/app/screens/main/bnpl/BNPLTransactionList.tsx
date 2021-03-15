@@ -7,12 +7,12 @@ import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback} from 'react';
-import {FlatList, Text, View} from 'react-native';
+import {FlatList, FlatListProps, Text, View} from 'react-native';
 
 type BNPLTransactionListProps = {
   emptyState?: EmptyStateProps;
-  data: Realm.Results<IBNPLDrawdown & Realm.Object>;
-};
+  data: (IBNPLDrawdown & Realm.Object)[];
+} & Partial<FlatListProps<IBNPLDrawdown>>;
 
 const strings = getI18nService().strings;
 
@@ -80,7 +80,7 @@ const BNPLTransactionListItem = ({
 };
 
 export const BNPLTransactionList = (props: BNPLTransactionListProps) => {
-  const {data, emptyState} = props;
+  const {data, emptyState, ...rest} = props;
   const navigation = useAppNavigation();
 
   const handlePressListItem = useCallback(
@@ -116,6 +116,7 @@ export const BNPLTransactionList = (props: BNPLTransactionListProps) => {
       contentContainerStyle={
         !data.length ? applyStyles('flex-1') : applyStyles({paddingBottom: 180})
       }
+      {...rest}
     />
   );
 };

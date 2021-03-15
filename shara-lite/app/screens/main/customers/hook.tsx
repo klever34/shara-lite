@@ -132,7 +132,7 @@ export const useCustomerList = (options: UseCustomerListOptions) => {
       >;
       if (search) {
         customers = customers.filtered(
-          `name CONTAINS[c] "${search}" OR mobile CONTAINS[c] "${searchTerm}"`,
+          `name CONTAINS[c] "${search}" OR mobile CONTAINS[c] "${search}"`,
         );
       }
       if (status) {
