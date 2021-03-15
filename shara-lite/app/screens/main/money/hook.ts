@@ -204,7 +204,7 @@ export const usePaymentActivities = ({
   }, [filteredCollections]);
 
   const totalWithdrawnAmount = useMemo(() => {
-    return filteredDisbursements.sum('amount') ?? 0;
+    return filteredDisbursements.filtered('status != "failed"').sum('amount') ?? 0;
   }, [filteredDisbursements]);
 
   const handleSetDisplayCollections = useCallback(

@@ -7,6 +7,7 @@ import {
   TextInput,
   TextInputFocusEventData,
   TextInputProps,
+  TextStyle,
   View,
 } from 'react-native';
 import {applyStyles, colors} from '../styles';
@@ -16,11 +17,24 @@ export type FloatingLabelInputProps = {
   isInvalid?: boolean;
   containerStyle?: any;
   errorMessage?: string;
+  labelStyle?: TextStyle;
   inputStyle?: {
     [key: string]: any;
   };
   leftIcon?: React.ReactNode | string;
 } & TextInputProps;
+
+export const FlatFloatingLabelInput = (props: FloatingLabelInputProps) => {
+  return (
+    <View style={applyStyles('bg-gray-20')}>
+      <FloatingLabelInput
+        labelStyle={applyStyles('px-24', props.labelStyle)}
+        inputStyle={applyStyles('px-24', props.inputStyle)}
+        {...props}
+      />
+    </View>
+  );
+};
 
 export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
   const {
@@ -33,9 +47,11 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
     inputStyle,
     errorMessage,
     containerStyle,
+    labelStyle: labelStyleProp,
     ...rest
   } = props;
   const [isFocused, setIsFocused] = React.useState(false);
+  const [focusedStyles, setFocusedStyles] = React.useState({});
   const animatedIsFocused = new Animated.Value(!value ? 0 : 1);
 
   React.useEffect(() => {
@@ -48,8 +64,8 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
 
   const labelStyle = {
     left: 2,
+    ...labelStyleProp,
     position: 'absolute',
-    fontFamily: 'Rubik-Regular',
     top: animatedIsFocused.interpolate({
       inputRange: [0, 1],
       outputRange: [32, 10],
@@ -81,6 +97,10 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
   const handleFocus = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setIsFocused(true);
+      setFocusedStyles({
+        borderBottomWidth: 2,
+        borderBottomColor: colors['green-300'],
+      });
       onFocus && onFocus(e);
     },
     [onFocus],
@@ -89,6 +109,7 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
   const handleBlur = React.useCallback(
     (e: NativeSyntheticEvent<TextInputFocusEventData>) => {
       setIsFocused(false);
+      setFocusedStyles({});
       onBlur && onBlur(e);
     },
     [onBlur],
@@ -106,12 +127,17 @@ export const FloatingLabelInput = (props: FloatingLabelInputProps) => {
         value={value}
         onBlur={handleBlur}
         onFocus={handleFocus}
-        style={applyStyles('text-400', inputFieldStyle, inputStyle)}
+        style={applyStyles(
+          'text-400',
+          inputFieldStyle,
+          focusedStyles,
+          inputStyle,
+        )}
       />
       {isInvalid && (
         <Text
-          style={applyStyles('text-500 pt-xs', {
-            fontSize: 14,
+          style={applyStyles('text-400 pt-xs', {
+            fontSize: 12,
             color: colors['red-200'],
           })}>
           {errorMessage}
@@ -128,7 +154,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#000',
     borderBottomWidth: 1,
-    borderBottomColor: colors['gray-300'],
+    borderBottomColor: colors['gray-20'],
   },
   inputIcon: {
     top: 33,

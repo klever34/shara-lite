@@ -41,6 +41,15 @@ import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
+import {BNPLScreen} from './bnpl';
+import {BNPLTransactionSuccessScreen} from './bnpl/BNPLTransactionSuccessScreen';
+import {BNPLClientScreen} from './bnpl/BNPLClientScreen';
+import {BNPLRecordTransactionScreen} from './bnpl/BNPLRecordTransactionScreen';
+import {BNPLTransactionDetailsScreen} from './bnpl/BNPLTransactionDetailsScreen';
+import {BNPLRepaymentSuccessScreen} from './bnpl/BNPLRepaymentSuccessScreen';
+import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
+import {IBNPLRepayment} from '@/models/BNPLRepayment';
+import {IBNPLApproval} from '@/models/BNPLApproval';
 
 const strings = getI18nService().strings;
 
@@ -79,6 +88,29 @@ export type MainStackParamList = {
 
   // Money
   Drawdown: undefined;
+  BNPLScreen: undefined;
+  BNPLClientScreen: {data: IBNPLDrawdown};
+  BNPLRecordTransactionScreen: undefined;
+  BNPLTransactionDetailsScreen: {transaction: IBNPLDrawdown};
+  BNPLTransactionSuccessScreen: {
+    transaction: {
+      receiptData?: IReceipt;
+      drawdown: IBNPLDrawdown;
+      repayments: IBNPLRepayment[];
+      approval: IBNPLApproval;
+    };
+    onDone?: () => void;
+  };
+  BNPLRepaymentSuccessScreen: {
+    amount: number;
+    transaction: {
+      receiptData?: IReceipt;
+      drawdown: IBNPLDrawdown;
+      repayments: IBNPLRepayment[];
+      approval: IBNPLApproval;
+    };
+    onDone?: () => void;
+  };
 };
 
 const MainStack = createNativeStackNavigator<MainStackParamList>();
@@ -288,6 +320,56 @@ const MainScreens = () => {
           component={DrawdownScreen}
           options={{
             headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLScreen"
+          component={BNPLScreen}
+          options={{
+            headerShown: true,
+            headerTintColor: colors.white,
+            headerStyle: applyStyles('bg-primary'),
+            headerTitle: strings('bnpl.buy_now_pay_later'),
+            headerTitleStyle: applyStyles('text-white text-capitalize'),
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLClientScreen"
+          component={BNPLClientScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLTransactionSuccessScreen"
+          component={BNPLTransactionSuccessScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLRepaymentSuccessScreen"
+          component={BNPLRepaymentSuccessScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLRecordTransactionScreen"
+          component={BNPLRecordTransactionScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <MainStack.Screen
+          name="BNPLTransactionDetailsScreen"
+          component={BNPLTransactionDetailsScreen}
+          options={{
+            headerShown: true,
+            headerTintColor: colors.white,
+            headerStyle: applyStyles('bg-primary'),
+            headerTitle: strings('bnpl.transaction_details'),
+            headerTitleStyle: applyStyles('text-white text-capitalize'),
           }}
         />
       </MainStack.Navigator>

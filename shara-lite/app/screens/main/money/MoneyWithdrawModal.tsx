@@ -1,5 +1,5 @@
 import React, {ReactNode, useCallback, useState} from 'react';
-import {Header, Text} from '@/components';
+import {Header, Text, toNumber} from '@/components';
 import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {ScrollView, View} from 'react-native';
 import {applyStyles, as} from '@/styles';
@@ -63,7 +63,12 @@ const SelectWithdrawalAccountModal = ({
           if (!disbursementMethod.parsedAccountDetails) {
             return null;
           }
-          const {bank_name, nuban} = disbursementMethod.parsedAccountDetails;
+          const {
+            bank_name,
+            nuban,
+            account_label,
+            provider_label,
+          } = disbursementMethod.parsedAccountDetails;
           const isSelected =
             nuban === selectedDisbursementMethod.parsedAccountDetails?.nuban;
           return (
@@ -80,7 +85,7 @@ const SelectWithdrawalAccountModal = ({
                   <Text style={as('uppercase mb-4 font-bold text-gray-300')}>
                     {bank_name}
                   </Text>
-                  <Text style={as('text-gray-300')}>{nuban}</Text>
+                  <Text style={as('text-gray-300')}>{account_label}</Text>
                 </View>
                 <View
                   style={as(
@@ -174,7 +179,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     const withdrawAccountDetails = disbursementMethod?.parsedAccountDetails;
     const selectedBankAccount = !withdrawAccountDetails
       ? ''
-      : `${withdrawAccountDetails.bank_name} - ${withdrawAccountDetails.nuban}`;
+      : `${withdrawAccountDetails.provider_label} - ${withdrawAccountDetails.account_label}`;
     const handleSelectWithdrawalAccount = useCallback(() => {
       openModal('bottom-half', {
         renderContent: () => (
@@ -271,10 +276,29 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         </View>
       );
     }
+    const handleValidateAmountForm = useCallback(
+      (values) => {
+        const errors = {} as {amount: string};
+        if (!values.amount) {
+          errors.amount = strings(
+            'payment_activities.withdraw_amount_required_error',
+          );
+        } else if (!!walletBalance && toNumber(values.amount) > walletBalance) {
+          errors.amount = strings('payment_activities.withdraw_excess_error');
+        } else if (toNumber(values.amount) < 10) {
+          errors.amount = strings('payment_activities.withdraw_minimum_error', {
+            amount: amountWithCurrency(10),
+          });
+        }
+        return errors;
+      },
+      [walletBalance],
+    );
+
     return (
       <AmountForm
         maxAmount={walletBalance}
-        errorMessage={strings('payment_activities.withdraw_excess_error')}
+        validateFn={handleValidateAmountForm}
         header={{
           title: strings('payment_activities.withdraw'),
         }}

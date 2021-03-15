@@ -14,6 +14,7 @@ import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
 import {getI18nService} from '@/services';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, as, colors} from '@/styles';
+import {useFocusEffect} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {orderBy} from 'lodash';
 import React, {useCallback, useEffect, useMemo} from 'react';
@@ -63,6 +64,12 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     filteredCollections.length,
     filteredDisbursements.length,
   ]);
+
+  useFocusEffect(
+    useCallback(() => {
+      reloadData();
+    }, [reloadData]),
+  );
 
   const handleCopyMerchantId = useCallback(() => {
     copyToClipboard(String(merchantId));
@@ -115,6 +122,10 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
 
   const handleDrawdown = useCallback(() => {
     navigation.navigate('Drawdown');
+  }, [navigation]);
+
+  const handleBNPL = useCallback(() => {
+    navigation.navigate('BNPLScreen');
   }, [navigation]);
 
   const renderListItem = useCallback(
@@ -253,8 +264,8 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
               color: colors['blue-100'],
               bgColor: colors['blue-10'],
             },
-            onPress: handleDrawdown,
-            label: strings('payment_activities.drawdown'),
+            onPress: handleBNPL,
+            label: strings('payment_activities.bnpl_text'),
           },
         ]}
       />

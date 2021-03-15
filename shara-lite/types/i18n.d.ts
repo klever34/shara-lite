@@ -127,6 +127,92 @@ export interface Strings {
           success: string;
         };
       };
+      mPesa: {
+        initiateSTKPush: {
+          business: {
+            notFound: string;
+          };
+          customer: {
+            notFound: string;
+          };
+          kenyaOnly: {
+            [key: string]: string;
+          };
+          success: {
+            [key: string]: string;
+          };
+        };
+        processValidationEvent: {
+          success: string;
+        };
+        processConfirmationEvent: {
+          success: string;
+        };
+      };
+      disbursement: {
+        create: {
+          notFound: string;
+          success: string;
+          insufficientBalance: string;
+          error: string;
+        };
+      };
+      drawdown: {
+        create: {
+          notFound: string;
+          invalidAmount: string;
+          inactive: string;
+          error: string;
+          success: string;
+        };
+      };
+      drawdownRepayment: {
+        create: {
+          notFound: string;
+          complete: string;
+          error: string;
+          insufficientBalance: string;
+          success: string;
+        };
+      };
+      identity: {
+        verify: {
+          error: string;
+          invalid: string;
+          success: string;
+        };
+        validate: {
+          error: string;
+          invalid: string;
+          success: string;
+        };
+      };
+      bnplApproval: {
+        create: {
+          success: string,
+          error: string,
+          exists: string,
+          userNotFound: string,
+        },
+      },
+      bnplDrawdown: {
+        create: {
+          notFound: string,
+          invalidAmount: string,
+          inactive: string,
+          error: string,
+          success: string,
+        },
+      },
+      bnplRepayment: {
+        create: {
+          notFound: string,
+          complete: string,
+          error: string,
+          insufficientBalance: string,
+          success: string,
+        },
+      };
     };
   };
   home_screen_setup_business_text: string;
@@ -566,6 +652,7 @@ export interface Strings {
     tap_to_copy: string;
     withdraw: string;
     drawdown: string;
+    bnpl_text: string;
     payment_activities: string;
     no_money_activities: string;
     your_wallet_balance: string;
@@ -579,6 +666,8 @@ export interface Strings {
       note: FormField;
     };
     withdraw_excess_error: string;
+    withdraw_minimum_error: string;
+    withdraw_amount_required_error: string;
     deposit_help_text: string;
     select_withdrawal_account: string;
     confirm_withdrawal: string;
@@ -622,9 +711,100 @@ export interface Strings {
     withdraw_success: string;
     withdraw_excess_error: string;
     repayment_excess_error: string;
+    amount_required_error: string;
     not_qualified: string;
     repayment_success: string;
     repayment_item_text: string;
+  };
+  bnpl: {
+    day_text: PluralizedString;
+    not_available: {
+      button_text: string;
+      instruction: string;
+    };
+    active_empty_state: string;
+    complete_empty_state: string;
+    active_text: string;
+    complete_text: string;
+    clients_text: string;
+    buy_now_pay_later: string;
+    transaction_details: string;
+    new_transaction_text: string;
+    total_completed_text: string;
+    amount_used_text: string;
+    amount_available_text: string;
+    completed_text: string;
+    payment_left_text: PluralizedString;
+    payment_made_text: PluralizedString;
+    repayment_per_week: string;
+    add_repayment: string;
+    share_receipt: string;
+    record_transaction: {
+      title: string;
+      fields: {
+        note: FormField;
+        total_amount: FormField;
+        amount_paid: FormField;
+        customer: FormField;
+      };
+      balance: string;
+      bnpl_terms_text: string;
+      repayment_date: string;
+    };
+    confirmation: {
+      title: string;
+      instruction: string;
+      client_terms: string;
+      merchant_terms: string;
+      terms: string;
+    };
+    success: {
+      heading: string;
+      outstanding: string;
+      payment: string;
+    };
+    receipt: {
+      bnpl_text: string;
+    };
+    client: {
+      upcoming_text: string;
+      paid_text: string;
+      wallet_balance: string;
+      add_repayment_note: string;
+      repayment_to_shara: string;
+      repayment: {
+        fields: {
+          amount: FormField;
+        };
+        success: {
+          heading: string;
+          outstanding: string;
+          payment: string;
+          repayment_complete: string;
+        };
+      };
+      empty_state: string;
+      paid: string;
+      not_paid: string;
+      past_due: string;
+    };
+    transaction_info: {
+      date: string;
+      total_amount_text: string;
+      total_amount: string;
+      paid_text: string;
+      paid_amount: string;
+      outstanding_text: string;
+      outstanding_amount: string;
+      notes: string;
+      notes_text_content: string;
+    };
+    recent_purchase_message: string;
+    recent_purchase_message_from_business: string;
+    you_paid_message: string;
+    you_owe_message: string;
+    next_repayment: string;
+    first_repayment: string;
   };
   copied: string;
   submit: string;
@@ -645,4 +825,5 @@ interface Card {
 interface FormField {
   label: string;
   placeholder?: string;
+  errorMessage?: string;
 }
