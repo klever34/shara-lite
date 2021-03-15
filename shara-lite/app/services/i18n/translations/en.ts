@@ -212,6 +212,32 @@ const en: Strings = {
           success: 'OTP Validation successful',
         },
       },
+      bnplApproval: {
+        create: {
+          success: 'BNPL approved successfully',
+          error: 'Unable to approve BNPL for user',
+          exists: 'An active BNPL exists for this user',
+          userNotFound: 'User not found',
+        },
+      },
+      bnplDrawdown: {
+        create: {
+          notFound: 'No BNPL has been approved for you',
+          invalidAmount: 'Amount specified is more than the amount available for drawdown',
+          inactive: 'Drawdown is not currently active',
+          error:  'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
+          success: 'Drawdown taken successfully',
+        },
+      },
+      bnplRepayment: {
+        create: {
+          notFound: 'No BNPL has been approved for you',
+          complete: "You've already finished repaying your loans",
+          error: 'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
+          insufficientBalance: 'Your wallet balance is not sufficient',
+          success: 'Repayment successful',
+        },
+      },
     },
   },
   shara_tagline: 'Built To Get You Paid Faster',
@@ -810,6 +836,7 @@ const en: Strings = {
         'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
       tag: 'Go to Money Settings',
     },
+    bnpl_text: 'BNPL',
     search_placeholder: 'Search payments here...',
     received: 'Received',
     withdrawn: 'Withdrawn',
@@ -844,7 +871,7 @@ const en: Strings = {
     about_to_withdraw:
       'You are about to withdraw **{{amount}}** to\\n**{{bank_details}}**',
     withdraw_success:
-      'Your withdrawal of **{{amount}}** to **{{bank_details}}** was succesful',
+      'Your transaction is being processed. It may take up to a few minutes to reflect in your Shara wallet',
     payment_activity: {
       received_payment:
         'Received payment of **{{amount}}** via **{{provider}}**',
@@ -853,6 +880,8 @@ const en: Strings = {
     },
     withdraw_excess_error:
       'Withdrawal amount is greater than your wallet balance',
+    withdraw_amount_required_error: 'Amount is required',
+    withdraw_minimum_error: 'Withdrawal amount must be greater than {{amount}}',
     not_available: {
       title: 'Not available in your country',
       description:
@@ -899,11 +928,132 @@ const en: Strings = {
     withdraw_excess_error: 'Withdrawal amount is more than your drawdown limit',
     repayment_excess_error:
       'The amount you want to pay is more than your wallet balance',
+    amount_required_error: 'Amount is required',
     not_qualified: 'You do not qualify for drawdowns at the moment.',
     repayment_success:
       'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
     repayment_item_text:
       'Drawdown repayment of **{{amount}}** from your wallet on **{{date}}**',
+  },
+  bnpl: {
+    not_available: {
+      button_text:
+        'Go to money settings',
+      instruction: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
+    },
+    buy_now_pay_later: 'Buy now pay later',
+    transaction_details: 'Transaction Details',
+    day_text: {one: '{{amount}} day', other: '{{amount}} days'},
+    active_text: 'Active',
+    complete_text: 'Complete',
+    clients_text: 'Clients',
+    active_empty_state:
+      'You have no active BNPL transactions yet. Click the button below to get started.',
+    complete_empty_state:
+      'You have no fully completed BNPL transactions yet. Click the button below to get started.',
+    new_transaction_text: 'New transaction',
+    total_completed_text: 'Total completed',
+    amount_used_text: 'Amount drawn',
+    amount_available_text: 'Amount available',
+    completed_text: 'Completed',
+    payment_left_text: {
+      one: '{{amount}} payment left',
+      other: '{{amount}} payments left',
+    },
+    payment_made_text: {
+      one: '{{amount}} payment made',
+      other: '{{amount}} payments made',
+    },
+    share_receipt: 'Share Receipt',
+    repayment_per_week: '{{amount}}/week',
+    record_transaction: {
+      title: 'Enter transaction',
+      fields: {
+        note: {
+          label: 'Note',
+          placeholder: 'E.g what was sold or any other information',
+        },
+        total_amount: {
+          label: 'Total Amount',
+          errorMessage: 'Total amount is required',
+        },
+        amount_paid: {
+          label: 'Amount Paid',
+        },
+        customer: {
+          label: 'Customer',
+          placeholder: 'Select a customer',
+          errorMessage: 'Customer is required',
+        },
+      },
+      balance: 'Balance',
+      bnpl_terms_text: 'Buy now pay later terms',
+      repayment_date: 'to be paid in full by {{date}}',
+    },
+    confirmation: {
+      instruction:
+        '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
+      title: 'Confirm Buy Now Pay Later',
+      client_terms: 'I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.',
+      merchant_terms: 'I have accepted the [Terms and Conditions](https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub) for Shara Buy Now Pay Later',
+      terms: '**Terms**',
+    },
+    success: {
+      heading: 'Buy Now Pay Later Successful',
+      outstanding:
+        'The outstanding amount of {{amount}} has been added to your wallet.',
+      payment: 'Client pays {{amount}} over {{days}} days',
+    },
+    receipt: {
+      bnpl_text: 'Buy Now Pay Later (8 weeks)',
+    },
+    add_repayment: 'Add Repayment',
+    client: {
+      upcoming_text: 'Upcoming',
+      paid_text: 'Paid',
+      wallet_balance: 'Wallet balance {{amount}}',
+      add_repayment_note:
+        'Note that this amount will be deducted from your wallet balance.',
+      repayment_to_shara: 'Repayment to Shara Inc.',
+      repayment: {
+        fields: {
+          amount: {
+            label: 'Amount',
+            errorMessage: 'Amount is required',
+          },
+        },
+        success: {
+          heading: 'Buy Now Pay Later Payment Successful',
+          payment:
+            'Payment of {{amount}} confirmed and deducted from your wallet balance',
+          outstanding: 'Outstanding: {{amount}} over {{days}} days',
+          repayment_complete: 'BNPL Transaction Repayment Completed!',
+        },
+      },
+      empty_state: '{{client}} has made no repayment yet. Click the button below to record a repayment.',
+      paid: 'Paid',
+      not_paid: 'Not paid',
+      past_due: 'Past due',
+    },
+    transaction_info: {
+      date: '{{date}}',
+      total_amount_text: 'Total Amount',
+      total_amount: '{{amount}}',
+      paid_text: 'Paid',
+      paid_amount: '{{amount}}',
+      outstanding_text: 'Outstanding',
+      outstanding_amount: '{{amount}}',
+      notes: 'Notes',
+      notes_text_content: '{{notes}}',
+    },
+    recent_purchase_message:
+      'Hi {{customer_name}}, thank you for your recent purchase.',
+    recent_purchase_message_from_business:
+      'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.',
+    you_paid_message: 'You paid {{amount}}.',
+    you_owe_message: 'You owe {{credit_amount}}.',
+    next_repayment: 'Your next repayment is {{amount}} and it is due on {{date}}.',
+    first_repayment: 'Your first repayment is {{amount}} and it is due on {{date}}.'
   },
   copied: 'Copied',
   submit: 'Submit',

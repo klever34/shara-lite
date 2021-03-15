@@ -43,12 +43,6 @@ export const AuthView = ({
           })}>
           {heading}
         </Text>
-        {/* <Text
-          style={applyStyles('text-400 text-center text-sm', {
-            color: colors['gray-300'],
-          })}>
-          {description}
-        </Text> */}
         <Markdown
           style={{
             textgroup: applyStyles(

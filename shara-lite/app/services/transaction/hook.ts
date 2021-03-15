@@ -9,7 +9,7 @@ import {useCustomer} from '@/services/customer/hook';
 import BluebirdPromise from 'bluebird';
 import {usePaymentReminder} from '@/services/payment-reminder';
 
-interface saveTransactionInterface {
+export interface saveTransactionInterface {
   customer?: ICustomer | Customer;
   amount_paid: number;
   credit_amount: number;

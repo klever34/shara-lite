@@ -47,13 +47,29 @@ export const MakeDrawdownRepaymentForm = (props: any) => {
     [openModal, closeModal],
   );
 
+  const handleValidateAmountForm = useCallback(
+    (values) => {
+      const errors = {} as {amount: string};
+      if (!values.amount) {
+        errors.amount = strings('drawdown.amount_required_error');
+      } else if (
+        !!wallet?.drawdown_amount_owed &&
+        toNumber(values.amount) > wallet?.drawdown_amount_owed
+      ) {
+        errors.amount = strings('drawdown.repayment_excess_error');
+      }
+      return errors;
+    },
+    [wallet?.drawdown_amount_owed],
+  );
+
   return (
     <AmountForm
       header={{
         title: strings('drawdown.repayment'),
       }}
-      maxAmount={wallet?.balance}
-      errorMessage={strings('drawdown.repayment_excess_error')}
+      maxAmount={wallet?.drawdown_amount_owed}
+      validateFn={handleValidateAmountForm}
       leadText={`${strings(
         'payment_activities.wallet_balance',
       )}: ${amountWithCurrency(wallet.balance)}`}

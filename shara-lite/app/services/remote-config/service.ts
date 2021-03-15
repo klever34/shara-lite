@@ -11,6 +11,7 @@ export const remoteConfigDefaults: RemoteConfig = {
     NGN: {},
     KES: {},
   },
+  sharaMoneyEnabledUsers: {},
 };
 
 export interface IRemoteConfigService {

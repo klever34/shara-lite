@@ -33,10 +33,16 @@ export const PaymentActivityItem = ({
 }: {
   data: ICollection | IDisbursement;
 }) => {
-  const {amount, created_at, type, provider_label} = data;
+  const {amount, created_at, type, provider_label, status} = data;
   const [customer, setCustomer] = useState<ICustomer | undefined>(
     isCollection(data) ? data.customer : undefined,
   );
+
+  const statusColors = {
+    success: 'text-green-200',
+    pending: 'text-yellow-100',
+    failed: 'text-red-100',
+  } as {[key: string]: string};
 
   const navigation = useAppNavigation();
   const {updateCollection} = useCollection();
@@ -118,6 +124,15 @@ export const PaymentActivityItem = ({
           />
           <View style={applyStyles('pl-8')}>
             <View>{renderItemText()}</View>
+
+            {!isCollection(data) && (
+              <Text
+                style={applyStyles(
+                  `text-700 text-capitalize ${statusColors[status]}`,
+                )}>
+                {status}
+              </Text>
+            )}
           </View>
         </View>
         <View style={applyStyles('items-end', {width: '30%'})}>
