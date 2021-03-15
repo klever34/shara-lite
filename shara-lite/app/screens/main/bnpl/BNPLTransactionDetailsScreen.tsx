@@ -25,6 +25,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
     due_at,
     receipt,
     created_at,
+    amount_owed,
     bnpl_repayments,
     repayment_amount,
     payment_frequency_amount,
@@ -99,7 +100,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
               'flex-1 py-18 text-red-100 text-700 text-right',
             )}>
             {strings('bnpl.transaction_info.outstanding_amount', {
-              amount: amountWithCurrency(receiptData?.credit_amount),
+              amount: amountWithCurrency(amount_owed),
             })}
           </Text>
         </View>

@@ -28,18 +28,18 @@ export const BNPLTransactionSuccessScreen = (
   const paymentLink =
     businessInfo.slug &&
     `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
-      drawdown.customer?._id
-        ? `?customer=${String(drawdown.customer?._id)}`
+      receiptData?.customer?._id
+        ? `?customer=${String(receiptData?.customer?._id)}`
         : ''
     }`;
   const shareReceiptMessage = `${
     businessInfo.name || user?.firstname
       ? strings('bnpl.recent_purchase_message_from_business', {
-          customer_name: drawdown.customer?.name ?? '',
+          customer_name: receiptData?.customer?.name ?? '',
           business_name: businessInfo.name || user?.firstname,
         })
       : strings('bnpl.recent_purchase_message', {
-          customer_name: drawdown.customer?.name ?? '',
+          customer_name: receiptData?.customer?.name ?? '',
         })
   } ${strings('bnpl.you_paid_message', {
     amount: amountWithCurrency(receiptData?.amount_paid),

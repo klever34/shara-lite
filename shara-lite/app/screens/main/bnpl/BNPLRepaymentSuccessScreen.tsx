@@ -83,10 +83,13 @@ export const BNPLRepaymentSuccessScreen = (
       shareReceiptMessage={shareReceiptMessage}
       captions={{
         heading: strings('bnpl.client.repayment.success.heading'),
-        payment: strings('bnpl.client.repayment.success.outstanding', {
-          amount: amountWithCurrency(drawdown.amount_owed),
-          days: remainingDays,
-        }),
+        payment:
+          drawdown.amount_owed && drawdown.amount_owed > 0
+            ? strings('bnpl.client.repayment.success.outstanding', {
+                amount: amountWithCurrency(drawdown.amount_owed),
+                days: remainingDays,
+              })
+            : strings('bnpl.client.repayment.success.repayment_complete'),
         outstanding: strings('bnpl.client.repayment.success.payment', {
           amount: amountWithCurrency(amount),
         }),

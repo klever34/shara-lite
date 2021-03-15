@@ -14,6 +14,7 @@ import {IReceipt} from '@/models/Receipt';
 import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
 import {IBNPLRepayment} from '@/models/BNPLRepayment';
 import {IBNPLApproval} from '@/models/BNPLApproval';
+import {sortBy} from 'lodash';
 
 const strings = getI18nService().strings;
 
@@ -45,10 +46,10 @@ export const BNPLReceiptImage = memo((props: Props) => {
   const receiptNo = _id?.toString().substring(0, 6);
 
   const viewShot = useRef<any>(null);
+  const {callingCode} = useIPGeolocation();
 
   const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
-  const {callingCode} = useIPGeolocation();
   const code = businessInfo.country_code || user?.country_code || callingCode;
   const getBusinessMobile = useCallback(() => {
     if (businessInfo.mobile) {
@@ -216,7 +217,7 @@ export const BNPLReceiptImage = memo((props: Props) => {
               </Text>
             </View>
             <View>
-              {repayments?.map(
+              {sortBy(repayments, 'batch_no')?.map(
                 ({batch_no, due_at, status, amount_owed, repayment_amount}) => (
                   <View
                     key={batch_no}
@@ -229,7 +230,7 @@ export const BNPLReceiptImage = memo((props: Props) => {
                         due_at ? new Date(due_at) : new Date(),
                         'dd MMM yyyy',
                       )}
-                      {status === 'complete' ? ` ${strings('paid')}` : ''}
+                      {status === 'complete' ? ` (${strings('paid')})` : ''}
                     </Text>
                     <Text style={applyStyles('print-text-400 text-xl')}>
                       {status === 'pending' || 'complete'

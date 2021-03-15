@@ -17,7 +17,9 @@ export const CompleteBNPLScreen = () => {
   const navigation = useAppNavigation();
   const {getBNPLDrawdowns} = useBNPLDrawdown();
 
-  const bnplDrawdowns = getBNPLDrawdowns().filtered('status = "complete"');
+  const bnplDrawdowns = getBNPLDrawdowns()
+    .filtered('status = "complete"')
+    .sorted('created_at');
   const totalAmount = bnplDrawdowns.sum('repayment_amount');
 
   const {

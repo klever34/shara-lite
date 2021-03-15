@@ -880,6 +880,8 @@ const en: Strings = {
     },
     withdraw_excess_error:
       'Withdrawal amount is greater than your wallet balance',
+    withdraw_amount_required_error: 'Amount is required',
+    withdraw_minimum_error: 'Withdrawal amount must be greater than {{amount}}',
     not_available: {
       title: 'Not available in your country',
       description:
@@ -926,6 +928,7 @@ const en: Strings = {
     withdraw_excess_error: 'Withdrawal amount is more than your drawdown limit',
     repayment_excess_error:
       'The amount you want to pay is more than your wallet balance',
+    amount_required_error: 'Amount is required',
     not_qualified: 'You do not qualify for drawdowns at the moment.',
     repayment_success:
       'Your drawdown repayment of **{{amount}}** was successful. Funds have been deducted from your wallet balance.',
@@ -1024,6 +1027,7 @@ const en: Strings = {
           payment:
             'Payment of {{amount}} confirmed and deducted from your wallet balance',
           outstanding: 'Outstanding: {{amount}} over {{days}} days',
+          repayment_complete: 'BNPL Transaction Repayment Completed!',
         },
       },
       empty_state: '{{client}} has made no repayment yet. Click the button below to record a repayment.',

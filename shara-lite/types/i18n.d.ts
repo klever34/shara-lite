@@ -666,6 +666,8 @@ export interface Strings {
       note: FormField;
     };
     withdraw_excess_error: string;
+    withdraw_minimum_error: string;
+    withdraw_amount_required_error: string;
     deposit_help_text: string;
     select_withdrawal_account: string;
     confirm_withdrawal: string;
@@ -709,6 +711,7 @@ export interface Strings {
     withdraw_success: string;
     withdraw_excess_error: string;
     repayment_excess_error: string;
+    amount_required_error: string;
     not_qualified: string;
     repayment_success: string;
     repayment_item_text: string;
@@ -777,6 +780,7 @@ export interface Strings {
           heading: string;
           outstanding: string;
           payment: string;
+          repayment_complete: string;
         };
       };
       empty_state: string;
