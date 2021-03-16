@@ -195,7 +195,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     }, [closeModal, openModal]);
     const handleNext = useCallback(
       (amount: string) => {
-        if (Number(amount) && disbursementMethod?.api_id) {
+        if (disbursementMethod?.api_id) {
           openModal('bottom-half', {
             renderContent: () => (
               <ConfirmationModal
