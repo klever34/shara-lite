@@ -64,7 +64,6 @@ const SelectWithdrawalAccountModal = ({
             return null;
           }
           const {
-            bank_name,
             nuban,
             account_label,
             provider_label,
@@ -83,7 +82,7 @@ const SelectWithdrawalAccountModal = ({
                 )}>
                 <View style={as('flex-1')}>
                   <Text style={as('uppercase mb-4 font-bold text-gray-300')}>
-                    {bank_name}
+                    {provider_label}
                   </Text>
                   <Text style={as('text-gray-300')}>{account_label}</Text>
                 </View>
