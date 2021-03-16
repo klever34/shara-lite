@@ -64,7 +64,6 @@ const SelectWithdrawalAccountModal = ({
             return null;
           }
           const {
-            bank_name,
             nuban,
             account_label,
             provider_label,
@@ -83,7 +82,7 @@ const SelectWithdrawalAccountModal = ({
                 )}>
                 <View style={as('flex-1')}>
                   <Text style={as('uppercase mb-4 font-bold text-gray-300')}>
-                    {bank_name}
+                    {provider_label}
                   </Text>
                   <Text style={as('text-gray-300')}>{account_label}</Text>
                 </View>
@@ -195,7 +194,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     }, [closeModal, openModal]);
     const handleNext = useCallback(
       (amount: string) => {
-        if (Number(amount) && disbursementMethod?.api_id) {
+        if (disbursementMethod?.api_id) {
           openModal('bottom-half', {
             renderContent: () => (
               <ConfirmationModal
@@ -239,7 +238,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                 }}>
                 <Markdown style={markdownStyle}>
                   {strings('payment_activities.about_to_withdraw', {
-                    amount: amountWithCurrency(Number(amount)),
+                    amount: amountWithCurrency(toNumber(amount)),
                     bank_details: selectedBankAccount,
                   })}
                 </Markdown>
