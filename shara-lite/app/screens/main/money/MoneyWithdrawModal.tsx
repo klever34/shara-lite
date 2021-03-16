@@ -239,7 +239,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                 }}>
                 <Markdown style={markdownStyle}>
                   {strings('payment_activities.about_to_withdraw', {
-                    amount: amountWithCurrency(Number(amount)),
+                    amount: amountWithCurrency(toNumber(amount)),
                     bank_details: selectedBankAccount,
                   })}
                 </Markdown>
