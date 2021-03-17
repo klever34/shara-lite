@@ -202,13 +202,13 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                 onConfirm={() => {
                   return getApiService()
                     .makeDisbursement({
-                      amount: Number(amount),
+                      amount: toNumber(amount),
                       disbursement_method_id: disbursementMethod.api_id,
                     })
                     .then(() => {
                       getAnalyticsService()
                         .logEvent('moneyWithdrawn', {
-                          amount: Number(amount),
+                          amount: toNumber(amount),
                           bank_details: selectedBankAccount,
                         })
                         .then(() => {});
@@ -219,7 +219,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
                             subheading={strings(
                               'payment_activities.withdraw_success',
                               {
-                                amount: amountWithCurrency(Number(amount)),
+                                amount: amountWithCurrency(toNumber(amount)),
                                 bank_details: selectedBankAccount,
                               },
                             )}
