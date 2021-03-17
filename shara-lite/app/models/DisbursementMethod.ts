@@ -36,6 +36,8 @@ export interface IDisbursementMethod extends BaseModelInterface {
     nuban: string;
     account_name: string;
     fields: FieldsData;
+    account_label: string;
+    provider_label: string;
   } | null;
 }
 

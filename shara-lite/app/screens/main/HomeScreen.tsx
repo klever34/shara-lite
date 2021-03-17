@@ -4,12 +4,16 @@ import {CustomersScreen} from '@/screens/main/customers';
 import {TransactionsScreen} from '@/screens/main/transactions';
 import {applySpacing, applyStyles, colors, navBarHeight} from '@/styles';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useMemo} from 'react';
 import {Text} from '@/components';
 import {Image, SafeAreaView, View} from 'react-native';
 import {useAppNavigation} from '@/services/navigation';
 import {useInfo} from '@/helpers/hooks';
-import {getAuthService, getI18nService} from '@/services';
+import {
+  getAuthService,
+  getI18nService,
+  getRemoteConfigService,
+} from '@/services';
 import {EntryContext} from '@/components/EntryView';
 import Touchable from '@/components/Touchable';
 import {useLastSeen} from '@/services/last-seen';
@@ -28,7 +32,26 @@ export type MainNavParamList = {
 
 const MainNav = createBottomTabNavigator<MainNavParamList>();
 
+export const useSharaMoney = () => {
+  const enableSharaMoney = useMemo(() => {
+    try {
+      const sharaMoneyEnabledUsers = JSON.parse(
+        getRemoteConfigService().getValue('sharaMoneyEnabledUsers').asString(),
+      );
+      if (!Object.keys(sharaMoneyEnabledUsers).length) {
+        return true;
+      }
+      const user = getAuthService().getUser();
+      return !!sharaMoneyEnabledUsers[user?.id ?? ''];
+    } catch (e) {
+      return false;
+    }
+  }, []);
+  return {enableSharaMoney};
+};
+
 export const HomeScreen = () => {
+  const {enableSharaMoney} = useSharaMoney();
   const navigation = useAppNavigation();
   const business = useInfo(() => getAuthService().getBusinessInfo());
   const {setCurrentCustomer} = useContext(EntryContext);
@@ -131,23 +154,25 @@ export const HomeScreen = () => {
             ),
           }}
         />
-        <MainNav.Screen
-          name="MoneyTab"
-          component={MoneyScreen}
-          options={{
-            tabBarLabel: (labelProps) => (
-              <TabBarLabel {...labelProps}>{strings('money')}</TabBarLabel>
-            ),
-            tabBarIcon: ({color}) => (
-              <Icon
-                type="material-icons"
-                name="attach-money"
-                size={28}
-                color={color}
-              />
-            ),
-          }}
-        />
+        {enableSharaMoney && (
+          <MainNav.Screen
+            name="MoneyTab"
+            component={MoneyScreen}
+            options={{
+              tabBarLabel: (labelProps) => (
+                <TabBarLabel {...labelProps}>{strings('money')}</TabBarLabel>
+              ),
+              tabBarIcon: ({color}) => (
+                <Icon
+                  type="material-icons"
+                  name="attach-money"
+                  size={28}
+                  color={color}
+                />
+              ),
+            }}
+          />
+        )}
         <MainNav.Screen
           name="MoreTab"
           component={MoreScreen}

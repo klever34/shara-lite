@@ -80,13 +80,29 @@ export const TakeDrawdownForm = (props: any) => {
     [openModal, closeModal, saveDrawdown],
   );
 
+  const handleValidateAmountForm = useCallback(
+    (values) => {
+      const errors = {} as {amount: string};
+      if (!values.amount) {
+        errors.amount = strings('drawdown.amount_required_error');
+      } else if (
+        !!wallet?.drawdown_amount_available &&
+        toNumber(values.amount) > wallet?.drawdown_amount_available
+      ) {
+        errors.amount = strings('drawdown.withdraw_excess_error');
+      }
+      return errors;
+    },
+    [wallet?.drawdown_amount_available],
+  );
+
   return (
     <AmountForm
       header={{
         title: strings('drawdown.take_drawdown'),
       }}
       maxAmount={wallet?.drawdown_amount_available}
-      errorMessage={strings('drawdown.withdraw_excess_error')}
+      validateFn={handleValidateAmountForm}
       onCurrencyInputChange={(value) => handleRepaymentAmountChange(value)}
       leadText={strings('drawdown.take_drawdown_lead_text')}
       onClose={closeModal}

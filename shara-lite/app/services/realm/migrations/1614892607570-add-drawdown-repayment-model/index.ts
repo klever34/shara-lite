@@ -28,11 +28,15 @@ import {Activity} from '@/services/realm/migrations/1611236083669-add-activity-x
 
 import {Customer} from '@/services/realm/migrations/1611256639370-re-add-disable-customer-reminders/models/Customer';
 
-import {Wallet} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/Wallet';
-import {CollectionMethod} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/CollectionMethod';
-import {Collection} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/Collection';
-import {Disbursement} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/Disbursement';
-import {DisbursementMethod} from '@/services/realm/migrations/1613468659343-add-shara-pay-models/models/DisbursementMethod';
+import {Collection} from '@/services/realm/migrations/1614273134730-add-drawdown_transaction_fee_percentage-to-wallet-and-provider_label-to-collection/models/Collection';
+import {Disbursement} from '@/services/realm/migrations/1614273134730-add-drawdown_transaction_fee_percentage-to-wallet-and-provider_label-to-collection/models/Disbursement';
+
+import {CollectionMethod} from '@/services/realm/migrations/1613546853297-add-is_primary_to_collection_disbursment_methods/models/CollectionMethod';
+import {DisbursementMethod} from '@/services/realm/migrations/1613546853297-add-is_primary_to_collection_disbursment_methods/models/DisbursementMethod';
+
+import {Wallet} from '@/services/realm/migrations/1614273134730-add-drawdown_transaction_fee_percentage-to-wallet-and-provider_label-to-collection/models/Wallet';
+import {Drawdown} from '@/services/realm/migrations/1614251072879-add-repayment-date-to-wallet-and-drawdown/models/Drawdown';
+
 
 import {DrawdownRepayment} from '@/services/realm/migrations/1614892607570-add-drawdown-repayment-model/models/DrawdownRepayment'
 
@@ -62,6 +66,7 @@ const schema = [
   Collection,
   DisbursementMethod,
   Disbursement,
+  Drawdown,
   DrawdownRepayment,
 ];
 

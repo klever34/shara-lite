@@ -14,7 +14,7 @@ import {
 import {getI18nService} from '@/services';
 import {as} from '@/styles';
 import {useFormik} from 'formik';
-import React, {useCallback} from 'react';
+import React, {useCallback, useMemo} from 'react';
 import {View} from 'react-native';
 
 const strings = getI18nService().strings;
@@ -28,26 +28,28 @@ type AmountFormProps = {
     onPress: (amount: string) => void;
   };
   maxAmount?: number;
-  errorMessage?: string;
   onCurrencyInputChange?(value: string): void;
+  validateFn?: (values: {amount: string}) => {amount: string};
 };
 
 export const AmountForm = ({
   header,
   leadText,
-  actionItems,
   onClose,
-  doneButton,
   maxAmount,
-  errorMessage,
+  validateFn,
+  doneButton,
+  actionItems,
   onCurrencyInputChange,
 }: AmountFormProps) => {
-  const {values, setFieldValue} = useFormik({
+  const {values, touched, errors, handleSubmit, setFieldValue} = useFormik({
     initialValues: {
       amount: '',
     },
-    onSubmit: () => {},
+    validate: validateFn,
+    onSubmit: (values) => doneButton.onPress(values.amount),
   });
+  console.log(errors);
   const handleChange = useCallback(
     (text: string) => {
       setFieldValue('amount', text);
@@ -64,8 +66,8 @@ export const AmountForm = ({
           label={strings('payment_activities.withdraw_fields.amount.label')}
           onChangeText={handleChange}
           keyboardType="numeric"
-          isInvalid={!!maxAmount && toNumber(values.amount) > maxAmount}
-          errorMessage={errorMessage}
+          isInvalid={!!touched.amount && !!errors.amount}
+          errorMessage={errors.amount}
         />
         <Text style={as('self-center mt-8 text-gray-200 text-sm')}>
           {leadText}
@@ -97,9 +99,7 @@ export const AmountForm = ({
               disabled:
                 !values.amount ||
                 (!!maxAmount && toNumber(values.amount) > maxAmount),
-              onPress: () => {
-                doneButton.onPress?.(values.amount);
-              },
+              onPress: handleSubmit,
             },
           ]}
         />
