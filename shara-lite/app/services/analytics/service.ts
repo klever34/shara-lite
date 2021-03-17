@@ -136,6 +136,16 @@ export type SharaAppEventsProperties = {
   };
   feedbackSaved: {};
   comingSoonPrompted: {feature: string};
+
+  // Money
+  moneyWithdrawn: {
+    amount: number;
+    bank_details: string;
+  };
+  takeDrawdown: {
+    amount: number;
+  };
+  updateCollectionWithCustomer: {};
 };
 
 export interface IAnalyticsService {

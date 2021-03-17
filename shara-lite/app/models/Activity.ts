@@ -2,6 +2,8 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 
 export enum ActivityTypes {
   REMINDER = 'reminder',
+  COLLECTION = 'collection',
+  DISBURSEMENT = 'disbursement',
 }
 
 export interface IActivity extends BaseModelInterface {

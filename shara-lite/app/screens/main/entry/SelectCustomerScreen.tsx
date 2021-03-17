@@ -22,8 +22,8 @@ import {
   View,
 } from 'react-native';
 import {Text} from '@/components';
-import {useCustomerList} from '../customers/CustomerListScreen';
 import {getI18nService} from '@/services';
+import {useCustomerList} from '../customers/hook';
 
 const strings = getI18nService().strings;
 
@@ -49,12 +49,16 @@ export type SelectCustomerListScreenProps = {
 export const SelectCustomerListScreen = withModal(
   ({route, openModal}: SelectCustomerListScreenProps) => {
     const {withCustomer, onSelectCustomer, isCollection} = route.params;
+    const {getCustomers} = useCustomer();
+
+    const customers = getCustomers();
 
     const {
       searchTerm,
       filteredCustomers,
       handleCustomerSearch,
     } = useCustomerList({
+      customers,
       orderByOptions: {orderByQuery: ['name'], orderByOrder: ['asc', 'desc']},
     });
 

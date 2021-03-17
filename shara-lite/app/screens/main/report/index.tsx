@@ -1,4 +1,4 @@
-import {FAButton, SearchFilter} from '@/components';
+import {FAButton, SearchFilter, Text} from '@/components';
 import EmptyState from '@/components/EmptyState';
 import {HeaderBackButton} from '@/components/HeaderBackButton';
 import {Icon} from '@/components/Icon';
@@ -12,6 +12,7 @@ import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useReports} from '@/services/reports';
+import {useTransaction} from '@/services/transaction';
 import {applyStyles, colors} from '@/styles';
 import {format} from 'date-fns';
 import React, {
@@ -20,10 +21,9 @@ import React, {
   useEffect,
   useLayoutEffect,
 } from 'react';
-import {Text} from '@/components';
 import {Alert, FlatList, SafeAreaView, View} from 'react-native';
 import FileViewer from 'react-native-file-viewer';
-import {useTransactionList} from '../transactions/hook';
+import {useReceiptList} from '../transactions/hook';
 import {ReportListHeader} from './ReportListHeader';
 import {ReportListItem} from './ReportListItem';
 
@@ -33,8 +33,11 @@ const i18Service = getI18nService();
 
 export const ReportScreen = withModal(({openModal}: Props) => {
   const navigation = useAppNavigation();
+  const {getTransactions} = useTransaction();
   const {exportUserReportToPDF} = useReports();
   const {showSuccessToast} = useContext(ToastContext);
+
+  const receipts = getTransactions();
   const {
     filter,
     reloadData,
@@ -48,7 +51,7 @@ export const ReportScreen = withModal(({openModal}: Props) => {
     filteredReceipts,
     handleStatusFilter,
     handleReceiptSearch,
-  } = useTransactionList();
+  } = useReceiptList({receipts});
 
   useEffect(() => {
     return navigation.addListener('focus', () => {

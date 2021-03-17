@@ -25,6 +25,7 @@ type ModalOptionsList = {
       animationOutTiming?: number;
       swipeDirection?: Direction | Array<Direction>;
       renderContent: (props: BottomHalfContentProps) => ReactNode;
+      showHandleNub?: boolean;
     };
   full: Partial<ModalProps> &
     BaseModalOptions & {

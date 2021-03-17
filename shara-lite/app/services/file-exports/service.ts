@@ -12,7 +12,6 @@ export interface ExcelExportInterface {
   filename?: string;
 }
 
-
 export const saveToFile = async ({
   data,
   path,

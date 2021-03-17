@@ -29,7 +29,12 @@ const createDIContainer = (): IDIContainer => {
     Geolocation: object(GeolocationService),
     IPGeolocation: object(IPGeolocationService),
     Analytics: object(AnalyticsService).construct(get('Storage')),
-    Auth: object(AuthService).construct(get('Storage'), get('Analytics')),
+    I18n: object(I18nService).construct(get('RemoteConfig'), get('Storage')),
+    Auth: object(AuthService).construct(
+      get('Storage'),
+      get('Analytics'),
+      get('I18n'),
+    ),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
       get('Realm'),
@@ -39,11 +44,6 @@ const createDIContainer = (): IDIContainer => {
     ),
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
-    I18n: object(I18nService).construct(
-      get('RemoteConfig'),
-      get('Auth'),
-      get('Storage'),
-    ),
   });
   return container;
 };

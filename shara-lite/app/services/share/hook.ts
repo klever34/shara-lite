@@ -1,6 +1,6 @@
 import {getCustomerWhatsappNumber} from '@/helpers/utils';
 import {useCallback} from 'react';
-import {Alert, Platform} from 'react-native';
+import {Alert, Platform, Share as ShareIOS} from 'react-native';
 import Share from 'react-native-share';
 //@ts-ignore
 import {AppInstalledChecker} from 'react-native-check-app-install';
@@ -25,8 +25,6 @@ export const useShare = ({
   const userCountryCode = user?.country_code;
 
   const handleSmsShare = useCallback(async () => {
-    console.log('here');
-
     const shareOptions = {
       // @ts-ignore
       social: Share.Social.SMS,
@@ -47,6 +45,13 @@ export const useShare = ({
       }
     } else {
       try {
+        if (Platform.OS == 'ios') {
+          await ShareIOS.share({
+            title,
+            message,
+          });
+          return;
+        }
         await Share.shareSingle(shareOptions);
       } catch (e) {
         console.log('Error', e.error);
@@ -84,7 +89,6 @@ export const useShare = ({
       filename: 'Invalid file attached',
       whatsAppNumber: 'Please check the phone number supplied',
     } as {[key: string]: any};
-
     if (!recipient) {
       const options = {
         title,
@@ -97,23 +101,20 @@ export const useShare = ({
         console.log('Error', e.error);
       }
     } else {
+      if (Platform.OS == 'ios') {
+        await ShareIOS.share({
+          title,
+          url: `data:image/png;base64,${image}`,
+        });
+        return;
+      }
       try {
-        if(Platform.OS == 'android'){
-          isWhatsappInstalled = await AppInstalledChecker.checkPackageName(
-            'com.whatsapp',
-          );
-          isWhatsappBusinessInstalled = await AppInstalledChecker.checkPackageName(
-            'com.whatsapp.w4b',
-          );
-        }
-        else {
-          isWhatsappInstalled = await AppInstalledChecker.checkURLScheme(
-            'whatsapp',
-          );
-          isWhatsappBusinessInstalled = await AppInstalledChecker.checkURLScheme(
-            'whatsapp',
-          );
-        }
+        isWhatsappInstalled = await AppInstalledChecker.checkPackageName(
+          'com.whatsapp',
+        );
+        isWhatsappBusinessInstalled = await AppInstalledChecker.checkPackageName(
+          'com.whatsapp.w4b',
+        );
       } catch (e) {
         console.log(e);
       }

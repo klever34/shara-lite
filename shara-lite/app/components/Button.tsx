@@ -166,7 +166,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   text: {
-    fontSize: applySpacing(18),
+    fontSize: applySpacing(16),
     fontWeight: '700',
     textTransform: 'capitalize',
   },
@@ -232,7 +232,7 @@ export const baseButtonStyles = StyleSheet.create({
     elevation: 8,
   },
   text: {
-    fontSize: applySpacing(14),
+    fontSize: applySpacing(16),
     lineHeight: applySpacing(20),
     color: colors.white,
     textTransform: 'capitalize',

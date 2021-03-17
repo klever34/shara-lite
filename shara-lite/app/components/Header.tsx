@@ -45,7 +45,7 @@ export const Header = ({
   return (
     <View
       style={applyStyles(
-        'flex-row py-16 bg-white relative items-center',
+        'flex-row py-8 bg-white relative items-center',
         {
           borderBottomWidth: 1.5,
           borderBottomColor: colors['gray-20'],
@@ -60,7 +60,7 @@ export const Header = ({
       )}
       {renderContent()}
       {headerRight && (
-        <View style={applyStyles('absolute h-full top-16 right-0')}>
+        <View style={applyStyles('absolute h-full top-10 right-0')}>
           <HeaderRight {...headerRight} />
         </View>
       )}

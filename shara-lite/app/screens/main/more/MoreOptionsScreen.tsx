@@ -25,6 +25,7 @@ import {MoreStackParamList} from '.';
 import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
+import {RootStackParamList} from '@/index';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -32,7 +33,7 @@ const strings = getI18nService().strings;
 export const MoreOptionsScreen = withModal(
   ({openModal}: ModalWrapperFields) => {
     const navigation = useAppNavigation<
-      MainStackParamList & MoreStackParamList
+      RootStackParamList & MainStackParamList & MoreStackParamList
     >();
     const shareProps: ShareHookProps = {
       image: inviteImageBase64String,
@@ -53,6 +54,15 @@ export const MoreOptionsScreen = withModal(
 
     const onEditBusinessSettings = useCallback(() => {
       navigation.navigate('BusinessSettings');
+    }, [navigation]);
+
+    const onPaymentSettings = useCallback(() => {
+      const user = getAuthService().getUser();
+      if (user?.is_identity_verified) {
+        navigation.navigate('DisburementScreen');
+      } else {
+        navigation.navigate('PaymentSettings');
+      }
     }, [navigation]);
 
     const {reloadApp} = useContext(AppContext);
@@ -91,6 +101,13 @@ export const MoreOptionsScreen = withModal(
           },
           onPress: onEditBusinessSettings,
         },
+        {
+          leftSection: {
+            title: strings('more.list.payment_settings.title'),
+            caption: strings('more.list.payment_settings.description'),
+          },
+          onPress: onPaymentSettings,
+        },
         ...(languages.length > 1
           ? [
               {
@@ -123,6 +140,7 @@ export const MoreOptionsScreen = withModal(
       ];
     }, [
       onEditBusinessSettings,
+      onPaymentSettings,
       languages.length,
       onLanguageSettings,
       navigation,

@@ -373,16 +373,16 @@ const CalculatorKeyboard = () => {
         </View>
         <View style={applyStyles('flex-1 flex-row px-16 w-full')}>
           <View style={applyStyles('flex-1')}>
-            <CalculatorButton label="C" onPress={handleClear} />
+            <CalculatorButton onPress={handleDelete}>
+              <Icon type="feathericons" name="delete" size={24} />
+            </CalculatorButton>
             <CalculatorButton label="7" onPress={enterValue?.('7')} />
             <CalculatorButton label="4" onPress={enterValue?.('4')} />
             <CalculatorButton label="1" onPress={enterValue?.('1')} />
             <CalculatorButton label="00" onPress={enterValue?.('00')} />
           </View>
           <View style={applyStyles('flex-1')}>
-            <CalculatorButton onPress={handleDelete}>
-              <Icon type="feathericons" name="delete" size={24} />
-            </CalculatorButton>
+            <CalculatorButton label="C" onPress={handleClear} />
             <CalculatorButton label="8" onPress={enterValue?.('8')} />
             <CalculatorButton label="5" onPress={enterValue?.('5')} />
             <CalculatorButton label="2" onPress={enterValue?.('2')} />

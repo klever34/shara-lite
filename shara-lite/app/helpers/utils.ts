@@ -195,3 +195,18 @@ export const convertUriToBase64 = async (uri: string) => {
     handleError(error);
   }
 };
+
+export const sortDatesRelativeToDate = (dates: Date[], date: Date) => {
+  return dates
+    .filter(function (d) {
+      //@ts-ignore
+      return d - date > 0;
+    })
+    .sort(function (a, b) {
+      //@ts-ignore
+      var distancea = Math.abs(date - a);
+      //@ts-ignore
+      var distanceb = Math.abs(date - b);
+      return distancea - distanceb;
+    });
+}

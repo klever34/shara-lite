@@ -7,7 +7,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useRef, useState} from 'react';
 import {Text} from '@/components';
-import {View} from 'react-native';
+import {View, TouchableOpacity, StyleSheet} from 'react-native';
 import Swiper from 'react-native-swiper';
 
 const strings = getI18nService().strings;
@@ -126,18 +126,30 @@ export const Welcome = () => {
               title={strings('get_started')}
             />
           ) : (
-            <View style={applyStyles('flex-row justify-between items-center w-full')}>
-              <Button
-                title={strings('skip')}
-                onPress={handleSkip}
-                variantColor="transparent"
-                style={applyStyles({width: '300%'})}
-              />
-              <Button
-                title={strings('next')}
-                onPress={handleNext}
-                style={applyStyles({width: '105%', marginRight: 100})}
-              />
+            <View
+              style={applyStyles(
+                'flex-row justify-between items-center w-full',
+              )}>
+              <TouchableOpacity
+                style={styles.skipBtn}
+                onPress={() => handleSkip()}>
+                <Text
+                  style={{fontFamily: 'Roboto-Medium', alignSelf: 'center'}}>
+                  Skip
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.nextBtn}
+                onPress={() => handleNext()}>
+                <Text
+                  style={{
+                    fontFamily: 'Roboto-Medium',
+                    alignSelf: 'center',
+                    color: '#fff',
+                  }}>
+                  Next
+                </Text>
+              </TouchableOpacity>
             </View>
           )}
         </View>
@@ -145,3 +157,22 @@ export const Welcome = () => {
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  skipBtn: {
+    width: '47%',
+    elevation: 0,
+    borderWidth: 1.5,
+    borderColor: colors['gray-20'],
+    backgroundColor: 'transparent',
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    paddingVertical: 15,
+    borderRadius: 6,
+  },
+});
