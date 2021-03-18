@@ -1,4 +1,4 @@
-import {Strings} from 'types/i18n';
+import {Strings} from 'types/i18n'
 
 const en: Strings = {
   update_shara: {
@@ -8,6 +8,7 @@ const en: Strings = {
     submit_button: 'Update Now',
   },
   next: 'Next',
+  send: 'Send',
   skip: 'Skip',
   get_started: 'Get Started',
   login: {
@@ -154,13 +155,9 @@ const en: Strings = {
           customer: {
             notFound: 'Business not found',
           },
-          kenyaOnly: {
-            'Business not found': '',
-          },
-          success: {
-            'We were unable to send an STK push to your mobile number':
-              ' please try again or contact us through the Shara mobile application',
-          },
+          kenyaOnly: 'Business not found',
+          success:
+            'We were unable to send an STK push to your mobile number please try again or contact us through the Shara mobile application',
         },
         processValidationEvent: {
           success: 'Error Validating Payment',
@@ -223,9 +220,11 @@ const en: Strings = {
       bnplDrawdown: {
         create: {
           notFound: 'No BNPL has been approved for you',
-          invalidAmount: 'Amount specified is more than the amount available for drawdown',
+          invalidAmount:
+            'Amount specified is more than the amount available for drawdown',
           inactive: 'Drawdown is not currently active',
-          error:  'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
+          error:
+            'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
           success: 'Drawdown taken successfully',
         },
       },
@@ -233,7 +232,8 @@ const en: Strings = {
         create: {
           notFound: 'No BNPL has been approved for you',
           complete: "You've already finished repaying your loans",
-          error: 'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
+          error:
+            'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
           insufficientBalance: 'Your wallet balance is not sufficient',
           success: 'Repayment successful',
         },
@@ -899,6 +899,24 @@ const en: Strings = {
       tag: 'Go to payment settings',
     },
     feedback_submitted: 'Feedback Submitted',
+    stk_push: {
+      notification_sent: 'Notification sent',
+      amount_minimum_error: 'Amount must be greater than {{amount}}',
+      confirmation_text:
+        'A notification has been sent to your MPESA number {{mobile}}. Please check your phone to confirm.',
+      fields: {
+        amount: {
+          label: 'Amount',
+          placeholder: 'Enter amount',
+          errorMessage: 'Amount is required',
+        },
+        mobile: {
+          label: 'Phone Number',
+          placeholder: 'Enter your phone number',
+          errorMessage: 'Phone Number is required',
+        },
+      },
+    },
   },
   drawdown: {
     title: 'Drawdown',
@@ -937,9 +955,9 @@ const en: Strings = {
   },
   bnpl: {
     not_available: {
-      button_text:
-        'Go to money settings',
-      instruction: 'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
+      button_text: 'Go to money settings',
+      instruction:
+        'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
     },
     buy_now_pay_later: 'Buy now pay later',
     transaction_details: 'Transaction Details',
@@ -994,8 +1012,10 @@ const en: Strings = {
       instruction:
         '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
       title: 'Confirm Buy Now Pay Later',
-      client_terms: 'I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.',
-      merchant_terms: 'I have accepted the [Terms and Conditions](https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub) for Shara Buy Now Pay Later',
+      client_terms:
+        'I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.',
+      merchant_terms:
+        'I have accepted the [Terms and Conditions](https://docs.google.com/document/d/e/2PACX-1vR-gp6aV3UKaVUo8KVqpNMpITxqZG6AgC1M4_ZPH9DQj4ApsHceJcrrl93KemalVg/pub) for Shara Buy Now Pay Later',
       terms: '**Terms**',
     },
     success: {
@@ -1030,7 +1050,8 @@ const en: Strings = {
           repayment_complete: 'BNPL Transaction Repayment Completed!',
         },
       },
-      empty_state: '{{client}} has made no repayment yet. Click the button below to record a repayment.',
+      empty_state:
+        '{{client}} has made no repayment yet. Click the button below to record a repayment.',
       paid: 'Paid',
       not_paid: 'Not paid',
       past_due: 'Past due',
@@ -1052,11 +1073,13 @@ const en: Strings = {
       'Hi {{customer_name}}, thank you for your recent purchase from {{business_name}}.',
     you_paid_message: 'You paid {{amount}}.',
     you_owe_message: 'You owe {{credit_amount}}.',
-    next_repayment: 'Your next repayment is {{amount}} and it is due on {{date}}.',
-    first_repayment: 'Your first repayment is {{amount}} and it is due on {{date}}.'
+    next_repayment:
+      'Your next repayment is {{amount}} and it is due on {{date}}.',
+    first_repayment:
+      'Your first repayment is {{amount}} and it is due on {{date}}.',
   },
   copied: 'Copied',
   submit: 'Submit',
-};
+}
 
-export default en;
+export default en
