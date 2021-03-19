@@ -6,12 +6,12 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
 import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
 import {IBNPLRepayment} from '@/models/BNPLRepayment';
-import {getApiService, getI18nService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useReceipt} from '@/services/receipt';
 import {applyStyles, colors, dimensions} from '@/styles';
-import React, {useCallback, useState} from 'react';
+import React, {useCallback} from 'react';
 import {FlatList, InteractionManager, Text, View} from 'react-native';
 import {AddRepaymentModal} from './AddRepaymentModal';
 import {BNPLClientTransactionListItem} from './BNPLClientTransactionListItem';
@@ -54,6 +54,13 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
           receipt = drawdown && getReceipt({receiptId: drawdown.receipt?._id});
         }
         closeModal();
+
+        getAnalyticsService()
+          .logEvent('bnplRepayment', {
+            amount: values.total_amount,
+            drawdown_id: drawdown?.api_id?.toString() ?? '',
+          })
+          .then();
 
         navigation.navigate('BNPLRepaymentSuccessScreen', {
           amount: toNumber(values.amount),

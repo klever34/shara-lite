@@ -84,7 +84,7 @@ export const ShareModal = (props: ShareModalProps) => {
       .logEvent('share', {
         method: 'sms',
         item_id: receiptData?._id?.toString() ?? '',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
       })
       .then(() => {});
     handleSmsShare();
@@ -94,7 +94,7 @@ export const ShareModal = (props: ShareModalProps) => {
     analyticsService
       .logEvent('share', {
         method: 'whatsapp',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
         item_id: receiptData?._id?.toString() ?? '',
       })
       .then(() => {});
@@ -105,7 +105,7 @@ export const ShareModal = (props: ShareModalProps) => {
     analyticsService
       .logEvent('share', {
         method: 'others',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
         item_id: receiptData?._id?.toString() ?? '',
       })
       .then(() => {});
