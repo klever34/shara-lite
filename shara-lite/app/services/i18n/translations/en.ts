@@ -917,6 +917,10 @@ const en: Strings = {
         },
       },
     },
+    bnpl_drawdown_item:
+      'Buy now pay later drawdown of **{{amount}}** to **{{customer}}**',
+    bnpl_repayment_item:
+      'Buy now pay later repayment of **{{amount}}** from **{{customer}}**',
   },
   drawdown: {
     title: 'Drawdown',

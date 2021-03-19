@@ -692,6 +692,8 @@ export interface Strings {
       amount_minimum_error: string
       fields: {amount: FormField; mobile: FormField}
     }
+    bnpl_drawdown_item: string
+    bnpl_repayment_item: string
   }
   drawdown: {
     title: string
