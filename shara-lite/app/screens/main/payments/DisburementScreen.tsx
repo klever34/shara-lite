@@ -65,11 +65,11 @@ function DisburementScreen(props: ModalWrapperFields) {
               updated_at: parseISO(disbursementMethod.updated_at),
             },
           });
+          showSuccessToast(strings('payment.payment_container.payment_added'));
+          setIsSaving(false);
         } catch (error) {
           handleError(error);
         }
-        showSuccessToast(strings('payment.payment_container.payment_added'));
-        setIsSaving(false);
       } else {
         Alert.alert(
           strings('warning'),

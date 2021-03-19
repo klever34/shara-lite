@@ -5,7 +5,7 @@ import Touchable from '@/components/Touchable';
 import {withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {ICustomer} from '@/models';
-import {getApiService, getI18nService} from '@/services';
+import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useBNPLApproval} from '@/services/bnpl-approval';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
@@ -131,9 +131,48 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
           amount: credit_amount,
           receipt_id: `${receipt?._id}`,
           customer_id: `${customer?._id}`,
+          customer_data: {
+            _id: customer?._id,
+            name: customer?.name ?? '',
+            mobile: customer?.mobile,
+            email: customer?.email,
+            image: customer?.image,
+            _partition: customer?._partition,
+            created_at: customer?.created_at,
+            is_deleted: customer?.is_deleted,
+            updated_at: customer?.updated_at,
+            disable_reminders: customer?.disable_reminders,
+          },
+          receipt_data: {
+            tax: receipt.tax,
+            _id: receipt?._id,
+            note: receipt.note,
+            _partition: receipt._partition,
+            amount_paid: receipt.amount_paid,
+            updated_at: receipt?.updated_at,
+            created_at: receipt?.created_at,
+            is_cancelled: receipt.is_cancelled,
+            is_deleted: receipt.is_deleted,
+            total_amount: receipt.total_amount,
+            is_collection: receipt.is_collection,
+            credit_amount: receipt.credit_amount,
+            customer_name: receipt.customer_name,
+            customer_mobile: receipt.customer_mobile,
+            is_hidden_in_pro: receipt.is_hidden_in_pro,
+            transaction_date: receipt.transaction_date,
+            //@ts-ignore
+            customer: receipt?.customer?._id?.toString() ?? '',
+          },
         });
         const {approval, repayments, drawdown} = data;
         closeModal();
+        getAnalyticsService()
+          .logEvent('takeBNPLDrawdown', {
+            amount: values.total_amount,
+            receipt_id: receipt?._id?.toString() ?? '',
+            repayment_amount: drawdown.repayment_amount,
+          })
+          .then();
         navigation.navigate('BNPLTransactionSuccessScreen', {
           transaction: {
             approval,

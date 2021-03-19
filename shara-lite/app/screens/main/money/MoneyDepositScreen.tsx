@@ -1,13 +1,33 @@
-import React, {useCallback, useMemo} from 'react';
-import {Button, Header, Text} from '@/components';
-import {getI18nService} from '@/services';
-import {View} from 'react-native';
-import {as} from '@/styles';
-import {useClipboard} from '@/helpers/hooks';
+import {
+  Button,
+  CurrencyInput,
+  Header,
+  PhoneNumber,
+  PhoneNumberField,
+  Text,
+  toNumber,
+} from '@/components';
+import ActionButtonSet from '@/components/ActionButtonSet';
 import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {useClipboard} from '@/helpers/hooks';
+import {amountWithCurrency} from '@/helpers/utils';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
 import {useCollectionMethod} from '@/services/collection-method';
+import {handleError} from '@/services/error-boundary';
 import {useWallet} from '@/services/wallet';
+import {applyStyles, as, colors} from '@/styles';
+import {useFormik} from 'formik';
+import {parsePhoneNumber} from 'libphonenumber-js';
 import _ from 'lodash';
+import React, {useCallback, useMemo, useState} from 'react';
+import {View} from 'react-native';
+import Markdown from 'react-native-markdown-display';
 
 const strings = getI18nService().strings;
 
@@ -59,71 +79,254 @@ const AccountDetailsCard = ({
   );
 };
 
-type MoneyDepositScreenProps = {
-  onClose: () => void;
-};
+const STKPushDeposit = ({
+  onSubmit,
+  onClose,
+  isLoading,
+}: {
+  onClose(): void;
+  isLoading?: boolean;
+  onSubmit: (values: {amount: string; mobile?: string}) => Promise<void>;
+}) => {
+  const user = getAuthService().getUser();
 
-export const MoneyDepositScreen = ({onClose}: MoneyDepositScreenProps) => {
-  const {getWallet} = useWallet();
-  const {getCollectionMethods} = useCollectionMethod();
-  const wallet = getWallet();
-  const collectionMethods = getCollectionMethods();
-  const merchantId = wallet?.merchant_id;
-  const parseBankDetails = useCallback((bankDetailsString: string): {
-    vnuban: string;
-    bank_name?: string;
-  } | null => {
-    try {
-      return JSON.parse(bankDetailsString);
-    } catch (e) {
-      return null;
+  const phoneNumber = parsePhoneNumber('+' + user?.mobile);
+  const nationalNumber = (phoneNumber?.nationalNumber ?? '') as string;
+
+  const handleValidateForm = useCallback((values) => {
+    const errors = {} as {amount: string; mobile: string};
+    if (!values.amount) {
+      errors.amount = strings(
+        'payment_activities.stk_push.fields.amount.errorMessage',
+      );
+    } else if (toNumber(values.amount) < 10) {
+      errors.amount = strings('payment_activities.withdraw_minimum_error', {
+        amount: amountWithCurrency(10),
+      });
+    } else if (!values.mobile) {
+      errors.mobile = strings(
+        'payment_activities.stk_push.fields.mobile.errorMessage',
+      );
     }
+    return errors;
   }, []);
 
-  const virtualAccounts = useMemo(() => {
-    return _(collectionMethods)
-      .map((collectionMethod) => {
-        const bankDetails = parseBankDetails(collectionMethod.account_details);
-        if (!bankDetails) {
-          return null;
-        }
-        return bankDetails;
-      })
-      .compact()
-      .value();
-  }, [collectionMethods, parseBankDetails]);
+  const {errors, values, touched, setFieldValue, handleSubmit} = useFormik({
+    onSubmit: ({mobile, amount}) => {
+      onSubmit({mobile: `${user?.country_code}${mobile}`, amount});
+    },
+    initialValues: {amount: '', mobile: nationalNumber},
+    validate: handleValidateForm,
+  });
+
+  const handleAmountChange = useCallback(
+    (text: string) => {
+      setFieldValue('amount', text);
+    },
+    [setFieldValue],
+  );
+
+  const handleMobileChange = useCallback(
+    (value: PhoneNumber) => {
+      setFieldValue('countryCode', user?.country_code);
+      setFieldValue('mobile', value.number);
+    },
+    [setFieldValue],
+  );
 
   return (
-    <View style={as('')}>
-      <Header
-        title={strings('payment_activities.deposit')}
-        style={as('border-b-0 pt-12 pb-0')}
-      />
-      <View style={as('items-center px-16 py-12')}>
-        <Text style={as('text-center text-sm mb-16 text-gray-200')}>
-          {strings('payment_activities.deposit_help_text')}
-        </Text>
-        {merchantId && (
-          <AccountDetailsCard
-            label={strings('payment_activities.your_merchant_id_is')}
-            accountDetailsList={[{vnuban: merchantId}]}
-            copyMessage={strings('payment_activities.tap_to_copy')}
-          />
+    <View style={applyStyles('px-16 py-24')}>
+      <CurrencyInput
+        errorMessage={errors.amount}
+        onChangeText={handleAmountChange}
+        containerStyle={applyStyles('mb-24')}
+        isInvalid={!!touched.amount && !!errors.amount}
+        label={strings('payment_activities.stk_push.fields.amount.label')}
+        placeholder={strings(
+          'payment_activities.stk_push.fields.amount.placeholder',
         )}
-        <AccountDetailsCard
-          label={strings('payment_activities.your_wallet_account_no_is', {
-            count: virtualAccounts.length,
-          })}
-          accountDetailsList={virtualAccounts}
-          copyMessage={strings('payment_activities.tap_to_copy')}
-        />
-        <Button
-          title={strings('close')}
-          variantColor="clear"
-          style={as('px-64 mt-24 mb-16')}
-          onPress={onClose}
-        />
-      </View>
+      />
+      <PhoneNumberField
+        errorMessage={errors.mobile}
+        onSubmitEditing={handleSubmit}
+        containerStyle={applyStyles('mb-24')}
+        isInvalid={!!touched.mobile && !!errors.mobile}
+        onChangeText={(data) => handleMobileChange(data)}
+        label={strings('payment_activities.stk_push.fields.mobile.label')}
+        value={{
+          number: values.mobile ?? '',
+          callingCode: user?.country_code ?? '',
+        }}
+        placeholder={strings(
+          'payment_activities.stk_push.fields.mobile.placeholder',
+        )}
+      />
+      <ActionButtonSet
+        actionBtns={[
+          {
+            title: strings('cancel'),
+            variantColor: 'clear',
+            onPress: onClose,
+          },
+          {
+            variantColor: 'blue',
+            onPress: handleSubmit,
+            title: strings('send'),
+            isLoading,
+          },
+        ]}
+      />
     </View>
   );
 };
+
+const STKPushConfirmation = ({
+  onClose,
+  mobile,
+}: {
+  onClose(): void;
+  mobile: string;
+}) => (
+  <>
+    <View style={applyStyles('px-16 pt-24')}>
+      <Text
+        style={applyStyles(
+          'pb-8 text-center text-700 text-uppercase text-gray-300',
+        )}>
+        {strings('payment_activities.stk_push.notification_sent')}
+      </Text>
+      <Markdown
+        style={{
+          body: applyStyles(
+            'pb-12 px-16 text-center text-gray-300 text-400 text-base',
+          ),
+          textgroup: applyStyles('text-center'),
+          em: applyStyles('text-700', {
+            fontWeight: '500',
+            fontStyle: 'normal',
+          }),
+        }}>
+        {strings('payment_activities.stk_push.confirmation_text', {mobile})}
+      </Markdown>
+    </View>
+    <View
+      style={applyStyles('pb-24 px-16 flex-row justify-end pt-16 border-t-1', {
+        borderTopColor: colors['gray-20'],
+      })}>
+      <Button
+        onPress={onClose}
+        variantColor="blue"
+        title={strings('done')}
+        style={applyStyles({width: 100})}
+      />
+    </View>
+  </>
+);
+
+type MoneyDepositScreenProps = {
+  onClose: () => void;
+} & ModalWrapperFields;
+
+export const MoneyDepositScreen = withModal(
+  ({onClose, closeModal, openModal}: MoneyDepositScreenProps) => {
+    const {getWallet} = useWallet();
+    const {getCollectionMethods} = useCollectionMethod();
+    const wallet = getWallet();
+    const collectionMethods = getCollectionMethods();
+    const parseBankDetails = useCallback((bankDetailsString: string): {
+      vnuban: string;
+      bank_name?: string;
+    } | null => {
+      try {
+        return JSON.parse(bankDetailsString);
+      } catch (e) {
+        return null;
+      }
+    }, []);
+
+    const [loading, setLoading] = useState(false);
+
+    const virtualAccounts = useMemo(() => {
+      return _(collectionMethods)
+        .map((collectionMethod) => {
+          const bankDetails = parseBankDetails(
+            collectionMethod.account_details,
+          );
+          if (!bankDetails) {
+            return null;
+          }
+          return bankDetails;
+        })
+        .compact()
+        .value();
+    }, [collectionMethods, parseBankDetails]);
+
+    const handleSTKPush = useCallback(
+      async ({mobile, amount}) => {
+        try {
+          setLoading(true);
+          await getApiService().stkPushDeposit({
+            mobile,
+            amount: toNumber(amount),
+          });
+          getAnalyticsService()
+            .logEvent('initiateDepositSTKPush', {
+              amount: toNumber(amount),
+            })
+            .then();
+          setLoading(false);
+          openModal('bottom-half', {
+            renderContent: () => (
+              <STKPushConfirmation
+                mobile={mobile}
+                onClose={() => {
+                  closeModal();
+                  onClose();
+                }}
+              />
+            ),
+          });
+        } catch (error) {
+          setLoading(false);
+          handleError(error);
+        }
+      },
+      [onClose, openModal, closeModal],
+    );
+
+    return (
+      <View style={as('')}>
+        <Header
+          title={strings('payment_activities.deposit')}
+          style={as('border-b-0 pt-12 pb-0')}
+        />
+        {wallet?.currency_code !== 'KES' ? (
+          <View style={as('items-center px-16 py-12')}>
+            <Text style={as('text-center text-sm mb-16 text-gray-200')}>
+              {strings('payment_activities.deposit_help_text')}
+            </Text>
+            <AccountDetailsCard
+              label={strings('payment_activities.your_wallet_account_no_is', {
+                count: virtualAccounts.length,
+              })}
+              accountDetailsList={virtualAccounts}
+              copyMessage={strings('payment_activities.tap_to_copy')}
+            />
+            <Button
+              onPress={onClose}
+              variantColor="clear"
+              title={strings('close')}
+              style={as('px-64 mt-24 mb-16')}
+            />
+          </View>
+        ) : (
+          <STKPushDeposit
+            isLoading={loading}
+            onClose={onClose}
+            onSubmit={handleSTKPush}
+          />
+        )}
+      </View>
+    );
+  },
+);
