@@ -27,7 +27,7 @@ export const BNPLTransactionSuccessScreen = (
     drawdown?.bnpl_repayments && drawdown.bnpl_repayments[0];
   const paymentLink =
     businessInfo.slug &&
-    `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}/${drawdown.api_id}${
       receiptData?.customer?._id
         ? `?customer=${String(receiptData?.customer?._id)}`
         : ''

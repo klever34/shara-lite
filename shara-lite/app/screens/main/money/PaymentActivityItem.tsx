@@ -65,9 +65,9 @@ const BNPLDrawdownItem = ({data}: {data: IBNPLDrawdown}) => {
       <View style={applyStyles('flex-row items-center', {width: '66%'})}>
         <Icon
           size={18}
-          name="arrow-up"
+          name="arrow-down"
           type="feathericons"
-          color={colors['red-100']}
+          color={colors['green-200']}
         />
         <View style={applyStyles('pl-8')}>
           <Markdown style={markdownStyle}>
@@ -84,7 +84,7 @@ const BNPLDrawdownItem = ({data}: {data: IBNPLDrawdown}) => {
             borderWidth: 1,
             borderColor: colors['gray-20'],
           })}>
-          <Text style={applyStyles('pb-4 text-700 text-xs text-red-200')}>
+          <Text style={applyStyles('pb-4 text-700 text-xs text-green-200')}>
             {amountWithCurrency(amount_drawn)}
           </Text>
         </View>
