@@ -1,4 +1,4 @@
-import {Strings} from 'types/i18n'
+import {Strings} from 'types/i18n';
 
 const en: Strings = {
   update_shara: {
@@ -903,7 +903,7 @@ const en: Strings = {
       notification_sent: 'Notification sent',
       amount_minimum_error: 'Amount must be greater than {{amount}}',
       confirmation_text:
-        'A notification has been sent to your MPESA number {{mobile}}. Please check your phone to confirm.',
+        'A notification has been sent to your MPESA number **{{mobile}}**. Please check your phone to confirm.',
       fields: {
         amount: {
           label: 'Amount',
@@ -963,9 +963,12 @@ const en: Strings = {
       instruction:
         'Receive and withdraw money using your Shara wallet. Click the button below to get started.',
     },
-    buy_now_pay_later: 'Buy now pay later',
+    buy_now_pay_later: 'Buy Now Pay Later',
     transaction_details: 'Transaction Details',
-    day_text: {one: '{{amount}} day', other: '{{amount}} days'},
+    day_text: {
+      one: '{{amount}} day',
+      other: '{{amount}} days',
+    },
     active_text: 'Active',
     complete_text: 'Complete',
     clients_text: 'Clients',
@@ -1014,7 +1017,7 @@ const en: Strings = {
     },
     confirmation: {
       instruction:
-        '1. Accept the terms of the BNPL offered by Shara to you. \n 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
+        '1. Accept the terms of the BNPL offered by Shara to you 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.',
       title: 'Confirm Buy Now Pay Later',
       client_terms:
         'I confirm that my Client has accepted the terms of the Buy Now Pay Later product I am offering him or her.',
@@ -1037,7 +1040,7 @@ const en: Strings = {
       paid_text: 'Paid',
       wallet_balance: 'Wallet balance {{amount}}',
       add_repayment_note:
-        'Note that this amount will be deducted from your wallet balance.',
+        'Note that this amount will be deducted from your wallet balance',
       repayment_to_shara: 'Repayment to Shara Inc.',
       repayment: {
         fields: {
@@ -1084,6 +1087,6 @@ const en: Strings = {
   },
   copied: 'Copied',
   submit: 'Submit',
-}
+};
 
-export default en
+export default en;
