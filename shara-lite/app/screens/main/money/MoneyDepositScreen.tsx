@@ -189,12 +189,18 @@ const STKPushConfirmation = ({
 }) => (
   <>
     <View style={applyStyles('px-16 pt-24')}>
-      <Text style={applyStyles('pb-24 text-700 text-uppercase text-gray-300')}>
+      <Text
+        style={applyStyles(
+          'pb-8 text-center text-700 text-uppercase text-gray-300',
+        )}>
         {strings('payment_activities.stk_push.notification_sent')}
       </Text>
       <Markdown
         style={{
-          body: applyStyles('text-gray-300 text-400 text-base'),
+          body: applyStyles(
+            'pb-12 px-16 text-center text-gray-300 text-400 text-base',
+          ),
+          textgroup: applyStyles('text-center'),
           em: applyStyles('text-700', {
             fontWeight: '500',
             fontStyle: 'normal',
@@ -204,10 +210,15 @@ const STKPushConfirmation = ({
       </Markdown>
     </View>
     <View
-      style={applyStyles('pb-24 pt-16 border-t-1', {
+      style={applyStyles('pb-24 px-16 flex-row justify-end pt-16 border-t-1', {
         borderTopColor: colors['gray-20'],
       })}>
-      <Button onPress={onClose} variantColor="blue" title={strings('done')} />
+      <Button
+        onPress={onClose}
+        variantColor="blue"
+        title={strings('done')}
+        style={applyStyles({width: 100})}
+      />
     </View>
   </>
 );
@@ -264,10 +275,15 @@ export const MoneyDepositScreen = withModal(
             })
             .then();
           setLoading(false);
-          onClose();
           openModal('bottom-half', {
             renderContent: () => (
-              <STKPushConfirmation mobile={mobile} onClose={closeModal} />
+              <STKPushConfirmation
+                mobile={mobile}
+                onClose={() => {
+                  closeModal();
+                  onClose();
+                }}
+              />
             ),
           });
         } catch (error) {
