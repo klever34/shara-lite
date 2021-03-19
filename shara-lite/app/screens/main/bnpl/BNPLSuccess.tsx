@@ -41,7 +41,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
       .logEvent('share', {
         method: 'sms',
         item_id: drawdown?.receipt?.toString() ?? '',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
       })
       .then(() => {});
     handleSmsShare();
@@ -51,7 +51,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
     analyticsService
       .logEvent('share', {
         method: 'whatsapp',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
         item_id: drawdown?.receipt?.toString() ?? '',
       })
       .then(() => {});
@@ -62,7 +62,7 @@ export const BNPLSuccess = (props: BNPLSuccessProps) => {
     analyticsService
       .logEvent('share', {
         method: 'others',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
         item_id: drawdown?.receipt?.toString() ?? '',
       })
       .then(() => {});

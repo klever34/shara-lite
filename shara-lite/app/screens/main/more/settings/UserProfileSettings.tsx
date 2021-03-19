@@ -22,6 +22,7 @@ export const UserProfileSettings = () => {
   const apiService = getApiService();
 
   const user = authService.getUser();
+
   const navigation = useAppNavigation();
   const {firstname, lastname, email, mobile = '', country_code = ''} =
     user || {};

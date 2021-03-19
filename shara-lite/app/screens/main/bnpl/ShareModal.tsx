@@ -36,7 +36,7 @@ export const ShareModal = (props: ShareModalProps) => {
   const nextRepayment = activeRepayments && activeRepayments[0];
   const paymentLink =
     businessInfo.slug &&
-    `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}/${drawdown.api_id}${
       drawdown.customer?._id
         ? `?customer=${String(drawdown.customer?._id)}`
         : ''
@@ -84,7 +84,7 @@ export const ShareModal = (props: ShareModalProps) => {
       .logEvent('share', {
         method: 'sms',
         item_id: receiptData?._id?.toString() ?? '',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
       })
       .then(() => {});
     handleSmsShare();
@@ -94,7 +94,7 @@ export const ShareModal = (props: ShareModalProps) => {
     analyticsService
       .logEvent('share', {
         method: 'whatsapp',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
         item_id: receiptData?._id?.toString() ?? '',
       })
       .then(() => {});
@@ -105,7 +105,7 @@ export const ShareModal = (props: ShareModalProps) => {
     analyticsService
       .logEvent('share', {
         method: 'others',
-        content_type: 'share-receipt',
+        content_type: 'share-bnpl-receipt',
         item_id: receiptData?._id?.toString() ?? '',
       })
       .then(() => {});
