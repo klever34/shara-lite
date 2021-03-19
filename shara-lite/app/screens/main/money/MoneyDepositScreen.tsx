@@ -1,4 +1,3 @@
-import React, {useCallback, useMemo, useState} from 'react';
 import {
   Button,
   CurrencyInput,
@@ -8,27 +7,26 @@ import {
   Text,
   toNumber,
 } from '@/components';
-import * as yup from 'yup';
+import ActionButtonSet from '@/components/ActionButtonSet';
+import Touchable from '@/components/Touchable';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {useClipboard} from '@/helpers/hooks';
+import {amountWithCurrency} from '@/helpers/utils';
 import {
   getAnalyticsService,
   getApiService,
   getAuthService,
   getI18nService,
 } from '@/services';
-import {View} from 'react-native';
-import {applyStyles, as, colors} from '@/styles';
-import {useClipboard} from '@/helpers/hooks';
-import Touchable from '@/components/Touchable';
 import {useCollectionMethod} from '@/services/collection-method';
-import {useWallet} from '@/services/wallet';
-import _ from 'lodash';
-import {FormikConfig, FormikProps, useFormik} from 'formik';
 import {handleError} from '@/services/error-boundary';
-import {useIPGeolocation} from '@/services/ip-geolocation';
-import ActionButtonSet from '@/components/ActionButtonSet';
-import {ModalWrapperFields, withModal} from '@/helpers/hocs';
+import {useWallet} from '@/services/wallet';
+import {applyStyles, as, colors} from '@/styles';
+import {useFormik} from 'formik';
 import {parsePhoneNumber} from 'libphonenumber-js';
-import {amountWithCurrency} from '@/helpers/utils';
+import _ from 'lodash';
+import React, {useCallback, useMemo, useState} from 'react';
+import {View} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
 const strings = getI18nService().strings;
@@ -90,7 +88,6 @@ const STKPushDeposit = ({
   isLoading?: boolean;
   onSubmit: (values: {amount: string; mobile?: string}) => Promise<void>;
 }) => {
-  const {callingCode} = useIPGeolocation();
   const user = getAuthService().getUser();
 
   const phoneNumber = parsePhoneNumber('+' + user?.mobile);
@@ -116,7 +113,7 @@ const STKPushDeposit = ({
 
   const {errors, values, touched, setFieldValue, handleSubmit} = useFormik({
     onSubmit: ({mobile, amount}) => {
-      onSubmit({mobile: `${callingCode}${mobile}`, amount});
+      onSubmit({mobile: `${user?.country_code}${mobile}`, amount});
     },
     initialValues: {amount: '', mobile: nationalNumber},
     validate: handleValidateForm,
@@ -131,7 +128,7 @@ const STKPushDeposit = ({
 
   const handleMobileChange = useCallback(
     (value: PhoneNumber) => {
-      setFieldValue('countryCode', value.callingCode);
+      setFieldValue('countryCode', user?.country_code);
       setFieldValue('mobile', value.number);
     },
     [setFieldValue],
@@ -155,8 +152,11 @@ const STKPushDeposit = ({
         containerStyle={applyStyles('mb-24')}
         isInvalid={!!touched.mobile && !!errors.mobile}
         onChangeText={(data) => handleMobileChange(data)}
-        value={{number: values.mobile ?? '', callingCode: callingCode}}
         label={strings('payment_activities.stk_push.fields.mobile.label')}
+        value={{
+          number: values.mobile ?? '',
+          callingCode: user?.country_code ?? '',
+        }}
         placeholder={strings(
           'payment_activities.stk_push.fields.mobile.placeholder',
         )}

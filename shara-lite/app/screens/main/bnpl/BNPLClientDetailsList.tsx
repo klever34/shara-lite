@@ -58,6 +58,7 @@ export const BNPLClientDetailsList = withModal((props: Props) => {
         getAnalyticsService()
           .logEvent('bnplRepayment', {
             amount: values.total_amount,
+            customer: drawdown.customer?.name ?? '',
             drawdown_id: drawdown?.api_id?.toString() ?? '',
           })
           .then();

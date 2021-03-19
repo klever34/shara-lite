@@ -74,9 +74,6 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     },
   });
 
-  console.log(filteredBNPLRepayments.length, '1');
-  console.log(bnplRepayments.length, '2');
-
   const activitiesData: PaymentActivityItemData[] = useMemo(() => {
     const data = [
       ...collections,
@@ -85,7 +82,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
       // ...bnplRepayments,
     ];
     return orderBy(data, 'created_at', 'desc');
-  }, [collections, disbursements, bnplDrawdowns, bnplRepayments]);
+  }, [collections, disbursements, bnplDrawdowns]);
 
   useEffect(() => {
     if (!searchTerm) {

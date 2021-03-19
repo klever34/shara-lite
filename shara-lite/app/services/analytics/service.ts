@@ -158,6 +158,7 @@ export type SharaAppEventsProperties = {
   bnplRepayment: {
     amount: number
     drawdown_id: string
+    customer: string
   }
 }
 
