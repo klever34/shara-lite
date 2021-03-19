@@ -144,6 +144,9 @@ export type SharaAppEventsProperties = {
   takeDrawdown: {
     amount: number
   }
+  initiateDepositSTKPush: {
+    amount: number
+  }
   updateCollectionWithCustomer: {}
 
   //BNPL

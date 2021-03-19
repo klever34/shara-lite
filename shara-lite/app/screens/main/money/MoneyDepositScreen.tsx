@@ -9,7 +9,12 @@ import {
   toNumber,
 } from '@/components';
 import * as yup from 'yup';
-import {getApiService, getAuthService, getI18nService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+} from '@/services';
 import {View} from 'react-native';
 import {applyStyles, as, colors} from '@/styles';
 import {useClipboard} from '@/helpers/hooks';
@@ -253,6 +258,11 @@ export const MoneyDepositScreen = withModal(
             mobile,
             amount: toNumber(amount),
           });
+          getAnalyticsService()
+            .logEvent('initiateDepositSTKPush', {
+              amount: toNumber(amount),
+            })
+            .then();
           setLoading(false);
           onClose();
           openModal('bottom-half', {
