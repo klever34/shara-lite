@@ -28,7 +28,7 @@ export const BVNVerification = () => {
   const idType = useMemo(() => {
     switch (countryCode) {
       case '234':
-        return 'BVN';
+        return 'BVN number';
       case '254':
         return 'National ID';
       default:
@@ -60,7 +60,7 @@ export const BVNVerification = () => {
         Alert.alert(strings('alert.error'), error.message);
       }
     },
-    [user, authService, navigation, otp, storageService],
+    [user, authService, navigation, storageService],
   );
 
   return (
