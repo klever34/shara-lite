@@ -226,6 +226,7 @@ const en: Strings = {
           error:
             'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
           success: 'Drawdown taken successfully',
+          duplicate: 'This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.'
         },
       },
       bnplRepayment: {

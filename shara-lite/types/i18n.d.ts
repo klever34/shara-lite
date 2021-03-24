@@ -199,6 +199,7 @@ export interface Strings {
           inactive: string
           error: string
           success: string
+          duplicate: string
         }
       }
       bnplRepayment: {

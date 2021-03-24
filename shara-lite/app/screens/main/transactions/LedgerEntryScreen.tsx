@@ -40,9 +40,12 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     amount_paid,
     total_amount,
     credit_amount,
+    bnpl_drawdowns,
     transaction_date,
     customer: customerProp,
   } = transaction;
+
+  const drawdown = bnpl_drawdowns?.[0];
 
   const navigation = useAppNavigation();
   const {showSuccessToast} = useContext(ToastContext);
@@ -62,6 +65,11 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   const paymentLink =
     businessInfo.slug &&
     `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+      customer?._id ? `?customer=${String(customer?._id)}` : ''
+    }`;
+  const bnplPaymentLink =
+    businessInfo.slug &&
+    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}/${drawdown?.api_id}${
       customer?._id ? `?customer=${String(customer?._id)}` : ''
     }`;
 
@@ -88,7 +96,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   } ${
     paymentLink
       ? strings('payment_link_message', {
-          payment_link: paymentLink,
+          payment_link: drawdown ? bnplPaymentLink : paymentLink,
         })
       : ''
   }\n\n${strings('powered_by_shara')}`;
