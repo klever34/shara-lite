@@ -618,11 +618,11 @@ const en: Strings = {
     bvn_input_field_placeholder: 'Enter your BVN',
     withdrawal_method: {
       bvn_description:
-        'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
+        'Please enter your National ID/BVN number. Your ID should match the names and the payment method in your Settings',
       bvn_input_field_placeholder: 'Enter your BVN',
       otp_description: 'An OTP has been sent to your BVN number *******4343',
       id_description:
-        'Some copy about why we are collecting {{idType}} goes here. Also telling them it needs to match the name on their account',
+        'Please enter your {{idType}}. Your ID should match the names and the payment method in your Settings',
       id_input_field_placeholder: 'Enter your {{idType}}',
       id_otp_description:
         'An OTP has been sent to your {{idType}} number {{mobile}}',

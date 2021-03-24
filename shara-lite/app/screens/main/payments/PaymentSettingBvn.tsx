@@ -24,7 +24,7 @@ export const PaymentSettingBvn = () => {
   const idType = useMemo(() => {
     switch (countryCode) {
       case '234':
-        return 'BVN';
+        return 'BVN number';
       case '254':
         return 'National ID';
       default:
