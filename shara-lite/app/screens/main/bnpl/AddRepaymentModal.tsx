@@ -9,7 +9,7 @@ import {getI18nService} from '@/services';
 import {useWallet} from '@/services/wallet';
 import {applyStyles, colors} from '@/styles';
 import {FormikConfig, useFormik} from 'formik';
-import React from 'react';
+import React, {useCallback} from 'react';
 import {Text, View} from 'react-native';
 import * as yup from 'yup';
 
@@ -27,6 +27,18 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
   const {getWallet} = useWallet();
   const wallet = getWallet();
 
+  const handleValidateForm = useCallback((values) => {
+    const errors = {} as {amount: string};
+    if (!values.amount) {
+      errors.amount = strings(
+        'bnpl.record_transaction.fields.total_amount.errorMessage',
+      );
+    } else if (toNumber(values.total_amount) > (wallet?.balance ?? 0)) {
+      errors.amount = strings('payment_activities.withdraw_excess_error');
+    }
+    return errors;
+  }, []);
+
   const {
     values,
     errors,
@@ -37,13 +49,7 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
   } = useFormik({
     onSubmit,
     initialValues: initialValues ? initialValues : {amount: ''},
-    validationSchema: yup.object().shape({
-      amount: yup
-        .string()
-        .required(
-          strings('bnpl.record_transaction.fields.total_amount.errorMessage'),
-        ),
-    }),
+    validate: handleValidateForm,
   });
 
   return (

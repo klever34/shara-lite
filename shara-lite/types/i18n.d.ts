@@ -694,6 +694,7 @@ export interface Strings {
     }
     bnpl_drawdown_item: string
     bnpl_repayment_item: string
+    no_decimals: string
   }
   drawdown: {
     title: string
@@ -755,6 +756,7 @@ export interface Strings {
       balance: string
       bnpl_terms_text: string
       repayment_date: string
+      excess_amount_error: string
     }
     confirmation: {
       title: string
