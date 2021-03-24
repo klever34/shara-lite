@@ -187,7 +187,8 @@
             "invalidAmount": "Amount specified is more than the amount available for drawdown",
             "inactive": "Drawdown is not currently active",
             "error": "We were unable to process your drawdown, please try again or contact us through the Shara mobile application",
-            "success": "Drawdown taken successfully"
+            "success": "Drawdown taken successfully",
+            "duplicate": "This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error."
           }
         },
         "bnplRepayment": {
@@ -764,7 +765,8 @@
         "amount_minimum_error": "Amount must be greater than {{amount}}"
       },
       "bnpl_drawdown_item": "Buy now pay later drawdown of **{{amount}}** to **{{customer}}**",
-      "bnpl_repayment_item": "Buy now pay later repayment of **{{amount}}** from **{{customer}}**"
+      "bnpl_repayment_item": "Buy now pay later repayment of **{{amount}}** from **{{customer}}**",
+      "no_decimals": "MPESA doesn't allow for decimal payments"
     },
     "drawdown": {
       "title": "Drawdown",
@@ -840,7 +842,8 @@
         },
         "balance": "Balance",
         "bnpl_terms_text": "Buy now pay later terms",
-        "repayment_date": "to be paid in full by {{date}}"
+        "repayment_date": "to be paid in full by {{date}}",
+        "excess_amount_error": "Amount is more than amount available for drawdown"
       },
       "confirmation": {
         "instruction": "1. Accept the terms of the BNPL offered by Shara to you 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.",
@@ -1094,7 +1097,8 @@
             "invalidAmount": "Kiasi kilichoainishwa ni zaidi ya kiwango kilichopatikana cha kushuka",
             "inactive": "Kiwango cha kushuka hakifanyi kazi",
             "error": "Hatukuweza kushughulikia shida yako tafadhali jaribu tena au wasiliana nasi kuipitia programu ya rununu ya Shara",
-            "success": "Kiwango cha kushuka kimechukuliwa kwa mafanikio"
+            "success": "Kiwango cha kushuka kimechukuliwa kwa mafanikio",
+            "duplicate": "Hii inaonekana kama manunuzi ya nakala. Tafadhali subiri dakika 2 ili ujaribu tena, ikiwa hii sio kosa."
           }
         },
         "bnplRepayment": {
@@ -1670,7 +1674,8 @@
         "amount_minimum_error": "Kiasi lazima kiwe kikubwa kuliko {{kiasi}}"
       },
       "bnpl_drawdown_item": "Nunua sasa lipa uchoraji baadaye wa ** {{amount}} ** hadi ** {{customer}} **",
-      "bnpl_repayment_item": "Nunua sasa ulipe ulipaji wa baadaye wa ** {{amount}} ** kutoka kwa ** {{customer}} **"
+      "bnpl_repayment_item": "Nunua sasa ulipe ulipaji wa baadaye wa ** {{amount}} ** kutoka kwa ** {{customer}} **",
+      "no_decimals": "MPESA hairuhusu malipo ya desimali"
     },
     "drawdown": {
       "title": "Kuchora",
@@ -1746,7 +1751,8 @@
         },
         "balance": "Usawa",
         "bnpl_terms_text": "Nunua sasa ulipe masharti ya baadaye",
-        "repayment_date": "kulipwa kamili na {{date}}"
+        "repayment_date": "kulipwa kamili na {{date}}",
+        "excess_amount_error": "Kiasi ni zaidi ya kiasi kinachopatikana kwa uharibifu"
       },
       "confirmation": {
         "instruction": "1. Kubali masharti ya BNPL uliyopewa na Shara kwako 2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara.",
@@ -1993,7 +1999,8 @@
             "invalidAmount": "Yawan farashin da akasa ya wuce yawan farashin da aka yarje na drawdown",
             "inactive": "Ba a tabbatar da drawdown a yanzu ba",
             "error": "mun gaza aiwatar d drawdown, a daure a sake gwadawa ko a nememu ta manhajar shara ",
-            "success": "An zabi drawdown cikin nasara"
+            "success": "An zabi drawdown cikin nasara",
+            "duplicate": "Wannan yana kama da ma'amala biyu. Da fatan za a jira minti 2 don sake gwadawa, idan wannan ba kuskure bane."
           }
         },
         "bnplRepayment": {
@@ -2561,7 +2568,8 @@
         "amount_minimum_error": "Adadin dole ne ya fi {{amount}}"
       },
       "bnpl_drawdown_item": "Sayi yanzu biya daga gaba ** {{amount}} ** zuwa ** {{customer}} **",
-      "bnpl_repayment_item": "Sayi yanzu biya da aka biya nan gaba na ** {{amount}} ** zuwa ** {{customer}} **"
+      "bnpl_repayment_item": "Sayi yanzu biya da aka biya nan gaba na ** {{amount}} ** zuwa ** {{customer}} **",
+      "no_decimals": "MPESA baya bada izinin biyan kuɗin goma"
     },
     "drawdown": {
       "title": "Drawdown",
@@ -2637,7 +2645,8 @@
         },
         "balance": "Daidaita",
         "bnpl_terms_text": "Sayi yanzu biya sharuɗɗa daga baya",
-        "repayment_date": "da za a biya su cikakke ta {{date}}"
+        "repayment_date": "da za a biya su cikakke ta {{date}}",
+        "excess_amount_error": "Adadin ya fi adadin da ake samu don zanawa"
       },
       "confirmation": {
         "instruction": "1. Yarda da sharuddan BNPL da Shara ta gabatar muku 2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.",
@@ -2836,7 +2845,8 @@
             "invalidAmount": "",
             "inactive": "",
             "error": "",
-            "success": ""
+            "success": "",
+            "duplicate": ""
           }
         },
         "bnplRepayment": {
@@ -3270,7 +3280,8 @@
         "amount_minimum_error": ""
       },
       "bnpl_drawdown_item": "",
-      "bnpl_repayment_item": ""
+      "bnpl_repayment_item": "",
+      "no_decimals": ""
     },
     "drawdown": {
       "title": "",
@@ -3324,7 +3335,8 @@
         },
         "balance": "",
         "bnpl_terms_text": "",
-        "repayment_date": ""
+        "repayment_date": "",
+        "excess_amount_error": ""
       },
       "confirmation": {
         "instruction": "",
@@ -3517,7 +3529,8 @@
             "invalidAmount": "",
             "inactive": "",
             "error": "",
-            "success": ""
+            "success": "",
+            "duplicate": ""
           }
         },
         "bnplRepayment": {
@@ -3951,7 +3964,8 @@
         "amount_minimum_error": ""
       },
       "bnpl_drawdown_item": "",
-      "bnpl_repayment_item": ""
+      "bnpl_repayment_item": "",
+      "no_decimals": ""
     },
     "drawdown": {
       "title": "",
@@ -4005,7 +4019,8 @@
         },
         "balance": "",
         "bnpl_terms_text": "",
-        "repayment_date": ""
+        "repayment_date": "",
+        "excess_amount_error": ""
       },
       "confirmation": {
         "instruction": "",
@@ -4198,7 +4213,8 @@
             "invalidAmount": "",
             "inactive": "",
             "error": "",
-            "success": ""
+            "success": "",
+            "duplicate": ""
           }
         },
         "bnplRepayment": {
@@ -4632,7 +4648,8 @@
         "amount_minimum_error": ""
       },
       "bnpl_drawdown_item": "",
-      "bnpl_repayment_item": ""
+      "bnpl_repayment_item": "",
+      "no_decimals": ""
     },
     "drawdown": {
       "title": "",
@@ -4686,7 +4703,8 @@
         },
         "balance": "",
         "bnpl_terms_text": "",
-        "repayment_date": ""
+        "repayment_date": "",
+        "excess_amount_error": ""
       },
       "confirmation": {
         "instruction": "",
