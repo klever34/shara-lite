@@ -632,3 +632,8 @@ bnpl.next_repayment,Your next repayment is {{amount}} and it is due on {{date}}.
 bnpl.first_repayment,Your first repayment is {{amount}} and it is due on {{date}}.,Ulipaji wako wa kwanza ni {{kiasi}} na unastahili kulipwa tarehe {{date}}.,Biyan ku na farko shine {{adadin}} kuma ya dace a ranar {{date}}.,,,
 copied,Copied,Imenakiliwa,An kwafa,,,
 submit,Submit,Wasilisha,Tura,,,
+alert.api.bnplDrawdown.create.duplicate,"This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.",,,,,
+more.list.support.title,Contact Support,,,,,
+more.list.support.description,Ask a question or leave a message,,,,,
+payment_activities.no_decimals,MPESA doesn't allow for decimal payments,,,,,
+bnpl.record_transaction.excess_amount_error,Amount is more than amount available for drawdown,,,,,
