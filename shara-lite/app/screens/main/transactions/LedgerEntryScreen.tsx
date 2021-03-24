@@ -21,6 +21,7 @@ import {SafeAreaView, View} from 'react-native';
 import Config from 'react-native-config';
 import {MainStackParamList} from '..';
 import {getI18nService} from '@/services';
+import {BNPLReceiptImage} from '../bnpl/BNPLReceiptImage';
 
 const strings = getI18nService().strings;
 
@@ -450,17 +451,30 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
         />
       </View>
       <View style={applyStyles({opacity: 0, height: 0})}>
-        <ReceiptImage
-          note={note}
-          customer={customer}
-          creditDueDate={dueDate}
-          amountPaid={amount_paid}
-          totalAmount={total_amount}
-          creditAmount={credit_amount}
-          createdAt={transaction_date}
-          receiptNo={_id?.toString().substring(0, 6)}
-          getImageUri={(data: any) => setReceiptImage(data)}
-        />
+        {drawdown ? (
+          <BNPLReceiptImage
+            transaction={{
+              drawdown,
+              receiptData: transaction,
+              repayments: drawdown.bnpl_repayments
+                ? [...drawdown.bnpl_repayments]
+                : [],
+            }}
+            getImageUri={(data) => setReceiptImage(data)}
+          />
+        ) : (
+          <ReceiptImage
+            note={note}
+            customer={customer}
+            creditDueDate={dueDate}
+            amountPaid={amount_paid}
+            totalAmount={total_amount}
+            creditAmount={credit_amount}
+            createdAt={transaction_date}
+            receiptNo={_id?.toString().substring(0, 6)}
+            getImageUri={(data: any) => setReceiptImage(data)}
+          />
+        )}
       </View>
     </SafeAreaView>
   );
