@@ -9,7 +9,8 @@ export const remoteConfigDefaults: RemoteConfig = {
   minimumVersion: '0.0.0',
   sharaMoneyEnabledCountries: {
     NGN: {},
-    KES: {},
+    KES: {
+    maxWithdrawalAmount: 50000},
   },
   sharaMoneyEnabledUsers: {},
 }
@@ -40,20 +41,20 @@ export class RemoteConfigService implements IRemoteConfigService {
   }
 
   getValue (key: keyof RemoteConfig): FirebaseRemoteConfigTypes.ConfigValue {
-    // return {
-    //   asString(): string {
-    //     return JSON.stringify(remoteConfigDefaults[key]);
-    //   },
-    //   getSource(): 'remote' | 'default' | 'static' {
-    //     return 'default';
-    //   },
-    //   asNumber(): number {
-    //     return 0;
-    //   },
-    //   asBoolean(): boolean {
-    //     return false;
-    //   },
-    // };
-    return remoteConfig().getValue(key)
+    return {
+      asString(): string {
+        return JSON.stringify(remoteConfigDefaults[key]);
+      },
+      getSource(): 'remote' | 'default' | 'static' {
+        return 'default';
+      },
+      asNumber(): number {
+        return 0;
+      },
+      asBoolean(): boolean {
+        return false;
+      },
+    };
+    // return remoteConfig().getValue(key)
   }
 }
