@@ -1,14 +1,16 @@
 import {getCustomerWhatsappNumber} from '@/helpers/utils';
-import React, {useCallback} from 'react';
+import React, {useCallback, useContext} from 'react';
 import {Alert, Text} from 'react-native';
 import Share from 'react-native-share';
 //@ts-ignore
 import {AppInstalledChecker} from 'react-native-check-app-install';
-import {getAuthService, getI18nService} from '..';
+import {getApiService, getAuthService, getI18nService} from '..';
 import {useOfflineModal} from '@/components/OfflineModalProvider';
 import {View} from 'react-native-ui-lib';
 import {applyStyles, colors} from '@/styles';
 import {Button} from '@/components';
+import {handleError} from '../error-boundary';
+import {ToastContext} from '@/components/Toast';
 
 export type ShareHookProps = {
   title: string;
@@ -29,6 +31,8 @@ export const useShare = ({
 }: ShareHookProps) => {
   const user = getAuthService().getUser();
   const userCountryCode = user?.country_code;
+
+  const {showSuccessToast} = useContext(ToastContext);
   const {isConnected, openModal, closeModal} = useOfflineModal();
 
   const handleOfflineSmsShare = useCallback(async () => {
@@ -59,7 +63,19 @@ export const useShare = ({
     }
   }, [message, recipient, title]);
 
-  const handleOnlineSmsShare = useCallback(() => {}, []);
+  const handleOnlineSmsShare = useCallback(async () => {
+    try {
+      if (recipient && message) {
+        await getApiService().sendSMS({
+          message,
+          to: recipient ?? '',
+        });
+        showSuccessToast(strings('message_sent'));
+      }
+    } catch (error) {
+      handleError(error);
+    }
+  }, []);
 
   const handleSmsShare = useCallback(() => {
     if (isConnected) {

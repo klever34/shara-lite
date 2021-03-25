@@ -240,6 +240,13 @@ const en: Strings = {
           success: 'Repayment successful',
         },
       },
+      sms: {
+        create: {
+          success: 'Sms sent successfully',
+          missingFields: 'To & Message are required',
+          error: 'Unable to send SMS. Please try again later',
+        },
+      },
     },
   },
   shara_tagline: 'Built To Get You Paid Faster',
@@ -1094,6 +1101,7 @@ const en: Strings = {
     first_repayment:
       'Your first repayment is {{amount}} and it is due on {{date}}.',
   },
+  message_sent: 'MESSAGE SENT',
   offline_sms_notification_title: 'You are offline',
   offline_sms_notification_description: 'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
   copied: 'Copied',

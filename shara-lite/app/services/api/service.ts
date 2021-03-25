@@ -182,6 +182,7 @@ export interface IApiService {
     amount: number
     mobile?: string
   }): Promise<ApiResponse>
+  sendSMS(payload: {to: string, message: string}): Promise<ApiResponse>
 }
 
 export class ApiService implements IApiService {
@@ -840,6 +841,21 @@ export class ApiService implements IApiService {
     try {
       const fetchResponse = await this.requester.post(
         '/collections/kenya/mobile-money/mpesa/stk/wallet',
+        payload,
+      )
+      return fetchResponse
+    } catch (error) {
+      throw error
+    }
+  }
+
+  async sendSMS (payload: {
+    to: string
+    message: string
+  }): Promise<ApiResponse> {
+    try {
+      const fetchResponse = await this.requester.post(
+        '/sms',
         payload,
       )
       return fetchResponse

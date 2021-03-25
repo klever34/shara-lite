@@ -211,6 +211,13 @@ export interface Strings {
           success: string;
         };
       };
+      sms: {
+        create: {
+          success: string;
+          missingFields: string;
+          error: string;
+        };
+      };
     };
   };
   home_screen_setup_business_text: string;
@@ -816,6 +823,7 @@ export interface Strings {
     next_repayment: string;
     first_repayment: string;
   };
+  message_sent: string;
   offline_sms_notification_title: string;
   offline_sms_notification_description: string;
   copied: string;
