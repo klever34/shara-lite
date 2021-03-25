@@ -101,7 +101,7 @@ const BNPLDrawdownItem = ({data}: {data: IBNPLDrawdown}) => {
 };
 
 const BNPLRepaymentItem = ({data}: {data: IBNPLRepayment}) => {
-  const {repayment_amount, amount_repaid, created_at, bnpl_drawdown} = data;
+  const {repayment_amount, amount_repaid, bnpl_drawdown, completed_at} = data;
 
   return (
     <View
@@ -137,8 +137,8 @@ const BNPLRepaymentItem = ({data}: {data: IBNPLRepayment}) => {
         </View>
         <Text
           style={applyStyles('text-400 text-uppercase text-xxs text-gray-100')}>
-          {created_at &&
-            formatDistanceToNowStrict(created_at, {
+          {completed_at &&
+            formatDistanceToNowStrict(completed_at, {
               addSuffix: true,
             })}
         </Text>

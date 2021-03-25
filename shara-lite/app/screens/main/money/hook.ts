@@ -612,6 +612,7 @@ export const usePaymentActivities = ({
     setDisplayedCollections([])
     setDisplayedDisbursements([])
     setBNPLDrawdownsToDisplay([])
+    setBNPLRepaymentsToDisplay([])
     handleSetDisplayCollections(0, perPage)
     handleSetDisplayDisbursements(0, perPage)
     handleSetBNPLDrawdownsToDisplay(0, perPage)
