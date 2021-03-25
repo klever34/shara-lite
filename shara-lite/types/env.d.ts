@@ -36,4 +36,12 @@ declare module 'react-native-config' {
   export const API_BASE_URL: string;
 
   export const GOOGLE_API_KEY: string;
+
+  export const ZENDESK_CHAT_ACCOUNT_KEY: string;
+
+  export const ZENDESK_APP_ID: string;
+
+  export const ZENDESK_URL: string;
+
+  export const ZENDESK_CLIENT_ID: string;
 }

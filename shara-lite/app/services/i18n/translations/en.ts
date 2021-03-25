@@ -226,7 +226,8 @@ const en: Strings = {
           error:
             'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
           success: 'Drawdown taken successfully',
-          duplicate: 'This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.'
+          duplicate:
+            'This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.',
         },
       },
       bnplRepayment: {
@@ -668,6 +669,10 @@ const en: Strings = {
         title: 'Language',
         description: 'Select your language',
       },
+      support: {
+        title: 'Contact Support',
+        description: 'Ask a question or leave a message',
+      },
     },
     logout: {
       logout_data_verification_text: 'Verifying your saved data...',
@@ -883,6 +888,7 @@ const en: Strings = {
       'Withdrawal amount is greater than your wallet balance',
     withdraw_amount_required_error: 'Amount is required',
     withdraw_minimum_error: 'Withdrawal amount must be greater than {{amount}}',
+    withdraw_maximum_error: 'Maximum amount per withdrawal is {{amount}}',
     not_available: {
       title: 'Not available in your country',
       description:
@@ -922,7 +928,7 @@ const en: Strings = {
       'Buy now pay later drawdown of **{{amount}}** to **{{customer}}**',
     bnpl_repayment_item:
       'Buy now pay later repayment of **{{amount}}** from **{{customer}}**',
-    no_decimals: "MPESA doesn't allow for decimal payments"
+    no_decimals: "MPESA doesn't allow for decimal payments",
   },
   drawdown: {
     title: 'Drawdown',
@@ -1016,7 +1022,7 @@ const en: Strings = {
       balance: 'Balance',
       bnpl_terms_text: 'Buy now pay later terms',
       repayment_date: 'to be paid in full by {{date}}',
-      excess_amount_error: 'Amount is more than amount available for drawdown'
+      excess_amount_error: 'Amount is more than amount available for drawdown',
     },
     confirmation: {
       instruction:

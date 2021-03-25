@@ -3,6 +3,7 @@ import {Header, Text, toNumber} from '@/components';
 import {
   getAnalyticsService,
   getApiService,
+  getAuthService,
   getI18nService,
   getRemoteConfigService,
 } from '@/services';
@@ -177,6 +178,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     const {getWallet} = useWallet();
 
     const walletBalance = getWallet()?.balance ?? 0;
+    const user = getAuthService().getUser();
     const primaryDisbursementMethod = getPrimaryDisbursementMethod();
     const [disbursementMethod, setDisbursementMethod] = useState(
       primaryDisbursementMethod,
@@ -186,18 +188,18 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       ? ''
       : `${withdrawAccountDetails.provider_label} - ${withdrawAccountDetails.account_label}`;
 
-    const enableSharaMoney = useMemo(() => {
+    const maxWithdrawalAmount = useMemo(() => {
       try {
         const sharaMoneyEnabledCountries = JSON.parse(
           getRemoteConfigService()
             .getValue('sharaMoneyEnabledCountries')
             .asString(),
         );
-        console.log(sharaMoneyEnabledCountries);
-        // if (!Object.keys(sharaMoneyEnabledCountries).length) {
-        //   return true;
-        // }
-        // return !!sharaMoneyEnabledUsers[user?.id ?? ''];
+        if (!Object.keys(sharaMoneyEnabledCountries).length) {
+          return true;
+        }
+        return sharaMoneyEnabledCountries[user?.currency_code ?? '']
+          .maxWithdrawalAmount;
       } catch (e) {
         return false;
       }
@@ -313,6 +315,13 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
           );
         } else if (!!walletBalance && toNumber(values.amount) > walletBalance) {
           errors.amount = strings('payment_activities.withdraw_excess_error');
+        } else if (
+          !!maxWithdrawalAmount &&
+          toNumber(values.amount) > maxWithdrawalAmount
+        ) {
+          errors.amount = strings('payment_activities.withdraw_maximum_error', {
+            amount: amountWithCurrency(maxWithdrawalAmount),
+          });
         } else if (toNumber(values.amount) < 10) {
           errors.amount = strings('payment_activities.withdraw_minimum_error', {
             amount: amountWithCurrency(10),

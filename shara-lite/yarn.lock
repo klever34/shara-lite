@@ -7016,6 +7016,11 @@ react-native-view-shot@^3.1.2:
   resolved "https://registry.yarnpkg.com/react-native-view-shot/-/react-native-view-shot-3.1.2.tgz#8c8e84c67a4bc8b603e697dbbd59dbc9b4f84825"
   integrity sha512-9u9fPtp6a52UMoZ/UCPrCjKZk8tnkI9To0Eh6yYnLKFEGkRZ7Chm6DqwDJbYJHeZrheCCopaD5oEOnRqhF4L2Q==
 
+react-native-zendesk-v2@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/react-native-zendesk-v2/-/react-native-zendesk-v2-0.2.1.tgz#612458d29c0950d214b7632a79bfdb4781ba0e43"
+  integrity sha512-v05ccFlDTEn1jjwpxd9z7oLCSckq9dA0tMk+7AbhpNWZ7Lv1mvIh2NnA8BmB1JRkpHFMAGOjipyP/x7B3zHUOw==
+
 react-native@0.63.3:
   version "0.63.3"
   resolved "https://registry.yarnpkg.com/react-native/-/react-native-0.63.3.tgz#4a7f6540e049ff41810887bbd1125abc4672f3bf"

@@ -5,7 +5,12 @@ import Touchable from '@/components/Touchable';
 import {TouchableActionItem} from '@/components/TouchableActionItem';
 import {AppContext} from '@/contexts/app';
 import {ModalWrapperFields, withModal} from '@/helpers/hocs';
-import {getAnalyticsService, getAuthService, getI18nService} from '@/services';
+import {
+  getAnalyticsService,
+  getAuthService,
+  getHelpDeskService,
+  getI18nService,
+} from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useRealmLogout} from '@/services/realm';
@@ -135,6 +140,15 @@ export const MoreOptionsScreen = withModal(
           },
           onPress: () => {
             navigation.navigate('Feedback');
+          },
+        },
+        {
+          leftSection: {
+            title: strings('more.list.support.title'),
+            caption: strings('more.list.support.description'),
+          },
+          onPress: () => {
+            getHelpDeskService().startChat();
           },
         },
       ];

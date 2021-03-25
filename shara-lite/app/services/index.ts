@@ -18,6 +18,7 @@ import {
   RemoteConfigService,
 } from '@/services/remote-config';
 import {I18nService, II18nService} from '@/services/i18n';
+import {HelpDeskService, IHelpDeskService} from '@/services/help-desk';
 
 const createDIContainer = (): IDIContainer => {
   const container = new DIContainer();
@@ -34,6 +35,7 @@ const createDIContainer = (): IDIContainer => {
       get('Storage'),
       get('Analytics'),
       get('I18n'),
+      get('HelpDesk'),
     ),
     Api: object(ApiService).construct(get('Auth'), get('Storage')),
     Contact: object(ContactService).construct(
@@ -44,6 +46,7 @@ const createDIContainer = (): IDIContainer => {
     ),
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
+    HelpDesk: object(HelpDeskService).construct(get('Notification')),
   });
   return container;
 };
@@ -84,3 +87,6 @@ export const getRemoteConfigService = () =>
   container.get<IRemoteConfigService>('RemoteConfig');
 
 export const getI18nService = () => container.get<II18nService>('I18n');
+
+export const getHelpDeskService = () =>
+  container.get<IHelpDeskService>('HelpDesk');
