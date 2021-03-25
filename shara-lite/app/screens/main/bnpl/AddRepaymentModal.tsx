@@ -33,7 +33,7 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
       errors.amount = strings(
         'bnpl.record_transaction.fields.total_amount.errorMessage',
       );
-    } else if (toNumber(values.total_amount) > (wallet?.balance ?? 0)) {
+    } else if (toNumber(values.amount) > (wallet?.balance ?? 0)) {
       errors.amount = strings('payment_activities.withdraw_excess_error');
     }
     return errors;
@@ -48,8 +48,8 @@ export const AddRepaymentModal = (props: AddRepaymentModalProps) => {
     handleSubmit,
   } = useFormik({
     onSubmit,
-    initialValues: initialValues ? initialValues : {amount: ''},
     validate: handleValidateForm,
+    initialValues: initialValues ? initialValues : {amount: ''},
   });
 
   return (

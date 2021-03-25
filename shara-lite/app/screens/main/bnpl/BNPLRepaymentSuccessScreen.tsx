@@ -62,15 +62,25 @@ export const BNPLRepaymentSuccessScreen = (
         })
   } ${strings('bnpl.you_paid_message', {
     amount: amountWithCurrency(receiptData?.amount_paid),
-  })} ${strings('bnpl.you_owe_message', {
-    credit_amount: amountWithCurrency(receiptData?.credit_amount),
-  })}  ${strings('bnpl.next_repayment', {
-    date: format(
-      nextRepayment?.due_at ? new Date(nextRepayment?.due_at) : new Date(),
-      'dd MMM yyyy',
-    ),
-    amount: amountWithCurrency(drawdown?.payment_frequency_amount),
-  })}\n${
+  })} ${
+    drawdown.amount_owed && drawdown.amount_owed > 0
+      ? strings('bnpl.you_owe_message', {
+          credit_amount: amountWithCurrency(receiptData?.credit_amount),
+        })
+      : ''
+  }  ${
+    drawdown.amount_owed && drawdown.amount_owed > 0
+      ? strings('bnpl.next_repayment', {
+          date: format(
+            nextRepayment?.due_at
+              ? new Date(nextRepayment?.due_at)
+              : new Date(),
+            'dd MMM yyyy',
+          ),
+          amount: amountWithCurrency(drawdown?.payment_frequency_amount),
+        })
+      : ''
+  }\n${
     paymentLink
       ? strings('payment_link_message', {
           payment_link: paymentLink,
