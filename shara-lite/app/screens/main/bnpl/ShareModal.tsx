@@ -20,7 +20,7 @@ type ShareModalProps = {
 };
 
 export const ShareModal = (props: ShareModalProps) => {
-  const {transaction} = props;
+  const {transaction, onClose} = props;
   const {drawdown, receiptData} = transaction;
 
   const [receiptImage, setReceiptImage] = useState('');
@@ -87,8 +87,8 @@ export const ShareModal = (props: ShareModalProps) => {
         content_type: 'share-bnpl-receipt',
       })
       .then(() => {});
-    handleSmsShare();
-  }, [analyticsService, handleSmsShare, receiptData]);
+    handleSmsShare(onClose);
+  }, [onClose, analyticsService, handleSmsShare, receiptData]);
 
   const onWhatsappShare = useCallback(() => {
     analyticsService

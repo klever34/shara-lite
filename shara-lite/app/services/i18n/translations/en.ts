@@ -1103,6 +1103,7 @@ const en: Strings = {
   },
   message_sent: 'MESSAGE SENT',
   offline_sms_notification_title: 'You are offline',
+  sms_no_recipient: "Please ensure there's a recipient to send the message to.",
   offline_sms_notification_description: 'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
   copied: 'Copied',
   submit: 'Submit',

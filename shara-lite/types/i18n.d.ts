@@ -824,6 +824,7 @@ export interface Strings {
     first_repayment: string;
   };
   message_sent: string;
+  sms_no_recipient: string;
   offline_sms_notification_title: string;
   offline_sms_notification_description: string;
   copied: string;
