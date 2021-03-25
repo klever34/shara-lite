@@ -1228,7 +1228,7 @@
             "inactive": "Kiwango cha kushuka hakifanyi kazi",
             "error": "Hatukuweza kushughulikia shida yako tafadhali jaribu tena au wasiliana nasi kuipitia programu ya rununu ya Shara",
             "success": "Kiwango cha kushuka kimechukuliwa kwa mafanikio",
-            "duplicate": ""
+            "duplicate": "Hii inaonekana kama manunuzi ya nakala. Tafadhali subiri dakika 2 ili ujaribu tena, ikiwa hii sio kosa."
           }
         },
         "bnplRepayment": {
@@ -1882,7 +1882,7 @@
       },
       "bnpl_drawdown_item": "Nunua sasa lipa uchoraji baadaye wa ** {{amount}} ** hadi ** {{customer}} **",
       "bnpl_repayment_item": "Nunua sasa ulipe ulipaji wa baadaye wa ** {{amount}} ** kutoka kwa ** {{customer}} **",
-      "no_decimals": ""
+      "no_decimals": "MPESA hairuhusu malipo ya desimali"
     },
     "drawdown": {
       "title": "Kuchora",
@@ -1964,7 +1964,7 @@
         "balance": "Usawa",
         "bnpl_terms_text": "Nunua sasa ulipe masharti ya baadaye",
         "repayment_date": "kulipwa kamili na {{date}}",
-        "excess_amount_error": ""
+        "excess_amount_error": "Kiasi ni zaidi ya kiasi kinachopatikana kwa uharibifu"
       },
       "confirmation": {
         "instruction": "1. Kubali masharti ya BNPL uliyopewa na Shara kwako 2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara.",
@@ -2244,7 +2244,7 @@
             "inactive": "Ba a tabbatar da drawdown a yanzu ba",
             "error": "mun gaza aiwatar d drawdown, a daure a sake gwadawa ko a nememu ta manhajar shara ",
             "success": "An zabi drawdown cikin nasara",
-            "duplicate": ""
+            "duplicate": "Wannan yana kama da ma'amala biyu. Da fatan za a jira minti 2 don sake gwadawa, idan wannan ba kuskure bane."
           }
         },
         "bnplRepayment": {
@@ -2898,7 +2898,7 @@
       },
       "bnpl_drawdown_item": "Sayi yanzu biya daga gaba ** {{amount}} ** zuwa ** {{customer}} **",
       "bnpl_repayment_item": "Sayi yanzu biya da aka biya nan gaba na ** {{amount}} ** zuwa ** {{customer}} **",
-      "no_decimals": ""
+      "no_decimals": "MPESA baya bada izinin biyan kuɗin goma"
     },
     "drawdown": {
       "title": "Drawdown",
@@ -2980,7 +2980,7 @@
         "balance": "Daidaita",
         "bnpl_terms_text": "Sayi yanzu biya sharuɗɗa daga baya",
         "repayment_date": "da za a biya su cikakke ta {{date}}",
-        "excess_amount_error": ""
+        "excess_amount_error": "Adadin ya fi adadin da ake samu don zanawa"
       },
       "confirmation": {
         "instruction": "1. Yarda da sharuddan BNPL da Shara ta gabatar muku 2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.",
