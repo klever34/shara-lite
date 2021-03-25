@@ -1094,6 +1094,8 @@ const en: Strings = {
     first_repayment:
       'Your first repayment is {{amount}} and it is due on {{date}}.',
   },
+  offline_sms_notification_title: 'You are offline',
+  offline_sms_notification_description: 'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
   copied: 'Copied',
   submit: 'Submit',
 };

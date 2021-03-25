@@ -1,10 +1,14 @@
 import {getCustomerWhatsappNumber} from '@/helpers/utils';
-import {useCallback} from 'react';
-import {Alert} from 'react-native';
+import React, {useCallback} from 'react';
+import {Alert, Text} from 'react-native';
 import Share from 'react-native-share';
 //@ts-ignore
 import {AppInstalledChecker} from 'react-native-check-app-install';
-import {getAuthService} from '..';
+import {getAuthService, getI18nService} from '..';
+import {useOfflineModal} from '@/components/OfflineModalProvider';
+import {View} from 'react-native-ui-lib';
+import {applyStyles, colors} from '@/styles';
+import {Button} from '@/components';
 
 export type ShareHookProps = {
   title: string;
@@ -13,6 +17,8 @@ export type ShareHookProps = {
   message: string;
   recipient?: string;
 };
+
+const strings = getI18nService().strings;
 
 export const useShare = ({
   recipient,
@@ -23,8 +29,9 @@ export const useShare = ({
 }: ShareHookProps) => {
   const user = getAuthService().getUser();
   const userCountryCode = user?.country_code;
+  const {isConnected, openModal, closeModal} = useOfflineModal();
 
-  const handleSmsShare = useCallback(async () => {
+  const handleOfflineSmsShare = useCallback(async () => {
     const shareOptions = {
       // @ts-ignore
       social: Share.Social.SMS,
@@ -51,6 +58,54 @@ export const useShare = ({
       }
     }
   }, [message, recipient, title]);
+
+  const handleOnlineSmsShare = useCallback(() => {}, []);
+
+  const handleSmsShare = useCallback(() => {
+    if (isConnected) {
+      handleOnlineSmsShare();
+    } else {
+      openModal('bottom-half', {
+        renderContent: () => (
+          <View>
+            <Text
+              style={applyStyles(
+                'py-16 text-center text-700 text-gray-300 text-uppercase',
+              )}>
+              {strings('offline_sms_notification_title')}
+            </Text>
+            <Text
+              style={applyStyles(
+                'text-center pb-24 px-48 text-gray-300 text-base',
+              )}>
+              {strings('offline_sms_notification_description')}
+            </Text>
+            <View
+              style={applyStyles('p-24 flex-row justify-end border-t-1', {
+                borderColor: colors['gray-20'],
+              })}>
+              <View style={applyStyles('flex-row items-center')}>
+                <Button
+                  onPress={closeModal}
+                  variantColor="clear"
+                  title={strings('cancel')}
+                  textStyle={applyStyles('text-secondary text-uppercase')}
+                  style={applyStyles('mr-16', {width: 120, borderWidth: 0})}
+                />
+                <Button
+                  variantColor="blue"
+                  title={strings('confirm')}
+                  onPress={handleOfflineSmsShare}
+                  style={applyStyles({width: 120})}
+                  textStyle={applyStyles('text-uppercase')}
+                />
+              </View>
+            </View>
+          </View>
+        ),
+      });
+    }
+  }, [isConnected, closeModal, handleOnlineSmsShare, handleOfflineSmsShare]);
 
   const handleEmailShare = useCallback(async () => {
     const shareOptions = {

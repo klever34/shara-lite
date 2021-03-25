@@ -816,6 +816,8 @@ export interface Strings {
     next_repayment: string;
     first_repayment: string;
   };
+  offline_sms_notification_title: string;
+  offline_sms_notification_description: string;
   copied: string;
   submit: string;
 }
