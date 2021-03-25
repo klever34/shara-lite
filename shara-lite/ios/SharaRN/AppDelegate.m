@@ -14,6 +14,7 @@
 #import <FirebaseCore/FirebaseCore.h>
 #import <UserNotifications/UserNotifications.h>
 #import <RNCPushNotificationIOS.h>
+#import <CommonUISDK/CommonUISDK.h>
 
 static void InitializeFlipper(UIApplication *application) {
   FlipperClient *client = [FlipperClient sharedClient];
@@ -27,6 +28,10 @@ static void InitializeFlipper(UIApplication *application) {
 #endif
 
 @implementation AppDelegate
+
+-(void) setupSDKStyle {
+    [ZDKCommonTheme currentTheme].primaryColor = [[UIColor alloc] initWithRed:(37.0/255.0) green:(163.0/255.0) blue:(110.0/255.0) alpha:1.0];
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {

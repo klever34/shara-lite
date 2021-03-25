@@ -46,7 +46,7 @@ const createDIContainer = (): IDIContainer => {
     ),
     Address: object(AddressService).construct(get('Realm')),
     RemoteConfig: object(RemoteConfigService),
-    HelpDesk: object(HelpDeskService),
+    HelpDesk: object(HelpDeskService).construct(get('Notification')),
   });
   return container;
 };
