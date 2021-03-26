@@ -44,7 +44,7 @@ export const BNPLTransactionSuccessScreen = (
   } ${strings('bnpl.you_paid_message', {
     amount: amountWithCurrency(receiptData?.amount_paid),
   })} ${strings('bnpl.you_owe_message', {
-    credit_amount: amountWithCurrency(receiptData?.credit_amount),
+    credit_amount: amountWithCurrency(drawdown?.repayment_amount),
   })}  ${strings('bnpl.first_repayment', {
     date: format(
       firstRepayment?.due_at ? new Date(firstRepayment?.due_at) : new Date(),

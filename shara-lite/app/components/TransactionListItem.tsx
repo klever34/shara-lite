@@ -26,7 +26,10 @@ const TransactionListItem = ({
     credit_amount,
     is_collection,
     created_at,
+    bnpl_drawdowns,
   } = transaction;
+
+  const drawdown = bnpl_drawdowns?.[0];
 
   return (
     <Touchable onPress={onPress ? onPress : undefined}>
@@ -80,7 +83,9 @@ const TransactionListItem = ({
               style={applyStyles(
                 'text-xs text-700 text-gray-300 text-uppercase',
               )}>
-              {amountWithCurrency(total_amount)}
+              {amountWithCurrency(
+                drawdown ? drawdown.repayment_amount : total_amount,
+              )}
             </Text>
           )}
         </View>

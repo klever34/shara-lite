@@ -10,7 +10,7 @@ import {getAnalyticsService, getI18nService} from '@/services';
 import {useCollection} from '@/services/collection';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
-import {formatDistanceToNowStrict} from 'date-fns';
+import {format, formatDistanceToNowStrict} from 'date-fns';
 import React, {useCallback, useState} from 'react';
 import {InteractionManager, Text, View} from 'react-native';
 import Markdown from 'react-native-markdown-display';
@@ -137,10 +137,7 @@ const BNPLRepaymentItem = ({data}: {data: IBNPLRepayment}) => {
         </View>
         <Text
           style={applyStyles('text-400 text-uppercase text-xxs text-gray-100')}>
-          {completed_at &&
-            formatDistanceToNowStrict(completed_at, {
-              addSuffix: true,
-            })}
+          {completed_at && format(completed_at, 'dd MMMM yyyy')}
         </Text>
       </View>
     </View>

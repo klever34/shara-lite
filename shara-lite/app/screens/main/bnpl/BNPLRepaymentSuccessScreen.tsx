@@ -61,11 +61,11 @@ export const BNPLRepaymentSuccessScreen = (
           customer_name: receiptData?.customer?.name ?? '',
         })
   } ${strings('bnpl.you_paid_message', {
-    amount: amountWithCurrency(receiptData?.amount_paid),
+    amount: amountWithCurrency(drawdown?.repayment_amount),
   })} ${
     drawdown.amount_owed && drawdown.amount_owed > 0
       ? strings('bnpl.you_owe_message', {
-          credit_amount: amountWithCurrency(receiptData?.credit_amount),
+          credit_amount: amountWithCurrency(drawdown?.amount_owed),
         })
       : ''
   }  ${
