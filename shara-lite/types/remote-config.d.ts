@@ -2,7 +2,7 @@ interface RemoteConfig {
   translations: Translations;
   countries: Countries;
   minimumVersion: string;
-  sharaMoneyEnabledCountries: {[key: string]: {}};
+  sharaMoneyEnabledCountries: {[key: string]: {maxWithdrawalAmount?: number},};
   sharaMoneyEnabledUsers: {[key: string]: {id: string; name: string}};
 }
 

@@ -10,6 +10,7 @@ import {useBNPLApproval} from '@/services/bnpl-approval';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
+import {useWallet} from '@/services/wallet';
 import {applyStyles, colors} from '@/styles';
 import {addWeeks, format} from 'date-fns';
 import {useFormik} from 'formik';
@@ -21,7 +22,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import * as yup from 'yup';
 import {ConfirmationModal} from './ConfirmationModal';
 
 type FormValues = {
@@ -35,10 +35,37 @@ const strings = getI18nService().strings;
 
 export const BNPLRecordTransactionScreen = withModal((props) => {
   const {openModal, closeModal} = props;
+  const {getWallet} = useWallet();
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
   const {getBNPLApproval} = useBNPLApproval();
-  const {interest_rate, payment_frequency} = getBNPLApproval() ?? {};
+
+  const wallet = getWallet();
+  const {interest_rate, amount_available, payment_frequency} =
+    getBNPLApproval() ?? {};
+
+  const handleValidateForm = useCallback((values) => {
+    const errors = {} as {total_amount: string; customer: string};
+    if (!values.total_amount) {
+      errors.total_amount = strings(
+        'bnpl.record_transaction.fields.total_amount.errorMessage',
+      );
+    } else if (
+      wallet?.currency_code === 'KES' &&
+      values.total_amount.includes('.')
+    ) {
+      errors.total_amount = strings('payment_activities.no_decimals');
+    } else if (toNumber(values.total_amount) > (amount_available ?? 0)) {
+      errors.total_amount = strings(
+        'bnpl.record_transaction.excess_amount_error',
+      );
+    } else if (!values.customer) {
+      errors.customer = strings(
+        'bnpl.record_transaction.fields.customer.errorMessage',
+      );
+    }
+    return errors;
+  }, []);
 
   const {
     values,
@@ -64,18 +91,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
       total_amount: '',
       customer: undefined,
     },
-    validationSchema: yup.object().shape({
-      total_amount: yup
-        .string()
-        .required(
-          strings('bnpl.record_transaction.fields.total_amount.errorMessage'),
-        ),
-      customer: yup
-        .object()
-        .required(
-          strings('bnpl.record_transaction.fields.customer.errorMessage'),
-        ),
-    }),
+    validate: handleValidateForm,
   });
   const credit_amount = useMemo(() => {
     return toNumber(values.total_amount) - toNumber(values.amount_paid || '0');

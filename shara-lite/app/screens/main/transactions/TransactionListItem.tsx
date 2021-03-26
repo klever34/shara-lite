@@ -38,7 +38,10 @@ export const TransactionListItem = ({
     credit_amount,
     is_collection,
     created_at,
+    bnpl_drawdowns,
   } = receipt ?? {};
+
+  const drawdown = bnpl_drawdowns?.[0];
 
   const renderTransactionText = useCallback(() => {
     if (is_collection) {
@@ -79,7 +82,9 @@ export const TransactionListItem = ({
               'transaction.customer_owes_statement',
               {
                 customer_name: customer.name,
-                credit_amount: amountWithCurrency(credit_amount),
+                credit_amount: amountWithCurrency(
+                  drawdown ? drawdown.repayment_amount : credit_amount,
+                ),
               },
             )}`}</Markdown>
           ) : (
@@ -101,7 +106,9 @@ export const TransactionListItem = ({
             {
               customer_name: customer?.name ?? '',
               amount_paid: amountWithCurrency(amount_paid),
-              credit_amount: amountWithCurrency(credit_amount),
+              credit_amount: amountWithCurrency(
+                drawdown ? drawdown.repayment_amount : credit_amount,
+              ),
             },
           )}`}</Markdown>
         </View>
@@ -163,7 +170,11 @@ export const TransactionListItem = ({
                 }`,
               )}>
               {amountWithCurrency(
-                !credit_amount ? total_amount : credit_amount,
+                !credit_amount
+                  ? total_amount
+                  : drawdown
+                  ? drawdown.repayment_amount
+                  : credit_amount,
               )}
             </Text>
           </View>

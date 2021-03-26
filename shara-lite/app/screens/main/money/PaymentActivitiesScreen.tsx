@@ -74,15 +74,17 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     },
   });
 
+  console.log(bnplRepayments, filteredBNPLRepayments);
+
   const activitiesData: PaymentActivityItemData[] = useMemo(() => {
     const data = [
       ...collections,
       ...disbursements,
       ...bnplDrawdowns,
-      // ...bnplRepayments,
+      ...bnplRepayments,
     ];
     return orderBy(data, 'created_at', 'desc');
-  }, [collections, disbursements, bnplDrawdowns]);
+  }, [collections, disbursements, bnplDrawdowns, bnplRepayments]);
 
   useEffect(() => {
     if (!searchTerm) {
@@ -95,7 +97,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     filteredCollections.length,
     filteredDisbursements.length,
     filteredBNPLDrawdowns.length,
-    // filteredBNPLRepayments.length,
+    filteredBNPLRepayments.length,
   ]);
 
   useFocusEffect(

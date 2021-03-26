@@ -6,7 +6,7 @@ import OptionsModal from '../modals/OptionsModal';
 import FullModal from '@/modals/FullModal';
 import SearchModal from '@/modals/SearchModal';
 
-type OpenModal = <K extends keyof ModalOptionsList>(
+export type OpenModal = <K extends keyof ModalOptionsList>(
   modalType: K,
   modalProps: ModalOptionsList[K],
 ) => () => void;

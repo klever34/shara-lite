@@ -73,6 +73,7 @@ export const CompleteBNPLScreen = () => {
       </View>
       <Button
         onPress={handleRecordTransaction}
+        disabled={!bnplDrawdownsToDisplay.length}
         style={applyStyles('absolute bottom-16 rounded-32', {
           left: (dimensions.fullWidth - 200) / 2,
           width: 200,
