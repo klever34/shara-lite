@@ -7,7 +7,7 @@ import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, colors} from '@/styles';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text} from '@/components';
-import {Alert, FlatList, View} from 'react-native';
+import {Alert, FlatList, TouchableOpacity, View} from 'react-native';
 import {DisbursementProvider} from 'types/app';
 //@ts-ignore
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scrollview';
@@ -19,6 +19,7 @@ import {DisbursementOption} from '@/models/DisbursementMethod';
 import {handleError} from '@/services/error-boundary';
 import {useDisbursementMethod} from '@/services/disbursement-method';
 import {parseISO} from 'date-fns';
+import Icon from '@/components/Icon';
 const strings = getI18nService().strings;
 
 function DisburementScreen(props: ModalWrapperFields) {
@@ -28,12 +29,14 @@ function DisburementScreen(props: ModalWrapperFields) {
   const {
     getDisbursementMethods,
     saveDisbursementMethod,
+    deleteDisbursementMethod,
   } = useDisbursementMethod();
   const disbursementMethods = getDisbursementMethods();
   const [disbursementProviders, setDisbursementProviders] = useState<
     DisbursementProvider[]
   >([]);
   const [isSaving, setIsSaving] = useState(false);
+  const [, setIsDeleting] = useState(false);
   const [user, setUser] = useState(getAuthService().getUser());
   const [business, setBusiness] = useState(getAuthService().getBusinessInfo());
 
@@ -65,7 +68,9 @@ function DisburementScreen(props: ModalWrapperFields) {
               updated_at: parseISO(disbursementMethod.updated_at),
             },
           });
-          showSuccessToast(strings('payment.payment_container.payment_added'));
+          showSuccessToast(
+            strings('payment.withdrawal_method.withdrawal_added'),
+          );
           setIsSaving(false);
         } catch (error) {
           handleError(error);
@@ -127,6 +132,17 @@ function DisburementScreen(props: ModalWrapperFields) {
       ),
     });
   }, [openModal, isSaving, onFormSubmit, disbursementProviders]);
+
+  const handleRemoveItem = useCallback(
+    async (values) => {
+      setIsDeleting(true);
+      await apiService.deleteDisbursementMethod(values.api_id);
+      await deleteDisbursementMethod({disbursementMethod: values});
+      showSuccessToast(strings('payment.withdrawal_method.withdrawal_added'));
+      setIsDeleting(false);
+    },
+    [apiService, deleteDisbursementMethod, showSuccessToast],
+  );
 
   const fectchDisbursementProviders = useCallback(async () => {
     try {
@@ -253,6 +269,36 @@ function DisburementScreen(props: ModalWrapperFields) {
                           </Text>
                         ),
                       )}
+                    </View>
+                    <View style={applyStyles('px-8')}>
+                      <TouchableOpacity
+                        onPress={() => {
+                          Alert.alert(
+                            strings('warning'),
+                            strings(
+                              'payment.withdrawal_method.remove_withdrawal_message',
+                            ),
+                            [
+                              {
+                                text: strings('no'),
+                                onPress: () => {},
+                              },
+                              {
+                                text: strings('yes'),
+                                onPress: () => {
+                                  handleRemoveItem(item);
+                                },
+                              },
+                            ],
+                          );
+                        }}>
+                        <Icon
+                          size={24}
+                          name="delete"
+                          color={colors['gray-100']}
+                          type="material-community-icons"
+                        />
+                      </TouchableOpacity>
                     </View>
                   </View>
                 );
