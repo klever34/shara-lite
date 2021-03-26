@@ -14,9 +14,26 @@ interface useDisbursementMethodInterface {
   saveDisbursementMethod: (
     data: saveDisbursementMethodInterface,
   ) => Promise<IDisbursementMethod>;
+
+  updateDisbursementMethod: (
+    data: updateDisbursementMethodInterface,
+  ) => Promise<void>;
+
+  deleteDisbursementMethod: (
+    data: deleteDisbursementMethodInterface,
+  ) => Promise<void>;
 }
 
 interface saveDisbursementMethodInterface {
+  disbursementMethod: IDisbursementMethod;
+}
+
+interface updateDisbursementMethodInterface {
+  disbursementMethod: IDisbursementMethod;
+  updates: Partial<IDisbursementMethod>;
+}
+
+interface deleteDisbursementMethodInterface {
   disbursementMethod: IDisbursementMethod;
 }
 
@@ -59,9 +76,37 @@ export const useDisbursementMethod = (): useDisbursementMethodInterface => {
     return updatedDisbursementMethod;
   };
 
+  const updateDisbursementMethod = async ({
+    disbursementMethod,
+    updates,
+  }: updateDisbursementMethodInterface) => {
+    const updatedDisbursementMethod = {
+      _id: disbursementMethod._id,
+      ...updates,
+      updated_at: new Date(),
+    };
+
+    const trace = await perf().startTrace('updatedDisbursementMethod');
+    realm.write(() => {
+      realm.create(modelName, updatedDisbursementMethod, UpdateMode.Modified);
+    });
+    await trace.stop();
+  };
+
+  const deleteDisbursementMethod = async ({
+    disbursementMethod,
+  }: deleteDisbursementMethodInterface) => {
+    await updateDisbursementMethod({
+      disbursementMethod,
+      updates: {is_deleted: true},
+    });
+  };
+
   return {
     getDisbursementMethods,
     saveDisbursementMethod,
+    updateDisbursementMethod,
+    deleteDisbursementMethod,
     getPrimaryDisbursementMethod,
   };
 };

@@ -467,6 +467,7 @@ export interface Strings {
       payment_added: string;
       warning_message: string;
       payment_edited: string;
+      payment_removed: string;
       add_payment_info: string;
       edit_payment_info: string;
       remove_message: string;
@@ -507,6 +508,9 @@ export interface Strings {
       make_default_withdrawal: string;
       withdrawal_picker_placeholder: string;
       select_an_option: string;
+      withdrawal_added: string;
+      withdrawal_removed: string;
+      remove_withdrawal_message: string;
     };
   };
   more: {

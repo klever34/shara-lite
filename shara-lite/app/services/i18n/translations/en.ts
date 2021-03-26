@@ -597,6 +597,7 @@ const en: Strings = {
       payment_added: 'PAYMENT OPTION ADDED',
       warning_message: 'Please fill all the fields in the form',
       payment_edited: 'PAYMENT OPTION EDITED',
+      payment_removed: 'PAYMENT OPTION REMOVED',
       add_payment_info: 'add Payment info',
       edit_payment_info: 'edit Payment info',
       remove_message: 'Are you sure you want to remove the payment option?',
@@ -644,6 +645,10 @@ const en: Strings = {
       make_default_withdrawal: 'Make default withdrawal account',
       withdrawal_picker_placeholder: 'Select a withdrawal method',
       select_an_option: 'Select an option',
+      withdrawal_added: 'WITHDRAWAL METHOD ADDED',
+      withdrawal_removed: 'WITHDRAWAL METHOD REMOVED',
+      remove_withdrawal_message:
+        'Are you sure you want to remove the withdrawal method?',
     },
   },
   more: {
@@ -1104,7 +1109,8 @@ const en: Strings = {
   message_sent: 'MESSAGE SENT',
   offline_sms_notification_title: 'You are offline',
   sms_no_recipient: "Please ensure there's a recipient to send the message to.",
-  offline_sms_notification_description: 'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
+  offline_sms_notification_description:
+    'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
   copied: 'Copied',
   submit: 'Submit',
 };
