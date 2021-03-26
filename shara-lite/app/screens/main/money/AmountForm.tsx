@@ -49,7 +49,6 @@ export const AmountForm = ({
     validate: validateFn,
     onSubmit: (values) => doneButton.onPress(values.amount),
   });
-  console.log(errors);
   const handleChange = useCallback(
     (text: string) => {
       setFieldValue('amount', text);

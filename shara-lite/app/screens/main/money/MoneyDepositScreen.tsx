@@ -89,6 +89,8 @@ const STKPushDeposit = ({
   onSubmit: (values: {amount: string; mobile?: string}) => Promise<void>;
 }) => {
   const user = getAuthService().getUser();
+  const {getWallet} = useWallet();
+  const wallet = getWallet();
 
   const phoneNumber = parsePhoneNumber('+' + user?.mobile);
   const nationalNumber = (phoneNumber?.nationalNumber ?? '') as string;
@@ -107,6 +109,8 @@ const STKPushDeposit = ({
       errors.mobile = strings(
         'payment_activities.stk_push.fields.mobile.errorMessage',
       );
+    } else if (wallet?.currency_code === 'KES' && values.amount.includes('.')) {
+      errors.amount = strings('payment_activities.no_decimals');
     }
     return errors;
   }, []);

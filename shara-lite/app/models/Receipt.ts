@@ -3,6 +3,7 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IPayment} from './Payment';
 import {IReceiptItem} from './ReceiptItem';
 import {ICredit} from './Credit';
+import { IBNPLDrawdown } from './BNPLDrawdown';
 
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;
@@ -24,6 +25,7 @@ export interface IReceipt extends BaseModelInterface {
   is_hidden_in_pro?: boolean;
   is_collection?: boolean;
   transaction_date?: Date;
+  bnpl_drawdowns?: IBNPLDrawdown[];
 
   //Getters
   isPaid?: boolean;
@@ -71,6 +73,11 @@ export class Receipt extends BaseModel implements Partial<IReceipt> {
       credits: {
         type: 'linkingObjects',
         objectType: 'Credit',
+        property: 'receipt',
+      },
+      bnpl_drawdowns: {
+        type: 'linkingObjects',
+        objectType: 'BNPLDrawdown',
         property: 'receipt',
       },
     },

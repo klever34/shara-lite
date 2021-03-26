@@ -226,6 +226,8 @@ const en: Strings = {
           error:
             'We were unable to process your drawdown, please try again or contact us through the Shara mobile application',
           success: 'Drawdown taken successfully',
+          duplicate:
+            'This looks like a duplicate transaction. Please wait 2 minutes to retry, if this is not an error.',
         },
       },
       bnplRepayment: {
@@ -236,6 +238,13 @@ const en: Strings = {
             'We were unable to process your repayment, please try again or contact us through the Shara mobile application',
           insufficientBalance: 'Your wallet balance is not sufficient',
           success: 'Repayment successful',
+        },
+      },
+      sms: {
+        create: {
+          success: 'Sms sent successfully',
+          missingFields: 'To & Message are required',
+          error: 'Unable to send SMS. Please try again later',
         },
       },
     },
@@ -588,6 +597,7 @@ const en: Strings = {
       payment_added: 'PAYMENT OPTION ADDED',
       warning_message: 'Please fill all the fields in the form',
       payment_edited: 'PAYMENT OPTION EDITED',
+      payment_removed: 'PAYMENT OPTION REMOVED',
       add_payment_info: 'add Payment info',
       edit_payment_info: 'edit Payment info',
       remove_message: 'Are you sure you want to remove the payment option?',
@@ -618,11 +628,11 @@ const en: Strings = {
     bvn_input_field_placeholder: 'Enter your BVN',
     withdrawal_method: {
       bvn_description:
-        'Some copy about why we are collecting BVN goes here. Also telling them it needs to match the name on their account',
+        'Please enter your National ID/BVN number. Your ID should match the names and the payment method in your Settings',
       bvn_input_field_placeholder: 'Enter your BVN',
       otp_description: 'An OTP has been sent to your BVN number *******4343',
       id_description:
-        'Some copy about why we are collecting {{idType}} goes here. Also telling them it needs to match the name on their account',
+        'Please enter your {{idType}}. Your ID should match the names and the payment method in your Settings',
       id_input_field_placeholder: 'Enter your {{idType}}',
       id_otp_description:
         'An OTP has been sent to your {{idType}} number {{mobile}}',
@@ -635,6 +645,10 @@ const en: Strings = {
       make_default_withdrawal: 'Make default withdrawal account',
       withdrawal_picker_placeholder: 'Select a withdrawal method',
       select_an_option: 'Select an option',
+      withdrawal_added: 'WITHDRAWAL METHOD ADDED',
+      withdrawal_removed: 'WITHDRAWAL METHOD REMOVED',
+      remove_withdrawal_message:
+        'Are you sure you want to remove the withdrawal method?',
     },
   },
   more: {
@@ -666,6 +680,10 @@ const en: Strings = {
       language: {
         title: 'Language',
         description: 'Select your language',
+      },
+      support: {
+        title: 'Contact Support',
+        description: 'Ask a question or leave a message',
       },
     },
     logout: {
@@ -882,6 +900,7 @@ const en: Strings = {
       'Withdrawal amount is greater than your wallet balance',
     withdraw_amount_required_error: 'Amount is required',
     withdraw_minimum_error: 'Withdrawal amount must be greater than {{amount}}',
+    withdraw_maximum_error: 'Maximum amount per withdrawal is {{amount}}',
     not_available: {
       title: 'Not available in your country',
       description:
@@ -921,6 +940,7 @@ const en: Strings = {
       'Buy now pay later drawdown of **{{amount}}** to **{{customer}}**',
     bnpl_repayment_item:
       'Buy now pay later repayment of **{{amount}}** from **{{customer}}**',
+    no_decimals: "MPESA doesn't allow for decimal payments",
   },
   drawdown: {
     title: 'Drawdown',
@@ -1014,6 +1034,7 @@ const en: Strings = {
       balance: 'Balance',
       bnpl_terms_text: 'Buy now pay later terms',
       repayment_date: 'to be paid in full by {{date}}',
+      excess_amount_error: 'Amount is more than amount available for drawdown',
     },
     confirmation: {
       instruction:
@@ -1085,6 +1106,11 @@ const en: Strings = {
     first_repayment:
       'Your first repayment is {{amount}} and it is due on {{date}}.',
   },
+  message_sent: 'MESSAGE SENT',
+  offline_sms_notification_title: 'You are offline',
+  sms_no_recipient: "Please ensure there's a recipient to send the message to.",
+  offline_sms_notification_description:
+    'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
   copied: 'Copied',
   submit: 'Submit',
 };

@@ -1,6 +1,12 @@
-import React, {ReactNode, useCallback, useState} from 'react';
+import React, {ReactNode, useCallback, useMemo, useState} from 'react';
 import {Header, Text, toNumber} from '@/components';
-import {getAnalyticsService, getApiService, getI18nService} from '@/services';
+import {
+  getAnalyticsService,
+  getApiService,
+  getAuthService,
+  getI18nService,
+  getRemoteConfigService,
+} from '@/services';
 import {ScrollView, View} from 'react-native';
 import {applyStyles, as} from '@/styles';
 import {withModal} from '@/helpers/hocs';
@@ -170,7 +176,9 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       getDisbursementMethods,
     } = useDisbursementMethod();
     const {getWallet} = useWallet();
+
     const walletBalance = getWallet()?.balance ?? 0;
+    const user = getAuthService().getUser();
     const primaryDisbursementMethod = getPrimaryDisbursementMethod();
     const [disbursementMethod, setDisbursementMethod] = useState(
       primaryDisbursementMethod,
@@ -179,6 +187,24 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
     const selectedBankAccount = !withdrawAccountDetails
       ? ''
       : `${withdrawAccountDetails.provider_label} - ${withdrawAccountDetails.account_label}`;
+
+    const maxWithdrawalAmount = useMemo(() => {
+      try {
+        const sharaMoneyEnabledCountries = JSON.parse(
+          getRemoteConfigService()
+            .getValue('sharaMoneyEnabledCountries')
+            .asString(),
+        );
+        if (!Object.keys(sharaMoneyEnabledCountries).length) {
+          return true;
+        }
+        return sharaMoneyEnabledCountries[user?.currency_code ?? '']
+          .maxWithdrawalAmount;
+      } catch (e) {
+        return false;
+      }
+    }, []);
+
     const handleSelectWithdrawalAccount = useCallback(() => {
       openModal('bottom-half', {
         renderContent: () => (
@@ -192,6 +218,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         ),
       });
     }, [closeModal, openModal]);
+
     const handleNext = useCallback(
       (amount: string) => {
         if (disbursementMethod?.api_id) {
@@ -249,12 +276,15 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
       },
       [closeModal, disbursementMethod, onClose, openModal, selectedBankAccount],
     );
+
     // TODO: Add logic to check whether money settings is set up
     const disbursementMethods = getDisbursementMethods();
     const navigation = useAppNavigation();
+
     const onGoToMoneySettings = useCallback(() => {
       navigation.navigate('PaymentSettings');
     }, [navigation]);
+
     if (!disbursementMethods.length) {
       return (
         <View style={as('center px-32 py-16')}>
@@ -275,6 +305,7 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
         </View>
       );
     }
+
     const handleValidateAmountForm = useCallback(
       (values) => {
         const errors = {} as {amount: string};
@@ -284,6 +315,13 @@ const MoneyWithdrawModal = withModal<MoneyWithdrawScreenProps>(
           );
         } else if (!!walletBalance && toNumber(values.amount) > walletBalance) {
           errors.amount = strings('payment_activities.withdraw_excess_error');
+        } else if (
+          !!maxWithdrawalAmount &&
+          toNumber(values.amount) > maxWithdrawalAmount
+        ) {
+          errors.amount = strings('payment_activities.withdraw_maximum_error', {
+            amount: amountWithCurrency(maxWithdrawalAmount),
+          });
         } else if (toNumber(values.amount) < 10) {
           errors.amount = strings('payment_activities.withdraw_minimum_error', {
             amount: amountWithCurrency(10),

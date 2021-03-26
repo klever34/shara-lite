@@ -178,26 +178,10 @@ export const BNPLReceiptImage = memo((props: Props) => {
               borderBottomColor: colors.black,
             })}>
             <Text style={applyStyles('print-text-400 pb-8 text-lg')}>
-              {strings('total')}: {amountWithCurrency(total_amount)}
-            </Text>
-            <Text style={applyStyles('print-text-400 pb-8 text-lg')}>
               {strings('paid')}: {amountWithCurrency(amount_paid)}
             </Text>
           </View>
 
-          {!!credit_amount && (
-            <View
-              style={applyStyles('py-16', {
-                borderRadius: 1,
-                borderBottomWidth: 1,
-                borderStyle: 'dashed',
-                borderBottomColor: colors.black,
-              })}>
-              <Text style={applyStyles('print-text-400 text-lg')}>
-                {strings('balance')}: {amountWithCurrency(credit_amount)}
-              </Text>
-            </View>
-          )}
           <View>
             <View
               style={applyStyles(

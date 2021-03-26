@@ -21,6 +21,7 @@ import {SafeAreaView, View} from 'react-native';
 import Config from 'react-native-config';
 import {MainStackParamList} from '..';
 import {getI18nService} from '@/services';
+import {BNPLReceiptImage} from '../bnpl/BNPLReceiptImage';
 
 const strings = getI18nService().strings;
 
@@ -40,9 +41,12 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
     amount_paid,
     total_amount,
     credit_amount,
+    bnpl_drawdowns,
     transaction_date,
     customer: customerProp,
   } = transaction;
+
+  const drawdown = bnpl_drawdowns?.[0];
 
   const navigation = useAppNavigation();
   const {showSuccessToast} = useContext(ToastContext);
@@ -62,6 +66,11 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   const paymentLink =
     businessInfo.slug &&
     `${Config.WEB_BASE_URL}/pay/${businessInfo.slug}${
+      customer?._id ? `?customer=${String(customer?._id)}` : ''
+    }`;
+  const bnplPaymentLink =
+    businessInfo.slug &&
+    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}/${drawdown?.api_id}${
       customer?._id ? `?customer=${String(customer?._id)}` : ''
     }`;
 
@@ -88,7 +97,7 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
   } ${
     paymentLink
       ? strings('payment_link_message', {
-          payment_link: paymentLink,
+          payment_link: drawdown ? bnplPaymentLink : paymentLink,
         })
       : ''
   }\n\n${strings('powered_by_shara')}`;
@@ -285,7 +294,9 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             {strings('total')}
           </Text>
           <Text style={applyStyles('text-700 text-black text-base')}>
-            {amountWithCurrency(total_amount)}
+            {amountWithCurrency(
+              drawdown ? drawdown.repayment_amount : total_amount,
+            )}
           </Text>
         </View>
         <View style={applyStyles('items-end', {width: '33%'})}>
@@ -307,7 +318,9 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             {strings('outstanding')}
           </Text>
           <Text style={applyStyles('text-700 text-red-100 text-base')}>
-            {amountWithCurrency(credit_amount)}
+            {amountWithCurrency(
+              drawdown ? drawdown.repayment_amount : credit_amount,
+            )}
           </Text>
         </View>
       </View>
@@ -442,17 +455,30 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
         />
       </View>
       <View style={applyStyles({opacity: 0, height: 0})}>
-        <ReceiptImage
-          note={note}
-          customer={customer}
-          creditDueDate={dueDate}
-          amountPaid={amount_paid}
-          totalAmount={total_amount}
-          creditAmount={credit_amount}
-          createdAt={transaction_date}
-          receiptNo={_id?.toString().substring(0, 6)}
-          getImageUri={(data: any) => setReceiptImage(data)}
-        />
+        {drawdown ? (
+          <BNPLReceiptImage
+            transaction={{
+              drawdown,
+              receiptData: transaction,
+              repayments: drawdown.bnpl_repayments
+                ? [...drawdown.bnpl_repayments]
+                : [],
+            }}
+            getImageUri={(data) => setReceiptImage(data)}
+          />
+        ) : (
+          <ReceiptImage
+            note={note}
+            customer={customer}
+            creditDueDate={dueDate}
+            amountPaid={amount_paid}
+            totalAmount={total_amount}
+            creditAmount={credit_amount}
+            createdAt={transaction_date}
+            receiptNo={_id?.toString().substring(0, 6)}
+            getImageUri={(data: any) => setReceiptImage(data)}
+          />
+        )}
       </View>
     </SafeAreaView>
   );

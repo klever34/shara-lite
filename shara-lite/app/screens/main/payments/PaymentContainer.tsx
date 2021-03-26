@@ -114,7 +114,7 @@ function PaymentContainer(props: ModalWrapperFields) {
       getAnalyticsService()
         .logEvent('paymentOptionRemoved', {})
         .then(() => {});
-      showSuccessToast('PAYMENT OPTION REMOVED');
+      showSuccessToast(strings('payment.payment_container.payment_deleted'));
       setIsDeleting(false);
     },
     [deletePaymentOption, showSuccessToast],
