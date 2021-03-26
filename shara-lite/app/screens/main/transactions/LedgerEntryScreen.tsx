@@ -294,7 +294,9 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             {strings('total')}
           </Text>
           <Text style={applyStyles('text-700 text-black text-base')}>
-            {amountWithCurrency(total_amount)}
+            {amountWithCurrency(
+              drawdown ? drawdown.repayment_amount : total_amount,
+            )}
           </Text>
         </View>
         <View style={applyStyles('items-end', {width: '33%'})}>
@@ -316,7 +318,9 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
             {strings('outstanding')}
           </Text>
           <Text style={applyStyles('text-700 text-red-100 text-base')}>
-            {amountWithCurrency(credit_amount)}
+            {amountWithCurrency(
+              drawdown ? drawdown.repayment_amount : credit_amount,
+            )}
           </Text>
         </View>
       </View>

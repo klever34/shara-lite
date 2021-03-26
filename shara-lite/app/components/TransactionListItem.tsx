@@ -70,7 +70,10 @@ const TransactionListItem = ({
               style={applyStyles(
                 'text-700 text-xxs text-gray-100 text-uppercase',
               )}>
-              {strings('balance')}: {amountWithCurrency(credit_amount)}
+              {strings('balance')}:{' '}
+              {amountWithCurrency(
+                drawdown ? drawdown.repayment_amount : credit_amount,
+              )}
             </Text>
           )}
         </View>
