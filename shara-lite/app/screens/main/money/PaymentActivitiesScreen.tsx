@@ -9,7 +9,7 @@ import {useClipboard} from '@/helpers/hooks';
 import {amountWithCurrency} from '@/helpers/utils';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
-import {getI18nService} from '@/services';
+import {getAuthService, getI18nService} from '@/services';
 import {useBNPLDrawdown} from '@/services/bnpl-drawdown';
 import {useBNPLRepayment} from '@/services/bnpl-repayment';
 import {useCollection} from '@/services/collection';
@@ -17,7 +17,7 @@ import {useDisbursement} from '@/services/disbursement';
 import {useAppNavigation} from '@/services/navigation';
 import {applyStyles, as, colors} from '@/styles';
 import {useFocusEffect} from '@react-navigation/native';
-import {format} from 'date-fns';
+import {format, parseISO} from 'date-fns';
 import {orderBy} from 'lodash';
 import {usePubNub} from 'pubnub-react';
 import React, {useCallback, useEffect, useMemo} from 'react';
@@ -35,7 +35,7 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   const pubNub = usePubNub();
   const navigation = useAppNavigation();
   const {copyToClipboard} = useClipboard();
-  const {getCollections} = useCollection();
+  const {getCollections, saveCollection} = useCollection();
   const {getDisbursements} = useDisbursement();
   const {getBNPLDrawdowns} = useBNPLDrawdown();
   const {getBNPLRepayments} = useBNPLRepayment();
@@ -81,13 +81,23 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
   }, [collections, disbursements, bnplDrawdowns, bnplRepayments]);
 
   useEffect(() => {
+    const user = getAuthService().getUser();
     const listener = {
-      message: (envelope: any) => {
-        console.log(envelope);
+      message: async (envelope: any) => {
+        console.log(JSON.parse(envelope.message));
+        const collection = JSON.parse(envelope.message);
+        await saveCollection({
+          collection: {
+            ...collection,
+            meta: JSON.stringify(collection.meta),
+            created_at: parseISO(collection.created_at),
+            updated_at: parseISO(collection.updated_at),
+          },
+        });
       },
     };
     pubNub.addListener(listener);
-    pubNub.subscribe({channels: ['collection']});
+    pubNub.subscribe({channels: ['collection_' + user?.id]});
     return () => {
       pubNub.removeListener(listener);
       pubNub.unsubscribeAll();
