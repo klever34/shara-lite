@@ -1,7 +1,11 @@
 import EmptyState from '@/components/EmptyState';
 import {EntryView} from '@/components/EntryView';
+import OfflineModalProvider from '@/components/OfflineModalProvider';
 import {TransactionDetailsProps} from '@/components/TransactionDetails';
 import {ICustomer} from '@/models';
+import {IBNPLApproval} from '@/models/BNPLApproval';
+import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
+import {IBNPLRepayment} from '@/models/BNPLRepayment';
 import {IReceipt} from '@/models/Receipt';
 import CustomerDetailsScreen from '@/screens/main/customers/CustomerDetailsScreen';
 import RecordCollectionScreen from '@/screens/main/entry/RecordCollectionScreen';
@@ -14,7 +18,11 @@ import {
   UserProfileSettings,
 } from '@/screens/main/more/settings';
 import {PaymentsScreen} from '@/screens/main/payments';
-import {getI18nService, getNotificationService} from '@/services';
+import {
+  getAuthService,
+  getI18nService,
+  getNotificationService,
+} from '@/services';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation, useRepeatBackToExit} from '@/services/navigation';
@@ -22,10 +30,20 @@ import {useRealm} from '@/services/realm';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
-import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import {ObjectId} from 'bson';
-import React, {useContext, useEffect} from 'react';
+import PubNub from 'pubnub';
+import {PubNubProvider} from 'pubnub-react';
+import React, {useContext, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
+import Config from 'react-native-config';
+import {createNativeStackNavigator} from 'react-native-screens/native-stack';
+import getUuidByString from 'uuid-by-string';
+import {BNPLScreen} from './bnpl';
+import {BNPLClientScreen} from './bnpl/BNPLClientScreen';
+import {BNPLRecordTransactionScreen} from './bnpl/BNPLRecordTransactionScreen';
+import {BNPLRepaymentSuccessScreen} from './bnpl/BNPLRepaymentSuccessScreen';
+import {BNPLTransactionDetailsScreen} from './bnpl/BNPLTransactionDetailsScreen';
+import {BNPLTransactionSuccessScreen} from './bnpl/BNPLTransactionSuccessScreen';
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 import {
@@ -41,16 +59,6 @@ import {EditTransactionScreen} from './transactions/EditTransactionScreen';
 import {LedgerEntryScreen} from './transactions/LedgerEntryScreen';
 import TransactionDetailsScreen from './transactions/TransactionDetailsScreen';
 import {TransactionSuccessScreen} from './transactions/TransactionSuccessScreen';
-import {BNPLScreen} from './bnpl';
-import {BNPLTransactionSuccessScreen} from './bnpl/BNPLTransactionSuccessScreen';
-import {BNPLClientScreen} from './bnpl/BNPLClientScreen';
-import {BNPLRecordTransactionScreen} from './bnpl/BNPLRecordTransactionScreen';
-import {BNPLTransactionDetailsScreen} from './bnpl/BNPLTransactionDetailsScreen';
-import {BNPLRepaymentSuccessScreen} from './bnpl/BNPLRepaymentSuccessScreen';
-import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
-import {IBNPLRepayment} from '@/models/BNPLRepayment';
-import {IBNPLApproval} from '@/models/BNPLApproval';
-import OfflineModalProvider from '@/components/OfflineModalProvider';
 
 const strings = getI18nService().strings;
 
@@ -123,8 +131,23 @@ const MainScreens = () => {
   const {getCustomer} = useCustomer();
   const navigation = useAppNavigation();
 
+  const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
+
   useSyncLoader();
   useCreditReminder();
+
+  // Effect to setup PubNub
+  useEffect(() => {
+    const user = getAuthService().getUser();
+    if (user) {
+      const pubNub = new PubNub({
+        subscribeKey: Config.PUBNUB_SUB_KEY,
+        publishKey: Config.PUBNUB_PUB_KEY,
+        uuid: getUuidByString(user.mobile),
+      });
+      setPubNubClient(pubNub);
+    }
+  }, []);
 
   // Effect to when FCM notification is clicked
   useEffect(() => {
@@ -167,216 +190,226 @@ const MainScreens = () => {
     );
   }
 
+  if (!pubNubClient) {
+    return (
+      <View style={applyStyles('flex-1 center')}>
+        <ActivityIndicator color={colors.primary} size={40} />
+      </View>
+    );
+  }
+
   return (
-    <OfflineModalProvider>
-      <EntryView>
-        <MainStack.Navigator
-          initialRouteName="Home"
-          screenOptions={{
-            headerStyle: {
-              backgroundColor: colors.white,
-            },
-            headerTitleStyle: {
-              fontSize: 16,
-              fontFamily: 'Roboto-Regular',
-            },
-            headerTintColor: colors['gray-300'],
-          }}>
-          {/* Home */}
-          <MainStack.Screen
-            name="Home"
-            component={HomeScreen}
-            options={{headerShown: false}}
-          />
+    <PubNubProvider client={pubNubClient}>
+      <OfflineModalProvider>
+        <EntryView>
+          <MainStack.Navigator
+            initialRouteName="Home"
+            screenOptions={{
+              headerStyle: {
+                backgroundColor: colors.white,
+              },
+              headerTitleStyle: {
+                fontSize: 16,
+                fontFamily: 'Roboto-Regular',
+              },
+              headerTintColor: colors['gray-300'],
+            }}>
+            {/* Home */}
+            <MainStack.Screen
+              name="Home"
+              component={HomeScreen}
+              options={{headerShown: false}}
+            />
 
-          {/* Customers */}
-          <MainStack.Screen
-            name="CustomerDetails"
-            component={CustomerDetailsScreen}
-            options={({route}) => ({
-              title: route.params.customer?.name,
-              headerShown: false,
-            })}
-          />
+            {/* Customers */}
+            <MainStack.Screen
+              name="CustomerDetails"
+              component={CustomerDetailsScreen}
+              options={({route}) => ({
+                title: route.params.customer?.name,
+                headerShown: false,
+              })}
+            />
 
-          <MainStack.Screen
-            name="SelectCustomerList"
-            component={SelectCustomerListScreen}
-            options={{headerShown: false}}
-            initialParams={{
-              onSelectCustomer: () => {},
-            }}
-          />
+            <MainStack.Screen
+              name="SelectCustomerList"
+              component={SelectCustomerListScreen}
+              options={{headerShown: false}}
+              initialParams={{
+                onSelectCustomer: () => {},
+              }}
+            />
 
-          <MainStack.Screen
-            name="RecordSale"
-            component={RecordSaleScreen}
-            options={{headerShown: false}}
-          />
+            <MainStack.Screen
+              name="RecordSale"
+              component={RecordSaleScreen}
+              options={{headerShown: false}}
+            />
 
-          <MainStack.Screen
-            name="RecordCollection"
-            component={RecordCollectionScreen}
-            options={{headerShown: false}}
-          />
+            <MainStack.Screen
+              name="RecordCollection"
+              component={RecordCollectionScreen}
+              options={{headerShown: false}}
+            />
 
-          <MainStack.Screen
-            name="ReminderSettings"
-            component={ReminderSettingsScreen}
-            options={{headerShown: false}}
-          />
+            <MainStack.Screen
+              name="ReminderSettings"
+              component={ReminderSettingsScreen}
+              options={{headerShown: false}}
+            />
 
-          <MainStack.Screen
-            name="EditCustomer"
-            component={EditCustomerScreen}
-            options={{headerShown: false}}
-          />
+            <MainStack.Screen
+              name="EditCustomer"
+              component={EditCustomerScreen}
+              options={{headerShown: false}}
+            />
 
-          {/* More */}
-          <MainStack.Screen
-            name="BusinessSettings"
-            component={BusinessSettings}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="UserProfileSettings"
-            component={UserProfileSettings}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="Referral"
-            component={ReferralScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="Settings"
-            component={MoreScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="PaymentSettings"
-            component={PaymentsScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="Feedback"
-            component={FeedbackScreen}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="BVNVerification"
-            component={BVNVerification}
-            options={{headerShown: false}}
-          />
-          <MainStack.Screen
-            name="DisburementScreen"
-            component={DisburementScreen}
-            options={{headerShown: false}}
-          />
+            {/* More */}
+            <MainStack.Screen
+              name="BusinessSettings"
+              component={BusinessSettings}
+              options={{headerShown: false}}
+            />
+            <MainStack.Screen
+              name="UserProfileSettings"
+              component={UserProfileSettings}
+              options={{headerShown: false}}
+            />
+            <MainStack.Screen
+              name="Referral"
+              component={ReferralScreen}
+              options={{headerShown: false}}
+            />
+            <MainStack.Screen
+              name="Settings"
+              component={MoreScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="PaymentSettings"
+              component={PaymentsScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="Feedback"
+              component={FeedbackScreen}
+              options={{headerShown: false}}
+            />
+            <MainStack.Screen
+              name="BVNVerification"
+              component={BVNVerification}
+              options={{headerShown: false}}
+            />
+            <MainStack.Screen
+              name="DisburementScreen"
+              component={DisburementScreen}
+              options={{headerShown: false}}
+            />
 
-          {/* Transactions */}
-          <MainStack.Screen
-            name="TransactionDetails"
-            component={TransactionDetailsScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="LedgerEntry"
-            component={LedgerEntryScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="EditTransaction"
-            component={EditTransactionScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="TransactionSuccess"
-            component={TransactionSuccessScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
+            {/* Transactions */}
+            <MainStack.Screen
+              name="TransactionDetails"
+              component={TransactionDetailsScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="LedgerEntry"
+              component={LedgerEntryScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="EditTransaction"
+              component={EditTransactionScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="TransactionSuccess"
+              component={TransactionSuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
 
-          {/* Report */}
-          <MainStack.Screen
-            name="Report"
-            component={ReportScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          {/* Money */}
-          <MainStack.Screen
-            name="Drawdown"
-            component={DrawdownScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="BNPLScreen"
-            component={BNPLScreen}
-            options={{
-              headerShown: true,
-              headerTintColor: colors.white,
-              headerStyle: applyStyles('bg-primary'),
-              headerTitle: strings('bnpl.buy_now_pay_later'),
-              headerTitleStyle: applyStyles('text-white text-capitalize'),
-            }}
-          />
-          <MainStack.Screen
-            name="BNPLClientScreen"
-            component={BNPLClientScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="BNPLTransactionSuccessScreen"
-            component={BNPLTransactionSuccessScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="BNPLRepaymentSuccessScreen"
-            component={BNPLRepaymentSuccessScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="BNPLRecordTransactionScreen"
-            component={BNPLRecordTransactionScreen}
-            options={{
-              headerShown: false,
-            }}
-          />
-          <MainStack.Screen
-            name="BNPLTransactionDetailsScreen"
-            component={BNPLTransactionDetailsScreen}
-            options={{
-              headerShown: true,
-              headerTintColor: colors.white,
-              headerStyle: applyStyles('bg-primary'),
-              headerTitle: strings('bnpl.transaction_details'),
-              headerTitleStyle: applyStyles('text-white text-capitalize'),
-            }}
-          />
-        </MainStack.Navigator>
-      </EntryView>
-    </OfflineModalProvider>
+            {/* Report */}
+            <MainStack.Screen
+              name="Report"
+              component={ReportScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            {/* Money */}
+            <MainStack.Screen
+              name="Drawdown"
+              component={DrawdownScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="BNPLScreen"
+              component={BNPLScreen}
+              options={{
+                headerShown: true,
+                headerTintColor: colors.white,
+                headerStyle: applyStyles('bg-primary'),
+                headerTitle: strings('bnpl.buy_now_pay_later'),
+                headerTitleStyle: applyStyles('text-white text-capitalize'),
+              }}
+            />
+            <MainStack.Screen
+              name="BNPLClientScreen"
+              component={BNPLClientScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="BNPLTransactionSuccessScreen"
+              component={BNPLTransactionSuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="BNPLRepaymentSuccessScreen"
+              component={BNPLRepaymentSuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="BNPLRecordTransactionScreen"
+              component={BNPLRecordTransactionScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="BNPLTransactionDetailsScreen"
+              component={BNPLTransactionDetailsScreen}
+              options={{
+                headerShown: true,
+                headerTintColor: colors.white,
+                headerStyle: applyStyles('bg-primary'),
+                headerTitle: strings('bnpl.transaction_details'),
+                headerTitleStyle: applyStyles('text-white text-capitalize'),
+              }}
+            />
+          </MainStack.Navigator>
+        </EntryView>
+      </OfflineModalProvider>
+    </PubNubProvider>
   );
 };
 

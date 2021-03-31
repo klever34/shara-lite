@@ -7,10 +7,6 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {withModal} from '@/helpers/hocs';
 import {useClipboard} from '@/helpers/hooks';
 import {amountWithCurrency} from '@/helpers/utils';
-import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
-import {IBNPLRepayment} from '@/models/BNPLRepayment';
-import {ICollection} from '@/models/Collection';
-import {IDisbursement} from '@/models/Disbursement';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
 import {getI18nService} from '@/services';
@@ -23,9 +19,9 @@ import {applyStyles, as, colors} from '@/styles';
 import {useFocusEffect} from '@react-navigation/native';
 import {format} from 'date-fns';
 import {orderBy} from 'lodash';
+import {usePubNub} from 'pubnub-react';
 import React, {useCallback, useEffect, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
-import {useBNPLDrawdownsList} from '../bnpl/hook';
 import {usePaymentActivities} from './hook';
 import {MoneyActionsContainer} from './MoneyActionsContainer';
 import {
@@ -36,6 +32,7 @@ import {
 const strings = getI18nService().strings;
 
 export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
+  const pubNub = usePubNub();
   const navigation = useAppNavigation();
   const {copyToClipboard} = useClipboard();
   const {getCollections} = useCollection();
@@ -73,9 +70,6 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
       bnplRepayments: getBNPLRepayments().filtered('status = "complete"'),
     },
   });
-
-  console.log(bnplRepayments, filteredBNPLRepayments);
-
   const activitiesData: PaymentActivityItemData[] = useMemo(() => {
     const data = [
       ...collections,
@@ -85,6 +79,20 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     ];
     return orderBy(data, 'created_at', 'desc');
   }, [collections, disbursements, bnplDrawdowns, bnplRepayments]);
+
+  useEffect(() => {
+    const listener = {
+      message: (envelope: any) => {
+        console.log(envelope);
+      },
+    };
+    pubNub.addListener(listener);
+    pubNub.subscribe({channels: ['collection']});
+    return () => {
+      pubNub.removeListener(listener);
+      pubNub.unsubscribeAll();
+    };
+  }, [pubNub]);
 
   useEffect(() => {
     if (!searchTerm) {
