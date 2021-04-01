@@ -82,11 +82,9 @@ const AccountDetailsCard = ({
 export const STKPushDeposit = ({
   onSubmit,
   onClose,
-  isLoading,
   initialValues,
 }: {
   onClose(): void;
-  isLoading?: boolean;
   initialValues?: {amount: string; mobile: string};
   onSubmit: (
     values: {amount: string; mobile?: string},
@@ -193,7 +191,7 @@ export const STKPushDeposit = ({
             variantColor: 'blue',
             onPress: handleSubmit,
             title: strings('send'),
-            isLoading: isLoading || isSubmitting,
+            isLoading: isSubmitting,
           },
         ]}
       />
@@ -265,8 +263,6 @@ export const MoneyDepositScreen = withModal(
       }
     }, []);
 
-    const [loading, setLoading] = useState(false);
-
     const virtualAccounts = useMemo(() => {
       return _(collectionMethods)
         .map((collectionMethod) => {
@@ -283,9 +279,9 @@ export const MoneyDepositScreen = withModal(
     }, [collectionMethods, parseBankDetails]);
 
     const handleSTKPush = useCallback(
-      async ({mobile, amount}) => {
+      async ({mobile, amount}, setSubmitting) => {
         try {
-          setLoading(true);
+          setSubmitting(true);
           await getApiService().stkPushDeposit({
             mobile,
             amount: toNumber(amount),
@@ -295,7 +291,7 @@ export const MoneyDepositScreen = withModal(
               amount: toNumber(amount),
             })
             .then();
-          setLoading(false);
+          setSubmitting(false);
           openModal('bottom-half', {
             renderContent: () => (
               <STKPushConfirmation
@@ -308,7 +304,7 @@ export const MoneyDepositScreen = withModal(
             ),
           });
         } catch (error) {
-          setLoading(false);
+          setSubmitting(false);
           handleError(error);
         }
       },
@@ -341,11 +337,7 @@ export const MoneyDepositScreen = withModal(
             />
           </View>
         ) : (
-          <STKPushDeposit
-            isLoading={loading}
-            onClose={onClose}
-            onSubmit={handleSTKPush}
-          />
+          <STKPushDeposit onClose={onClose} onSubmit={handleSTKPush} />
         )}
       </View>
     );

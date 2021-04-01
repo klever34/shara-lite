@@ -20,7 +20,7 @@ import {applyStyles, colors} from '@/styles';
 import {RouteProp} from '@react-navigation/native';
 import {useFormik} from 'formik';
 import {parsePhoneNumber} from 'libphonenumber-js';
-import React, {useCallback, useRef, useState} from 'react';
+import React, {useCallback, useRef} from 'react';
 import {TextInput, View} from 'react-native';
 import Config from 'react-native-config';
 import {STKPushConfirmation, STKPushDeposit} from '../money/MoneyDepositScreen';
@@ -42,8 +42,6 @@ export default withModal(function RequestPaymentScreen({
   const user = getAuthService().getUser();
   const analyticsService = getAnalyticsService();
   const businessInfo = getAuthService().getBusinessInfo();
-
-  const [loading, setLoading] = useState(false);
 
   const {values, handleChange, setFieldValue} = useFormik({
     initialValues: {
@@ -154,7 +152,6 @@ export default withModal(function RequestPaymentScreen({
     openModal('bottom-half', {
       renderContent: () => (
         <STKPushDeposit
-          isLoading={loading}
           onSubmit={handleSTKPush}
           onClose={closeModal}
           initialValues={{
@@ -164,7 +161,7 @@ export default withModal(function RequestPaymentScreen({
         />
       ),
     });
-  }, [values, loading, handleSTKPush, nationalNumber, closeModal, openModal]);
+  }, [values, handleSTKPush, nationalNumber, closeModal, openModal]);
 
   return (
     <Page header={{iconLeft: {}, title: ' '}}>
