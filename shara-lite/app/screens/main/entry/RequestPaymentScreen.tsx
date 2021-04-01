@@ -60,18 +60,20 @@ export default withModal(function RequestPaymentScreen({
   const shareReceiptMessage = `Hi ${customer.name}, ${
     businessInfo.name || user?.firstname
   } is requesting a payment of ${amountWithCurrency(values.amount)}${
-    values.note ? `for ${values.note}` : ''
+    values.note ? ` for ${values.note}` : ''
   }. \n\nClick this link ${Config.WEB_BASE_URL}/pay/${
     businessInfo.slug
-  }?amount=${values.amount}&mobile=${customer.mobile}&note=${
-    values.note
-  } to make payment.\n\n${strings('powered_by_shara')}`;
+  }?amount=${values.amount}&mobile=${customer.mobile
+    ?.replace('+', '')
+    .replace(/\s/g, '')}&note=${values.note}\nto make payment.\n\n${strings(
+    'powered_by_shara',
+  )}`;
 
   const receiptShareProps: ShareHookProps = {
     title: strings('receipts.receipt_share_title'),
     subject: strings('receipts.receipt_share_title'),
     message: shareReceiptMessage,
-    recipient: customer?.mobile,
+    recipient: customer?.mobile?.replace(/\s/g, ''),
   };
   const phoneNumber = customer?.mobile && parsePhoneNumber(customer?.mobile);
   //@ts-ignore
