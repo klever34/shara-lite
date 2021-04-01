@@ -79,13 +79,15 @@ const AccountDetailsCard = ({
   );
 };
 
-const STKPushDeposit = ({
+export const STKPushDeposit = ({
   onSubmit,
   onClose,
   isLoading,
+  initialValues,
 }: {
   onClose(): void;
   isLoading?: boolean;
+  initialValues?: {amount: string; mobile: string};
   onSubmit: (values: {amount: string; mobile?: string}) => Promise<void>;
 }) => {
   const user = getAuthService().getUser();
@@ -119,8 +121,8 @@ const STKPushDeposit = ({
     onSubmit: ({mobile, amount}) => {
       onSubmit({mobile: `${user?.country_code}${mobile}`, amount});
     },
-    initialValues: {amount: '', mobile: nationalNumber},
     validate: handleValidateForm,
+    initialValues: initialValues ?? {amount: '', mobile: nationalNumber},
   });
 
   const handleAmountChange = useCallback(
@@ -142,6 +144,7 @@ const STKPushDeposit = ({
     <View style={applyStyles('px-16 py-24')}>
       <CurrencyInput
         errorMessage={errors.amount}
+        value={toNumber(values.amount)}
         onChangeText={handleAmountChange}
         containerStyle={applyStyles('mb-24')}
         isInvalid={!!touched.amount && !!errors.amount}
@@ -184,7 +187,7 @@ const STKPushDeposit = ({
   );
 };
 
-const STKPushConfirmation = ({
+export const STKPushConfirmation = ({
   onClose,
   mobile,
 }: {

@@ -1,4 +1,4 @@
-import {Strings} from 'types/i18n';
+import {Strings} from 'types/i18n'
 
 const en: Strings = {
   update_shara: {
@@ -425,6 +425,25 @@ const en: Strings = {
     select_a_photo_text: 'Select a photo',
     transaction_date_text: 'What date did this happen?',
     coming_soon_select_a_photo: 'Coming Soon: Select a Photo',
+  },
+  request_payment: {
+    button: {
+      title: 'Request Payment',
+      description: 'Send payment link to clients to receive money',
+    },
+    header: {
+      title: 'Request Payment',
+      description: 'Send payment link to clients to receive money',
+    },
+    fields: {
+      amount: {
+        label: 'Enter Amount',
+      },
+      note: {
+        label: 'Note (optional)',
+        placeholder: 'Write a brief note about this transaction',
+      },
+    },
   },
   sale: {
     sale_recorded: 'SALE RECORDED',
@@ -1113,6 +1132,8 @@ const en: Strings = {
     'Do you want to send via standard SMS? Your carrier SMS & data rates may apply.',
   copied: 'Copied',
   submit: 'Submit',
-};
+  send_via: 'Send via',
+  push_payment: 'Push payment',
+}
 
-export default en;
+export default en

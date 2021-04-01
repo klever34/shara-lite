@@ -69,9 +69,25 @@ export const EntryView = withModal(
       }
     }, [currentCustomer, navigation]);
 
+    const onRequestPayment = useCallback(() => {
+      const onSelectCustomer = (customer: ICustomer) => {
+        navigation.navigate('RequestPayment', {
+          customer,
+          goBack: () => navigation.navigate('Home'),
+        });
+      };
+
+      navigation.navigate('SelectCustomerList', {
+        withCustomer: true,
+        onSelectCustomer,
+        isCollection: true,
+      });
+    }, [currentCustomer, navigation]);
+
     const showEntryDialog = useCallback(() => {
       const entryOptions = [
         {
+          iconType: 'feathericons',
           title: strings('sale.button.title'),
           description: strings('sale.button.description'),
           icon: 'dollar-sign',
@@ -82,6 +98,7 @@ export const EntryView = withModal(
           },
         },
         {
+          iconType: 'feathericons',
           title: strings('collection.button.title'),
           description: strings('collection.button.description'),
           icon: 'arrow-down',
@@ -91,7 +108,33 @@ export const EntryView = withModal(
             pastel: colors['green-50'],
           },
         },
-      ];
+        {
+          iconType: 'material-community-icons',
+          title: strings('request_payment.button.title'),
+          description: strings('request_payment.button.description'),
+          icon: 'request_page',
+          onPress: onRequestPayment,
+          color: {
+            primary: colors['gray-300'],
+            pastel: colors['gray-20'],
+          },
+        },
+      ] as {
+        icon: string;
+        title: string;
+        description: string;
+        iconType:
+          | 'ionicons'
+          | 'octicons'
+          | 'material-icons'
+          | 'feathericons'
+          | 'material-community-icons';
+        onPress: () => void;
+        color: {
+          primary: string;
+          pastel: string;
+        };
+      }[];
       return openModal('bottom-half', {
         renderContent: () => {
           return (
@@ -116,9 +159,9 @@ export const EntryView = withModal(
                             },
                           )}>
                           <Icon
-                            type="feathericons"
-                            name={icon}
                             size={24}
+                            name={icon}
+                            type="feathericons"
                             color={color.primary}
                           />
                         </View>

@@ -23,6 +23,7 @@ import {
   getI18nService,
   getNotificationService,
 } from '@/services';
+import {useCollection} from '@/services/collection';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useCustomer} from '@/services/customer/hook';
 import {useAppNavigation, useRepeatBackToExit} from '@/services/navigation';
@@ -31,6 +32,7 @@ import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
 import {RealmContext} from '@/services/realm/provider';
 import {applyStyles, colors} from '@/styles';
 import {ObjectId} from 'bson';
+import {parseISO} from 'date-fns';
 import PubNub from 'pubnub';
 import {PubNubProvider} from 'pubnub-react';
 import React, {useContext, useEffect, useState} from 'react';
@@ -46,6 +48,7 @@ import {BNPLTransactionDetailsScreen} from './bnpl/BNPLTransactionDetailsScreen'
 import {BNPLTransactionSuccessScreen} from './bnpl/BNPLTransactionSuccessScreen';
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
+import RequestPaymentScreen from './entry/RequestPaymentScreen';
 import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
@@ -78,6 +81,7 @@ export type MainStackParamList = {
   };
   EditTransaction: {transaction: IReceipt};
   TransactionDetails: {transaction: IReceipt};
+  RequestPayment: {customer: ICustomer; goBack?: () => void};
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
   RecordCollection: {customer: ICustomer; goBack?: () => void};
   TransactionSuccess: {transaction: IReceipt; onDone?: () => void};
@@ -129,6 +133,7 @@ const MainScreens = () => {
   const realm = useRealm();
   const {isSyncCompleted} = useContext(RealmContext);
   const {getCustomer} = useCustomer();
+  const {saveCollection} = useCollection();
   const navigation = useAppNavigation();
 
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
@@ -145,7 +150,30 @@ const MainScreens = () => {
         publishKey: Config.PUBNUB_PUB_KEY,
         uuid: getUuidByString(user.mobile),
       });
+      const listener = {
+        message: async (envelope: any) => {
+          console.log(JSON.parse(envelope.message));
+          const collection = JSON.parse(envelope.message);
+          if (realm) {
+            await saveCollection({
+              collection: {
+                ...collection,
+                meta: JSON.stringify(collection.meta),
+                created_at: parseISO(collection.created_at),
+                updated_at: parseISO(collection.updated_at),
+              },
+            });
+          }
+        },
+      };
       setPubNubClient(pubNub);
+
+      pubNub.addListener(listener);
+      pubNub.subscribe({channels: ['collection_' + user?.id]});
+      return () => {
+        pubNub.removeListener(listener);
+        pubNub.unsubscribeAll();
+      };
     }
   }, []);
 
@@ -249,6 +277,12 @@ const MainScreens = () => {
             <MainStack.Screen
               name="RecordCollection"
               component={RecordCollectionScreen}
+              options={{headerShown: false}}
+            />
+
+            <MainStack.Screen
+              name="RequestPayment"
+              component={RequestPaymentScreen}
               options={{headerShown: false}}
             />
 
