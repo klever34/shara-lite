@@ -109,10 +109,10 @@ export const EntryView = withModal(
           },
         },
         {
-          iconType: 'material-community-icons',
+          iconType: 'feathericons',
           title: strings('request_payment.button.title'),
           description: strings('request_payment.button.description'),
-          icon: 'request_page',
+          icon: 'dollar-sign',
           onPress: onRequestPayment,
           color: {
             primary: colors['gray-300'],
