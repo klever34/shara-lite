@@ -685,6 +685,10 @@ const en: Strings = {
         title: 'Contact Support',
         description: 'Ask a question or leave a message',
       },
+      kyc_settings: {
+        title: 'KYC Settings',
+        description: 'Fill your KYC information',
+      },
     },
     logout: {
       logout_data_verification_text: 'Verifying your saved data...',

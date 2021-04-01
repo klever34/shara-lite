@@ -523,6 +523,7 @@ export interface Strings {
       support: Card;
       referral: Card;
       feedback: Card;
+      kyc_settings: Card;
     };
     logout_button: string;
     logout: {

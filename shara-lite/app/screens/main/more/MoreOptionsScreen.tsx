@@ -31,6 +31,7 @@ import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {RootStackParamList} from '@/index';
+import {WebView} from 'react-native-webview';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -61,14 +62,14 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('BusinessSettings');
     }, [navigation]);
 
+    const user = getAuthService().getUser();
     const onPaymentSettings = useCallback(() => {
-      const user = getAuthService().getUser();
       if (user?.is_identity_verified) {
         navigation.navigate('DisburementScreen');
       } else {
         navigation.navigate('PaymentSettings');
       }
-    }, [navigation]);
+    }, [navigation, user]);
 
     const {reloadApp} = useContext(AppContext);
 
@@ -112,6 +113,50 @@ export const MoreOptionsScreen = withModal(
             caption: strings('more.list.payment_settings.description'),
           },
           onPress: onPaymentSettings,
+        },
+        {
+          leftSection: {
+            title: strings('more.list.kyc_settings.title'),
+            caption: strings('more.list.kyc_settings.description'),
+          },
+          onPress: () => {
+            const closeModal = openModal('full', {
+              renderContent: () => {
+                return (
+                  <>
+                    <View
+                      style={applyStyles(
+                        'justify-center items-end w-full px-16 py-12',
+                      )}>
+                      <Touchable
+                        onPress={() => {
+                          closeModal();
+                        }}>
+                        <Icon type="feathericons" name="x" size={32} />
+                      </Touchable>
+                    </View>
+                    <WebView
+                      source={{
+                        uri: `https://docs.google.com/forms/d/e/1FAIpQLSfiHj7htJXVZkStqN6b_V0QLEgjE1mXJ5EzoYSgVTVpXCBs6w/viewform?usp=pp_url&entry.574373958=${
+                          user?.id ?? ''
+                        }`,
+                      }}
+                      injectedJavaScript={`
+                      const inputs = document.getElementsByTagName("INPUT");
+                      const visible = [];
+                      for(let input of inputs) {
+                        if(input.getAttribute('type') !== 'hidden'){
+                          visible.push(input)
+                        }
+                      }
+                      visible[visible.length - 1].disabled = true
+                    `}
+                    />
+                  </>
+                );
+              },
+            });
+          },
         },
         ...(languages.length > 1
           ? [
@@ -158,6 +203,8 @@ export const MoreOptionsScreen = withModal(
       languages.length,
       onLanguageSettings,
       navigation,
+      openModal,
+      user,
     ]);
 
     const {logoutFromRealm} = useRealmLogout();
@@ -288,7 +335,10 @@ export const MoreOptionsScreen = withModal(
                     key={`${index}`}
                     style={applyStyles(
                       'border-t-1 border-gray-20 px-16',
-                      {borderTopWidth: 1, borderColor: colors['gray-20']},
+                      {
+                        borderTopWidth: 1,
+                        borderColor: colors['gray-20'],
+                      },
                       index === moreOptions.length - 1 && {
                         borderBottomWidth: 1,
                       },
@@ -302,7 +352,10 @@ export const MoreOptionsScreen = withModal(
                 <Image
                   resizeMode="center"
                   source={require('@/assets/images/invite-banner.png')}
-                  style={applyStyles('mb-24', {width: '100%', height: 80})}
+                  style={applyStyles('mb-24', {
+                    width: '100%',
+                    height: 80,
+                  })}
                 />
               </Touchable>
               <View style={applyStyles('center pb-24')}>
