@@ -121,9 +121,9 @@ export default withModal(function RequestPaymentScreen({
   }, [closeModal, navigation]);
 
   const handleSTKPush = useCallback(
-    async ({mobile, amount}) => {
+    async ({mobile, amount}, setSubmitting) => {
       try {
-        setLoading(true);
+        setSubmitting(true);
         await getApiService().stkPushDeposit({
           mobile,
           amount: toNumber(amount),
@@ -133,7 +133,7 @@ export default withModal(function RequestPaymentScreen({
             amount: toNumber(amount),
           })
           .then();
-        setLoading(false);
+        setSubmitting(false);
         openModal('bottom-half', {
           renderContent: () => (
             <STKPushConfirmation
@@ -143,7 +143,7 @@ export default withModal(function RequestPaymentScreen({
           ),
         });
       } catch (error) {
-        setLoading(false);
+        setSubmitting(false);
         handleError(error);
       }
     },
@@ -164,7 +164,7 @@ export default withModal(function RequestPaymentScreen({
         />
       ),
     });
-  }, [values, nationalNumber, closeModal, openModal]);
+  }, [values, loading, handleSTKPush, nationalNumber, closeModal, openModal]);
 
   return (
     <Page header={{iconLeft: {}, title: ' '}}>

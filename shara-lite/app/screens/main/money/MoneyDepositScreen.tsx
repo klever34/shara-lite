@@ -88,7 +88,10 @@ export const STKPushDeposit = ({
   onClose(): void;
   isLoading?: boolean;
   initialValues?: {amount: string; mobile: string};
-  onSubmit: (values: {amount: string; mobile?: string}) => Promise<void>;
+  onSubmit: (
+    values: {amount: string; mobile?: string},
+    setSubmitting: (isSubmitting: boolean) => void,
+  ) => Promise<void>;
 }) => {
   const user = getAuthService().getUser();
   const {getWallet} = useWallet();
@@ -117,9 +120,20 @@ export const STKPushDeposit = ({
     return errors;
   }, []);
 
-  const {errors, values, touched, setFieldValue, handleSubmit} = useFormik({
+  const {
+    errors,
+    values,
+    touched,
+    setFieldValue,
+    handleSubmit,
+    setSubmitting,
+    isSubmitting,
+  } = useFormik({
     onSubmit: ({mobile, amount}) => {
-      onSubmit({mobile: `${user?.country_code}${mobile}`, amount});
+      onSubmit(
+        {mobile: `${user?.country_code}${mobile}`, amount},
+        setSubmitting,
+      );
     },
     validate: handleValidateForm,
     initialValues: initialValues ?? {amount: '', mobile: nationalNumber},
@@ -179,7 +193,7 @@ export const STKPushDeposit = ({
             variantColor: 'blue',
             onPress: handleSubmit,
             title: strings('send'),
-            isLoading,
+            isLoading: isLoading || isSubmitting,
           },
         ]}
       />
