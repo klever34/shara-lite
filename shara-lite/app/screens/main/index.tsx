@@ -152,7 +152,6 @@ const MainScreens = () => {
       });
       const listener = {
         message: async (envelope: any) => {
-          console.log(JSON.parse(envelope.message));
           const collection = JSON.parse(envelope.message);
           if (realm) {
             await saveCollection({

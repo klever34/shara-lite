@@ -1,6 +1,6 @@
 {
   "name": "shara-lite",
-  "version": "0.8.6-shara-lite-enhancements.shara-money+build.7341",
+  "version": "0.8.6-shara-lite-enhancements.shara-money+build.7349",
   "private": true,
   "scripts": {
     "android": "react-native run-android --variant localDebug --appIdSuffix local",
@@ -91,6 +91,7 @@
     "react-native-ux-cam": "^5.2.0",
     "react-native-vector-icons": "6.6.0",
     "react-native-view-shot": "^3.1.2",
+    "react-native-webview": "^11.3.2",
     "react-native-zendesk-v2": "^0.2.1",
     "readable-stream": "1.0.33",
     "realm": "10.1.2",

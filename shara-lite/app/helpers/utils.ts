@@ -6,7 +6,6 @@ import promiseRetry from 'promise-retry';
 import * as React from 'react';
 import {useCallback, useMemo, useState} from 'react';
 import {Alert, ToastAndroid} from 'react-native';
-import Config from 'react-native-config';
 import 'react-native-get-random-values';
 import ImagePicker, {
   ImagePickerOptions,
@@ -41,11 +40,14 @@ export const retryPromise = (
   );
 };
 
-export const decrypt = (encryptedText: string) => {
-  return CryptoJS.AES.decrypt(
-    encryptedText,
-    Config.PUBNUB_USER_CRYPT_KEY,
-  ).toString(CryptoJS.enc.Utf8);
+export const encryptText = (text: string) => {
+  return CryptoJS.AES.encrypt(text, 'cnwr4h4uhpctzhvt').toString();
+};
+
+export const decryptText = (encryptedText: string) => {
+  return CryptoJS.AES.decrypt(encryptedText, 'cnwr4h4uhpctzhvt').toString(
+    CryptoJS.enc.Utf8,
+  );
 };
 
 export const amountWithCurrency = (amount?: number) => {
@@ -208,4 +210,4 @@ export const sortDatesRelativeToDate = (dates: Date[], date: Date) => {
       var distanceb = Math.abs(date - b);
       return distancea - distanceb;
     });
-}
+};
