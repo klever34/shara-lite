@@ -371,6 +371,7 @@ export interface Strings {
         placeholder: string
       }
     }
+    success_text: string
   }
   sale: {
     sale_recorded: string

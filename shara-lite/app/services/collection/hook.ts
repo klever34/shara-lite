@@ -32,7 +32,7 @@ export const useCollection = (): useCollectionInterface => {
       _id: new ObjectId(collection._id),
     }
 
-    const trace = await perf().startTrace('saveDisbursementMethod')
+    const trace = await perf().startTrace('saveCollection')
     realm.write(() => {
       realm.create<ICollection>(
         modelName,

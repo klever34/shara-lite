@@ -49,6 +49,7 @@ import {BNPLTransactionSuccessScreen} from './bnpl/BNPLTransactionSuccessScreen'
 import {EditCustomerScreen} from './customers/EditCustomerScreen';
 import {ReminderSettingsScreen} from './customers/ReminderSettingsScreen';
 import RequestPaymentScreen from './entry/RequestPaymentScreen';
+import RequestPaymentSuccessScreen from './entry/RequestPaymentSuccessScreen';
 import {
   SelectCustomerListScreen,
   SelectCustomerListScreenParams,
@@ -85,6 +86,7 @@ export type MainStackParamList = {
   LedgerEntry: {transaction: IReceipt; showCustomer: boolean};
   RecordCollection: {customer: ICustomer; goBack?: () => void};
   TransactionSuccess: {transaction: IReceipt; onDone?: () => void};
+  RequestPaymentSuccess: {amount: number; customer: ICustomer; note?: string};
 
   // More
   Settings: undefined;
@@ -368,6 +370,13 @@ const MainScreens = () => {
             <MainStack.Screen
               name="TransactionSuccess"
               component={TransactionSuccessScreen}
+              options={{
+                headerShown: false,
+              }}
+            />
+            <MainStack.Screen
+              name="RequestPaymentSuccess"
+              component={RequestPaymentSuccessScreen}
               options={{
                 headerShown: false,
               }}

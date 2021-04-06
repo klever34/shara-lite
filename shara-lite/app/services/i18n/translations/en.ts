@@ -444,6 +444,8 @@ const en: Strings = {
         placeholder: 'Write a brief note about this transaction',
       },
     },
+    success_text:
+      'Your payment request of {{amount}} from {{customer}} was successful',
   },
   sale: {
     sale_recorded: 'SALE RECORDED',
