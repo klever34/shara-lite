@@ -7,6 +7,7 @@ import {
   getAnalyticsService,
   getApiService,
   getAuthService,
+  getContactService,
   getI18nService,
 } from '@/services';
 import {ShareHookProps, useShare} from '@/services/share';
@@ -18,7 +19,6 @@ import Markdown from 'react-native-markdown-display';
 import {STKPushConfirmation, STKPushDeposit} from '../money/MoneyDepositScreen';
 import {useAppNavigation} from '@/services/navigation';
 import Config from 'react-native-config';
-import {parsePhoneNumber} from 'libphonenumber-js';
 import {RouteProp} from '@react-navigation/core';
 import {MainStackParamList} from '..';
 import {handleError} from '@/services/error-boundary';
@@ -59,7 +59,8 @@ export default withModal(function RequestPaymentSuccessScreen({
     message: shareReceiptMessage,
     recipient: customer?.mobile?.replace(/\s/g, ''),
   };
-  const phoneNumber = customer?.mobile && parsePhoneNumber(customer?.mobile);
+  const phoneNumber =
+    customer?.mobile && getContactService().parsePhoneNumber(customer?.mobile);
   //@ts-ignore
   const nationalNumber = (phoneNumber?.nationalNumber ?? '') as string;
   const {handleSmsShare, handleEmailShare, handleWhatsappShare} = useShare(
