@@ -26,6 +26,8 @@ import {
 import {useCollection} from '@/services/collection';
 import {useCreditReminder} from '@/services/credit-reminder';
 import {useCustomer} from '@/services/customer/hook';
+import {useDisbursement} from '@/services/disbursement';
+import {useDisbursementMethod} from '@/services/disbursement-method';
 import {useAppNavigation, useRepeatBackToExit} from '@/services/navigation';
 import {useRealm} from '@/services/realm';
 import useSyncLoader from '@/services/realm/hooks/use-sync-loader';
@@ -136,6 +138,8 @@ const MainScreens = () => {
   const {isSyncCompleted} = useContext(RealmContext);
   const {getCustomer} = useCustomer();
   const {saveCollection} = useCollection();
+  const {saveDisbursement} = useDisbursement();
+  const {getDisbursementMethod} = useDisbursementMethod();
   const navigation = useAppNavigation();
 
   const [pubNubClient, setPubNubClient] = useState<PubNub | null>(null);
@@ -154,23 +158,45 @@ const MainScreens = () => {
       });
       const listener = {
         message: async (envelope: any) => {
-          const collection = JSON.parse(envelope.message);
-          if (realm) {
-            await saveCollection({
-              collection: {
-                ...collection,
-                meta: JSON.stringify(collection.meta),
-                created_at: parseISO(collection.created_at),
-                updated_at: parseISO(collection.updated_at),
-              },
-            });
+          if (envelope && realm) {
+            const message = JSON.parse(envelope.message);
+            switch (envelope.userMetadata.type) {
+              case 'collection':
+                await saveCollection({
+                  collection: {
+                    ...message,
+                    meta: JSON.stringify(message.meta),
+                    created_at: parseISO(message.created_at),
+                    updated_at: parseISO(message.updated_at),
+                  },
+                });
+
+                break;
+              case 'disbursement':
+                await saveDisbursement({
+                  disbursement: {
+                    ...message,
+                    meta: JSON.stringify(message.meta),
+                    created_at: parseISO(message.created_at),
+                    updated_at: parseISO(message.updated_at),
+                    disbursement_method: getDisbursementMethod({
+                      disbursementMethodId: new ObjectId(
+                        message.disbursement_method,
+                      ),
+                    }),
+                  },
+                });
+                break;
+              default:
+                break;
+            }
           }
         },
       };
       setPubNubClient(pubNub);
 
       pubNub.addListener(listener);
-      pubNub.subscribe({channels: ['collection_' + user?.id]});
+      pubNub.subscribe({channels: ['shara-money-' + user?.id]});
       return () => {
         pubNub.removeListener(listener);
         pubNub.unsubscribeAll();

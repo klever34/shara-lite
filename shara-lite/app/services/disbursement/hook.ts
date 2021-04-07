@@ -24,7 +24,7 @@ export const useDisbursement = (): useDisbursementInterface => {
   const saveDisbursement = async ({
     disbursement,
   }: saveDisbursementInterface): Promise<IDisbursement> => {
-    const updatedCollection: IDisbursement = {
+    const updatedDisbursement: IDisbursement = {
       ...disbursement,
       _id: new ObjectId(disbursement._id),
     }
@@ -33,13 +33,13 @@ export const useDisbursement = (): useDisbursementInterface => {
     realm.write(() => {
       realm.create<IDisbursement>(
         modelName,
-        updatedCollection,
+        updatedDisbursement,
         UpdateMode.Modified,
       )
     })
     await trace.stop()
 
-    return updatedCollection
+    return updatedDisbursement
   }
 
   return {
