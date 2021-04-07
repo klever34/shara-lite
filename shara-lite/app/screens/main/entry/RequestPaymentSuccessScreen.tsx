@@ -49,9 +49,9 @@ export default withModal(function RequestPaymentSuccessScreen({
     businessInfo.slug
   }?amount=${amount}&mobile=${customer.mobile
     ?.replace('+', '')
-    .replace(/\s/g, '')}&note=${note}\nto make payment.\n\n${strings(
-    'powered_by_shara',
-  )}`;
+    .replace(/\s/g, '')}&note=${encodeURIComponent(
+    note ?? '',
+  )}\nto make payment.\n\n${strings('powered_by_shara')}`;
 
   const receiptShareProps: ShareHookProps = {
     title: strings('receipts.receipt_share_title'),
