@@ -166,8 +166,8 @@ const MainScreens = () => {
                   collection: {
                     ...message,
                     meta: JSON.stringify(message.meta),
-                    created_at: parseISO(message.created_at),
-                    updated_at: parseISO(message.updated_at),
+                    created_at: parseISO(`${message.created_at}Z`),
+                    updated_at: parseISO(`${message.updated_at}Z`),
                   },
                 });
 
@@ -177,8 +177,8 @@ const MainScreens = () => {
                   disbursement: {
                     ...message,
                     meta: JSON.stringify(message.meta),
-                    created_at: parseISO(message.created_at),
-                    updated_at: parseISO(message.updated_at),
+                    created_at: parseISO(`${message.created_at}Z`),
+                    updated_at: parseISO(`${message.updated_at}Z`),
                     disbursement_method: getDisbursementMethod({
                       disbursementMethodId: new ObjectId(
                         message.disbursement_method,
