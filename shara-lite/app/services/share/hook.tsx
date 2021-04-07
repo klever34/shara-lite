@@ -14,7 +14,7 @@ import {ToastContext} from '@/components/Toast';
 
 export type ShareHookProps = {
   title: string;
-  image: string;
+  image?: string;
   subject: string;
   message: string;
   recipient?: string;
@@ -138,7 +138,7 @@ export const useShare = ({
       title,
       subject,
       message,
-      url: `data:image/png;base64,${image}`,
+      url: image ? `data:image/png;base64,${image}` : undefined,
     };
 
     try {
@@ -157,7 +157,7 @@ export const useShare = ({
       message,
       whatsAppNumber,
       social: Share.Social.WHATSAPP,
-      url: `data:image/png;base64,${image}`,
+      url: image ? `data:image/png;base64,${image}` : undefined,
     };
     const errorMessages = {
       filename: 'Invalid file attached',
@@ -168,7 +168,7 @@ export const useShare = ({
       const options = {
         title,
         message,
-        url: `data:image/png;base64,${image}`,
+        url: image ? `data:image/png;base64,${image}` : undefined,
       };
       try {
         await Share.open(options);

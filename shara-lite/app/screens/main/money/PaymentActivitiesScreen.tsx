@@ -7,10 +7,6 @@ import {TransactionFilterModal} from '@/components/TransactionFilterModal';
 import {withModal} from '@/helpers/hocs';
 import {useClipboard} from '@/helpers/hooks';
 import {amountWithCurrency} from '@/helpers/utils';
-import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
-import {IBNPLRepayment} from '@/models/BNPLRepayment';
-import {ICollection} from '@/models/Collection';
-import {IDisbursement} from '@/models/Disbursement';
 import {MoneyDepositScreen} from '@/screens/main/money/MoneyDepositScreen';
 import MoneyWithdrawModal from '@/screens/main/money/MoneyWithdrawModal';
 import {getI18nService} from '@/services';
@@ -25,7 +21,6 @@ import {format} from 'date-fns';
 import {orderBy} from 'lodash';
 import React, {useCallback, useEffect, useMemo} from 'react';
 import {FlatList, SafeAreaView, View} from 'react-native';
-import {useBNPLDrawdownsList} from '../bnpl/hook';
 import {usePaymentActivities} from './hook';
 import {MoneyActionsContainer} from './MoneyActionsContainer';
 import {
@@ -73,9 +68,6 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
       bnplRepayments: getBNPLRepayments().filtered('status = "complete"'),
     },
   });
-
-  console.log(bnplRepayments, filteredBNPLRepayments);
-
   const activitiesData: PaymentActivityItemData[] = useMemo(() => {
     const data = [
       ...collections,

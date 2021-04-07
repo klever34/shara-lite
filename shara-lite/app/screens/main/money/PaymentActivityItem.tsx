@@ -31,6 +31,12 @@ const markdownStyle = {
 
 const strings = getI18nService().strings;
 
+const statusColors = {
+  success: 'text-green-200',
+  pending: 'text-yellow-100',
+  failed: 'text-red-100',
+} as {[key: string]: string};
+
 export const PaymentActivityItem = ({
   data,
 }: {
@@ -198,18 +204,27 @@ const CollectionItem = ({data}: {data: ICollection}) => {
                   },
                 )}
               </Markdown>
-              <View>
-                {customer ? (
-                  <Text style={applyStyles('text-700 text-gray-100')}>
-                    {customer.name}
-                  </Text>
-                ) : (
-                  <Text style={applyStyles('flex-1 text-secondary text-700')}>
-                    {strings(
-                      'payment_activities.payment_activity.select_customer',
-                    )}
-                  </Text>
-                )}
+              <View style={applyStyles('flex-row items-center')}>
+                <>
+                  {customer ? (
+                    <Text style={applyStyles('text-700 text-gray-100')}>
+                      {customer.name}
+                    </Text>
+                  ) : (
+                    <Text style={applyStyles('text-secondary text-700')}>
+                      {strings(
+                        'payment_activities.payment_activity.select_customer',
+                      )}
+                    </Text>
+                  )}
+                </>
+
+                <Text
+                  style={applyStyles(
+                    `pl-8 text-700 text-capitalize ${statusColors[status]}`,
+                  )}>
+                  {status}
+                </Text>
               </View>
             </View>
           </View>
@@ -241,12 +256,6 @@ const CollectionItem = ({data}: {data: ICollection}) => {
 
 const DisbursementItem = ({data}: {data: IDisbursement}) => {
   const {amount, created_at, type, provider_label, status} = data;
-
-  const statusColors = {
-    success: 'text-green-200',
-    pending: 'text-yellow-100',
-    failed: 'text-red-100',
-  } as {[key: string]: string};
 
   return (
     <View

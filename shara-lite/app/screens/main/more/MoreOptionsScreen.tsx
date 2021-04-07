@@ -61,14 +61,14 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('BusinessSettings');
     }, [navigation]);
 
+    const user = getAuthService().getUser();
     const onPaymentSettings = useCallback(() => {
-      const user = getAuthService().getUser();
       if (user?.is_identity_verified) {
         navigation.navigate('DisburementScreen');
       } else {
         navigation.navigate('PaymentSettings');
       }
-    }, [navigation]);
+    }, [navigation, user]);
 
     const {reloadApp} = useContext(AppContext);
 
@@ -158,6 +158,8 @@ export const MoreOptionsScreen = withModal(
       languages.length,
       onLanguageSettings,
       navigation,
+      openModal,
+      user,
     ]);
 
     const {logoutFromRealm} = useRealmLogout();
@@ -288,7 +290,10 @@ export const MoreOptionsScreen = withModal(
                     key={`${index}`}
                     style={applyStyles(
                       'border-t-1 border-gray-20 px-16',
-                      {borderTopWidth: 1, borderColor: colors['gray-20']},
+                      {
+                        borderTopWidth: 1,
+                        borderColor: colors['gray-20'],
+                      },
                       index === moreOptions.length - 1 && {
                         borderBottomWidth: 1,
                       },
@@ -302,7 +307,10 @@ export const MoreOptionsScreen = withModal(
                 <Image
                   resizeMode="center"
                   source={require('@/assets/images/invite-banner.png')}
-                  style={applyStyles('mb-24', {width: '100%', height: 80})}
+                  style={applyStyles('mb-24', {
+                    width: '100%',
+                    height: 80,
+                  })}
                 />
               </Touchable>
               <View style={applyStyles('center pb-24')}>

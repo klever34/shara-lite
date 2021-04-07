@@ -79,14 +79,17 @@ const AccountDetailsCard = ({
   );
 };
 
-const STKPushDeposit = ({
+export const STKPushDeposit = ({
   onSubmit,
   onClose,
-  isLoading,
+  initialValues,
 }: {
   onClose(): void;
-  isLoading?: boolean;
-  onSubmit: (values: {amount: string; mobile?: string}) => Promise<void>;
+  initialValues?: {amount: string; mobile: string};
+  onSubmit: (
+    values: {amount: string; mobile?: string},
+    setSubmitting: (isSubmitting: boolean) => void,
+  ) => Promise<void>;
 }) => {
   const user = getAuthService().getUser();
   const {getWallet} = useWallet();
@@ -115,12 +118,23 @@ const STKPushDeposit = ({
     return errors;
   }, []);
 
-  const {errors, values, touched, setFieldValue, handleSubmit} = useFormik({
+  const {
+    errors,
+    values,
+    touched,
+    setFieldValue,
+    handleSubmit,
+    setSubmitting,
+    isSubmitting,
+  } = useFormik({
     onSubmit: ({mobile, amount}) => {
-      onSubmit({mobile: `${user?.country_code}${mobile}`, amount});
+      onSubmit(
+        {mobile: `${user?.country_code}${mobile}`, amount},
+        setSubmitting,
+      );
     },
-    initialValues: {amount: '', mobile: nationalNumber},
     validate: handleValidateForm,
+    initialValues: initialValues ?? {amount: '', mobile: nationalNumber},
   });
 
   const handleAmountChange = useCallback(
@@ -142,6 +156,7 @@ const STKPushDeposit = ({
     <View style={applyStyles('px-16 py-24')}>
       <CurrencyInput
         errorMessage={errors.amount}
+        value={toNumber(values.amount)}
         onChangeText={handleAmountChange}
         containerStyle={applyStyles('mb-24')}
         isInvalid={!!touched.amount && !!errors.amount}
@@ -176,7 +191,7 @@ const STKPushDeposit = ({
             variantColor: 'blue',
             onPress: handleSubmit,
             title: strings('send'),
-            isLoading,
+            isLoading: isSubmitting,
           },
         ]}
       />
@@ -184,7 +199,7 @@ const STKPushDeposit = ({
   );
 };
 
-const STKPushConfirmation = ({
+export const STKPushConfirmation = ({
   onClose,
   mobile,
 }: {
@@ -248,8 +263,6 @@ export const MoneyDepositScreen = withModal(
       }
     }, []);
 
-    const [loading, setLoading] = useState(false);
-
     const virtualAccounts = useMemo(() => {
       return _(collectionMethods)
         .map((collectionMethod) => {
@@ -266,9 +279,9 @@ export const MoneyDepositScreen = withModal(
     }, [collectionMethods, parseBankDetails]);
 
     const handleSTKPush = useCallback(
-      async ({mobile, amount}) => {
+      async ({mobile, amount}, setSubmitting) => {
         try {
-          setLoading(true);
+          setSubmitting(true);
           await getApiService().stkPushDeposit({
             mobile,
             amount: toNumber(amount),
@@ -278,7 +291,7 @@ export const MoneyDepositScreen = withModal(
               amount: toNumber(amount),
             })
             .then();
-          setLoading(false);
+          setSubmitting(false);
           openModal('bottom-half', {
             renderContent: () => (
               <STKPushConfirmation
@@ -291,7 +304,7 @@ export const MoneyDepositScreen = withModal(
             ),
           });
         } catch (error) {
-          setLoading(false);
+          setSubmitting(false);
           handleError(error);
         }
       },
@@ -324,11 +337,7 @@ export const MoneyDepositScreen = withModal(
             />
           </View>
         ) : (
-          <STKPushDeposit
-            isLoading={loading}
-            onClose={onClose}
-            onSubmit={handleSTKPush}
-          />
+          <STKPushDeposit onClose={onClose} onSubmit={handleSTKPush} />
         )}
       </View>
     );
