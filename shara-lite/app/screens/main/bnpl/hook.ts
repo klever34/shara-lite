@@ -1,45 +1,45 @@
-import {IBNPLDrawdown} from '@/models/BNPLDrawdown'
-import {useMemo, useState, useCallback} from 'react'
+import {IBNPLDrawdown} from '@/models/BNPLDrawdown';
+import {useMemo, useState, useCallback} from 'react';
 
 interface UseBNPLDrawdownsOptions {
-  bnplDrawdowns: Realm.Results<IBNPLDrawdown & Realm.Object>
+  bnplDrawdowns: Realm.Results<IBNPLDrawdown & Realm.Object>;
 }
 
 export const useBNPLDrawdownsList = (options: UseBNPLDrawdownsOptions) => {
-  let {bnplDrawdowns: bnplDrawdownsData} = options
+  let {bnplDrawdowns: bnplDrawdownsData} = options;
 
-  const perPage = 20
-  const totalCount = bnplDrawdownsData.length
+  const perPage = 20;
+  const totalCount = bnplDrawdownsData.length;
 
-  const [start, setStart] = useState(0)
-  const [end, setEnd] = useState(perPage)
-  const [searchTerm, setSearchTerm] = useState('')
+  const [start, setStart] = useState(0);
+  const [end, setEnd] = useState(perPage);
+  const [searchTerm, setSearchTerm] = useState('');
   const [bnplDrawdownsToDisplay, setBNPLDrawdownsToDisplay] = useState<
     (IBNPLDrawdown & Realm.Object)[]
-  >([])
+  >([]);
 
   const filteredBNPLDrawdowns = useMemo(() => {
     let bnplDrawdowns = (bnplDrawdownsData as unknown) as Realm.Results<
       IBNPLDrawdown & Realm.Object
-    >
+    >;
     if (searchTerm) {
       bnplDrawdowns = bnplDrawdowns.filtered(
         `customer CONTAINS[c] "${searchTerm}"`,
-      )
+      );
     }
-    return bnplDrawdowns
-  }, [bnplDrawdownsData.length, searchTerm])
+    return bnplDrawdowns;
+  }, [bnplDrawdownsData.length, searchTerm]);
 
   const handleSetBNPLDrawdownsToDisplay = useCallback(
     (start, end) => {
-      const newData = filteredBNPLDrawdowns.slice(start, end)
+      const newData = filteredBNPLDrawdowns.slice(start, end);
 
-      setBNPLDrawdownsToDisplay(bnplDrawdownsToDisplay => {
-        return [...bnplDrawdownsToDisplay, ...newData]
-      })
+      setBNPLDrawdownsToDisplay((bnplDrawdownsToDisplay) => {
+        return [...bnplDrawdownsToDisplay, ...newData];
+      });
     },
     [filteredBNPLDrawdowns],
-  )
+  );
 
   const handlePaginatedSearchFilter = useCallback(
     ({
@@ -47,60 +47,60 @@ export const useBNPLDrawdownsList = (options: UseBNPLDrawdownsOptions) => {
       endCount,
       startCount,
     }: {
-      search?: string
-      status?: string
-      endCount: number
-      startCount: number
+      search?: string;
+      status?: string;
+      endCount: number;
+      startCount: number;
     }) => {
       let bnplDrawdowns = (bnplDrawdownsData as unknown) as Realm.Results<
         IBNPLDrawdown & Realm.Object
-      >
+      >;
       if (search) {
         bnplDrawdowns = bnplDrawdowns.filtered(
           `customer.name CONTAINS[c] "${search}"`,
-        )
+        );
       }
-      const newCustomerData = bnplDrawdowns.slice(startCount, endCount)
+      const newCustomerData = bnplDrawdowns.slice(startCount, endCount);
 
-      setBNPLDrawdownsToDisplay(bnplDrawdownsToDisplay => {
-        return [...bnplDrawdownsToDisplay, ...newCustomerData]
-      })
+      setBNPLDrawdownsToDisplay((bnplDrawdownsToDisplay) => {
+        return [...bnplDrawdownsToDisplay, ...newCustomerData];
+      });
     },
     [bnplDrawdownsData.length],
-  )
+  );
 
   const handlePagination = useCallback(() => {
     if (totalCount > end) {
-      let startCount = start + perPage
-      let endCount = end + perPage
+      let startCount = start + perPage;
+      let endCount = end + perPage;
 
-      setStart(startCount)
-      setEnd(endCount)
-      handleSetBNPLDrawdownsToDisplay(startCount, endCount)
+      setStart(startCount);
+      setEnd(endCount);
+      handleSetBNPLDrawdownsToDisplay(startCount, endCount);
     }
-  }, [end, start, perPage, totalCount, handleSetBNPLDrawdownsToDisplay])
+  }, [end, start, perPage, totalCount, handleSetBNPLDrawdownsToDisplay]);
 
   const reloadData = useCallback(() => {
-    setStart(0)
-    setEnd(perPage)
-    setBNPLDrawdownsToDisplay([])
-    handleSetBNPLDrawdownsToDisplay(0, perPage)
-  }, [perPage, handleSetBNPLDrawdownsToDisplay])
+    setStart(0);
+    setEnd(perPage);
+    setBNPLDrawdownsToDisplay([]);
+    handleSetBNPLDrawdownsToDisplay(0, perPage);
+  }, [perPage, handleSetBNPLDrawdownsToDisplay]);
 
   const handleSearch = useCallback(
     (text: string) => {
-      setSearchTerm(text)
-      setStart(0)
-      setEnd(perPage)
-      setBNPLDrawdownsToDisplay([])
+      setSearchTerm(text);
+      setStart(0);
+      setEnd(perPage);
+      setBNPLDrawdownsToDisplay([]);
       handlePaginatedSearchFilter({
         search: text,
         startCount: 0,
         endCount: perPage,
-      })
+      });
     },
     [handlePaginatedSearchFilter],
-  )
+  );
 
   return useMemo(
     () => ({
@@ -119,5 +119,5 @@ export const useBNPLDrawdownsList = (options: UseBNPLDrawdownsOptions) => {
       filteredBNPLDrawdowns,
       bnplDrawdownsToDisplay,
     ],
-  )
-}
+  );
+};

@@ -177,7 +177,7 @@ const CollectionItem = ({data}: {data: ICollection}) => {
         onSelectCustomer: handleUpdateCollectionCustomer,
       });
     });
-  }, [navigation, data]);
+  }, [navigation, handleUpdateCollectionCustomer]);
 
   return (
     <Touchable onPress={!customer ? handleOpenSelectCustomer : undefined}>

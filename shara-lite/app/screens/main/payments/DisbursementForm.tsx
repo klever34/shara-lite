@@ -147,6 +147,7 @@ export const DisbursementForm = ({
                     field.key,
                     handleSubmit,
                   )}
+                  // @ts-ignore
                   value={
                     values?.fieldsData ? values?.fieldsData[index]?.value : ''
                   }
@@ -177,6 +178,7 @@ export const DisbursementForm = ({
                   <Picker
                     mode="dropdown"
                     prompt={field.label}
+                    // @ts-ignore
                     selectedValue={
                       values?.fieldsData ? values?.fieldsData[index]?.value : ''
                     }

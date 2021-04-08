@@ -82,7 +82,7 @@ export const EntryView = withModal(
         onSelectCustomer,
         isCollection: true,
       });
-    }, [currentCustomer, navigation]);
+    }, [navigation]);
 
     const showEntryDialog = useCallback(() => {
       const entryOptions = [
@@ -190,7 +190,13 @@ export const EntryView = withModal(
           );
         },
       });
-    }, [hideEntryDialog, onRecordCollection, onRecordSale, openModal]);
+    }, [
+      hideEntryDialog,
+      onRecordCollection,
+      onRecordSale,
+      onRequestPayment,
+      openModal,
+    ]);
 
     return (
       <EntryContext.Provider

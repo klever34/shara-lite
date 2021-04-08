@@ -3,7 +3,7 @@ import {BaseModel, BaseModelInterface, baseModelSchema} from './baseSchema';
 import {IPayment} from './Payment';
 import {IReceiptItem} from './ReceiptItem';
 import {ICredit} from './Credit';
-import { IBNPLDrawdown } from './BNPLDrawdown';
+import {IBNPLDrawdown} from './BNPLDrawdown';
 
 export interface IReceipt extends BaseModelInterface {
   amount_paid: number;

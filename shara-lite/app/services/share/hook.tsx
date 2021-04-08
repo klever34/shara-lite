@@ -81,7 +81,7 @@ export const useShare = ({
         handleError(error);
       }
     },
-    [showSuccessToast, handleOfflineSmsShare],
+    [recipient, message, showSuccessToast, handleOfflineSmsShare],
   );
 
   const handleSmsShare = useCallback(
@@ -130,7 +130,13 @@ export const useShare = ({
         });
       }
     },
-    [isConnected, closeModal, handleOnlineSmsShare, handleOfflineSmsShare],
+    [
+      isConnected,
+      handleOnlineSmsShare,
+      openModal,
+      closeModal,
+      handleOfflineSmsShare,
+    ],
   );
 
   const handleEmailShare = useCallback(async () => {

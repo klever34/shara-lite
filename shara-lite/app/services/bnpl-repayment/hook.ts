@@ -17,7 +17,9 @@ interface useBNPLRepaymentInterface {
 
 export const useBNPLRepayment = (): useBNPLRepaymentInterface => {
   const realm = useRealm();
-  const getBNPLRepayments = (): Realm.Results<IBNPLRepayment & Realm.Object> => {
+  const getBNPLRepayments = (): Realm.Results<
+    IBNPLRepayment & Realm.Object
+  > => {
     return realm
       .objects<IBNPLRepayment>(modelName)
       .filtered('is_deleted != true');
@@ -28,7 +30,8 @@ export const useBNPLRepayment = (): useBNPLRepaymentInterface => {
   }: saveBNPLRepaymentInterface): Promise<IBNPLRepayment> => {
     const updatedBNPLRepayment: IBNPLRepayment = {
       ...bnplRepayment,
-      _id: new ObjectId( bnplRepayment._id ),
+      _id: new ObjectId(bnplRepayment._id),
+      // @ts-ignore
       bnpl_drawdown: new ObjectId(bnplRepayment.bnpl_drawdown?._id),
     };
 
@@ -44,7 +47,6 @@ export const useBNPLRepayment = (): useBNPLRepaymentInterface => {
 
     return updatedBNPLRepayment;
   };
-
 
   return {
     getBNPLRepayments,

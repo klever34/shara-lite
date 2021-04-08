@@ -5,9 +5,7 @@ import {ObjectId} from 'bson';
 import {UpdateMode} from 'realm';
 
 interface useDrawdownInterface {
-  saveDrawdown: (
-    data: saveDrawdownInterface,
-  ) => Promise<IDrawdown>;
+  saveDrawdown: (data: saveDrawdownInterface) => Promise<IDrawdown>;
   getDrawdowns: () => Realm.Results<IDrawdown & Realm.Object>;
 }
 
