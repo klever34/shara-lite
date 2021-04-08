@@ -10,7 +10,7 @@ target 'SharaRN' do
   permissions_path = '../node_modules/react-native-permissions/ios'
 
   pod 'Permission-Contacts', :path => "#{permissions_path}/Contacts"
-
+  pod 'OpenSSL-Universal', '~>1.0.2.20'
 
   target 'SharaRNTests' do
     inherit! :complete

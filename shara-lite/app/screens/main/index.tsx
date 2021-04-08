@@ -188,193 +188,193 @@ const MainScreens = () => {
           options={{headerShown: false}}
         />
 
-        {/* Customers */}
-        <MainStack.Screen
-          name="CustomerDetails"
-          component={CustomerDetailsScreen}
-          options={({route}) => ({
-            title: route.params.customer?.name,
-            headerShown: false,
-          })}
-        />
+          {/* Customers */}
+          <MainStack.Screen
+            name="CustomerDetails"
+            component={CustomerDetailsScreen}
+            options={({route}) => ({
+              title: route.params.customer?.name,
+              headerShown: false,
+            })}
+          />
 
-        <MainStack.Screen
-          name="SelectCustomerList"
-          component={SelectCustomerListScreen}
-          options={{headerShown: false}}
-          initialParams={{
-            onSelectCustomer: () => {},
-          }}
-        />
+          <MainStack.Screen
+            name="SelectCustomerList"
+            component={SelectCustomerListScreen}
+            options={{headerShown: false}}
+            initialParams={{
+              onSelectCustomer: () => {},
+            }}
+          />
 
-        <MainStack.Screen
-          name="RecordSale"
-          component={RecordSaleScreen}
-          options={{headerShown: false}}
-        />
+          <MainStack.Screen
+            name="RecordSale"
+            component={RecordSaleScreen}
+            options={{headerShown: false}}
+          />
 
-        <MainStack.Screen
-          name="RecordCollection"
-          component={RecordCollectionScreen}
-          options={{headerShown: false}}
-        />
+          <MainStack.Screen
+            name="RecordCollection"
+            component={RecordCollectionScreen}
+            options={{headerShown: false}}
+          />
 
-        <MainStack.Screen
-          name="ReminderSettings"
-          component={ReminderSettingsScreen}
-          options={{headerShown: false}}
-        />
+          <MainStack.Screen
+            name="ReminderSettings"
+            component={ReminderSettingsScreen}
+            options={{headerShown: false}}
+          />
 
-        <MainStack.Screen
-          name="EditCustomer"
-          component={EditCustomerScreen}
-          options={{headerShown: false}}
-        />
+          <MainStack.Screen
+            name="EditCustomer"
+            component={EditCustomerScreen}
+            options={{headerShown: false}}
+          />
 
-        {/* More */}
-        <MainStack.Screen
-          name="BusinessSettings"
-          component={BusinessSettings}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="UserProfileSettings"
-          component={UserProfileSettings}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="Referral"
-          component={ReferralScreen}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="Settings"
-          component={MoreScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="PaymentSettings"
-          component={PaymentsScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="Feedback"
-          component={FeedbackScreen}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="BVNVerification"
-          component={BVNVerification}
-          options={{headerShown: false}}
-        />
-        <MainStack.Screen
-          name="DisburementScreen"
-          component={DisburementScreen}
-          options={{headerShown: false}}
-        />
+          {/* More */}
+          <MainStack.Screen
+            name="BusinessSettings"
+            component={BusinessSettings}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="UserProfileSettings"
+            component={UserProfileSettings}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="Referral"
+            component={ReferralScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="Settings"
+            component={MoreScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="PaymentSettings"
+            component={PaymentsScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="Feedback"
+            component={FeedbackScreen}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="BVNVerification"
+            component={BVNVerification}
+            options={{headerShown: false}}
+          />
+          <MainStack.Screen
+            name="DisburementScreen"
+            component={DisburementScreen}
+            options={{headerShown: false}}
+          />
 
-        {/* Transactions */}
-        <MainStack.Screen
-          name="TransactionDetails"
-          component={TransactionDetailsScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="LedgerEntry"
-          component={LedgerEntryScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="EditTransaction"
-          component={EditTransactionScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="TransactionSuccess"
-          component={TransactionSuccessScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
+          {/* Transactions */}
+          <MainStack.Screen
+            name="TransactionDetails"
+            component={TransactionDetailsScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="LedgerEntry"
+            component={LedgerEntryScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="EditTransaction"
+            component={EditTransactionScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="TransactionSuccess"
+            component={TransactionSuccessScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
 
-        {/* Report */}
-        <MainStack.Screen
-          name="Report"
-          component={ReportScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        {/* Money */}
-        <MainStack.Screen
-          name="Drawdown"
-          component={DrawdownScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="BNPLScreen"
-          component={BNPLScreen}
-          options={{
-            headerShown: true,
-            headerTintColor: colors.white,
-            headerStyle: applyStyles('bg-primary'),
-            headerTitle: strings('bnpl.buy_now_pay_later'),
-            headerTitleStyle: applyStyles('text-white text-capitalize'),
-          }}
-        />
-        <MainStack.Screen
-          name="BNPLClientScreen"
-          component={BNPLClientScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="BNPLTransactionSuccessScreen"
-          component={BNPLTransactionSuccessScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="BNPLRepaymentSuccessScreen"
-          component={BNPLRepaymentSuccessScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="BNPLRecordTransactionScreen"
-          component={BNPLRecordTransactionScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <MainStack.Screen
-          name="BNPLTransactionDetailsScreen"
-          component={BNPLTransactionDetailsScreen}
-          options={{
-            headerShown: true,
-            headerTintColor: colors.white,
-            headerStyle: applyStyles('bg-primary'),
-            headerTitle: strings('bnpl.transaction_details'),
-            headerTitleStyle: applyStyles('text-white text-capitalize'),
-          }}
-        />
-      </MainStack.Navigator>
-    </EntryView>
+          {/* Report */}
+          <MainStack.Screen
+            name="Report"
+            component={ReportScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          {/* Money */}
+          <MainStack.Screen
+            name="Drawdown"
+            component={DrawdownScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="BNPLScreen"
+            component={BNPLScreen}
+            options={{
+              headerShown: true,
+              headerTintColor: colors.white,
+              headerStyle: applyStyles('bg-primary'),
+              headerTitle: strings('bnpl.buy_now_pay_later'),
+              headerTitleStyle: applyStyles('text-white text-capitalize'),
+            }}
+          />
+          <MainStack.Screen
+            name="BNPLClientScreen"
+            component={BNPLClientScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="BNPLTransactionSuccessScreen"
+            component={BNPLTransactionSuccessScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="BNPLRepaymentSuccessScreen"
+            component={BNPLRepaymentSuccessScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="BNPLRecordTransactionScreen"
+            component={BNPLRecordTransactionScreen}
+            options={{
+              headerShown: false,
+            }}
+          />
+          <MainStack.Screen
+            name="BNPLTransactionDetailsScreen"
+            component={BNPLTransactionDetailsScreen}
+            options={{
+              headerShown: true,
+              headerTintColor: colors.white,
+              headerStyle: applyStyles('bg-primary'),
+              headerTitle: strings('bnpl.transaction_details'),
+              headerTitleStyle: applyStyles('text-white text-capitalize'),
+            }}
+          />
+        </MainStack.Navigator>
+      </EntryView>
   );
 };
 

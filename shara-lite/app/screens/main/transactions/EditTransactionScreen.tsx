@@ -14,7 +14,7 @@ import {format} from 'date-fns';
 import {useFormik} from 'formik';
 import {omit} from 'lodash';
 import React, {useCallback, useContext, useRef} from 'react';
-import {Alert, SafeAreaView, TextInput, View} from 'react-native';
+import {Alert, SafeAreaView, TextInput, View, TouchableOpacity, StyleSheet} from 'react-native';
 import {ScrollView} from 'react-native-gesture-handler';
 import {MainStackParamList} from '..';
 
@@ -214,13 +214,18 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
                     </DatePicker>
                   </View>
                 )}
-                <Button
-                  onPress={handleSubmit}
-                  style={applyStyles('mt-20', {width: '100%'})}
-                  title={
-                    transaction.customer ? strings('save') : strings('next')
-                  }
-                />
+              <TouchableOpacity
+                style={styles.nextBtn}
+                onPress={() => handleSubmit()}>
+                <Text
+                  style={{
+                    fontFamily: 'Roboto-Medium',
+                    alignSelf: 'center',
+                    color: '#fff',
+                  }}>
+                  {transaction.customer ? strings('save') : strings('next')}
+                </Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
@@ -229,3 +234,14 @@ export const EditTransactionScreen = (props: EditTransactionScreenProps) => {
     </CalculatorView>
   );
 };
+
+const styles = StyleSheet.create({
+  nextBtn: {
+    width: '47%',
+    elevation: 0,
+    backgroundColor: colors['blue-100'],
+    padding: 15,
+    borderRadius: 6,
+    marginTop: 25
+  },
+});

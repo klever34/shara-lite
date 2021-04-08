@@ -32,6 +32,7 @@ export const HeaderBackButton = ({
           />
         </View>
       )}
+      labelVisible={false}
       {...restProps}
       onPress={onPress ?? navigation.goBack}
     />

@@ -17,7 +17,7 @@ import {RouteProp} from '@react-navigation/native';
 import {format, isToday} from 'date-fns';
 import React, {useCallback, useContext, useEffect, useState} from 'react';
 import {Text} from '@/components';
-import {SafeAreaView, View} from 'react-native';
+import {SafeAreaView, View, TouchableOpacity, StyleSheet} from 'react-native';
 import Config from 'react-native-config';
 import {MainStackParamList} from '..';
 import {getI18nService} from '@/services';
@@ -427,19 +427,23 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
           </View>
         </View>
       </View>
-      <View style={applyStyles('p-16 flex-row items-center justify-between')}>
-        <Button
-          title={strings('delete')}
-          variantColor="transparent"
+      <View
+        style={{
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginHorizontal: 10,
+        }}>
+        <TouchableOpacity
           onPress={handleOpenConfirmModal}
-          style={applyStyles({width: '100%'})}
-        />
-        <Button
-          title={strings('edit')}
-          variantColor="clear"
+          style={styles.deleteBtn}>
+          <Text style={styles.btnText}>Delete</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
           onPress={handleEditTransaction}
-          style={applyStyles({width: '100%'})}
-        />
+          style={styles.editBtn}>
+          <Text style={styles.btnText}>Edit</Text>
+        </TouchableOpacity>
       </View>
       <View style={applyStyles({opacity: 0, height: 0})}>
         <ReceiptImage
@@ -456,4 +460,30 @@ export const LedgerEntryScreen = withModal((props: LedgerEntryScreenProps) => {
       </View>
     </SafeAreaView>
   );
+});
+
+const styles = StyleSheet.create({
+  deleteBtn: {
+    backgroundColor: 'transparent',
+    borderRadius: 7,
+    borderWidth: 0.5,
+    borderColor: '#c4c4c4',
+    width: '45%',
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  editBtn: {
+    backgroundColor: '#fff',
+    width: '45%',
+    padding: 20,
+    borderRadius: 7,
+    alignItems:'center',
+    justifyContent:'center'
+  },
+  btnText: {
+    fontFamily: 'Roboto-Medium',
+    alignSelf: 'center',
+    color: '#000',
+  },
 });
