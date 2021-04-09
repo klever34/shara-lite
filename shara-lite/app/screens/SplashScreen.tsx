@@ -36,7 +36,7 @@ const SplashScreen = () => {
   const navigation = useNavigation();
   const {initRealm: _initRealm} = useInitRealm();
   const initRealm = useRef(_initRealm).current;
-
+  
   useEffect(() => {
     const navigationService = getNavigationService();
     navigationService.setInstance(navigation);
