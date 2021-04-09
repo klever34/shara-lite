@@ -13,7 +13,7 @@ export const DrawdownExplanationModal = ({
   return (
     <View>
       <Header {...header} style={applyStyles('border-b-0 pt-12 pb-0')} />
-      <View style={applyStyles('px-24 py-12')} />
+      <View style={applyStyles('px-24 py-12')}></View>
     </View>
   );
 };

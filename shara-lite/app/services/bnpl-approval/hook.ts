@@ -10,7 +10,9 @@ interface saveBNPLApprovalInterface {
 
 interface useBNPLApprovalInterface {
   getBNPLApproval: () => IBNPLApproval | undefined;
-  saveBNPLApproval: (data: saveBNPLApprovalInterface) => Promise<IBNPLApproval>;
+  saveBNPLApproval: (
+    data: saveBNPLApprovalInterface,
+  ) => Promise<IBNPLApproval>;
 }
 
 export const useBNPLApproval = (): useBNPLApprovalInterface => {
@@ -44,6 +46,6 @@ export const useBNPLApproval = (): useBNPLApprovalInterface => {
 
   return {
     getBNPLApproval,
-    saveBNPLApproval,
+    saveBNPLApproval
   };
 };

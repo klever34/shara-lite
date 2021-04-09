@@ -148,7 +148,5 @@ export const useReports = () => {
   return {
     exportUserReportToPDF,
     exportCustomerReportToPDF,
-    getReceiptsData,
-    getCustomerReceiptsData,
   };
 };

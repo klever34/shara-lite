@@ -1,8 +1,4 @@
-import {
-  BaseModel,
-  BaseModelInterface,
-  baseModelSchema,
-} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
+import {BaseModel, BaseModelInterface, baseModelSchema} from '@/services/realm/migrations/1599807779969-decimal-quantity/models/baseSchema';
 
 export interface IDrawdownRepayment extends BaseModelInterface {
   amount: number;
@@ -15,8 +11,7 @@ export interface IDrawdownRepayment extends BaseModelInterface {
 
 export const modelName = 'DrawdownRepayment';
 
-export class DrawdownRepayment extends BaseModel
-  implements Partial<IDrawdownRepayment> {
+export class DrawdownRepayment extends BaseModel implements Partial<IDrawdownRepayment> {
   public static schema: Realm.ObjectSchema = {
     name: 'DrawdownRepayment',
     primaryKey: '_id',

@@ -147,6 +147,10 @@ export const PaymentActivitiesScreen = withModal(({openModal, closeModal}) => {
     navigation.navigate('PaymentSettings');
   }, [navigation]);
 
+  const handleDrawdown = useCallback(() => {
+    navigation.navigate('Drawdown');
+  }, [navigation]);
+
   const handleBNPL = useCallback(() => {
     navigation.navigate('BNPLScreen');
   }, [navigation]);
