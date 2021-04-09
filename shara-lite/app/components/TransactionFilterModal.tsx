@@ -16,7 +16,11 @@ type TransactionFilterModalProps = {
   onClose: () => void;
   initialFilter?: string;
   options?: FilterOption[];
-  onDone: (payload: {status: string; startDate?: Date; endDate?: Date}) => void;
+  onDone: (payload: {
+    status?: string;
+    startDate?: Date;
+    endDate?: Date;
+  }) => void;
 };
 
 export type FilterOption = {
@@ -60,7 +64,7 @@ export const TransactionFilterModal = ({
 
   const handleDone = useCallback(() => {
     onDone({
-      status: filter ?? '',
+      status: filter,
       startDate: filterStartDate,
       endDate: filterEndDate,
     });

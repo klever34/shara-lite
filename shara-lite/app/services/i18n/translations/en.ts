@@ -1,4 +1,4 @@
-import {Strings} from 'types/i18n';
+import {Strings} from 'types/i18n'
 
 const en: Strings = {
   update_shara: {
@@ -706,10 +706,6 @@ const en: Strings = {
         title: 'Contact Support',
         description: 'Ask a question or leave a message',
       },
-      kyc_settings: {
-        title: 'KYC Settings',
-        description: 'Fill your KYC information',
-      },
     },
     logout: {
       logout_data_verification_text: 'Verifying your saved data...',
@@ -1140,6 +1136,6 @@ const en: Strings = {
   submit: 'Submit',
   send_via: 'Send via',
   push_payment: 'Push payment',
-};
+}
 
-export default en;
+export default en

@@ -14,7 +14,9 @@ interface getBNPLDrawdownInterface {
 interface useBNPLDrawdownInterface {
   getBNPLDrawdowns: () => Realm.Results<IBNPLDrawdown & Realm.Object>;
   getBNPLDrawdown: (data: getBNPLDrawdownInterface) => IBNPLDrawdown;
-  saveBNPLDrawdown: (data: saveBNPLDrawdownInterface) => Promise<IBNPLDrawdown>;
+  saveBNPLDrawdown: (
+    data: saveBNPLDrawdownInterface,
+  ) => Promise<IBNPLDrawdown>;
 }
 
 export const useBNPLDrawdown = (): useBNPLDrawdownInterface => {
@@ -25,11 +27,8 @@ export const useBNPLDrawdown = (): useBNPLDrawdownInterface => {
       .filtered('is_deleted != true');
   };
 
-  const getBNPLDrawdown = ({bnplDrawdownId}: getBNPLDrawdownInterface) => {
-    return realm.objectForPrimaryKey(
-      modelName,
-      bnplDrawdownId,
-    ) as IBNPLDrawdown;
+  const getBNPLDrawdown = ({bnplDrawdownId}: getBNPLDrawdownInterface ) => {
+    return realm.objectForPrimaryKey(modelName, bnplDrawdownId) as IBNPLDrawdown;
   };
 
   const saveBNPLDrawdown = async ({
@@ -38,9 +37,7 @@ export const useBNPLDrawdown = (): useBNPLDrawdownInterface => {
     const updatedBNPLDrawdown: IBNPLDrawdown = {
       ...bnplDrawdown,
       _id: new ObjectId(bnplDrawdown._id),
-      // @ts-ignore
       customer: new ObjectId(bnplDrawdown.customer?._id),
-      // @ts-ignore
       receipt: new ObjectId(bnplDrawdown.receipt?._id),
     };
 
@@ -56,6 +53,7 @@ export const useBNPLDrawdown = (): useBNPLDrawdownInterface => {
 
     return updatedBNPLDrawdown;
   };
+
 
   return {
     getBNPLDrawdown,

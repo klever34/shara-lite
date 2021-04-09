@@ -1,4 +1,5 @@
 import {IReceipt} from '@/models/Receipt';
+import {colors} from '@/styles';
 import {createNativeStackNavigator} from 'react-native-screens/native-stack';
 import React from 'react';
 import {TransactionListScreen} from './TransactionListScreen';

@@ -7,9 +7,7 @@ interface useDrawdownRepaymentInterface {
 
 export const useDrawdownRepayment = (): useDrawdownRepaymentInterface => {
   const realm = useRealm();
-  const getDrawdownRepayments = (): Realm.Results<
-    IDrawdownRepayment & Realm.Object
-  > => {
+  const getDrawdownRepayments = (): Realm.Results<IDrawdownRepayment & Realm.Object> => {
     return realm
       .objects<IDrawdownRepayment>(modelName)
       .filtered('is_deleted != true');

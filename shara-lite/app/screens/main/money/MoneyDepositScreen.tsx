@@ -25,7 +25,7 @@ import {applyStyles, as, colors} from '@/styles';
 import {useFormik} from 'formik';
 import {parsePhoneNumber} from 'libphonenumber-js';
 import _ from 'lodash';
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {View} from 'react-native';
 import Markdown from 'react-native-markdown-display';
 
@@ -98,31 +98,25 @@ export const STKPushDeposit = ({
   const phoneNumber = parsePhoneNumber('+' + user?.mobile);
   const nationalNumber = (phoneNumber?.nationalNumber ?? '') as string;
 
-  const handleValidateForm = useCallback(
-    (values) => {
-      const errors = {} as {amount: string; mobile: string};
-      if (!values.amount) {
-        errors.amount = strings(
-          'payment_activities.stk_push.fields.amount.errorMessage',
-        );
-      } else if (toNumber(values.amount) < 10) {
-        errors.amount = strings('payment_activities.withdraw_minimum_error', {
-          amount: amountWithCurrency(10),
-        });
-      } else if (!values.mobile) {
-        errors.mobile = strings(
-          'payment_activities.stk_push.fields.mobile.errorMessage',
-        );
-      } else if (
-        wallet?.currency_code === 'KES' &&
-        values.amount.includes('.')
-      ) {
-        errors.amount = strings('payment_activities.no_decimals');
-      }
-      return errors;
-    },
-    [wallet],
-  );
+  const handleValidateForm = useCallback((values) => {
+    const errors = {} as {amount: string; mobile: string};
+    if (!values.amount) {
+      errors.amount = strings(
+        'payment_activities.stk_push.fields.amount.errorMessage',
+      );
+    } else if (toNumber(values.amount) < 10) {
+      errors.amount = strings('payment_activities.withdraw_minimum_error', {
+        amount: amountWithCurrency(10),
+      });
+    } else if (!values.mobile) {
+      errors.mobile = strings(
+        'payment_activities.stk_push.fields.mobile.errorMessage',
+      );
+    } else if (wallet?.currency_code === 'KES' && values.amount.includes('.')) {
+      errors.amount = strings('payment_activities.no_decimals');
+    }
+    return errors;
+  }, []);
 
   const {
     errors,
@@ -155,7 +149,7 @@ export const STKPushDeposit = ({
       setFieldValue('countryCode', user?.country_code);
       setFieldValue('mobile', value.number);
     },
-    [setFieldValue, user],
+    [setFieldValue],
   );
 
   return (

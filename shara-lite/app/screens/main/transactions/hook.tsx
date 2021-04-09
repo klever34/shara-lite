@@ -3,6 +3,7 @@ import {IActivity} from '@/models/Activity';
 import {IReceipt} from '@/models/Receipt';
 import {getI18nService} from '@/services';
 import {useActivity} from '@/services/activity';
+import {useTransaction} from '@/services/transaction';
 import {endOfDay, startOfDay, subMonths, subWeeks} from 'date-fns';
 import uniqBy from 'lodash/uniqBy';
 import React, {
@@ -154,7 +155,7 @@ export const useReceiptList = ({
       'created_at',
       true,
     ) as unknown) as Realm.Results<IReceipt & Realm.Object>;
-  }, [receipts, filter, searchTerm, filterStartDate, filterEndDate]);
+  }, [filter, filterStartDate, filterEndDate, receipts?.length, searchTerm]);
 
   const filteredActivities = useMemo(() => {
     let userActivities = activities;
@@ -207,7 +208,7 @@ export const useReceiptList = ({
       );
     }
     return userActivities.sorted('created_at', true);
-  }, [activities, filter, searchTerm, filterStartDate, filterEndDate]);
+  }, [searchTerm, activities.length, filter, filterEndDate, filterStartDate]);
 
   const sharaProCreditPayments = useMemo(
     () =>
@@ -395,7 +396,7 @@ export const useReceiptList = ({
         return [...activitiesToDisplay, ...newActivitiesData];
       });
     },
-    [receipts, activities],
+    [receipts?.length, activities.length],
   );
 
   const handleSetActivitiesToDisplay = useCallback(
