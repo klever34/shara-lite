@@ -31,6 +31,7 @@ import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {RootStackParamList} from '@/index';
+import {WebView} from 'react-native-webview';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -112,6 +113,46 @@ export const MoreOptionsScreen = withModal(
             caption: strings('more.list.payment_settings.description'),
           },
           onPress: onPaymentSettings,
+        },
+        {
+          leftSection: {
+            title: strings('more.list.kyc_settings.title'),
+            caption: strings('more.list.kyc_settings.description'),
+          },
+          onPress: () => {
+            const closeModal = openModal('full', {
+              renderContent: () => {
+                return (
+                  <>
+                    <View
+                      style={applyStyles(
+                        'justify-center items-end w-full px-16 py-12',
+                      )}>
+                      <Touchable
+                        onPress={() => {
+                          closeModal();
+                        }}>
+                        <Icon type="feathericons" name="x" size={32} />
+                      </Touchable>
+                    </View>
+                    <WebView
+                      source={{
+                        uri: `https://shara.retool.com/embedded/public/89034f9f-4280-455c-b541-05486ae0cecc?token=${getAuthService().getToken()}&user_id=${
+                          user?.id ?? ''
+                        }`,
+                      }}
+                      injectedJavaScript={`
+                        const branding = document.getElementsByClassName("retool-branding")[0];
+                        if (branding) {
+                          branding.style.display = "none";
+                        }
+                      `}
+                    />
+                  </>
+                );
+              },
+            });
+          },
         },
         ...(languages.length > 1
           ? [
