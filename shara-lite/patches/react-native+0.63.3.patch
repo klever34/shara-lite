@@ -1,0 +1,965 @@
+diff --git a/node_modules/react-native/Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent.js b/node_modules/react-native/Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent.js
+index 2fed508..22da77e 100644
+--- a/node_modules/react-native/Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent.js
++++ b/node_modules/react-native/Libraries/Components/ScrollView/AndroidHorizontalScrollViewNativeComponent.js
+@@ -37,7 +37,6 @@ const AndroidHorizontalScrollViewViewConfig = {
+     snapToInterval: true,
+     snapToStart: true,
+     snapToOffsets: true,
+-    contentOffset: true,
+   },
+ };
+ 
+diff --git a/node_modules/react-native/Libraries/Core/ReactNativeVersion.js b/node_modules/react-native/Libraries/Core/ReactNativeVersion.js
+index 5661829..590676d 100644
+--- a/node_modules/react-native/Libraries/Core/ReactNativeVersion.js
++++ b/node_modules/react-native/Libraries/Core/ReactNativeVersion.js
+@@ -12,6 +12,6 @@
+ exports.version = {
+   major: 0,
+   minor: 63,
+-  patch: 4,
++  patch: 3,
+   prerelease: null,
+ };
+diff --git a/node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m b/node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m
+index 55bc2c8..6293922 100644
+--- a/node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m
++++ b/node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m
+@@ -272,6 +272,9 @@ - (void)displayDidRefresh:(CADisplayLink *)displayLink
+ 
+ - (void)displayLayer:(CALayer *)layer
+ {
++  if (!_currentFrame) {
++    _currentFrame = self.image;
++  }
+   if (_currentFrame) {
+     layer.contentsScale = self.animatedImageScale;
+     layer.contents = (__bridge id)_currentFrame.CGImage;
+diff --git a/node_modules/react-native/Libraries/Utilities/MatrixMath.js b/node_modules/react-native/Libraries/Utilities/MatrixMath.js
+index f316bea..2a943a8 100755
+--- a/node_modules/react-native/Libraries/Utilities/MatrixMath.js
++++ b/node_modules/react-native/Libraries/Utilities/MatrixMath.js
+@@ -651,6 +651,10 @@ const MatrixMath = {
+     skew[0] = MatrixMath.v3Dot(row[0], row[1]);
+     row[1] = MatrixMath.v3Combine(row[1], row[0], 1.0, -skew[0]);
+ 
++    // Compute XY shear factor and make 2nd row orthogonal to 1st.
++    skew[0] = MatrixMath.v3Dot(row[0], row[1]);
++    row[1] = MatrixMath.v3Combine(row[1], row[0], 1.0, -skew[0]);
++
+     // Now, compute Y scale and normalize 2nd row.
+     scale[1] = MatrixMath.v3Length(row[1]);
+     row[1] = MatrixMath.v3Normalize(row[1], scale[1]);
+diff --git a/node_modules/react-native/React/Base/RCTVersion.m b/node_modules/react-native/React/Base/RCTVersion.m
+index c04cb07..d601aa9 100644
+--- a/node_modules/react-native/React/Base/RCTVersion.m
++++ b/node_modules/react-native/React/Base/RCTVersion.m
+@@ -23,7 +23,7 @@
+     __rnVersion = @{
+                   RCTVersionMajor: @(0),
+                   RCTVersionMinor: @(63),
+-                  RCTVersionPatch: @(4),
++                  RCTVersionPatch: @(3),
+                   RCTVersionPrerelease: [NSNull null],
+                   };
+   });
+diff --git a/node_modules/react-native/React/CoreModules/RCTAlertController.h b/node_modules/react-native/React/CoreModules/RCTAlertController.h
+deleted file mode 100644
+index ada35e8..0000000
+--- a/node_modules/react-native/React/CoreModules/RCTAlertController.h
++++ /dev/null
+@@ -1,14 +0,0 @@
+-/*
+- * Copyright (c) Facebook, Inc. and its affiliates.
+- *
+- * This source code is licensed under the MIT license found in the
+- * LICENSE file in the root directory of this source tree.
+- */
+-
+-#import <UIKit/UIKit.h>
+-
+-@interface RCTAlertController : UIAlertController
+-
+-- (void)show:(BOOL)animated completion:(void (^)(void))completion;
+-
+-@end
+\ No newline at end of file
+diff --git a/node_modules/react-native/React/CoreModules/RCTAlertController.m b/node_modules/react-native/React/CoreModules/RCTAlertController.m
+deleted file mode 100644
+index e38c500..0000000
+--- a/node_modules/react-native/React/CoreModules/RCTAlertController.m
++++ /dev/null
+@@ -1,36 +0,0 @@
+-/*
+- * Copyright (c) Facebook, Inc. and its affiliates.
+- *
+- * This source code is licensed under the MIT license found in the
+- * LICENSE file in the root directory of this source tree.
+- */
+-
+-#import <React/RCTUtils.h>
+-
+-#import "RCTAlertController.h"
+-
+-@interface RCTAlertController ()
+-
+-@property (nonatomic, strong) UIWindow *alertWindow;
+-
+-@end
+-
+-@implementation RCTAlertController
+-
+-- (UIWindow *)alertWindow
+-{
+-  if (_alertWindow == nil) {
+-    _alertWindow = [[UIWindow alloc] initWithFrame:RCTSharedApplication().keyWindow.bounds];
+-    _alertWindow.rootViewController = [UIViewController new];
+-    _alertWindow.windowLevel = UIWindowLevelAlert + 1;
+-  }
+-  return _alertWindow;
+-}
+-
+-- (void)show:(BOOL)animated completion:(void (^)(void))completion
+-{
+-  [self.alertWindow makeKeyAndVisible];
+-  [self.alertWindow.rootViewController presentViewController:self animated:animated completion:completion];
+-}
+-
+-@end
+diff --git a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+index 59c45bb..e467816 100644
+--- a/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
++++ b/node_modules/react-native/React/CoreModules/RCTAlertManager.mm
+@@ -15,7 +15,6 @@
+ #import <React/RCTUtils.h>
+ 
+ #import "CoreModulesPlugins.h"
+-#import "RCTAlertController.h"
+ 
+ @implementation RCTConvert (UIAlertViewStyle)
+ 
+@@ -100,9 +99,29 @@ - (void)invalidate
+     }
+   }
+ 
+-  RCTAlertController *alertController = [RCTAlertController alertControllerWithTitle:title
+-                                                                             message:nil
+-                                                                      preferredStyle:UIAlertControllerStyleAlert];
++  UIViewController *presentingController = RCTPresentedViewController();
++  if (presentingController == nil) {
++    RCTLogError(@"Tried to display alert view but there is no application window. args: %@", @{
++      @"title" : args.title() ?: [NSNull null],
++      @"message" : args.message() ?: [NSNull null],
++      @"buttons" : RCTConvertOptionalVecToArray(
++          args.buttons(),
++          ^id(id<NSObject> element) {
++            return element;
++          })
++          ?: [NSNull null],
++      @"type" : args.type() ?: [NSNull null],
++      @"defaultValue" : args.defaultValue() ?: [NSNull null],
++      @"cancelButtonKey" : args.cancelButtonKey() ?: [NSNull null],
++      @"destructiveButtonKey" : args.destructiveButtonKey() ?: [NSNull null],
++      @"keyboardType" : args.keyboardType() ?: [NSNull null],
++    });
++    return;
++  }
++
++  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
++                                                                           message:nil
++                                                                    preferredStyle:UIAlertControllerStyleAlert];
+   switch (type) {
+     case RCTAlertViewStylePlainTextInput: {
+       [alertController addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+@@ -151,7 +170,7 @@ - (void)invalidate
+     } else if ([buttonKey isEqualToString:destructiveButtonKey]) {
+       buttonStyle = UIAlertActionStyleDestructive;
+     }
+-    __weak RCTAlertController *weakAlertController = alertController;
++    __weak UIAlertController *weakAlertController = alertController;
+     [alertController
+         addAction:[UIAlertAction
+                       actionWithTitle:buttonTitle
+@@ -183,7 +202,7 @@ - (void)invalidate
+   [_alertControllers addObject:alertController];
+ 
+   dispatch_async(dispatch_get_main_queue(), ^{
+-    [alertController show:YES completion:nil];
++    [presentingController presentViewController:alertController animated:YES completion:nil];
+   });
+ }
+ 
+diff --git a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
+index c120bc6..9648b18 100644
+--- a/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
++++ b/node_modules/react-native/React/CoreModules/RCTWebSocketModule.mm
+@@ -166,9 +166,7 @@ - (void)webSocket:(RCTSRWebSocket *)webSocket didFailWithError:(NSError *)error
+   NSNumber *socketID = [webSocket reactTag];
+   _contentHandlers[socketID] = nil;
+   _sockets[socketID] = nil;
+-  NSDictionary *body =
+-      @{@"message" : error.localizedDescription ?: @"Undefined, error is nil", @"id" : socketID ?: @(-1)};
+-  [self sendEventWithName:@"websocketFailed" body:body];
++  [self sendEventWithName:@"websocketFailed" body:@{@"message" : error.localizedDescription, @"id" : socketID}];
+ }
+ 
+ - (void)webSocket:(RCTSRWebSocket *)webSocket
+diff --git a/node_modules/react-native/React/Views/RCTConvert+Transform.m b/node_modules/react-native/React/Views/RCTConvert+Transform.m
+index 06a0db3..94e5dcd 100644
+--- a/node_modules/react-native/React/Views/RCTConvert+Transform.m
++++ b/node_modules/react-native/React/Views/RCTConvert+Transform.m
+@@ -65,7 +65,6 @@ + (CATransform3D)CATransform3D:(id)json
+ 
+   CGFloat zeroScaleThreshold = FLT_EPSILON;
+ 
+-  CATransform3D next;
+   for (NSDictionary *transformConfig in (NSArray<NSDictionary *> *)json) {
+     if (transformConfig.count != 1) {
+       RCTLogConvertError(json, @"a CATransform3D. You must specify exactly one property per transform object.");
+@@ -75,13 +74,10 @@ + (CATransform3D)CATransform3D:(id)json
+     id value = transformConfig[property];
+ 
+     if ([property isEqualToString:@"matrix"]) {
+-      next = [self CATransform3DFromMatrix:value];
+-      transform = CATransform3DConcat(next, transform);
++      transform = [self CATransform3DFromMatrix:value];
+ 
+     } else if ([property isEqualToString:@"perspective"]) {
+-      next = CATransform3DIdentity;
+-      next.m34 = -1 / [value floatValue];
+-      transform = CATransform3DConcat(next, transform);
++      transform.m34 = -1 / [value floatValue];
+ 
+     } else if ([property isEqualToString:@"rotateX"]) {
+       CGFloat rotate = [self convertToRadians:value];
+@@ -127,15 +123,11 @@ + (CATransform3D)CATransform3D:(id)json
+ 
+     } else if ([property isEqualToString:@"skewX"]) {
+       CGFloat skew = [self convertToRadians:value];
+-      next = CATransform3DIdentity;
+-      next.m21 = tanf(skew);
+-      transform = CATransform3DConcat(next, transform);
++      transform.m21 = tanf(skew);
+ 
+     } else if ([property isEqualToString:@"skewY"]) {
+       CGFloat skew = [self convertToRadians:value];
+-      next = CATransform3DIdentity;
+-      next.m12 = tanf(skew);
+-      transform = CATransform3DConcat(next, transform);
++      transform.m12 = tanf(skew);
+ 
+     } else {
+       RCTLogError(@"Unsupported transform type for a CATransform3D: %@.", property);
+diff --git a/node_modules/react-native/ReactAndroid/gradle.properties b/node_modules/react-native/ReactAndroid/gradle.properties
+index b48c9f8..325f265 100644
+--- a/node_modules/react-native/ReactAndroid/gradle.properties
++++ b/node_modules/react-native/ReactAndroid/gradle.properties
+@@ -1,4 +1,4 @@
+-VERSION_NAME=0.63.4
++VERSION_NAME=0.63.3
+ GROUP=com.facebook.react
+ 
+ POM_NAME=ReactNative
+@@ -13,8 +13,8 @@ FEST_ASSERT_CORE_VERSION=2.0M10
+ 
+ ANDROIDX_TEST_VERSION=1.1.0
+ FRESCO_VERSION=2.0.0
+-OKHTTP_VERSION=3.12.12
+-SO_LOADER_VERSION=0.9.0
++OKHTTP_VERSION=3.12.1
++SO_LOADER_VERSION=0.8.2
+ 
+ BOOST_VERSION=1_63_0
+ DOUBLE_CONVERSION_VERSION=1.1.6
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java
+index 33076a0..30b5069 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/ReactRootView.java
+@@ -705,7 +705,6 @@ public class ReactRootView extends FrameLayout implements RootView, ReactRoot {
+         return;
+       }
+       mDeviceRotation = rotation;
+-      DisplayMetricsHolder.initDisplayMetrics(getContext().getApplicationContext());
+       emitOrientationChanged(rotation);
+     }
+ 
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeMap.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeMap.java
+index ae471c2..e8609d8 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeMap.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/bridge/ReadableNativeMap.java
+@@ -120,7 +120,7 @@ public class ReadableNativeMap extends NativeMap implements ReadableMap {
+     if (hasKey(name)) {
+       return getLocalMap().get(name);
+     }
+-    return null;
++    throw new NoSuchKeyException(name);
+   }
+ 
+   private @Nullable <T> T getNullableValue(String name, Class<T> type) {
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java
+index 99621a6..bf6fbe8 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/modules/systeminfo/ReactNativeVersion.java
+@@ -17,6 +17,6 @@ public class ReactNativeVersion {
+   public static final Map<String, Object> VERSION = MapBuilder.<String, Object>of(
+       "major", 0,
+       "minor", 63,
+-      "patch", 4,
++      "patch", 3,
+       "prerelease", null);
+ }
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/uimanager/MatrixMathHelper.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/uimanager/MatrixMathHelper.java
+index cf448bd..179cc32 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/uimanager/MatrixMathHelper.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/uimanager/MatrixMathHelper.java
+@@ -169,6 +169,10 @@ public class MatrixMathHelper {
+     skew[0] = v3Dot(row[0], row[1]);
+     row[1] = v3Combine(row[1], row[0], 1.0, -skew[0]);
+ 
++    // Compute XY shear factor and make 2nd row orthogonal to 1st.
++    skew[0] = v3Dot(row[0], row[1]);
++    row[1] = v3Combine(row[1], row[0], 1.0, -skew[0]);
++
+     // Now, compute Y scale and normalize 2nd row.
+     scale[1] = v3Length(row[1]);
+     row[1] = v3Normalize(row[1], scale[1]);
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/viewmanagers/AndroidDropdownPickerManagerDelegate.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/viewmanagers/AndroidDropdownPickerManagerDelegate.java
+index c14ce24..33d27bb 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/viewmanagers/AndroidDropdownPickerManagerDelegate.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/viewmanagers/AndroidDropdownPickerManagerDelegate.java
+@@ -1,11 +1,12 @@
+ /**
+- * Copyright (c) Facebook, Inc. and its affiliates.
+- *
+- * <p>This source code is licensed under the MIT license found in the LICENSE file in the root
+- * directory of this source tree.
+- *
+- * @generated by codegen project: GeneratePropsJavaDelegate.js
+- */
++* Copyright (c) Facebook, Inc. and its affiliates.
++*
++* This source code is licensed under the MIT license found in the
++* LICENSE file in the root directory of this source tree.
++*
++* @generated by codegen project: GeneratePropsJavaDelegate.js
++*/
++
+ package com.facebook.react.viewmanagers;
+ 
+ import android.view.View;
+@@ -15,14 +16,10 @@ import com.facebook.react.uimanager.BaseViewManagerDelegate;
+ import com.facebook.react.uimanager.BaseViewManagerInterface;
+ import com.facebook.react.uimanager.LayoutShadowNode;
+ 
+-public class AndroidDropdownPickerManagerDelegate<
+-        T extends View,
+-        U extends BaseViewManagerInterface<T> & AndroidDropdownPickerManagerInterface<T>>
+-    extends BaseViewManagerDelegate<T, U> {
++public class AndroidDropdownPickerManagerDelegate<T extends View, U extends BaseViewManagerInterface<T> & AndroidDropdownPickerManagerInterface<T>> extends BaseViewManagerDelegate<T, U> {
+   public AndroidDropdownPickerManagerDelegate(U viewManager) {
+     super(viewManager);
+   }
+-
+   @Override
+   public void setProperty(T view, String propName, @Nullable Object value) {
+     switch (propName) {
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactDropdownPickerManager.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactDropdownPickerManager.java
+index 04b3f3d..23f4163 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactDropdownPickerManager.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactDropdownPickerManager.java
+@@ -8,7 +8,6 @@
+ package com.facebook.react.views.picker;
+ 
+ import android.widget.Spinner;
+-import androidx.annotation.NonNull;
+ import com.facebook.react.module.annotations.ReactModule;
+ import com.facebook.react.uimanager.ThemedReactContext;
+ import com.facebook.react.uimanager.ViewManagerDelegate;
+@@ -42,9 +41,4 @@ public class ReactDropdownPickerManager extends ReactPickerManager
+   protected ViewManagerDelegate<ReactPicker> getDelegate() {
+     return mDelegate;
+   }
+-
+-  @Override
+-  public void setBackgroundColor(@NonNull ReactPicker view, int backgroundColor) {
+-    view.setStagedBackgroundColor(backgroundColor);
+-  }
+ }
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactPicker.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactPicker.java
+index 8eff2dd..c629f26 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactPicker.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/picker/ReactPicker.java
+@@ -8,14 +8,12 @@
+ package com.facebook.react.views.picker;
+ 
+ import android.content.Context;
+-import android.content.res.ColorStateList;
+ import android.util.AttributeSet;
+ import android.view.View;
+ import android.widget.AdapterView;
+ import android.widget.Spinner;
+ import androidx.annotation.Nullable;
+ import androidx.appcompat.widget.AppCompatSpinner;
+-import androidx.core.view.ViewCompat;
+ import com.facebook.react.common.annotations.VisibleForTesting;
+ import java.util.List;
+ 
+@@ -175,7 +173,6 @@ public class ReactPicker extends AppCompatSpinner {
+         && adapter != null
+         && mStagedPrimaryTextColor != adapter.getPrimaryTextColor()) {
+       adapter.setPrimaryTextColor(mStagedPrimaryTextColor);
+-      ViewCompat.setBackgroundTintList(this, ColorStateList.valueOf(mStagedPrimaryTextColor));
+       mStagedPrimaryTextColor = null;
+     }
+ 
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.java
+index c905c5d..0dee6f7 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollView.java
+@@ -50,8 +50,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
+   private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
+   private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
+ 
+-  private static final int UNSET_CONTENT_OFFSET = -1;
+-
+   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
+   private final @Nullable OverScroller mScroller;
+   private final VelocityHelper mVelocityHelper = new VelocityHelper();
+@@ -78,8 +76,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
+   private boolean mSnapToEnd = true;
+   private ReactViewBackgroundManager mReactBackgroundManager;
+   private boolean mPagedArrowScrolling = false;
+-  private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
+-  private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+   private @Nullable StateWrapper mStateWrapper;
+ 
+   private final Rect mTempRect = new Rect();
+@@ -228,13 +224,7 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
+   @Override
+   protected void onLayout(boolean changed, int l, int t, int r, int b) {
+     // Call with the present values in order to re-layout if necessary
+-    // If a "pending" value has been set, we restore that value.
+-    // That value gets cleared by reactScrollTo.
+-    int scrollToX =
+-        pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+-    int scrollToY =
+-        pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+-    reactScrollTo(scrollToX, scrollToY);
++    reactScrollTo(getScrollX(), getScrollY());
+   }
+ 
+   /**
+@@ -916,7 +906,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
+   public void reactSmoothScrollTo(int x, int y) {
+     smoothScrollTo(x, y);
+     updateStateOnScroll(x, y);
+-    setPendingContentOffsets(x, y);
+   }
+ 
+   /**
+@@ -928,25 +917,6 @@ public class ReactHorizontalScrollView extends HorizontalScrollView
+   public void reactScrollTo(int x, int y) {
+     scrollTo(x, y);
+     updateStateOnScroll(x, y);
+-    setPendingContentOffsets(x, y);
+-  }
+-
+-  /**
+-   * If contentOffset is set before the View has been laid out, store the values and set them when
+-   * `onLayout` is called.
+-   *
+-   * @param x
+-   * @param y
+-   */
+-  private void setPendingContentOffsets(int x, int y) {
+-    View child = getChildAt(0);
+-    if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
+-      pendingContentOffsetX = UNSET_CONTENT_OFFSET;
+-      pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+-    } else {
+-      pendingContentOffsetX = x;
+-      pendingContentOffsetY = y;
+-    }
+   }
+ 
+   public void updateState(@Nullable StateWrapper stateWrapper) {
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.java
+index 8b72155..b7712b3 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactHorizontalScrollViewManager.java
+@@ -12,7 +12,6 @@ import android.util.DisplayMetrics;
+ import androidx.annotation.Nullable;
+ import androidx.core.view.ViewCompat;
+ import com.facebook.react.bridge.ReadableArray;
+-import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.module.annotations.ReactModule;
+ import com.facebook.react.uimanager.DisplayMetricsHolder;
+ import com.facebook.react.uimanager.PixelUtil;
+@@ -300,15 +299,4 @@ public class ReactHorizontalScrollViewManager extends ViewGroupManager<ReactHori
+       view.setFadingEdgeLength(0);
+     }
+   }
+-
+-  @ReactProp(name = "contentOffset")
+-  public void setContentOffset(ReactHorizontalScrollView view, ReadableMap value) {
+-    if (value != null) {
+-      double x = value.hasKey("x") ? value.getDouble("x") : 0;
+-      double y = value.hasKey("y") ? value.getDouble("y") : 0;
+-      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+-    } else {
+-      view.reactScrollTo(0, 0);
+-    }
+-  }
+ }
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.java
+index f0d4e99..6bd0be8 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollView.java
+@@ -55,8 +55,6 @@ public class ReactScrollView extends ScrollView
+   private static final String CONTENT_OFFSET_LEFT = "contentOffsetLeft";
+   private static final String CONTENT_OFFSET_TOP = "contentOffsetTop";
+ 
+-  private static final int UNSET_CONTENT_OFFSET = -1;
+-
+   private final OnScrollDispatchHelper mOnScrollDispatchHelper = new OnScrollDispatchHelper();
+   private final @Nullable OverScroller mScroller;
+   private final VelocityHelper mVelocityHelper = new VelocityHelper();
+@@ -83,8 +81,6 @@ public class ReactScrollView extends ScrollView
+   private boolean mSnapToEnd = true;
+   private View mContentView;
+   private ReactViewBackgroundManager mReactBackgroundManager;
+-  private int pendingContentOffsetX = UNSET_CONTENT_OFFSET;
+-  private int pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+   private @Nullable StateWrapper mStateWrapper;
+ 
+   public ReactScrollView(ReactContext context) {
+@@ -204,13 +200,7 @@ public class ReactScrollView extends ScrollView
+   @Override
+   protected void onLayout(boolean changed, int l, int t, int r, int b) {
+     // Call with the present values in order to re-layout if necessary
+-    // If a "pending" value has been set, we restore that value.
+-    // That value gets cleared by reactScrollTo.
+-    int scrollToX =
+-        pendingContentOffsetX != UNSET_CONTENT_OFFSET ? pendingContentOffsetX : getScrollX();
+-    int scrollToY =
+-        pendingContentOffsetY != UNSET_CONTENT_OFFSET ? pendingContentOffsetY : getScrollY();
+-    reactScrollTo(scrollToX, scrollToY);
++    reactScrollTo(getScrollX(), getScrollY());
+   }
+ 
+   @Override
+@@ -787,7 +777,6 @@ public class ReactScrollView extends ScrollView
+   public void reactSmoothScrollTo(int x, int y) {
+     smoothScrollTo(x, y);
+     updateStateOnScroll(x, y);
+-    setPendingContentOffsets(x, y);
+   }
+ 
+   /**
+@@ -799,25 +788,6 @@ public class ReactScrollView extends ScrollView
+   public void reactScrollTo(int x, int y) {
+     scrollTo(x, y);
+     updateStateOnScroll(x, y);
+-    setPendingContentOffsets(x, y);
+-  }
+-
+-  /**
+-   * If contentOffset is set before the View has been laid out, store the values and set them when
+-   * `onLayout` is called.
+-   *
+-   * @param x
+-   * @param y
+-   */
+-  private void setPendingContentOffsets(int x, int y) {
+-    View child = getChildAt(0);
+-    if (child != null && child.getWidth() != 0 && child.getHeight() != 0) {
+-      pendingContentOffsetX = UNSET_CONTENT_OFFSET;
+-      pendingContentOffsetY = UNSET_CONTENT_OFFSET;
+-    } else {
+-      pendingContentOffsetX = x;
+-      pendingContentOffsetY = y;
+-    }
+   }
+ 
+   /**
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.java
+index 8e6f93e..51dc131 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/scroll/ReactScrollViewManager.java
+@@ -13,7 +13,6 @@ import android.view.View;
+ import androidx.annotation.Nullable;
+ import androidx.core.view.ViewCompat;
+ import com.facebook.react.bridge.ReadableArray;
+-import com.facebook.react.bridge.ReadableMap;
+ import com.facebook.react.bridge.RetryableMountingLayerException;
+ import com.facebook.react.common.MapBuilder;
+ import com.facebook.react.module.annotations.ReactModule;
+@@ -305,17 +304,6 @@ public class ReactScrollViewManager extends ViewGroupManager<ReactScrollView>
+     }
+   }
+ 
+-  @ReactProp(name = "contentOffset")
+-  public void setContentOffset(ReactScrollView view, ReadableMap value) {
+-    if (value != null) {
+-      double x = value.hasKey("x") ? value.getDouble("x") : 0;
+-      double y = value.hasKey("y") ? value.getDouble("y") : 0;
+-      view.reactScrollTo((int) PixelUtil.toPixelFromDIP(x), (int) PixelUtil.toPixelFromDIP(y));
+-    } else {
+-      view.reactScrollTo(0, 0);
+-    }
+-  }
+-
+   @Override
+   public Object updateState(
+       ReactScrollView view, ReactStylesDiffMap props, @Nullable StateWrapper stateWrapper) {
+diff --git a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/textinput/ReactEditText.java b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/textinput/ReactEditText.java
+index d1783a3..78a05c5 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/textinput/ReactEditText.java
++++ b/node_modules/react-native/ReactAndroid/src/main/java/com/facebook/react/views/textinput/ReactEditText.java
+@@ -383,6 +383,8 @@ public class ReactEditText extends AppCompatEditText {
+   @Override
+   public void setInputType(int type) {
+     Typeface tf = super.getTypeface();
++    // Input type password defaults to monospace font, so we need to re-apply the font
++    super.setTypeface(tf);
+ 
+     int inputType = type;
+ 
+@@ -399,8 +401,6 @@ public class ReactEditText extends AppCompatEditText {
+ 
+     super.setInputType(inputType);
+     mStagedInputType = inputType;
+-    // Input type password defaults to monospace font, so we need to re-apply the font
+-    super.setTypeface(tf);
+ 
+     /**
+      * If set forces multiline on input, because of a restriction on Android source that enables
+diff --git a/node_modules/react-native/ReactAndroid/src/main/libraries/soloader/java/com/facebook/soloader/BUCK b/node_modules/react-native/ReactAndroid/src/main/libraries/soloader/java/com/facebook/soloader/BUCK
+index 3c1ec40..d6a57a8 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/libraries/soloader/java/com/facebook/soloader/BUCK
++++ b/node_modules/react-native/ReactAndroid/src/main/libraries/soloader/java/com/facebook/soloader/BUCK
+@@ -10,9 +10,9 @@ fb_native.android_library(
+     visibility = ["PUBLIC"],
+ )
+ 
+-fb_native.prebuilt_jar(
++fb_native.android_prebuilt_aar(
+     name = "annotation-binary",
+-    binary_jar = ":annotation-binary.jar",
++    aar = ":annotation-binary-aar",
+ )
+ 
+ fb_native.prebuilt_jar(
+@@ -26,19 +26,19 @@ fb_native.android_prebuilt_aar(
+ )
+ 
+ fb_native.remote_file(
+-    name = "annotation-binary.jar",
+-    sha1 = "dc58463712cb3e5f03d8ee5ac9743b9ced9afa77",
+-    url = "mvn:com.facebook.soloader:annotation:jar:0.9.0",
++    name = "annotation-binary-aar",
++    sha1 = "ae6d46195467467fae746c6225f79ac41e7039e8",
++    url = "mvn:com.facebook.soloader:annotation:aar:0.8.2",
+ )
+ 
+ fb_native.remote_file(
+     name = "nativeloader-binary.jar",
+-    sha1 = "677c7fbfcc847d7eb6082048d07b10afd4cff898",
+-    url = "mvn:com.facebook.soloader:nativeloader:jar:0.9.0",
++    sha1 = "86cb3da9384707034355ac1e84e9a8cf6de80f7c",
++    url = "mvn:com.facebook.soloader:nativeloader:jar:0.8.2",
+ )
+ 
+ fb_native.remote_file(
+     name = "soloader-binary-aar",
+-    sha1 = "6e138af1dd29ceabf5bace2d24dc4333f304d104",
+-    url = "mvn:com.facebook.soloader:soloader:aar:0.9.0",
++    sha1 = "8575dbdec464207a19273bd3c09d758a08fa655c",
++    url = "mvn:com.facebook.soloader:soloader:aar:0.8.2",
+ )
+diff --git a/node_modules/react-native/ReactAndroid/src/main/third-party/java/okhttp/BUCK b/node_modules/react-native/ReactAndroid/src/main/third-party/java/okhttp/BUCK
+index a193365..4991f95 100644
+--- a/node_modules/react-native/ReactAndroid/src/main/third-party/java/okhttp/BUCK
++++ b/node_modules/react-native/ReactAndroid/src/main/third-party/java/okhttp/BUCK
+@@ -9,8 +9,8 @@ rn_prebuilt_jar(
+ 
+ fb_native.remote_file(
+     name = "okhttp3-binary.jar",
+-    sha1 = "d3e1ce1d2b3119adf270b2d00d947beb03fe3321",
+-    url = "mvn:com.squareup.okhttp3:okhttp:jar:3.12.12",
++    sha1 = "dc6d02e4e68514eff5631963e28ca7742ac69efe",
++    url = "mvn:com.squareup.okhttp3:okhttp:jar:3.12.1",
+ )
+ 
+ rn_prebuilt_jar(
+@@ -21,6 +21,6 @@ rn_prebuilt_jar(
+ 
+ fb_native.remote_file(
+     name = "okhttp3-urlconnection-binary.jar",
+-    sha1 = "3cfbe11fb8c48d30600a70f90b3283fc858aea72",
+-    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:3.12.12",
++    sha1 = "f689d3657c3f1fdbde4877bcddc668491a4ad46f",
++    url = "mvn:com.squareup.okhttp3:okhttp-urlconnection:jar:3.12.1",
+ )
+diff --git a/node_modules/react-native/ReactCommon/cxxreact/ReactNativeVersion.h b/node_modules/react-native/ReactCommon/cxxreact/ReactNativeVersion.h
+index 5d284f6..6e48cf8 100644
+--- a/node_modules/react-native/ReactCommon/cxxreact/ReactNativeVersion.h
++++ b/node_modules/react-native/ReactCommon/cxxreact/ReactNativeVersion.h
+@@ -17,7 +17,7 @@ namespace facebook::react {
+ constexpr struct {
+   int32_t Major = 0;
+   int32_t Minor = 63;
+-  int32_t Patch = 4;
++  int32_t Patch = 3;
+   std::string_view Prerelease = "";
+ } ReactNativeVersion;
+ 
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar
+new file mode 100644
+index 0000000..ba3c5b8
+Binary files /dev/null and b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar differ
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar.md5
+new file mode 100644
+index 0000000..075347a
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar.md5
+@@ -0,0 +1 @@
++5b731c933609168bfeeaddabd26abac2
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar.sha1
+new file mode 100644
+index 0000000..802a220
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-javadoc.jar.sha1
+@@ -0,0 +1 @@
++74bb446b2827ebe14a9362ec986692002d09d831
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar
+similarity index 85%
+rename from node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar
+rename to node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar
+index b9968f6..052dbe7 100644
+Binary files a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar and b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar differ
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar.md5
+new file mode 100644
+index 0000000..b7e81a0
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar.md5
+@@ -0,0 +1 @@
++1e51a66c674970f493f8445fe0d2c248
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar.sha1
+new file mode 100644
+index 0000000..f98a22a
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3-sources.jar.sha1
+@@ -0,0 +1 @@
++596a01837a6b53b36b3a6fc81c3b1f91b754b31a
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar
+similarity index 89%
+rename from node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar
+rename to node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar
+index dace068..642e46e 100644
+Binary files a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar and b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar differ
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar.md5
+new file mode 100644
+index 0000000..ad004c2
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar.md5
+@@ -0,0 +1 @@
++8a4fba261bbf3628671aeded320545ed
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar.sha1
+new file mode 100644
+index 0000000..162e417
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.aar.sha1
+@@ -0,0 +1 @@
++7ef7d35f33970cd41528e0a9e50e8c2dc58554a3
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom
+similarity index 96%
+rename from node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom
+rename to node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom
+index fbf163a..70f55d8 100644
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom
+@@ -4,7 +4,7 @@
+   <modelVersion>4.0.0</modelVersion>
+   <groupId>com.facebook.react</groupId>
+   <artifactId>react-native</artifactId>
+-  <version>0.63.4</version>
++  <version>0.63.3</version>
+   <packaging>aar</packaging>
+   <name>ReactNative</name>
+   <description>A framework for building native apps with React</description>
+@@ -73,7 +73,7 @@
+     <dependency>
+       <groupId>com.facebook.soloader</groupId>
+       <artifactId>soloader</artifactId>
+-      <version>0.9.0</version>
++      <version>0.8.2</version>
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+@@ -85,13 +85,13 @@
+     <dependency>
+       <groupId>com.squareup.okhttp3</groupId>
+       <artifactId>okhttp</artifactId>
+-      <version>3.12.12</version>
++      <version>3.12.1</version>
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+       <groupId>com.squareup.okhttp3</groupId>
+       <artifactId>okhttp-urlconnection</artifactId>
+-      <version>3.12.12</version>
++      <version>3.12.1</version>
+       <scope>compile</scope>
+     </dependency>
+     <dependency>
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom.md5
+new file mode 100644
+index 0000000..f79b13e
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom.md5
+@@ -0,0 +1 @@
++84e55363915526db3048dc33f38e41df
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom.sha1
+new file mode 100644
+index 0000000..5a3b246
+--- /dev/null
++++ b/node_modules/react-native/android/com/facebook/react/react-native/0.63.3/react-native-0.63.3.pom.sha1
+@@ -0,0 +1 @@
++d8e4b8a55682a0783445b14c47e8105b8fb4635c
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar
+deleted file mode 100644
+index 2dd8893..0000000
+Binary files a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar and /dev/null differ
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar.md5
+deleted file mode 100644
+index 34c83a1..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar.md5
++++ /dev/null
+@@ -1 +0,0 @@
+-42f4cfea4dc4d5a72bd8af198fa57fa7
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar.sha1
+deleted file mode 100644
+index 05ee2c3..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-javadoc.jar.sha1
++++ /dev/null
+@@ -1 +0,0 @@
+-dfa0498e27018d0f0794044bb6e31b52bbf39ae5
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar.md5
+deleted file mode 100644
+index f7be6e0..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar.md5
++++ /dev/null
+@@ -1 +0,0 @@
+-5736b99f217cc4b5240ce8b22a1f1054
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar.sha1
+deleted file mode 100644
+index 26fe4ba..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4-sources.jar.sha1
++++ /dev/null
+@@ -1 +0,0 @@
+-19191d0f0c740b71147a93e7a66d74ce7373e0e7
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar.md5
+deleted file mode 100644
+index efc33e6..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar.md5
++++ /dev/null
+@@ -1 +0,0 @@
+-6a469298fb3241e4b8fb0ff744f78fb4
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar.sha1
+deleted file mode 100644
+index b0b7253..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.aar.sha1
++++ /dev/null
+@@ -1 +0,0 @@
+-29c2c92eab0e117e43133e38c02884911c455b43
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom.md5 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom.md5
+deleted file mode 100644
+index 6bcb13c..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom.md5
++++ /dev/null
+@@ -1 +0,0 @@
+-828dacca7617210bfb861bf9db1f5a88
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom.sha1
+deleted file mode 100644
+index 4dd304e..0000000
+--- a/node_modules/react-native/android/com/facebook/react/react-native/0.63.4/react-native-0.63.4.pom.sha1
++++ /dev/null
+@@ -1 +0,0 @@
+-329da4cdbeeef573dd30dfd60dacd9ba3bdb660d
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml b/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml
+index e5bcc75..8739ef4 100644
+--- a/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml
++++ b/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml
+@@ -3,10 +3,10 @@
+   <groupId>com.facebook.react</groupId>
+   <artifactId>react-native</artifactId>
+   <versioning>
+-    <release>0.63.4</release>
++    <release>0.63.3</release>
+     <versions>
+-      <version>0.63.4</version>
++      <version>0.63.3</version>
+     </versions>
+-    <lastUpdated>20201130144734</lastUpdated>
++    <lastUpdated>20200929142730</lastUpdated>
+   </versioning>
+ </metadata>
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.md5 b/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.md5
+index d1cde5c..bf2f441 100644
+--- a/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.md5
++++ b/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.md5
+@@ -1 +1 @@
+-44b3cdf458e3191221d8784ddcebb36f
+\ No newline at end of file
++0a24bdd6cf986759e8bf3a157fbf4a3e
+\ No newline at end of file
+diff --git a/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.sha1 b/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.sha1
+index 1a0e6eb..578917f 100644
+--- a/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.sha1
++++ b/node_modules/react-native/android/com/facebook/react/react-native/maven-metadata.xml.sha1
+@@ -1 +1 @@
+-e6bcce4e41279b42af19779ae54e74cae8fb2cbf
+\ No newline at end of file
++ebd6e06258c95fe41adc0fc9a81dbafee4afaafe
+\ No newline at end of file
+diff --git a/node_modules/react-native/react.gradle b/node_modules/react-native/react.gradle
+index c28cbd4..6441d93 100644
+--- a/node_modules/react-native/react.gradle
++++ b/node_modules/react-native/react.gradle
+@@ -302,11 +302,6 @@ afterEvaluate {
+             enabled(currentBundleTask.enabled)
+         }
+ 
+-        // mergeResources task runs before the bundle file is copied to the intermediate asset directory from Android plugin 4.1+.
+-        // This ensures to copy the bundle file before mergeResources task starts
+-        def mergeResourcesTask = tasks.findByName("merge${targetName}Resources")
+-        mergeResourcesTask.dependsOn(currentAssetsCopyTask)
+-
+         packageTask.dependsOn(currentAssetsCopyTask)
+         if (buildPreBundleTask != null) {
+             buildPreBundleTask.dependsOn(currentAssetsCopyTask)
+diff --git a/node_modules/react-native/scripts/.packager.env b/node_modules/react-native/scripts/.packager.env
+new file mode 100644
+index 0000000..361f5fb
+--- /dev/null
++++ b/node_modules/react-native/scripts/.packager.env
+@@ -0,0 +1 @@
++export RCT_METRO_PORT=8081
