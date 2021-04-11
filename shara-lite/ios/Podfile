@@ -24,18 +24,6 @@ target 'SharaRN' do
   use_flipper!
   post_install do |installer|
     flipper_post_install(installer)
-    installer.pods_project.targets.each do |target|
-      if target.name == 'react-native-config'
-        phase = target.project.new(Xcodeproj::Project::Object::PBXShellScriptBuildPhase)
-        phase.shell_script = "cd ../../"\
-        " && RNC_ROOT=./node_modules/react-native-config/"\
-        " && export SYMROOT=$RNC_ROOT/ios/ReactNativeConfig"\
-        " && ruby $RNC_ROOT/ios/ReactNativeConfig/BuildDotenvConfig.rb"
-        
-        target.build_phases << phase
-        target.build_phases.move(phase,0)
-      end
-    end
   end
 end
 
@@ -52,3 +40,12 @@ end
 pod 'Firebase/Analytics'
 # add pods for any other desired Firebase products
 # https://firebase.google.com/docs/ios/setup#available-pods
+
+#for fixing the image issue in iOS 14
+pre_install do |installer|
+  puts("Image fix for ios14: remove this when upgradeing to >= 0.63.3")
+  find = "_currentFrame.CGImage;"
+  replace = "_currentFrame.CGImage ;} else { [super displayLayer:layer];"
+  op = `sed -ie "s/#{find}/#{replace}/" ../node_modules/react-native/Libraries/Image/RCTUIImageViewAnimated.m`
+  puts("Image fix for ios14 done")
+end
