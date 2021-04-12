@@ -1130,6 +1130,11 @@ const en: Strings = {
       'Your next repayment is {{amount}} and it is due on {{date}}.',
     first_repayment:
       'Your first repayment is {{amount}} and it is due on {{date}}.',
+    product: {
+      repayment_duration: 'Paid for {{frequency}}',
+      repayment_frequency_amount: '{{amount}} per {{frequency_unit}}',
+      amount_added_to_wallet: '{{amount}} will be added to your wallet',
+    }
   },
   message_sent: 'MESSAGE SENT',
   offline_sms_notification_title: 'You are offline',

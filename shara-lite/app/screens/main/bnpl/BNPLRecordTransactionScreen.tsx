@@ -1,4 +1,5 @@
 import {Button, FloatingLabelInput, toNumber} from '@/components';
+import { Checkbox } from '@/components/Checkbox';
 import {FlatFloatingLabelCurrencyInput} from '@/components/FloatingLabelCurrencyInput';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
@@ -22,6 +23,8 @@ import {
   Text,
   View,
 } from 'react-native';
+import Markdown from 'react-native-markdown-display';
+import { BNPLProduct } from './BNPLProduct';
 import {ConfirmationModal} from './ConfirmationModal';
 
 type FormValues = {
@@ -29,6 +32,7 @@ type FormValues = {
   total_amount: string;
   note: string;
   customer?: ICustomer;
+  bearingFees?: boolean;
 };
 
 const strings = getI18nService().strings;
@@ -90,6 +94,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
       amount_paid: '',
       total_amount: '',
       customer: undefined,
+      bearingFees: false,
     },
     validate: handleValidateForm,
   });
@@ -219,6 +224,14 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
     [closeModal, handleSaveTransaction, openModal],
   );
 
+  const handleMerchantTermChange = useCallback(() => {
+    if (values.bearingFees) {
+      setFieldValue('bearingFees',false);
+    } else {
+      setFieldValue('bearingFees',true);
+    }
+  }, [values.bearingFees]);
+
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
       <View style={applyStyles('pt-16 pb-32 px-24 bg-primary')}>
@@ -277,12 +290,9 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
       </View>
       <ScrollView
         persistentScrollbar
-        keyboardShouldPersistTaps="always"
-        contentContainerStyle={
-          !values.total_amount ? applyStyles('flex-1') : undefined
-        }>
+        keyboardShouldPersistTaps="always">
         <View style={applyStyles('px-24')}>
-          {!!values.total_amount && (
+          {/* {!!values.total_amount && (
             <>
               <Text
                 style={applyStyles(
@@ -332,8 +342,65 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
                 })}
               </Text>
             </>
-          )}
-          <View style={applyStyles('pb-24 flex-row items-center')}>
+          )} */}
+
+          <Checkbox
+            value=""
+            checkedColor="bg-blue-100"
+            borderColor={colors['blue-100']}
+            isChecked={values.bearingFees}
+            onChange={handleMerchantTermChange}
+            containerStyle={applyStyles('center pt-16 pb-24')}
+            rightLabel={
+              <View style={applyStyles('pl-24')}>
+                <Text style={applyStyles('text-400 text-gray-200 text-lg')}>
+                  I will be braring the BNPL fees
+                </Text>
+              </View>
+            }
+          />
+          <View style={applyStyles('center pb-16')}>
+            <Text style={applyStyles('text-400 text-gray-100 text-uppercase')}>
+              Select buy now pay later option
+            </Text>
+          </View>
+          <BNPLProduct 
+            leftSection={{
+              bottom: strings('total'),
+              top: amountWithCurrency(2300), 
+            }} 
+            rightSection={{
+              bottom: strings('bnpl.product.repayment_duration', {frequency: '12 weeks'}),
+              top: strings('bnpl.product.repayment_frequency_amount', {amount: amountWithCurrency(191.67), frequency_unit: 'week'}), 
+            }}
+          />
+          <BNPLProduct 
+            leftSection={{
+              bottom: strings('total'),
+              top: amountWithCurrency(2300), 
+            }} 
+            rightSection={{
+              bottom: strings('bnpl.product.repayment_duration', {frequency: '12 weeks'}),
+              top: strings('bnpl.product.repayment_frequency_amount', {amount: amountWithCurrency(191.67), frequency_unit: 'week'}), 
+            }}
+          />
+          <BNPLProduct 
+            leftSection={{
+              bottom: strings('total'),
+              top: amountWithCurrency(2300), 
+            }} 
+            rightSection={{
+              bottom: strings('bnpl.product.repayment_duration', {frequency: '12 weeks'}),
+              top: strings('bnpl.product.repayment_frequency_amount', {amount: amountWithCurrency(191.67), frequency_unit: 'week'}), 
+            }}
+          />
+          <Text style={applyStyles('pt-8 text-red-100 text-center text-uppercase')}>
+            {strings('bnpl.record_transaction.repayment_date', {
+              date: format(addWeeks(new Date(), 8), 'dd MMM, yyyy'),
+            })}
+          </Text>
+          
+          {/* <View style={applyStyles('pb-24 flex-row items-center')}>
             <Icon
               size={20}
               name="comment"
@@ -385,8 +452,9 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
               })}>
               {errors.customer}
             </Text>
-          )}
+          )} */}
         </View>
+      </ScrollView>
         <View
           style={applyStyles(
             `bg-white mt-32 px-24 py-8 flex-row justify-end border-t-1 ${
@@ -413,7 +481,6 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
             />
           </View>
         </View>
-      </ScrollView>
     </SafeAreaView>
   );
 });

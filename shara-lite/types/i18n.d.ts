@@ -841,6 +841,11 @@ export interface Strings {
     you_owe_message: string;
     next_repayment: string;
     first_repayment: string;
+    product: {
+      repayment_duration: string;
+      repayment_frequency_amount: string;
+      amount_added_to_wallet: string;
+    }
   };
   message_sent: string;
   sms_no_recipient: string;
