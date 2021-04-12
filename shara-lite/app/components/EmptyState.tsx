@@ -2,6 +2,7 @@ import React from 'react';
 import {Text} from '@/components';
 import {Image, View, ImageProps, ImageStyle, TextStyle} from 'react-native';
 import {applyStyles} from '../styles';
+import EMB_IMG from '@/assets/images/emblem-gray.svg';
 
 export type EmptyStateProps = {
   text?: string;
@@ -28,11 +29,13 @@ const EmptyState = (props: EmptyStateProps) => {
   return (
     <View style={applyStyles('flex-1 justify-center items-center', style)}>
       {source && (
-        <Image
-          source={source}
-          style={applyStyles('mb-md', {width: 140, height: 140}, imageStyle)}
-          resizeMode="contain"
-        />
+        // <Image
+        //   source={source}
+        //   style={applyStyles('mb-md', {width: 140, height: 140}, imageStyle)}
+        //   resizeMode="contain"
+        // />
+    <EMB_IMG style={applyStyles('mb-20')} />
+
       )}
       {!!heading && (
         <Text

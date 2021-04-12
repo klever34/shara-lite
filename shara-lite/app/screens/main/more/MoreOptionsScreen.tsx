@@ -26,6 +26,7 @@ import {MainStackParamList} from '..';
 import {version} from '../../../../package.json';
 import {inviteImageBase64String} from './inviteImageBase64String';
 import {RootStackParamList} from '@/index';
+import BANNER from '@/assets/images/invyt-banner.svg';
 
 const i18nService = getI18nService();
 const strings = getI18nService().strings;
@@ -286,11 +287,13 @@ export const MoreOptionsScreen = withModal(
             </View>
             <View style={applyStyles('px-16')}>
               <Touchable onPress={handleInviteFriends}>
-                <Image
+                {/* <Image
                   resizeMode="center"
                   source={require('@/assets/images/invite-banner.png')}
                   style={applyStyles('mb-24', {width: '100%', height: 80})}
-                />
+                /> */}
+                <BANNER style={{width: 100, height: 200, alignSelf: 'center', marginBottom: 20}} />
+
               </Touchable>
               <View style={applyStyles('center pb-24')}>
                 <SecureEmblem />
