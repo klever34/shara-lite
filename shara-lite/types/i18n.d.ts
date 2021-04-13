@@ -786,6 +786,8 @@ export interface Strings {
       bnpl_terms_text: string;
       repayment_date: string;
       excess_amount_error: string;
+      bearing_fees_text: string;
+      select_option_text: string;
     };
     confirmation: {
       title: string;

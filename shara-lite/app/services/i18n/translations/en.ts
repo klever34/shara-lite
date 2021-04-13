@@ -1059,6 +1059,8 @@ const en: Strings = {
       balance: 'Balance',
       bnpl_terms_text: 'Buy now pay later terms',
       repayment_date: 'to be paid in full by {{date}}',
+      bearing_fees_text: 'I will be braring the BNPL fees',
+      select_option_text: 'Select buy now pay later option',
       excess_amount_error: 'Amount is more than amount available for drawdown',
     },
     confirmation: {

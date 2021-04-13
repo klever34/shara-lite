@@ -302,14 +302,14 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
               rightLabel={
                 <View style={applyStyles('pl-24')}>
                   <Text style={applyStyles('text-400 text-gray-200 text-lg')}>
-                    I will be braring the BNPL fees
+                    {strings('bnpl.record_transaction.bearing_fees_text')}
                   </Text>
                 </View>
               }
             />
             <View style={applyStyles('center pb-16')}>
               <Text style={applyStyles('text-400 text-gray-100 text-uppercase')}>
-                Select buy now pay later option
+                {strings('bnpl.record_transaction.select_option_text')}
               </Text>
             </View>
             {
