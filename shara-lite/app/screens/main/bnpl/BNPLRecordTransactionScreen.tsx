@@ -1,11 +1,10 @@
-import {Button, FloatingLabelInput, toNumber} from '@/components';
+import {Button, toNumber} from '@/components';
 import { Checkbox } from '@/components/Checkbox';
 import {FlatFloatingLabelCurrencyInput} from '@/components/FloatingLabelCurrencyInput';
 import {Icon} from '@/components/Icon';
 import Touchable from '@/components/Touchable';
-import {withModal} from '@/helpers/hocs';
+import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
-import {ICustomer} from '@/models';
 import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useBNPLApproval} from '@/services/bnpl-approval';
 import {handleError} from '@/services/error-boundary';
@@ -13,9 +12,10 @@ import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {useWallet} from '@/services/wallet';
 import {applyStyles, colors} from '@/styles';
+import { RouteProp } from '@react-navigation/core';
 import {addWeeks, format} from 'date-fns';
 import {useFormik} from 'formik';
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 import {
   InteractionManager,
   SafeAreaView,
@@ -23,7 +23,7 @@ import {
   Text,
   View,
 } from 'react-native';
-import Markdown from 'react-native-markdown-display';
+import { MainStackParamList } from '..';
 import { BNPLProduct } from './BNPLProduct';
 import {ConfirmationModal} from './ConfirmationModal';
 
@@ -31,14 +31,18 @@ type FormValues = {
   amount_paid: string;
   total_amount: string;
   note: string;
-  customer?: ICustomer;
   bearingFees?: boolean;
+};
+
+type BNPLRecordTransactionScreenProps = ModalWrapperFields & {
+  route: RouteProp<MainStackParamList, 'BNPLRecordTransactionScreen'>;
 };
 
 const strings = getI18nService().strings;
 
-export const BNPLRecordTransactionScreen = withModal((props) => {
-  const {openModal, closeModal} = props;
+export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransactionScreenProps) => {
+  const {openModal, closeModal, route} = props;
+  const {customer} = route.params;
   const {getWallet} = useWallet();
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
@@ -49,7 +53,7 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
     getBNPLApproval() ?? {};
 
   const handleValidateForm = useCallback((values) => {
-    const errors = {} as {total_amount: string; customer: string};
+    const errors = {} as {total_amount: string;};
     if (!values.total_amount) {
       errors.total_amount = strings(
         'bnpl.record_transaction.fields.total_amount.errorMessage',
@@ -63,10 +67,6 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
       errors.total_amount = strings(
         'bnpl.record_transaction.excess_amount_error',
       );
-    } else if (!values.customer) {
-      errors.customer = strings(
-        'bnpl.record_transaction.fields.customer.errorMessage',
-      );
     }
     return errors;
   }, []);
@@ -76,13 +76,13 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
     errors,
     touched,
     handleSubmit,
-    handleChange,
     setFieldValue,
   } = useFormik<FormValues>({
     onSubmit: (values) => {
-      const {total_amount, amount_paid, ...rest} = values;
+      const {total_amount, amount_paid, bearingFees, ...rest} = values;
       handleOpenConfirmModal({
         ...rest,
+        customer,
         total_amount: toNumber(total_amount),
         amount_paid: toNumber(amount_paid || '0'),
         credit_amount:
@@ -93,7 +93,6 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
       note: '',
       amount_paid: '',
       total_amount: '',
-      customer: undefined,
       bearingFees: false,
     },
     validate: handleValidateForm,
@@ -101,32 +100,26 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
   const credit_amount = useMemo(() => {
     return toNumber(values.total_amount) - toNumber(values.amount_paid || '0');
   }, [values.total_amount, values.amount_paid]);
+  const bnplProducts = useMemo(() => [
+    {id: 1, payment_frequency: 12, payment_frequency_unit: 'week'}, 
+    {id: 2, payment_frequency: 8, payment_frequency_unit: 'week'},
+    {id: 3, payment_frequency: 4, payment_frequency_unit: 'week'},
+  ].map(item => {
+    const amountToPay =
+      (((interest_rate ?? 0) * (item.payment_frequency ?? 0)) / 100) * credit_amount +
+      credit_amount;
 
-  const amountToPay =
-    (((interest_rate ?? 0) * (payment_frequency ?? 0)) / 100) * credit_amount +
-    credit_amount;
-
-  const amountToPayPerWeek = amountToPay / (payment_frequency ?? 0);
+    return {
+      ...item,
+      total_amount: amountToPay,
+      merchant_amount: amountToPay,
+      payment_frequency_amount: amountToPay / (item.payment_frequency ?? 0)
+    }
+  }), [credit_amount, interest_rate]);
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
   }, [navigation]);
-
-  const handleAddCustomer = useCallback(
-    (customer: ICustomer) => {
-      setFieldValue('customer', customer);
-      navigation.navigate('BNPLRecordTransactionScreen');
-    },
-    [navigation, setFieldValue],
-  );
-
-  const handleOpenSelectCustomer = useCallback(() => {
-    InteractionManager.runAfterInteractions(() => {
-      navigation.navigate('SelectCustomerList', {
-        onSelectCustomer: handleAddCustomer,
-      });
-    });
-  }, [handleAddCustomer, navigation]);
 
   const handleDone = useCallback(() => {
     InteractionManager.runAfterInteractions(() => {
@@ -139,10 +132,9 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
       credit_amount: number;
       amount_paid: number;
       total_amount: number;
-      customer?: ICustomer;
     }) => {
       try {
-        const {customer, credit_amount} = values;
+        const {credit_amount} = values;
         const receipt = await saveTransaction({
           ...values,
           is_collection: false,
@@ -232,6 +224,13 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
     }
   }, [values.bearingFees]);
 
+
+  const [selectedBNPLProduct, setSelectedBNPLProduct] = useState(bnplProducts[0])
+
+  const handleBNPLProductChange = useCallback((product: any) => {
+    setSelectedBNPLProduct(product)
+  }, [])
+
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
       <View style={applyStyles('pt-16 pb-32 px-24 bg-primary')}>
@@ -288,199 +287,76 @@ export const BNPLRecordTransactionScreen = withModal((props) => {
           </Text>
         </View>
       </View>
-      <ScrollView
-        persistentScrollbar
-        keyboardShouldPersistTaps="always">
-        <View style={applyStyles('px-24')}>
-          {/* {!!values.total_amount && (
-            <>
-              <Text
-                style={applyStyles(
-                  'py-24 text-gray-100 text-center text-uppercase',
-                )}>
-                {strings('bnpl.record_transaction.bnpl_terms_text')}
-              </Text>
-              <View
-                style={applyStyles(
-                  'p-16 flex-row items-center justify-between border-t-1 border-b-1',
-                  {
-                    borderColor: colors['gray-20'],
-                  },
-                )}>
-                <View style={applyStyles({width: '48%'})}>
-                  <Text style={applyStyles('pb-8 text-gray-300 text-2xl')}>
-                    {amountWithCurrency(amountToPay)}
-                  </Text>
-                  <Text style={applyStyles('text-gray-100')}>
-                    {strings('bnpl.repayment_per_week', {
-                      amount: amountWithCurrency(amountToPayPerWeek),
-                    })}
+      {!!values.total_amount && 
+        <ScrollView
+          persistentScrollbar
+          keyboardShouldPersistTaps="always">
+          <View style={applyStyles('px-24')}>
+            <Checkbox
+              value=""
+              checkedColor="bg-blue-100"
+              borderColor={colors['blue-100']}
+              isChecked={values.bearingFees}
+              onChange={handleMerchantTermChange}
+              containerStyle={applyStyles('center pt-16 pb-24')}
+              rightLabel={
+                <View style={applyStyles('pl-24')}>
+                  <Text style={applyStyles('text-400 text-gray-200 text-lg')}>
+                    I will be braring the BNPL fees
                   </Text>
                 </View>
-                <View style={applyStyles({width: '48%'})}>
-                  <Text
-                    style={applyStyles(
-                      'pb-8 text-right text-gray-300 text-2xl',
-                    )}>
-                    {strings('bnpl.day_text.other', {
-                      amount: (payment_frequency ?? 0) * 7,
-                    })}
-                  </Text>
-                  <Text style={applyStyles('text-right text-gray-100')}>
-                    {strings('bnpl.payment_left_text.other', {
-                      amount: payment_frequency,
-                    })}
-                  </Text>
-                </View>
-              </View>
-              <Text
-                style={applyStyles(
-                  'pt-24 pb-8 text-red-100 text-center text-uppercase',
-                )}>
-                {strings('bnpl.record_transaction.repayment_date', {
-                  date: format(addWeeks(new Date(), 8), 'dd MMM, yyyy'),
-                })}
+              }
+            />
+            <View style={applyStyles('center pb-16')}>
+              <Text style={applyStyles('text-400 text-gray-100 text-uppercase')}>
+                Select buy now pay later option
               </Text>
-            </>
-          )} */}
-
-          <Checkbox
-            value=""
-            checkedColor="bg-blue-100"
-            borderColor={colors['blue-100']}
-            isChecked={values.bearingFees}
-            onChange={handleMerchantTermChange}
-            containerStyle={applyStyles('center pt-16 pb-24')}
-            rightLabel={
-              <View style={applyStyles('pl-24')}>
-                <Text style={applyStyles('text-400 text-gray-200 text-lg')}>
-                  I will be braring the BNPL fees
-                </Text>
-              </View>
-            }
-          />
-          <View style={applyStyles('center pb-16')}>
-            <Text style={applyStyles('text-400 text-gray-100 text-uppercase')}>
-              Select buy now pay later option
-            </Text>
-          </View>
-          <BNPLProduct 
-            leftSection={{
-              bottom: strings('total'),
-              top: amountWithCurrency(2300), 
-            }} 
-            rightSection={{
-              bottom: strings('bnpl.product.repayment_duration', {frequency: '12 weeks'}),
-              top: strings('bnpl.product.repayment_frequency_amount', {amount: amountWithCurrency(191.67), frequency_unit: 'week'}), 
-            }}
-          />
-          <BNPLProduct 
-            leftSection={{
-              bottom: strings('total'),
-              top: amountWithCurrency(2300), 
-            }} 
-            rightSection={{
-              bottom: strings('bnpl.product.repayment_duration', {frequency: '12 weeks'}),
-              top: strings('bnpl.product.repayment_frequency_amount', {amount: amountWithCurrency(191.67), frequency_unit: 'week'}), 
-            }}
-          />
-          <BNPLProduct 
-            leftSection={{
-              bottom: strings('total'),
-              top: amountWithCurrency(2300), 
-            }} 
-            rightSection={{
-              bottom: strings('bnpl.product.repayment_duration', {frequency: '12 weeks'}),
-              top: strings('bnpl.product.repayment_frequency_amount', {amount: amountWithCurrency(191.67), frequency_unit: 'week'}), 
-            }}
-          />
-          <Text style={applyStyles('pt-8 text-red-100 text-center text-uppercase')}>
-            {strings('bnpl.record_transaction.repayment_date', {
-              date: format(addWeeks(new Date(), 8), 'dd MMM, yyyy'),
-            })}
-          </Text>
-          
-          {/* <View style={applyStyles('pb-24 flex-row items-center')}>
-            <Icon
-              size={20}
-              name="comment"
-              style={applyStyles('top-8')}
-              type="material-icons"
-              color={colors['gray-100']}
-            />
-            <FloatingLabelInput
-              value={values.note}
-              errorMessage={errors.note}
-              onChangeText={handleChange('note')}
-              isInvalid={!!errors.note && !!touched.note}
-              containerStyle={applyStyles('ml-16 flex-1')}
-              label={strings('bnpl.record_transaction.fields.note.label')}
-            />
-          </View>
-          <View style={applyStyles('flex-row items-center')}>
-            <Icon
-              size={24}
-              name="account"
-              color={colors['gray-100']}
-              style={applyStyles('top-8')}
-              type="material-community-icons"
-            />
-            <Touchable onPress={handleOpenSelectCustomer}>
-              <View
-                style={applyStyles('border-b-1 flex-1 ml-16 py-18', {
-                  borderBottomColor: colors['gray-20'],
-                })}>
-                {values.customer ? (
-                  <Text style={applyStyles('text-black text-700 text-xl')}>
-                    {values.customer.name}
-                  </Text>
-                ) : (
-                  <Text style={applyStyles('text-gray-50 text-xl')}>
-                    {strings(
-                      'bnpl.record_transaction.fields.customer.placeholder',
-                    )}
-                  </Text>
-                )}
-              </View>
-            </Touchable>
-          </View>
-          {!!touched.customer && !!errors.customer && (
-            <Text
-              style={applyStyles('pt-8 text-red-200', {
-                fontSize: 12,
-                color: colors['red-200'],
-              })}>
-              {errors.customer}
-            </Text>
-          )} */}
-        </View>
-      </ScrollView>
-        <View
-          style={applyStyles(
-            `bg-white mt-32 px-24 py-8 flex-row justify-end border-t-1 ${
-              !values.total_amount && 'bottom-0 absolute w-full'
-            }`,
+            </View>
             {
-              borderColor: colors['gray-20'],
-            },
-          )}>
-          <View style={applyStyles('flex-row items-center')}>
-            <Button
-              variantColor="clear"
-              onPress={handleGoBack}
-              title={strings('cancel')}
-              textStyle={applyStyles('text-secondary text-uppercase')}
-              style={applyStyles('mr-16', {width: 120, borderWidth: 0})}
-            />
-            <Button
-              variantColor="blue"
-              onPress={handleSubmit}
-              title={strings('next')}
-              style={applyStyles({width: 120})}
-              textStyle={applyStyles('text-uppercase')}
-            />
+              bnplProducts.map((product, index) => (
+                <BNPLProduct 
+                  {...product} 
+                  key={index.toString()}
+                  isMerchant={values.bearingFees}
+                  onPress={() => handleBNPLProductChange(product)}
+                  isSelected={selectedBNPLProduct.id === product.id}
+                />
+              ))
+            }
+            <Text style={applyStyles('pt-8 text-red-100 text-center text-uppercase', {paddingBottom: 100})}>
+              {strings('bnpl.record_transaction.repayment_date', {
+                date: format(addWeeks(new Date(), selectedBNPLProduct.payment_frequency), 'dd MMM, yyyy'),
+              })}
+            </Text>
           </View>
+        </ScrollView>
+      }
+      <View
+        style={applyStyles(
+          `bg-white mt-32 px-24 py-8 flex-row justify-end border-t-1 ${
+            !values.total_amount && 'bottom-0 absolute w-full'
+          }`,
+          {
+            borderColor: colors['gray-20'],
+          },
+        )}>
+        <View style={applyStyles('flex-row items-center')}>
+          <Button
+            variantColor="clear"
+            onPress={handleGoBack}
+            title={strings('cancel')}
+            textStyle={applyStyles('text-secondary text-uppercase')}
+            style={applyStyles('mr-16', {width: 120, borderWidth: 0})}
+          />
+          <Button
+            variantColor="blue"
+            onPress={handleSubmit}
+            title={strings('next')}
+            style={applyStyles({width: 120})}
+            textStyle={applyStyles('text-uppercase')}
+          />
         </View>
+      </View>
     </SafeAreaView>
   );
 });
