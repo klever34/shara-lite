@@ -15,7 +15,7 @@ import {applyStyles, colors} from '@/styles';
 import { RouteProp } from '@react-navigation/core';
 import {addWeeks, format} from 'date-fns';
 import {useFormik} from 'formik';
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   InteractionManager,
   SafeAreaView,
@@ -23,6 +23,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { BNPLBundle } from 'types/app';
 import { MainStackParamList } from '..';
 import { BNPLProduct } from './BNPLProduct';
 import {ConfirmationModal} from './ConfirmationModal';
@@ -51,6 +52,8 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   const wallet = getWallet();
   const {interest_rate, amount_available, payment_frequency} =
     getBNPLApproval() ?? {};
+
+    const [bnplBundles, setBNPLBundles] = useState<BNPLBundle[] | undefined>();
 
   const handleValidateForm = useCallback((values) => {
     const errors = {} as {total_amount: string;};
@@ -100,11 +103,8 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   const credit_amount = useMemo(() => {
     return toNumber(values.total_amount) - toNumber(values.amount_paid || '0');
   }, [values.total_amount, values.amount_paid]);
-  const bnplProducts = useMemo(() => [
-    {id: 1, payment_frequency: 12, payment_frequency_unit: 'week'}, 
-    {id: 2, payment_frequency: 8, payment_frequency_unit: 'week'},
-    {id: 3, payment_frequency: 4, payment_frequency_unit: 'week'},
-  ].map(item => {
+
+  const bnplProducts = useMemo(() => bnplBundles?.map(item => {
     const amountToPay =
       (((interest_rate ?? 0) * (item.payment_frequency ?? 0)) / 100) * credit_amount +
       credit_amount;
@@ -115,7 +115,9 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
       merchant_amount: amountToPay,
       payment_frequency_amount: amountToPay / (item.payment_frequency ?? 0)
     }
-  }), [credit_amount, interest_rate]);
+  }), [credit_amount, interest_rate, bnplBundles?.length]);
+
+  const [selectedBNPLProduct, setSelectedBNPLProduct] = useState(bnplProducts?.[0]);
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
@@ -132,9 +134,10 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
       credit_amount: number;
       amount_paid: number;
       total_amount: number;
+      bearingFees: boolean;
     }) => {
       try {
-        const {credit_amount} = values;
+        const {credit_amount, bearingFees } = values;
         const receipt = await saveTransaction({
           ...values,
           is_collection: false,
@@ -144,6 +147,8 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
           amount: credit_amount,
           receipt_id: `${receipt?._id}`,
           customer_id: `${customer?._id}`,
+          bnpl_bundle_id: selectedBNPLProduct?.id,
+          takes_charge: bearingFees ? 'merchant' : 'client',
           customer_data: {
             _id: customer?._id,
             name: customer?.name ?? '',
@@ -199,8 +204,9 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
         handleError(error);
       }
     },
-    [handleDone, navigation],
+    [handleDone, navigation, selectedBNPLProduct],
   );
+
 
   const handleOpenConfirmModal = useCallback(
     (values) => {
@@ -224,12 +230,26 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     }
   }, [values.bearingFees]);
 
-
-  const [selectedBNPLProduct, setSelectedBNPLProduct] = useState(bnplProducts[0])
-
   const handleBNPLProductChange = useCallback((product: any) => {
     setSelectedBNPLProduct(product)
+  }, []);
+  
+  useEffect(() => {
+    const fetchBNPLBundles = async () => {
+      try {
+        const data  = await getApiService().getBNPLBundles()
+        setBNPLBundles(data)
+      } catch (error) {
+        handleError(error)
+      }
+    }
+    fetchBNPLBundles();
   }, [])
+
+  useEffect(() => {
+    //@ts-ignore
+    setSelectedBNPLProduct(bnplBundles?.[0])
+  }, [bnplBundles?.length])
 
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
@@ -313,19 +333,19 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
               </Text>
             </View>
             {
-              bnplProducts.map((product, index) => (
+              bnplProducts?.map((product, index) => (
                 <BNPLProduct 
                   {...product} 
                   key={index.toString()}
                   isMerchant={values.bearingFees}
                   onPress={() => handleBNPLProductChange(product)}
-                  isSelected={selectedBNPLProduct.id === product.id}
+                  isSelected={selectedBNPLProduct?.id === product.id}
                 />
               ))
             }
             <Text style={applyStyles('pt-8 text-red-100 text-center text-uppercase', {paddingBottom: 100})}>
               {strings('bnpl.record_transaction.repayment_date', {
-                date: format(addWeeks(new Date(), selectedBNPLProduct.payment_frequency), 'dd MMM, yyyy'),
+                date: format(addWeeks(new Date(), selectedBNPLProduct?.payment_frequency ?? 1), 'dd MMM, yyyy'),
               })}
             </Text>
           </View>

@@ -8,6 +8,7 @@ import {IAuthService} from '../auth';
 import {IStorageService} from '../storage';
 import {
   ApiResponse,
+  BNPLBundle,
   Business,
   DisbursementProvider,
   GroupChat,
@@ -174,7 +175,9 @@ export interface IApiService {
     customer_id: string;
     receipt_id: string;
     receipt_data?: IReceipt;
+    bnpl_bundle_id?: number;
     customer_data?: ICustomer;
+    takes_charge?: 'merchant' | 'client';
   }): Promise<any>;
   saveBNPLRepayment(payload: {
     amount: number;
@@ -187,6 +190,7 @@ export interface IApiService {
     mobile?: string;
   }): Promise<ApiResponse>;
   sendSMS(payload: {to: string; message: string}): Promise<ApiResponse>;
+  getBNPLBundles(): Promise<BNPLBundle[]>
 }
 
 export class ApiService implements IApiService {
@@ -873,6 +877,20 @@ export class ApiService implements IApiService {
       return fetchResponse;
     } catch (error) {
       throw error;
+    }
+  }
+
+  async getBNPLBundles() {
+    try {
+      const {
+        data: {bnplBundles},
+      } = await this.requester.get<{bnplBundles: BNPLBundle[]}>(
+        '/bnpl/bundles',
+        {},
+      );
+      return bnplBundles;
+    } catch (e) {
+      throw e;
     }
   }
 }
