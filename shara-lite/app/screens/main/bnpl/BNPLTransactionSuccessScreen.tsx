@@ -22,6 +22,7 @@ export const BNPLTransactionSuccessScreen = (
 
   const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
+  const numberOfDays = (drawdown?.payment_frequency ?? 0) * 7
 
   const firstRepayment =
     drawdown?.bnpl_repayments && drawdown.bnpl_repayments[0];
@@ -69,7 +70,7 @@ export const BNPLTransactionSuccessScreen = (
         }),
         payment: strings('bnpl.success.payment', {
           amount: amountWithCurrency(drawdown.repayment_amount),
-          days: 56,
+          days: numberOfDays,
         }),
       }}
       {...route.params}

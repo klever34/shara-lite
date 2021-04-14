@@ -619,7 +619,7 @@ bnpl.success.heading,Buy Now Pay Later Successful,Nunua sasa Lipa Baadaye Umefan
 bnpl.success.outstanding,The outstanding amount of {{amount}} has been added to your wallet.,Kiasi kilichobaki cha {{amount}} kimeongezwa kwenye mkoba wako.,An saka fitaccen adadin {{amount}} a cikin walat din ku.,,,
 bnpl.success.payment,Client pays {{amount}} over {{days}} days,Mteja hulipa {{amount}} zaidi ya siku {{days}},Abokin ciniki yana biyan {{adadin}} sama da kwanaki {{days}},,,
 bnpl.share_receipt,Share Receipt,Shiriki Stakabadhi,Raba Raba,,,
-bnpl.receipt.bnpl_text,Buy Now Pay Later (8 weeks),Nunua Sasa Lipa Baadaye (wiki 8),Sayi Yanzu Biya Daga baya (makonni 8),,,
+bnpl.receipt.bnpl_text,Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}}),Nunua Sasa Lipa Baadaye ({{payment_frequency}} {{payment_frequency_unit}}),Sayi Yanzu Biya Daga baya ({{payment_frequency}} {{payment_frequency_unit}}),,,
 bnpl.buy_now_pay_later,Buy Now Pay Later,Nunua Sasa Lipa Baadaye,Sayi Yanzu Biya Daga baya,,,
 bnpl.add_repayment,Add Repayment,Ongeza Ulipaji,Repara Biya,,,
 bnpl.transaction_details,Transaction Details,Maelezo ya Muamala,Bayanin ma'amala,,,

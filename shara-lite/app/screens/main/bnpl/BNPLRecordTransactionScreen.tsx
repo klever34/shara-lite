@@ -15,6 +15,7 @@ import {applyStyles, colors} from '@/styles';
 import { RouteProp } from '@react-navigation/core';
 import {addWeeks, format} from 'date-fns';
 import {useFormik} from 'formik';
+import { orderBy } from 'lodash';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
 import {
   InteractionManager,
@@ -104,7 +105,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     return toNumber(values.total_amount) - toNumber(values.amount_paid || '0');
   }, [values.total_amount, values.amount_paid]);
 
-  const bnplProducts = useMemo(() => bnplBundles?.map(item => {
+  const bnplProducts = useMemo(() => orderBy(bnplBundles?.map(item => {
     const amountToPay =
       (((interest_rate ?? 0) * (item.payment_frequency ?? 0)) / 100) * credit_amount +
       credit_amount;
@@ -115,7 +116,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
       merchant_amount: amountToPay,
       payment_frequency_amount: amountToPay / (item.payment_frequency ?? 0)
     }
-  }), [credit_amount, interest_rate, bnplBundles?.length]);
+  }), 'payment_frequency', 'desc'), [credit_amount, interest_rate, bnplBundles?.length]);
 
   const [selectedBNPLProduct, setSelectedBNPLProduct] = useState(bnplProducts?.[0]);
 

@@ -1080,7 +1080,7 @@ const en: Strings = {
       payment: 'Client pays {{amount}} over {{days}} days',
     },
     receipt: {
-      bnpl_text: 'Buy Now Pay Later (8 weeks)',
+      bnpl_text: 'Buy Now Pay Later ({{payment_frequency}} {{payment_frequency_unit}})',
     },
     add_repayment: 'Add Repayment',
     client: {

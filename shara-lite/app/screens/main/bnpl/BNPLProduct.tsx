@@ -32,13 +32,16 @@ export const BNPLProduct = (props: BNPLProductProps) => {
     } = props;
     const containerStyle = isSelected ? 'border-green-300' : 'border-gray-100'
     const textStyle = isSelected ? 'text-green-300' : 'text-gray-100'
+    const frequency_units: {[key: string]: string} = {
+        'weeks': 'week'
+    };
 
     return (
         <Touchable onPress={onPress}>
             <View style={applyStyles(`border-1 p-16 rounded-12 mb-16 ${containerStyle}`)}>
                 <View style={applyStyles('pb-8 flex-row items-center justify-between')}>
                     <Text style={applyStyles(`pb-4 font-bold text-base ${textStyle}`)}>
-                        {amountWithCurrency(payment_frequency_amount)}/{payment_frequency_unit}
+                        {amountWithCurrency(payment_frequency_amount)}/{frequency_units[payment_frequency_unit]}
                     </Text>
                     {isSelected && <Icon name="check-circle" type="material-icons" size={16} color={colors['green-300']} />}
                 </View>
@@ -55,7 +58,7 @@ export const BNPLProduct = (props: BNPLProductProps) => {
                     </View>
                     <View style={applyStyles(`border-1 px-8 py-4 rounded-4 ${containerStyle} ${isSelected ? 'bg-green-300' : 'transparent'}`)}>
                         <Text style={applyStyles(`${isSelected ? 'text-white' : 'text-gray-100'} font-bold`)}>
-                            {payment_frequency} {payment_frequency_unit}s
+                            {payment_frequency} {payment_frequency_unit}
                         </Text>
                     </View>
                 </View>
