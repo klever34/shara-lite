@@ -10,6 +10,7 @@ import {
   getAuthService,
   getHelpDeskService,
   getI18nService,
+  getRemoteConfigService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
@@ -61,13 +62,15 @@ export const MoreOptionsScreen = withModal(
     const onEditBusinessSettings = useCallback(() => {
       navigation.navigate('BusinessSettings');
     }, [navigation]);
-
     const user = getAuthService().getUser();
     const onPaymentSettings = useCallback(() => {
-      if (user?.is_identity_verified) {
-        navigation.navigate('DisburementScreen');
-      } else {
+      const bvnVerificationEnabled = getRemoteConfigService()
+        .getValue('enableBVNVerification')
+        .asBoolean();
+      if (!user?.is_identity_verified && bvnVerificationEnabled) {
         navigation.navigate('PaymentSettings');
+      } else {
+        navigation.navigate('DisburementScreen');
       }
     }, [navigation, user]);
 
