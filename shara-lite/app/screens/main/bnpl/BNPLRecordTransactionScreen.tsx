@@ -83,7 +83,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     setFieldValue,
   } = useFormik<FormValues>({
     onSubmit: (values) => {
-      const {total_amount, amount_paid, bearingFees, ...rest} = values;
+      const {total_amount, amount_paid, ...rest} = values;
       handleOpenConfirmModal({
         ...rest,
         customer,
@@ -255,8 +255,9 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   }, [])
 
   useEffect(() => {
+    const defaultBundle = bnplBundles?.find(item => item.default);
     //@ts-ignore
-    setSelectedBNPLProduct(bnplBundles?.[0]);
+    setSelectedBNPLProduct(defaultBundle);
   }, [bnplBundles?.length])
 
   return (

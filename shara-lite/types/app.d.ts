@@ -184,6 +184,7 @@ type IPGeolocationResponse = {
 
 type BNPLBundle = {
   id: number;
+  default: boolean;
   bnpl_product_id: number;
   currency_code: string;
   active: boolean;
