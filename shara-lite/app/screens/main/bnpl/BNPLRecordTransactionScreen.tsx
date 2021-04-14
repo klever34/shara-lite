@@ -51,7 +51,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   const {getBNPLApproval} = useBNPLApproval();
 
   const wallet = getWallet();
-  const {interest_rate, amount_available, payment_frequency} =
+  const {amount_available} =
     getBNPLApproval() ?? {};
 
     const [bnplBundles, setBNPLBundles] = useState<BNPLBundle[] | undefined>();
@@ -107,7 +107,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
 
   const bnplProducts = useMemo(() => orderBy(bnplBundles?.map(item => {
     const amountToPay =
-      (((interest_rate ?? 0) * (item.payment_frequency ?? 0)) / 100) * credit_amount +
+      (((item.interest_rate ?? 0) * (item.payment_frequency ?? 0)) / 100) * credit_amount +
       credit_amount;
 
     return {
@@ -116,7 +116,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
       merchant_amount: amountToPay,
       payment_frequency_amount: amountToPay / (item.payment_frequency ?? 0)
     }
-  }), 'payment_frequency', 'desc'), [credit_amount, interest_rate, bnplBundles?.length]);
+  }), 'payment_frequency', 'desc'), [credit_amount, bnplBundles?.length]);
 
   const [selectedBNPLProduct, setSelectedBNPLProduct] = useState(bnplProducts?.[0]);
 
