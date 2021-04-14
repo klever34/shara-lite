@@ -106,17 +106,24 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   }, [values.total_amount, values.amount_paid]);
 
   const bnplProducts = useMemo(() => orderBy(bnplBundles?.map(item => {
-    const amountToPay =
+    const amountToPay = 
       (((item.interest_rate ?? 0) * (item.payment_frequency ?? 0)) / 100) * credit_amount +
       credit_amount;
 
+    const total_amount = values.bearingFees ? credit_amount : amountToPay;
+    const merchant_amount = credit_amount / ((((item.interest_rate ?? 0) * (item.payment_frequency ?? 0)) + 100) / 100);
+
     return {
       ...item,
-      total_amount: amountToPay,
-      merchant_amount: amountToPay,
-      payment_frequency_amount: amountToPay / (item.payment_frequency ?? 0)
+      total_amount,
+      merchant_amount,
+      payment_frequency_amount: total_amount / (item.payment_frequency ?? 0)
     }
-  }), 'payment_frequency', 'desc'), [credit_amount, bnplBundles?.length]);
+  }), 'payment_frequency', 'desc'), [
+    credit_amount, 
+    values.bearingFees,
+    bnplBundles?.length, 
+  ]);
 
   const [selectedBNPLProduct, setSelectedBNPLProduct] = useState(bnplProducts?.[0]);
 
