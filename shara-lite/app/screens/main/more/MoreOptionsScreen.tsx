@@ -11,6 +11,7 @@ import {
   getHelpDeskService,
   getI18nService,
   getRemoteConfigService,
+  getStorageService,
 } from '@/services';
 import {useErrorHandler} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
@@ -63,8 +64,8 @@ export const MoreOptionsScreen = withModal(
       navigation.navigate('BusinessSettings');
     }, [navigation]);
     const user = getAuthService().getUser();
-    const onPaymentSettings = useCallback(() => {
-      let idValue = true;
+    const onPaymentSettings = useCallback(async () => {
+      const idValue = await getStorageService().getItem('bvn');
       if (!user?.is_identity_verified) {
         const bvnVerificationEnabled = getRemoteConfigService()
           .getValue('enableBVNVerification')
