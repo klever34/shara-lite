@@ -609,7 +609,7 @@ bnpl.record_transaction.bnpl_terms_text,Buy now pay later terms,Nunua sasa ulipe
 bnpl.record_transaction.repayment_date,to be paid in full by {{date}},kulipwa kamili na {{date}},da za a biya su cikakke ta {{date}},,,
 bnpl.record_transaction.excess_amount_error,Amount is more than amount available for drawdown,Kiasi ni zaidi ya kiasi kinachopatikana kwa uharibifu,Adadin ya fi adadin da ake samu don zanawa,,,
 bnpl.record_transaction.select_option_text,Select buy now pay later option,Chagua kununua sasa ulipe baadaye chaguo,Zaɓi saya yanzu biya zaɓi daga baya,,,
-bnpl.record_transaction.bearing_fees_text,I will be braring the BNPL fees,Nitabeba ada ya BNPL,Zan ɗauki nauyin BNPL,,,
+bnpl.record_transaction.bearing_fees_text,I will be bearing the BNPL fees,Nitabeba ada ya BNPL,Zan ɗauki nauyin BNPL,,,
 bnpl.confirmation.instruction,1. Accept the terms of the BNPL offered by Shara to you 2. Confirm that your client has accepted the terms of the BNPL you are offering them powered by Shara.,1. Kubali masharti ya BNPL uliyopewa na Shara kwako 2. Thibitisha kuwa mteja wako amekubali masharti ya BNPL unayowapa inayotumiwa na Shara.,1. Yarda da sharuddan BNPL da Shara ta gabatar muku 2. Tabbatar cewa abokin aikin ka ya karbi sharuɗɗan BNPL da kake bayarwa ta hanyar Shara.,,,
 bnpl.confirmation.title,Confirm Buy Now Pay Later,Thibitisha Nunua Sasa Lipa Baadaye,Tabbatar Sayi Yanzu Biya Daga baya,,,
 bnpl.confirmation.terms,**Terms**,** Masharti **,** Sharudda **,,,

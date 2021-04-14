@@ -105,7 +105,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     return toNumber(values.total_amount) - toNumber(values.amount_paid || '0');
   }, [values.total_amount, values.amount_paid]);
 
-  const bnplProducts = useMemo(() => orderBy(bnplBundles?.map(item => {
+  const bnplProducts = useMemo(() => bnplBundles?.map(item => {
     const amountToPay = 
       (((item.interest_rate ?? 0) * (item.payment_frequency ?? 0)) / 100) * credit_amount +
       credit_amount;
@@ -119,7 +119,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
       merchant_amount,
       payment_frequency_amount: total_amount / (item.payment_frequency ?? 0)
     }
-  }), 'payment_frequency', 'desc'), [
+  }), [
     credit_amount, 
     values.bearingFees,
     bnplBundles?.length, 
@@ -215,7 +215,6 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     [handleDone, navigation, selectedBNPLProduct],
   );
 
-
   const handleOpenConfirmModal = useCallback(
     (values) => {
       openModal('bottom-half', {
@@ -245,10 +244,11 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   useEffect(() => {
     const fetchBNPLBundles = async () => {
       try {
-        const data  = await getApiService().getBNPLBundles()
-        setBNPLBundles(data)
+        const data  = await getApiService().getBNPLBundles();
+        const orderedData = orderBy(data, 'payment_frequency', 'desc');
+        setBNPLBundles(orderedData);
       } catch (error) {
-        handleError(error)
+        handleError(error);
       }
     }
     fetchBNPLBundles();
@@ -256,7 +256,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
 
   useEffect(() => {
     //@ts-ignore
-    setSelectedBNPLProduct(bnplBundles?.[0])
+    setSelectedBNPLProduct(bnplBundles?.[0]);
   }, [bnplBundles?.length])
 
   return (
