@@ -29,7 +29,7 @@ export const useBNPLDrawdownsList = (options: UseBNPLDrawdownsOptions) => {
     }
     return bnplDrawdowns.sorted(
       'created_at',
-      false,
+      true,
     )
   }, [bnplDrawdownsData.length, searchTerm])
 

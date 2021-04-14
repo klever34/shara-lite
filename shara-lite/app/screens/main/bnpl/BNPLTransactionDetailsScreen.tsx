@@ -28,6 +28,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
     amount_owed,
     bnpl_repayments,
     repayment_amount,
+    payment_frequency,
     payment_frequency_amount,
   } = transaction;
   const {getReceipt} = useReceipt();
@@ -132,7 +133,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
           <View style={applyStyles({width: '48%'})}>
             <Text style={applyStyles('pb-8 text-right text-gray-300 text-2xl')}>
               {strings('bnpl.day_text.other', {
-                amount: 56,
+                amount: (payment_frequency ?? 0) * 7,
               })}
             </Text>
             <Text style={applyStyles('text-right text-gray-100')}>

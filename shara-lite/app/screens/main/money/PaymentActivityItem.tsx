@@ -62,8 +62,8 @@ export const PaymentActivityItem = ({
 
 const BNPLDrawdownItem = ({data}: {data: IBNPLDrawdown}) => {
   const {amount_drawn, amount_owed, takes_charge, created_at, customer} = data;
-  const amount = takes_charge === "client" ? amount_drawn : amount_owed;
-  
+  const amount = takes_charge && takes_charge === "client" ? amount_drawn : amount_owed;
+
   return (
     <View
       style={applyStyles('px-16 py-8 flex-row items-center justify-between', {

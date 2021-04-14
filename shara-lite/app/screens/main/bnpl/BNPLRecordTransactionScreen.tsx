@@ -7,13 +7,14 @@ import {ModalWrapperFields, withModal} from '@/helpers/hocs';
 import {amountWithCurrency} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useBNPLApproval} from '@/services/bnpl-approval';
+import { useBNPLDrawdown } from '@/services/bnpl-drawdown';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
 import {useWallet} from '@/services/wallet';
 import {applyStyles, colors} from '@/styles';
 import { RouteProp } from '@react-navigation/core';
-import {addWeeks, format} from 'date-fns';
+import {addWeeks, format, parseISO} from 'date-fns';
 import {useFormik} from 'formik';
 import { orderBy } from 'lodash';
 import React, {useCallback, useEffect, useMemo, useState} from 'react';
@@ -49,6 +50,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   const navigation = useAppNavigation();
   const {saveTransaction} = useTransaction();
   const {getBNPLApproval} = useBNPLApproval();
+  const {saveBNPLDrawdown} = useBNPLDrawdown();
 
   const wallet = getWallet();
   const {amount_available} =
@@ -125,7 +127,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     bnplBundles?.length, 
   ]);
 
-  const [selectedBNPLProduct, setSelectedBNPLProduct] = useState(bnplProducts?.[0]);
+  const [selectedBNPLProduct, setSelectedBNPLProduct] = useState<BNPLBundle | undefined>();
 
   const handleGoBack = useCallback(() => {
     navigation.goBack();
@@ -199,6 +201,14 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
             repayment_amount: drawdown.repayment_amount,
           })
           .then();
+          
+        await saveBNPLDrawdown({bnplDrawdown: {
+            ...drawdown,
+            _partition: drawdown._partition.toString(),
+            created_at: parseISO(`${drawdown.created_at}Z`),
+            updated_at: parseISO(`${drawdown.updated_at}Z`),
+          }
+        });
         navigation.navigate('BNPLTransactionSuccessScreen', {
           transaction: {
             approval,
@@ -253,12 +263,6 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
     }
     fetchBNPLBundles();
   }, [])
-
-  useEffect(() => {
-    const defaultBundle = bnplBundles?.find(item => item.default);
-    //@ts-ignore
-    setSelectedBNPLProduct(defaultBundle);
-  }, [bnplBundles?.length])
 
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
