@@ -64,11 +64,16 @@ export const MoreOptionsScreen = withModal(
     }, [navigation]);
     const user = getAuthService().getUser();
     const onPaymentSettings = useCallback(() => {
-      const bvnVerificationEnabled = getRemoteConfigService()
-        .getValue('enableBVNVerification')
-        .asBoolean();
-      if (!user?.is_identity_verified && bvnVerificationEnabled) {
-        navigation.navigate('PaymentSettings');
+      let idValue = true;
+      if (!user?.is_identity_verified) {
+        const bvnVerificationEnabled = getRemoteConfigService()
+          .getValue('enableBVNVerification')
+          .asBoolean();
+        if (idValue && !bvnVerificationEnabled) {
+          navigation.navigate('DisburementScreen');
+        } else {
+          navigation.navigate('PaymentSettings');
+        }
       } else {
         navigation.navigate('DisburementScreen');
       }
