@@ -8,6 +8,7 @@ import {amountWithCurrency} from '@/helpers/utils';
 import {getAnalyticsService, getApiService, getI18nService} from '@/services';
 import {useBNPLApproval} from '@/services/bnpl-approval';
 import { useBNPLDrawdown } from '@/services/bnpl-drawdown';
+import { useBNPLRepayment } from '@/services/bnpl-repayment';
 import {handleError} from '@/services/error-boundary';
 import {useAppNavigation} from '@/services/navigation';
 import {useTransaction} from '@/services/transaction';
@@ -51,6 +52,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
   const {saveTransaction} = useTransaction();
   const {getBNPLApproval} = useBNPLApproval();
   const {saveBNPLDrawdown} = useBNPLDrawdown();
+  const {saveBNPLDrawdownRepayments} = useBNPLRepayment();
 
   const wallet = getWallet();
   const {amount_available} =
@@ -211,6 +213,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
             updated_at: parseISO(`${drawdown.updated_at}Z`),
           }
         });
+        await saveBNPLDrawdownRepayments({bnplRepayments: repayments})
         navigation.navigate('BNPLTransactionSuccessScreen', {
           transaction: {
             approval,
@@ -264,7 +267,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
       }
     }
     fetchBNPLBundles();
-  }, [])
+  }, []);
 
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
@@ -322,7 +325,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
           </Text>
         </View>
       </View>
-      {!!values.total_amount && 
+      {!!values.total_amount && !!bnplProducts?.length && 
         <ScrollView
           persistentScrollbar
           keyboardShouldPersistTaps="always">
@@ -406,6 +409,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
             title={strings('next')}
             style={applyStyles({width: 120})}
             textStyle={applyStyles('text-uppercase')}
+            disabled={!values.total_amount || !selectedBNPLProduct}
           />
         </View>
       </View>
