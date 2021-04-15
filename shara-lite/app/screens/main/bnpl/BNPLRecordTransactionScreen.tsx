@@ -409,7 +409,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
             title={strings('next')}
             style={applyStyles({width: 120})}
             textStyle={applyStyles('text-uppercase')}
-            disabled={!values.total_amount || !selectedBNPLProduct}
+            disabled={!toNumber(values.total_amount) || !selectedBNPLProduct}
           />
         </View>
       </View>

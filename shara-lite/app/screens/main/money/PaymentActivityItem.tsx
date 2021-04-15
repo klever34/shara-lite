@@ -61,8 +61,7 @@ export const PaymentActivityItem = ({
 };
 
 const BNPLDrawdownItem = ({data}: {data: IBNPLDrawdown}) => {
-  const {amount_drawn, amount_owed, takes_charge, created_at, customer} = data;
-  const amount = takes_charge && takes_charge === "client" ? amount_drawn : amount_owed;
+  const {created_at, customer, repayment_amount} = data;
 
   return (
     <View
@@ -80,7 +79,7 @@ const BNPLDrawdownItem = ({data}: {data: IBNPLDrawdown}) => {
         <View style={applyStyles('pl-8')}>
           <Markdown style={markdownStyle}>
             {strings('payment_activities.bnpl_drawdown_item', {
-              amount: amountWithCurrency(amount),
+              amount: amountWithCurrency(repayment_amount),
               customer: customer?.name,
             })}
           </Markdown>
@@ -93,7 +92,7 @@ const BNPLDrawdownItem = ({data}: {data: IBNPLDrawdown}) => {
             borderColor: colors['gray-20'],
           })}>
           <Text style={applyStyles('pb-4 text-700 text-xs text-green-200')}>
-            {amountWithCurrency(amount)}
+            {amountWithCurrency(repayment_amount)}
           </Text>
         </View>
         <Text
