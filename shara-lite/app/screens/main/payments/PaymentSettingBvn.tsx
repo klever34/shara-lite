@@ -5,6 +5,7 @@ import {
   getApiService,
   getAuthService,
   getI18nService,
+  getRemoteConfigService,
   getStorageService,
 } from '@/services';
 import {useAppNavigation} from '@/services/navigation';
@@ -41,6 +42,8 @@ export const PaymentSettingBvn = () => {
     try {
       let user = authService.getUser() as User;
       const payload = {idNumber};
+      let idValue = true;
+
       await apiService.verify(payload);
       if (user?.country_code !== '234') {
         const userInfo = {
@@ -51,7 +54,15 @@ export const PaymentSettingBvn = () => {
         await getStorageService().setItem('user', userInfo);
         navigation.navigate('DisburementScreen');
       } else {
-        navigation.navigate('BVNVerification');
+        const bvnVerificationEnabled = getRemoteConfigService()
+          .getValue('enableBVNVerification')
+          .asBoolean();
+        if (bvnVerificationEnabled) {
+          navigation.navigate('BVNVerification');
+        } else {
+          await getStorageService().setItem('bvn', idValue);
+          navigation.navigate('DisburementScreen');
+        }
       }
     } catch (error) {
       Alert.alert(strings('alert.error'), error.message);

@@ -22,12 +22,13 @@ export const BNPLTransactionSuccessScreen = (
 
   const user = getAuthService().getUser();
   const businessInfo = getAuthService().getBusinessInfo();
+  const numberOfDays = (drawdown?.payment_frequency ?? 0) * 7
 
   const firstRepayment =
     drawdown?.bnpl_repayments && drawdown.bnpl_repayments[0];
   const paymentLink =
     businessInfo.slug &&
-    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}/${drawdown.api_id}${
+    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}${
       receiptData?.customer?._id
         ? `?customer=${String(receiptData?.customer?._id)}`
         : ''
@@ -69,7 +70,7 @@ export const BNPLTransactionSuccessScreen = (
         }),
         payment: strings('bnpl.success.payment', {
           amount: amountWithCurrency(drawdown.repayment_amount),
-          days: 56,
+          days: numberOfDays,
         }),
       }}
       {...route.params}
