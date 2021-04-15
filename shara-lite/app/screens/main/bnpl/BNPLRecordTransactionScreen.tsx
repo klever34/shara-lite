@@ -213,7 +213,7 @@ export const BNPLRecordTransactionScreen = withModal((props: BNPLRecordTransacti
             updated_at: parseISO(`${drawdown.updated_at}Z`),
           }
         });
-        await saveBNPLDrawdownRepayments({bnplRepayments: repayments})
+        await saveBNPLDrawdownRepayments({bnplRepayments: repayments});
         navigation.navigate('BNPLTransactionSuccessScreen', {
           transaction: {
             approval,

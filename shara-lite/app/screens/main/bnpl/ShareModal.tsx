@@ -36,7 +36,7 @@ export const ShareModal = (props: ShareModalProps) => {
   const nextRepayment = activeRepayments && activeRepayments[0];
   const paymentLink =
     businessInfo.slug &&
-    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}/${drawdown.api_id}${
+    `${Config.WEB_BASE_URL}/pay/bnpl/${businessInfo.slug}${
       drawdown.customer?._id
         ? `?customer=${String(drawdown.customer?._id)}`
         : ''

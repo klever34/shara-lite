@@ -26,6 +26,7 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
     receipt,
     created_at,
     amount_owed,
+    amount_drawn,
     takes_charge,
     bnpl_repayments,
     repayment_amount,
@@ -54,8 +55,8 @@ export const BNPLTransactionDetailsScreen = withModal((props: Props) => {
 
   const takesChargeMessage: {[key: string]: string} = {
     client: strings('bnpl.transaction_info.client_takes_charge', {payment_frequency_amount: amountWithCurrency(payment_frequency_amount)}),
-    merchant: strings('bnpl.transaction_info.merchant_takes_charge', {amount: amountWithCurrency(amount_owed)})
-  }
+    merchant: strings('bnpl.transaction_info.merchant_takes_charge', {amount: amountWithCurrency(amount_drawn)})
+  };
 
   return (
     <SafeAreaView style={applyStyles('bg-white flex-1')}>
